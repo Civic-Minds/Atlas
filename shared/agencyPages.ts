@@ -5,6 +5,7 @@
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
 import { headwayEvery } from './headwayText';
+import { areaRegionTitle } from './areaRegions';
 import { SITE_URL } from './seo';
 
 export { headwayEvery };
@@ -285,7 +286,7 @@ export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; n
   const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
   if (a.country) crumbs.push({ name: a.country });
   if (a.region) crumbs.push({ name: a.region });
-  if (area) crumbs.push({ name: `${area.name} area`, href: `/area/${area.slug}` });
+  if (area) crumbs.push({ name: areaRegionTitle(area), href: `/area/${area.slug}` });
   else if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
   crumbs.push({ name: a.displayName });
   return crumbs;

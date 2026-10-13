@@ -30,7 +30,7 @@ describe('AgencyPage', () => {
   it('shows the short title, the area link, plain stats and the five period columns', () => {
     view(<AgencyPage data={data} />);
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('TTC · Toronto');
-    expect(screen.getByRole('link', { name: 'Toronto area →' }).getAttribute('href')).toBe('/area/toronto');
+    expect(screen.getByRole('link', { name: 'Greater Toronto and Hamilton Area →' }).getAttribute('href')).toBe('/area/toronto');
     expect(screen.queryByText('every 16 min')).toBeNull(); // no average wait stat
     expect(screen.getAllByText('every 4 min').length).toBeGreaterThan(0);
     expect(screen.queryByText('24 h')).toBeNull(); // service hours stat removed
@@ -65,7 +65,7 @@ describe('AgencyPage other agencies list', () => {
     const withArea = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);
     expect(withArea.nearby.map(n => n.slug)).toEqual(['hsr']);
     view(<AgencyPage data={withArea} />);
-    const heading = screen.getByRole('heading', { name: 'Nearby agencies in Toronto' });
+    const heading = screen.getByRole('heading', { name: 'Nearby agencies in the Greater Toronto and Hamilton Area' });
     expect(heading.querySelector('a')?.getAttribute('href')).toBe('/area/toronto');
     expect(screen.getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
   });

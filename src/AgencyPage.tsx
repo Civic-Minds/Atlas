@@ -16,6 +16,7 @@ import {
   type AgencyPageData,
   type AgencyPageRoute,
 } from '../shared/agencyPages';
+import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { titleCase } from './utils/format';
@@ -93,7 +94,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{agencyPageH1(agency)}</h1>
-              {data!.area && <a className={`mt-1 inline-block text-sm ${LINK}`} href={`/area/${data!.area.slug}`}>{data!.area.name} area →</a>}
+              {data!.area && <a className={`mt-1 inline-block text-sm ${LINK}`} href={`/area/${data!.area.slug}`}>{areaRegionTitle(data!.area)} →</a>}
             </div>
             <a href={agencyMapHref(agency)} className={PAGE_ACTION}>
               Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -144,7 +145,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">
               <h2 id="nearby-heading" className="text-xl font-black tracking-tight">
-                {data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={`/area/${data!.area.slug}`}>{data!.area.name}</a></> : 'Nearby agencies'}
+                {data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={`/area/${data!.area.slug}`}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
               </h2>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (

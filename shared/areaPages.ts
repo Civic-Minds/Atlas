@@ -12,6 +12,7 @@ import {
   type AgencyPageSummary,
 } from './agencyPages';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
+import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL } from './seo';
 
 export { AREA_PATH_PREFIX, areaPagePath };
@@ -111,11 +112,11 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
 export function areaPageTitle(d: Pick<AreaPageData, 'area' | 'agencies'>): string {
-  return `${d.area.name} area frequency map: ${plural(d.agencies.length, 'transit agency', 'transit agencies')} compared | Transit Atlas`;
+  return `${areaRegionTitle(d.area)} frequency map: ${plural(d.agencies.length, 'transit agency', 'transit agencies')} compared | Transit Atlas`;
 }
 
 export function areaPageH1(d: Pick<AreaPageData, 'area'>): string {
-  return `${d.area.name} area`;
+  return areaRegionTitle(d.area);
 }
 
 export function areaSubtitle(d: Pick<AreaPageData, 'area'>): string {
@@ -124,7 +125,7 @@ export function areaSubtitle(d: Pick<AreaPageData, 'area'>): string {
 
 /** One sentence that stands alone, used as the meta description's opening. */
 export function areaLeadSentence(d: AreaPageData): string {
-  return `${plural(d.totalRoutes, 'weekday route', 'weekday routes')} across ${plural(d.agencies.length, 'transit agency', 'transit agencies')} in the ${d.area.name} area.`;
+  return `${plural(d.totalRoutes, 'weekday route', 'weekday routes')} across ${plural(d.agencies.length, 'transit agency', 'transit agencies')} in ${areaRegionName(d.area)}.`;
 }
 
 export function areaPageDescription(d: AreaPageData): string {
@@ -152,7 +153,7 @@ export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>):
 /** One plain sentence, the same template for every area. */
 export function areaAboutParagraph(d: AreaPageData): string {
   const n = d.agencies.length;
-  const out: string[] = [`The ${d.area.name} area has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}.`];
+  const out: string[] = [`${areaRegionSentenceStart(d.area)} has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}.`];
   return out.join(' ');
 }
 
@@ -189,7 +190,7 @@ export function resolveAreaSeo(
 
 /** BreadcrumbList and Dataset; the breadcrumb is not shown on the page. */
 export function areaPageJsonLd(d: AreaPageData, canonicalUrl: string, origin: string): object {
-  const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.area.country }, { name: `${d.area.name} area`, item: canonicalUrl }];
+  const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.area.country }, { name: areaRegionTitle(d.area), item: canonicalUrl }];
   const m = d.newestRefresh ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(d.newestRefresh) : null;
   return {
     '@context': 'https://schema.org',
@@ -200,11 +201,11 @@ export function areaPageJsonLd(d: AreaPageData, canonicalUrl: string, origin: st
       },
       {
         '@type': 'Dataset',
-        name: `${d.area.name} area transit frequency`,
+        name: `${areaRegionTitle(d.area)} transit frequency`,
         description: areaPageDescription(d),
         url: canonicalUrl,
         isAccessibleForFree: true,
-        spatialCoverage: { '@type': 'Place', name: `${d.area.name} area, ${d.area.country}` },
+        spatialCoverage: { '@type': 'Place', name: `${areaRegionTitle(d.area)}, ${d.area.country}` },
         creator: { '@type': 'Organization', name: 'Civic Minds', url: `${SITE_URL}/` },
         ...(m ? { dateModified: `${m[1]}-${m[2]}-${m[3]}` } : {}),
       },
