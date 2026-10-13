@@ -3,7 +3,7 @@ import { isHourInPeriod, PERIOD_KEYS, TIME_PERIODS } from '../../shared/config';
 import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
-import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery } from './headwayText';
+import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange } from './headwayText';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -274,7 +274,7 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
 
 /**
  * The lower end of a route list range: the slower direction's cadence with alternating branches
- * combined on their shared stretch. Display text only ("about every 30–60 min"); sorting,
+ * combined on their shared stretch. Display text only ("every 30–60 min"); sorting,
  * filtering and colour use routeListDisplayHeadway. Null when it is not lower, or the route is limited.
  */
 export function routeListSharedHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
@@ -307,7 +307,10 @@ export function routeListDisplay(features: readonly ShapeProperties[], period: T
   return display;
 }
 
-/** List text for a route's cadence: "about every 30–60 min" with a shared-stretch range, else "every N min". */
-export function routeListHeadwayText(headway: number, sharedHeadway?: number | null): string {
-  return sharedHeadway != null && sharedHeadway < headway ? headwayAboutRange(sharedHeadway, headway) : headwayEvery(headway);
+/**
+ * List text for a route's cadence: "every 30–60 min" with a shared-stretch range, else "every N
+ * min". Compact drops "every" from the range so it fits a narrow table cell ("30–60 min").
+ */
+export function routeListHeadwayText(headway: number, sharedHeadway?: number | null, compact = false): string {
+  return sharedHeadway != null && sharedHeadway < headway ? headwayEveryRange(sharedHeadway, headway, compact) : headwayEvery(headway);
 }

@@ -15,7 +15,8 @@ describe('route lists show a range where alternating branches share a stretch', 
   it('GO Lakeshore West weekday midday: every 30 on the shared part, 60 per branch', () => {
     const lw = rows('goLakeshoreWest');
     expect(routeListDisplay(lw, 'midday')).toEqual({ headway: 60, limited: false, sharedHeadway: 30 });
-    expect(routeListHeadwayText(60, 30)).toBe('about every 30–60 min');
+    expect(routeListHeadwayText(60, 30)).toBe('every 30–60 min');
+    expect(routeListHeadwayText(60, 30, true)).toBe('30–60 min');
     // No pooled PM value on the shared stretch: the single number stays.
     expect(routeListDisplay(lw, 'pmPeak')).toEqual({ headway: 60, limited: false });
     // Limited stays limited, never a range.

@@ -70,7 +70,7 @@ function Intro({ intro, connections }: { intro: string; connections: AgencyPageD
  */
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
-  if (v != null) return routeListHeadwayText(v, r.shared?.[col]);
+  if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
   return Array.isArray(r.limited) && r.limited.includes(col) ? 'Limited' : headwayEvery(null);
 }
 
