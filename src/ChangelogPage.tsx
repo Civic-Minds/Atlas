@@ -12,7 +12,7 @@ export default function ChangelogPage() {
   return (
     <PageShell stickyHeader>
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
-          <PageContents items={entries.map(entry => ({ id: entry.key, label: entry.label }))} />
+          <PageContents title="Changelog" items={entries.map(entry => ({ id: entry.key, label: entry.label }))} />
           <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
             <header>
               <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">Changelog</h1>
