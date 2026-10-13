@@ -15,6 +15,7 @@ import {
   type HistoryTier,
 } from '../../shared/historyEligibility';
 import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayText';
+import Panel, { PanelTitleBar } from '../components/ui/Panel';
 
 export interface RouteSnapshot {
   label: string;
@@ -172,7 +173,7 @@ function RouteHistoryCard({
   }
 
   return (
-    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
+    <Panel enter>
       {/* Header */}
       <div className="shrink-0 px-4 pt-3 pb-2">
         <button
@@ -304,7 +305,7 @@ function RouteHistoryCard({
           </div>
         )}
       </div>
-    </div>
+    </Panel>
   );
 }
 
@@ -390,7 +391,7 @@ function HistoryAgencyPanel({
   }, [activeFilter, agencyHistory.slug, routeRows]);
 
   return (
-    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] ${PANEL_ENTER}`}>
+    <Panel enter className="max-h-[calc(100vh-104px)]">
       {/* Header */}
       <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div className="flex items-start justify-between gap-2">
@@ -463,7 +464,7 @@ function HistoryAgencyPanel({
           />
         ))}
       </div>
-    </div>
+    </Panel>
   );
 }
 
@@ -738,10 +739,10 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
           className={`${FLOATING_CARD} max-h-[calc(100vh-104px)] overflow-y-auto custom-scrollbar transition-[opacity,transform] duration-200 ease-out ${showAgencyChooser || searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
           onMouseDown={e => e.preventDefault()}
         >
-          <div className={PANEL_TITLE_BAR}>
+          <PanelTitleBar>
             <HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
             <span className={PANEL_TITLE}>Historical service</span>
-          </div>
+          </PanelTitleBar>
           {query === '' && recentSearches.length > 0 ? (
             <>
               <div className="px-5 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">

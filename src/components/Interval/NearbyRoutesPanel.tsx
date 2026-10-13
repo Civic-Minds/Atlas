@@ -4,6 +4,7 @@ import { useColorVision } from '../../context/ColorVisionContext';
 import { fmtHeadway, titleCase } from '../../utils/format';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX, LIST_ROW, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_BODY, PANEL_EMPTY } from '../../styles';
+import { PanelBody, PanelTitleBar } from '../ui/Panel';
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
@@ -31,9 +32,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       style={{ position: 'absolute', bottom: 136, right: 12, zIndex: PANEL_Z_INDEX }}
       className={`w-64 max-h-[calc(100vh-152px)] flex flex-col ${FLOATING_CARD} ${PANEL_ENTER}`}
     >
-      <div className={PANEL_TITLE_BAR}>
+      <PanelTitleBar>
         <span className={PANEL_TITLE}>Near You</span>
-      </div>
+      </PanelTitleBar>
 
       {loading ? (
         <div className="flex items-center gap-2 px-4 py-3">
@@ -45,7 +46,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
           No routes within 500 m
         </p>
       ) : (
-        <div className={PANEL_BODY}>
+        <PanelBody>
           {routes.map(r => (
             <button
               key={r.rKey}
@@ -86,7 +87,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
               </div>
             </button>
           ))}
-        </div>
+        </PanelBody>
       )}
     </div>
   );
