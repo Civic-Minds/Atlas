@@ -1777,7 +1777,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     sp.set('lon', lon.toFixed(5));
     sp.set('z', (map?.getZoom() ?? zoom).toFixed(2));
     const url = `${window.location.origin}${window.location.pathname}?${sp.toString()}`;
-    return medium ? withShareTags(url, medium) : url;
+    return withShareTags(url, medium);
   };
 
   const handleCopyLocationUrl = () => {

@@ -4,16 +4,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const trackEvent = vi.fn();
 const trackPageView = vi.fn();
+const trackLandingPageView = vi.fn();
 vi.mock('../../lib/analytics', async () => {
   const actual = await vi.importActual<typeof import('../../lib/analytics')>('../../lib/analytics');
-  return { ...actual, trackEvent: (...a: unknown[]) => trackEvent(...a), trackPageView: (...a: unknown[]) => trackPageView(...a) };
+  return { ...actual, trackEvent: (...a: unknown[]) => trackEvent(...a), trackPageView: (...a: unknown[]) => trackPageView(...a), trackLandingPageView: (...a: unknown[]) => trackLandingPageView(...a) };
 });
 
 import { OutboundLink } from '../OutboundLink';
 import RouteTracker from '../RouteTracker';
 import { MapAttribution } from '../Interval/MapAttribution';
 
-beforeEach(() => { trackEvent.mockClear(); trackPageView.mockClear(); });
+beforeEach(() => { trackEvent.mockClear(); trackPageView.mockClear(); trackLandingPageView.mockClear(); });
 
 describe('OutboundLink', () => {
   it('opens in a new tab and reports kind and agency on click', () => {
@@ -50,8 +51,10 @@ describe('RouteTracker', () => {
 
   it('sends one page view per route, including non-App pages', () => {
     render(<MemoryRouter initialEntries={['/']}><RouteTracker /><Nav /></MemoryRouter>);
-    expect(trackPageView.mock.calls).toEqual([['/']]);
+    expect(trackLandingPageView.mock.calls).toEqual([['/']]);
+    expect(trackPageView).not.toHaveBeenCalled();
     fireEvent.click(screen.getByText('go'));
-    expect(trackPageView.mock.calls).toEqual([['/'], ['/about']]);
+    expect(trackLandingPageView).toHaveBeenCalledTimes(1);
+    expect(trackPageView.mock.calls).toEqual([['/about']]);
   });
 });

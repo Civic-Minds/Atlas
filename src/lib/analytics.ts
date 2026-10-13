@@ -98,12 +98,39 @@ export type ShareMedium = typeof SHARE_UTM_MEDIUM_IMAGE | typeof SHARE_UTM_MEDIU
  * URL is returned untouched. Nothing reads these params back: URL-state parsers only look at their
  * own named params, so an arriving utm tag is ignored.
  */
-export function withShareTags(url: string, medium: ShareMedium, enabled: boolean = FEATURES.shareUtm): string {
-  if (!enabled) return url;
+export function withShareTags(url: string, medium?: ShareMedium, enabled: boolean = FEATURES.shareUtm): string {
   const u = new URL(url);
-  // The internal-session marker stays in the address bar; a shared copy must not mark recipients.
+  // Always (on public too): a copied link must not carry the internal-session marker, which stays
+  // in the address bar and would exclude whoever opens the link from analytics, nor old utm tags.
   u.searchParams.delete('atlas_internal');
-  u.searchParams.set('utm_source', SHARE_UTM_SOURCE);
-  u.searchParams.set('utm_medium', medium);
+  for (const key of Array.from(u.searchParams.keys())) {
+    if (key.startsWith('utm_')) u.searchParams.delete(key);
+  }
+  if (enabled && medium) {
+    u.searchParams.set('utm_source', SHARE_UTM_SOURCE);
+    u.searchParams.set('utm_medium', medium);
+  }
   return u.toString();
+}
+
+/** True when the URL carries any utm_ param. */
+export function hasUtmParams(url: string): boolean {
+  for (const key of new URL(url).searchParams.keys()) if (key.startsWith('utm_')) return true;
+  return false;
+}
+
+/**
+ * Send the first page view with the full landing URL (utm tags included, so GA can attribute the
+ * visit), then drop the utm params from the address bar. The URL is captured into the event now,
+ * so the strip is safe even though GA loads later and the event may still be queued.
+ */
+export function trackLandingPageView(path: string) {
+  const landing = window.location.href;
+  trackEvent('page_view', { page_path: path, page_location: landing });
+  if (!hasUtmParams(landing)) return;
+  const u = new URL(landing);
+  for (const key of Array.from(u.searchParams.keys())) {
+    if (key.startsWith('utm_')) u.searchParams.delete(key);
+  }
+  window.history.replaceState(window.history.state, '', `${u.pathname}${u.search}${u.hash}`);
 }

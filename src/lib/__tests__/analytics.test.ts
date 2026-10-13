@@ -3,7 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FEATURES } from '../../../shared/config';
 import { parseAgencyUrlRule, parseModesParam } from '../../utils/shareUrlState';
-import { withShareTags } from '../analytics';
+import { trackLandingPageView, withShareTags } from '../analytics';
 
 describe('analytics startup queue', () => {
   beforeEach(() => {
@@ -121,5 +121,39 @@ describe('events stay off for internal sessions', () => {
     initAnalytics();
     trackEvent('outbound_click', { kind: 'fares' });
     expect(gtag).not.toHaveBeenCalled();
+  });
+});
+
+describe('link cleaning and landing strip', () => {
+  const base = 'https://atlas.example/?lat=1&lon=2&atlas_internal=1&utm_source=x&utm_medium=y&utm_campaign=z';
+
+  it('removes atlas_internal and utm tags even when tagging is off (public)', () => {
+    const u = new URL(withShareTags(base, 'link', false));
+    expect([...u.searchParams.keys()]).toEqual(['lat', 'lon']);
+    expect([...new URL(withShareTags(base, undefined, true)).searchParams.keys()]).toEqual(['lat', 'lon']);
+  });
+
+  it('strips atlas_internal when tagging on too', () => {
+    const u = new URL(withShareTags(base, 'image', true));
+    expect(u.searchParams.has('atlas_internal')).toBe(false);
+    expect(u.searchParams.get('utm_medium')).toBe('image');
+    expect(u.searchParams.has('utm_campaign')).toBe(false);
+  });
+
+  it('sends the landing URL with utm in the first pageview, then strips the address bar', async () => {
+    vi.resetModules();
+    vi.stubEnv('PROD', true);
+    vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'G-TEST123');
+    vi.stubEnv('VITE_ATLAS_MODE', 'public');
+    window.localStorage.clear();
+    window.history.replaceState({}, '', '/?lat=1&utm_source=atlas_share&utm_medium=link&atlas_internal=0');
+    const mod = await import('../analytics');
+    window.dataLayer = [];
+    mod.trackLandingPageView('/');
+    expect(window.location.search).toBe('?lat=1&atlas_internal=0');
+    mod.initAnalytics();
+    const sent = JSON.stringify(window.dataLayer.map((e) => Array.from(e as ArrayLike<unknown>)));
+    expect(sent).toContain('utm_source=atlas_share');
+    expect(sent).toContain('page_location');
   });
 });
