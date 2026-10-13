@@ -65,7 +65,7 @@ export function summarize(
   let first = Infinity;
   let last = -Infinity;
   // Per route: its direction/branch rows, so the numbers come from the route card's own display rule
-  // (routeListDisplay: the best branch's cadence, "limited" when it runs but has no trustworthy cadence).
+  // (routeListDisplay: the slower direction's cadence, "limited" when it runs but has no trustworthy cadence).
   const rows = new Map<string, ShapeProperties[]>();
   for (const f of lines) {
     const p = f.properties;

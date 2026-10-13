@@ -37,6 +37,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Route lists show the slower direction's frequency, as the agency page says**: they showed the busier direction, so GO 47 read "every 3 min" in the AM peak from a one-way rush cluster ([#821](https://github.com/Civic-Minds/Atlas/issues/821))
 - **Buffalo Metro Rail is counted when the LRT filter is on**: the map drew the line but the route counter showed 0 ([#811](https://github.com/Civic-Minds/Atlas/issues/811))
 - **The In view route count matches the lines you can see**: one line published under several route IDs was counted once per ID ([#399](https://github.com/Civic-Minds/Atlas/issues/399)).
 - **The Refresh GTFS feeds workflow can accept reviewed release-gate flags**: a new "allow" input (e.g. `xpress-ga:expired`) goes to both the refresh and publish steps, so one agency's red flag no longer blocks the whole weekly release with no way around it ([#807](https://github.com/Civic-Minds/Atlas/issues/807)).

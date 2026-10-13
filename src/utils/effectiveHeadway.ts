@@ -119,18 +119,53 @@ export function routeCardDisplayLimited(p: ShapeProperties, period: TimePeriod):
   return hasDirectionPeriodService(p, period);
 }
 
-/** Display the best active-period cadence across a route's direction/branch rows. */
+/**
+ * Whether this row itself runs in the period as non-span service. Unlike hasDirectionPeriodService,
+ * it ignores the route-wide worst-direction stamp, which every row of the route carries. Span
+ * patterns are left out, as in the frequency filter's worst-direction pool.
+ */
+function rowRunsInPeriod(p: ShapeProperties, period: TimePeriod): boolean {
+  if (p.tier === 'span') return false;
+  if (period === 'all') return true;
+  // Not maxGapByPeriod: it also measures the wait before or after a period with no trips at all.
+  if (p.periodCoverageHeadway?.[period] != null || p.headwayByPeriod?.[period] != null) return true;
+  return Object.entries(p.headwayByHour ?? {}).some(([hour, value]) => value != null && isHourInPeriod(Number(hour), period));
+}
+
+/**
+ * The route list cadence, judged by the slower direction (#821). Within a direction the best
+ * branch's cadence speaks for it, so an infrequent short-turn never hides the main pattern (#708).
+ * Across directions the slower one wins. A direction that runs in the period but has no
+ * trustworthy cadence (one AM trip against a peak-direction cluster) leaves the route with no
+ * number, so lists show "limited". A direction with no trips in the period, or only span-pattern
+ * trips, is skipped, so a one-way peak service still shows its own cadence.
+ */
 export function routeListDisplayHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
-  const values = features
-    .map(feature => routeCardDisplayHeadway(feature, period))
-    .filter((value): value is number => value != null);
-  return values.length > 0 ? Math.min(...values) : null;
+  const byDirection = new Map<number | null, ShapeProperties[]>();
+  for (const feature of features) {
+    const direction = feature.directionId ?? null;
+    (byDirection.get(direction) ?? byDirection.set(direction, []).get(direction)!).push(feature);
+  }
+  let slowest: number | null = null;
+  for (const rows of byDirection.values()) {
+    const values = rows
+      .map(feature => routeCardDisplayHeadway(feature, period))
+      .filter((value): value is number => value != null);
+    if (values.length === 0) {
+      if (rows.some(feature => rowRunsInPeriod(feature, period))) return null;
+      continue;
+    }
+    const best = Math.min(...values);
+    slowest = slowest == null ? best : Math.max(slowest, best);
+  }
+  return slowest;
 }
 
 /**
  * Whether a route list row (sidebar lists, agency card, nearby routes) shows
- * "limited", in any period, using the route card's rule. Any branch with a real
- * cadence wins, so an infrequent short-turn never hides the main pattern's number (#708).
+ * "limited", in any period, using the route card's rule. Within a direction any branch
+ * with a real cadence wins, so an infrequent short-turn never hides the main pattern's
+ * number (#708); a direction that runs with no cadence makes the route limited (#821).
  */
 export function routeListDisplayLimited(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   return routeListDisplayHeadway(features, period) == null
