@@ -22,7 +22,9 @@ export interface AgencyPageRoute {
   midday: number | null;
   am: number | null;
   pm: number | null;
-  /** No sustained daytime service, but published overnight service (a night route). */
+  /** Runs by day but with no trustworthy cadence in some period (the route card says "limited"). */
+  limited?: boolean;
+  /** Overnight service and nothing by day (a night route). */
   night?: boolean;
 }
 

@@ -20,7 +20,9 @@ import { readFileSync, writeFileSync, existsSync, renameSync } from 'node:fs';
 import { DEFAULT_R2_PUBLIC_URL } from '../shared/config';
 import { effectiveMode } from '../shared/modes';
 import { routeGroupKey } from '../shared/routeGroupKey';
-import { normalizeRouteFilterFeatures, routeFilterHeadway } from '../shared/routeHeadwayFilter';
+import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter';
+import { routeListDisplay, hasDirectionPeriodService } from '../src/utils/effectiveHeadway';
+import type { ShapeProperties } from '../src/hooks/useAgencyData';
 import type { AgencyPageIdentity, AgencyPageRoute, AgencyPageSummary, AgencyPageSummaries } from '../shared/agencyPages';
 import { trimRedundantCity } from '../shared/agencyPages';
 import { countryForRegion } from '../shared/regionCountry';
@@ -61,26 +63,22 @@ export function summarize(
   const routes = new Map<string, AgencyPageRoute>();
   let first = Infinity;
   let last = -Infinity;
-  const overnight = new Set<string>();
-  const best = (prev: number | null | undefined, next: number | null) =>
-    next == null ? prev ?? null : prev == null ? Math.round(next) : Math.min(prev, Math.round(next));
+  // Per route: its direction/branch rows, so the numbers come from the route card's own display rule
+  // (routeListDisplay: the best branch's cadence, "limited" when it runs but has no trustworthy cadence).
+  const rows = new Map<string, ShapeProperties[]>();
   for (const f of lines) {
     const p = f.properties;
     const key = routeGroupKey(p.routeShortName, p.routeId);
     const shortName = typeof p.routeShortName === 'string' ? p.routeShortName.trim() : '';
     const longName = typeof p.routeLongName === 'string' && p.routeLongName.trim() ? p.routeLongName.trim() : null;
     const prev = routes.get(key);
-    // A route counts at its best passing pattern, like the map: some feature passes.
     routes.set(key, {
       name: prev?.name ?? (shortName || longName || String(p.routeId ?? '')),
       longName: prev?.longName ?? longName,
       mode: prev?.mode ?? effectiveMode({ routeType: p.routeType as number, routeLongName: longName, routeShortName: shortName, agencySlug: slug }),
-      midday: best(prev?.midday, routeFilterHeadway(p, 'midday')),
-      am: best(prev?.am, routeFilterHeadway(p, 'amPeak')),
-      pm: best(prev?.pm, routeFilterHeadway(p, 'pmPeak')),
+      midday: null, am: null, pm: null,
     });
-    const byPeriod = p.headwayByPeriod as Record<string, number | null> | undefined;
-    if (byPeriod?.overnight != null) overnight.add(key);
+    (rows.get(key) ?? rows.set(key, []).get(key)!).push(p as unknown as ShapeProperties);
     const hours = p.headwayByHour as Record<string, number | null> | undefined;
     for (const [h, v] of Object.entries(hours ?? {})) {
       if (v == null) continue;
@@ -88,7 +86,15 @@ export function summarize(
       last = Math.max(last, Number(h));
     }
   }
-  for (const [key, r] of routes) if (r.midday == null && r.am == null && r.pm == null && overnight.has(key)) r.night = true;
+  for (const [key, r] of routes) {
+    const ps = rows.get(key)!;
+    const day = (['midday', 'amPeak', 'pmPeak'] as const).map(period => routeListDisplay(ps, period));
+    [r.midday, r.am, r.pm] = day.map(d => d.headway);
+    const limited = day.some(d => d.limited);
+    if (limited) r.limited = true;
+    // Night only: overnight service and nothing at all by day (no cadence, no limited daytime service).
+    if (day.every(d => d.headway == null && !d.limited) && ps.some(p => hasDirectionPeriodService(p, 'overnight'))) r.night = true;
+  }
   const hasDay = (day: string) => features.some(f => f.geometry?.type === 'LineString' && f.properties.day === day
     && Object.values((f.properties.headwayByHour as Record<string, number | null> | undefined) ?? {}).some(v => v != null));
   const list = [...routes.values()].sort((a, b) =>

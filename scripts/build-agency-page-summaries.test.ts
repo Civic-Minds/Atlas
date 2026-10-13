@@ -17,10 +17,10 @@ function line(name: string, directionId: number, midday: number | null, extra: R
 }
 
 describe('summarize', () => {
-  it('records a route at its slower direction, like the map filter', () => {
+  it('records a route as its route card lists it (best branch), not by the filter rule', () => {
     const s = summarize([line('A', 0, 10), line('A', 1, 10), line('B', 0, 8), line('B', 1, 25), line('C', 0, 60), line('C', 1, 60)], 'x', '2026-10-01');
     expect(s.routeCount).toBe(3);
-    expect(s.routes.map(r => [r.name, r.midday, r.am, r.pm])).toEqual([['A', 10, 10, 10], ['B', 25, 25, 25], ['C', 60, 60, 60]]);
+    expect(s.routes.map(r => [r.name, r.midday, r.am, r.pm])).toEqual([['A', 10, 10, 10], ['B', 8, 8, 8], ['C', 60, 60, 60]]);
     expect(s.routes[0].mode).toBe(3);
     expect(s.span).toEqual({ first: 6, last: 25 });
   });
@@ -50,6 +50,12 @@ describe('night routes and weekend service', () => {
     const s = summarize([night('301'), line('A', 0, 10), line('A', 1, 10)], 'x', null);
     expect(s.routes.find(r => r.name === '301')).toMatchObject({ midday: null, am: null, pm: null, night: true });
     expect(s.routes.find(r => r.name === 'A')?.night).toBeUndefined();
+  });
+
+  it('shows an unsustained daytime cadence like the card, and never calls it night-only', () => {
+    const l = line('46', 0, 19, { headwayByPeriodSustained: { midday: false, amPeak: false, pmPeak: false }, headwayByPeriod: { midday: 19, amPeak: 13, pmPeak: 13, overnight: 17 } });
+    const r = summarize([l], 'x', null).routes[0];
+    expect([r.midday, r.am, r.pm, r.night]).toEqual([19, 13, 13, undefined]);
   });
 
   it('does not mark a route with no service at all as night-only', () => {
