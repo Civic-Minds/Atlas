@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE } from '../../styles';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
@@ -83,23 +83,11 @@ type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact';
 
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
 
-const compactOptBtn = (active: boolean, highContrast = false) =>
-  `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${
-    active
-      ? highContrast
-        ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
-        : 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-      : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)] hover:border-[var(--control-active-border)] hover:text-[var(--control-active-fg)]'
-  }`;
+const compactOptBtn = (active: boolean) =>
+  `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
 
-const rowBtn = (active: boolean, highContrast = false) =>
-  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
-    active
-      ? highContrast
-        ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
-        : 'bg-[var(--bg-btn-hover)] border-[var(--text-muted)] text-[var(--text-primary)]'
-      : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)] hover:border-[var(--control-active-border)] hover:text-[var(--control-active-fg)]'
-  }`;
+const rowBtn = (active: boolean) =>
+  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
 
 interface AgenciesPanelProps {
   agencies: Agency[];
@@ -109,7 +97,6 @@ interface AgenciesPanelProps {
   agencyQuery: string;
   setAgencyQuery: (q: string) => void;
   agencySearchRef: React.RefObject<HTMLInputElement | null>;
-  highContrast: boolean;
 }
 
 export function applyAgencyBulkSelection(current: Set<string>, allSlugs: string[], enabled: boolean): Set<string> {
@@ -119,7 +106,7 @@ export function applyAgencyBulkSelection(current: Set<string>, allSlugs: string[
   return next;
 }
 
-function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef, highContrast }: AgenciesPanelProps) {
+function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
   const [showAll, setShowAll] = useState(false);
 
   // Build deduplicated groups, tagging each with whether it overlaps the current viewport
@@ -207,7 +194,8 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
                     else g.slugs.forEach(s => next.add(s));
                     setSelectedAgencies(next);
                   }}
-                  className={rowBtn(active, highContrast)}
+                  className={rowBtn(active)}
+                  aria-pressed={active}
                   aria-label={g.name}
                 >
                   <span className="truncate flex-1 min-w-0">
@@ -295,10 +283,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   };
 
   const chipClass = (active: boolean) =>
-    `relative h-8 px-3.5 flex items-center justify-center ${CHIP_BASE} text-xs font-bold transition-colors whitespace-nowrap ${
+    `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors whitespace-nowrap ${
       active
-        ? 'border-[var(--accent-border)] text-[var(--accent)]'
-        : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
+        ? CONTROL_ACTIVE_GLASS
+        : 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
     }`;
 
   const Dot = ({ show }: { show: boolean }) =>
@@ -313,7 +301,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       <div ref={rowRef} className="flex items-center gap-2">
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
           {([30, 60] as const).map(value => (
-            <button key={value} onClick={() => setNightServiceFrequency(value)} className={compactOptBtn(nightServiceFrequency === value, colorMode === 'friendly')} aria-pressed={nightServiceFrequency === value}>
+            <button key={value} onClick={() => setNightServiceFrequency(value)} className={compactOptBtn(nightServiceFrequency === value)} aria-pressed={nightServiceFrequency === value}>
               {value} min
             </button>
           ))}
@@ -323,7 +311,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   }
 
   if (researchMode && setResearchDays && setResearchFrequency && setResearchWindow) {
-    const researchButton = (active: boolean) => rowBtn(active, colorMode === 'friendly');
+    const researchButton = (active: boolean) => rowBtn(active);
     const toggleResearchDay = (selected: DayType) => {
       const next = researchDays.includes(selected)
         ? researchDays.filter(dayType => dayType !== selected)
@@ -339,7 +327,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           </div>}
         </div>
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-          {([15, 30] as const).map(value => <button key={value} onClick={() => setResearchFrequency(value)} className={compactOptBtn(researchFrequency === value, colorMode === 'friendly')} aria-pressed={researchFrequency === value}>{value} min</button>)}
+          {([15, 30] as const).map(value => <button key={value} onClick={() => setResearchFrequency(value)} className={compactOptBtn(researchFrequency === value)} aria-pressed={researchFrequency === value}>{value} min</button>)}
         </div>
         {researchFrequency === 30 && (
           <div className="hidden xl:flex items-center gap-2 text-[9px] font-bold text-[var(--text-muted)]" aria-label="30-minute view legend">
@@ -348,7 +336,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           </div>
         )}
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-          {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <button key={value} onClick={() => setResearchWindow(value)} className={compactOptBtn(researchWindow === value, colorMode === 'friendly')} aria-pressed={researchWindow === value}>{label}</button>)}
+          {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <button key={value} onClick={() => setResearchWindow(value)} className={compactOptBtn(researchWindow === value)} aria-pressed={researchWindow === value}>{label}</button>)}
         </div>
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
@@ -375,7 +363,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <button
                 key={label}
                 onClick={() => { setMaxHeadway(max); setOpenChip(null); }}
-                className={rowBtn(isSelected, colorMode === 'friendly')}
+                className={rowBtn(isSelected)}
+                aria-pressed={isSelected}
                 aria-label={max === Infinity ? 'Show all routes' : `Every ${max} min or better`}
               >
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
@@ -400,7 +389,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <button
               key={d}
               onClick={() => { setDay(d); setOpenChip(null); }}
-              className={rowBtn(day === d, colorMode === 'friendly')}
+              className={rowBtn(day === d)}
+              aria-pressed={day === d}
             >
               {d}
             </button>
@@ -422,10 +412,11 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <button
               key={p}
               onClick={() => { setPeriod(p); setOpenChip(null); }}
-              className={`${rowBtn(period === p, colorMode === 'friendly')} flex items-center justify-between gap-3`}
+              className={`${rowBtn(period === p)} flex items-center justify-between gap-3`}
+              aria-pressed={period === p}
             >
               <span>{PERIOD_LABELS[p]}</span>
-              <span className="text-[9px] text-[var(--text-dim)] shrink-0">{formatPeriodRange(p)}</span>
+              <span className="text-[9px] opacity-70 shrink-0">{formatPeriodRange(p)}</span>
             </button>
           ))}
         </div>
@@ -453,7 +444,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           agencyQuery={agencyQuery}
           setAgencyQuery={setAgencyQuery}
           agencySearchRef={agencySearchRef}
-          highContrast={colorMode === 'friendly'}
         />
       )}
     </div>
@@ -471,7 +461,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <button
               key={m.id}
               onClick={() => toggleMode(m.id)}
-              className={rowBtn(modeIsActive(m.id), colorMode === 'friendly')}
+              className={rowBtn(modeIsActive(m.id))}
+              aria-pressed={modeIsActive(m.id)}
             >
               {m.label}
             </button>
@@ -522,7 +513,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                 {HEADWAY_TIERS.map(({ max, label }) => {
                   const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
                   return (
-                    <button key={label} onClick={() => setMaxHeadway(max)} className={compactOptBtn(maxHeadway === max, colorMode === 'friendly')}>
+                    <button key={label} onClick={() => setMaxHeadway(max)} className={compactOptBtn(maxHeadway === max)} aria-pressed={maxHeadway === max}>
                       <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
                       {label === 'Infrequent' ? 'All routes' : label}
                     </button>
@@ -535,7 +526,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Day</p>
               <div className="flex gap-1">
                 {DAY_TYPES.map(d => (
-                  <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d, colorMode === 'friendly')}>
+                  <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d)} aria-pressed={day === d}>
                     {d === 'Saturday' ? 'Sat' : d === 'Sunday' ? 'Sun' : 'Weekday'}
                   </button>
                 ))}
@@ -546,7 +537,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Time</p>
               <div className="flex flex-wrap gap-1">
                 {PERIOD_KEYS.map(p => (
-                  <button key={p} onClick={() => setPeriod(p)} className={compactOptBtn(period === p, colorMode === 'friendly')}>
+                  <button key={p} onClick={() => setPeriod(p)} className={compactOptBtn(period === p)} aria-pressed={period === p}>
                     {PERIOD_LABELS[p]}
                   </button>
                 ))}
@@ -557,7 +548,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Mode</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
-                  <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(modeIsActive(m.id), colorMode === 'friendly')}>
+                  <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(modeIsActive(m.id))} aria-pressed={modeIsActive(m.id)}>
                     {m.label}
                   </button>
                 ))}

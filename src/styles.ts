@@ -46,12 +46,14 @@ export const GLASS_PILL = 'backdrop-blur-md rounded-full shadow-lg';
 export const CHIP_BASE = `${GLASS_PILL} bg-[var(--bg-panel)] border`;
 
 /** Shared mode-aware control states. */
+/** Same selected tint for pills that float over the map: an opaque panel base with the tint laid on top. */
+export const CONTROL_ACTIVE_GLASS = 'bg-[var(--bg-panel)] [background-image:linear-gradient(var(--control-active-bg),var(--control-active-bg))] border-[var(--control-active-border)] text-[var(--control-active-fg)]';
 export const CONTROL_ACTIVE = 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]';
 export const CONTROL_INACTIVE = 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]';
 /** Compact filter option button used across agency, hidden-route, and feed lists. */
 export const FILTER_OPTION = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap';
 /** App switchers use the same glass pill surface as the filter chips. */
-export const APP_TAB_ACTIVE = `${GLASS_PILL} bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]`;
+export const APP_TAB_ACTIVE = `${GLASS_PILL} ${CONTROL_ACTIVE_GLASS}`;
 export const APP_TAB_INACTIVE = `${GLASS_PILL} bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--accent)]`;
 export const SELECTION_ACTIVE = 'bg-[var(--selection-active-bg)] border-l-2 border-[var(--selection-active-border)]';
 export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';

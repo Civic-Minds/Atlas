@@ -620,7 +620,7 @@ export default function App() {
             title={liveTabCollapsed ? 'Live vehicles' : undefined}
             className={`hidden sm:flex h-8 ${modeTabSpacing(liveTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
-            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--control-active-fg)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
             <ModeTabLabel collapsed={liveTabCollapsed}>
               <span>Live</span>
               <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
@@ -632,7 +632,7 @@ export default function App() {
           <a
             href={inHistory ? '/' : '/apps/history'}
             aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
-            aria-pressed={inHistory}
+            aria-current={inHistory ? 'page' : undefined}
             title={historyTabCollapsed ? 'Historical service' : undefined}
             className={`hidden sm:flex h-8 ${modeTabSpacing(historyTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
@@ -670,9 +670,10 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => { setActiveApp(inLive ? 'frequency' : 'live'); setAppLinksOpen(false); }}
+                      aria-pressed={inLive}
                       className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${inLive ? 'bg-[var(--control-active-fg)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
                       <span>Live</span>
                       <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
                     </button>

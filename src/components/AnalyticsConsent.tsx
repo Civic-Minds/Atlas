@@ -9,7 +9,7 @@ const STRICT_COUNTRIES = new Set(['AT','BE','BG','HR','CY','CZ','DK','EE','FI','
 
 function Toggle({ on }: { on: boolean }) {
   return <span className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${on ? 'bg-[var(--toggle-on-bg)]' : 'bg-[var(--toggle-off-bg)]'}`}>
-    <span className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${on ? 'translate-x-5' : 'translate-x-1'}`} />
+    <span className={`absolute top-1 h-3 w-3 rounded-full shadow-sm transition-transform ${TRANSITION_BASE} ${on ? 'translate-x-5 bg-[var(--toggle-knob-on)]' : 'translate-x-1 bg-[var(--toggle-knob-off)]'}`} />
   </span>;
 }
 
@@ -37,7 +37,7 @@ function Controls({ onClose }: { onClose: () => void }) {
               <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Google Analytics</p>
               <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Optional analytics helps us understand which parts of Atlas people use.</p>
             </div>
-            <button type="button" onClick={() => choose(consent === 'granted' ? 'denied' : 'granted')} aria-label="Toggle Google Analytics" aria-pressed={consent === 'granted'} className="shrink-0">
+            <button type="button" onClick={() => choose(consent === 'granted' ? 'denied' : 'granted')} aria-label="Toggle Google Analytics" role="switch" aria-checked={consent === 'granted'} className="shrink-0">
               <Toggle on={consent === 'granted'} />
             </button>
           </div>

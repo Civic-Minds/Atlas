@@ -621,6 +621,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     key={f.key}
                     type="button"
                     onClick={() => setActiveFilter(on ? null : f.key)}
+                    aria-pressed={on}
                     className={`text-[9px] font-bold px-2 py-0.5 rounded-full border transition-colors ${
                       on ? CONTROL_ACTIVE : CONTROL_INACTIVE
                     }`}

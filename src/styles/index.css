@@ -22,18 +22,25 @@ html {
   --bg-btn: rgba(0, 0, 0, 0.05);
   --bg-btn-hover: rgba(0, 0, 0, 0.1);
   --bg-hover: var(--bg-btn-hover);
-  --control-active-bg: var(--accent-bg);
-  --control-active-border: var(--accent-border);
-  --control-active-fg: var(--accent);
+  /* Selected controls are a flat tonal tint with a firmer edge and full-strength text (no dark
+     fills). Unselected stay faint with secondary text, so selected clearly wins. */
+  --control-active-bg: var(--accent-selected-bg);
+  --control-active-border: var(--accent-selected-border);
+  --control-active-fg: var(--text-primary);
   --control-inactive-bg: var(--bg-btn);
   --control-inactive-border: var(--border-primary);
-  --control-inactive-fg: var(--text-primary);
+  --control-inactive-fg: var(--text-secondary);
   --control-hover-bg: var(--bg-btn-hover);
-  --toggle-on-bg: var(--accent);
-  --toggle-off-bg: #d1d5db;
-  --selection-active-bg: var(--accent-bg);
-  --selection-active-border: var(--accent-border);
-  --selection-active-fg: var(--accent);
+  /* Toggles: off is a flat neutral grey track with a plain knob on the left; on is a tinted track
+     with an accent knob on the right, so the two never read alike. */
+  --toggle-on-bg: #a9a9b6;
+  --toggle-off-bg: #d4d4d8;
+  --toggle-knob-on: var(--accent);
+  --toggle-knob-off: #ffffff;
+  /* Selected list rows keep their text legible, so they get a clear tint plus a solid edge. */
+  --selection-active-bg: var(--accent-selected-bg);
+  --selection-active-border: var(--accent);
+  --selection-active-fg: var(--text-primary);
   --action-primary-bg: var(--accent);
   --action-primary-border: var(--accent);
   --action-primary-fg: #ffffff;
@@ -48,6 +55,8 @@ html {
   --accent: #3f3f46;
   --accent-bg: rgba(63, 63, 70, 0.08);
   --accent-border: rgba(63, 63, 70, 0.2);
+  --accent-selected-bg: rgba(63, 63, 70, 0.2);
+  --accent-selected-border: rgba(63, 63, 70, 0.5);
   /* Status badges (feed quality, etc.) */
   --status-warn-bg: #fffbeb;
   --status-warn-text: #92400e;
@@ -70,14 +79,18 @@ html {
   --bg-btn: rgba(255, 255, 255, 0.05);
   --bg-btn-hover: rgba(255, 255, 255, 0.1);
   --bg-hover: var(--bg-btn-hover);
-  --toggle-on-bg: var(--accent);
-  --toggle-off-bg: #4b5563;
+  --toggle-on-bg: #55555e;
+  --toggle-off-bg: #2f2f33;
+  --toggle-knob-on: var(--accent);
+  --toggle-knob-off: #8b8b93;
   --text-legend: rgba(255, 255, 255, 0.7);
   --dim-route: #334155;
   /* Accent */
   --accent: #e4e4e7;
   --accent-bg: rgba(228, 228, 231, 0.08);
   --accent-border: rgba(228, 228, 231, 0.18);
+  --accent-selected-bg: rgba(228, 228, 231, 0.16);
+  --accent-selected-border: rgba(228, 228, 231, 0.5);
   /* Status badges (feed quality, etc.) */
   --status-warn-bg: rgba(245, 158, 11, 0.12);
   --status-warn-text: #fbbf24;
@@ -95,8 +108,10 @@ html {
   --control-inactive-border: #4b5563;
   --control-inactive-fg: #111827;
   --control-hover-bg: #f3f4f6;
-  --toggle-on-bg: #111827;
+  --toggle-on-bg: #9ca3af;
   --toggle-off-bg: #d1d5db;
+  --toggle-knob-on: #111827;
+  --toggle-knob-off: #ffffff;
   --selection-active-bg: #e5e7eb;
   --selection-active-border: #111827;
   --selection-active-fg: #111827;
@@ -111,15 +126,17 @@ html {
 }
 
 [data-theme='dark'][data-color-vision='high-contrast'] {
-  --control-active-bg: #f0f0f0;
+  --control-active-bg: #374151;
   --control-active-border: #f0f0f0;
-  --control-active-fg: #111827;
+  --control-active-fg: #ffffff;
   --control-inactive-bg: #111827;
   --control-inactive-border: #9ca3af;
   --control-inactive-fg: #ffffff;
   --control-hover-bg: #1f2937;
-  --toggle-on-bg: #f0f0f0;
-  --toggle-off-bg: #4b5563;
+  --toggle-on-bg: #4b5563;
+  --toggle-off-bg: #1f2937;
+  --toggle-knob-on: #f0f0f0;
+  --toggle-knob-off: #9ca3af;
   --selection-active-bg: #1f2937;
   --selection-active-border: #f0f0f0;
   --selection-active-fg: #ffffff;

@@ -87,8 +87,8 @@ function Toggle({ on }: { on: boolean }) {
       }`}
     >
       <span
-        className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${
-          on ? 'translate-x-5' : 'translate-x-1'
+        className={`absolute top-1 h-3 w-3 rounded-full shadow-sm transition-transform ${TRANSITION_BASE} ${
+          on ? 'translate-x-5 bg-[var(--toggle-knob-on)]' : 'translate-x-1 bg-[var(--toggle-knob-off)]'
         }`}
       />
     </span>
@@ -524,7 +524,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <button
                     onClick={() => setLightMode(v => !v)}
                     aria-label="Toggle light/dark mode"
-                    aria-pressed={!lightMode}
+                    role="switch"
+                    aria-checked={!lightMode}
                     className="shrink-0"
                   >
                     <Toggle on={!lightMode} />
@@ -540,6 +541,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <button
                     onClick={() => setColorVisionFriendly(v => !v)}
                     aria-label="Toggle high contrast mode"
+                    role="switch"
+                    aria-checked={colorVisionFriendly}
                     className="shrink-0"
                   >
                     <Toggle on={colorVisionFriendly} />
@@ -640,6 +643,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <button
                       onClick={toggles[id]}
                       aria-label={label}
+                      role="switch"
+                      aria-checked={!!values[id]}
                       className="mt-0.5 shrink-0"
                     >
                       <Toggle on={values[id]} />
@@ -663,6 +668,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <button
                           key={label}
                           onClick={() => setMaxHeadway?.(max)}
+                          aria-pressed={active}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
                             active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
@@ -685,6 +691,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <button
                           key={dayType}
                           onClick={() => setDay?.(dayType)}
+                          aria-pressed={active}
                           className={`flex-1 h-7 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
                             active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
@@ -706,6 +713,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <button
                           key={key}
                           onClick={() => setPeriod?.(key)}
+                          aria-pressed={active}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
                             active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
@@ -748,6 +756,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       return (
                         <button
                           key={id}
+                          aria-pressed={active}
                           onClick={() => {
                             if (!selectedModes || !setSelectedModes) return;
                             const next = new Set(selectedModes);

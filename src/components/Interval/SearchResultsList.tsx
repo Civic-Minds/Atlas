@@ -161,6 +161,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         return (
           <button
             type="button"
+            aria-current={selectedStop === s.key ? 'true' : undefined}
             className={`${LIST_ROW_SPACED} items-start gap-3 ${selectedStop === s.key ? SELECTION_ACTIVE : ''}`}
             onClick={() => {
               saveRecentSearch(query);
