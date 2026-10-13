@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { OutboundLink } from './OutboundLink';
 
 interface MapFrame {
   agency: string;
@@ -57,9 +58,9 @@ export default function FrequentServicePublishedMapMontage() {
           />
         ))}
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-black/60 to-transparent px-4 pb-4 pt-12 text-white sm:px-6 sm:pb-5">
-          <a href={current.source} target="_blank" rel="noreferrer" className="text-sm font-bold underline decoration-white/60 underline-offset-4">
+          <OutboundLink href={current.source} kind="published_map" className="text-sm font-bold underline decoration-white/60 underline-offset-4">
             {current.agency}
-          </a>
+          </OutboundLink>
           <button
             type="button"
             onClick={() => setIsPlaying(playing => !playing)}

@@ -3,6 +3,7 @@ import { Download, Share2, X } from 'lucide-react';
 import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
 import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, getMapExportOutputSize, MAP_EXPORT_SIZES, MapExportBlockedError, type MapExportText, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
 import type { MapExportBox, MapExportDetails } from '../utils/mapExportDetails';
+import { trackEvent } from '../lib/analytics';
 
 interface Props {
   open: boolean;
@@ -99,6 +100,7 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
       } else {
         downloadMapExport(blob, details.filename);
       }
+      trackEvent('map_exported', { mode, size: size.id });
       onClose();
     } catch (shareError) {
       if (shareError instanceof DOMException && shareError.name === 'AbortError') return;

@@ -78,6 +78,9 @@ export const MOBILE_ROUTE_SHEET_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE ==
 // Compare mode: two maps side by side, same filter, each with its own day and time (CIV-19).
 // Beta-only while it is tried out.
 export const COMPARE_MODE_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// Shared links and shared map images carry utm tags so analytics can count shared visits.
+// Beta-only until it's been seen working end to end.
+export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
 // On-demand zones, the On-demand filter chip and the standalone on-demand agencies. Beta and
 // preview only until Ryan signs off on the public launch (CIV-23); launch flips this one value.
 export const ON_DEMAND_PUBLIC = false;
@@ -115,6 +118,7 @@ export const FEATURES = {
   mapExport: true,
   mobileRouteSheet: MOBILE_ROUTE_SHEET_ENABLED,
   compareMode: COMPARE_MODE_ENABLED,
+  shareUtm: SHARE_UTM_ENABLED,
   onDemand: ON_DEMAND_ENABLED,
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,

@@ -8,6 +8,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Added
 
+- Analytics now count map exports, outbound link clicks, report-issue and feedback opens, and page views on the About, Docs, Privacy and Terms pages, so we can see which features get used (internal sessions stay excluded).
+- On the beta site, shared map images now include a link back to the map, and shared links are tagged so shared visits can be counted in analytics.
 - On-demand zones now load from Atlas's data storage only when on-demand is shown, instead of shipping about 1.5 MB of zone data to every visitor, and the map says when they couldn't load instead of showing an empty area. New zones can be added without a site update, after passing checks for broken shapes, eligibility-only service, dropped zones, lost hours and old sources (CIV-50).
 - On-demand zone outlines, fills and stop dots are thin and light when zoomed out to a region, so they no longer outweigh the routes, and reach full strength by street zoom (beta only).
 - On the beta site, agencies that run on-demand service Atlas hasn't mapped yet now say so on their card, partly mapped services name the part that's missing, and the On-demand filter shows a note that coverage is still growing, so a missing zone no longer looks like no service (CIV-23).
@@ -18,6 +20,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Long names in list cards now wrap instead of being cut off.
 - A route's small hourly chart now shows the slower direction each hour instead of only the first direction, so a weaker direction is no longer hidden. The full-day view drops the "All directions" pill, opens on the slower direction, shows no pills for one-direction routes, and names pills by destination ("To Downtown") instead of "Direction 1" when there's no bound label.
 - The hourly schedule chart now sizes bars by trips per hour from zero, so the least frequent hour no longer shrinks to a stub, and the full-day view labels each hour's minutes between trips, explains the colours, and its direction pills now actually switch the chart and clearly show which one is picked.
+- Copied and shared links no longer carry the internal-testing marker, which silently excluded anyone who opened them from analytics. Campaign tags are also removed from the address bar after the first page view is counted.
 - Redwood Coast Transit 20 now draws its route line from Eureka to Crescent City instead of a short stub, since long highway stretches between towns were mistaken for broken route data ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
 - NJ Transit's 14 commuter rail lines are back on the map, since their feed gives nearly every train its own copy of the line's shape ([#616](https://github.com/Civic-Minds/Atlas/issues/616)).
 - SamTrans 120 shows its weekday service again (every 15 min), since that day's feed gives every trip its own copy of the same route shape ([#775](https://github.com/Civic-Minds/Atlas/issues/775)).
