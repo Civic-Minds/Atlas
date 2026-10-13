@@ -1,0 +1,25 @@
+{
+  "slug": "essa",
+  "name": "Essa",
+  "type": "CA",
+  "officialName": "Essa",
+  "country": "Canada",
+  "cities": [
+    "Essa"
+  ],
+  "bbox": [
+    44.14663791021022,
+    -79.96099083653732,
+    44.38421071598408,
+    -79.66445704654309
+  ],
+  "center": [
+    44.26542431309715,
+    -79.81272394154021
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "simcoe"
+  ],
+  "page": false
+}

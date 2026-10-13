@@ -1,0 +1,26 @@
+{
+  "slug": "eugene",
+  "name": "Eugene",
+  "type": "MSA",
+  "officialName": "Eugene-Springfield, OR",
+  "country": "United States",
+  "cities": [
+    "Eugene",
+    "Springfield"
+  ],
+  "bbox": [
+    43.43739499968627,
+    -124.23017799984069,
+    44.290537000217824,
+    -121.76801599975576
+  ],
+  "center": [
+    43.86396599995204,
+    -122.99909699979823
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "eugene-ltd"
+  ],
+  "page": false
+}

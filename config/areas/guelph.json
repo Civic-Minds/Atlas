@@ -1,0 +1,25 @@
+{
+  "slug": "guelph",
+  "name": "Guelph",
+  "type": "CMA",
+  "officialName": "Guelph",
+  "country": "Canada",
+  "cities": [
+    "Guelph"
+  ],
+  "bbox": [
+    43.35933427939922,
+    -80.45255729284615,
+    43.7448328019039,
+    -79.97701616434011
+  ],
+  "center": [
+    43.55208354065156,
+    -80.21478672859314
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "guelph"
+  ],
+  "page": false
+}

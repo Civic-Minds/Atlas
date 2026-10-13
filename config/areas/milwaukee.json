@@ -1,0 +1,27 @@
+{
+  "slug": "milwaukee",
+  "name": "Milwaukee",
+  "type": "MSA",
+  "officialName": "Milwaukee-Waukesha, WI",
+  "country": "United States",
+  "cities": [
+    "Milwaukee",
+    "Waukesha"
+  ],
+  "bbox": [
+    42.841915000037524,
+    -88.54227699984749,
+    43.54353199968253,
+    -87.06941899958517
+  ],
+  "center": [
+    43.19272349986002,
+    -87.80584799971632
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "mcts",
+    "waukesha-metro"
+  ],
+  "page": true
+}

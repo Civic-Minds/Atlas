@@ -1,0 +1,26 @@
+{
+  "slug": "ann-arbor",
+  "name": "Ann Arbor",
+  "type": "MSA",
+  "officialName": "Ann Arbor, MI",
+  "country": "United States",
+  "cities": [
+    "Ann Arbor"
+  ],
+  "bbox": [
+    42.07157699994705,
+    -84.13407899963123,
+    42.435165999908065,
+    -83.53939600002126
+  ],
+  "center": [
+    42.25337149992755,
+    -83.83673749982624
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "theride",
+    "um-transit"
+  ],
+  "page": true
+}

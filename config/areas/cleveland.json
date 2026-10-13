@@ -1,0 +1,26 @@
+{
+  "slug": "cleveland",
+  "name": "Cleveland",
+  "type": "MSA",
+  "officialName": "Cleveland, OH",
+  "country": "United States",
+  "cities": [
+    "Cleveland"
+  ],
+  "bbox": [
+    40.98819599988929,
+    -82.34818299989843,
+    42.32713200000673,
+    -80.51915800033112
+  ],
+  "center": [
+    41.657663999948014,
+    -81.43367050011477
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "gcrta",
+    "laketran"
+  ],
+  "page": true
+}

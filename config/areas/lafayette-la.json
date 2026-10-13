@@ -1,0 +1,25 @@
+{
+  "slug": "lafayette-la",
+  "name": "Lafayette",
+  "type": "MSA",
+  "officialName": "Lafayette, LA",
+  "country": "United States",
+  "cities": [
+    "Lafayette"
+  ],
+  "bbox": [
+    29.481496000149253,
+    -92.73721699977261,
+    30.49813799988932,
+    -91.0894649997151
+  ],
+  "center": [
+    29.989817000019286,
+    -91.91334099974387
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "lafayette-la"
+  ],
+  "page": false
+}

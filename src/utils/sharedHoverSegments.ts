@@ -1,6 +1,6 @@
 import type { ShapeProperties, HoveredBranch, DayType } from '../hooks/useIntervalStats';
 import type { AgencyLayers } from '../hooks/useAgencyData';
-import { clipBetweenStopIndices } from '../apps/corridor-geometry';
+import { clipBetweenStopIndices } from './lineClip';
 import { headwayToTierColor, type ColorVisionMode } from './colors';
 
 /** Build clipped GeoJSON for the shared section of a hovered multi-branch direction. */

@@ -1,0 +1,25 @@
+{
+  "slug": "indiana",
+  "name": "Indiana",
+  "type": "MicroSA",
+  "officialName": "Indiana, PA",
+  "country": "United States",
+  "cities": [
+    "Indiana"
+  ],
+  "bbox": [
+    40.36871700022889,
+    -79.45990000013978,
+    40.911345999716886,
+    -78.79922599978364
+  ],
+  "center": [
+    40.64003149997289,
+    -79.1295629999617
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "indigo"
+  ],
+  "page": false
+}

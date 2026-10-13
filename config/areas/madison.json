@@ -1,0 +1,25 @@
+{
+  "slug": "madison",
+  "name": "Madison",
+  "type": "MSA",
+  "officialName": "Madison, WI",
+  "country": "United States",
+  "cities": [
+    "Madison"
+  ],
+  "bbox": [
+    42.50007799976698,
+    -90.43004200041015,
+    43.64366999985789,
+    -89.00447700034469
+  ],
+  "center": [
+    43.07187399981244,
+    -89.71725950037742
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "madison-metro"
+  ],
+  "page": false
+}

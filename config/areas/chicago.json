@@ -1,0 +1,31 @@
+{
+  "slug": "chicago",
+  "name": "Chicago",
+  "type": "MSA",
+  "officialName": "Chicago-Naperville-Elgin, IL-IN",
+  "country": "United States",
+  "cities": [
+    "Chicago",
+    "Naperville",
+    "Elgin"
+  ],
+  "bbox": [
+    40.736509999999775,
+    -88.94214600017074,
+    42.49563700031495,
+    -86.92935299956228
+  ],
+  "center": [
+    41.61607350015736,
+    -87.93574949986652
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "cta",
+    "dekalb",
+    "gptc",
+    "metra",
+    "pace-bus"
+  ],
+  "page": true
+}

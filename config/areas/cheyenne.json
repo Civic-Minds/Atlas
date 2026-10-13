@@ -1,0 +1,25 @@
+{
+  "slug": "cheyenne",
+  "name": "Cheyenne",
+  "type": "MSA",
+  "officialName": "Cheyenne, WY",
+  "country": "United States",
+  "cities": [
+    "Cheyenne"
+  ],
+  "bbox": [
+    40.9980480002953,
+    -105.28067500025038,
+    41.65665500033557,
+    -104.05224500002744
+  ],
+  "center": [
+    41.32735150031543,
+    -104.66646000013891
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cheyenne"
+  ],
+  "page": false
+}

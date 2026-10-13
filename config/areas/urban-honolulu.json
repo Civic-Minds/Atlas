@@ -1,0 +1,25 @@
+{
+  "slug": "urban-honolulu",
+  "name": "Urban Honolulu",
+  "type": "MSA",
+  "officialName": "Urban Honolulu, HI",
+  "country": "United States",
+  "cities": [
+    "Urban Honolulu"
+  ],
+  "bbox": [
+    21.19923799969125,
+    -178.4435930001603,
+    28.51726899980199,
+    -157.5972880003514
+  ],
+  "center": [
+    24.858253499746617,
+    -168.02044050025586
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "thebus"
+  ],
+  "page": false
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "olympia",
+  "name": "Olympia",
+  "type": "MSA",
+  "officialName": "Olympia-Lacey-Tumwater, WA",
+  "country": "United States",
+  "cities": [
+    "Olympia",
+    "Lacey",
+    "Tumwater"
+  ],
+  "bbox": [
+    46.76203800028484,
+    -123.20310100024928,
+    47.19422000005454,
+    -122.20310600021169
+  ],
+  "center": [
+    46.97812900016969,
+    -122.70310350023048
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "intercitytransit"
+  ],
+  "page": false
+}

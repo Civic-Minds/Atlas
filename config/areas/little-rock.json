@@ -1,0 +1,27 @@
+{
+  "slug": "little-rock",
+  "name": "Little Rock",
+  "type": "MSA",
+  "officialName": "Little Rock-North Little Rock-Conway, AR",
+  "country": "United States",
+  "cities": [
+    "Little Rock",
+    "North Little Rock",
+    "Conway"
+  ],
+  "bbox": [
+    34.05947700017899,
+    -93.30588499985859,
+    35.36842200036054,
+    -91.63284499964999
+  ],
+  "center": [
+    34.71394950026976,
+    -92.46936499975429
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "rockregion"
+  ],
+  "page": false
+}

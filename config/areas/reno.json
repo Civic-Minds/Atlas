@@ -1,0 +1,25 @@
+{
+  "slug": "reno",
+  "name": "Reno",
+  "type": "MSA",
+  "officialName": "Reno, NV",
+  "country": "United States",
+  "cities": [
+    "Reno"
+  ],
+  "bbox": [
+    38.41375300018563,
+    -120.00647300038868,
+    41.997477000148855,
+    -118.75505899995366
+  ],
+  "center": [
+    40.20561500016724,
+    -119.38076600017118
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "rtcwashoe"
+  ],
+  "page": false
+}

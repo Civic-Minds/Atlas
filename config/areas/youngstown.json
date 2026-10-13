@@ -1,0 +1,26 @@
+{
+  "slug": "youngstown",
+  "name": "Youngstown",
+  "type": "MSA",
+  "officialName": "Youngstown-Warren, OH",
+  "country": "United States",
+  "cities": [
+    "Youngstown",
+    "Warren"
+  ],
+  "bbox": [
+    40.89977299967194,
+    -81.08672599987696,
+    41.50147800013652,
+    -80.51870499969628
+  ],
+  "center": [
+    41.200625499904234,
+    -80.80271549978661
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "youngstown-wrta"
+  ],
+  "page": false
+}

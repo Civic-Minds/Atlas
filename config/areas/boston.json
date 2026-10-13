@@ -1,0 +1,29 @@
+{
+  "slug": "boston",
+  "name": "Boston",
+  "type": "MSA",
+  "officialName": "Boston-Cambridge-Newton, MA-NH",
+  "country": "United States",
+  "cities": [
+    "Boston",
+    "Cambridge",
+    "Newton"
+  ],
+  "bbox": [
+    41.565850999767086,
+    -71.89877299980986,
+    43.57278699968813,
+    -70.32252199965164
+  ],
+  "center": [
+    42.56931899972761,
+    -71.11064749973076
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "coast-nh",
+    "essex-county",
+    "mbta"
+  ],
+  "page": true
+}

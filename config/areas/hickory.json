@@ -1,0 +1,27 @@
+{
+  "slug": "hickory",
+  "name": "Hickory",
+  "type": "MSA",
+  "officialName": "Hickory-Lenoir-Morganton, NC",
+  "country": "United States",
+  "cities": [
+    "Hickory",
+    "Lenoir",
+    "Morganton"
+  ],
+  "bbox": [
+    35.547020000057046,
+    -81.98693900018701,
+    36.12261900033296,
+    -80.92518000041316
+  ],
+  "center": [
+    35.834819500195,
+    -81.45605950030009
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "greenway"
+  ],
+  "page": false
+}

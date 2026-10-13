@@ -10,7 +10,7 @@ export const SITE_URL = 'https://www.transitatlas.fyi';
 export const SITE_NAME = 'Transit Atlas';
 export const ORG_NAME = 'Civic Minds';
 
-export type SeoGate = 'researchApps' | 'whatsNew' | 'live' | 'history' | 'corridors';
+export type SeoGate = 'researchApps' | 'whatsNew' | 'live' | 'history' | 'agencyPages';
 export type SeoMode = 'public' | 'preview' | 'beta' | 'dev';
 export type SeoFlags = Partial<Record<SeoGate, boolean>>;
 
@@ -83,13 +83,6 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     includeInSitemap: true,
   },
   {
-    path: '/apps/corridors',
-    title: 'Corridors: Transit Atlas',
-    description: 'Explore transit corridors by combined frequency across agencies.',
-    indexable: false,
-    gate: 'corridors',
-  },
-  {
     path: '/apps/history',
     title: 'Service history: Transit Atlas',
     description: 'See how scheduled transit service changed over time, using dated snapshots of agency schedules.',
@@ -104,7 +97,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     gate: 'live',
   },
   {
-    path: '/apps/night',
+    path: '/research/night',
     title: 'Night service: Transit Atlas',
     description: 'Find routes with sustained scheduled service between 2am and 6am.',
     indexable: false,
@@ -246,14 +239,20 @@ export function sitemapRoutes(): SeoRoute[] {
   return SEO_ROUTES.filter(r => r.indexable && r.includeInSitemap);
 }
 
-export function buildSitemapXml(): string {
-  const urls = sitemapRoutes()
-    .map(r => `  <url>\n    <loc>${SITE_URL}${r.path === '/' ? '/' : r.path}</loc>\n  </url>`)
+/** `extraUrls` are absolute URLs added by a build whose flags enable more pages (agency pages). */
+export function buildSitemapXml(extraUrls: readonly string[] = []): string {
+  const urls = [...sitemapRoutes().map(r => `${SITE_URL}${r.path === '/' ? '/' : r.path}`), ...extraUrls]
+    .map(loc => `  <url>\n    <loc>${loc}</loc>\n  </url>`)
     .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 
 /** Every path the router can answer, with and without a trailing slash, for vercel.json. */
+/** Agency pages are prerendered per slug; vercel.json serves each from its own file (404 if absent). */
+export const AGENCY_ROUTE_SOURCES: readonly string[] = ['/agency/:slug', '/agency/:slug/'];
+/** Same for metro area pages (/area/<slug>). */
+export const AREA_ROUTE_SOURCES: readonly string[] = ['/area/:slug', '/area/:slug/'];
+
 export function knownRouteSources(): string[] {
   const paths = [...SEO_ROUTES.map(r => r.path), ...UNREACHABLE_APP_PATHS].filter(p => p !== '/');
   return ['/', ...paths.flatMap(p => [p, `${p}/`])];

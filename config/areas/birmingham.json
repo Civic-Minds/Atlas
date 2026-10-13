@@ -1,0 +1,25 @@
+{
+  "slug": "birmingham",
+  "name": "Birmingham",
+  "type": "MSA",
+  "officialName": "Birmingham, AL",
+  "country": "United States",
+  "cities": [
+    "Birmingham"
+  ],
+  "bbox": [
+    32.66011699998262,
+    -87.6361190001911,
+    34.26048300018066,
+    -86.04386500013318
+  ],
+  "center": [
+    33.460300000081645,
+    -86.83999200016214
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "max-transit"
+  ],
+  "page": true
+}

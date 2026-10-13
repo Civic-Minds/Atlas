@@ -1,0 +1,26 @@
+{
+  "slug": "greensboro",
+  "name": "Greensboro",
+  "type": "MSA",
+  "officialName": "Greensboro-High Point, NC",
+  "country": "United States",
+  "cities": [
+    "Greensboro",
+    "High Point"
+  ],
+  "bbox": [
+    35.50566100010772,
+    -80.06684200031002,
+    36.54269600011668,
+    -79.51363800017347
+  ],
+  "center": [
+    36.0241785001122,
+    -79.79024000024174
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "greensboro"
+  ],
+  "page": false
+}

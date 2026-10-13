@@ -1,6 +1,7 @@
 {
   "slug": "hrt",
   "name": "Hampton Roads Transit",
+  "labelPlace": "",
   "websiteUrl": "https://gohrt.com/",
   "center": [
     37,

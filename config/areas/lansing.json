@@ -1,0 +1,26 @@
+{
+  "slug": "lansing",
+  "name": "Lansing",
+  "type": "MSA",
+  "officialName": "Lansing-East Lansing, MI",
+  "country": "United States",
+  "cities": [
+    "Lansing",
+    "East Lansing"
+  ],
+  "bbox": [
+    42.42142799986435,
+    -85.0755849996419,
+    43.118851000025884,
+    -84.14060100035928
+  ],
+  "center": [
+    42.77013949994512,
+    -84.6080930000006
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cata-lansing"
+  ],
+  "page": false
+}

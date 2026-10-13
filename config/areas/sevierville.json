@@ -1,0 +1,25 @@
+{
+  "slug": "sevierville",
+  "name": "Sevierville",
+  "type": "MicroSA",
+  "officialName": "Sevierville, TN",
+  "country": "United States",
+  "cities": [
+    "Sevierville"
+  ],
+  "bbox": [
+    35.56192899971186,
+    -83.79427500007606,
+    36.04311899977078,
+    -83.25152100013007
+  ],
+  "center": [
+    35.802523999741325,
+    -83.52289800010305
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sevier-county"
+  ],
+  "page": false
+}

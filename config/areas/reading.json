@@ -1,0 +1,25 @@
+{
+  "slug": "reading",
+  "name": "Reading",
+  "type": "MSA",
+  "officialName": "Reading, PA",
+  "country": "United States",
+  "cities": [
+    "Reading"
+  ],
+  "bbox": [
+    40.137107000181174,
+    -76.44018100030843,
+    40.67727000026718,
+    -75.52981300025894
+  ],
+  "center": [
+    40.40718850022418,
+    -75.98499700028368
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "barta"
+  ],
+  "page": false
+}

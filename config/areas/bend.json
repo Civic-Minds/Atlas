@@ -1,0 +1,25 @@
+{
+  "slug": "bend",
+  "name": "Bend",
+  "type": "MSA",
+  "officialName": "Bend, OR",
+  "country": "United States",
+  "cities": [
+    "Bend"
+  ],
+  "bbox": [
+    43.61110400024543,
+    -122.0023619998506,
+    44.82991899990639,
+    -119.65499299970612
+  ],
+  "center": [
+    44.220511500075915,
+    -120.82867749977837
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cascades-east"
+  ],
+  "page": false
+}

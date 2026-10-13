@@ -1,0 +1,25 @@
+{
+  "slug": "johnstown",
+  "name": "Johnstown",
+  "type": "MSA",
+  "officialName": "Johnstown, PA",
+  "country": "United States",
+  "cities": [
+    "Johnstown"
+  ],
+  "bbox": [
+    40.242523999716134,
+    -79.0563469998532,
+    40.72591900013048,
+    -78.34866800007862
+  ],
+  "center": [
+    40.48422149992331,
+    -78.70250749996592
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "camtran"
+  ],
+  "page": false
+}

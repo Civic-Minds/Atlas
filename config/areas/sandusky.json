@@ -1,0 +1,25 @@
+{
+  "slug": "sandusky",
+  "name": "Sandusky",
+  "type": "MSA",
+  "officialName": "Sandusky, OH",
+  "country": "United States",
+  "cities": [
+    "Sandusky"
+  ],
+  "bbox": [
+    41.283873999784824,
+    -83.41594100034358,
+    41.828968999742095,
+    -82.34233700028629
+  ],
+  "center": [
+    41.55642149976346,
+    -82.87913900031494
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sandusky"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "pullman",
+  "name": "Pullman",
+  "type": "MicroSA",
+  "officialName": "Pullman, WA",
+  "country": "United States",
+  "cities": [
+    "Pullman"
+  ],
+  "bbox": [
+    46.416779000108946,
+    -118.24938900003842,
+    47.26065899990226,
+    -117.03940499957135
+  ],
+  "center": [
+    46.838719000005604,
+    -117.64439699980488
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "whitman-county"
+  ],
+  "page": false
+}

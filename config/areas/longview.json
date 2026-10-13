@@ -1,0 +1,25 @@
+{
+  "slug": "longview",
+  "name": "Longview",
+  "type": "MSA",
+  "officialName": "Longview, TX",
+  "country": "United States",
+  "cities": [
+    "Longview"
+  ],
+  "bbox": [
+    31.84371800031477,
+    -95.15340999960847,
+    32.904502000220965,
+    -94.04281699995498
+  ],
+  "center": [
+    32.37411000026787,
+    -94.59811349978173
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "longview"
+  ],
+  "page": false
+}

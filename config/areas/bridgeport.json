@@ -1,0 +1,27 @@
+{
+  "slug": "bridgeport",
+  "name": "Bridgeport",
+  "type": "MSA",
+  "officialName": "Bridgeport-Stamford-Danbury, CT",
+  "country": "United States",
+  "cities": [
+    "Bridgeport",
+    "Stamford",
+    "Danbury"
+  ],
+  "bbox": [
+    40.95094299982573,
+    -73.72777499981095,
+    41.68332700001384,
+    -72.99954700018289
+  ],
+  "center": [
+    41.31713499991979,
+    -73.36366099999691
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bridgeport-gbt"
+  ],
+  "page": false
+}

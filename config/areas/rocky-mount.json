@@ -1,0 +1,25 @@
+{
+  "slug": "rocky-mount",
+  "name": "Rocky Mount",
+  "type": "MSA",
+  "officialName": "Rocky Mount, NC",
+  "country": "United States",
+  "cities": [
+    "Rocky Mount"
+  ],
+  "bbox": [
+    35.67493499977942,
+    -78.25716399994879,
+    36.20263299982544,
+    -77.34241800017503
+  ],
+  "center": [
+    35.938783999802425,
+    -77.7997910000619
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "nash-county"
+  ],
+  "page": false
+}

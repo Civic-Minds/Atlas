@@ -179,6 +179,7 @@ describe('useIntervalStats', () => {
       total: 2,
       matching: 2,
       limitedService: 0,
+      limitedServiceRoutes: [],
     });
     expect(result.current.searchMatches).toBeNull();
   });
@@ -190,6 +191,7 @@ describe('useIntervalStats', () => {
       total: 2,
       matching: 1, // Only the 504 matches (10m headway)
       limitedService: 0,
+      limitedServiceRoutes: [],
     });
   });
 
@@ -203,6 +205,7 @@ describe('useIntervalStats', () => {
       total: 2,
       matching: 0,
       limitedService: 0,
+      limitedServiceRoutes: [],
     });
 
     const { result: resultMatch } = renderHook(() => useIntervalStats(mockLayers, { 
@@ -374,7 +377,7 @@ describe('useIntervalStats', () => {
       ...defaultFilters,
       bounds: { s: 43.5, w: -79.6, n: 43.8, e: -79.1 }
     }));
-    expect(result.current.stats).toEqual({ total: 1, matching: 1, limitedService: 0 });
+    expect(result.current.stats).toEqual({ total: 1, matching: 1, limitedService: 0, limitedServiceRoutes: [] });
 
     // No bounds → wait for the map rather than counting every loaded route.
     const { result: unscoped } = renderHook(() => useIntervalStats(layersSpread, {

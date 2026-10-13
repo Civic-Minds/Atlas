@@ -1,0 +1,26 @@
+{
+  "slug": "lexington",
+  "name": "Lexington",
+  "type": "MSA",
+  "officialName": "Lexington-Fayette, KY",
+  "country": "United States",
+  "cities": [
+    "Lexington",
+    "Fayette"
+  ],
+  "bbox": [
+    37.728549999689875,
+    -84.8660029998165,
+    38.49292200026898,
+    -83.96631000008844
+  ],
+  "center": [
+    38.110735999979426,
+    -84.41615649995248
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "lexington"
+  ],
+  "page": false
+}

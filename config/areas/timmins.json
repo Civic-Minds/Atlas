@@ -1,0 +1,25 @@
+{
+  "slug": "timmins",
+  "name": "Timmins",
+  "type": "CA",
+  "officialName": "Timmins",
+  "country": "Canada",
+  "cities": [
+    "Timmins"
+  ],
+  "bbox": [
+    48.17728611241311,
+    -81.82915688104029,
+    48.79545711223422,
+    -80.70501246896838
+  ],
+  "center": [
+    48.486371612323666,
+    -81.26708467500433
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "timmins"
+  ],
+  "page": false
+}

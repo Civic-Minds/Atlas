@@ -1,0 +1,27 @@
+{
+  "slug": "sebastian",
+  "name": "Sebastian",
+  "type": "MSA",
+  "officialName": "Sebastian-Vero Beach-West Vero Corridor, FL",
+  "country": "United States",
+  "cities": [
+    "Sebastian",
+    "Vero Beach",
+    "West Vero Corridor"
+  ],
+  "bbox": [
+    27.55673699969333,
+    -80.88156600015677,
+    27.861362000115545,
+    -80.26354299978424
+  ],
+  "center": [
+    27.709049499904438,
+    -80.5725544999705
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "indian-river"
+  ],
+  "page": false
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "indianapolis",
+  "name": "Indianapolis",
+  "type": "MSA",
+  "officialName": "Indianapolis-Carmel-Greenwood, IN",
+  "country": "United States",
+  "cities": [
+    "Indianapolis",
+    "Carmel",
+    "Greenwood"
+  ],
+  "bbox": [
+    39.0483569997008,
+    -86.69586000013533,
+    40.406888999707746,
+    -85.57554100018949
+  ],
+  "center": [
+    39.72762299970427,
+    -86.13570050016241
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "indygo"
+  ],
+  "page": true
+}

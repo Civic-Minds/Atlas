@@ -1,0 +1,25 @@
+{
+  "slug": "halifax",
+  "name": "Halifax",
+  "type": "CMA",
+  "officialName": "Halifax",
+  "country": "Canada",
+  "cities": [
+    "Halifax"
+  ],
+  "bbox": [
+    43.17207614894951,
+    -64.39675514822105,
+    45.62814702885795,
+    -59.60758488458549
+  ],
+  "center": [
+    44.40011158890373,
+    -62.00217001640327
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "halifax"
+  ],
+  "page": false
+}

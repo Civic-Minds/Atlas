@@ -1,0 +1,25 @@
+{
+  "slug": "port-townsend",
+  "name": "Port Townsend",
+  "type": "MicroSA",
+  "officialName": "Port Townsend, WA",
+  "country": "United States",
+  "cities": [
+    "Port Townsend"
+  ],
+  "bbox": [
+    47.51771500008534,
+    -124.71715299957967,
+    48.370360999986374,
+    -122.59540099984567
+  ],
+  "center": [
+    47.94403800003586,
+    -123.65627699971267
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "jeffersontransit"
+  ],
+  "page": false
+}

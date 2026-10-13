@@ -1,0 +1,25 @@
+{
+  "slug": "susanville",
+  "name": "Susanville",
+  "type": "MicroSA",
+  "officialName": "Susanville, CA",
+  "country": "United States",
+  "cities": [
+    "Susanville"
+  ],
+  "bbox": [
+    39.707658000230715,
+    -121.33233799984407,
+    41.1845139999035,
+    -119.99559800005069
+  ],
+  "center": [
+    40.44608600006711,
+    -120.66396799994737
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "lassen"
+  ],
+  "page": false
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "mcallen",
+  "name": "McAllen",
+  "type": "MSA",
+  "officialName": "McAllen-Edinburg-Mission, TX",
+  "country": "United States",
+  "cities": [
+    "McAllen",
+    "Edinburg",
+    "Mission"
+  ],
+  "bbox": [
+    26.03626800000421,
+    -98.58644400000378,
+    26.783080999883026,
+    -97.86168400042897
+  ],
+  "center": [
+    26.40967449994362,
+    -98.22406400021637
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "mcallen"
+  ],
+  "page": false
+}

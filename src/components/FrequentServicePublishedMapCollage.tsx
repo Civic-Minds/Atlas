@@ -14,7 +14,7 @@ export default function FrequentServicePublishedMapCollage() {
             aria-label={`Open the published system map from ${frame.agency}`}
           >
             <img src={frame.image} alt={`Published system map from ${frame.agency}.`} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-            <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-2 pb-2 pt-7 text-[0.6rem] font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+            <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-2 pb-2 pt-7 text-xs font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
               {frame.agency}
             </span>
           </OutboundLink>

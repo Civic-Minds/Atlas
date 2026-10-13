@@ -1,0 +1,26 @@
+{
+  "slug": "brownsville",
+  "name": "Brownsville",
+  "type": "MSA",
+  "officialName": "Brownsville-Harlingen, TX",
+  "country": "United States",
+  "cities": [
+    "Brownsville",
+    "Harlingen"
+  ],
+  "bbox": [
+    25.83704800001939,
+    -97.86232499958815,
+    26.412714999695158,
+    -97.08934000040418
+  ],
+  "center": [
+    26.124881499857274,
+    -97.47583249999616
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "brownsville"
+  ],
+  "page": false
+}

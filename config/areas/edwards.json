@@ -1,0 +1,29 @@
+{
+  "slug": "edwards",
+  "name": "Edwards",
+  "type": "MicroSA",
+  "officialName": "Edwards, CO",
+  "country": "United States",
+  "cities": [
+    "Edwards"
+  ],
+  "bbox": [
+    39.34946900015096,
+    -107.11394700002072,
+    39.92529199979739,
+    -106.17591999993395
+  ],
+  "center": [
+    39.63738049997417,
+    -106.64493349997733
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "avon-transit",
+    "bustang",
+    "eco-transit",
+    "rfta",
+    "vail-transit"
+  ],
+  "page": false
+}

@@ -1,6 +1,7 @@
 {
   "slug": "mbta",
   "name": "Massachusetts Bay Transportation Authority",
+  "shortName": "MBTA",
   "displayArea": "Boston",
   "websiteUrl": "https://www.mbta.com/",
   "region": "Massachusetts",

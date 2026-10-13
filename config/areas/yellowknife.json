@@ -1,0 +1,25 @@
+{
+  "slug": "yellowknife",
+  "name": "Yellowknife",
+  "type": "CA",
+  "officialName": "Yellowknife",
+  "country": "Canada",
+  "cities": [
+    "Yellowknife"
+  ],
+  "bbox": [
+    62.38062586790852,
+    -114.60169988263527,
+    62.56110563935237,
+    -114.21093237843945
+  ],
+  "center": [
+    62.47086575363045,
+    -114.40631613053736
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "yellowknife"
+  ],
+  "page": false
+}

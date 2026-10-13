@@ -1,0 +1,25 @@
+{
+  "slug": "gallup",
+  "name": "Gallup",
+  "type": "MicroSA",
+  "officialName": "Gallup, NM",
+  "country": "United States",
+  "cities": [
+    "Gallup"
+  ],
+  "bbox": [
+    34.95908099965272,
+    -109.0469539996629,
+    36.00283900001462,
+    -107.30612199963267
+  ],
+  "center": [
+    35.48095999983367,
+    -108.17653799964779
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "mckinley-county"
+  ],
+  "page": false
+}

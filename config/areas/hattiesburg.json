@@ -1,0 +1,25 @@
+{
+  "slug": "hattiesburg",
+  "name": "Hattiesburg",
+  "type": "MSA",
+  "officialName": "Hattiesburg, MS",
+  "country": "United States",
+  "cities": [
+    "Hattiesburg"
+  ],
+  "bbox": [
+    30.909831999931626,
+    -89.65440000021142,
+    31.434444000050348,
+    -88.83433899966724
+  ],
+  "center": [
+    31.172137999990987,
+    -89.24436949993932
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "hub-city-transit"
+  ],
+  "page": false
+}

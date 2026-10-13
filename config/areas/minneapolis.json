@@ -1,0 +1,28 @@
+{
+  "slug": "minneapolis",
+  "name": "Minneapolis",
+  "type": "MSA",
+  "officialName": "Minneapolis-St. Paul-Bloomington, MN-WI",
+  "country": "United States",
+  "cities": [
+    "Minneapolis",
+    "St. Paul",
+    "Bloomington"
+  ],
+  "bbox": [
+    44.195836000152774,
+    -94.26152000000025,
+    46.24714999974799,
+    -92.13478499957115
+  ],
+  "center": [
+    45.221492999950385,
+    -93.19815249978569
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "metro-transit",
+    "mvta"
+  ],
+  "page": true
+}

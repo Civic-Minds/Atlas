@@ -1,0 +1,28 @@
+{
+  "slug": "vallejo",
+  "name": "Vallejo",
+  "type": "MSA",
+  "officialName": "Vallejo, CA",
+  "country": "United States",
+  "cities": [
+    "Vallejo"
+  ],
+  "bbox": [
+    38.031721000339374,
+    -122.40696999957316,
+    38.53904999965754,
+    -121.5932729995733
+  ],
+  "center": [
+    38.285385499998455,
+    -122.00012149957323
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "fast-ca",
+    "riovista",
+    "soltrans",
+    "vacaville"
+  ],
+  "page": true
+}

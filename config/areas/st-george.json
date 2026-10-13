@@ -1,0 +1,25 @@
+{
+  "slug": "st-george",
+  "name": "St. George",
+  "type": "MSA",
+  "officialName": "St. George, UT",
+  "country": "United States",
+  "cities": [
+    "St. George"
+  ],
+  "bbox": [
+    36.99997500018965,
+    -114.05288499996597,
+    37.61828900013141,
+    -112.89906600039359
+  ],
+  "center": [
+    37.30913200016053,
+    -113.47597550017977
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "st-george"
+  ],
+  "page": false
+}

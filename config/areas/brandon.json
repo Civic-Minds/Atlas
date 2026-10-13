@@ -1,0 +1,25 @@
+{
+  "slug": "brandon",
+  "name": "Brandon",
+  "type": "CA",
+  "officialName": "Brandon",
+  "country": "Canada",
+  "cities": [
+    "Brandon"
+  ],
+  "bbox": [
+    49.67504142427327,
+    -100.52915760173357,
+    50.09662548875047,
+    -99.60000844426786
+  ],
+  "center": [
+    49.88583345651187,
+    -100.06458302300072
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "brandon"
+  ],
+  "page": false
+}

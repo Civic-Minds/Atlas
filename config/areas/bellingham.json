@@ -1,0 +1,25 @@
+{
+  "slug": "bellingham",
+  "name": "Bellingham",
+  "type": "MSA",
+  "officialName": "Bellingham, WA",
+  "country": "United States",
+  "cities": [
+    "Bellingham"
+  ],
+  "bbox": [
+    48.62568700006525,
+    -123.32224000012691,
+    49.002438999941695,
+    -120.65585700030513
+  ],
+  "center": [
+    48.81406300000347,
+    -121.98904850021603
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "whatcomtransit"
+  ],
+  "page": false
+}

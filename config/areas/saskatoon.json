@@ -1,0 +1,25 @@
+{
+  "slug": "saskatoon",
+  "name": "Saskatoon",
+  "type": "CMA",
+  "officialName": "Saskatoon",
+  "country": "Canada",
+  "cities": [
+    "Saskatoon"
+  ],
+  "bbox": [
+    51.578073645898186,
+    -107.48317131316624,
+    52.6158631416347,
+    -105.59602351687352
+  ],
+  "center": [
+    52.096968393766446,
+    -106.53959741501987
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "saskatoon"
+  ],
+  "page": false
+}

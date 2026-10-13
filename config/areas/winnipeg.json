@@ -1,0 +1,25 @@
+{
+  "slug": "winnipeg",
+  "name": "Winnipeg",
+  "type": "CMA",
+  "officialName": "Winnipeg",
+  "country": "Canada",
+  "cities": [
+    "Winnipeg"
+  ],
+  "bbox": [
+    49.484631861122004,
+    -98.01503383627701,
+    50.55942926903151,
+    -96.27104673442598
+  ],
+  "center": [
+    50.02203056507676,
+    -97.1430402853515
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "winnipeg"
+  ],
+  "page": true
+}

@@ -1,17 +1,12 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, X } from 'lucide-react';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
-import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, TRANSITION_BASE, Z_HEADER, Z_MODAL_TOP } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
+import Toggle from './ui/Toggle';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
 
 const STRICT_COUNTRIES = new Set(['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']);
-
-function Toggle({ on }: { on: boolean }) {
-  return <span className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${on ? 'bg-[var(--toggle-on-bg)]' : 'bg-[var(--toggle-off-bg)]'}`}>
-    <span className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${on ? 'translate-x-5' : 'translate-x-1'}`} />
-  </span>;
-}
 
 function Controls({ onClose }: { onClose: () => void }) {
   const [consent, setConsent] = useState<AnalyticsConsent | null>(getAnalyticsConsent());
@@ -34,12 +29,10 @@ function Controls({ onClose }: { onClose: () => void }) {
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Google Analytics</p>
-              <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Optional analytics helps us understand which parts of Atlas people use.</p>
+              <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Google Analytics</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Optional analytics helps us understand which parts of Atlas people use.</p>
             </div>
-            <button type="button" onClick={() => choose(consent === 'granted' ? 'denied' : 'granted')} aria-label="Toggle Google Analytics" aria-pressed={consent === 'granted'} className="shrink-0">
-              <Toggle on={consent === 'granted'} />
-            </button>
+            <Toggle on={consent === 'granted'} onToggle={() => choose(consent === 'granted' ? 'denied' : 'granted')} label="Toggle Google Analytics" />
           </div>
         </div>
         <a href="/privacy" className="inline-block text-[var(--accent)] hover:underline">Read the Privacy Policy →</a>
@@ -61,5 +54,5 @@ export default function AnalyticsConsent() {
     return () => window.removeEventListener('atlas:privacy-settings', openSettings);
   }, []);
   const choose = (consent: AnalyticsConsent) => { setAnalyticsConsent(consent); setShowPrompt(false); };
-  return <>{showPrompt && <div role="dialog" aria-label="Analytics consent" className={`fixed bottom-6 left-1/2 h-8 max-w-[calc(100vw-2rem)] -translate-x-1/2 ${Z_HEADER} ${MAP_BADGE} gap-3 text-[10px] font-bold text-[var(--text-muted)]`}><span>Optional analytics help improve Atlas.</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>}{showSettings && <Controls onClose={() => setShowSettings(false)} />}</>;
+  return <>{showPrompt && <div role="dialog" aria-label="Analytics consent" className={`fixed bottom-6 left-1/2 h-8 max-w-[calc(100vw-2rem)] -translate-x-1/2 ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}><span>Optional analytics help improve Atlas.</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>}{showSettings && <Controls onClose={() => setShowSettings(false)} />}</>;
 }

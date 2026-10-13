@@ -1,4 +1,4 @@
-import { buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, getTierColor, getVehicleStatus, getVehicleColors, getFareColor, getNightServiceColor } from '../colors';
+import { buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, getTierColor, getVehicleStatus, getVehicleColors, getNightServiceColor } from '../colors';
 import { describe, it, expect } from 'vitest';
 
 describe('getTierColor', () => {
@@ -43,10 +43,9 @@ describe('colour-blind-friendly palette', () => {
     expect(colors).toEqual(['#0072b2', '#009e73', '#56b4e9', '#e69f00', '#cc79a7', '#4d4d4d']);
   });
 
-  it('uses the friendly status and fare colours when enabled', () => {
+  it('uses the friendly status colours when enabled', () => {
     expect(getVehicleColors('early', 'friendly').border).toBe('#005a8d');
     expect(getVehicleColors('late', 'friendly').border).toBe('#9e3510');
-    expect(getFareColor(5, 'friendly')).toBe('#c44516');
   });
 
   it('uses a distinct accessible Night Service colour when enabled', () => {

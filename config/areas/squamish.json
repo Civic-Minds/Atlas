@@ -1,0 +1,25 @@
+{
+  "slug": "squamish",
+  "name": "Squamish",
+  "type": "CA",
+  "officialName": "Squamish",
+  "country": "Canada",
+  "cities": [
+    "Squamish"
+  ],
+  "bbox": [
+    49.62682947482124,
+    -123.38646181186841,
+    49.88721313209552,
+    -123.00148064964982
+  ],
+  "center": [
+    49.75702130345838,
+    -123.19397123075912
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "squamish"
+  ],
+  "page": false
+}

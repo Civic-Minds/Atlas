@@ -1,0 +1,26 @@
+{
+  "slug": "lafayette-in",
+  "name": "Lafayette",
+  "type": "MSA",
+  "officialName": "Lafayette-West Lafayette, IN",
+  "country": "United States",
+  "cities": [
+    "Lafayette",
+    "West Lafayette"
+  ],
+  "bbox": [
+    40.12732199978433,
+    -87.53144900020307,
+    40.73758899993418,
+    -86.37343899960585
+  ],
+  "center": [
+    40.43245549985926,
+    -86.95244399990446
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "citybus-lafayette"
+  ],
+  "page": false
+}

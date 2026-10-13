@@ -1,0 +1,26 @@
+{
+  "slug": "key-west",
+  "name": "Key West",
+  "type": "MicroSA",
+  "officialName": "Key West-Key Largo, FL",
+  "country": "United States",
+  "cities": [
+    "Key West",
+    "Key Largo"
+  ],
+  "bbox": [
+    24.396308000324215,
+    -83.10891400034167,
+    25.8053770001382,
+    -80.1838710004174
+  ],
+  "center": [
+    25.10084250023121,
+    -81.64639250037953
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "key-west-transit"
+  ],
+  "page": false
+}

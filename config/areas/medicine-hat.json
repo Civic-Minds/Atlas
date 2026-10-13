@@ -1,0 +1,25 @@
+{
+  "slug": "medicine-hat",
+  "name": "Medicine Hat",
+  "type": "CA",
+  "officialName": "Medicine Hat",
+  "country": "Canada",
+  "cities": [
+    "Medicine Hat"
+  ],
+  "bbox": [
+    48.77375342678207,
+    -112.02424217151479,
+    50.96009182019455,
+    -109.25029128332363
+  ],
+  "center": [
+    49.86692262348831,
+    -110.63726672741922
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "medicine-hat"
+  ],
+  "page": false
+}

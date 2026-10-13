@@ -1,0 +1,26 @@
+{
+  "slug": "santa-cruz",
+  "name": "Santa Cruz",
+  "type": "MSA",
+  "officialName": "Santa Cruz-Watsonville, CA",
+  "country": "United States",
+  "cities": [
+    "Santa Cruz",
+    "Watsonville"
+  ],
+  "bbox": [
+    36.81960000017198,
+    -122.31768200041715,
+    37.28605500028296,
+    -121.58115399965347
+  ],
+  "center": [
+    37.052827500227465,
+    -121.94941800003531
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "santa-cruz-metro"
+  ],
+  "page": false
+}

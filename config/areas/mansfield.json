@@ -1,0 +1,25 @@
+{
+  "slug": "mansfield",
+  "name": "Mansfield",
+  "type": "MSA",
+  "officialName": "Mansfield, OH",
+  "country": "United States",
+  "cities": [
+    "Mansfield"
+  ],
+  "bbox": [
+    40.54987900032758,
+    -82.72716400043448,
+    40.99563799978567,
+    -82.33689500000689
+  ],
+  "center": [
+    40.772758500056625,
+    -82.53202950022069
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "richland-county-oh"
+  ],
+  "page": false
+}

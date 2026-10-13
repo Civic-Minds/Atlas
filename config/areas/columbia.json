@@ -1,0 +1,25 @@
+{
+  "slug": "columbia",
+  "name": "Columbia",
+  "type": "MSA",
+  "officialName": "Columbia, SC",
+  "country": "United States",
+  "cities": [
+    "Columbia"
+  ],
+  "bbox": [
+    33.46600599987813,
+    -82.01027200037855,
+    34.614765000102395,
+    -80.28396500031444
+  ],
+  "center": [
+    34.040385499990265,
+    -81.1471185003465
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "comet"
+  ],
+  "page": false
+}

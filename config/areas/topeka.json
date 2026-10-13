@@ -1,0 +1,25 @@
+{
+  "slug": "topeka",
+  "name": "Topeka",
+  "type": "MSA",
+  "officialName": "Topeka, KS",
+  "country": "United States",
+  "cities": [
+    "Topeka"
+  ],
+  "bbox": [
+    38.43354400021722,
+    -96.50172199987382,
+    39.653179999662825,
+    -95.1798269997137
+  ],
+  "center": [
+    39.04336199994002,
+    -95.84077449979375
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "topeka"
+  ],
+  "page": false
+}

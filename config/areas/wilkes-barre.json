@@ -1,0 +1,27 @@
+{
+  "slug": "wilkes-barre",
+  "name": "Wilkes-Barre",
+  "type": "MSA",
+  "officialName": "Scranton--Wilkes-Barre, PA",
+  "country": "United States",
+  "cities": [
+    "Wilkes-Barre",
+    "Scranton"
+  ],
+  "bbox": [
+    40.90231300011688,
+    -76.320219999725,
+    41.65182500029279,
+    -75.44038899976216
+  ],
+  "center": [
+    41.27706900020483,
+    -75.88030449974357
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "colts",
+    "lcta"
+  ],
+  "page": true
+}

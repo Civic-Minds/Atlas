@@ -1,0 +1,25 @@
+{
+  "slug": "peoria",
+  "name": "Peoria",
+  "type": "MSA",
+  "officialName": "Peoria, IL",
+  "country": "United States",
+  "cities": [
+    "Peoria"
+  ],
+  "bbox": [
+    40.31921200015744,
+    -89.98901799958023,
+    41.234478999716295,
+    -88.9293309999418
+  ],
+  "center": [
+    40.77684549993687,
+    -89.45917449976102
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "citylink-peoria"
+  ],
+  "page": false
+}

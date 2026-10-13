@@ -1,0 +1,27 @@
+{
+  "slug": "janesville",
+  "name": "Janesville",
+  "type": "MSA",
+  "officialName": "Janesville-Beloit, WI",
+  "country": "United States",
+  "cities": [
+    "Janesville",
+    "Beloit"
+  ],
+  "bbox": [
+    42.4919129997632,
+    -89.36922699974419,
+    42.84762999986959,
+    -88.77629900007724
+  ],
+  "center": [
+    42.66977149981639,
+    -89.07276299991071
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "janesville",
+    "rock-county"
+  ],
+  "page": true
+}

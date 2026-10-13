@@ -1,0 +1,26 @@
+{
+  "slug": "buffalo",
+  "name": "Buffalo",
+  "type": "MSA",
+  "officialName": "Buffalo-Cheektowaga, NY",
+  "country": "United States",
+  "cities": [
+    "Buffalo",
+    "Cheektowaga"
+  ],
+  "bbox": [
+    42.43799699977891,
+    -79.31213599957904,
+    43.634798999937395,
+    -78.4604159995651
+  ],
+  "center": [
+    43.03639799985815,
+    -78.88627599957206
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "nfta"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "mason-city",
+  "name": "Mason City",
+  "type": "MicroSA",
+  "officialName": "Mason City, IA",
+  "country": "United States",
+  "cities": [
+    "Mason City"
+  ],
+  "bbox": [
+    42.907495000189165,
+    -93.49861699986245,
+    43.49973300008489,
+    -93.02296799964981
+  ],
+  "center": [
+    43.20361400013702,
+    -93.26079249975612
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "mason-city"
+  ],
+  "page": false
+}

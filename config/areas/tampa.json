@@ -1,0 +1,29 @@
+{
+  "slug": "tampa",
+  "name": "Tampa",
+  "type": "MSA",
+  "officialName": "Tampa-St. Petersburg-Clearwater, FL",
+  "country": "United States",
+  "cities": [
+    "Tampa",
+    "St. Petersburg",
+    "Clearwater"
+  ],
+  "bbox": [
+    27.530750000392256,
+    -83.02236000039666,
+    28.69490800021451,
+    -82.05421499962459
+  ],
+  "center": [
+    28.112829000303385,
+    -82.53828750001063
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "hart",
+    "psta",
+    "tampa-international-airport"
+  ],
+  "page": true
+}

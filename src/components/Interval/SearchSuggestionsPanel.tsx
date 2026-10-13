@@ -1,12 +1,10 @@
 import React from 'react';
 import type { Agency } from '../../App';
 import {
-  FLOATING_CARD,
   PANEL_SECTION_HEAD,
-  LIST_ROW,
-  LIST_ROW_PRIMARY,
   LIST_ROW_DIM,
 } from '../../styles';
+import Panel from '../ui/Panel';
 import {
   titleCase,
   shortenAgencyName,
@@ -16,6 +14,8 @@ import {
 } from '../../utils/format';
 import RouteListRow from '../RouteListRow';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
+import { headwayEvery } from '../../utils/headwayText';
+import ListRow from '../ui/ListRow';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -39,11 +39,9 @@ interface SearchSuggestionsPanelProps {
   recentSearches: string[];
   clearRecentSearches: () => void;
   setQuery: (q: string) => void;
-  suggestedFareAgencies: Array<{ slug: string; name: string }>;
   recentlyViewed: RecentRoute[];
   suggestedRoutes: SuggestedRoute[];
   pickRoute: (key: string) => void;
-  fareView: boolean;
   displayForRouteKey: (key: string) => RouteListDisplay;
 }
 
@@ -72,7 +70,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
-        every {headway}m
+        {headwayEvery(headway)}
       </span>
     );
   }
@@ -94,68 +92,40 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
   recentSearches,
   clearRecentSearches,
   setQuery,
-  suggestedFareAgencies,
   recentlyViewed,
   suggestedRoutes,
   pickRoute,
-  fareView,
   displayForRouteKey,
 }) => {
   return (
-    <div className={`${FLOATING_CARD} shrink-0 flex flex-col overflow-hidden`}>
+    <Panel className="shrink-0">
       {recentSearches.length > 0 && (
         <>
           <div className={`flex items-center justify-between ${PANEL_SECTION_HEAD}`}>
             <span>Recent searches</span>
             <button
               onClick={clearRecentSearches}
-              className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+              className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
             >
               Clear
             </button>
           </div>
           <div>
             {recentSearches.map((s, i) => (
-              <button
+              <ListRow
                 key={i}
                 onClick={() => setQuery(s)}
-                className={`${LIST_ROW} border-b-0`}
+                className="border-b-0"
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">{s}</span>
-                <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
-              </button>
+                <span className="text-xs text-[var(--text-dim)] font-mono">↵</span>
+              </ListRow>
             ))}
           </div>
         </>
       )}
 
-      {fareView ? (
-        <>
-          {suggestedFareAgencies.length > 0 && (
-            <>
-              {recentSearches.length > 0 && <div className="mx-4 border-t border-[var(--border-primary)]" />}
-              <div className={PANEL_SECTION_HEAD}>
-                Suggested agencies
-              </div>
-              <div>
-                {suggestedFareAgencies.map((a) => (
-                  <button
-                    key={a.slug}
-                    onClick={() => setQuery(a.name)}
-                    className={`${LIST_ROW} border-b-0`}
-                  >
-                    <span className={LIST_ROW_PRIMARY}>{shortenAgencyName(a.name)}</span>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-          {suggestedFareAgencies.length === 0 && recentSearches.length === 0 && (
-            <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No agencies with fare data in this area.</p>
-          )}
-        </>
-      ) : (
-        <>
+      <>
           {recentlyViewed.length > 0 && (
             <>
               {recentSearches.length > 0 && <div className="mx-4 border-t border-[var(--border-primary)]" />}
@@ -208,10 +178,9 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
             </>
           )}
           {recentSearches.length === 0 && recentlyViewed.length === 0 && suggestedRoutes.length === 0 && (
-            <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
+            <p className="text-xs text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
           )}
-        </>
-      )}
-    </div>
+      </>
+    </Panel>
   );
 };

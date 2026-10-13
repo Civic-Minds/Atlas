@@ -1,0 +1,25 @@
+{
+  "slug": "las-cruces",
+  "name": "Las Cruces",
+  "type": "MSA",
+  "officialName": "Las Cruces, NM",
+  "country": "United States",
+  "cities": [
+    "Las Cruces"
+  ],
+  "bbox": [
+    31.783637999638145,
+    -107.29967299959787,
+    33.05277700003358,
+    -106.34051500004966
+  ],
+  "center": [
+    32.41820749983586,
+    -106.82009399982377
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "las-cruces"
+  ],
+  "page": false
+}

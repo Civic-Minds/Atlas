@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE } from '../../styles';
+import Pill from '../ui/Pill';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
@@ -13,6 +14,7 @@ import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorVision } from '../../context/ColorVisionContext';
+import { headwayAmount, headwayBandLabel, headwayFilterLabel, headwayTierLabel } from '../../utils/headwayText';
 
 export { getNowDay };
 
@@ -83,23 +85,8 @@ type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact';
 
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
 
-const compactOptBtn = (active: boolean, highContrast = false) =>
-  `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${
-    active
-      ? highContrast
-        ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
-        : 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-      : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)] hover:border-[var(--control-active-border)] hover:text-[var(--control-active-fg)]'
-  }`;
-
-const rowBtn = (active: boolean, highContrast = false) =>
-  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
-    active
-      ? highContrast
-        ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
-        : 'bg-[var(--bg-btn-hover)] border-[var(--text-muted)] text-[var(--text-primary)]'
-      : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)] hover:border-[var(--control-active-border)] hover:text-[var(--control-active-fg)]'
-  }`;
+const rowBtn = (active: boolean) =>
+  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border text-left min-w-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
 
 interface AgenciesPanelProps {
   agencies: Agency[];
@@ -109,7 +96,6 @@ interface AgenciesPanelProps {
   agencyQuery: string;
   setAgencyQuery: (q: string) => void;
   agencySearchRef: React.RefObject<HTMLInputElement | null>;
-  highContrast: boolean;
 }
 
 export function applyAgencyBulkSelection(current: Set<string>, allSlugs: string[], enabled: boolean): Set<string> {
@@ -119,7 +105,7 @@ export function applyAgencyBulkSelection(current: Set<string>, allSlugs: string[
   return next;
 }
 
-function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef, highContrast }: AgenciesPanelProps) {
+function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
   const [showAll, setShowAll] = useState(false);
 
   // Build deduplicated groups, tagging each with whether it overlaps the current viewport
@@ -167,34 +153,34 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           value={agencyQuery}
           onChange={e => setAgencyQuery(e.target.value)}
           placeholder="Search…"
-          className="flex-1 bg-transparent text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
+          className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
         />
       </div>
       <div className="flex gap-1 px-1 pt-1">
-        <button
+        <Pill
+          tone="outline"
           onClick={() => setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, true))}
           disabled={allOn}
-          className={`flex-1 ${FILTER_OPTION} border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default`}
+          className="flex-1"
         >
           All
-        </button>
-        <button
-          onClick={() => {
-            setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, false));
-          }}
+        </Pill>
+        <Pill
+          tone="outline"
+          onClick={() => setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, false))}
           disabled={allOff}
-          className={`flex-1 ${FILTER_OPTION} border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default`}
+          className="flex-1"
         >
           None
-        </button>
+        </Pill>
       </div>
       <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
         {byRegion.size === 0 && (
-          <p className="px-2 py-2 text-[10px] text-[var(--text-dim)]">No agencies in view.</p>
+          <p className="px-2 py-2 text-xs text-[var(--text-dim)]">No agencies in view.</p>
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
           <div key={region}>
-            <p className="px-2 pt-2 pb-0.5 text-[10px] font-black text-[var(--text-dim)]">{region}</p>
+            <p className="px-2 pt-2 pb-0.5 text-xs font-black text-[var(--text-dim)]">{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
               const { primary, secondary } = agencyDisplayParts(g.name, g.cities, g.displayArea);
@@ -207,7 +193,8 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
                     else g.slugs.forEach(s => next.add(s));
                     setSelectedAgencies(next);
                   }}
-                  className={rowBtn(active, highContrast)}
+                  className={rowBtn(active)}
+                  aria-pressed={active}
                   aria-label={g.name}
                 >
                   <span className="truncate flex-1 min-w-0">
@@ -223,7 +210,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
         {!agencyQuery && (
           <button
             onClick={() => setShowAll(v => !v)}
-            className="mt-1 mb-0.5 mx-2 text-[10px] font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors text-left"
+            className="mt-1 mb-0.5 mx-2 text-xs font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors text-left"
           >
             {showAll ? '← In view only' : `All agencies (${allGroups.length}) →`}
           </button>
@@ -295,10 +282,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   };
 
   const chipClass = (active: boolean) =>
-    `relative h-8 px-3.5 flex items-center justify-center ${CHIP_BASE} text-xs font-bold transition-colors whitespace-nowrap ${
+    `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors whitespace-nowrap ${
       active
-        ? 'border-[var(--accent-border)] text-[var(--accent)]'
-        : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
+        ? CONTROL_ACTIVE_GLASS
+        : 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
     }`;
 
   const Dot = ({ show }: { show: boolean }) =>
@@ -313,9 +300,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       <div ref={rowRef} className="flex items-center gap-2">
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
           {([30, 60] as const).map(value => (
-            <button key={value} onClick={() => setNightServiceFrequency(value)} className={compactOptBtn(nightServiceFrequency === value, colorMode === 'friendly')} aria-pressed={nightServiceFrequency === value}>
-              {value} min
-            </button>
+            <Pill size="segment" key={value} onClick={() => setNightServiceFrequency(value)} selected={nightServiceFrequency === value}>
+              {headwayAmount(value)}
+            </Pill>
           ))}
         </div>
       </div>
@@ -323,7 +310,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   }
 
   if (researchMode && setResearchDays && setResearchFrequency && setResearchWindow) {
-    const researchButton = (active: boolean) => rowBtn(active, colorMode === 'friendly');
+    const researchButton = (active: boolean) => rowBtn(active);
     const toggleResearchDay = (selected: DayType) => {
       const next = researchDays.includes(selected)
         ? researchDays.filter(dayType => dayType !== selected)
@@ -339,16 +326,16 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           </div>}
         </div>
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-          {([15, 30] as const).map(value => <button key={value} onClick={() => setResearchFrequency(value)} className={compactOptBtn(researchFrequency === value, colorMode === 'friendly')} aria-pressed={researchFrequency === value}>{value} min</button>)}
+          {([15, 30] as const).map(value => <Pill size="segment" key={value} onClick={() => setResearchFrequency(value)} selected={researchFrequency === value}>{headwayAmount(value)}</Pill>)}
         </div>
         {researchFrequency === 30 && (
-          <div className="hidden xl:flex items-center gap-2 text-[9px] font-bold text-[var(--text-muted)]" aria-label="30-minute view legend">
-            <span className="flex items-center gap-1"><span className="inline-block h-1 rounded-full" style={{ background: getTierColor('15', colorMode), width: 12 }} />≤15 min</span>
-            <span className="flex items-center gap-1"><span className="inline-block h-0.5 rounded-full" style={{ background: getTierColor('30', colorMode), width: 12 }} />16–30 min</span>
+          <div className="hidden xl:flex items-center gap-2 text-xs font-bold text-[var(--text-muted)]" aria-label="30-minute view legend">
+            <span className="flex items-center gap-1"><span className="inline-block h-1 rounded-full" style={{ background: getTierColor('15', colorMode), width: 12 }} />{headwayTierLabel(15)}</span>
+            <span className="flex items-center gap-1"><span className="inline-block h-0.5 rounded-full" style={{ background: getTierColor('30', colorMode), width: 12 }} />{headwayBandLabel(16, 30)}</span>
           </div>
         )}
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-          {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <button key={value} onClick={() => setResearchWindow(value)} className={compactOptBtn(researchWindow === value, colorMode === 'friendly')} aria-pressed={researchWindow === value}>{label}</button>)}
+          {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <Pill size="segment" key={value} onClick={() => setResearchWindow(value)} selected={researchWindow === value}>{label}</Pill>)}
         </div>
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
@@ -375,8 +362,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <button
                 key={label}
                 onClick={() => { setMaxHeadway(max); setOpenChip(null); }}
-                className={rowBtn(isSelected, colorMode === 'friendly')}
-                aria-label={max === Infinity ? 'Show all routes' : `Every ${max} min or better`}
+                className={rowBtn(isSelected)}
+                aria-pressed={isSelected}
+                aria-label={max === Infinity ? 'Show all routes' : `${headwayFilterLabel(max)}`}
               >
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
                 {label === 'Infrequent' ? 'All' : label}
@@ -400,7 +388,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <button
               key={d}
               onClick={() => { setDay(d); setOpenChip(null); }}
-              className={rowBtn(day === d, colorMode === 'friendly')}
+              className={rowBtn(day === d)}
+              aria-pressed={day === d}
             >
               {d}
             </button>
@@ -422,10 +411,11 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <button
               key={p}
               onClick={() => { setPeriod(p); setOpenChip(null); }}
-              className={`${rowBtn(period === p, colorMode === 'friendly')} flex items-center justify-between gap-3`}
+              className={`${rowBtn(period === p)} flex items-center justify-between gap-3`}
+              aria-pressed={period === p}
             >
               <span>{PERIOD_LABELS[p]}</span>
-              <span className="text-[9px] text-[var(--text-dim)] shrink-0">{formatPeriodRange(p)}</span>
+              <span className="text-xs opacity-70 shrink-0">{formatPeriodRange(p)}</span>
             </button>
           ))}
         </div>
@@ -453,7 +443,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           agencyQuery={agencyQuery}
           setAgencyQuery={setAgencyQuery}
           agencySearchRef={agencySearchRef}
-          highContrast={colorMode === 'friendly'}
         />
       )}
     </div>
@@ -471,7 +460,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <button
               key={m.id}
               onClick={() => toggleMode(m.id)}
-              className={rowBtn(modeIsActive(m.id), colorMode === 'friendly')}
+              className={rowBtn(modeIsActive(m.id))}
+              aria-pressed={modeIsActive(m.id)}
             >
               {m.label}
             </button>
@@ -495,7 +485,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return (
       <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label="Filters for both maps">
         <span className="h-8 px-3 flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">
-          <span className="inline-flex h-4 px-1 items-center justify-center rounded-full bg-[var(--text-primary)] text-[9px] font-black text-[var(--bg-panel)]" aria-hidden="true">A+B</span>
+          <span className="inline-flex h-4 px-1 items-center justify-center rounded-full bg-[var(--text-primary)] text-2xs font-black text-[var(--bg-panel)]" aria-hidden="true">A+B</span>
           Both maps
         </span>
         {modeChip('')}
@@ -517,49 +507,49 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <div className={`absolute top-10 right-0 ${FLOATING_CARD} p-3 w-72 ${PANEL_ENTER_TOP} flex flex-col gap-3`}>
             {/* Frequency */}
             <div>
-              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Frequency</p>
+              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Frequency</p>
               <div className="flex flex-wrap gap-1">
                 {HEADWAY_TIERS.map(({ max, label }) => {
                   const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
                   return (
-                    <button key={label} onClick={() => setMaxHeadway(max)} className={compactOptBtn(maxHeadway === max, colorMode === 'friendly')}>
+                    <Pill size="segment" key={label} onClick={() => setMaxHeadway(max)} selected={maxHeadway === max}>
                       <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
                       {label === 'Infrequent' ? 'All routes' : label}
-                    </button>
+                    </Pill>
                   );
                 })}
               </div>
             </div>
             {/* Day */}
             <div>
-              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Day</p>
+              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Day</p>
               <div className="flex gap-1">
                 {DAY_TYPES.map(d => (
-                  <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d, colorMode === 'friendly')}>
+                  <Pill size="segment" key={d} onClick={() => setDay(d)} selected={day === d}>
                     {d === 'Saturday' ? 'Sat' : d === 'Sunday' ? 'Sun' : 'Weekday'}
-                  </button>
+                  </Pill>
                 ))}
               </div>
             </div>
             {/* Time */}
             <div>
-              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Time</p>
+              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Time</p>
               <div className="flex flex-wrap gap-1">
                 {PERIOD_KEYS.map(p => (
-                  <button key={p} onClick={() => setPeriod(p)} className={compactOptBtn(period === p, colorMode === 'friendly')}>
+                  <Pill size="segment" key={p} onClick={() => setPeriod(p)} selected={period === p}>
                     {PERIOD_LABELS[p]}
-                  </button>
+                  </Pill>
                 ))}
               </div>
             </div>
             {/* Mode */}
             <div>
-              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Mode</p>
+              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Mode</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
-                  <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(modeIsActive(m.id), colorMode === 'friendly')}>
+                  <Pill size="segment" key={m.id} onClick={() => toggleMode(m.id)} selected={modeIsActive(m.id)}>
                     {m.label}
-                  </button>
+                  </Pill>
                 ))}
               </div>
             </div>
