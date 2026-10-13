@@ -1,25 +1,3 @@
-import { THRESHOLDS, type Threshold } from '../shared/agencyPages';
-import { CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
-
-/** The 10 / 15 / 30 standard picker, styled like the map's Day of service selector (aria-pressed). */
-export function ThresholdToggle({ value, onChange }: { value: Threshold; onChange: (t: Threshold) => void }) {
-  return (
-    <div role="group" aria-label="Every N minutes or better" className="flex gap-1.5">
-      {THRESHOLDS.map(t => (
-        <button
-          key={t}
-          type="button"
-          aria-pressed={value === t}
-          onClick={() => onChange(t)}
-          className={`flex-1 h-7 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${value === t ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
-        >
-          {t} min
-        </button>
-      ))}
-    </div>
-  );
-}
-
 export interface StatItem {
   value: string;
   label: string;

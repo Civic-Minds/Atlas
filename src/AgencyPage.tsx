@@ -6,7 +6,6 @@ import {
   DEFAULT_THRESHOLD,
   modesText,
   typicalWait,
-  type Threshold,
   agencyDatesText,
   agencyMapHref,
   agencyPageH1,
@@ -21,7 +20,7 @@ import {
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { LINK, PAGE_ACTION } from './pageStyles';
-import { StatRow, ThresholdToggle, type StatItem } from './pageParts';
+import { StatRow, type StatItem } from './pageParts';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
@@ -51,7 +50,7 @@ function cell(v: number | null, r: { limited?: boolean }): string {
 export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }) {
   const params = useParams();
   const [data, setData] = useState<AgencyPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));
-  const [threshold, setThreshold] = useState<Threshold>(DEFAULT_THRESHOLD);
+  const threshold = DEFAULT_THRESHOLD;
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
     void import('./agencyPageDevData').then(m => setData(m.devAgencyPageData(params.slug)));
@@ -107,10 +106,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
           <section className="mt-14" aria-labelledby="routes-heading">
             <h2 id="routes-heading" className="text-xl font-black tracking-tight">Routes and weekday frequency</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">
-              Agencies define frequent differently; pick a standard. <a className={LINK} href="/about/docs#frequency">Methodology</a>
-            </p>
-            <div className="mt-3"><ThresholdToggle value={threshold} onChange={setThreshold} /></div>
             <p className="mt-3 text-base font-bold">{stats.within} of {stats.totalRoutes} routes {headwayOrBetter(threshold)} on a weekday midday</p>
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Each route is judged by its slower direction. A dash means no sustained service in that period.</p>
             {stats.byMode.map(group => (
