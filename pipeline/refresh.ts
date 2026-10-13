@@ -258,6 +258,7 @@ interface AgencyEntry {
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
   keepLongShapeJumps?: boolean;
+  poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
   staged?: boolean;
   fare?: number;
