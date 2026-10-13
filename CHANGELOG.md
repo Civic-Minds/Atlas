@@ -6,6 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+### Changed
+
+- **Docs, changelog, terms and privacy pages scroll smoothly and keep the top bar and "On this page" list in view**: long pages were hard to navigate once you scrolled past the top.
+
 ### Added
 
 - **Every agency gets its own frequency page, with real numbers and a link into the map**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, an intro sentence naming the agencies it connects with (stops within 150 m), and nearby agencies, so the agency can be found in search once these go public.
