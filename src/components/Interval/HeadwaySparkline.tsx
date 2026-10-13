@@ -273,6 +273,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   : undefined}
               >
                 <div style={{ height: H }} className="relative flex items-end justify-center w-full">
+                  {isTooltipHover && hasValue && (
+                    <div data-testid="sparkline-hover-column" className="absolute inset-0 rounded-sm bg-[var(--bg-btn-hover)] pointer-events-none" />
+                  )}
                   {expanded && hasValue && (
                     <span
                       data-testid="sparkline-headway-label"
@@ -284,7 +287,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   )}
                   {hasValue && (
                     segments.length > 0 && segmentTotalFreq > 0 ? (
-                      <div className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} flex flex-col-reverse overflow-hidden rounded-sm transition-[opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}>
+                      <div className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} flex flex-col-reverse overflow-hidden rounded-sm transition-opacity duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}>
                         {segments.map(segment => (
                           <div
                             key={segment.label}
@@ -295,7 +298,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     ) : (
                       <div
                         style={{ height: barH, background: barColor }}
-                        className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} rounded-sm transition-[background,opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}
+                        className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} rounded-sm transition-[background,opacity] duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}
                       />
                     )
                   )}
