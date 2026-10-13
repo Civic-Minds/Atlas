@@ -6,10 +6,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-### Changed
-
-- **Text is bigger and easier to read**: nothing a person has to read is below 12px any more, and the faint greys, status colours (green, red, amber) and white-on-pastel fare and timeline pills now meet WCAG AA contrast in light, dark and high-contrast modes.
-
 ### Added
 
 - **Every agency gets its own frequency page, with real numbers and a link into the map (beta)**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, and nearby agencies, so the agency can be found in search once these go public.
@@ -28,13 +24,13 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
+- **Text is bigger and easier to read**: nothing a person has to read is below 12px any more, and the faint greys, status colours (green, red, amber) and white-on-pastel fare and timeline pills now meet WCAG AA contrast in light, dark and high-contrast modes.
 - **Frequency reads the same way everywhere, and Compare now says "or better"**: Compare headings read like a claim about the service rather than the filter, and the same frequency was worded eight different ways ("≤10m", "every 12m", "about every 10 min").
 - **Night Service moved to `/research/night`**: it now lives with the other research pages, and old `/apps/night` links redirect there with their filters kept.
-- The full-day schedule view now shows how long the trip takes by hour, e.g. "Trip time: 35–51 min, slowest 4 p.m.", with minutes on hover (beta only).
-- On-demand zones now load from Atlas's data storage only when on-demand is shown, instead of shipping about 1.5 MB of zone data to every visitor, and the map says when they couldn't load instead of showing an empty area. New zones can be added without a site update, after passing checks for broken shapes, eligibility-only service, dropped zones, lost hours and old sources (CIV-50).
-- On-demand zone outlines, fills and stop dots are thin and light when zoomed out to a region, so they no longer outweigh the routes, and reach full strength by street zoom (beta only).
-- On the beta site, agencies that run on-demand service Atlas hasn't mapped yet now say so on their card, partly mapped services name the part that's missing, and the On-demand filter shows a note that coverage is still growing, so a missing zone no longer looks like no service (CIV-23).
-- On the beta site, the "In view" route list now has the same state and province pills as the agency list, the What's new panel labels the map data date apart from the app version and merges overlapping notes, and the What's new pill now sits before Feedback.
+- **The full-day schedule view shows trip time by hour (beta)**: e.g. "Trip time: 35–51 min, slowest 4 p.m.", with minutes on hover.
+- **The Corridors and Fares pages are retired**: old links go to the map, and Diagnostics moved to dev builds only (`/dev/diagnostics`).
+- **The limited-service route count links to the routes behind it**: the number is no longer plain text.
+- **The Research hub, Changelog and docs pages share one page layout**: flat cards, sentence-case titles, and the What's new panel shows the version and map data date on one line.
 
 ### Fixed
 
@@ -61,6 +57,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Routes with paired trips no longer look like they run every 2 or 3 minutes**: Niagara 105 and 401 showed this in search, lists, cards and the hourly chart, but two buses minutes apart and then a long wait is not frequent service ([#761](https://github.com/Civic-Minds/Atlas/issues/761))
 - **A public agency with no data in the current release can no longer show "Couldn't load"**: the agency checks and the release publish step now fail and list it until it is hidden or refreshed into a release ([#759](https://github.com/Civic-Minds/Atlas/issues/759))
 - **Routes whose buses alternate short and long gaps show their real wait**: Basin Transit 1 (every 1 hour, then 2) had shown the short gap, halving the wait ([#772](https://github.com/Civic-Minds/Atlas/issues/772)).
+
 
 ## [3.3.0] - 2026-10-12
 
