@@ -37,6 +37,7 @@ import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { decideDedupe, type DedupePattern } from './featureDedupe.js';
+import { decideHeadline, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, segmentsByTier, type StopSharers } from './stopPools.js';
 
@@ -1843,11 +1844,6 @@ export async function processGtfsBuffer(
       // bunched 3 minutes apart keep the own pattern's headline.
       return pooledStepOneHeadway(sorted) != null ? sorted : null;
     };
-    const pooledStepOneHeadway = (times: readonly number[]): number | undefined =>
-      pooledHeadwayInWindow(times, 540, 900)
-        ?? pooledHeadwayInWindow(times, 900, 1140)
-        ?? pooledHeadwayInWindow(times, 360, 1320, 3, true)
-        ?? undefined;
     // #771: the drawn non-terminal stops served by fewer distinct departures than the destination
     // pool: stops some variants skip (MTA Silver's Morgan State stops, a branch's own tail). A
     // stop every pooled trip serves reads the same trips in a shifted clock window (basin 1
@@ -1857,13 +1853,6 @@ export async function processGtfsBuffer(
       if (!pool) return [];
       const poolCount = new Set(pool).size;
       return drawn.slice(0, -1).map(p => p.stopId).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
-    };
-    const stepOneHeadway = (times: readonly number[]): number | undefined => {
-      const sorted = [...times].sort((a, b) => a - b);
-      return medianHeadwayInWindow(sorted, 540, 900, 3, true)
-        ?? medianHeadwayInWindow(sorted, 900, 1140, 3, true)
-        ?? sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true)
-        ?? undefined;
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
@@ -1963,19 +1952,10 @@ export async function processGtfsBuffer(
       // The headline reads the own pattern at the terminal (allStopHw may hold a pooled value
       // there, #690) or the qualifying destination pool.
       const ownTerminalTimes = (terminalId ? metricStopMap.get(terminalId) : undefined) ?? [];
-      const ownTerminalMiddayHw = terminalId ? (medianHeadwayInWindow([...ownTerminalTimes].sort((a, b) => a - b), 540, 900, 3, true) ?? undefined) : undefined;
       const headlinePool = pooledHeadlineTimes(terminalId);
-      const headlineTimes = headlinePool ?? ownTerminalTimes;
-      const terminalHw = !terminalId ? undefined : headlinePool ? pooledStepOneHeadway(headlinePool) : stepOneHeadway(headlineTimes);
-      // Use midday as the headline headway — consistent with the "Midday" filter period and
-      // avoids all-day averages being inflated by low-frequency overnight/early-morning runs.
-      const terminalMiddayHw = headlinePool ? (pooledHeadwayInWindow(headlinePool, 540, 900) ?? undefined) : ownTerminalMiddayHw;
       const hwVals = onShape.map(({ stopId }) => ownStopHw[stopId]).filter((v): v is number => v != null).sort((a, b) => a - b);
-      const mid = Math.floor(hwVals.length / 2);
-      const allStopMedian = hwVals.length % 2 === 0
-        ? Math.round((hwVals[mid - 1] + hwVals[mid]) / 2)
-        : hwVals[mid];
-      const terminalComputedHw = terminalMiddayHw ?? terminalHw ?? allStopMedian;
+      // Step 4.1 (routeGrading.ts): the terminal's value, from the pool or the own pattern.
+      const { ownTerminalMiddayHw, terminalHw, allStopMedian, terminalComputedHw } = terminalReading({ terminalId, ownTerminalTimes, pool: headlinePool, ownStopHwsSorted: hwVals });
 
       // If the terminal stop is shared, the combined terminal headway might be lower (better)
       // than the branch-specific headway. Do not override with the combined headway in that case.
@@ -2021,42 +2001,30 @@ export async function processGtfsBuffer(
       const plainNonTerminalStopHws = onShape.slice(0, -1)
         .map(({ stopId }) => allStopHwPlain[stopId])
         .filter((v): v is number => v != null);
-      // #771: a destination pool pools every same-headsign variant, but a stop that only one
-      // variant serves gets only that variant's trips (MTA Silver to Curtis Bay: the Morgan
+      // #771: the drawn stops some pooled variants skip (MTA Silver to Curtis Bay: the Morgan
       // State stops before the Hopkins short trips join run every 40 in the evening against 20
-      // combined). The headline from a pool is never better than the worst drawn stop's value,
-      // pooled where #690 pools it, the same every-stop rule #728 grades the tier on (policy:
-      // the route headline never overstates a stop on its drawn line; the pooled values live on
-      // the segments). The terminal itself is read from the pool already: the drawn variant's
-      // own terminal can be a stop only its few trips end at (freedom M to Pittsburgh: 3 of the
-      // 10 trips). A qualifying pool is the branch itself, so it needs no protection against a
-      // shared terminal's combined value; without one the #772 branch decision stands.
+      // combined), read where #690 pools them; the terminal itself is read from the pool already
+      // (freedom M to Pittsburgh: the drawn variant's own terminal is a stop 3 of 10 trips end at).
       const worstDrawnStopHw = (): number | undefined => {
         const vals = servedByFewerTrips(headlinePool, onShape).filter(stopId => !ownFallbackHw.has(stopId))
           .map(stopId => allStopHw[stopId]).filter((v): v is number => v != null);
         return vals.length ? Math.max(...vals) : undefined;
       };
-      const headway = thinTerminalSample
-        ? (scoped?.headway ?? branchHw)
-        : headlinePool
-        ? Math.max(terminalComputedHw, worstDrawnStopHw() ?? terminalComputedHw)
-        : resolveTerminalHeadline(plainTerminalComputedHw, plainNonTerminalStopHws, terminalComputedHw, branchHw, branchTripCount,
-          pooledTerminalHeadway(terminalId ? headsignMap?.get(terminalId) : undefined));
+      // Step 4.2 and 4.3 (routeGrading.ts): the headline, then the tier it supports.
+      const headway = decideHeadline({
+        branchHw,
+        branchTripCount,
+        terminalComputedHw,
+        hasPool: headlinePool != null,
+        thinTerminalSample,
+        scoped,
+        worstDrawnStopHw: headlinePool ? worstDrawnStopHw() : undefined,
+        plainTerminalComputedHw,
+        plainNonTerminalStopHws,
+        pooledPlainTerminalHw: pooledTerminalHeadway(terminalId ? headsignMap?.get(terminalId) : undefined),
+      });
       feature.properties.headway = headway;
-
-      // AI-220: Step 4 may only degrade a tier (branch less frequent than trunk),
-      // never improve one. Route tier is owned by phase 2; Step 4 only refines it downward.
-      // This prevents AM/PM peak clusters from promoting infrequent routes (e.g. Halifax 330).
-      let newTier = headwayToTier(headway);
-      const currentRank = TIER_RANK[feature.properties.tier as string] ?? -1;
-      if ((TIER_RANK[newTier] ?? -1) > currentRank) {
-        feature.properties.tier = newTier;
-      }
-      // A thin shape that phase 2 put in no finite tier (capmetro 2: gaps 32, 80, 32) contradicts
-      // the finite scoped headline: take the scoped sample's tier. A finite phase 2 tier stands.
-      if (scoped?.tier && scoped.tier !== 'infrequent' && feature.properties.tier === 'infrequent') {
-        feature.properties.tier = scoped.tier;
-      }
+      feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped);
       // #728: the tier is phase 2's every-gap grade of the one shape that won dedupe, while the
       // period values below read the whole destination at the terminal. A shape that covers part
       // of the day or has one hole is graded 60 or infrequent beside periods of 8-20 (Brampton 7
@@ -2081,35 +2049,16 @@ export async function processGtfsBuffer(
         const shapeTerminalDepartures = new Set(shapeMap?.get(terminalId) ?? []).size;
         const poolDepartures = new Set(branchPoolTimesAt(hsKey, drawnIds, terminalId, true)).size;
         if (poolDepartures >= MIN_POOLED_TIER_DEPARTURES && poolDepartures > shapeTerminalDepartures) {
-          const worse = (a: string | null, b: string) => a == null || (TIER_RANK[b] ?? 99) > (TIER_RANK[a] ?? 99) ? b : a;
-          // The pool's worst every-gap grade over the drawn stops; null when a stop has no grade.
-          const gradePool = (weekday?: { name: DayName; tripIds: Set<string> }): string | null => {
-            let worst: string | null = null;
-            for (const stopId of drawnIds) {
-              const graded = scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day, featureRoute?.route_type ?? '', railFeature);
-              if (!graded?.tier) return null;
-              worst = worse(worst, graded.tier);
-            }
-            return worst;
-          };
-          let pooledTier = gradePool();
-          // A Weekday pool is graded on every weekday whose trips differ, and the worst day
-          // counts: the lift must hold on each weekday the line runs.
-          if (pooledTier && day === 'Weekday') {
-            for (const weekday of otherWeekdayPools(hsKey)) {
-              const graded = gradePool(weekday);
-              if (!graded) { pooledTier = null; break; }
-              pooledTier = worse(pooledTier, graded);
-            }
-          }
-          const headlineTier = headwayToTier(headway);
-          if (pooledTier) {
-            const liftedTier = (TIER_RANK[pooledTier] ?? 99) >= (TIER_RANK[headlineTier] ?? 99) ? pooledTier : headlineTier;
-            const current = feature.properties.tier as string;
-            if ((TIER_RANK[liftedTier] ?? 99) < (TIER_RANK[current] ?? 99)) {
-              feature.properties.tier = liftedTier;
-            }
-          }
+          // Step 4.4 (routeGrading.ts): the pool's worst every-gap grade over the drawn stops and
+          // the other weekdays, never past the headline.
+          feature.properties.tier = liftTierOnDestinationPool({
+            currentTier: feature.properties.tier as string,
+            headway,
+            day,
+            drawnStopIds: drawnIds,
+            gradeAt: (stopId, weekday) => scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day, featureRoute?.route_type ?? '', railFeature)?.tier ?? null,
+            otherWeekdays: () => otherWeekdayPools(hsKey),
+          });
         }
       }
 
