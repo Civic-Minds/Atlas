@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- Feeds that give every sailing day its own service, like Washington State Ferries, now show one day's timetable instead of up to eight days pooled together, so Port Townsend's weekend ferry reads every 90 minutes instead of a false 45 and the Fauntleroy triangle's weekend values match a single day's sailings ([#744](https://github.com/Civic-Minds/Atlas/issues/744)).
 - Routes with no short name, like Annapolis's Free Downtown Shuttle, now show their name in bold in route lists instead of dimmed and indented, and agency headings in the agency route list no longer use extra letter spacing ([#777](https://github.com/Civic-Minds/Atlas/issues/777)).
 - Routes with paired trips, like Niagara 105 and 401, no longer show as running every 2 or 3 minutes in search, route lists, route and stop cards, live vehicle cards and the hourly chart, since two buses minutes apart and then a long wait is not frequent service ([#761](https://github.com/Civic-Minds/Atlas/issues/761)).
 - A public agency with no data in the current release can no longer reach the public site and show "Couldn't load": the agency checks and the release publish step now fail and list the agency until it is hidden or refreshed into a release ([#759](https://github.com/Civic-Minds/Atlas/issues/759)).

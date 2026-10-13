@@ -206,6 +206,40 @@ describe('getActiveServiceIds', () => {
     expect(active.has('special_monday')).toBe(true);
     expect(active.has('weekend')).toBe(false);
   });
+
+  it('takes only the closest date when every operating day is its own service (WSF, #744)', () => {
+    // Saturdays Oct 3 - Nov 28, two one-day services per date (one per route); Oct 3 ran extra sailings.
+    const saturdays = ['20261003', '20261010', '20261017', '20261024', '20261031', '20261107', '20261114', '20261121', '20261128'];
+    const calendar = saturdays.flatMap(d => [cal(`a-${d}`, 'sa', d, d), cal(`b-${d}`, 'sa', d, d)]);
+    const active = getActiveServiceIds(calendar, [], 'Saturday', '20261027');
+    // Oct 24 is 3 days from the reference, Oct 31 is 4: only Oct 24's services, both of them.
+    expect([...active].sort()).toEqual(['a-20261024', 'b-20261024']);
+  });
+
+  it('breaks a tie between equally close dates toward the later one', () => {
+    const calendar = [cal('before', 'mo', '20240610', '20240610'), cal('after', 'mo', '20240624', '20240624')];
+    expect([...getActiveServiceIds(calendar, [], 'Monday', '20240617')]).toEqual(['after']);
+  });
+
+  it('skips a closest date whose one-day services are all cancelled (#744 review)', () => {
+    const saturdays = ['20261003', '20261010', '20261017', '20261024', '20261031', '20261107'];
+    const calendar = saturdays.map(d => cal(`s-${d}`, 'sa', d, d));
+    const removed = [{ service_id: 's-20261024', date: '20261024', exception_type: '2' }];
+    // Oct 24 is cancelled; Oct 17 and Oct 31 are equally close, the later wins.
+    expect([...getActiveServiceIds(calendar, removed as any, 'Saturday', '20261024')]).toEqual(['s-20261031']);
+  });
+
+  it('a one-day row flagged for every weekday only answers the weekday its date falls on (#744 review)', () => {
+    const saturdays = ['20261003', '20261010', '20261017', '20261024', '20261031', '20261107'];
+    const calendar = [...saturdays.map(d => cal(`s-${d}`, 'sa', d, d)), cal('holiday-mon', 'mo,tu,we,th,fr,sa,su', '20261026', '20261026')];
+    expect([...getActiveServiceIds(calendar, [], 'Saturday', '20261027')]).toEqual(['s-20261024']);
+    expect([...getActiveServiceIds(calendar, [], 'Monday', '20261027')]).toEqual(['holiday-mon']);
+  });
+
+  it('keeps every single-day service without a reference date', () => {
+    const calendar = [cal('d1', 'sa', '20261003', '20261003'), cal('d2', 'sa', '20261010', '20261010')];
+    expect([...getActiveServiceIds(calendar, [], 'Saturday')].sort()).toEqual(['d1', 'd2']);
+  });
 });
 
 describe('getActiveServiceIds holiday in the reference week (#658)', () => {
