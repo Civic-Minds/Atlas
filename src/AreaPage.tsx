@@ -78,7 +78,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
               <p className="mt-1 text-sm text-[var(--text-muted)]">{areaSubtitle(data)}</p>
             </div>
             <a href={areaMapHref(data)} className={PAGE_ACTION}>
-              Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              View on map <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{areaAboutParagraph(data)}</p>

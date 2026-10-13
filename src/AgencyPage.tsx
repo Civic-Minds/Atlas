@@ -135,7 +135,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               {data!.area && <a className={`mt-1 inline-block text-sm ${LINK}`} href={`/area/${data!.area.slug}`}>{areaRegionTitle(data!.area)} →</a>}
             </div>
             <a href={agencyMapHref(agency)} className={PAGE_ACTION}>
-              Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              View on map <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
           <Intro data={data!} />
