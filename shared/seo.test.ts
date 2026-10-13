@@ -131,3 +131,21 @@ describe('head tag rewriting', () => {
     expect(prerenderRoutes({ researchApps: true }).map(r => r.path)).toContain('/research');
   });
 });
+
+describe('index.html defaults', () => {
+  it('match the home route, so a visitor without JavaScript sees the same tags', () => {
+    const html = readFileSync('index.html', 'utf8');
+    const home = resolveSeo('/', PUBLIC);
+    expect(html).toContain(`<title>${home.title}</title>`);
+    expect(html).toContain(`<link rel="canonical" href="${home.canonicalUrl}" />`);
+    expect(html.replace(/\s+/g, ' ')).toContain(`name="description" content="${home.description}"`);
+  });
+
+  it('carries WebSite and Organization structured data with the real site address', () => {
+    const html = readFileSync('index.html', 'utf8');
+    const json = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)![1]);
+    const types = json['@graph'].map((n: { '@type': string }) => n['@type']);
+    expect(types).toEqual(['WebSite', 'Organization']);
+    for (const n of json['@graph']) expect(n.url).toBe(`${SITE_URL}/`);
+  });
+});

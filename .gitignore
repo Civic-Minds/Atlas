@@ -70,3 +70,4 @@ ATLASLOG.md
 .wrangler/
 workers/gtfs-rt-archiver/burlington/
 workers/gtfs-rt-archiver/hamilton/
+.prerender
