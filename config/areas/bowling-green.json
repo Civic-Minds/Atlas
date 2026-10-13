@@ -1,0 +1,25 @@
+{
+  "slug": "bowling-green",
+  "name": "Bowling Green",
+  "type": "MSA",
+  "officialName": "Bowling Green, KY",
+  "country": "United States",
+  "cities": [
+    "Bowling Green"
+  ],
+  "bbox": [
+    36.628492999737524,
+    -86.94493899971046,
+    37.395123000095936,
+    -85.94909399979154
+  ],
+  "center": [
+    37.011807999916726,
+    -86.447016499751
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bowling-green"
+  ],
+  "page": false
+}

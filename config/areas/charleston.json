@@ -1,0 +1,26 @@
+{
+  "slug": "charleston",
+  "name": "Charleston",
+  "type": "MSA",
+  "officialName": "Charleston-North Charleston, SC",
+  "country": "United States",
+  "cities": [
+    "Charleston",
+    "North Charleston"
+  ],
+  "bbox": [
+    32.48256499980579,
+    -80.79196799958271,
+    33.50717199986485,
+    -79.2218779995792
+  ],
+  "center": [
+    32.99486849983532,
+    -80.00692299958095
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "carta"
+  ],
+  "page": false
+}

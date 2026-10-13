@@ -1,0 +1,25 @@
+{
+  "slug": "glens-falls",
+  "name": "Glens Falls",
+  "type": "MSA",
+  "officialName": "Glens Falls, NY",
+  "country": "United States",
+  "cities": [
+    "Glens Falls"
+  ],
+  "bbox": [
+    42.94122199969571,
+    -74.21462499987648,
+    43.80848100007068,
+    -73.24139099990073
+  ],
+  "center": [
+    43.37485149988319,
+    -73.7280079998886
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "glensfallstransit"
+  ],
+  "page": false
+}

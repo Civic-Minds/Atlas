@@ -1,0 +1,25 @@
+{
+  "slug": "fayetteville",
+  "name": "Fayetteville",
+  "type": "MSA",
+  "officialName": "Fayetteville, NC",
+  "country": "United States",
+  "cities": [
+    "Fayetteville"
+  ],
+  "bbox": [
+    34.833716999901974,
+    -79.45875100009417,
+    35.26691400019892,
+    -78.49467799962294
+  ],
+  "center": [
+    35.050315500050445,
+    -78.97671449985856
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "fast-nc"
+  ],
+  "page": false
+}

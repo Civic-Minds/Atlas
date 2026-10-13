@@ -1,0 +1,30 @@
+{
+  "slug": "sacramento",
+  "name": "Sacramento",
+  "type": "MSA",
+  "officialName": "Sacramento-Roseville-Folsom, CA",
+  "country": "United States",
+  "cities": [
+    "Sacramento",
+    "Roseville",
+    "Folsom"
+  ],
+  "bbox": [
+    38.018421000086875,
+    -122.42204799973324,
+    39.31649600019226,
+    -119.87724800036854
+  ],
+  "center": [
+    38.66745850013957,
+    -121.14964800005089
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "roseville",
+    "sacrt",
+    "unitrans",
+    "yolobus"
+  ],
+  "page": true
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "des-moines",
+  "name": "Des Moines",
+  "type": "MSA",
+  "officialName": "Des Moines-West Des Moines, IA",
+  "country": "United States",
+  "cities": [
+    "Des Moines",
+    "West Des Moines"
+  ],
+  "bbox": [
+    41.15653499994163,
+    -94.74487600007326,
+    41.86346900011689,
+    -92.75650799980052
+  ],
+  "center": [
+    41.51000200002926,
+    -93.75069199993689
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "des-moines"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "seneca",
+  "name": "Seneca",
+  "type": "MicroSA",
+  "officialName": "Seneca, SC",
+  "country": "United States",
+  "cities": [
+    "Seneca"
+  ],
+  "bbox": [
+    34.47220399996721,
+    -83.35392800018695,
+    35.05618199981564,
+    -82.82287999970893
+  ],
+  "center": [
+    34.76419299989143,
+    -83.08840399994794
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "clemson-cat"
+  ],
+  "page": false
+}

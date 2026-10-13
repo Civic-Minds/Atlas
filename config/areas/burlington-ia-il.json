@@ -1,0 +1,25 @@
+{
+  "slug": "burlington-ia-il",
+  "name": "Burlington",
+  "type": "MicroSA",
+  "officialName": "Burlington, IA-IL",
+  "country": "United States",
+  "cities": [
+    "Burlington"
+  ],
+  "bbox": [
+    40.634945999700776,
+    -91.40945300043413,
+    41.07417299983528,
+    -90.78519399956382
+  ],
+  "center": [
+    40.85455949976803,
+    -91.09732349999896
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "burlington-ia"
+  ],
+  "page": false
+}

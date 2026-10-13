@@ -1,0 +1,26 @@
+{
+  "slug": "fort-collins",
+  "name": "Fort Collins",
+  "type": "MSA",
+  "officialName": "Fort Collins-Loveland, CO",
+  "country": "United States",
+  "cities": [
+    "Fort Collins",
+    "Loveland"
+  ],
+  "bbox": [
+    40.257783999925145,
+    -106.1954379997426,
+    40.99843999981971,
+    -104.94305199971227
+  ],
+  "center": [
+    40.62811199987243,
+    -105.56924499972743
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "transfort"
+  ],
+  "page": false
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "hartford",
+  "name": "Hartford",
+  "type": "MSA",
+  "officialName": "Hartford-West Hartford-East Hartford, CT",
+  "country": "United States",
+  "cities": [
+    "Hartford",
+    "West Hartford",
+    "East Hartford"
+  ],
+  "bbox": [
+    41.17777399992736,
+    -72.95384900009549,
+    42.037528000300526,
+    -72.15632099967668
+  ],
+  "center": [
+    41.60765100011395,
+    -72.55508499988608
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "cttransit"
+  ],
+  "page": true
+}

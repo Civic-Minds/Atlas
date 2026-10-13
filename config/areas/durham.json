@@ -1,0 +1,29 @@
+{
+  "slug": "durham",
+  "name": "Durham",
+  "type": "MSA",
+  "officialName": "Durham-Chapel Hill, NC",
+  "country": "United States",
+  "cities": [
+    "Durham",
+    "Chapel Hill"
+  ],
+  "bbox": [
+    35.51503900017207,
+    -79.5558039997352,
+    36.54219000016136,
+    -78.69931600000963
+  ],
+  "center": [
+    36.02861450016671,
+    -79.12755999987242
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "chapel-hill-transit",
+    "duke",
+    "godurham",
+    "gotriangle"
+  ],
+  "page": true
+}

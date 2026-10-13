@@ -1,0 +1,25 @@
+{
+  "slug": "greeley",
+  "name": "Greeley",
+  "type": "MSA",
+  "officialName": "Greeley, CO",
+  "country": "United States",
+  "cities": [
+    "Greeley"
+  ],
+  "bbox": [
+    40.00025099995751,
+    -105.05671999989652,
+    41.00190500018051,
+    -103.57321599962509
+  ],
+  "center": [
+    40.50107800006901,
+    -104.3149679997608
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "greeley"
+  ],
+  "page": false
+}

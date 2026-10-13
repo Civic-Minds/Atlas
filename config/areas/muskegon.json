@@ -1,0 +1,26 @@
+{
+  "slug": "muskegon",
+  "name": "Muskegon",
+  "type": "MSA",
+  "officialName": "Muskegon-Norton Shores, MI",
+  "country": "United States",
+  "cities": [
+    "Muskegon",
+    "Norton Shores"
+  ],
+  "bbox": [
+    43.11729699986472,
+    -87.14716600002801,
+    43.473689000268564,
+    -85.79044800011845
+  ],
+  "center": [
+    43.29549300006664,
+    -86.46880700007323
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "muskegon"
+  ],
+  "page": false
+}

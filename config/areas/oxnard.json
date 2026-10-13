@@ -1,0 +1,33 @@
+{
+  "slug": "oxnard",
+  "name": "Oxnard",
+  "type": "MSA",
+  "officialName": "Oxnard-Thousand Oaks-Ventura, CA",
+  "country": "United States",
+  "cities": [
+    "Oxnard",
+    "Thousand Oaks",
+    "Ventura"
+  ],
+  "bbox": [
+    33.16349299965308,
+    -119.63630199972783,
+    34.90117100006836,
+    -118.63249399985554
+  ],
+  "center": [
+    34.032331999860716,
+    -119.13439799979169
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "camarillo",
+    "gold-coast",
+    "moorpark",
+    "simi-valley",
+    "thousand-oaks",
+    "valley-express",
+    "vctc"
+  ],
+  "page": true
+}

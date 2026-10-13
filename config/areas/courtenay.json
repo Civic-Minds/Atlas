@@ -1,0 +1,25 @@
+{
+  "slug": "courtenay",
+  "name": "Courtenay",
+  "type": "CA",
+  "officialName": "Courtenay",
+  "country": "Canada",
+  "cities": [
+    "Courtenay"
+  ],
+  "bbox": [
+    49.32186670376609,
+    -125.28296033614859,
+    49.84717073108186,
+    -124.54028769523951
+  ],
+  "center": [
+    49.584518717423975,
+    -124.91162401569406
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "comox-valley"
+  ],
+  "page": false
+}

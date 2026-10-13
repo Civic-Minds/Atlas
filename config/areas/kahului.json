@@ -1,0 +1,26 @@
+{
+  "slug": "kahului",
+  "name": "Kahului",
+  "type": "MSA",
+  "officialName": "Kahului-Wailuku, HI",
+  "country": "United States",
+  "cities": [
+    "Kahului",
+    "Wailuku"
+  ],
+  "bbox": [
+    20.452930000042755,
+    -157.36654900022697,
+    21.28034700032557,
+    -155.92678499971032
+  ],
+  "center": [
+    20.866638500184163,
+    -156.64666699996866
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "maui-county"
+  ],
+  "page": false
+}

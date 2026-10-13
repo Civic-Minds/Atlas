@@ -1,0 +1,25 @@
+{
+  "slug": "nanaimo",
+  "name": "Nanaimo",
+  "type": "CMA",
+  "officialName": "Nanaimo",
+  "country": "Canada",
+  "cities": [
+    "Nanaimo"
+  ],
+  "bbox": [
+    48.8262432889964,
+    -124.76064829485631,
+    49.486680492695704,
+    -123.74937256689941
+  ],
+  "center": [
+    49.15646189084605,
+    -124.25501043087786
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "nanaimo"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "sioux-falls",
+  "name": "Sioux Falls",
+  "type": "MSA",
+  "officialName": "Sioux Falls, SD-MN",
+  "country": "United States",
+  "cities": [
+    "Sioux Falls"
+  ],
+  "bbox": [
+    43.083124000304466,
+    -97.60909599989441,
+    43.84951999996189,
+    -96.05229599959766
+  ],
+  "center": [
+    43.466322000133175,
+    -96.83069599974604
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sioux-falls"
+  ],
+  "page": false
+}

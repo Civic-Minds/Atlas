@@ -1,0 +1,25 @@
+{
+  "slug": "lawrence",
+  "name": "Lawrence",
+  "type": "MSA",
+  "officialName": "Lawrence, KS",
+  "country": "United States",
+  "cities": [
+    "Lawrence"
+  ],
+  "bbox": [
+    38.73826500027041,
+    -95.50190000008864,
+    39.06978300016466,
+    -95.0558480001544
+  ],
+  "center": [
+    38.90402400021753,
+    -95.27887400012152
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "lawrence-ku"
+  ],
+  "page": false
+}

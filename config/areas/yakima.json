@@ -1,0 +1,25 @@
+{
+  "slug": "yakima",
+  "name": "Yakima",
+  "type": "MSA",
+  "officialName": "Yakima, WA",
+  "country": "United States",
+  "cities": [
+    "Yakima"
+  ],
+  "bbox": [
+    46.0401690002216,
+    -121.52306999968253,
+    47.08875000020368,
+    -119.86554000035245
+  ],
+  "center": [
+    46.56445950021264,
+    -120.6943050000175
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "yakima"
+  ],
+  "page": false
+}

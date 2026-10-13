@@ -1,0 +1,27 @@
+{
+  "slug": "albany-ny",
+  "name": "Albany",
+  "type": "MSA",
+  "officialName": "Albany-Schenectady-Troy, NY",
+  "country": "United States",
+  "cities": [
+    "Albany",
+    "Schenectady",
+    "Troy"
+  ],
+  "bbox": [
+    42.35501700008582,
+    -74.71158000035103,
+    43.39804499990752,
+    -73.26482700002443
+  ],
+  "center": [
+    42.876530999996675,
+    -73.98820350018772
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cdta"
+  ],
+  "page": false
+}

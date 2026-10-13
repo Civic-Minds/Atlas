@@ -1,0 +1,25 @@
+{
+  "slug": "springfield-il",
+  "name": "Springfield",
+  "type": "MSA",
+  "officialName": "Springfield, IL",
+  "country": "United States",
+  "cities": [
+    "Springfield"
+  ],
+  "bbox": [
+    39.52210400020932,
+    -89.9951129996127,
+    40.16072600002689,
+    -89.21743699981167
+  ],
+  "center": [
+    39.841415000118104,
+    -89.60627499971218
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "springfield-il"
+  ],
+  "page": false
+}

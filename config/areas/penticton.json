@@ -1,0 +1,25 @@
+{
+  "slug": "penticton",
+  "name": "Penticton",
+  "type": "CA",
+  "officialName": "Penticton",
+  "country": "Canada",
+  "cities": [
+    "Penticton"
+  ],
+  "bbox": [
+    49.10189388945134,
+    -120.18064760599701,
+    49.88887535828835,
+    -119.14600248730112
+  ],
+  "center": [
+    49.495384623869846,
+    -119.66332504664906
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "south-okanagan"
+  ],
+  "page": false
+}

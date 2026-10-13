@@ -1,0 +1,26 @@
+{
+  "slug": "south-bend",
+  "name": "South Bend",
+  "type": "MSA",
+  "officialName": "South Bend-Mishawaka, IN-MI",
+  "country": "United States",
+  "cities": [
+    "South Bend",
+    "Mishawaka"
+  ],
+  "bbox": [
+    41.432792000306705,
+    -86.52668200025593,
+    42.071484000195696,
+    -85.76011699989613
+  ],
+  "center": [
+    41.7521380002512,
+    -86.14339950007603
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "south-bend"
+  ],
+  "page": false
+}

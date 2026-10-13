@@ -1,0 +1,25 @@
+{
+  "slug": "kansas-city",
+  "name": "Kansas City",
+  "type": "MSA",
+  "officialName": "Kansas City, MO-KS",
+  "country": "United States",
+  "cities": [
+    "Kansas City"
+  ],
+  "bbox": [
+    38.0259519996548,
+    -95.18796299991948,
+    39.7890580003216,
+    -93.4772329997827
+  ],
+  "center": [
+    38.907504999988205,
+    -94.33259799985109
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "kcata"
+  ],
+  "page": true
+}

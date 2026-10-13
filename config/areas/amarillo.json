@@ -1,0 +1,25 @@
+{
+  "slug": "amarillo",
+  "name": "Amarillo",
+  "type": "MSA",
+  "officialName": "Amarillo, TX",
+  "country": "United States",
+  "cities": [
+    "Amarillo"
+  ],
+  "bbox": [
+    34.74741600004717,
+    -103.0425210002228,
+    35.62751499983213,
+    -101.085885999938
+  ],
+  "center": [
+    35.18746549993965,
+    -102.0642035000804
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "amarillo"
+  ],
+  "page": false
+}

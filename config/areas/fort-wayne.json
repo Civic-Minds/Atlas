@@ -1,0 +1,25 @@
+{
+  "slug": "fort-wayne",
+  "name": "Fort Wayne",
+  "type": "MSA",
+  "officialName": "Fort Wayne, IN",
+  "country": "United States",
+  "cities": [
+    "Fort Wayne"
+  ],
+  "bbox": [
+    40.56683199976949,
+    -85.6865739999986,
+    41.29537299971065,
+    -84.8029219998051
+  ],
+  "center": [
+    40.93110249974007,
+    -85.24474799990185
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "citilink-fw"
+  ],
+  "page": false
+}

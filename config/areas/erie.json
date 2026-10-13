@@ -1,0 +1,25 @@
+{
+  "slug": "erie",
+  "name": "Erie",
+  "type": "MSA",
+  "officialName": "Erie, PA",
+  "country": "United States",
+  "cities": [
+    "Erie"
+  ],
+  "bbox": [
+    41.84903899979075,
+    -80.51985100026717,
+    42.516072000324215,
+    -79.61064800015681
+  ],
+  "center": [
+    42.18255550005748,
+    -80.06524950021199
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "emta"
+  ],
+  "page": false
+}

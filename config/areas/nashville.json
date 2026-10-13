@@ -1,0 +1,28 @@
+{
+  "slug": "nashville",
+  "name": "Nashville",
+  "type": "MSA",
+  "officialName": "Nashville-Davidson--Murfreesboro--Franklin, TN",
+  "country": "United States",
+  "cities": [
+    "Nashville",
+    "Davidson",
+    "Murfreesboro",
+    "Franklin"
+  ],
+  "bbox": [
+    35.40817499972726,
+    -87.74375000006918,
+    36.65244300028608,
+    -85.77863399979714
+  ],
+  "center": [
+    36.03030900000667,
+    -86.76119199993316
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "nashvillemta"
+  ],
+  "page": true
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "charlottetown",
+  "name": "Charlottetown",
+  "type": "CA",
+  "officialName": "Charlottetown",
+  "country": "Canada",
+  "cities": [
+    "Charlottetown"
+  ],
+  "bbox": [
+    46.0168624652095,
+    -63.60341818039112,
+    46.60617967105486,
+    -62.67515400578615
+  ],
+  "center": [
+    46.31152106813218,
+    -63.13928609308863
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "t3-transit"
+  ],
+  "page": false
+}

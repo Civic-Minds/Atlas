@@ -14,6 +14,8 @@ import AboutPage from './AboutPage';
 import LegalPage from './LegalPage';
 import ResearchPage from './apps/ResearchPage';
 import AgencyPage from './AgencyPage';
+import AreaPage from './AreaPage';
+import type { AreaPageData } from '../shared/areaPages';
 
 const PAGES: Record<string, () => ReactElement> = {
   '/about': () => <AboutPage />,
@@ -43,4 +45,8 @@ export const PRERENDER_PATHS = Object.keys(PAGES);
 
 export function renderAgencyPage(data: AgencyPageData): string {
   return renderToString(<StaticRouter location={`/agency/${data.agency.slug}`}><AgencyPage data={data} /></StaticRouter>);
+}
+
+export function renderAreaPage(data: AreaPageData): string {
+  return renderToString(<StaticRouter location={`/area/${data.area.slug}`}><AreaPage data={data} /></StaticRouter>);
 }

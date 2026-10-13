@@ -1,0 +1,25 @@
+{
+  "slug": "bangor",
+  "name": "Bangor",
+  "type": "MSA",
+  "officialName": "Bangor, ME",
+  "country": "United States",
+  "cities": [
+    "Bangor"
+  ],
+  "bbox": [
+    44.644022999688744,
+    -69.35566700028883,
+    46.395782000251714,
+    -67.93975999984535
+  ],
+  "center": [
+    45.51990249997023,
+    -68.64771350006708
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bangor"
+  ],
+  "page": false
+}

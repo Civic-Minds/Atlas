@@ -1,0 +1,25 @@
+{
+  "slug": "tallahassee",
+  "name": "Tallahassee",
+  "type": "MSA",
+  "officialName": "Tallahassee, FL",
+  "country": "United States",
+  "cities": [
+    "Tallahassee"
+  ],
+  "bbox": [
+    29.742929999871254,
+    -84.9325190002692,
+    30.711541999938845,
+    -83.60412099964759
+  ],
+  "center": [
+    30.227235999905048,
+    -84.2683199999584
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "starmetro"
+  ],
+  "page": false
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "kalamazoo",
+  "name": "Kalamazoo",
+  "type": "MSA",
+  "officialName": "Kalamazoo-Portage, MI",
+  "country": "United States",
+  "cities": [
+    "Kalamazoo",
+    "Portage"
+  ],
+  "bbox": [
+    42.06932700002207,
+    -85.76606600033872,
+    42.42152199976611,
+    -85.29362300023853
+  ],
+  "center": [
+    42.245424499894085,
+    -85.52984450028862
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "kalamazoo"
+  ],
+  "page": false
+}

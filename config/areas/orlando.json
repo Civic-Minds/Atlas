@@ -1,0 +1,28 @@
+{
+  "slug": "orlando",
+  "name": "Orlando",
+  "type": "MSA",
+  "officialName": "Orlando-Kissimmee-Sanford, FL",
+  "country": "United States",
+  "cities": [
+    "Orlando",
+    "Kissimmee",
+    "Sanford"
+  ],
+  "bbox": [
+    27.641990000160114,
+    -81.95764099965936,
+    29.276765999610365,
+    -80.86139499969674
+  ],
+  "center": [
+    28.45937799988524,
+    -81.40951799967806
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "lynx",
+    "sunrail"
+  ],
+  "page": true
+}

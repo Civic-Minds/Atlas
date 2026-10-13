@@ -1,0 +1,25 @@
+{
+  "slug": "charlottesville",
+  "name": "Charlottesville",
+  "type": "MSA",
+  "officialName": "Charlottesville, VA",
+  "country": "United States",
+  "cities": [
+    "Charlottesville"
+  ],
+  "bbox": [
+    37.535642000337035,
+    -79.17213499985347,
+    38.47552700011117,
+    -78.06330999966349
+  ],
+  "center": [
+    38.0055845002241,
+    -78.61772249975849
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "albemarle-county"
+  ],
+  "page": false
+}

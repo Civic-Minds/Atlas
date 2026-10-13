@@ -1,0 +1,26 @@
+{
+  "slug": "spokane",
+  "name": "Spokane",
+  "type": "MSA",
+  "officialName": "Spokane-Spokane Valley, WA",
+  "country": "United States",
+  "cities": [
+    "Spokane",
+    "Spokane Valley"
+  ],
+  "bbox": [
+    47.25927199978589,
+    -118.40240699965926,
+    49.00073699992988,
+    -117.03976299977164
+  ],
+  "center": [
+    48.13000449985788,
+    -117.72108499971546
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "spokane"
+  ],
+  "page": false
+}

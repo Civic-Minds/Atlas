@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { AGENCY_ROUTE_SOURCES, SEO_ROUTES, SITE_URL, buildSitemapXml, knownRouteSources, sitemapRoutes } from './seo';
+import { AGENCY_ROUTE_SOURCES, AREA_ROUTE_SOURCES, SEO_ROUTES, SITE_URL, buildSitemapXml, knownRouteSources, sitemapRoutes } from './seo';
 
 const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { rewrites: { source: string; destination: string }[] };
 
@@ -37,13 +37,16 @@ describe('vercel.json routing', () => {
     // No catch-all: an unknown path must fall through to a real 404.
     for (const s of sources) {
       const patterned = s.includes('(') || s.includes('*') || s.includes(':');
-      expect(patterned, `${s} is a pattern`).toBe(s.startsWith('/beta-data/') || AGENCY_ROUTE_SOURCES.includes(s));
+      expect(patterned, `${s} is a pattern`).toBe(s.startsWith('/beta-data/') || AGENCY_ROUTE_SOURCES.includes(s) || AREA_ROUTE_SOURCES.includes(s));
     }
   });
 
   it('serves each agency page from its own prerendered file, so public builds (no files) return 404', () => {
     for (const source of AGENCY_ROUTE_SOURCES) {
       expect(vercel.rewrites.find(r => r.source === source)?.destination).toBe('/agency/:slug/index.html');
+    }
+    for (const source of AREA_ROUTE_SOURCES) {
+      expect(vercel.rewrites.find(r => r.source === source)?.destination).toBe('/area/:slug/index.html');
     }
   });
 

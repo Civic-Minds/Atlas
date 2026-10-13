@@ -1,0 +1,26 @@
+{
+  "slug": "portland-me",
+  "name": "Portland",
+  "type": "MSA",
+  "officialName": "Portland-South Portland, ME",
+  "country": "United States",
+  "cities": [
+    "Portland",
+    "South Portland"
+  ],
+  "bbox": [
+    42.91712599993515,
+    -70.98912199998587,
+    44.17103600030692,
+    -69.66474499961147
+  ],
+  "center": [
+    43.54408100012104,
+    -70.32693349979867
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "portlandme"
+  ],
+  "page": false
+}

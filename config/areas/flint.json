@@ -1,0 +1,25 @@
+{
+  "slug": "flint",
+  "name": "Flint",
+  "type": "MSA",
+  "officialName": "Flint, MI",
+  "country": "United States",
+  "cities": [
+    "Flint"
+  ],
+  "bbox": [
+    42.780820999836024,
+    -83.9320709995968,
+    43.22313100009629,
+    -83.4532970003609
+  ],
+  "center": [
+    43.001975999966156,
+    -83.69268399997885
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "mta-flint"
+  ],
+  "page": false
+}

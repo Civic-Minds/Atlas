@@ -1,0 +1,25 @@
+{
+  "slug": "calgary",
+  "name": "Calgary",
+  "type": "CMA",
+  "officialName": "Calgary",
+  "country": "Canada",
+  "cities": [
+    "Calgary"
+  ],
+  "bbox": [
+    50.59287255545994,
+    -114.95290167404364,
+    51.712279118340895,
+    -113.08367621846786
+  ],
+  "center": [
+    51.15257583690042,
+    -114.01828894625575
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "calgary"
+  ],
+  "page": true
+}

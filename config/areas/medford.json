@@ -1,0 +1,25 @@
+{
+  "slug": "medford",
+  "name": "Medford",
+  "type": "MSA",
+  "officialName": "Medford, OR",
+  "country": "United States",
+  "cities": [
+    "Medford"
+  ],
+  "bbox": [
+    42.003084000077294,
+    -123.23132699982588,
+    42.99679500008086,
+    -122.28268200021739
+  ],
+  "center": [
+    42.49993950007908,
+    -122.75700450002164
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "rvtd"
+  ],
+  "page": false
+}

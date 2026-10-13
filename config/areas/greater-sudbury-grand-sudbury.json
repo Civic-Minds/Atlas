@@ -1,0 +1,25 @@
+{
+  "slug": "greater-sudbury-grand-sudbury",
+  "name": "Greater Sudbury / Grand Sudbury",
+  "type": "CMA",
+  "officialName": "Greater Sudbury / Grand Sudbury",
+  "country": "Canada",
+  "cities": [
+    "Greater Sudbury / Grand Sudbury"
+  ],
+  "bbox": [
+    46.06443835994475,
+    -81.63897517793018,
+    47.04555392263356,
+    -80.1351836391777
+  ],
+  "center": [
+    46.55499614128915,
+    -80.88707940855394
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sudbury"
+  ],
+  "page": false
+}

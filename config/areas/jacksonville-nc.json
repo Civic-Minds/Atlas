@@ -1,0 +1,25 @@
+{
+  "slug": "jacksonville-nc",
+  "name": "Jacksonville",
+  "type": "MSA",
+  "officialName": "Jacksonville, NC",
+  "country": "United States",
+  "cities": [
+    "Jacksonville"
+  ],
+  "bbox": [
+    34.39970499974142,
+    -77.68012700002855,
+    34.98445999986962,
+    -77.09607299981094
+  ],
+  "center": [
+    34.69208249980552,
+    -77.38809999991975
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "jacksonville-nc"
+  ],
+  "page": false
+}

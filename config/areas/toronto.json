@@ -1,0 +1,39 @@
+{
+  "slug": "toronto",
+  "name": "Toronto",
+  "type": "CMA",
+  "officialName": "Toronto + Hamilton + Oshawa",
+  "country": "Canada",
+  "cities": [
+    "Toronto",
+    "Hamilton",
+    "Oshawa"
+  ],
+  "bbox": [
+    43.02029785079536,
+    -80.33222621940558,
+    44.57151749246167,
+    -78.38730848630476
+  ],
+  "center": [
+    43.79590767162851,
+    -79.35976735285517
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "brampton",
+    "burlington",
+    "drt",
+    "go",
+    "hamilton",
+    "milton",
+    "miway",
+    "oakville",
+    "orangeville",
+    "ttc",
+    "upexpress",
+    "yrt"
+  ],
+  "page": true,
+  "note": "This area combines the Toronto, Hamilton and Oshawa metro areas so it matches the Greater Toronto and Hamilton Area (GTHA)."
+}

@@ -498,7 +498,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
           </p>
           {FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug) && (
-            <a href={agencyPagePath(agency.slug)} className="mt-1 block text-[10px] text-[var(--accent)] hover:underline">
+            <a href={agencyPagePath(agency.slug)} className="mt-1 block text-xs text-[var(--accent)] hover:underline">
               About this agency →
             </a>
           )}

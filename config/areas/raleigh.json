@@ -1,0 +1,27 @@
+{
+  "slug": "raleigh",
+  "name": "Raleigh",
+  "type": "MSA",
+  "officialName": "Raleigh-Cary, NC",
+  "country": "United States",
+  "cities": [
+    "Raleigh",
+    "Cary"
+  ],
+  "bbox": [
+    35.25466300032511,
+    -78.99504800044733,
+    36.26619099977557,
+    -78.0065510003636
+  ],
+  "center": [
+    35.76042700005034,
+    -78.50079950040546
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "goraleigh",
+    "ncsu-wolfline"
+  ],
+  "page": true
+}

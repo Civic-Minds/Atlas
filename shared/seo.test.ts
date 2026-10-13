@@ -44,7 +44,7 @@ describe('route metadata table', () => {
     const main = readFileSync('src/main.tsx', 'utf8');
     const app = readFileSync('src/App.tsx', 'utf8');
     const routePaths = [...main.matchAll(/<Route path="(\/[^"*]*)"/g)].map(m => m[1])
-      .filter(p => !p.startsWith('/dev/') && p !== '/apps/night' && p !== '/agency/:slug'); // /apps/night only redirects
+      .filter(p => !p.startsWith('/dev/') && p !== '/apps/night' && p !== '/agency/:slug' && p !== '/area/:slug'); // /apps/night only redirects
     const appPaths = [...app.matchAll(/'(\/apps\/[a-z]+)':/g)].map(m => m[1]);
     const research = [...readFileSync('shared/config.ts', 'utf8').matchAll(/: '(\/research[^']*)'/g)].map(m => m[1]);
     const known = new Set([...SEO_ROUTES.map(r => r.path), ...UNREACHABLE_APP_PATHS]);

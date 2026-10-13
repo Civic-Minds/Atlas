@@ -1,0 +1,32 @@
+{
+  "slug": "pittsburgh",
+  "name": "Pittsburgh",
+  "type": "MSA",
+  "officialName": "Pittsburgh, PA",
+  "country": "United States",
+  "cities": [
+    "Pittsburgh"
+  ],
+  "bbox": [
+    39.72067799998684,
+    -80.51931099959369,
+    41.173133999784234,
+    -78.97381400015541
+  ],
+  "center": [
+    40.44690599988554,
+    -79.74656249987456
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "beaver-county",
+    "butler-pa",
+    "fact",
+    "freedom-transit",
+    "mmvta",
+    "new-castle",
+    "port-authority-pa",
+    "westmoreland"
+  ],
+  "page": true
+}

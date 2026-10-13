@@ -1,0 +1,25 @@
+{
+  "slug": "regina",
+  "name": "Regina",
+  "type": "CMA",
+  "officialName": "Regina",
+  "country": "Canada",
+  "cities": [
+    "Regina"
+  ],
+  "bbox": [
+    49.900943296996836,
+    -105.4551283058328,
+    50.91264101606611,
+    -103.9659627091175
+  ],
+  "center": [
+    50.40679215653147,
+    -104.71054550747516
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "regina"
+  ],
+  "page": false
+}

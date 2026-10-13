@@ -1,0 +1,29 @@
+{
+  "slug": "santa-rosa",
+  "name": "Santa Rosa",
+  "type": "MSA",
+  "officialName": "Santa Rosa-Petaluma, CA",
+  "country": "United States",
+  "cities": [
+    "Santa Rosa",
+    "Petaluma"
+  ],
+  "bbox": [
+    38.073260000074065,
+    -123.63249699963237,
+    38.85291599988517,
+    -122.3474539996994
+  ],
+  "center": [
+    38.46308799997962,
+    -122.98997549966589
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "petaluma",
+    "santarosa",
+    "smart-ca",
+    "sonoma-county"
+  ],
+  "page": true
+}

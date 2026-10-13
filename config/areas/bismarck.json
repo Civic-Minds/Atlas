@@ -1,0 +1,25 @@
+{
+  "slug": "bismarck",
+  "name": "Bismarck",
+  "type": "MSA",
+  "officialName": "Bismarck, ND",
+  "country": "United States",
+  "cities": [
+    "Bismarck"
+  ],
+  "bbox": [
+    46.284389999964645,
+    -102.0972049998521,
+    47.327696000023096,
+    -100.07522899999779
+  ],
+  "center": [
+    46.80604299999387,
+    -101.08621699992494
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bis-man"
+  ],
+  "page": false
+}

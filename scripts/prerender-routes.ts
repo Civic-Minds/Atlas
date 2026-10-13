@@ -3,11 +3,13 @@
  * text inside #root and its own title, canonical and robots tags. The app still mounts over it.
  * Run after `vite build` and `vite build --ssr src/prerender.tsx --outDir .prerender`.
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_URL, applySeoToHtml, buildSitemapXml, injectRootHtml, prerenderRoutes, resolveSeo } from '../shared/seo';
 import { AGENCY_DATA_SCRIPT_ID, agencyPageData, agencyPageJsonLd, agencyPagePath, resolveAgencySeo } from '../shared/agencyPages';
+import { AREA_DATA_SCRIPT_ID, areaPageJsonLd, buildAreaPageData, resolveAreaSeo } from '../shared/areaPages';
+import { areaPagePath, type AreaConfig } from '../shared/areas';
 import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../shared/agencyPagesData';
 
 const dist = resolve('dist');
@@ -34,19 +36,37 @@ if (mod.BUILD_FLAGS.agencyPages) {
     console.warn('\n!!! AGENCY PAGES SKIPPED: shared/data/agency-pages.json has no agencies. Run scripts/build-agency-page-summaries.ts. !!!\n');
   } else {
     const urls: string[] = [];
+    // Metro areas (config/areas): pages only for areas flagged page: true. An agency links to its area.
+    const areas = readdirSync('config/areas').filter(f => f.endsWith('.json') && !f.startsWith('_'))
+      .map(f => JSON.parse(readFileSync(join('config/areas', f), 'utf8')) as AreaConfig).filter(a => a.page);
+    const areaOf = new Map<string, { slug: string; name: string }>();
+    for (const area of areas) for (const slug of area.agencies) areaOf.set(slug, { slug: area.slug, name: area.name });
     for (const a of agencies) {
-      const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt);
+      const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug));
       const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin });
       const embedded = `<script type="application/json" id="${AGENCY_DATA_SCRIPT_ID}">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n</body>`;
-      const ld = `  <script type="application/ld+json">${JSON.stringify(agencyPageJsonLd(a, seo.canonicalUrl, origin)).replace(/</g, '\\u003c')}</script>\n</head>`;
+      const ld = `  <script type="application/ld+json">${JSON.stringify(agencyPageJsonLd(a, seo.canonicalUrl, origin, areaOf.get(a.slug))).replace(/</g, '\\u003c')}</script>\n</head>`;
       const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAgencyPage(data)).replace('</head>', () => ld).replace('</body>', () => embedded);
       const file = join(dist, agencyPagePath(a.slug), 'index.html');
       mkdirSync(dirname(file), { recursive: true });
       writeFileSync(file, html);
       urls.push(seo.canonicalUrl);
     }
-    // The committed public/sitemap.xml stays public-only; this build's copy also lists agency pages.
+    const byslug = new Map(agencies.map(a => [a.slug, a]));
+    for (const area of areas) {
+      const data = buildAreaPageData(area, byslug, AGENCY_PAGE_DATA.generatedAt);
+      if (data.agencies.length === 0) continue;
+      const seo = resolveAreaSeo(data, { mode: mod.BUILD_MODE, origin });
+      const embedded = `<script type="application/json" id="${AREA_DATA_SCRIPT_ID}">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n</body>`;
+      const ld = `  <script type="application/ld+json">${JSON.stringify(areaPageJsonLd(data, seo.canonicalUrl, origin)).replace(/</g, '\\u003c')}</script>\n</head>`;
+      const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAreaPage(data)).replace('</head>', () => ld).replace('</body>', () => embedded);
+      const file = join(dist, areaPagePath(area.slug), 'index.html');
+      mkdirSync(dirname(file), { recursive: true });
+      writeFileSync(file, html);
+      urls.push(seo.canonicalUrl);
+    }
+    // The committed public/sitemap.xml stays public-only; this build's copy also lists agency and area pages.
     writeFileSync(join(dist, 'sitemap.xml'), buildSitemapXml(urls));
-    console.log(`Prerendered ${agencies.length} agency pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
+    console.log(`Prerendered ${agencies.length} agency pages and ${areas.length} area pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
   }
 }

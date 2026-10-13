@@ -1,0 +1,25 @@
+{
+  "slug": "kingston",
+  "name": "Kingston",
+  "type": "CMA",
+  "officialName": "Kingston",
+  "country": "Canada",
+  "cities": [
+    "Kingston"
+  ],
+  "bbox": [
+    44.00120966938321,
+    -76.97256891907098,
+    44.777254933814035,
+    -76.02255175233736
+  ],
+  "center": [
+    44.389232301598625,
+    -76.49756033570418
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "kingston"
+  ],
+  "page": false
+}

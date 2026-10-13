@@ -1,0 +1,25 @@
+{
+  "slug": "columbus-ga-al",
+  "name": "Columbus",
+  "type": "MSA",
+  "officialName": "Columbus, GA-AL",
+  "country": "United States",
+  "cities": [
+    "Columbus"
+  ],
+  "bbox": [
+    31.92030799966787,
+    -85.43474700007044,
+    32.88359500028206,
+    -84.28624600003063
+  ],
+  "center": [
+    32.40195149997496,
+    -84.86049650005054
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "muscogee-county"
+  ],
+  "page": false
+}

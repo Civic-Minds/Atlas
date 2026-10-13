@@ -1,0 +1,25 @@
+{
+  "slug": "sherbrooke",
+  "name": "Sherbrooke",
+  "type": "CMA",
+  "officialName": "Sherbrooke",
+  "country": "Canada",
+  "cities": [
+    "Sherbrooke"
+  ],
+  "bbox": [
+    45.05669832701675,
+    -72.35589983251818,
+    45.72663599236179,
+    -71.5322898384753
+  ],
+  "center": [
+    45.39166715968927,
+    -71.94409483549674
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sherbrooke"
+  ],
+  "page": false
+}

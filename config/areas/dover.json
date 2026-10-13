@@ -1,0 +1,25 @@
+{
+  "slug": "dover",
+  "name": "Dover",
+  "type": "MSA",
+  "officialName": "Dover, DE",
+  "country": "United States",
+  "cities": [
+    "Dover"
+  ],
+  "bbox": [
+    38.82985099993632,
+    -75.76007399963416,
+    39.38755499996983,
+    -75.13846099990796
+  ],
+  "center": [
+    39.108702999953074,
+    -75.44926749977105
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "dart-first-state"
+  ],
+  "page": false
+}

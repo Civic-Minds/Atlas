@@ -1,0 +1,27 @@
+{
+  "slug": "kitchener",
+  "name": "Kitchener",
+  "type": "CMA",
+  "officialName": "Kitchener - Cambridge - Waterloo",
+  "country": "Canada",
+  "cities": [
+    "Kitchener",
+    "Cambridge",
+    "Waterloo"
+  ],
+  "bbox": [
+    43.23255549931843,
+    -80.83355439675886,
+    43.71282145564092,
+    -80.11408130752875
+  ],
+  "center": [
+    43.47268847747968,
+    -80.47381785214381
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "grt"
+  ],
+  "page": true
+}

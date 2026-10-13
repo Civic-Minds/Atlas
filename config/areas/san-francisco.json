@@ -1,0 +1,42 @@
+{
+  "slug": "san-francisco",
+  "name": "San Francisco",
+  "type": "MSA",
+  "officialName": "San Francisco-Oakland-Fremont, CA",
+  "country": "United States",
+  "cities": [
+    "San Francisco",
+    "Oakland",
+    "Fremont"
+  ],
+  "bbox": [
+    37.05385799965333,
+    -123.17382500036122,
+    38.321226999966115,
+    -121.46921399964808
+  ],
+  "center": [
+    37.68754249980972,
+    -122.32151950000465
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "actransit",
+    "bart",
+    "caltrain",
+    "carta-chattanooga",
+    "countyconnection",
+    "emerygoround",
+    "goldengate",
+    "lavta",
+    "marintransit",
+    "samtrans",
+    "sfmta",
+    "tridelta",
+    "unioncity",
+    "westberkeley",
+    "westcat",
+    "weta"
+  ],
+  "page": true
+}

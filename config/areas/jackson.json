@@ -1,0 +1,25 @@
+{
+  "slug": "jackson",
+  "name": "Jackson",
+  "type": "MSA",
+  "officialName": "Jackson, MS",
+  "country": "United States",
+  "cities": [
+    "Jackson"
+  ],
+  "bbox": [
+    31.68514700007988,
+    -90.75975300015018,
+    33.375120999784194,
+    -89.32222899999844
+  ],
+  "center": [
+    32.53013399993203,
+    -90.04099100007431
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "jackson-ms"
+  ],
+  "page": false
+}

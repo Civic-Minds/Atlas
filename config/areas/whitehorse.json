@@ -1,0 +1,25 @@
+{
+  "slug": "whitehorse",
+  "name": "Whitehorse",
+  "type": "CA",
+  "officialName": "Whitehorse",
+  "country": "Canada",
+  "cities": [
+    "Whitehorse"
+  ],
+  "bbox": [
+    59.850413438619235,
+    -136.8121476699565,
+    61.38818670607436,
+    -133.70802307440277
+  ],
+  "center": [
+    60.619300072346796,
+    -135.26008537217962
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "whitehorse"
+  ],
+  "page": false
+}

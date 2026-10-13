@@ -1,0 +1,25 @@
+{
+  "slug": "duncan",
+  "name": "Duncan",
+  "type": "CA",
+  "officialName": "Duncan",
+  "country": "Canada",
+  "cities": [
+    "Duncan"
+  ],
+  "bbox": [
+    48.626868170477806,
+    -124.00620444550711,
+    48.96907821083333,
+    -123.50322113152002
+  ],
+  "center": [
+    48.79797319065557,
+    -123.75471278851356
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cowichan"
+  ],
+  "page": false
+}

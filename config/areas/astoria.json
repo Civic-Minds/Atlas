@@ -1,0 +1,25 @@
+{
+  "slug": "astoria",
+  "name": "Astoria",
+  "type": "MicroSA",
+  "officialName": "Astoria, OR",
+  "country": "United States",
+  "cities": [
+    "Astoria"
+  ],
+  "bbox": [
+    45.77307999997355,
+    -124.15954599960452,
+    46.29909899997804,
+    -123.35882600021526
+  ],
+  "center": [
+    46.036089499975795,
+    -123.75918599990989
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "setd"
+  ],
+  "page": false
+}

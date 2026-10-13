@@ -250,6 +250,8 @@ export function buildSitemapXml(extraUrls: readonly string[] = []): string {
 /** Every path the router can answer, with and without a trailing slash, for vercel.json. */
 /** Agency pages are prerendered per slug; vercel.json serves each from its own file (404 if absent). */
 export const AGENCY_ROUTE_SOURCES: readonly string[] = ['/agency/:slug', '/agency/:slug/'];
+/** Same for metro area pages (/area/<slug>). */
+export const AREA_ROUTE_SOURCES: readonly string[] = ['/area/:slug', '/area/:slug/'];
 
 export function knownRouteSources(): string[] {
   const paths = [...SEO_ROUTES.map(r => r.path), ...UNREACHABLE_APP_PATHS].filter(p => p !== '/');

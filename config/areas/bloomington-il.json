@@ -1,0 +1,25 @@
+{
+  "slug": "bloomington-il",
+  "name": "Bloomington",
+  "type": "MSA",
+  "officialName": "Bloomington, IL",
+  "country": "United States",
+  "cities": [
+    "Bloomington"
+  ],
+  "bbox": [
+    40.280919000227115,
+    -89.26939700033613,
+    40.757608000030004,
+    -88.45920699984926
+  ],
+  "center": [
+    40.51926350012856,
+    -88.86430200009269
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "connect-transit"
+  ],
+  "page": false
+}
