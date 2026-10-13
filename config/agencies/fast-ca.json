@@ -12,7 +12,7 @@
     38.58,
     -121.5
   ],
-  "feedUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=FS",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-76/latest.zip",
   "lastFeedExpiry": "20260630",
   "lastFeedVersion": "UTC: 14-Nov-2025 10:07",
@@ -32,5 +32,6 @@
   "feedRefreshErrorAt": "20261012",
   "feedRefreshRetryCount": 3,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY"
 }

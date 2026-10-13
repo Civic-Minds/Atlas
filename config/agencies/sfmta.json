@@ -13,7 +13,7 @@
     37.83,
     -122.37
   ],
-  "feedUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SF",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2886/latest.zip",
   "lastFeedExpiry": "20260828",
   "lastFeedVersion": null,
@@ -33,5 +33,6 @@
   "feedRefreshErrorAt": "20261012",
   "feedRefreshRetryCount": 3,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip"
+  "lastFeedSourceUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY"
 }

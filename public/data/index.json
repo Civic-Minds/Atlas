@@ -6450,7 +6450,7 @@
         37.83,
         -122.37
       ],
-      "feedUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip",
+      "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SF",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2886/latest.zip",
       "lastFeedExpiry": "20260828",
       "lastFeedVersion": null,
@@ -6470,7 +6470,8 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip"
+      "lastFeedSourceUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip",
+      "feedApiKeyEnvVar": "MUNI_511_API_KEY"
     },
     {
       "slug": "bart",
@@ -7484,7 +7485,7 @@
         38.58,
         -121.5
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
+      "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=FS",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-76/latest.zip",
       "lastFeedExpiry": "20260630",
       "lastFeedVersion": "UTC: 14-Nov-2025 10:07",
@@ -7504,7 +7505,8 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
+      "feedApiKeyEnvVar": "MUNI_511_API_KEY"
     },
     {
       "slug": "vacaville",
@@ -12585,7 +12587,7 @@
         40.7491,
         -73.9883
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/path-nj-us/path-nj-us.zip",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/14843/PATHGTFS.zip",
       "lastFeedExpiry": "20260601",
       "lastFeedVersion": "UTC: 22-May-2025 18:06",
       "lastRefreshedAt": "20260811",
