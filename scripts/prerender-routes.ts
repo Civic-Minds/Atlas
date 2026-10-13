@@ -6,7 +6,9 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { SITE_URL, applySeoToHtml, injectRootHtml, prerenderRoutes, resolveSeo } from '../shared/seo';
+import { SITE_URL, applySeoToHtml, buildSitemapXml, injectRootHtml, prerenderRoutes, resolveSeo } from '../shared/seo';
+import { agencyPageJsonLd, agencyPagePath, resolveAgencySeo } from '../shared/agencyPages';
+import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../shared/agencyPagesData';
 
 const dist = resolve('dist');
 const mod = await import(pathToFileURL(resolve('.prerender/prerender.js')).href);
@@ -22,4 +24,27 @@ for (const route of prerenderRoutes(mod.BUILD_FLAGS)) {
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, html);
   console.log(`Prerendered ${route.path}`);
+}
+
+// Agency pages: beta and dev builds only. They read the committed summary file, never R2, so an
+// unreachable R2 cannot fail the build. An empty or missing summary skips them, loudly.
+if (mod.BUILD_FLAGS.agencyPages) {
+  const agencies = agencyPageSummaries();
+  if (agencies.length === 0) {
+    console.warn('\n!!! AGENCY PAGES SKIPPED: shared/data/agency-pages.json has no agencies. Run scripts/build-agency-page-summaries.ts. !!!\n');
+  } else {
+    const urls: string[] = [];
+    for (const a of agencies) {
+      const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin });
+      const ld = `  <script type="application/ld+json">${JSON.stringify(agencyPageJsonLd(a, seo.canonicalUrl, origin)).replace(/</g, '\\u003c')}</script>\n</head>`;
+      const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAgencyPage(a.slug)).replace('</head>', () => ld);
+      const file = join(dist, agencyPagePath(a.slug), 'index.html');
+      mkdirSync(dirname(file), { recursive: true });
+      writeFileSync(file, html);
+      urls.push(seo.canonicalUrl);
+    }
+    // The committed public/sitemap.xml stays public-only; this build's copy also lists agency pages.
+    writeFileSync(join(dist, 'sitemap.xml'), buildSitemapXml(urls));
+    console.log(`Prerendered ${agencies.length} agency pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
+  }
 }

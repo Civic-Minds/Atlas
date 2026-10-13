@@ -12,6 +12,7 @@ import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
 import LegalPage from './LegalPage';
 import ResearchPage from './apps/ResearchPage';
+import AgencyPage from './AgencyPage';
 
 const PAGES: Record<string, () => ReactElement> = {
   '/about': () => <AboutPage />,
@@ -29,6 +30,7 @@ export const BUILD_FLAGS: SeoFlags = {
   live: FEATURES.live,
   history: FEATURES.history,
   corridors: FEATURES.corridors,
+  agencyPages: FEATURES.agencyPages,
 };
 
 export function renderPage(path: string): string {
@@ -38,3 +40,7 @@ export function renderPage(path: string): string {
 }
 
 export const PRERENDER_PATHS = Object.keys(PAGES);
+
+export function renderAgencyPage(slug: string): string {
+  return renderToString(<StaticRouter location={`/agency/${slug}`}><AgencyPage slug={slug} /></StaticRouter>);
+}

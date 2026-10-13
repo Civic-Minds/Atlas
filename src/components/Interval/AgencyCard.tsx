@@ -1,6 +1,8 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { FEATURES } from '../../../shared/config';
+import { agencyPagePath } from '../../../shared/agencyPages';
+import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency, FareOverride } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
@@ -558,6 +560,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
               : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
           </p>
+          {FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug) && (
+            <a href={agencyPagePath(agency.slug)} className="mt-1 block text-[10px] text-[var(--accent)] hover:underline">
+              About this agency →
+            </a>
+          )}
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
               <div className="flex items-baseline justify-between gap-2">

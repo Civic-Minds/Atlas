@@ -56,6 +56,14 @@
       "destination": "/terms/index.html"
     },
     {
+      "source": "/agency/:slug",
+      "destination": "/agency/:slug/index.html"
+    },
+    {
+      "source": "/agency/:slug/",
+      "destination": "/agency/:slug/index.html"
+    },
+    {
       "source": "/",
       "destination": "/index.html"
     },
