@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import Toggle from '../ui/Toggle';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
 import { DAY_TYPES } from '../../../shared/dayTypes';
@@ -80,22 +81,6 @@ export function updateHiddenRouteRegions(current: Set<string>, region: string): 
   if (next.has(region)) next.delete(region);
   else next.add(region);
   return next;
-}
-
-function Toggle({ on }: { on: boolean }) {
-  return (
-    <span
-      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
-        on ? 'bg-[var(--toggle-on-bg)]' : 'bg-[var(--toggle-off-bg)]'
-      }`}
-    >
-      <span
-        className={`absolute top-1 h-3 w-3 rounded-full shadow-sm transition-transform ${TRANSITION_BASE} ${
-          on ? 'translate-x-5 bg-[var(--toggle-knob-on)]' : 'translate-x-1 bg-[var(--toggle-knob-off)]'
-        }`}
-      />
-    </span>
-  );
 }
 
 const SETTINGS = [
@@ -569,15 +554,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Uses a dark colour theme across Atlas.</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setLightMode(v => !v)}
-                    aria-label="Toggle light/dark mode"
-                    role="switch"
-                    aria-checked={!lightMode}
-                    className="shrink-0"
-                  >
-                    <Toggle on={!lightMode} />
-                  </button>
+                  <Toggle on={!lightMode} onToggle={() => setLightMode(v => !v)} label="Toggle light/dark mode" />
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-2">
                   <div className="flex items-center min-w-0">
@@ -586,15 +563,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines for easier route distinction.</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setColorVisionFriendly(v => !v)}
-                    aria-label="Toggle high contrast mode"
-                    role="switch"
-                    aria-checked={colorVisionFriendly}
-                    className="shrink-0"
-                  >
-                    <Toggle on={colorVisionFriendly} />
-                  </button>
+                  <Toggle on={colorVisionFriendly} onToggle={() => setColorVisionFriendly(v => !v)} label="Toggle high contrast mode" />
                 </div>
               </div>
 
@@ -611,13 +580,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map legend visible while you explore.</p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => setShowMapLegend(v => !v)}
-                        aria-label="Toggle persistent legend"
-                        className="mt-0.5 shrink-0"
-                      >
-                        <Toggle on={showMapLegend} />
-                      </button>
+                      <Toggle on={showMapLegend} onToggle={() => setShowMapLegend(v => !v)} label="Toggle persistent legend" className="mt-0.5 shrink-0" />
                     </div>
                   </div>
                 </>
@@ -636,13 +599,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use on slower connections.</p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => setDataSaver(v => !v)}
-                        aria-label="Toggle data saver"
-                        className="mt-0.5 shrink-0"
-                      >
-                        <Toggle on={dataSaver} />
-                      </button>
+                      <Toggle on={dataSaver} onToggle={() => setDataSaver(v => !v)} label="Toggle data saver" className="mt-0.5 shrink-0" />
                     </div>
                   </div>
                 </>
@@ -691,15 +648,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         )}
                       </div>
                     </div>
-                    <button
-                      onClick={toggles[id]}
-                      aria-label={label}
-                      role="switch"
-                      aria-checked={!!values[id]}
-                      className="mt-0.5 shrink-0"
-                    >
-                      <Toggle on={values[id]} />
-                    </button>
+                    <Toggle on={values[id]} onToggle={toggles[id]} label={label} className="mt-0.5 shrink-0" />
                   </div>
                 ))}
               </div>
