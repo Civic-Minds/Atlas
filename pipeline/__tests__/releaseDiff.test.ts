@@ -461,3 +461,25 @@ describe('release diff gate: overrides', () => {
     expect(JSON.parse(readFileSync(paths.json, 'utf8')).blocked).toEqual(['amarillo']);
   });
 });
+
+describe('release diff gate: route gains weekday service (#714)', () => {
+  const line = (routeId: string, day: string, headway: number) => ({
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: [[routeId.length, day.length], [1, 1]] },
+    properties: { routeId, directionId: 0, day, tier: headway <= 30 ? '30' : '60', headway },
+  });
+  const artifact = (features: unknown[]) => summarizeArtifact(JSON.stringify({ type: 'FeatureCollection', features }), null);
+  const live = artifact([line('1', 'Weekday', 30), line('2', 'Saturday', 60)]);
+
+  it('flags a weekend-only live route that now has weekday rows', () => {
+    const next = artifact([line('1', 'Weekday', 30), line('2', 'Saturday', 60), line('2', 'Weekday', 5)]);
+    const flags = evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['x:route-shift:yellow']);
+    expect(flags[0].message).toBe('1 route with no weekday service live now runs on weekdays (2 new weekday service, 5 min)');
+  });
+
+  it('stays quiet for brand-new routes and routes that already had weekday rows', () => {
+    const next = artifact([line('1', 'Weekday', 30), line('2', 'Saturday', 60), line('3', 'Weekday', 5)]);
+    expect(evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY)).toEqual([]);
+  });
+});
