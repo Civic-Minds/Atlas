@@ -82,6 +82,22 @@ export function CompareTab({ active, onStart, onExit, collapsed = false }: { act
   );
 }
 
+/** Phone version of the Compare tab: an item in the top bar's More menu, beside History and Live. */
+export function CompareMenuItem({ active, onStart, onExit, onDone }: { active: boolean; onStart: () => void; onExit: () => void; onDone: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => { (active ? onExit : onStart)(); onDone(); }}
+      aria-pressed={active}
+      aria-label="Compare two maps"
+      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${active ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+    >
+      <Columns2 className="h-3.5 w-3.5" aria-hidden="true" />
+      <span>Compare</span>
+    </button>
+  );
+}
+
 const NO_MODES = new Set<number>();
 const NO_AGENCIES = new Set<string>();
 const noop = () => {};

@@ -1,19 +1,8 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 
-export interface HistoryMapStop {
-  stopId: string;
-  name: string;
-  lat: number;
-  lon: number;
-  avgGap: number | null;
-  headwayDeltaMin: number | null;
-  scheduledHeadwayMin: number | null;
-}
-
 export interface HistoryMapOverlay {
   slug: string;
   routeShortName: string;
-  stops: HistoryMapStop[];
   agencyCenter?: [number, number];
   routeGeometry?: number[][];  // historical shape for the selected period (AI-162, AI-161)
   selectedYear?: number;
