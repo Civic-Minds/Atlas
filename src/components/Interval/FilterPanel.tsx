@@ -21,6 +21,7 @@ interface FilterPanelProps {
   hideLimitedService: boolean;
   setHideLimitedService: (v: boolean | ((prev: boolean) => boolean)) => void;
   limitedServiceRouteCount?: number | null;
+  limitedServiceRoutes?: HiddenRoute[];
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
@@ -112,6 +113,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   hideLimitedService,
   setHideLimitedService,
   limitedServiceRouteCount,
+  limitedServiceRoutes,
   livePollingOnly,
   setLivePollingOnly,
   onInfoOpen,
@@ -141,7 +143,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [view, setView] = useState<'settings' | 'hidden-routes' | 'degraded-feeds'>('settings');
+  const [view, setView] = useState<'settings' | 'hidden-routes' | 'limited-routes' | 'degraded-feeds'>('settings');
   const [hiddenRoutes, setHiddenRoutes] = useState<HiddenRoute[]>([]);
   const [hiddenRoutesLoaded, setHiddenRoutesLoaded] = useState(false);
   const [hiddenRoutesLoading, setHiddenRoutesLoading] = useState(false);
@@ -212,20 +214,34 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     setHiddenRegionFilter(prev => updateHiddenRouteRegions(prev, region));
   };
 
+  // The route-list view serves both filters: irregular routes (global inventory) and
+  // limited-service routes (computed from the loaded map data, so no separate fetch).
+  const limitedView = view === 'limited-routes';
+  const regionBySlug = useMemo(
+    () => new Map((allAgencies ?? agencies ?? []).map(agency => [agency.slug, agency.region ?? null] as const)),
+    [allAgencies, agencies],
+  );
+  const listRoutes = useMemo<HiddenRoute[]>(
+    () => limitedView
+      ? (limitedServiceRoutes ?? []).map(route => ({ ...route, region: regionBySlug.get(route.agencySlug) ?? null }))
+      : hiddenRoutes,
+    [limitedView, limitedServiceRoutes, regionBySlug, hiddenRoutes],
+  );
+
   const filteredHiddenRoutes = useMemo(() => {
     const q = hiddenRoutesQuery.trim().toLowerCase();
-    return hiddenRoutes.filter(route => [
+    return listRoutes.filter(route => [
       route.routeShortName,
       route.routeLongName ?? '',
       route.agencyName,
       route.region ?? '',
     ].some(value => value.toLowerCase().includes(q))
       && (hiddenRegionFilter.size === 0 || hiddenRegionFilter.has(route.region ?? 'Other')));
-  }, [hiddenRoutes, hiddenRoutesQuery, hiddenRegionFilter]);
+  }, [listRoutes, hiddenRoutesQuery, hiddenRegionFilter]);
 
   const hiddenRouteRegions = useMemo(
-    () => [...new Set(hiddenRoutes.map(route => route.region ?? 'Other'))].sort(),
-    [hiddenRoutes],
+    () => [...new Set(listRoutes.map(route => route.region ?? 'Other'))].sort(),
+    [listRoutes],
   );
 
   useEffect(() => {
@@ -356,6 +372,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <h2 id="settings-panel-title" className="text-xs font-black text-[var(--text-primary)]">
                   {view === 'hidden-routes'
                     ? 'Hidden routes'
+                    : view === 'limited-routes'
+                      ? 'Limited-service routes'
                     : view === 'degraded-feeds'
                       ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
                       : 'Settings'}
@@ -371,7 +389,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             </div>
 
             <div className="overflow-y-auto flex flex-col">
-              {view === 'hidden-routes' ? (
+              {view === 'hidden-routes' || view === 'limited-routes' ? (
                 <>
                   <div className="px-5 pt-4 pb-3">
                     <label className={SEARCH_PILL}>
@@ -379,7 +397,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       <input
                         value={hiddenRoutesQuery}
                         onChange={event => setHiddenRoutesQuery(event.target.value)}
-                        placeholder="Search hidden routes…"
+                        placeholder={limitedView ? 'Search limited-service routes…' : 'Search hidden routes…'}
                         className={SEARCH_FIELD}
                         autoFocus
                       />
@@ -401,11 +419,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       })}
                     </div>
                   </div>
-                  {hiddenRoutesLoading ? (
+                  {hiddenRoutesLoading && !limitedView ? (
                     <p className="px-5 py-4 text-[10px] text-[var(--text-muted)]">Loading hidden routes…</p>
                   ) : filteredHiddenRoutes.length === 0 ? (
                     <p className="px-5 py-4 text-[10px] text-[var(--text-muted)]">
-                      {hiddenRoutes.length === 0 ? 'The hidden-route list is unavailable right now.' : 'No hidden routes match your search.'}
+                      {listRoutes.length === 0
+                        ? (limitedView ? 'No limited-service routes in view.' : 'The hidden-route list is unavailable right now.')
+                        : (limitedView ? 'No limited-service routes match your search.' : 'No hidden routes match your search.')}
                     </p>
                   ) : (
                     <div className="px-5 pb-4">
@@ -625,9 +645,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           </>
                         )}
                         {id === 'limited' && limitedServiceRouteCount != null && (
-                          <p className="text-[10px] text-[var(--text-muted)] mt-1">
-                            {limitedServiceRouteCount.toLocaleString()} {limitedServiceRouteCount === 1 ? 'route' : 'routes'} affected
-                          </p>
+                          <button
+                            onClick={() => setView('limited-routes')}
+                            className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
+                          >
+                            {limitedServiceRouteCount.toLocaleString()} {limitedServiceRouteCount === 1 ? 'route' : 'routes'} affected →
+                          </button>
                         )}
                         {id === 'quality' && (
                           <button
