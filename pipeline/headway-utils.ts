@@ -206,6 +206,23 @@ export function isThinAllDayTerminalSample(departureTimes: readonly number[], br
   return inWindow < MIN_ALL_DAY_TERMINAL_DEPARTURES && branchTripCount > inWindow;
 }
 
+/**
+ * True when a terminal's midday value rests on exactly three departures whose two gaps differ
+ * materially, and the phase 2 branch value rests on more trips than that sample (wsf 131 to
+ * Anacortes: 09:40, 13:05 and 14:45 give gaps 205 and 100, which read 153 where the route's
+ * own median is 100). A median of two gaps is their mean, and for uneven gaps it is neither
+ * gap and not the wait either. Step 4 then keeps the branch headway, as it does for a thin
+ * all-day sample (isThinAllDayTerminalSample). Two even gaps (60, 60) keep their value.
+ */
+export const UNEVEN_TWO_GAP_RATIO = 1.5;
+export function isUnevenTwoGapMiddayTerminalSample(departureTimes: readonly number[], branchTripCount = Infinity): boolean {
+  const times = [...new Set(departureTimes)].filter(t => t >= 540 && t <= 900).sort((a, b) => a - b);
+  if (times.length !== 3 || branchTripCount <= 3) return false;
+  const g1 = times[1] - times[0];
+  const g2 = times[2] - times[1];
+  return Math.max(g1, g2) >= Math.min(g1, g2) * UNEVEN_TWO_GAP_RATIO;
+}
+
 // A branch's own dispatch-frequency median (computeHeadwayStats over the whole route+dir+day)
 // has no minimum-sample floor, unlike the per-stop windowed values it gets compared against
 // (medianHeadwayInWindow above requires minDeps=3). On sparse branches this produces a noisy

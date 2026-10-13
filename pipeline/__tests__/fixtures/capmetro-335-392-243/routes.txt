@@ -1,0 +1,4 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color
+243,CM,243,243-Wells Branch,3,http://www.capmetro.org/current_schedules/pdf/243.pdf,004A97,FFFFFF
+335,CM,335,335 35th/38th,3,http://www.capmetro.org/current_schedules/pdf/335.pdf,004A97,FFFFFF
+392,CM,392,392-Braker,3,http://www.capmetro.org/current_schedules/pdf/392.pdf,004A97,FFFFFF

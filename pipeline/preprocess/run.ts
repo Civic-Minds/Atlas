@@ -7,12 +7,13 @@ import { synthesizeLondonRouteNames } from '../transforms/london-route-names.js'
 import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels.js';
+import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'brantford-route-labels';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'brantford-route-labels' | 'interpolate-untimed-stops';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -27,6 +28,8 @@ export interface GtfsTransformOptions {
   mergeEquivalentShapeVariantsAllModes?: boolean;
   /** Keep shapes whole across long point-to-point steps (rural highways, #776). Read at parse time. */
   keepLongShapeJumps?: boolean;
+  /** Leave shapes flagged for clustered jumps unrepaired (Streamline Goldline, #433). Read at parse time. */
+  skipClusteredJumpRepair?: boolean;
   /** Draw a headsign whose trips each have their own shape on one shape (RCT 20 southbound, #776). */
   poolSingleTripShapes?: boolean;
   /** Read the feed as of the run date instead of the detected reference date (#774). */
@@ -107,6 +110,11 @@ export function normalizeGtfs(
   if (options?.preprocess === 'brantford-route-labels') {
     gtfs = normalizeBrantfordRouteLabels(gtfs);
     onStatus?.('Brantford route labels: removed feed-supplied leading separators');
+  }
+  if (options?.preprocess === 'interpolate-untimed-stops') {
+    const result = interpolateUntimedStops(gtfs);
+    gtfs = result.gtfs;
+    onStatus?.(`Untimed stops: interpolated ${result.filled} stop times between timepoints`);
   }
   gtfs = synthesizeTripHeadsigns(gtfs);
   if (options?.mergeEquivalentShapeVariants || options?.mergeEquivalentShapeVariantsAllModes) {

@@ -6,6 +6,8 @@ import type { SupplementalFeedMeta } from '../shared/feedAvailability.js';
 
 export interface FeedMetaFields {
   lastFeedExpiry?: string | null;
+  /** The feed's own latest service date, uncapped. lastFeedExpiry caps placeholder dates, so it can't detect an unchanged feed (#688). */
+  lastPeekedExpiry?: string | null;
   lastFeedVersion?: string | null;
   lastRawArchiveKey?: string | null;
   lastRefreshedAt?: string | null;
@@ -97,6 +99,7 @@ export function stampFeedMeta(
   },
 ): void {
   agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.peekedExpiry, opts.todayYmd);
+  agency.lastPeekedExpiry = opts.peekedExpiry;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
   agency.feedRefreshStatus = 'current';
@@ -155,12 +158,16 @@ export function decideRefreshSkipUnchanged(opts: {
   peekedExpiry: string | null;
   peekedVersion: string | null;
   lastFeedExpiry?: string | null;
+  /** Uncapped expiry stored at the last refresh; the right key to compare a raw peek against (#688). */
+  lastPeekedExpiry?: string | null;
   lastFeedVersion?: string | null;
   /** The agency reads its feed as of the run date (#774), so an unchanged feed still has new output. */
   referenceDateFromRunDate?: boolean;
 }): RefreshSkipReason {
   if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || opts.referenceDateFromRunDate) return { skip: false };
-  const { peekedExpiry, peekedVersion, lastFeedExpiry, lastFeedVersion } = opts;
+  const { peekedExpiry, peekedVersion, lastFeedVersion } = opts;
+  // Older records have no uncapped value; compare against the recorded one as before.
+  const lastFeedExpiry = opts.lastPeekedExpiry ?? opts.lastFeedExpiry;
   const versionKnown = !!peekedVersion && !!lastFeedVersion;
   if (versionKnown && peekedVersion !== lastFeedVersion) return { skip: false };
   if (peekedExpiry && lastFeedExpiry && peekedExpiry === lastFeedExpiry) {
