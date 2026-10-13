@@ -42,6 +42,15 @@ describe('referenceDateFromRunDate (#774)', () => {
     expect(features.some((p: any) => p.routeShortName === '40')).toBe(false);
   });
 
+  it('reads the break timetable during winter break', async () => {
+    // Dec 14-18 and 21-23: the semester service (74000.218963) is removed and the break
+    // timetable (74000.219021) runs.
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-12-16T12:00:00') });
+    const features = await weekday({ referenceDateFromRunDate: true });
+    expect(features.find((p: any) => p.routeShortName === '41')?.headway).toBe(15);
+    expect(features.some((p: any) => p.routeShortName === '40')).toBe(false);
+  });
+
   it('keeps the detected reference date without the opt-in', async () => {
     vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-14T12:00:00') });
     const features = await weekday({});
