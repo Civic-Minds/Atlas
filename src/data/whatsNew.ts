@@ -40,7 +40,7 @@ export const WHATS_NEW: WhatsNewRelease[] = [
       { lead: 'Compare mode', text: 'put any two days, times or frequencies side by side', isNew: true, beta: true },
       { lead: 'Save the map as an image', text: 'it names the place, explains what is shown and links back to the map', isNew: true },
       { lead: 'On-demand zones', text: 'see their hours and whether they are running right now', isNew: true, beta: true },
-      { lead: 'Better on phones', text: 'tapping a route opens its details at the bottom of the screen, and search, settings and About fit better', beta: true },
+      { lead: 'Better on phones', text: 'search results, settings and About fit the screen better, and stop names no longer break mid-word' },
     ],
   },
 ];
