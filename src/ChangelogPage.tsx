@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
 import SiteHeader from './components/SiteHeader';
 import SiteFooter from './components/SiteFooter';
-import { resolveDataRelease } from './lib/dataRelease';
+import { loadDataReleases } from './lib/dataRelease';
 import { buildChangelog } from './lib/changelog';
 import { WHATS_NEW, visibleWhatsNew } from './data/whatsNew';
 import { FEATURES } from '../shared/config';
 
 type DataRelease = { releaseId?: string; generatedAt?: string };
 
-export default function ChangelogPage({ loadRelease = resolveDataRelease }: { loadRelease?: () => Promise<DataRelease | null> } = {}) {
+export default function ChangelogPage({ loadReleases = loadDataReleases }: { loadReleases?: () => Promise<DataRelease[]> } = {}) {
   const [dataReleases, setDataReleases] = useState<DataRelease[]>([]);
 
   useEffect(() => {
     let cancelled = false;
-    loadRelease()
-      .then(release => { if (!cancelled) setDataReleases(release ? [release] : []); })
+    loadReleases()
+      .then(releases => { if (!cancelled) setDataReleases(releases); })
       .catch(() => { if (!cancelled) setDataReleases([]); });
     return () => { cancelled = true; };
-  }, [loadRelease]);
+  }, [loadReleases]);
 
   const entries = buildChangelog(visibleWhatsNew(FEATURES.beta, WHATS_NEW), dataReleases);
 
