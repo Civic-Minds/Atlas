@@ -18,12 +18,13 @@ import {
 } from '../shared/agencyPages';
 import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
 import { ATLAS_MODE } from '../shared/config';
+import PageShell from './components/ui/PageShell';
+import DataTable from './components/ui/DataTable';
 import { applySeoToDocument } from './lib/seoDom';
 import { titleCase } from './utils/format';
 import { LINK, PAGE_ACTION } from './pageStyles';
 import { FrequencyBar } from './pageParts';
 import SiteFooter from './components/SiteFooter';
-import SiteHeader from './components/SiteHeader';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
@@ -93,14 +94,11 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
   if (!agency) {
     return (
-      <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
-        <div className="mx-auto max-w-3xl">
-          <SiteHeader />
+      <PageShell variant="wide">
           <h1 className="mt-24 text-3xl font-black tracking-tight">No page for this agency</h1>
           <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Atlas has no frequency page at this address.</p>
           <a href="/" className={`mt-6 inline-flex items-center gap-2 text-sm font-black ${LINK}`}>Open the Atlas map <ArrowRight className="h-4 w-4" /></a>
-        </div>
-      </main>
+      </PageShell>
     );
   }
 
@@ -108,9 +106,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
   const nearby = data!.nearby;
 
   return (
-    <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
-      <div className="mx-auto max-w-4xl">
-        <SiteHeader />
+    <PageShell variant="wide">
 
         <article className="pb-16 pt-10 sm:pt-14">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -131,32 +127,22 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Each route is judged by its slower direction. A dash means no sustained service in that period.</p>
             {stats.byMode.map(group => (
               <div key={group.mode} className="mt-8 overflow-x-auto">
-                <table className="w-full min-w-[44rem] table-fixed border-collapse text-left text-sm">
-                  <colgroup><col className="w-64" /><col className="w-28" /><col className="w-28" /><col className="w-28" /><col className="w-28" /><col className="w-28" /></colgroup>
-                  <caption className="pb-2 text-left text-base font-black">{group.label} routes ({group.routes.length})</caption>
-                  <thead>
-                    <tr className="text-[var(--text-dim)]">
-                      <th scope="col" className="py-1.5 pr-4 font-bold">Route</th>
-                      <th scope="col" className="py-1.5 pr-4 font-bold">AM peak</th>
-                      <th scope="col" className="py-1.5 pr-4 font-bold">Midday</th>
-                      <th scope="col" className="py-1.5 pr-4 font-bold">PM peak</th>
-                      <th scope="col" className="py-1.5 pr-4 font-bold">Evening</th>
-                      <th scope="col" className="py-1.5 font-bold">Overnight</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {group.routes.map(r => (
-                      <tr key={`${r.name}-${r.longName ?? ''}`}>
-                        <th scope="row" className="py-1.5 pr-4 font-normal"><span className="font-black">{titleCase(r.name)}</span>{r.longName && r.longName !== r.name ? <span className="text-[var(--text-muted)]"> {titleCase(r.longName)}</span> : null}</th>
-                        <td className="py-1.5 pr-4">{cell('am', r)}</td>
-                        <td className="py-1.5 pr-4">{cell('midday', r)}</td>
-                        <td className="py-1.5 pr-4">{cell('pm', r)}</td>
-                        <td className="py-1.5 pr-4">{cell('evening', r)}</td>
-                        <td className="py-1.5">{cell('overnight', r)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} routes ({group.routes.length})</h3>
+                <div className="min-w-[44rem]">
+                  <DataTable
+                    caption={`${group.label} routes (${group.routes.length})`}
+                    rows={group.routes}
+                    rowKey={r => `${r.name}-${r.longName ?? ''}`}
+                    columns={[
+                      { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <><span className="font-black">{titleCase(r.name)}</span>{r.longName && r.longName !== r.name ? <span className="text-[var(--text-muted)]"> {titleCase(r.longName)}</span> : null}</> },
+                      { key: 'am', header: 'AM peak', cell: r => cell('am', r) },
+                      { key: 'midday', header: 'Midday', cell: r => cell('midday', r) },
+                      { key: 'pm', header: 'PM peak', cell: r => cell('pm', r) },
+                      { key: 'evening', header: 'Evening', cell: r => cell('evening', r) },
+                      { key: 'overnight', header: 'Overnight', cell: r => cell('overnight', r) },
+                    ]}
+                  />
+                </div>
               </div>
             ))}
           </section>
@@ -181,7 +167,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
         </article>
 
         <SiteFooter />
-      </div>
-    </main>
+    </PageShell>
   );
 }

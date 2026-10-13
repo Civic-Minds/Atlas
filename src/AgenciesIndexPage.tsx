@@ -12,7 +12,7 @@ import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { LINK } from './pageStyles';
 import SiteFooter from './components/SiteFooter';
-import SiteHeader from './components/SiteHeader';
+import PageShell from './components/ui/PageShell';
 
 /** Read this page's data from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(): AgencyIndexData | null {
@@ -47,9 +47,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
 
   if (!data) {
     return (
-      <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
-        <div className="mx-auto max-w-4xl"><SiteHeader /></div>
-      </main>
+      <PageShell variant="wide">{null}</PageShell>
     );
   }
 
@@ -65,9 +63,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
   const nothing = areas.length === 0 && groups.length === 0;
 
   return (
-    <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
-      <div className="mx-auto max-w-4xl">
-        <SiteHeader />
+    <PageShell variant="wide">
 
         <article className="pb-16 pt-10 sm:pt-14">
           <h1 className="text-2xl font-black tracking-tight sm:text-3xl">All agencies and areas</h1>
@@ -118,7 +114,6 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
         </article>
 
         <SiteFooter />
-      </div>
-    </main>
+    </PageShell>
   );
 }
