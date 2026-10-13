@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import { FLOATING_CARD, PANEL_ENTER, Z_MODAL_TOP } from '../styles';
+import { Z_MODAL_TOP } from '../styles';
+import Panel from './ui/Panel';
 import { resolveDataRelease, type DataRelease } from '../lib/dataRelease';
 import { formatStoredDate } from '../utils/format';
 import { WhatsNewItemText } from './WhatsNewItemText';
@@ -42,12 +43,13 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
 
   return (
     <div className={`fixed inset-0 ${Z_MODAL_TOP}`} onClick={onClose}>
-      <div
+      <Panel
         role="dialog"
         aria-modal="true"
         aria-labelledby="whats-new-title"
         onClick={event => event.stopPropagation()}
-        className={`absolute bottom-24 sm:bottom-16 left-3 right-3 sm:left-6 sm:right-auto sm:w-[340px] max-h-[min(70vh,520px)] flex flex-col overflow-hidden ${FLOATING_CARD} ${PANEL_ENTER}`}
+        enter
+        className="absolute bottom-24 sm:bottom-16 left-3 right-3 sm:left-6 sm:right-auto sm:w-[340px] max-h-[min(70vh,520px)]"
       >
         <div className="shrink-0 flex items-center justify-between px-5 border-b border-[var(--border-primary)] h-12">
           <h2 id="whats-new-title" className="text-xs font-black text-[var(--text-primary)]">What's new</h2>
@@ -79,7 +81,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
           ))}
           <a href="/changelog" className="block text-xs font-bold text-[var(--accent)] hover:underline">See all changes</a>
         </div>
-      </div>
+      </Panel>
     </div>
   );
 }
