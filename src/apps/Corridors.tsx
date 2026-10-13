@@ -594,7 +594,7 @@ export default function Corridors({
             {geoLoading ? (
               <div className="flex items-center justify-center gap-2 px-4 py-6">
                 <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
-                <span className="text-[10px] font-bold text-[var(--text-muted)]">Searching routes…</span>
+                <span className="text-xs font-bold text-[var(--text-muted)]">Searching routes…</span>
               </div>
             ) : results.length === 0 ? (
               <p className={`${PANEL_EMPTY} text-center`}>No direct routes found</p>

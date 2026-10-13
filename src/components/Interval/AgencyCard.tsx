@@ -5,7 +5,7 @@ import type { Agency, FareOverride } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
-import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
+import { getFareColor, readableTextOn, HEADWAY_TIERS } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { agencyDisplayParts, getRouteLabel, shouldHideNumericRouteShortName, titleCase } from '../../utils/format';
@@ -434,41 +434,41 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       >
         <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
           <p className={`${CARD_TITLE} mb-0`}>{[serviceName, zoneDisplayName].filter(Boolean).join(' — ')}</p>
-          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
+          <p className="text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug">
             {[agencyNamePrimary, agencyNameSecondary].filter(Boolean).join(' · ')}
           </p>
         </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-4">
           <div>
-            <p className="text-[10px] font-black text-[var(--text-dim)]">On-demand service</p>
+            <p className="text-xs font-black text-[var(--text-dim)]">On-demand service</p>
             {showsShadedArea && (
-              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
+              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">
                 The shaded map area shows where this on-demand service operates.
               </p>
             )}
             {pickupSentence && (
-              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{pickupSentence}</p>
+              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{pickupSentence}</p>
             )}
             {coverageNote?.kind === 'partly-mapped' && (
-              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
+              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
             )}
           </div>
           {zone.eligibility && (
             <div className="px-1">
-              <p className="text-[10px] font-black text-[var(--text-dim)]">Who can ride</p>
-              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{zone.eligibility}</p>
+              <p className="text-xs font-black text-[var(--text-dim)]">Who can ride</p>
+              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.eligibility}</p>
             </div>
           )}
           {zone.tripRules && (
             <div className="px-1">
-              <p className="text-[10px] font-black text-[var(--text-dim)]">Trip rules</p>
-              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{zone.tripRules}</p>
+              <p className="text-xs font-black text-[var(--text-dim)]">Trip rules</p>
+              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.tripRules}</p>
             </div>
           )}
           <div className="px-1">
-            <p className="text-[10px] font-black text-[var(--text-dim)]">Service hours</p>
+            <p className="text-xs font-black text-[var(--text-dim)]">Service hours</p>
             <p
-              className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1"
+              className="text-xs leading-relaxed text-[var(--text-muted)] mt-1"
               data-testid="on-demand-running-note"
             >
               {runningNote}
@@ -477,16 +477,16 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               availability={zone.availability}
               serviceHours={zone.serviceHours}
               day={day}
-              className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1"
+              className="text-xs leading-relaxed text-[var(--text-muted)] mt-1"
             />
             {zone.availability && zone.hoursNote && (
-              <p className="text-[10px] leading-snug text-[var(--text-dim)] mt-1">{zone.hoursNote}</p>
+              <p className="text-xs leading-snug text-[var(--text-dim)] mt-1">{zone.hoursNote}</p>
             )}
           </div>
           {zone.bookingInfo && (
             <div className="px-1">
-              <p className="text-[10px] font-black text-[var(--text-dim)]">Booking</p>
-              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{zone.bookingInfo}</p>
+              <p className="text-xs font-black text-[var(--text-dim)]">Booking</p>
+              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.bookingInfo}</p>
             </div>
           )}
         </div>
@@ -512,19 +512,19 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             <>
               {fareOverride?.free ? (
                 <div className="mt-2">
-                  <span className="text-sm font-black px-2.5 py-0.5 rounded-full text-white bg-emerald-500">FREE</span>
+                  <span className="text-sm font-black px-2.5 py-0.5 rounded-full text-white bg-emerald-700">FREE</span>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-[10px] font-bold text-[var(--text-dim)]">
+                    <span className="text-xs font-bold text-[var(--text-dim)]">
                       {fareOverride?.label ? `Adult (${fareOverride.label})` : 'Base adult fare'}
                       {fareOverride?.zones ? ' · from' : ''}
                     </span>
                     {baseFare != null ? (
                       <span
-                        className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
-                        style={{ background: getFareColor(baseFare, colorMode) }}
+                        className="text-sm font-black px-2.5 py-0.5 rounded-full"
+                        style={{ background: getFareColor(baseFare, colorMode), color: readableTextOn(getFareColor(baseFare, colorMode)) }}
                       >
                         ${baseFare.toFixed(2)}
                       </span>
@@ -534,7 +534,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                   </div>
                   {fareOverride?.adultCash != null && fareOverride.adultCash !== baseFare && (
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] text-[var(--text-dim)]">Cash</span>
+                      <span className="text-xs text-[var(--text-dim)]">Cash</span>
                       <span className="text-xs font-bold text-[var(--text-muted)]">${fareOverride.adultCash.toFixed(2)}</span>
                     </div>
                   )}
@@ -545,7 +545,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                   href={(fareOverride?.fareUrl ?? agency.fareUrl)!}
                   kind="fares"
                   agencySlug={agency.slug}
-                  className="text-[10px] text-[var(--accent)] hover:underline mt-1.5 block"
+                  className="text-xs text-[var(--accent)] hover:underline mt-1.5 block"
                 >
                   View all fares →
                 </OutboundLink>
@@ -553,7 +553,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             </>
           ) : (
           <>
-          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
+          <p className="text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug">
             {agency.onDemandOnly
               ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
               : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
@@ -561,36 +561,36 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-[10px] font-black text-[var(--accent)]">On-demand service</p>
+                <p className="text-xs font-black text-[var(--accent)]">On-demand service</p>
                 {agency.onDemandServiceArea.sourceUrl && (
-                  <OutboundLink href={agency.onDemandServiceArea.sourceUrl} kind="on_demand_source" agencySlug={agency.slug} className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
+                  <OutboundLink href={agency.onDemandServiceArea.sourceUrl} kind="on_demand_source" agencySlug={agency.slug} className="shrink-0 text-xs text-[var(--accent)] hover:underline">
                     Details →
                   </OutboundLink>
                 )}
               </div>
-              <p className="text-[10px] font-bold text-[var(--text-primary)] mt-0.5">{agency.onDemandServiceArea.serviceName}</p>
+              <p className="text-xs font-bold text-[var(--text-primary)] mt-0.5">{agency.onDemandServiceArea.serviceName}</p>
               <OnDemandHoursText
                 availability={agency.onDemandServiceArea.availability}
                 serviceHours={agency.onDemandServiceArea.serviceHours}
                 day={day}
-                className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5"
+                className="text-xs leading-snug text-[var(--text-muted)] mt-0.5"
               />
               {agency.onDemandServiceArea.tripRules && (
-                <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.tripRules}</p>
+                <p className="text-xs leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.tripRules}</p>
               )}
               {otherZoneServices(agency.onDemandServiceArea).map(zoneService => (
                 <div key={zoneService.serviceName} className="mt-1.5">
-                  <p className="text-[10px] font-bold text-[var(--text-primary)]">{zoneService.serviceName}</p>
+                  <p className="text-xs font-bold text-[var(--text-primary)]">{zoneService.serviceName}</p>
                   <OnDemandHoursText
                     availability={zoneService.availability}
                     serviceHours={zoneService.serviceHours}
                     day={day}
-                    className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5"
+                    className="text-xs leading-snug text-[var(--text-muted)] mt-0.5"
                   />
                 </div>
               ))}
               {coverageNote?.kind === 'partly-mapped' && (
-                <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-1">
+                <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">
                   Not on the map yet: {coverageNote.missing}.
                 </p>
               )}
@@ -599,15 +599,15 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {!agency.onDemandOnly && coverageNote?.kind === 'not-mapped' && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-[10px] font-black text-[var(--accent)]">On-demand service</p>
+                <p className="text-xs font-black text-[var(--accent)]">On-demand service</p>
                 {coverageNote.url && (
-                  <OutboundLink href={coverageNote.url} kind="coverage_note" agencySlug={agency.slug} className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
+                  <OutboundLink href={coverageNote.url} kind="coverage_note" agencySlug={agency.slug} className="shrink-0 text-xs text-[var(--accent)] hover:underline">
                     Details →
                   </OutboundLink>
                 )}
               </div>
-              <p className="text-[10px] font-bold text-[var(--text-primary)] mt-0.5">{coverageNote.serviceName}</p>
-              <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">
+              <p className="text-xs font-bold text-[var(--text-primary)] mt-0.5">{coverageNote.serviceName}</p>
+              <p className="text-xs leading-snug text-[var(--text-muted)] mt-0.5">
                 Its service area isn't on the map yet.
               </p>
             </div>
@@ -621,7 +621,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     key={f.key}
                     type="button"
                     onClick={() => setActiveFilter(on ? null : f.key)}
-                    className={`text-[9px] font-bold px-2 py-0.5 rounded-full border transition-colors ${
+                    className={`text-xs font-bold px-2 py-0.5 rounded-full border transition-colors ${
                       on ? CONTROL_ACTIVE : CONTROL_INACTIVE
                     }`}
                   >

@@ -402,9 +402,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </div>
                   </div>
                   {hiddenRoutesLoading ? (
-                    <p className="px-5 py-4 text-[10px] text-[var(--text-muted)]">Loading hidden routes…</p>
+                    <p className="px-5 py-4 text-xs text-[var(--text-muted)]">Loading hidden routes…</p>
                   ) : filteredHiddenRoutes.length === 0 ? (
-                    <p className="px-5 py-4 text-[10px] text-[var(--text-muted)]">
+                    <p className="px-5 py-4 text-xs text-[var(--text-muted)]">
                       {hiddenRoutes.length === 0 ? 'The hidden-route list is unavailable right now.' : 'No hidden routes match your search.'}
                     </p>
                   ) : (
@@ -413,7 +413,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         const { primary, secondary } = agencyDisplayParts(group.agencyName, agencyCitiesBySlug.get(agencySlug), agencyDisplayAreasBySlug.get(agencySlug));
                         return (
                         <div key={agencySlug}>
-                          <p className="pt-2 pb-1 text-[11px] font-bold text-[var(--text-primary)]">
+                          <p className="pt-2 pb-1 text-xs font-bold text-[var(--text-primary)]">
                             {primary}
                             {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
                           </p>
@@ -421,10 +421,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             {group.routes.map(route => (
                               <div key={route.key} className="py-2.5">
                                 <div className="flex items-baseline justify-between gap-3">
-                                  <p className="text-[11px] font-bold text-[var(--text-primary)] line-clamp-2 break-words" title={route.routeShortName}>{route.routeShortName}</p>
+                                  <p className="text-xs font-bold text-[var(--text-primary)] line-clamp-2 break-words" title={route.routeShortName}>{route.routeShortName}</p>
                                 </div>
                                 {route.routeLongName && route.routeLongName !== route.routeShortName && (
-                                  <p className="text-[10px] text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5" title={route.routeLongName}>{route.routeLongName}</p>
+                                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5" title={route.routeLongName}>{route.routeLongName}</p>
                                 )}
                               </div>
                             ))}
@@ -437,7 +437,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </>
               ) : view === 'degraded-feeds' ? (
                 <div className="px-5 py-3">
-                  <p className="text-[10px] text-[var(--text-muted)] leading-relaxed pb-2">
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed pb-2">
                     Atlas found serious data problems or an expired schedule in these agencies.
                   </p>
                   {hiddenFeedAgencies.length > 0 && (
@@ -467,7 +467,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           value={degradedFeedsSort}
                           onChange={event => setDegradedFeedsSort(event.target.value as 'name' | 'status')}
                           aria-label="Sort degraded feeds"
-                          className="ml-auto h-6 rounded-md bg-[var(--bg-app)] border border-[var(--border-primary)] px-1.5 text-[10px] text-[var(--text-muted)] outline-none"
+                          className="ml-auto h-6 rounded-md bg-[var(--bg-app)] border border-[var(--border-primary)] px-1.5 text-xs text-[var(--text-muted)] outline-none"
                         >
                           <option value="name">Name</option>
                           <option value="status">Status</option>
@@ -476,11 +476,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </>
                   )}
                   {hiddenFeedAgencies.length === 0 ? (
-                    <p className="py-4 text-[10px] text-[var(--text-muted)]">
+                    <p className="py-4 text-xs text-[var(--text-muted)]">
                       No degraded or unusable feeds are currently recorded.
                     </p>
                   ) : filteredDegradedFeeds.length === 0 ? (
-                    <p className="py-4 text-[10px] text-[var(--text-muted)]">
+                    <p className="py-4 text-xs text-[var(--text-muted)]">
                       No feeds match your search or filter.
                     </p>
                   ) : (
@@ -491,16 +491,16 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         const checkedDate = formatStoredDate(quality.checkedAt.slice(0, 10)) || quality.checkedAt;
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">
-                            <p className="text-[11px] font-bold text-[var(--text-primary)] min-w-0">
+                            <p className="text-xs font-bold text-[var(--text-primary)] min-w-0">
                               {primary}
                               {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
                             </p>
                             {quality.reasons.length > 0 && (
-                              <ul className="mt-1.5 space-y-0.5 text-[10px] text-[var(--text-muted)] leading-relaxed">
+                              <ul className="mt-1.5 space-y-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
                                 {quality.reasons.map(reason => <li key={reason}>{presentFeedQualityReason(reason)}</li>)}
                               </ul>
                             )}
-                            <p className="mt-1 text-[9px] text-[var(--text-dim)]">Checked {checkedDate}</p>
+                            <p className="mt-1 text-xs text-[var(--text-dim)]">Checked {checkedDate}</p>
                           </div>
                         );
                       })}
@@ -511,14 +511,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <>
               {/* Appearance. Sections use spacing only, no divider lines (guarded by settingsNoDividers.test.ts). */}
               <div className="px-5 pt-4 pb-1">
-                <p className="text-[9px] font-bold text-[var(--text-dim)]">Appearance</p>
+                <p className="text-xs font-bold text-[var(--text-dim)]">Appearance</p>
               </div>
               <div className="px-5 pb-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center min-w-0">
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Dark mode</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses a dark colour theme across Atlas.</p>
+                      <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Dark mode</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Uses a dark colour theme across Atlas.</p>
                     </div>
                   </div>
                   <button
@@ -533,8 +533,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <div className="flex items-center justify-between mt-2 pt-2">
                   <div className="flex items-center min-w-0">
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines for easier route distinction.</p>
+                      <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines for easier route distinction.</p>
                     </div>
                   </div>
                   <button
@@ -550,14 +550,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {FEATURES.beta && (
                 <>
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-[9px] font-bold text-[var(--text-dim)]">Map</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Map</p>
                   </div>
                   <div className="px-5 pb-3">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start min-w-0">
                         <div className="min-w-0">
-                          <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Persistent legend</p>
-                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map legend visible while you explore.</p>
+                          <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Persistent legend</p>
+                          <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map legend visible while you explore.</p>
                         </div>
                       </div>
                       <button
@@ -575,14 +575,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {FEATURES.beta && (
                 <>
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-[9px] font-bold text-[var(--text-dim)]">Data &amp; performance</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Data &amp; performance</p>
                   </div>
                   <div className="px-5 pb-3">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start min-w-0">
                         <div className="min-w-0">
-                          <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Data saver</p>
-                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use on slower connections.</p>
+                          <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Data saver</p>
+                          <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use on slower connections.</p>
                         </div>
                       </div>
                       <button
@@ -599,9 +599,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
               {/* Filters */}
               <div className="px-5 pt-4 pb-1">
-                <p className="text-[9px] font-bold text-[var(--text-dim)]">Filters</p>
+                <p className="text-xs font-bold text-[var(--text-dim)]">Filters</p>
                 {!inFrequency && (
-                  <p className="text-[10px] text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
                 )}
               </div>
               <div className="px-5 pb-3 flex flex-col gap-4 pt-1">
@@ -609,27 +609,27 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <div key={id} className={`flex items-start justify-between gap-4 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
                     <div className="flex items-start min-w-0">
                       <div className="min-w-0">
-                        <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">{label}</p>
-                        <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
+                        <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">{label}</p>
+                        <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
                         {id === 'span' && (
                           <>
                             <button
                               onClick={() => setView('hidden-routes')}
-                              className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
+                              className="mt-1 text-xs text-[var(--accent)] hover:underline"
                             >
                               See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'} →
                             </button>
                           </>
                         )}
                         {id === 'limited' && limitedServiceRouteCount != null && (
-                          <p className="text-[10px] text-[var(--text-muted)] mt-1">
+                          <p className="text-xs text-[var(--text-muted)] mt-1">
                             {limitedServiceRouteCount.toLocaleString()} {limitedServiceRouteCount === 1 ? 'route' : 'routes'} affected
                           </p>
                         )}
                         {id === 'quality' && (
                           <button
                             onClick={() => setView('degraded-feeds')}
-                            className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
+                            className="mt-1 text-xs text-[var(--accent)] hover:underline"
                           >
                             {hideLowQuality ? 'See hidden feeds' : 'Review degraded feeds'}
                             {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''} →
@@ -653,7 +653,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <div className="block sm:hidden pb-4">
                   {/* Frequency */}
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Frequency</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Frequency</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {HEADWAY_TIERS.map(({ max, label }) => {
@@ -663,7 +663,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <button
                           key={label}
                           onClick={() => setMaxHeadway?.(max)}
-                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
+                          className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
                             active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
@@ -676,7 +676,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {/* Day of Service */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Day of service</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Day of service</p>
                   </div>
                   <div className="px-5 pb-3 flex gap-1.5">
                     {DAY_TYPES.map(dayType => {
@@ -685,7 +685,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <button
                           key={dayType}
                           onClick={() => setDay?.(dayType)}
-                          className={`flex-1 h-7 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
+                          className={`flex-1 h-7 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
                             active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
@@ -697,7 +697,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {/* Time Period */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Time period</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Time period</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {Object.entries(PERIOD_LABELS).map(([key, label]) => {
@@ -706,7 +706,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <button
                           key={key}
                           onClick={() => setPeriod?.(key)}
-                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
+                          className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
                             active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
@@ -719,11 +719,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   {compare && (
                     <div className="px-5 pt-2 pb-3">
                       <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-bold text-[var(--text-dim)]">Compare two maps</p>
+                        <p className="text-xs font-bold text-[var(--text-dim)]">Compare two maps</p>
                         <button
                           type="button"
                           onClick={compare.side ? compare.onExit : compare.onStart}
-                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${compare.side ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                          className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${compare.side ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           aria-pressed={!!compare.side}
                         >
                           Compare
@@ -731,7 +731,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       </div>
                       {compare.side && (
                         <div className="mt-2">
-                          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-dim)]"><SideBadge side="B" /> The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps.</p>
+                          <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-[var(--text-dim)]"><SideBadge side="B" /> The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps.</p>
                           <CompareSidePicker side={compare.side} onChange={compare.onChange} />
                         </div>
                       )}
@@ -740,7 +740,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {/* Transit Modes */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Transit modes</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Transit modes</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {AVAILABLE_FILTER_MODES.map(({ id, label }) => {
@@ -754,7 +754,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             if (next.has(id)) next.delete(id); else next.add(id);
                             setSelectedModes(next);
                           }}
-                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
+                          className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
                             active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >

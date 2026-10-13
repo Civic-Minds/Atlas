@@ -180,7 +180,7 @@ function RouteHistoryCard({
           aria-label="Back to routes"
         >
           <ChevronLeft className="w-3 h-3 shrink-0" />
-          <span className="text-[10px] font-bold">{shortenAgencyName(agencyName)} routes</span>
+          <span className="text-xs font-bold">{shortenAgencyName(agencyName)} routes</span>
         </button>
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
@@ -262,17 +262,17 @@ function RouteHistoryCard({
             const hw = snapHeadway(snap);
             const isLatest = i === 0;
             const hwColor = isLatest
-              ? worse ? 'text-[var(--status-negative)]' : better ? 'text-[var(--status-positive)]' : 'text-[var(--text-primary)]'
+              ? worse ? 'text-[var(--status-negative-text)]' : better ? 'text-[var(--status-positive-text)]' : 'text-[var(--text-primary)]'
               : 'text-[var(--text-dim)]';
             const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
             return (
               <div key={snap.label} className={LIST_ROW}>
-                <span className={`text-[10px] font-bold ${isLatest ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
+                <span className={`text-xs font-bold ${isLatest ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
                   {snap.label}
                 </span>
                 <div className="flex items-center gap-2">
                   {delta !== null && delta !== 0 && (
-                    <span className={`text-[9px] font-bold ${delta > 0 ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>
+                    <span className={`text-xs font-bold ${delta > 0 ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>
                       {delta > 0 ? `+${delta}` : `${delta}`}
                     </span>
                   )}
@@ -285,9 +285,9 @@ function RouteHistoryCard({
 
         {summary && (
           <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-[var(--status-negative-bg)]' : 'bg-[var(--status-positive-bg)]'}`}>
-            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>{summary.text}</p>
-            <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
-            <p className="text-[10px] text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
+            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>{summary.text}</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
+            <p className="text-xs text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
           </div>
         )}
 
@@ -296,7 +296,7 @@ function RouteHistoryCard({
             <p className="text-xs font-bold leading-tight text-[var(--text-primary)]">
               Trip time: {route.tripDuration.firstMinutes} min ({route.tripDuration.firstLabel}) → {route.tripDuration.lastMinutes} min ({route.tripDuration.lastLabel})
             </p>
-            <p className="text-[10px] text-[var(--text-dim)] mt-1">
+            <p className="text-xs text-[var(--text-dim)] mt-1">
               End-to-end scheduled time on a representative weekday trip. Only shown when the route's stops and alignment haven't changed between these years.
             </p>
           </div>
@@ -396,11 +396,11 @@ function HistoryAgencyPanel({
             <div className="flex items-center gap-1.5 min-w-0">
               <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{shortenAgencyName(agencyHistory.name)}</h2>
             </div>
-            <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
+            <p className="text-xs font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
               {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
             </p>
             {!routeQuery && !activeFilter && (
-              <p className="text-[9px] text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
+              <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
             )}
           </div>
         </div>
@@ -424,7 +424,7 @@ function HistoryAgencyPanel({
         </div>
         {routeFilters.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5 mt-2">
-            <span className="text-[9px] font-bold text-[var(--text-dim)]">Current mode</span>
+            <span className="text-xs font-bold text-[var(--text-dim)]">Current mode</span>
             {routeFilters.map(filter => {
               const active = activeFilter === filter.key;
               return (
@@ -434,7 +434,7 @@ function HistoryAgencyPanel({
                   onClick={() => setActiveFilter(active ? null : filter.key)}
                   aria-pressed={active}
                   title="Filters by current route metadata"
-                  className={`text-[9px] font-bold px-2 py-0.5 rounded-full border transition-colors ${active ? CONTROL_ACTIVE : 'bg-transparent border-[var(--border-primary)] text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]'}`}
+                  className={`text-xs font-bold px-2 py-0.5 rounded-full border transition-colors ${active ? CONTROL_ACTIVE : 'bg-transparent border-[var(--border-primary)] text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]'}`}
                 >
                   {filter.label} {filter.count}
                 </button>
@@ -446,7 +446,7 @@ function HistoryAgencyPanel({
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {visibleRouteRows.length === 0 && (
-          <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">
+          <p className="text-xs text-[var(--text-dim)] px-4 py-3">
             {routeQuery || activeFilter ? 'No routes match.' : 'No data for this period.'}
           </p>
         )}
@@ -743,10 +743,10 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
           {query === '' && recentSearches.length > 0 ? (
             <>
               <div className="px-5 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">
-                <p className="text-[10px] font-bold text-[var(--text-muted)]">Recent searches</p>
+                <p className="text-xs font-bold text-[var(--text-muted)]">Recent searches</p>
                 <button
                   onClick={clearRecentSearches}
-                  className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+                  className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
                 >
                   Clear
                 </button>
@@ -757,7 +757,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                   shortName={s}
                   onClick={() => setQuery(s)}
                   variant="spaced"
-                  right={<span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>}
+                  right={<span className="text-xs text-[var(--text-dim)] font-mono">↵</span>}
                 />
               ))}
             </>
@@ -773,25 +773,25 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                 </div>
               )}
               {historyData === null && (
-                <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">Loading…</p>
+                <p className="text-xs text-[var(--text-dim)] px-4 py-3">Loading…</p>
               )}
               {historyData !== null && historyLoadFailed && (
                 <div className="px-4 py-3">
-                  <p className="text-[11px] text-[var(--text-dim)]">Couldn't load history data. Check your connection and try again.</p>
+                  <p className="text-xs text-[var(--text-dim)]">Couldn't load history data. Check your connection and try again.</p>
                   <button
                     onClick={loadHistoryConfig}
-                    className="mt-2 text-[11px] font-medium text-[var(--accent)] hover:underline"
+                    className="mt-2 text-xs font-medium text-[var(--accent)] hover:underline"
                   >
                     Retry
                   </button>
                 </div>
               )}
               {historyData !== null && !historyLoadFailed && agenciesByRegion.length === 0 && (
-                <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
+                <p className="text-xs text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
               )}
               {agenciesByRegion.map(([region, agencies]) => (
                 <div key={region}>
-                  <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
+                  <p className="px-5 pt-3 pb-1 text-xs font-bold text-[var(--text-dim)]">{region}</p>
                   {agencies.map(agency => (
                     <button
                       key={agency.slug}
@@ -803,7 +803,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                     >
                       <span className="min-w-0">
                         <span className={AGENCY_LIST_PRIMARY} title={agency.name}>{shortenAgencyName(agency.name)}</span>
-                        <span className="block text-[10px] text-[var(--text-muted)]">
+                        <span className="block text-xs text-[var(--text-muted)]">
                           {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
                         </span>
                       </span>
@@ -820,13 +820,13 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
 
       {showScrubber && (
         <div
-          className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] h-8 flex items-center gap-2 px-2.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-[10px]`}
+          className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] h-8 flex items-center gap-2 px-2.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-xs`}
           title="Older to newer"
           onPointerDown={event => event.stopPropagation()}
           onPointerMove={event => event.stopPropagation()}
           onWheel={event => event.stopPropagation()}
         >
-            <span className="text-[9px] font-bold text-[var(--text-dim)] tabular-nums">{availableYears[0]}</span>
+            <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">{availableYears[0]}</span>
             <input
               type="range"
               min={0}
@@ -837,7 +837,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
               aria-label="History year"
               className="time-scrubber-range flex-1 min-w-0"
             />
-            <span className="text-[9px] font-bold text-[var(--text-dim)] tabular-nums">
+            <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">
               {selectedYear === availableYears[availableYears.length - 1] ? 'now' : availableYears[availableYears.length - 1]}
             </span>
             <span className="rounded-md bg-[var(--accent-bg)] border border-[var(--accent-border)] px-1.5 py-0.5 text-xs font-black text-[var(--text-primary)] tabular-nums">{selectedYear}</span>

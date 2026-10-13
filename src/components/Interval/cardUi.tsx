@@ -13,8 +13,8 @@ export { default as CardDirectionRow } from './RouteDirectionRow';
 
 export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-tight mb-0.5';
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
-export const CARD_LIST_ROUTE = 'text-[11px] font-bold text-[var(--text-primary)] leading-snug';
-export const CARD_SECTION = 'text-[10px] font-black text-[var(--text-dim)]';
+export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] leading-snug';
+export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
 
 const REPORT_REASONS = [
   'Route or agency is missing',
@@ -281,7 +281,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             <div className="px-4 py-3 space-y-2">
               {!selectedCategory ? (
                 <fieldset>
-                  <legend className="text-[10px] font-black text-[var(--text-muted)] mb-2">I have an issue with a…</legend>
+                  <legend className="text-xs font-black text-[var(--text-muted)] mb-2">I have an issue with a…</legend>
                   <div className="space-y-2">
                     {availableCategories.map(category => (
                       <button
@@ -299,11 +299,11 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               ) : (
                 <fieldset>
                   <div className="flex items-center justify-between mb-2">
-                    <legend className="text-[10px] font-black text-[var(--text-muted)]">{selectedCategoryQuestion}</legend>
+                    <legend className="text-xs font-black text-[var(--text-muted)]">{selectedCategoryQuestion}</legend>
                     <button
                       type="button"
                       onClick={() => { setValidationError(''); setSelectedCategory(null); }}
-                      className="text-[10px] font-black text-[var(--text-muted)] hover:text-[var(--accent)]"
+                      className="text-xs font-black text-[var(--text-muted)] hover:text-[var(--accent)]"
                     >
                       Change
                     </button>
@@ -330,7 +330,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
 
               {selectedCategory && hasFrequencyReason && (
                 <fieldset className="space-y-0.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] p-3">
-                  <legend className="px-1 text-[10px] font-black text-[var(--text-muted)]">Frequency details</legend>
+                  <legend className="px-1 text-xs font-black text-[var(--text-muted)]">Frequency details</legend>
                   {FREQUENCY_REASONS.map(reason => (
                     <label key={reason} className="flex items-start gap-2 px-1.5 py-1 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
                       <input
@@ -346,7 +346,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               )}
 
               {selectedCategory && <label className="block">
-                <span className="text-[10px] font-black text-[var(--text-muted)]">Additional details {selectedReasons.length === 0 && <span className="text-[var(--accent)]">(required if no reason is selected)</span>}</span>
+                <span className="text-xs font-black text-[var(--text-muted)]">Additional details {selectedReasons.length === 0 && <span className="text-[var(--accent)]">(required if no reason is selected)</span>}</span>
                 <textarea
                   value={description}
                   onChange={event => { setDescription(event.target.value); setValidationError(''); }}
@@ -356,16 +356,16 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                 />
               </label>}
               {selectedCategory && copiesDiagnostics && (
-                <p className="text-[10px] font-bold text-[var(--text-dim)]">
+                <p className="text-xs font-bold text-[var(--text-dim)]">
                   {import.meta.env.DEV ? 'The GitHub report includes the captured route diagnostics.' : 'The email draft includes the captured route diagnostics.'}
                 </p>
               )}
-              {validationError && <p className="text-[10px] font-bold text-[var(--status-negative)]" role="alert">{validationError}</p>}
+              {validationError && <p className="text-xs font-bold text-[var(--status-negative-text)]" role="alert">{validationError}</p>}
             </div>
 
             <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-3 bg-[var(--bg-panel)] border-t border-[var(--border-primary)]">
-              <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-[10px] font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">Cancel</button>
-              {selectedCategory && <button type="submit" className={`h-8 px-3 rounded-lg border text-[10px] font-black hover:opacity-90 transition-opacity ${ACTION_PRIMARY}`}>{import.meta.env.DEV ? 'Open GitHub report' : 'Open email draft'}</button>}
+              <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-xs font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">Cancel</button>
+              {selectedCategory && <button type="submit" className={`h-8 px-3 rounded-lg border text-xs font-black hover:opacity-90 transition-opacity ${ACTION_PRIMARY}`}>{import.meta.env.DEV ? 'Open GitHub report' : 'Open email draft'}</button>}
             </div>
           </form>
         </div>,
@@ -443,11 +443,11 @@ export function HeadwayBadge({
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   return (
-    <span className={`inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-[11px] leading-snug shrink-0 ${className}`}>
+    <span className={`inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0 ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
       <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />
       <span className="whitespace-nowrap">{label ?? fmtHeadway(headway)}</span>
-      {suffix && <span className="text-[9px] font-bold text-[var(--text-dim)] whitespace-nowrap">{suffix}</span>}
+      {suffix && <span className="text-xs font-bold text-[var(--text-dim)] whitespace-nowrap">{suffix}</span>}
     </span>
   );
 }
@@ -602,7 +602,7 @@ export function SidebarCardSection({ label, children }: { label?: string; childr
   );
 }
 
-const CARD_SUBLINE = 'text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors leading-snug';
+const CARD_SUBLINE = 'text-xs font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors leading-snug';
 
 /** Route label + headway on one row (stop card groups). */
 export function CardSummaryRow({

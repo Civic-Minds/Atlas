@@ -390,7 +390,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {liveRouteInfo && liveStatus !== 'noData' && (
         <div className="flex items-center gap-1.5 -mt-1 mb-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-dim)] shrink-0" />
-          <span className="text-[10px] font-black text-[var(--text-dim)]">Scheduled</span>
+          <span className="text-xs font-black text-[var(--text-dim)]">Scheduled</span>
         </div>
       )}
       <SidebarCardHeaderBlock>
@@ -415,14 +415,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {compareRows && (() => {
         const { headline, lines } = compareCardSummary(compareRows);
         return (
-          <div className="mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2 text-[11px] font-bold text-[var(--text-primary)]" data-testid="compare-card-summary">
+          <div className="mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2 text-xs font-bold text-[var(--text-primary)]" data-testid="compare-card-summary">
             {headline && <p className="text-xs font-black">{headline}</p>}
             {lines.map(line => <p key={line} className={headline ? 'mt-0.5 text-[var(--text-dim)]' : 'py-0.5'}>{line}</p>)}
           </div>
         );
       })()}
       {FEATURES.beta && variantFamily && (
-        <p className="text-[10px] text-[var(--text-dim)] -mt-1 mb-3">
+        <p className="text-xs text-[var(--text-dim)] -mt-1 mb-3">
           Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
         </p>
       )}
@@ -512,12 +512,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       })()}
       {periodNotice && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
-          <p className="text-[10px] font-normal text-[var(--text-primary)]">{periodNotice}</p>
+          <p className="text-xs font-normal text-[var(--text-primary)]">{periodNotice}</p>
         </div>
       )}
       {unevenNotice && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
-          <p className="text-[10px] font-black text-[var(--text-primary)]">{unevenNotice}</p>
+          <p className="text-xs font-black text-[var(--text-primary)]">{unevenNotice}</p>
         </div>
       )}
       <SidebarCardList>
@@ -600,7 +600,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   <>
                     <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                     {!hasVisibleDirectionRows && selectedPeriod && (
-                      <p className="mt-2 mb-2 text-[10px] font-bold text-[var(--text-dim)]">
+                      <p className="mt-2 mb-2 text-xs font-bold text-[var(--text-dim)]">
                         No {selectedPeriod.label.toLowerCase()} service.
                       </p>
                     )}

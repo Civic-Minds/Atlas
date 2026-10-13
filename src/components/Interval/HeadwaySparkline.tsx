@@ -216,13 +216,13 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             className="absolute inset-y-5 rounded-sm pointer-events-none odd:bg-[var(--bg-btn-hover)] even:bg-transparent opacity-40"
             style={{ left: `${band.left * 100}%`, width: `${band.width * 100}%` }}
           >
-            <span className="absolute -top-5 left-0.5 sm:left-1 text-[8px] sm:text-[9px] font-black text-[var(--text-muted)] whitespace-nowrap">
+            <span className="absolute -top-5 left-0.5 sm:left-1 text-xs font-black text-[var(--text-muted)] whitespace-nowrap">
               {band.label}
             </span>
           </div>
         ))}
         {activeLabelKey && (
-          <span className={`absolute top-0 text-[9px] font-bold text-[var(--text-dim)] pointer-events-none ${allowExpand && !expanded ? 'right-7' : 'right-0'}`}>
+          <span className={`absolute top-0 text-xs font-bold text-[var(--text-dim)] pointer-events-none ${allowExpand && !expanded ? 'right-7' : 'right-0'}`}>
             {PERIOD_LABELS[activeLabelKey]}
           </span>
         )}
@@ -273,7 +273,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   {expanded && hasValue && (
                     <span
                       data-testid="sparkline-headway-label"
-                      className="absolute left-1/2 -translate-x-1/2 text-[8px] sm:text-[10px] font-bold tabular-nums leading-none text-[var(--text-primary)] pointer-events-none"
+                      className="absolute left-1/2 -translate-x-1/2 text-xs font-bold tabular-nums leading-none text-[var(--text-primary)] pointer-events-none"
                       style={{ bottom: barH + 3 }}
                     >
                       {hw}
@@ -304,7 +304,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 
       </div>
       {(stackedLegend.length > 0 || reserveStackedLegendSpace) && (
-        <div className={`flex min-h-[10px] flex-wrap items-center justify-center gap-x-2 gap-y-0.5 mt-1 px-1 text-[7px] font-bold text-[var(--text-dim)] leading-tight`}>
+        <div className={`flex min-h-[10px] flex-wrap items-center justify-center gap-x-2 gap-y-0.5 mt-1 px-1 text-xs font-bold text-[var(--text-dim)] leading-tight`}>
           {stackedLegend.map(segment => (
             <span key={segment.label} className="inline-flex items-center gap-0.5">
               <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: segment.color }} />
@@ -318,26 +318,26 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           <div key={h} className="flex-1 min-w-0 text-center">
             {(expanded || HOUR_LABELS[h]) && (
               expanded ? (
-                // Phones get every third hour so the clock labels don't collide.
-                <span className={`text-[9px] text-[var(--text-dim)] whitespace-nowrap ${(h - HOURS[0]) % 3 === 0 ? '' : 'hidden sm:inline'}`}>
+                // Every third hour only, so the 12px clock labels don't collide.
+                <span className={`text-xs text-[var(--text-dim)] whitespace-nowrap ${(h - HOURS[0]) % 3 === 0 ? '' : 'hidden'}`}>
                   {formatClock(h * 60)}
                 </span>
               ) : (
-                <span className="text-[7px] text-[var(--text-dim)]">{HOUR_LABELS[h]}</span>
+                <span className="text-xs text-[var(--text-dim)]">{HOUR_LABELS[h]}</span>
               )
             )}
           </div>
         ))}
       </div>
       {expanded && (
-        <div className="mt-3 min-h-5 text-center text-[10px] font-bold text-[var(--text-muted)]" aria-live="polite">
+        <div className="mt-3 min-h-5 text-center text-xs font-bold text-[var(--text-muted)]" aria-live="polite">
           {hoveredHour != null && displayedByHour[hoveredHour] != null
             ? formatHourTitle(hoveredHour, displayedByHour[hoveredHour]!)
             : 'Hover over an hour to inspect its scheduled headway window.'}
         </div>
       )}
       {expanded && (
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-bold text-[var(--text-dim)]" data-testid="sparkline-legend">
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs font-bold text-[var(--text-dim)]" data-testid="sparkline-legend">
           <span className="text-[var(--text-muted)]">Numbers = minutes between trips. Taller bar = more trips that hour. Colour:</span>
           {tierLegend.map(tier => (
             <span key={tier.label} className="inline-flex items-center gap-1">
@@ -359,7 +359,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-base font-black text-[var(--text-primary)]">{title}</h2>
-                <p className="mt-1 text-[10px] font-bold text-[var(--text-dim)]">
+                <p className="mt-1 text-xs font-bold text-[var(--text-dim)]">
                   All time periods are shown together.
                 </p>
               </div>
@@ -380,7 +380,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     type="button"
                     aria-pressed={expandedDirection === option.key}
                     onClick={() => setPickedDirection(option.key)}
-                    className={`h-7 px-2.5 flex items-center justify-center text-[11px] font-bold border transition-colors ${expandedDirection === option.key ? `${GLASS_PILL} ${ACTION_PRIMARY}` : APP_TAB_INACTIVE}`}
+                    className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold border transition-colors ${expandedDirection === option.key ? `${GLASS_PILL} ${ACTION_PRIMARY}` : APP_TAB_INACTIVE}`}
                   >
                     {option.label}
                   </button>

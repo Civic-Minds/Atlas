@@ -34,8 +34,8 @@ function Controls({ onClose }: { onClose: () => void }) {
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Google Analytics</p>
-              <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Optional analytics helps us understand which parts of Atlas people use.</p>
+              <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Google Analytics</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Optional analytics helps us understand which parts of Atlas people use.</p>
             </div>
             <button type="button" onClick={() => choose(consent === 'granted' ? 'denied' : 'granted')} aria-label="Toggle Google Analytics" aria-pressed={consent === 'granted'} className="shrink-0">
               <Toggle on={consent === 'granted'} />
@@ -61,5 +61,5 @@ export default function AnalyticsConsent() {
     return () => window.removeEventListener('atlas:privacy-settings', openSettings);
   }, []);
   const choose = (consent: AnalyticsConsent) => { setAnalyticsConsent(consent); setShowPrompt(false); };
-  return <>{showPrompt && <div role="dialog" aria-label="Analytics consent" className={`fixed bottom-6 left-1/2 h-8 max-w-[calc(100vw-2rem)] -translate-x-1/2 ${Z_HEADER} ${MAP_BADGE} gap-3 text-[10px] font-bold text-[var(--text-muted)]`}><span>Optional analytics help improve Atlas.</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>}{showSettings && <Controls onClose={() => setShowSettings(false)} />}</>;
+  return <>{showPrompt && <div role="dialog" aria-label="Analytics consent" className={`fixed bottom-6 left-1/2 h-8 max-w-[calc(100vw-2rem)] -translate-x-1/2 ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}><span>Optional analytics help improve Atlas.</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>}{showSettings && <Controls onClose={() => setShowSettings(false)} />}</>;
 }

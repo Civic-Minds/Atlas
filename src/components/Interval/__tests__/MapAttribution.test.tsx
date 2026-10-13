@@ -19,7 +19,7 @@ describe('MapAttribution', () => {
     ]);
 
     for (const element of [feedback, about, osm, carto]) {
-      expect(element.className).toContain('text-[10px]');
+      expect(element.className).toContain('text-xs');
       expect(element.className).toContain('font-semibold');
       expect(element.className).toContain('leading-none');
     }

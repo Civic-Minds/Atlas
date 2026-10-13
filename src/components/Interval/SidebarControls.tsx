@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { getTierColor, getFareColor } from '../../utils/colors';
+import { getTierColor, getFareColor, readableTextOn } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency, FareOverride } from '../../App';
@@ -1145,18 +1145,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       {routeAgency?.name ?? routeSlug}
                     </h3>
                     {routeAgency?.region && (
-                      <span className="text-[9px] font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5 mt-1 inline-block">
+                      <span className="text-xs font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5 mt-1 inline-block">
                         {routeAgency.region}
                       </span>
                     )}
                   </div>
                 </div>
                 <div className="flex items-center justify-between px-3 py-2.5 bg-[var(--bg-app)] rounded-xl">
-                  <span className="text-[10px] font-bold text-[var(--text-dim)]">Base adult fare</span>
+                  <span className="text-xs font-bold text-[var(--text-dim)]">Base adult fare</span>
                   {routeBaseFare != null ? (
                     <span
-                      className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
-                      style={{ background: getFareColor(routeBaseFare, colorMode) }}
+                      className="text-sm font-black px-2.5 py-0.5 rounded-full"
+                      style={{ background: getFareColor(routeBaseFare, colorMode), color: readableTextOn(getFareColor(routeBaseFare, colorMode)) }}
                     >
                       ${routeBaseFare.toFixed(2)}
                     </span>
@@ -1204,8 +1204,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     <span className="text-sm font-bold text-[var(--text-primary)]">{name}</span>
                     {baseFare != null ? (
                       <span
-                        className="text-sm font-black px-2 py-0.5 rounded-full text-white"
-                        style={{ background: getFareColor(baseFare, colorMode) }}
+                        className="text-sm font-black px-2 py-0.5 rounded-full"
+                        style={{ background: getFareColor(baseFare, colorMode), color: readableTextOn(getFareColor(baseFare, colorMode)) }}
                       >
                         ${baseFare.toFixed(2)}
                       </span>

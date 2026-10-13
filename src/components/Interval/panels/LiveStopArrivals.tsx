@@ -55,7 +55,7 @@ export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: str
             {next.map((a, i) => (
               <span
                 key={i}
-                className="text-[10px] font-bold text-[var(--text-primary)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1"
+                className="text-xs font-bold text-[var(--text-primary)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1"
               >
                 {a.route} · {a.min === 0 ? 'now' : `${a.min} min`}
               </span>
@@ -63,18 +63,18 @@ export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: str
           </div>
         )}
         {data.observedGapMin != null && (
-          <p className="text-[10px] text-[var(--text-dim)] mt-2">
+          <p className="text-xs text-[var(--text-dim)] mt-2">
             Coming every ~{Math.round(data.observedGapMin)} min right now
           </p>
         )}
         {hasMeasured && (
           <div className={hasPredicted ? 'mt-2.5 pt-2.5 border-t border-[var(--border-primary)]' : ''}>
-            <p className="text-[9px] font-bold text-[var(--text-dim)]">Recently seen here</p>
+            <p className="text-xs font-bold text-[var(--text-dim)]">Recently seen here</p>
             <div className="flex flex-wrap gap-1.5 mt-1.5">
               {recentlySeen.map((a, i) => (
                 <span
                   key={i}
-                  className="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1"
+                  className="text-xs font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1"
                 >
                   {a.route} · {a.minAgo === 0 ? 'just now' : `${a.minAgo} min ago`}
                 </span>

@@ -38,7 +38,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       {loading ? (
         <div className="flex items-center gap-2 px-4 py-3">
           <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
-          <span className="text-[10px] font-bold text-[var(--text-muted)]">Loading nearby…</span>
+          <span className="text-xs font-bold text-[var(--text-muted)]">Loading nearby…</span>
         </div>
       ) : routes.length === 0 ? (
         <p className={PANEL_EMPTY}>
@@ -59,28 +59,28 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                     style={{ background: headwayToTierColor(r.headway, colorMode) }}
                   />
                   {r.displayShortName ? (
-                    <span className="text-[11px] font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
+                    <span className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
                       {r.displayShortName}
                     </span>
                   ) : null}
                   <span className={r.displayShortName
-                    ? 'min-w-0 text-[10px] font-bold text-[var(--text-muted)] line-clamp-2 break-words'
-                    : 'min-w-0 text-[11px] font-black text-[var(--text-primary)] line-clamp-2 break-words'}
+                    ? 'min-w-0 text-xs font-bold text-[var(--text-muted)] line-clamp-2 break-words'
+                    : 'min-w-0 text-xs font-black text-[var(--text-primary)] line-clamp-2 break-words'}
                     title={r.routeLongName || r.agencyName}>
                     {r.routeLongName || r.agencyName}
                   </span>
                   {r.headway != null && (
-                    <span className="text-[10px] font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
+                    <span className="text-xs font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
                       {fmtHeadway(r.headway)}
                     </span>
                   )}
                   {r.headway == null && r.limited && (
-                    <span className="text-[10px] font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
+                    <span className="text-xs font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
                       limited
                     </span>
                   )}
                 </div>
-                <p className="text-[9px] text-[var(--text-dim)] font-bold pl-3.5 truncate leading-tight">
+                <p className="text-xs text-[var(--text-dim)] font-bold pl-3.5 truncate leading-tight">
                   {titleCase(r.nearestStopName)} · {fmtDist(r.distanceMeters)}
                 </p>
               </div>

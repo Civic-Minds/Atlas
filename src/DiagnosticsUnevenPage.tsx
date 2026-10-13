@@ -162,7 +162,7 @@ export default function DiagnosticsUnevenPage() {
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
-            <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
+            <span className="text-2xs text-[var(--text-dim)]">by Civic Minds</span>
           </div>
         </a>
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
@@ -175,7 +175,7 @@ export default function DiagnosticsUnevenPage() {
                   key={d}
                   type="button"
                   onClick={() => setDay(d)}
-                  className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
+                  className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
                     day === d
                       ? CONTROL_ACTIVE
                       : CONTROL_INACTIVE

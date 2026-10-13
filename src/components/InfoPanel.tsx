@@ -357,7 +357,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </p>
 
               <div>
-                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
+                <p className="text-xs font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
                   Covering {agencies.length} transit agencies.
                   {FEATURES.live && FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryExploreAgencies}+ agencies.`}
@@ -383,7 +383,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
 
               <div>
-                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Feedback</p>
+                <p className="text-xs font-bold text-[var(--text-muted)] mb-2">Feedback</p>
                 <a
                   href="mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback"
                   onClick={() => { trackEvent('contact_opened'); trackEvent('feedback_opened', { source: 'info_panel' }); }}
@@ -395,13 +395,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
 
               <div>
-                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Privacy</p>
+                <p className="text-xs font-bold text-[var(--text-muted)] mb-2">Privacy</p>
                 <button type="button" onClick={() => window.dispatchEvent(new Event('atlas:privacy-settings'))} className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group">
                   <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Privacy &amp; analytics</span>
                 </button>
               </div>
 
-              <div className="text-[10px] text-[var(--text-dim)] whitespace-nowrap">
+              <div className="text-xs text-[var(--text-dim)] whitespace-nowrap">
                 <a href="/about/docs" className="hover:text-[var(--accent)] hover:underline">Documentation</a>
                 <span className="mx-1.5">·</span>
                 <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
@@ -447,7 +447,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         })}
                         aria-pressed={on}
                         title={id === 'all' ? 'Clear status filters' : 'Combine with other filters'}
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
+                        className={`px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${
                           on ? APP_TAB_ACTIVE : APP_TAB_INACTIVE
                         }`}
                       >
@@ -473,7 +473,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   <div className="py-2">
                     {[...byRegion.entries()].map(([region, list]) => (
                       <div key={region}>
-                        <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
+                        <p className="px-5 pt-3 pb-1 text-xs font-bold text-[var(--text-dim)]">{region}</p>
                         {list.map(a => {
                           const hasLive = liveBySlug.has(a.slug);
                           const hasHistory = historyBySlug.has(a.slug);
@@ -500,13 +500,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                   {showLiveBadge && (
                                     <span
                                       title={liveCoverageBySlug.has(a.slug) ? undefined : 'Live route coverage is still loading.'}
-                                      className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]"
+                                      className="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]"
                                     >
                                       {liveCoverageBySlug.get(a.slug) === 'full' ? 'Full live' : liveCoverageBySlug.get(a.slug) === 'partial' ? 'Partial live' : 'Live routes'}
                                     </span>
                                   )}
                                   {showHistoryBadge && (
-                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
+                                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
                                       History
                                     </span>
                                   )}
@@ -764,7 +764,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {selectedLiveRoutes.length > 0 && (
                     <div>
                       <div className="mb-2">
-                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">Live ({selectedLiveRoutes.length})</span>
+                        <span className="inline-block text-xs font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">Live ({selectedLiveRoutes.length})</span>
                       </div>
                       <div className="space-y-1">
                         {selectedLiveRoutes.map(r => (
@@ -784,7 +784,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {selectedHistory && (
                     <div>
                       <div className="mb-2">
-                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
+                        <span className="inline-block text-xs font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
                           History
                         </span>
                       </div>

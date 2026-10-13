@@ -2,6 +2,16 @@
 
 @theme {
   --color-brand: #4f46e5;
+  /* Type scale (px). Root is 14px, so these are set in px to stay exact.
+     Nothing a user has to read goes below text-xs (12px). text-2xs (10px) is for
+     decorative, aria-hidden marks only (glyphs inside badges, the wordmark tagline). */
+  --text-2xs: 10px;
+  --text-2xs--line-height: 1.2;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
 }
 
 html {
@@ -15,8 +25,8 @@ html {
   --bg-panel: rgba(255, 255, 255, 0.9);
   --border-primary: rgba(0, 0, 0, 0.1);
   --text-primary: #111827;
-  --text-muted: #6b7280;
-  --text-dim: #767676;
+  --text-muted: #5b6270;
+  --text-dim: #5f5f5f;
   --text-secondary: #374151;
   --bg-stat: rgba(0, 0, 0, 0.05);
   --bg-btn: rgba(0, 0, 0, 0.05);
@@ -42,6 +52,10 @@ html {
   --status-caution: #f59e0b;
   --status-positive-bg: rgba(16, 185, 129, 0.1);
   --status-negative-bg: rgba(239, 68, 68, 0.1);
+  /* Status colours safe to use as text (4.5:1 on app/panel backgrounds) */
+  --status-positive-text: #047857;
+  --status-negative-text: #b91c1c;
+  --status-caution-text: #92400e;
   --text-legend: #4b5563;
   --dim-route: #cbd5e1;
   /* Accent — change these two lines to retheme the whole app */
@@ -63,8 +77,8 @@ html {
   --bg-panel: rgba(15, 15, 15, 0.8);
   --border-primary: rgba(255, 255, 255, 0.1);
   --text-primary: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.4);
-  --text-dim: rgba(255, 255, 255, 0.55);
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-dim: rgba(255, 255, 255, 0.66);
   --text-secondary: rgba(255, 255, 255, 0.8);
   --bg-stat: rgba(255, 255, 255, 0.05);
   --bg-btn: rgba(255, 255, 255, 0.05);
@@ -73,6 +87,9 @@ html {
   --toggle-on-bg: var(--accent);
   --toggle-off-bg: #4b5563;
   --text-legend: rgba(255, 255, 255, 0.7);
+  --status-positive-text: #34d399;
+  --status-negative-text: #f87171;
+  --status-caution-text: #fbbf24;
   --dim-route: #334155;
   /* Accent */
   --accent: #e4e4e7;
@@ -88,6 +105,9 @@ html {
 }
 
 [data-color-vision='high-contrast'] {
+  --text-muted: #374151;
+  --text-dim: #374151;
+  --text-legend: #1f2937;
   --control-active-bg: #e5e7eb;
   --control-active-border: #111827;
   --control-active-fg: #111827;
@@ -111,6 +131,9 @@ html {
 }
 
 [data-theme='dark'][data-color-vision='high-contrast'] {
+  --text-muted: rgba(255, 255, 255, 0.82);
+  --text-dim: rgba(255, 255, 255, 0.82);
+  --text-legend: rgba(255, 255, 255, 0.88);
   --control-active-bg: #f0f0f0;
   --control-active-border: #f0f0f0;
   --control-active-fg: #111827;

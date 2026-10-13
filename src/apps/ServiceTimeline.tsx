@@ -1,5 +1,5 @@
 import React from 'react';
-import { getTimelineHeadwayColor } from '../utils/colors';
+import { getTimelineHeadwayColor, readableTextOn } from '../utils/colors';
 import { TIME_PERIODS, formatPeriodRangeLong } from '../../shared/config';
 import { type RouteGroup } from './corridor-types';
 import { fmtHeadway } from '../utils/format';
@@ -35,7 +35,7 @@ export function ServiceTimeline({
 
   return (
     <div className="overflow-y-auto px-4 py-3">
-      <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mb-3">
+      <p className="text-xs font-bold text-[var(--text-muted)] tracking-wide mb-3">
         {results.length} route{results.length !== 1 ? 's' : ''} · {day}
       </p>
 
@@ -43,8 +43,8 @@ export function ServiceTimeline({
         <div style={{ width: LABEL_W }} className="shrink-0" />
         {TIMELINE_PERIODS.map(p => (
           <div key={p.key} className="flex-1 flex flex-col">
-            <span className="text-[10px] font-bold text-[var(--text-primary)] leading-none">{p.label}</span>
-            <span className="text-[9px] text-[var(--text-dim)] mt-0.5">{p.time}</span>
+            <span className="text-xs font-bold text-[var(--text-primary)] leading-none">{p.label}</span>
+            <span className="text-xs text-[var(--text-dim)] mt-0.5">{p.time}</span>
           </div>
         ))}
       </div>
@@ -54,12 +54,12 @@ export function ServiceTimeline({
           <div key={gi}>
             <div className="flex items-center gap-1.5 mb-1.5">
               <span
-                className="text-[10px] font-black px-1.5 py-0.5 rounded text-white shrink-0"
-                style={{ backgroundColor: g.color || '#555' }}
+                className="text-xs font-black px-1.5 py-0.5 rounded shrink-0"
+                style={{ backgroundColor: g.color || '#555', color: readableTextOn(g.color || '#555555') }}
               >
                 {g.routeShortName}
               </span>
-              <span className="text-[10px] text-[var(--text-muted)]">{g.agencyName}</span>
+              <span className="text-xs text-[var(--text-muted)]">{g.agencyName}</span>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -72,7 +72,7 @@ export function ServiceTimeline({
                 return (
                   <div key={bi} className="flex items-center gap-1">
                     <div className="shrink-0 pr-2" style={{ width: LABEL_W }}>
-                      <span className="text-[10px] text-[var(--text-muted)] truncate block">
+                      <span className="text-xs text-[var(--text-muted)] truncate block">
                         to {b.headsign || b.routeLongName}
                       </span>
                     </div>
@@ -82,7 +82,7 @@ export function ServiceTimeline({
                         const { bg, fg } = getTimelineHeadwayColor(val);
                         return (
                           <div key={p.key} className="flex flex-1 items-center justify-center" style={{ backgroundColor: bg }}>
-                            <span className="text-[10px] font-bold" style={{ color: fg }}>{fmtHeadway(val, 'compact')}</span>
+                            <span className="text-xs font-bold" style={{ color: fg }}>{fmtHeadway(val, 'compact')}</span>
                           </div>
                         );
                       })}
@@ -96,7 +96,7 @@ export function ServiceTimeline({
       </div>
 
       <div className="mt-6 flex items-center gap-3 flex-wrap">
-        <span className="text-[10px] text-[var(--text-dim)] font-bold">Frequency</span>
+        <span className="text-xs text-[var(--text-dim)] font-bold">Frequency</span>
         {[
           { label: '≤10 min', hw: 10 },
           { label: '≤15 min', hw: 15 },
@@ -109,7 +109,7 @@ export function ServiceTimeline({
           return (
             <div key={label} className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: bg }} />
-              <span className="text-[9px] text-[var(--text-muted)]">{label}</span>
+              <span className="text-xs text-[var(--text-muted)]">{label}</span>
             </div>
           );
         })}

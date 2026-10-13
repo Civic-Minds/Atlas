@@ -101,12 +101,12 @@ export default function AppDrawer({ activeApp, onSelect }: Props) {
                       {app.label}
                     </span>
                     {!app.available && (
-                      <span className="text-[9px] font-bold text-[var(--text-muted)] bg-[var(--bg-active)] rounded px-1 py-0.5 shrink-0">
+                      <span className="text-xs font-bold text-[var(--text-muted)] bg-[var(--bg-active)] rounded px-1 py-0.5 shrink-0">
                         soon
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-[var(--text-muted)] truncate">{app.description}</p>
+                  <p className="text-xs text-[var(--text-muted)] truncate">{app.description}</p>
                 </div>
               </button>
             );

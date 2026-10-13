@@ -10,7 +10,7 @@ export default function AppUpdateBanner() {
     <div
       role="status"
       aria-live="polite"
-      className={`fixed bottom-6 left-1/2 h-8 max-w-[calc(100vw-2rem)] -translate-x-1/2 ${Z_HEADER} ${MAP_BADGE} gap-3 text-[10px] font-bold text-[var(--text-muted)]`}
+      className={`fixed bottom-6 left-1/2 h-8 max-w-[calc(100vw-2rem)] -translate-x-1/2 ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}
     >
       <span>This page is out of date. Refresh to update.</span>
       <button

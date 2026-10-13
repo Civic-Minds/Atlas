@@ -191,20 +191,20 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
             >
               <X className="w-3.5 h-3.5" />
             </button>
-            <p className="pr-5 text-[11px] font-black text-[var(--text-primary)] leading-snug">
+            <p className="pr-5 text-xs font-black text-[var(--text-primary)] leading-snug">
               Which routes actually run through the night?
             </p>
-            <p className="mt-1 pr-5 text-[10px] text-[var(--text-dim)] font-bold leading-snug">
+            <p className="mt-1 pr-5 text-xs text-[var(--text-dim)] font-bold leading-snug">
               A route counts here only if it has a departure at least every {frequency} minutes,
               2am to 6am, with no gap at either end of the core overnight window.
             </p>
-            <p className="mt-1.5 text-[10px] font-bold" style={{ color: getNightServiceColor(colorMode) }}>
+            <p className="mt-1.5 text-xs font-bold" style={{ color: getNightServiceColor(colorMode) }}>
               {data.routeCount} qualifying route patterns across {data.agencyCount} agencies.
             </p>
           </div>
         )}
         {data && introDismissed && (
-          <p className="px-4 pt-2 pb-1 text-[10px] text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
+          <p className="px-4 pt-2 pb-1 text-xs text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
             At least one departure every {frequency} minutes, 2am–6am local time, with no gap at either end of the window.
           </p>
         )}
@@ -217,7 +217,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
           )}
           {loadState === 'ready' && agencies.map(agency => (
             <div key={agency.slug}>
-              <div className="px-4 pt-2.5 pb-1 text-[10px] font-black text-[var(--text-primary)]">
+              <div className="px-4 pt-2.5 pb-1 text-xs font-black text-[var(--text-primary)]">
                 {agency.agencyName}
                 {agency.region && <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.region}</span>}
                 <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.routes.length} {agency.routes.length === 1 ? 'route' : 'routes'}</span>
@@ -235,7 +235,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
                     {route.routeShortName && route.routeLongName && <span className="font-normal text-[var(--text-dim)]"> — {route.routeLongName}</span>}
                   </div>
                   {route.destinations.length > 0 && (
-                    <div className="mt-0.5 text-[10px] font-bold text-[var(--text-dim)] truncate" title={route.destinations.join(' · ')}>
+                    <div className="mt-0.5 text-xs font-bold text-[var(--text-dim)] truncate" title={route.destinations.join(' · ')}>
                       To {route.destinations.join(' · ')}
                     </div>
                   )}

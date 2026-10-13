@@ -136,7 +136,7 @@ export const StopCard: React.FC<StopCardProps> = ({
         <button
           type="button"
           onClick={onDirectFromStop}
-          className="mb-3 text-[10px] font-bold text-[var(--accent)] hover:opacity-80 transition-opacity text-left"
+          className="mb-3 text-xs font-bold text-[var(--accent)] hover:opacity-80 transition-opacity text-left"
         >
           Corridors from here…
         </button>

@@ -6,6 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+### Changed
+
+- **Text is bigger and easier to read**: nothing a person has to read is below 12px any more, and the faint greys, status colours (green, red, amber) and white-on-pastel fare and timeline pills now meet WCAG AA contrast in light, dark and high-contrast modes.
+
 ### Added
 
 - **Analytics count more of what people use**: map exports, outbound link clicks, report-issue and feedback opens, and page views on the About, Docs, Privacy and Terms pages were missing, and internal sessions stay excluded.
