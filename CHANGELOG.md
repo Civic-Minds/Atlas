@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Added
 
+- On the beta site, while Compare, History or Live is on, the other view tabs in the top bar shrink to icons (named on hover), so the active view stands out; they expand again when you leave it.
 - On the beta site, each compare map now has its own Frequency, Day and Time controls next to its label, so two frequency thresholds can be compared as well as two times; Mode and Agencies sit in one bar marked for both maps, shared links keep both sides, the route card says in plain words which map shows the route, and switching to History or Live leaves compare (CIV-19).
 - On-demand zones now load from Atlas's data storage only when on-demand is shown, instead of shipping about 1.5 MB of zone data to every visitor, and the map says when they couldn't load instead of showing an empty area. New zones can be added without a site update, after passing checks for broken shapes, eligibility-only service, dropped zones, lost hours and old sources (CIV-50).
 - On-demand zone outlines, fills and stop dots are thin and light when zoomed out to a region, so they no longer outweigh the routes, and reach full strength by street zoom (beta only).

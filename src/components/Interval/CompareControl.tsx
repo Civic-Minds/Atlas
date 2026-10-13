@@ -2,6 +2,7 @@ import React from 'react';
 import { Columns2 } from 'lucide-react';
 import { APP_TAB_ACTIVE, APP_TAB_INACTIVE, CONTROL_ACTIVE, CONTROL_INACTIVE, MAP_BADGE } from '../../styles';
 import { FilterChips } from './FilterChips';
+import { ModeTabLabel, modeTabSpacing } from '../ModeTabLabel';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
@@ -67,17 +68,18 @@ export function CompareSidePicker({ side, onChange }: { side: CompareSide; onCha
  * sits with the other views rather than with the filter chips. It toggles like the other view tabs:
  * pressed while comparing, and pressing it again goes back to the single map.
  */
-export function CompareTab({ active, onStart, onExit }: { active: boolean; onStart: () => void; onExit: () => void }) {
+export function CompareTab({ active, onStart, onExit, collapsed = false }: { active: boolean; onStart: () => void; onExit: () => void; /** Another mode is active: show the icon only. */ collapsed?: boolean }) {
   return (
     <button
       type="button"
       onClick={active ? onExit : onStart}
       aria-pressed={active}
       aria-label="Compare two maps"
-      className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${active ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+      title={collapsed ? 'Compare' : undefined}
+      className={`hidden sm:flex h-8 ${modeTabSpacing(collapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${active ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
     >
       <Columns2 className="h-3.5 w-3.5" aria-hidden="true" />
-      <span>Compare</span>
+      <ModeTabLabel collapsed={collapsed}>Compare</ModeTabLabel>
     </button>
   );
 }
