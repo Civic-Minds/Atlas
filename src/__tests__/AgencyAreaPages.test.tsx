@@ -107,7 +107,7 @@ describe('AgencyPage intro place, notes and headings', () => {
     expect(screen.getByText("The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.")).toBeTruthy();
     expect(screen.queryByText(/sustained/)).toBeNull();
     const caption = screen.getAllByText(/^Subway/)[0];
-    expect(caption.textContent).toBe('Subway 2');
+    expect(caption.textContent).toBe('Subway/Metro 2');
     expect(caption.querySelector('span')?.className).toContain('font-normal');
   });
 });
