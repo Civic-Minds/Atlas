@@ -337,10 +337,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         </div>
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
-          {openChip === 'mode' && <div className={`${PANEL} w-56`}>
-            <div className="flex flex-wrap gap-1">
-              {MODES.map(mode => <Pill key={mode.id} size="segment" onClick={() => toggleMode(mode.id)} selected={modeIsActive(mode.id)}>{mode.label}</Pill>)}
-            </div>
+          {openChip === 'mode' && <div className={`${PANEL} w-36`}>
+            {MODES.map(mode => <button key={mode.id} onClick={() => toggleMode(mode.id)} className={researchButton(modeIsActive(mode.id))}>{mode.label}</button>)}
           </div>}
         </div>
       </div>
@@ -455,14 +453,17 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <Dot show={selectedModes.size > 0} />
       </button>
       {openChip === 'mode' && (
-        <div className={`${PANEL} w-56`}>
-          <div className="flex flex-wrap gap-1">
-            {MODES.map((m) => (
-              <Pill key={m.id} size="segment" onClick={() => toggleMode(m.id)} selected={modeIsActive(m.id)}>
-                {m.label}
-              </Pill>
-            ))}
-          </div>
+        <div className={`${PANEL} w-36`}>
+          {MODES.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => toggleMode(m.id)}
+              className={rowBtn(modeIsActive(m.id))}
+              aria-pressed={modeIsActive(m.id)}
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
       )}
     </div>
