@@ -94,7 +94,7 @@ const MAX_AREA_LIST = 12;
 export const AGENCY_PATH_PREFIX = '/agency/';
 
 export function agencyPagePath(slug: string): string {
-  return `${AGENCY_PATH_PREFIX}${slug}`;
+  return `${AGENCY_PATH_PREFIX}${encodeURIComponent(slug)}`;
 }
 
 export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'>): string {
