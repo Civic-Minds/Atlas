@@ -488,7 +488,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
                               className={AGENCY_LIST_ROW}
                             >
-                              <span className={AGENCY_LIST_PRIMARY}>
+                              <span className={AGENCY_LIST_PRIMARY} title={listLabel}>
                                 {primary}
                                 {secondary && (
                                   <span className="text-[var(--text-dim)]"> · {secondary}</span>

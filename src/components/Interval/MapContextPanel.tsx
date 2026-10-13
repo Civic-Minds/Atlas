@@ -81,7 +81,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               onClick={() => onSelectAgency?.(agency.slug)}
               className={`${LIST_ROW_SPACED} ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
             >
-              <span className={`${LIST_ROW_PRIMARY} min-w-0 truncate text-left`}>{agency.name}</span>
+              <span className={`${LIST_ROW_PRIMARY} min-w-0 break-words text-left`} title={agency.name}>{agency.name}</span>
             </button>
           )) : (
             <div className="px-4 py-3 text-[10px] font-bold text-[var(--text-dim)]">No matching agencies.</div>
