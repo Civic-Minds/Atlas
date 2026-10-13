@@ -40,6 +40,31 @@ export function sparklineBarHeight(headway: number | null | undefined, maxFreq: 
   return Math.max(floor, Math.round((1 / headway) / maxFreq * chartHeight));
 }
 
+function medianOf(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+/**
+ * The direction the full-day view opens on: the slower one overall, i.e. the
+ * longest typical (median) hourly headway, then the longer average headway.
+ * Full ties keep the first direction.
+ */
+export function slowerDirectionKey(options: { key: string; byHour: HeadwayByHour }[] | undefined): string | null {
+  let best: { key: string; typical: number; mean: number } | null = null;
+  for (const option of options ?? []) {
+    const values = HOURS.map(h => option.byHour[h]).filter((v): v is number => v != null && v > 0);
+    if (values.length === 0) continue;
+    const typical = medianOf(values);
+    const mean = values.reduce((sum, v) => sum + v, 0) / values.length;
+    if (!best || typical > best.typical || (typical === best.typical && mean > best.mean)) {
+      best = { key: option.key, typical, mean };
+    }
+  }
+  return best?.key ?? options?.[0]?.key ?? null;
+}
+
 const HOUR_TO_PERIOD: Record<number, string> = Object.fromEntries(
   HOURS.map(h => [h, periodKeyForHour(h)]).filter(([, p]) => p != null),
 ) as Record<number, string>;
@@ -81,17 +106,19 @@ interface HourlySparklineProps {
   /** Keep the legend's vertical space while a route branch is hovered. */
   reserveStackedLegendSpace?: boolean;
   title?: string;
+  /** Names what the bars show in hour tooltips, e.g. "slower direction". */
+  seriesLabel?: string;
   /** Used by the modal's larger, all-period rendering. */
   expanded?: boolean;
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', expanded = false }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false }: HourlySparklineProps) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [expandedDirection, setExpandedDirection] = useState('all');
+  const [pickedDirection, setPickedDirection] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isExpanded) return;
@@ -111,6 +138,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const displayedByHour = byHour;
   // The full-day view shows the direction picked with the pills above it;
   // the inline chart always shows the route's merged schedule.
+  const expandedDirection = (pickedDirection != null && directionOptions?.some(option => option.key === pickedDirection))
+    ? pickedDirection
+    : slowerDirectionKey(directionOptions);
   const modalByHour = directionOptions?.find(option => option.key === expandedDirection)?.byHour ?? byHour;
   const valids = HOURS.map(h => displayedByHour[h]).filter((v): v is number => v != null);
   if (valids.length === 0) return null;
@@ -236,7 +266,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                 key={h}
                 className="flex-1 min-w-0 flex flex-col items-center"
                 title={hasValue
-                  ? `${formatHourTitle(h, hw)}${maxGap != null && maxGap > hw ? `; longest gap ${maxGap} min` : ''}`
+                  ? `${formatHourTitle(h, hw)}${seriesLabel ? ` (${seriesLabel})` : ''}${maxGap != null && maxGap > hw ? `; longest gap ${maxGap} min` : ''}`
                   : undefined}
               >
                 <div style={{ height: H }} className="relative flex items-end justify-center w-full">
@@ -349,7 +379,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     key={option.key}
                     type="button"
                     aria-pressed={expandedDirection === option.key}
-                    onClick={() => setExpandedDirection(option.key)}
+                    onClick={() => setPickedDirection(option.key)}
                     className={`h-7 px-2.5 flex items-center justify-center text-[11px] font-bold border transition-colors ${expandedDirection === option.key ? `${GLASS_PILL} ${ACTION_PRIMARY}` : APP_TAB_INACTIVE}`}
                   >
                     {option.label}

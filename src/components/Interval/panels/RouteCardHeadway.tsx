@@ -425,7 +425,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             : sparklineHeadwayByHour(group.realTier, HOURS);
         const perDirection = displayGroups.map(group => ({ group, byHour: directionSeries(group) }));
         const directionsWithHours = perDirection.filter(entry => HOURS.some(h => entry.byHour[h] != null));
-        // "All directions" = the worst direction each hour, never one direction silently.
+        // Inline chart = the slower direction each hour, never one direction silently.
         const allDirections = directionsWithHours.length > 0
           ? worstDirectionByHour(directionsWithHours.map(entry => entry.byHour), HOURS)
           : sparklineHeadwayByHour(defaultSparklineDirs, HOURS);
@@ -459,14 +459,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               .filter((segment): segment is { label: string; headway: number; color: string } => segment.headway != null)
             : []]))
           : undefined;
-        const directionOptions = [
-          { key: 'all', label: 'All directions', byHour: merged },
-          ...perDirection.map(({ group, byHour }, index) => ({
-            key: `direction-${group.dirId}`,
-            label: group.boundLabel ?? `Direction ${index + 1}`,
-            byHour,
-          })),
-        ];
+        // Full-day view: one pill per direction, opening on the slower one.
+        // Single-direction routes get no pills.
+        const directionOptions = perDirection.map(({ group, byHour }, index) => ({
+          key: `direction-${group.dirId}`,
+          label: group.boundLabel ?? `Direction ${index + 1}`,
+          byHour,
+        }));
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;
         return (
@@ -474,6 +473,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <HeadwaySparkline
               byHour={merged}
               maxGapByHour={mergedMaxGaps}
+              seriesLabel={merged === defaultMerged && directionsWithHours.length > 1 ? 'slower direction' : undefined}
               stackedByHour={stackedByHour}
               directionOptions={directionOptions}
               period={period}
