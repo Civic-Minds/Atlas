@@ -18,9 +18,9 @@
     43.03639799985815,
     -78.88627599957206
   ],
-  "largeMetro": true,
+  "largeMetro": false,
   "agencies": [
     "nfta"
   ],
-  "page": true
+  "page": false
 }

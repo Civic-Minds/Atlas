@@ -9,7 +9,7 @@
  *   npx tsx scripts/build-areas.ts
  *
  * Merges (MERGED_AREAS) fold neighbouring official areas into the region people mean, with a
- * note shown on the page. A one-agency area earns a page only if it is in LARGE_METROS.
+ * note shown on the page. A one-agency area earns a page only if it is in large-metros.json.
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { countryForRegion } from '../shared/regionCountry';
@@ -69,7 +69,7 @@ function rescore() {
   let pages = 0;
   for (const f of readdirSync('config/areas').filter(n => n.endsWith('.json') && !n.startsWith('_'))) {
     const a = JSON.parse(readFileSync(`config/areas/${f}`, 'utf8')) as AreaConfig;
-    a.largeMetro = isLargeMetro(a.name, a.officialName);
+    a.largeMetro = isLargeMetro(a);
     const withPages = a.agencies.filter(s => summaries.has(s)).length;
     a.page = (a.type === 'MSA' || a.type === 'CMA') && (withPages >= 2 || (withPages === 1 && a.largeMetro));
     if (a.page) pages++;
@@ -164,7 +164,7 @@ async function main() {
   // A page for every metro (MSA or CMA) with 2+ agencies that have pages, or one such agency in a
   // large metro (LARGE_METROS). Micropolitan areas and census agglomerations never get one.
   for (const a of areas) {
-    a.largeMetro = isLargeMetro(a.name, a.officialName);
+    a.largeMetro = isLargeMetro(a);
     const withPages = a.agencies.filter(s => summaries.has(s)).length;
     a.page = (a.type === 'MSA' || a.type === 'CMA') && (withPages >= 2 || (withPages === 1 && a.largeMetro));
   }
