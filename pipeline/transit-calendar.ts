@@ -140,7 +140,20 @@ export function detectReferenceDate(
     const singletonMultiDayStarts = rawMultiStarts.length === 0
         ? sortedStarts.filter(s => groupEnd(s) > s)
         : [];
-    const medianStart = sortedStarts[Math.floor(sortedStarts.length / 2)];
+    // A one-day median (Mont-Tremblant's Thanksgiving Saturday, Oct 10, between periods that end
+    // Oct 3-9 and start Oct 16-17) is a holiday, not a timetable: when a multi-day service is
+    // running today, the newest running one (28+ days preferred, as below) stands in for it
+    // (#764). Running, not the median of all multi-day starts, which can be a future service
+    // (a winter calendar from Nov 1). This holds before, on and after the holiday, so the result
+    // does not depend on the build date. WSF-style feeds (every service one day) and stale feeds
+    // with no multi-day service running keep the plain median.
+    const overallMedianStart = sortedStarts[Math.floor(sortedStarts.length / 2)];
+    const runningMultiDayStarts = singletonMultiDayStarts.filter(s => s <= todayStr && groupEnd(s) >= todayStr);
+    const longRunningMultiDayStarts = runningMultiDayStarts.filter(s => daysBetween(s, groupEnd(s)) >= MIN_RUNNING_PERIOD_DAYS);
+    const medianStart = rawMultiStarts.length === 0 && overallMedianStart != null
+        && groupEnd(overallMedianStart) === overallMedianStart && runningMultiDayStarts.length > 0
+        ? (longRunningMultiDayStarts.at(-1) ?? runningMultiDayStarts.at(-1)!)
+        : overallMedianStart;
     const singletonRunningStart = rawMultiStarts.length === 0 && medianStart != null
         && groupEnd(medianStart) > medianStart && groupEnd(medianStart) < todayStr
         ? singletonMultiDayStarts

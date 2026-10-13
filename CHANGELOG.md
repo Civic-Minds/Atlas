@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- Mont-Tremblant's Friday and Saturday now show the regular timetables instead of the Thanksgiving and December one-day schedules, since a passed holiday no longer decides which schedule the feed is read from ([#764](https://github.com/Civic-Minds/Atlas/issues/764)).
 - Avon Transit's Beaver Creek Express no longer shows in October, and Seattle Monorail and Sierra Vista now read their current timetable, since feeds where each schedule starts on its own date were still being read from an ended summer or short block ([#767](https://github.com/Civic-Minds/Atlas/issues/767)).
 - Feeds that give every sailing day its own service, like Washington State Ferries, now show one day's timetable instead of up to eight days pooled together, so Port Townsend's weekend ferry reads every 90 minutes instead of a false 45 and the Fauntleroy triangle's weekend values match a single day's sailings ([#744](https://github.com/Civic-Minds/Atlas/issues/744)).
 - Routes with no short name, like Annapolis's Free Downtown Shuttle, now show their name in bold in route lists instead of dimmed and indented, and agency headings in the agency route list no longer use extra letter spacing ([#777](https://github.com/Civic-Minds/Atlas/issues/777)).
