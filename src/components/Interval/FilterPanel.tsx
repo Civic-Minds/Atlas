@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import Pill from '../ui/Pill';
+import ListRow from '../ui/ListRow';
 import Toggle from '../ui/Toggle';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
@@ -440,28 +441,33 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         : (limitedView ? 'No limited-service routes match your search.' : 'No hidden routes match your search.')}
                     </p>
                   ) : (
-                    <div className="px-5 pb-4">
+                    <div className="px-1 pb-3">
                       {hiddenRoutesByAgency.map(([agencySlug, group]) => {
                         const { primary, secondary } = agencyDisplayParts(group.agencyName, agencyCitiesBySlug.get(agencySlug), agencyDisplayAreasBySlug.get(agencySlug));
                         return (
-                        <div key={agencySlug}>
-                          <p className="pt-2 pb-1 text-xs font-bold text-[var(--text-primary)]">
-                            {primary}
-                            {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
-                          </p>
-                          <div className="divide-y divide-[var(--border-primary)]">
-                            {group.routes.map(route => (
-                              <div key={route.key} className="py-2.5">
-                                <div className="flex items-baseline justify-between gap-3">
-                                  <p className="text-xs font-bold text-[var(--text-primary)] line-clamp-2 break-words" title={route.routeShortName}>{route.routeShortName}</p>
-                                </div>
-                                {route.routeLongName && route.routeLongName !== route.routeShortName && (
-                                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5" title={route.routeLongName}>{route.routeLongName}</p>
-                                )}
-                              </div>
-                            ))}
+                          <div key={agencySlug} className="flex flex-col mt-2 first:mt-0">
+                            <div className={`${PANEL_SECTION_HEAD} mb-1 truncate`} title={secondary ? `${primary} · ${secondary}` : primary}>
+                              {primary}{secondary ? ` · ${secondary}` : ''}
+                            </div>
+                            {group.routes.map(route => {
+                              const name = route.routeLongName && route.routeLongName !== route.routeShortName ? route.routeLongName : null;
+                              return (
+                                <ListRow
+                                  key={route.key}
+                                  as="div"
+                                  variant="spaced"
+                                  className="items-start hover:bg-transparent"
+                                >
+                                  <div className="min-w-0 flex-1">
+                                    <p className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={name ? `${route.routeShortName} ${name}` : route.routeShortName}>
+                                      <span>{route.routeShortName}</span>
+                                      {name && <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{name}</span>}
+                                    </p>
+                                  </div>
+                                </ListRow>
+                              );
+                            })}
                           </div>
-                        </div>
                         );
                       })}
                     </div>
