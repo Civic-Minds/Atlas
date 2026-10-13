@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import Pill from '../ui/Pill';
 import Toggle from '../ui/Toggle';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
@@ -418,14 +419,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         const key = region === 'All' ? '' : region;
                         const active = key === '' ? hiddenRegionFilter.size === 0 : hiddenRegionFilter.has(key);
                         return (
-                          <button
+                          <Pill
                             key={region}
                             onClick={() => selectHiddenRouteRegion(key)}
-                            aria-pressed={active}
-                            className={`${FILTER_OPTION} shrink-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                            selected={active}
+                            className="shrink-0"
                           >
                             {region}
-                          </button>
+                          </Pill>
                         );
                       })}
                     </div>
@@ -485,14 +486,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       </label>
                       <div className="flex items-center gap-1.5 mt-2">
                         {(['all', 'degraded', 'unusable'] as const).map(status => (
-                          <button
+                          <Pill
                             key={status}
                             onClick={() => setDegradedFeedsStatus(status)}
-                            aria-pressed={degradedFeedsStatus === status}
-                            className={`${FILTER_OPTION} ${degradedFeedsStatus === status ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                            selected={degradedFeedsStatus === status}
                           >
                             {status === 'all' ? 'All' : qualityStatusLabel(status)}
-                          </button>
+                          </Pill>
                         ))}
                         <select
                           value={degradedFeedsSort}
@@ -668,17 +668,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
                       const active = maxHeadway === max;
                       return (
-                        <button
+                        <Pill
                           key={label}
                           onClick={() => setMaxHeadway?.(max)}
-                          aria-pressed={active}
-                          className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
-                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
-                          }`}
+                          size="segment"
+                          selected={active}
                         >
                           <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
                           {label === 'Infrequent' ? 'All routes' : label}
-                        </button>
+                        </Pill>
                       );
                     })}
                   </div>
@@ -713,16 +711,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     {Object.entries(PERIOD_LABELS).map(([key, label]) => {
                       const active = period === key;
                       return (
-                        <button
+                        <Pill
                           key={key}
                           onClick={() => setPeriod?.(key)}
-                          aria-pressed={active}
-                          className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
-                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
-                          }`}
+                          size="segment"
+                          selected={active}
                         >
                           {label}
-                        </button>
+                        </Pill>
                       );
                     })}
                   </div>
@@ -731,14 +727,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <div className="px-5 pt-2 pb-3">
                       <div className="flex items-center justify-between">
                         <p className="text-xs font-bold text-[var(--text-dim)]">Compare two maps</p>
-                        <button
-                          type="button"
+                        <Pill
                           onClick={compare.side ? compare.onExit : compare.onStart}
-                          className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${compare.side ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
-                          aria-pressed={!!compare.side}
+                          size="segment"
+                          selected={!!compare.side}
                         >
                           Compare
-                        </button>
+                        </Pill>
                       </div>
                       {compare.side && (
                         <div className="mt-2">
@@ -757,21 +752,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     {AVAILABLE_FILTER_MODES.map(({ id, label }) => {
                       const active = selectedModes?.has(id) ?? false;
                       return (
-                        <button
+                        <Pill
                           key={id}
-                          aria-pressed={active}
                           onClick={() => {
                             if (!selectedModes || !setSelectedModes) return;
                             const next = new Set(selectedModes);
                             if (next.has(id)) next.delete(id); else next.add(id);
                             setSelectedModes(next);
                           }}
-                          className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
-                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
-                          }`}
+                          size="segment"
+                          selected={active}
                         >
                           {label}
-                        </button>
+                        </Pill>
                       );
                     })}
                   </div>

@@ -5,7 +5,8 @@ import type { ShapeProperties } from './hooks/useAgencyData';
 import { isRiderMeaningfulGap } from './utils/routeCardUneven';
 import { TIME_PERIODS, type PeriodKey } from '../shared/config';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
-import { FLOATING_CARD, CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
+import { FLOATING_CARD } from './styles';
+import Pill from './components/ui/Pill';
 import type { Agency } from './App';
 import { delayAmount, headwayAbout } from './utils/headwayText';
 
@@ -172,19 +173,14 @@ export default function DiagnosticsUnevenPage() {
           <div className="ml-auto flex items-center gap-3">
             <div className="flex gap-1.5">
               {DAY_TYPES.map(d => (
-                <button
+                <Pill
                   key={d}
-                  type="button"
                   onClick={() => setDay(d)}
-                  aria-pressed={day === d}
-                  className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
-                    day === d
-                      ? CONTROL_ACTIVE
-                      : CONTROL_INACTIVE
-                  }`}
+                  size="segment"
+                  selected={day === d}
                 >
                   {d}
-                </button>
+                </Pill>
               ))}
             </div>
             <span className="text-sm text-[var(--text-dim)]">{sorted.length} flagged</span>

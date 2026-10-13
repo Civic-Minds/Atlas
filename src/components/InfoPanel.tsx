@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft, ChevronRight, Mail } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, APP_TAB_ACTIVE, APP_TAB_INACTIVE, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY } from '../styles';
+import Pill from './ui/Pill';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
@@ -436,8 +437,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {agencyFilterOptions.map(([id, label]) => {
                     const on = id === 'all' ? agencyFeatureFilters.size === 0 : agencyFeatureFilters.has(id);
                     return (
-                      <button
+                      <Pill
                         key={id}
+                        tone="glass"
                         onClick={() => setAgencyFeatureFilters(current => {
                           if (id === 'all') return new Set();
                           const next = new Set(current);
@@ -445,14 +447,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           else next.add(id);
                           return next;
                         })}
-                        aria-pressed={on}
+                        selected={on}
                         title={id === 'all' ? 'Clear status filters' : 'Combine with other filters'}
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? APP_TAB_ACTIVE : APP_TAB_INACTIVE
-                        }`}
+                        className="shrink-0"
                       >
                         {label}
-                      </button>
+                      </Pill>
                     );
                   })}
                   {regionsInScope.length > 0 && (

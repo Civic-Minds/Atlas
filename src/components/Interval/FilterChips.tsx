@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE } from '../../styles';
+import Pill from '../ui/Pill';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
@@ -84,9 +85,6 @@ type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact';
 
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
 
-const compactOptBtn = (active: boolean) =>
-  `h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
-
 const rowBtn = (active: boolean) =>
   `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border text-left min-w-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
 
@@ -159,22 +157,22 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
         />
       </div>
       <div className="flex gap-1 px-1 pt-1">
-        <button
+        <Pill
+          tone="outline"
           onClick={() => setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, true))}
           disabled={allOn}
-          className={`flex-1 ${FILTER_OPTION} border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default`}
+          className="flex-1"
         >
           All
-        </button>
-        <button
-          onClick={() => {
-            setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, false));
-          }}
+        </Pill>
+        <Pill
+          tone="outline"
+          onClick={() => setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, false))}
           disabled={allOff}
-          className={`flex-1 ${FILTER_OPTION} border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default`}
+          className="flex-1"
         >
           None
-        </button>
+        </Pill>
       </div>
       <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
         {byRegion.size === 0 && (
@@ -302,9 +300,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       <div ref={rowRef} className="flex items-center gap-2">
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
           {([30, 60] as const).map(value => (
-            <button key={value} onClick={() => setNightServiceFrequency(value)} className={compactOptBtn(nightServiceFrequency === value)} aria-pressed={nightServiceFrequency === value}>
+            <Pill size="segment" key={value} onClick={() => setNightServiceFrequency(value)} selected={nightServiceFrequency === value}>
               {headwayAmount(value)}
-            </button>
+            </Pill>
           ))}
         </div>
       </div>
@@ -328,7 +326,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           </div>}
         </div>
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-          {([15, 30] as const).map(value => <button key={value} onClick={() => setResearchFrequency(value)} className={compactOptBtn(researchFrequency === value)} aria-pressed={researchFrequency === value}>{headwayAmount(value)}</button>)}
+          {([15, 30] as const).map(value => <Pill size="segment" key={value} onClick={() => setResearchFrequency(value)} selected={researchFrequency === value}>{headwayAmount(value)}</Pill>)}
         </div>
         {researchFrequency === 30 && (
           <div className="hidden xl:flex items-center gap-2 text-xs font-bold text-[var(--text-muted)]" aria-label="30-minute view legend">
@@ -337,7 +335,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           </div>
         )}
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-          {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <button key={value} onClick={() => setResearchWindow(value)} className={compactOptBtn(researchWindow === value)} aria-pressed={researchWindow === value}>{label}</button>)}
+          {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <Pill size="segment" key={value} onClick={() => setResearchWindow(value)} selected={researchWindow === value}>{label}</Pill>)}
         </div>
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
@@ -514,10 +512,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                 {HEADWAY_TIERS.map(({ max, label }) => {
                   const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
                   return (
-                    <button key={label} onClick={() => setMaxHeadway(max)} className={compactOptBtn(maxHeadway === max)} aria-pressed={maxHeadway === max}>
+                    <Pill size="segment" key={label} onClick={() => setMaxHeadway(max)} selected={maxHeadway === max}>
                       <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
                       {label === 'Infrequent' ? 'All routes' : label}
-                    </button>
+                    </Pill>
                   );
                 })}
               </div>
@@ -527,9 +525,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Day</p>
               <div className="flex gap-1">
                 {DAY_TYPES.map(d => (
-                  <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d)} aria-pressed={day === d}>
+                  <Pill size="segment" key={d} onClick={() => setDay(d)} selected={day === d}>
                     {d === 'Saturday' ? 'Sat' : d === 'Sunday' ? 'Sun' : 'Weekday'}
-                  </button>
+                  </Pill>
                 ))}
               </div>
             </div>
@@ -538,9 +536,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Time</p>
               <div className="flex flex-wrap gap-1">
                 {PERIOD_KEYS.map(p => (
-                  <button key={p} onClick={() => setPeriod(p)} className={compactOptBtn(period === p)} aria-pressed={period === p}>
+                  <Pill size="segment" key={p} onClick={() => setPeriod(p)} selected={period === p}>
                     {PERIOD_LABELS[p]}
-                  </button>
+                  </Pill>
                 ))}
               </div>
             </div>
@@ -549,9 +547,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Mode</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
-                  <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(modeIsActive(m.id))} aria-pressed={modeIsActive(m.id)}>
+                  <Pill size="segment" key={m.id} onClick={() => toggleMode(m.id)} selected={modeIsActive(m.id)}>
                     {m.label}
-                  </button>
+                  </Pill>
                 ))}
               </div>
             </div>

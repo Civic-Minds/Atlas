@@ -1,6 +1,7 @@
 import React from 'react';
 import { Columns2 } from 'lucide-react';
-import { APP_TAB_ACTIVE, APP_TAB_INACTIVE, CONTROL_ACTIVE, CONTROL_INACTIVE, MAP_BADGE } from '../../styles';
+import { APP_TAB_ACTIVE, APP_TAB_INACTIVE, MAP_BADGE } from '../../styles';
+import Pill from '../ui/Pill';
 import { FilterChips } from './FilterChips';
 import { ModeTabLabel, modeTabSpacing } from '../ModeTabLabel';
 import { DAY_TYPES } from '../../../shared/dayTypes';
@@ -19,10 +20,6 @@ export function SideBadge({ side }: { side: 'A' | 'B' }) {
   );
 }
 
-// Same pills as the filter panel's own day and time buttons.
-const option = (active: boolean) =>
-  `h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
-
 const PERIOD_OPTIONS = ['all', ...PERIOD_KEYS] as TimePeriod[];
 const frequencyOptionLabel = (max: number) => (max === Infinity ? 'All routes' : headwayFilterLabel(max));
 
@@ -34,9 +31,9 @@ export function CompareSidePicker({ side, onChange }: { side: CompareSide; onCha
         <p className="mb-1.5 text-xs font-black text-[var(--text-dim)]">Frequency</p>
         <div className="flex flex-wrap gap-1">
           {HEADWAY_TIERS.map(({ max }) => (
-            <button key={max} type="button" onClick={() => onChange({ ...side, maxHeadway: max })} className={option(side.maxHeadway === max)} aria-pressed={side.maxHeadway === max}>
+            <Pill size="segment" key={max} onClick={() => onChange({ ...side, maxHeadway: max })} selected={side.maxHeadway === max}>
               {frequencyOptionLabel(max)}
-            </button>
+            </Pill>
           ))}
         </div>
       </div>
@@ -44,9 +41,9 @@ export function CompareSidePicker({ side, onChange }: { side: CompareSide; onCha
         <p className="mb-1.5 text-xs font-black text-[var(--text-dim)]">Day</p>
         <div className="flex gap-1">
           {DAY_TYPES.map(day => (
-            <button key={day} type="button" onClick={() => onChange({ ...side, day })} className={option(side.day === day)} aria-pressed={side.day === day}>
+            <Pill size="segment" key={day} onClick={() => onChange({ ...side, day })} selected={side.day === day}>
               {day}
-            </button>
+            </Pill>
           ))}
         </div>
       </div>
@@ -54,9 +51,9 @@ export function CompareSidePicker({ side, onChange }: { side: CompareSide; onCha
         <p className="mb-1.5 text-xs font-black text-[var(--text-dim)]">Time</p>
         <div className="flex flex-wrap gap-1">
           {PERIOD_OPTIONS.map(period => (
-            <button key={period} type="button" onClick={() => onChange({ ...side, period })} className={option(side.period === period)} aria-pressed={side.period === period}>
+            <Pill size="segment" key={period} onClick={() => onChange({ ...side, period })} selected={side.period === period}>
               {PERIOD_LABELS[period]}
-            </button>
+            </Pill>
           ))}
         </div>
       </div>
