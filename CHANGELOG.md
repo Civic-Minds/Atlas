@@ -37,6 +37,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Unknown addresses show a not-found page instead of the map**: the live site already answered them with a 404, and the app itself now does the same when it is opened or navigated to a made-up address ([#823](https://github.com/Civic-Minds/Atlas/issues/823))
+
 - **CARTA Chattanooga is no longer listed on the San Francisco area page**: its map center had been set to California, so it also sorted as a nearby agency in the wrong place ([#825](https://github.com/Civic-Minds/Atlas/issues/825))
 
 - **Buffalo Metro Rail is counted when the LRT filter is on**: the map drew the line but the route counter showed 0 ([#811](https://github.com/Civic-Minds/Atlas/issues/811))

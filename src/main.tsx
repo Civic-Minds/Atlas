@@ -6,6 +6,7 @@ import LegalPage from './LegalPage';
 import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
 import ChangelogPage from './ChangelogPage';
+import NotFoundPage from './NotFoundPage';
 import './styles/index.css';
 import { FEATURES, FEATURE_ROUTES } from '../shared/config';
 import { inject } from '@vercel/analytics';
@@ -16,6 +17,7 @@ import { RETIRED_APP_PATHS } from './utils/appGate';
 import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
 import { isInternalTestSession } from './lib/internalTest';
+import { findSeoRoute } from '../shared/seo';
 
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
@@ -28,6 +30,12 @@ const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerform
 function NightServiceRedirect() {
   const { search, hash } = useLocation();
   return <Navigate to={`${FEATURE_ROUTES.nightService}${search}${hash}`} replace />;
+}
+
+/** The map answers only the addresses the site knows; anything else gets the not-found page. */
+function MapOrNotFound() {
+  const { pathname } = useLocation();
+  return findSeoRoute(pathname) ? <App /> : <NotFoundPage />;
 }
 
 /** /docs is the short address for the Docs page at /about/docs. */
@@ -77,7 +85,7 @@ ReactDOM.createRoot(rootElement).render(
           {FEATURES.researchApps && <Route path="/research" element={<ResearchPage />} />}
           {FEATURES.agencyPages && <Route path="/area/:slug" element={<AreaPage />} />}
           {FEATURES.agencyPages && <Route path="/agencies" element={<AgenciesIndexPage />} />}
-          <Route path="/*" element={<App />} />
+          <Route path="/*" element={<MapOrNotFound />} />
           </Routes>
         </React.Suspense>
       </ColorVisionProvider>
