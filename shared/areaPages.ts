@@ -8,11 +8,14 @@ import {
   bestRoute,
   formatDataDate,
   headwayEvery,
+  modesText,
   modeLabel,
   type AgencyPageSummary,
 } from './agencyPages';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
+import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL } from './seo';
+import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 
 export { AREA_PATH_PREFIX, areaPagePath };
 
@@ -111,11 +114,19 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
 export function areaPageTitle(d: Pick<AreaPageData, 'area' | 'agencies'>): string {
-  return `${d.area.name} area frequency map: ${plural(d.agencies.length, 'transit agency', 'transit agencies')} compared | Transit Atlas`;
+  const region = areaRegionTitle(d.area);
+  const across = `how often transit runs across ${plural(d.agencies.length, 'agency', 'agencies')}`;
+  return firstThatFits([
+    `${region}: ${across} | Transit Atlas`,
+    `${region}: ${across}`,
+    `${region} transit frequency | Transit Atlas`,
+    `${region} transit frequency`,
+    `${truncateAtWord(region, TITLE_MAX - ' transit frequency'.length)} transit frequency`,
+  ], TITLE_MAX);
 }
 
 export function areaPageH1(d: Pick<AreaPageData, 'area'>): string {
-  return `${d.area.name} area`;
+  return areaRegionTitle(d.area);
 }
 
 export function areaSubtitle(d: Pick<AreaPageData, 'area'>): string {
@@ -124,11 +135,18 @@ export function areaSubtitle(d: Pick<AreaPageData, 'area'>): string {
 
 /** One sentence that stands alone, used as the meta description's opening. */
 export function areaLeadSentence(d: AreaPageData): string {
-  return `${plural(d.totalRoutes, 'weekday route', 'weekday routes')} across ${plural(d.agencies.length, 'transit agency', 'transit agencies')} in the ${d.area.name} area.`;
+  return `${plural(d.totalRoutes, 'weekday route', 'weekday routes')} across ${plural(d.agencies.length, 'transit agency', 'transit agencies')} in ${areaRegionName(d.area)}.`;
 }
 
 export function areaPageDescription(d: AreaPageData): string {
-  return `${areaLeadSentence(d)} Compare each agency's routes and frequency.`;
+  const n = d.agencies.length;
+  const where = areaRegionName(d.area);
+  return firstThatFits([
+    `Compare ${plural(n, 'transit agency', 'transit agencies')} in ${where} side by side: routes and weekday waits by time of day, from published schedules.`,
+    `Compare ${plural(n, 'transit agency', 'transit agencies')} in ${where}: routes and weekday waits by time of day.`,
+    `${areaLeadSentence(d)} Compare each agency's routes and frequency.`,
+    areaLeadSentence(d),
+  ], DESCRIPTION_MAX);
 }
 
 function hourLabel(h: number): string {
@@ -152,7 +170,7 @@ export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>):
 /** One plain sentence, the same template for every area. */
 export function areaAboutParagraph(d: AreaPageData): string {
   const n = d.agencies.length;
-  const out: string[] = [`The ${d.area.name} area has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}.`];
+  const out: string[] = [`${areaRegionSentenceStart(d.area)} has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}.`];
   return out.join(' ');
 }
 
@@ -162,14 +180,9 @@ export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDa
   return [refreshed ? `Newest schedule refresh ${refreshed}` : '', release ? `Atlas data release ${release}` : ''].filter(Boolean).join('. ') + '.';
 }
 
-/** The map link: framed on the area's bounds with only its agencies on (the app's `agencies` include list). */
-export function areaMapHref(d: Pick<AreaPageData, 'area' | 'agencies'>): string {
-  const [s, w, n, e] = d.area.bbox;
-  const [lat, lon] = d.area.center;
-  const span = Math.max(n - s, (e - w) * Math.cos((lat * Math.PI) / 180));
-  const z = span > 3 ? 7 : span > 1.5 ? 8 : span > 0.7 ? 9 : span > 0.35 ? 10 : 11;
-  const params = new URLSearchParams({ agencies: d.agencies.map(a => a.slug).join('.'), lat: lat.toFixed(4), lon: lon.toFixed(4), z: String(z) });
-  return `/?${params.toString()}`;
+/** The map link: `?area=<slug>` selects the area's agencies and fits the map to it (the app does the framing). */
+export function areaMapHref(d: Pick<AreaPageData, 'area'>): string {
+  return `/?${new URLSearchParams({ area: d.area.slug }).toString()}`;
 }
 
 export function resolveAreaSeo(
@@ -189,7 +202,7 @@ export function resolveAreaSeo(
 
 /** BreadcrumbList and Dataset; the breadcrumb is not shown on the page. */
 export function areaPageJsonLd(d: AreaPageData, canonicalUrl: string, origin: string): object {
-  const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.area.country }, { name: `${d.area.name} area`, item: canonicalUrl }];
+  const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.area.country }, { name: areaRegionTitle(d.area), item: canonicalUrl }];
   const m = d.newestRefresh ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(d.newestRefresh) : null;
   return {
     '@context': 'https://schema.org',
@@ -200,11 +213,11 @@ export function areaPageJsonLd(d: AreaPageData, canonicalUrl: string, origin: st
       },
       {
         '@type': 'Dataset',
-        name: `${d.area.name} area transit frequency`,
+        name: `${areaRegionTitle(d.area)} transit frequency`,
         description: areaPageDescription(d),
         url: canonicalUrl,
         isAccessibleForFree: true,
-        spatialCoverage: { '@type': 'Place', name: `${d.area.name} area, ${d.area.country}` },
+        spatialCoverage: { '@type': 'Place', name: `${areaRegionTitle(d.area)}, ${d.area.country}` },
         creator: { '@type': 'Organization', name: 'Civic Minds', url: `${SITE_URL}/` },
         ...(m ? { dateModified: `${m[1]}-${m[2]}-${m[3]}` } : {}),
       },

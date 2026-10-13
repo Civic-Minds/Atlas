@@ -77,7 +77,7 @@ export function deinterleaveDuplicateSequences(pts: { seq: number; lat: number; 
     const points: [number, number][] = [];
     for (const seq of [...bySeq.keys()].sort((a, b) => a - b)) {
         const candidates = bySeq.get(seq)!;
-        const selected = previous
+        const selected: { lat: number; lon: number } = previous
             ? candidates.reduce((best, candidate) => {
                 const bestDist = (best.lat - previous!.lat) ** 2 + (best.lon - previous!.lon) ** 2;
                 const candidateDist = (candidate.lat - previous!.lat) ** 2 + (candidate.lon - previous!.lon) ** 2;

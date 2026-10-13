@@ -20,6 +20,7 @@ import { isInternalTestSession } from './lib/internalTest';
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 const AreaPage = React.lazy(() => import('./AreaPage'));
+const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
 
@@ -29,6 +30,12 @@ function NightServiceRedirect() {
   return <Navigate to={`${FEATURE_ROUTES.nightService}${search}${hash}`} replace />;
 }
 
+/** /docs is the short address for the Docs page at /about/docs. */
+function DocsRedirect() {
+  const { search, hash } = useLocation();
+  return <Navigate to={`/about/docs${search}${hash}`} replace />;
+}
+
 // Collect page views only from deployed builds; local development should not
 // pollute the production and beta analytics data.
 if (import.meta.env.PROD && !isInternalTestSession()) {
@@ -36,14 +43,19 @@ if (import.meta.env.PROD && !isInternalTestSession()) {
   injectSpeedInsights();
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root')!;
+// A prerendered page already has its text in #root. Keep showing that same HTML while the page's code chunk
+// loads, so there is no blank flash (and never a not-found message) before the live page takes over.
+const prerenderedHtml = rootElement.innerHTML.trim();
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <ColorVisionProvider>
         <AnalyticsConsent />
         <RouteTracker />
         <RouteSeo />
-        <React.Suspense fallback={null}>
+        <React.Suspense fallback={prerenderedHtml ? <div style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: prerenderedHtml }} /> : null}>
           <Routes>
           {/* Maintainer-only research page; it is never included in built bundles. */}
           {import.meta.env.DEV && (
@@ -53,6 +65,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             </>
           )}
           <Route path="/apps/night" element={<NightServiceRedirect />} />
+          <Route path="/docs" element={<DocsRedirect />} />
           {RETIRED_APP_PATHS.map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}
           <Route path="/terms" element={<LegalPage document="terms" />} />
           <Route path="/privacy" element={<LegalPage document="privacy" />} />
@@ -63,6 +76,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           {FEATURES.agencyPages && <Route path="/agency/:slug" element={<AgencyPage />} />}
           {FEATURES.researchApps && <Route path="/research" element={<ResearchPage />} />}
           {FEATURES.agencyPages && <Route path="/area/:slug" element={<AreaPage />} />}
+          {FEATURES.agencyPages && <Route path="/agencies" element={<AgenciesIndexPage />} />}
           <Route path="/*" element={<App />} />
           </Routes>
         </React.Suspense>

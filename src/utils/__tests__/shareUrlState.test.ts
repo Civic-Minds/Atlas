@@ -4,8 +4,10 @@ import {
   encodeAgencySelection,
   encodeCompareSideParams,
   encodeModesParam,
+  encodeSelectionParams,
   isAgencyOff,
   parseAgencyUrlRule,
+  parseAreaBounds,
   parseCompareSideParams,
   parseHeadwayValue,
   parseModesParam,
@@ -247,5 +249,64 @@ describe('compare side B in the URL', () => {
     expect(parseHeadwayValue('20')).toBe(20);
     expect(parseHeadwayValue('0')).toBeNull();
     expect(parseHeadwayValue(null)).toBeNull();
+  });
+});
+
+describe('?area= (metro area link)', () => {
+  const areas = {
+    toronto: { agencies: ['ttc', 'hsr', 'go', 'beta-only-x'], bbox: [43, -80, 44, -79] as [number, number, number, number] },
+    hamilton: { agencies: ['hsr'], bbox: [43, -80, 43.5, -79.5] as [number, number, number, number] },
+    ghost: { agencies: ['not-in-catalog'], bbox: [1, 1, 2, 2] as [number, number, number, number] },
+  };
+  const slugs = ['ttc', 'hsr', 'go', 'other-a', 'other-b'];
+
+  it('selects the area agencies; slugs not in the catalog (beta-only on public) are dropped', () => {
+    const rule = settleAgencyUrlRule(parseAgencyUrlRule('?area=toronto', areas), slugs);
+    const on = slugs.filter(s => !isAgencyOff(s, rule, new Set()));
+    expect(on).toEqual(['ttc', 'hsr', 'go']);
+  });
+
+  it('is case-insensitive and ignores unknown or inherited slugs', () => {
+    expect(parseAgencyUrlRule('?area=TORONTO', areas)).not.toBeNull();
+    expect(parseAgencyUrlRule('?area=atlantis', areas)).toBeNull();
+    expect(parseAgencyUrlRule('?area=constructor', areas)).toBeNull();
+    expect(parseAgencyUrlRule('?area=', areas)).toBeNull();
+    expect(parseAreaBounds('?area=atlantis', areas)).toBeNull();
+  });
+
+  it('falls back to the viewer selection when no area agency is in the catalog', () => {
+    expect(settleAgencyUrlRule(parseAgencyUrlRule('?area=ghost', areas), slugs)).toBeNull();
+  });
+
+  it('lets explicit agencies/hide win over area for the selection', () => {
+    const rule = parseAgencyUrlRule('?area=toronto&agencies=other-a', areas);
+    expect(rule).toEqual({ kind: 'include', slugs: new Set(['other-a']) });
+  });
+
+  it('returns the bounds for the fit', () => {
+    expect(parseAreaBounds('?area=toronto&day=Saturday', areas)).toEqual([43, -80, 44, -79]);
+  });
+
+  it('encodes a selection that equals an area as area=, not the agency list', () => {
+    expect(encodeSelectionParams(new Set(['ttc', 'hsr', 'go']), slugs, areas)).toEqual({ area: 'toronto', agencies: null, hide: null });
+    // hamilton's only agency is hsr: a lone selection of it matches that area
+    expect(encodeSelectionParams(new Set(['hsr']), slugs, areas).area).toBe('hamilton');
+  });
+
+  it('falls back to agencies/hide when the selection is not exactly an area', () => {
+    expect(encodeSelectionParams(new Set(['ttc', 'hsr']), slugs, areas)).toEqual({ area: null, agencies: 'hsr.ttc', hide: null });
+    expect(encodeSelectionParams(new Set(['ttc', 'hsr', 'go', 'other-a']), slugs, areas)).toEqual({ area: null, agencies: null, hide: 'other-b' });
+  });
+
+  it('leaves everything-on out of the URL', () => {
+    expect(encodeSelectionParams(new Set(slugs), slugs, areas)).toEqual({ area: null, agencies: null, hide: null });
+  });
+
+  it('clears a stale area param and round-trips an area link', () => {
+    const qs = mergeUrlSearchParams('area=toronto&day=Saturday', encodeSelectionParams(new Set(['ttc', 'hsr']), slugs, areas));
+    expect(new URLSearchParams(qs).get('area')).toBeNull();
+    const back = mergeUrlSearchParams(qs, encodeSelectionParams(new Set(['ttc', 'hsr', 'go']), slugs, areas));
+    expect(new URLSearchParams(back).get('area')).toBe('toronto');
+    expect(new URLSearchParams(back).get('agencies')).toBeNull();
   });
 });

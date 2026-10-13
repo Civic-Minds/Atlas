@@ -1,8 +1,10 @@
 import type { HeadwayByPeriod } from '../shared/config.js';
 
 export interface CurrentHistoryRoute {
-  routeShortName: string;
+  routeShortName?: string;
   routeLongName?: string;
+  routeType?: number | string;
+  busSubType?: string;
   headway: number;
   headwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];

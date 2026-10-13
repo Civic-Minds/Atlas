@@ -52,7 +52,7 @@ export function areaSlug(name: string): string {
 
 export const AREA_PATH_PREFIX = '/area/';
 export function areaPagePath(slug: string): string {
-  return `${AREA_PATH_PREFIX}${slug}`;
+  return `${AREA_PATH_PREFIX}${encodeURIComponent(slug)}`;
 }
 
 /**

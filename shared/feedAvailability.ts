@@ -3,6 +3,14 @@ export function isCurrentFeedExpiry(expiry: string | null | undefined, today = t
   return typeof expiry === 'string' && /^\d{8}$/.test(expiry) && expiry >= today;
 }
 
+/**
+ * Whether a feed's known service end date has passed. An undated feed (open-ended
+ * calendar or no calendar end) is not expired, matching the frontend's isFeedExpired.
+ */
+export function isExpiredFeedExpiry(expiry: string | null | undefined, today = todayUtcYmd()): boolean {
+  return typeof expiry === 'string' && /^\d{8}$/.test(expiry) && expiry < today;
+}
+
 /** UTC calendar date in the same YYYYMMDD form used by GTFS metadata. */
 export function todayUtcYmd(now = new Date()): string {
   return now.toISOString().slice(0, 10).replace(/-/g, '');
@@ -57,7 +65,7 @@ export function isCurrentProductionFeed(
   agency: FeedAvailabilityEntry,
   today = todayUtcYmd(),
 ): boolean {
-  return isActiveProductionFeed(agency, today) && isCurrentFeedExpiry(effectiveFeedExpiry(agency), today);
+  return isActiveProductionFeed(agency, today) && !isExpiredFeedExpiry(effectiveFeedExpiry(agency), today);
 }
 
 /** An active production feed whose published schedule may be outdated. */
@@ -65,7 +73,7 @@ export function isStaleProductionFeed(
   agency: FeedAvailabilityEntry,
   today = todayUtcYmd(),
 ): boolean {
-  return isActiveProductionFeed(agency, today) && !isCurrentFeedExpiry(effectiveFeedExpiry(agency), today);
+  return isActiveProductionFeed(agency, today) && isExpiredFeedExpiry(effectiveFeedExpiry(agency), today);
 }
 
 /**

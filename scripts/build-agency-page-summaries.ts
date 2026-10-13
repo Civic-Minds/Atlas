@@ -24,7 +24,8 @@ import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter';
 import { routeListDisplay } from '../src/utils/effectiveHeadway';
 import type { ShapeProperties } from '../src/hooks/useAgencyData';
 import type { AgencyPageIdentity, AgencyPageRoute, AgencyPageSummary, AgencyPageSummaries } from '../shared/agencyPages';
-import { trimRedundantCity } from '../shared/agencyPages';
+import { agencyShortLabel, trimRedundantCity } from '../shared/agencyPages';
+import { computeConnections, extractStops, type AgencyStops } from './agency-connections';
 import { countryForRegion } from '../shared/regionCountry';
 import { agencyDisplayParts } from '../src/utils/format';
 
@@ -156,6 +157,7 @@ function identityFor(a: CatalogAgency) {
     center: a.center,
     bbox: a.bbox,
     websiteUrl: a.websiteUrl,
+    ...(a.betaOnly ? { betaOnly: true as const } : {}),
     validThrough: a.lastFeedExpiry ?? null,
   };
 }
@@ -172,7 +174,10 @@ function writeOutputs(out: AgencyPageSummaries): void {
 }
 
 async function main() {
-  const catalog = JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')) as Catalog;
+  // The beta catalog is a superset of public: beta-only agencies are marked betaOnly so the public build drops them.
+  const catalog = JSON.parse(readFileSync('public/data/catalog-beta.json', 'utf8')) as Catalog;
+  const publicSlugs = new Set((JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')) as Catalog).agencies.map(a => a.slug));
+  for (const a of catalog.agencies) a.betaOnly = publicSlugs.has(a.slug) ? undefined : true;
   const previous: AgencyPageSummaries | null = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : null;
 
   // --identity-only: refresh names, cities and short names from config with no network.
@@ -189,6 +194,7 @@ async function main() {
   const keep = new Map(only.size && previous ? previous.agencies.map(a => [a.slug, a]) : []);
   const targets = catalog.agencies.filter(a => only.size === 0 || only.has(a.slug));
   const results = new Map<string, AgencyPageSummary>();
+  const stopsCache = new Map<string, AgencyStops>();
   const failed: string[] = [];
   let done = 0;
   const queue = [...targets];
@@ -196,7 +202,9 @@ async function main() {
     for (let a = queue.shift(); a; a = queue.shift()) {
       try {
         const data = await getJson<{ features: Feature[] }>(`${base}/${release.agencyPrefix}/${a.slug}.json`);
-        results.set(a.slug, { ...identityFor(a), ...summarize(data.features, a.slug, a.lastRefreshedAt ?? null) });
+        const { stopCount, stops } = extractStops(data.features);
+        stopsCache.set(a.slug, stops);
+        results.set(a.slug, { ...identityFor(a), ...summarize(data.features, a.slug, a.lastRefreshedAt ?? null), stops: stopCount });
       } catch (err) {
         // Keep the previous numbers for an agency that failed, rather than dropping its page.
         failed.push(a.slug);
@@ -212,6 +220,34 @@ async function main() {
   if (failed.length > Math.max(5, targets.length * 0.1)) {
     throw new Error(`${failed.length} of ${targets.length} agencies failed; summary files left untouched`);
   }
+  // Connections: needs every nearby agency's stops. A full run already has them all; a limited run also
+  // loads the agencies whose bounding box touches a target's.
+  const t0 = Date.now();
+  if (only.size) {
+    const pad = 0.02;
+    const touches = (x: CatalogAgency, y: CatalogAgency) => !!x.bbox && !!y.bbox
+      && x.bbox[0] - pad <= y.bbox[2] && x.bbox[2] + pad >= y.bbox[0] && x.bbox[1] - pad <= y.bbox[3] && x.bbox[3] + pad >= y.bbox[1];
+    const near = catalog.agencies.filter(b => !stopsCache.has(b.slug) && targets.some(t => touches(t, b)));
+    const nearQueue = [...near];
+    await Promise.all([0, 1, 2].map(async () => {
+      for (let b = nearQueue.shift(); b; b = nearQueue.shift()) {
+        try {
+          const data = await getJson<{ features: Feature[] }>(`${base}/${release.agencyPrefix}/${b.slug}.json`);
+          stopsCache.set(b.slug, extractStops(data.features).stops);
+        } catch (err) {
+          console.warn(`neighbour ${b.slug} skipped for connections: ${(err as Error).message}`);
+        }
+      }
+    }));
+  }
+  const names = new Map(catalog.agencies.map(a => [a.slug, agencyShortLabel({ displayName: identityFor(a).displayName })]));
+  const betaOnlySlugs = new Set(catalog.agencies.filter(a => a.betaOnly).map(a => a.slug));
+  const connections = computeConnections(stopsCache, results.keys(), slug => names.get(slug) ?? slug, slug => betaOnlySlugs.has(slug));
+  for (const [slug, list] of connections) {
+    const r = results.get(slug)!;
+    if (list.length) r.connections = list; else delete r.connections;
+  }
+  console.log(`Connections for ${connections.size} agencies in ${((Date.now() - t0) / 1000).toFixed(1)}s from ${stopsCache.size} loaded agencies`);
   const merged = new Map([...keep, ...results]);
   const out: AgencyPageSummaries = {
     releaseId: release.releaseId,

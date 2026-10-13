@@ -2,25 +2,6 @@ import { useState } from 'react';
 import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE } from '../shared/agencyPages';
 import { HEADWAY_TIERS } from '../shared/config';
 
-export interface StatItem {
-  value: string;
-  label: string;
-}
-
-/** Plain large numbers with small labels in one row, separated by space only (wraps on phones). */
-export function StatRow({ items }: { items: StatItem[] }) {
-  return (
-    <dl className="mt-8 flex flex-wrap gap-x-12 gap-y-6">
-      {items.map(item => (
-        <div key={item.label} className="min-w-0 max-w-[16rem]">
-          <dd className="whitespace-nowrap text-3xl font-black tracking-tight">{item.value}</dd>
-          <dt className="mt-1 text-sm text-[var(--text-muted)]">{item.label}</dt>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
 const BAND_PHRASES = [...FREQUENCY_BANDS.map(b => b.phrase), NO_MIDDAY_PHRASE];
 const BAND_SHORT = ['≤10 min', '11–15', '16–20', '21–30', '31–60', '60+', 'no midday'];
 /** The map's own frequency colours (HEADWAY_TIERS, same bands and edges as the filters), then the neutral no-service grey. */

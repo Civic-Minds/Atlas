@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  agencyAboutParagraph, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
-  agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
+  agencyIntroSentence, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
+  agencyPageData, agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, weekendLabel,
 } from './agencyPages';
 import { agencyPageSummaries, getAgencyPageSummary } from './agencyPagesData';
@@ -17,7 +17,7 @@ const TTC: AgencyPageSummary = {
 
 describe('agency page text', () => {
   it('uses the agreed title and H1', () => {
-    expect(agencyPageTitle(TTC)).toBe('TTC (Toronto) frequency map: frequent routes and service levels | Transit Atlas');
+    expect(agencyPageTitle(TTC)).toBe('TTC frequency: how often routes run | Transit Atlas');
     expect(agencyPageH1(TTC)).toBe('TTC · Toronto');
     expect(agencyPageH1({ displayName: 'Halifax Transit' })).toBe('Halifax Transit');
   });
@@ -138,18 +138,56 @@ describe('dates', () => {
   });
 });
 
-describe('agencyAboutParagraph', () => {
-  const base = { displayName: 'TTC (Toronto)', city: 'Toronto' };
+describe('agencyIntroSentence', () => {
+  const base = { name: 'Hamilton Street Railway', city: 'Hamilton', stops: 1980 };
   const rs = (...mids: Array<[number, number | null]>) => mids.map(([mode, h], i) => r(`R${i}`, mode, h));
+  const conns = (...names: string[]) => names.map(name => ({ name }));
 
-  it('is one sentence: the route count in the city', () => {
-    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10], [3, 12], [1, 5], [3, 40], [3, null]) })).toBe('TTC runs 5 routes in Toronto.');
-    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10]) })).toBe('TTC runs 1 route in Toronto.');
-    expect(agencyAboutParagraph({ ...base, routes: [] })).toBe('TTC has no weekday routes in the data.');
+  it('names routes, place, stops and the first three connections', () => {
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10], [3, 12]) }, 'Hamilton', conns('GO Transit', 'Burlington Transit')))
+      .toBe('Hamilton Street Railway operates 2 routes in Hamilton with 1,980 stops and connects with GO Transit and Burlington Transit.');
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton', conns('A', 'B', 'C', 'D', 'E')))
+      .toBe('Hamilton Street Railway operates 1 route in Hamilton with 1,980 stops and connects with A, B, C and 2 others.');
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton', conns('A', 'B', 'C', 'D'))).toContain('A, B, C and 1 other.');
   });
 
+  it('adds the mode split only with more than one mode', () => {
+    const modes = [{ label: 'Subway', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }];
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], modes)).toBe('Hamilton Street Railway operates 1 route (3 subway, 2 light rail, 209 bus) in Toronto with 1,980 stops.');
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], [{ label: 'Bus', routes: 1 }])).not.toContain('(');
+  });
+
+  it('drops the connects-with clause and the stops when there are none', () => {
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton')).toBe('Hamilton Street Railway operates 1 route in Hamilton with 1,980 stops.');
+    expect(agencyIntroSentence({ ...base, stops: undefined, routes: rs([3, 10]) }, 'the Bay Area')).toBe('Hamilton Street Railway operates 1 route in the Bay Area.');
+    expect(agencyIntroSentence({ ...base, routes: [] }, 'Hamilton')).toBe('Hamilton Street Railway has no weekday routes in the data.');
+  });
+
+  it('lists names', () => {
+    expect(namesList(['A'])).toBe('A');
+    expect(namesList(['A', 'B', 'C'])).toBe('A, B and C');
+  });
+
+  it('uses the area name when the agency covers most of the area', () => {
+    const area: [number, number, number, number] = [43, -80, 44.5, -78.4];
+    expect(agencySpansArea([43.1, -80.2, 44.4, -78.5], area)).toBe(true);
+    expect(agencySpansArea([43.5, -79.6, 43.9, -79.1], area)).toBe(false);
+    expect(agencySpansArea(undefined, area)).toBe(false);
+  });
+});
+
+describe('agency summary pieces', () => {
   it('puts each route in one weekday-midday frequency band', () => {
     expect(bandCounts([{ midday: 10 }, { midday: 12 }, { midday: 15 }, { midday: 20 }, { midday: 30 }, { midday: 45 }, { midday: 90 }, { midday: null }])).toEqual([1, 2, 1, 1, 1, 1, 1]);
     expect(bandCounts([])).toEqual([0, 0, 0, 0, 0, 0, 0]);
+  });
+});
+
+describe('beta-only agencies', () => {
+  it('keeps a beta-only connection only on beta-capable builds', async () => {
+    const { BETA_BUILD } = await import('./config');
+    const a = { ...TTC, connections: [{ slug: 'metz', name: 'Le Met', routes: ['1'], betaOnly: true as const }, { slug: 'hsr', name: 'HSR', routes: ['2'] }] };
+    const names = agencyPageData(a, [a], null).connections.map(c => c.slug);
+    expect(names).toEqual(BETA_BUILD ? ['metz', 'hsr'] : ['hsr']);
   });
 });

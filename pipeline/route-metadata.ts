@@ -63,7 +63,7 @@ export function computeRouteBaseFares(gtfs: GtfsData, manualBaseFare?: number): 
     const prev = routeIdToFare.get(rule.route_id);
     if (prev === undefined) {
       routeIdToFare.set(rule.route_id, price);
-    } else if (price === 0 || (prev !== 0 && price < prev)) {
+    } else if (price === 0 || (prev !== 0 && prev !== null && price < prev)) {
       routeIdToFare.set(rule.route_id, price);
     }
   }

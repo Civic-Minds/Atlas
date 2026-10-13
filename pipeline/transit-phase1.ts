@@ -185,7 +185,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 const expected = (headsignKey && shapeFilter.has(headsignKey))
                     ? shapeFilter.get(headsignKey)!
                     : shapeFilter.get(baseKey);
-                if (expected && !expected.has(data.shapeId)) continue;
+                if (expected && !expected.has(data.shapeId as string)) continue;
             }
             if (!grouped.has(key)) grouped.set(key, {
                 routeId: data.routeId,

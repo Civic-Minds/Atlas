@@ -1,5 +1,5 @@
 #!/usr/bin/env npx tsx
-/** Read-only live audit for the active/latest GTFS lifecycle. */
+/** Read-only live audit for the active/latest GTFS lifecycle (raw zips are checked in the private archive bucket). */
 import { readFileSync } from 'node:fs';
 import './loadEnv.js';
 import { r2List, r2ListArchive } from './r2.js';
@@ -16,28 +16,27 @@ interface Agency {
 async function main(): Promise<void> {
   const index = JSON.parse(readFileSync('public/data/index.json', 'utf8')) as { agencies: Agency[] };
   const active = index.agencies.filter(agency => isActiveProductionFeed(agency));
-  const expected = new Set(active.map(agency => `gtfs/${agency.slug}.zip`));
   const publicKeys = await r2List('');
-  const activeRaw = publicKeys.filter(key => /^gtfs\/[^/]+\.zip$/.test(key));
-  const nestedOrDuplicateRaw = publicKeys.filter(key => key.startsWith('gtfs/') && key.endsWith('.zip') && !/^gtfs\/[^/]+\.zip$/.test(key));
-  const actual = new Set(activeRaw);
-  const missing = [...expected].filter(key => !actual.has(key));
-  const unexpected = [...actual].filter(key => !expected.has(key));
+  // Raw zips live only in the private archive bucket; every active agency needs at least one.
+  const archiveKeys = (await r2ListArchive('gtfs/archive/')).filter(key => key.endsWith('.zip'));
+  const archivedSlugs = new Set(archiveKeys.map(key => key.split('/')[2]));
+  const missing = active.filter(agency => !archivedSlugs.has(agency.slug)).map(agency => `gtfs/archive/${agency.slug}/*.zip`);
+  // Public gtfs/<slug>.zip copies are frozen leftovers from before 2026-08-15; informational only.
+  const frozenPublicZips = publicKeys.filter(key => /^gtfs\/[^/]+\.zip$/.test(key));
+  const nestedOrDuplicateRaw = publicKeys.filter(key => key.startsWith('gtfs/') && key.endsWith('.zip') && !/^gtfs\/[^/]+\.zip$/.test(key) && !key.startsWith('gtfs/archive/'));
   const missingArtifacts = active
     .map(agency => `atlas/${agency.slug}.json`)
     .filter(key => !publicKeys.includes(key));
   const publicArchiveKeys = publicKeys.filter(key => key.startsWith('gtfs/archive/'));
-  const archiveKeys = (await r2ListArchive('gtfs/archive/')).filter(key => key.endsWith('.zip'));
   const stale = active.filter(agency => isStaleProductionFeed(agency));
 
   const report = {
     activeAgencies: active.length,
-    activeRawZips: activeRaw.length,
     staleAgencies: stale.length,
     staleSlugs: stale.map(agency => agency.slug),
     archiveRawZips: archiveKeys.length,
-    missingActiveZips: missing,
-    unexpectedActiveZips: unexpected,
+    missingArchiveZips: missing,
+    frozenPublicZips: frozenPublicZips.length,
     nestedOrDuplicateRawZips: nestedOrDuplicateRaw,
     missingRouteArtifacts: missingArtifacts,
     publicArchiveKeys,
@@ -45,8 +44,7 @@ async function main(): Promise<void> {
   console.log(JSON.stringify(report, null, 2));
 
   const failures = [
-    missing.length ? `${missing.length} active ZIP(s) missing` : null,
-    unexpected.length ? `${unexpected.length} unexpected active ZIP(s)` : null,
+    missing.length ? `${missing.length} active agencies with no archived ZIP` : null,
     nestedOrDuplicateRaw.length ? `${nestedOrDuplicateRaw.length} nested/duplicate raw ZIP(s) in public Atlas` : null,
     missingArtifacts.length ? `${missingArtifacts.length} active route artifact(s) missing` : null,
     publicArchiveKeys.length ? `${publicArchiveKeys.length} archive ZIP(s) exposed in public Atlas` : null,
