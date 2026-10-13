@@ -1,4 +1,5 @@
 import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE } from '../shared/agencyPages';
+import { HEADWAY_TIERS } from '../shared/config';
 
 export interface StatItem {
   value: string;
@@ -20,16 +21,8 @@ export function StatRow({ items }: { items: StatItem[] }) {
 }
 
 const BAND_PHRASES = [...FREQUENCY_BANDS.map(b => b.phrase), NO_MIDDAY_PHRASE];
-/** Light to stronger tints of the accent, best frequency last-to-first; the final entry is the neutral no-service grey. */
-const BAND_FILLS = [
-  'color-mix(in srgb, var(--accent) 58%, var(--bg-app))',
-  'color-mix(in srgb, var(--accent) 48%, var(--bg-app))',
-  'color-mix(in srgb, var(--accent) 39%, var(--bg-app))',
-  'color-mix(in srgb, var(--accent) 31%, var(--bg-app))',
-  'color-mix(in srgb, var(--accent) 24%, var(--bg-app))',
-  'color-mix(in srgb, var(--accent) 18%, var(--bg-app))',
-  'var(--control-inactive-bg)',
-];
+/** The map's own frequency colours (HEADWAY_TIERS, same bands and edges as the filters), then the neutral no-service grey. */
+const BAND_FILLS = [...HEADWAY_TIERS.map(t => t.color), 'var(--control-inactive-bg)'];
 
 /** One flat stacked bar of route counts per weekday-midday frequency band, with a plain legend of counts under it. */
 export function FrequencyBar({ counts }: { counts: number[] }) {
