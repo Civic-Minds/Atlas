@@ -16,7 +16,7 @@
     "build": "tsc && vite build && npm run prerender",
     "prerender": "vite build --ssr src/prerender.tsx --outDir .prerender && npx tsx scripts/prerender-routes.ts",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.api.json",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.api.json && node scripts/typecheck-pipeline.mjs",
     "typecheck:workers": "tsc --noEmit -p tsconfig.workers.json",
     "test": "vitest run",
     "benchmark": "node scripts/benchmark-atlas.mjs",
