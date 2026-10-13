@@ -4,13 +4,10 @@
  * the per-route headways already published in the data release (see
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
-import { headwayEvery, headwayOrBetter } from './headwayText';
+import { headwayEvery } from './headwayText';
 import { SITE_URL } from './seo';
 
-export { headwayEvery, headwayOrBetter };
-
-/** The default standard, used in meta text and the paragraph: every 15 min or better. */
-export const FREQUENT_MINUTES = 15; // the default standard (DEFAULT_THRESHOLD) used in meta text
+export { headwayEvery };
 export const MAX_NEARBY = 8;
 
 export interface AgencyPageRoute {
@@ -22,10 +19,10 @@ export interface AgencyPageRoute {
   midday: number | null;
   am: number | null;
   pm: number | null;
-  /** Runs by day but with no trustworthy cadence in some period (the route card says "limited"). */
-  limited?: boolean;
-  /** Overnight service and nothing by day (a night route). */
-  night?: boolean;
+  evening: number | null;
+  overnight: number | null;
+  /** Periods where the route runs but has no trustworthy cadence (the route card says "limited"). */
+  limited?: Array<'am' | 'midday' | 'pm' | 'evening' | 'overnight'>;
 }
 
 export interface AgencyPageIdentity {
@@ -129,21 +126,31 @@ export function modeLabel(mode: number): string {
   return MODE_LABELS[mode]?.[0] ?? 'Other';
 }
 
-/** The standards a visitor can pick: routes running every N min or better on a weekday midday. */
-export const THRESHOLDS = [10, 15, 30] as const;
-export type Threshold = (typeof THRESHOLDS)[number];
-export const DEFAULT_THRESHOLD: Threshold = 15;
+/** Weekday-midday frequency bands, best first; the last one is routes with no regular midday service. */
+export const FREQUENCY_BANDS = [
+  { key: 'b10', phrase: 'every 10 min or better', test: (m: number) => m <= 10 },
+  { key: 'b15', phrase: 'every 11–15 min', test: (m: number) => m <= 15 },
+  { key: 'b20', phrase: 'every 16–20 min', test: (m: number) => m <= 20 },
+  { key: 'b30', phrase: 'every 21–30 min', test: (m: number) => m <= 30 },
+  { key: 'b60', phrase: 'every 31–60 min', test: (m: number) => m <= 60 },
+  { key: 'b60plus', phrase: 'less often than every 60 min', test: () => true },
+] as const;
+export const NO_MIDDAY_PHRASE = 'with no regular midday service';
+
+/** Route counts per band (same order as FREQUENCY_BANDS), then routes with no midday cadence last. */
+export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>): number[] {
+  const counts = new Array<number>(FREQUENCY_BANDS.length + 1).fill(0);
+  for (const r of routes) {
+    if (r.midday == null) { counts[FREQUENCY_BANDS.length]++; continue; }
+    counts[FREQUENCY_BANDS.findIndex(b => b.test(r.midday!))]++;
+  }
+  return counts;
+}
 
 export interface AgencyPageStats {
   /** Distinct weekday routes in the release. */
   totalRoutes: number;
-  /** Routes whose weekday midday headway is within the chosen threshold. */
-  within: number;
   byMode: Array<{ mode: number; label: string; routes: AgencyPageRoute[] }>;
-}
-
-export function routesWithin(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>, threshold: number): number {
-  return routes.filter(r => r.midday != null && r.midday <= threshold).length;
 }
 
 function modeOrder(modes: Iterable<number>): number[] {
@@ -154,10 +161,9 @@ function modeOrder(modes: Iterable<number>): number[] {
   });
 }
 
-export function agencyStats(a: Pick<AgencyPageSummary, 'routes'>, threshold: number = DEFAULT_THRESHOLD): AgencyPageStats {
+export function agencyStats(a: Pick<AgencyPageSummary, 'routes'>): AgencyPageStats {
   return {
     totalRoutes: a.routes.length,
-    within: routesWithin(a.routes, threshold),
     byMode: modeOrder(a.routes.map(r => r.mode)).map(mode => ({ mode, label: modeLabel(mode), routes: a.routes.filter(r => r.mode === mode) })),
   };
 }
@@ -191,10 +197,11 @@ export function weekendLabel(sat: boolean | undefined, sun: boolean | undefined)
   return 'Weekdays only';
 }
 
-/** One sentence that stands alone: "38 of 210 routes run every 15 min or better on a weekday midday." */
+/** One sentence that stands alone: "210 weekday routes; the typical weekday midday wait is every 12 min." */
 export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string {
-  const s = agencyStats(a);
-  return `${s.within} of ${s.totalRoutes} routes run ${headwayOrBetter(FREQUENT_MINUTES)} on a weekday midday.`;
+  const n = a.routes.length;
+  const wait = typicalWait(a.routes);
+  return `${n} weekday ${n === 1 ? 'route' : 'routes'}${wait != null ? `; the typical weekday midday wait is ${headwayEvery(wait)}` : ''}.`;
 }
 
 export function agencyPageDescription(a: AgencyPageSummary): string {
@@ -228,34 +235,16 @@ export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): str
 
 /**
  * Two or three plain sentences under the route table, the same template for every agency and
- * built only from the summary: route count, how many run every 15 min or better at midday, the
- * mode most of those belong to (only when it is more than half of them), and the weekday span.
+ * built only from the summary: route count, the typical weekday-midday wait, and the weekday span.
  */
 export function agencyAboutParagraph(a: Pick<AgencyPageSummary, 'displayName' | 'city' | 'routes' | 'span'>): string {
   const total = a.routes.length;
   const label = agencyShortLabel(a);
-  const meeting = a.routes.filter(r => r.midday != null && r.midday <= FREQUENT_MINUTES);
-  const k = meeting.length;
-  const standard = headwayOrBetter(FREQUENT_MINUTES);
+  const wait = typicalWait(a.routes);
   const sentences: string[] = [];
 
   sentences.push(total === 0 ? `${label} has no weekday routes in the data.` : `${label} runs ${total} ${total === 1 ? 'route' : 'routes'} in ${a.city}.`);
-
-  if (total > 0) {
-    let midday: string;
-    if (total === 1) midday = k === 1 ? `it runs ${standard}` : `it does not run ${standard}`;
-    else if (k === 0) midday = `none run ${standard}`;
-    else if (k === total) midday = `all run ${standard}`;
-    else midday = `${k} ${k === 1 ? 'runs' : 'run'} ${standard}`;
-    sentences.push(`At weekday midday, ${midday}.`);
-
-    if (k >= 2) {
-      const counts = new Map<number, number>();
-      for (const r of meeting) counts.set(r.mode, (counts.get(r.mode) ?? 0) + 1);
-      const [mode, n] = [...counts.entries()].sort((x, y) => y[1] - x[1] || x[0] - y[0])[0];
-      if (n * 2 > k && k < total) sentences.push(`Most of those are ${modeLabel(mode).toLowerCase()} routes.`);
-    }
-  }
+  if (wait != null) sentences.push(`At weekday midday, the typical wait is ${headwayEvery(wait)}.`);
 
   if (a.span) {
     sentences.push(a.span.last + 1 - a.span.first >= 24

@@ -46,21 +46,20 @@ describe('night routes and weekend service', () => {
     },
   });
 
-  it('marks a route night-only when it has overnight service and nothing sustained by day', () => {
+  it('records overnight and evening cadence from the route card rule', () => {
     const s = summarize([night('301'), line('A', 0, 10), line('A', 1, 10)], 'x', null);
-    expect(s.routes.find(r => r.name === '301')).toMatchObject({ midday: null, am: null, pm: null, night: true });
-    expect(s.routes.find(r => r.name === 'A')?.night).toBeUndefined();
+    expect(s.routes.find(r => r.name === '301')).toMatchObject({ midday: null, am: null, pm: null, evening: null, overnight: 30 });
   });
 
-  it('shows an unsustained daytime cadence like the card, and never calls it night-only', () => {
+  it('shows an unsustained daytime cadence like the card, and also records the overnight cadence', () => {
     const l = line('46', 0, 19, { headwayByPeriodSustained: { midday: false, amPeak: false, pmPeak: false }, headwayByPeriod: { midday: 19, amPeak: 13, pmPeak: 13, overnight: 17 } });
     const r = summarize([l], 'x', null).routes[0];
-    expect([r.midday, r.am, r.pm, r.night]).toEqual([19, 13, 13, undefined]);
+    expect([r.midday, r.am, r.pm, r.overnight]).toEqual([19, 13, 13, 17]);
   });
 
-  it('does not mark a route with no service at all as night-only', () => {
+  it('leaves every period empty for a route with no service at all', () => {
     const s = summarize([line('N', 0, null)], 'x', null);
-    expect(s.routes[0].night).toBeUndefined();
+    expect([s.routes[0].evening, s.routes[0].overnight]).toEqual([null, null]);
   });
 
   it('records whether the release has Saturday and Sunday service', () => {

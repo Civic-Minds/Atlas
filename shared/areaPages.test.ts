@@ -9,7 +9,7 @@ import { rankLargeMetros, parseCsv } from './largeMetros';
 import { areaLinkFor } from './agencyArea';
 import { MERGED_AREAS, isLargeMetro, areaSlug, mainCities, type AreaConfig } from './areas';
 
-const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: null, mode, midday, am, pm });
+const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: null, mode, midday, am, pm, evening: null, overnight: null });
 const ag = (slug: string, displayName: string, routes: AgencyPageRoute[], span = { first: 6, last: 24 }): AgencyPageSummary => ({
   slug, name: displayName, displayName, city: 'X', routeCount: routes.length, routes, span, lastRefreshedAt: '2026-09-01',
 });
@@ -28,8 +28,8 @@ describe('buildAreaPageData', () => {
   it('adds up the per-agency numbers and skips agencies with no page', () => {
     expect(d.agencies.map(a => a.slug)).toEqual(['ttc', 'hsr']);
     expect(d.totalRoutes).toBe(6);
-    expect(d.within).toEqual({ '10': 2, '15': 3, '30': 5 });
-    expect(d.agencies[0]).toMatchObject({ slug: 'ttc', totalRoutes: 4, within: { '10': 2, '15': 2, '30': 3 }, modes: { Subway: 2, Bus: 2 } });
+    expect(d.bands).toEqual([2, 1, 1, 1, 0, 0, 1]); // 4 and 10, 12, 20, 30, none
+    expect(d.agencies[0]).toMatchObject({ slug: 'ttc', totalRoutes: 4, modes: { Subway: 2, Bus: 2 } });
     expect(d.byMode).toEqual([{ label: 'Subway', routes: 2 }, { label: 'Bus', routes: 4 }]);
     expect(d.modeColumns).toEqual(['Subway', 'Bus']);
     expect(d.span).toEqual({ first: 5, last: 28 });
@@ -66,8 +66,8 @@ describe('buildAreaPageData', () => {
     expect(areaPageTitle(d)).toBe('Toronto area frequency map: 2 transit agencies compared | Transit Atlas');
     expect(areaPageH1(d)).toBe('Toronto area');
     expect(areaSubtitle(d)).toBe('Toronto, Hamilton');
-    expect(areaPageDescription(d)).toContain('3 of 6 routes across 2 transit agencies in the Toronto area run every 15 min or better');
-    expect(areaPageDescription(d)).not.toMatch(/frequent\b/i);
+    expect(areaPageDescription(d)).toContain('6 weekday routes across 2 transit agencies in the Toronto area');
+    expect(areaPageDescription(d)).not.toMatch(/frequent\b|15 min/i);
     expect(areaSpanShort(d)).toBe('24 h');
   });
 
@@ -97,15 +97,14 @@ describe('areaAboutParagraph', () => {
     ...buildAreaPageData(AREA, ALL, null), ...over,
   });
 
-  it('uses one template with the busiest agency', () => {
-    expect(areaAboutParagraph(base({}))).toBe('The Toronto area has 2 transit agencies running 6 routes. At weekday midday, 3 run every 15 min or better. TTC (Toronto) has the most, with 2.');
+  it('uses one template with the typical wait', () => {
+    expect(areaAboutParagraph(base({}))).toBe('The Toronto area has 2 transit agencies running 6 routes. At weekday midday, the typical wait is every 12 min.');
   });
 
-  it('handles singular, none and all', () => {
-    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, within: { '10': 1, '15': 1, '30': 1 }, modes: { Bus: 1 } }], totalRoutes: 1, within: { '10': 1, '15': 1, '30': 1 } });
-    expect(areaAboutParagraph(one)).toBe('The Toronto area has 1 transit agency running 1 route. At weekday midday, 1 runs every 15 min or better.');
-    expect(areaAboutParagraph(base({ within: { '10': 0, '15': 0, '30': 0 } }))).toContain('none run every 15 min or better.');
-    expect(areaAboutParagraph(base({ within: { '10': 6, '15': 6, '30': 6 } }))).toContain('all run every 15 min or better.');
+  it('handles singular and no midday service', () => {
+    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1, typicalWait: 10 });
+    expect(areaAboutParagraph(one)).toBe('The Toronto area has 1 transit agency running 1 route. At weekday midday, the typical wait is every 10 min.');
+    expect(areaAboutParagraph(base({ typicalWait: null }))).not.toContain('typical wait');
   });
 });
 
