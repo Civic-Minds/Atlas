@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- Routes where a few pre-dawn or late-night trips run on their own shape no longer show "limited" daytime service and an empty hourly chart: the all-day pattern now carries the direction, so York Region Viva Blue to Newmarket reads every 16 at midday instead of limited ([#746](https://github.com/Civic-Minds/Atlas/issues/746)).
 - Redwood Coast Transit 20 now draws its route line from Eureka to Crescent City instead of a short stub, since long highway stretches between towns were mistaken for broken route data ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
 - NJ Transit's 14 commuter rail lines are back on the map, since their feed gives nearly every train its own copy of the line's shape ([#616](https://github.com/Civic-Minds/Atlas/issues/616)).
 - SamTrans 120 shows its weekday service again (every 15 min), since that day's feed gives every trip its own copy of the same route shape ([#775](https://github.com/Civic-Minds/Atlas/issues/775)).

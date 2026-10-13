@@ -952,11 +952,23 @@ export async function processGtfsBuffer(
     const existingHasShape = existing?.geometry.type === 'LineString';
     if (existing && existingHasShape && !hasRouteShape) continue;
     const replacesMaplessWithShape = existing != null && !existingHasShape && hasRouteShape;
+    // A pattern that runs only late at night or before dawn never wins the slot from one that
+    // runs in the day, whatever its headway: YRT Viva Blue's 11 pre-dawn Richmond Hill-Newmarket
+    // trips (median 11) took the Newmarket slot from the 85 all-day Finch trips (#746).
+    const daytime = (p: Partial<HeadwayByPeriod> | undefined) =>
+      p != null && (p.amPeak != null || p.midday != null || p.pmPeak != null || p.evening != null);
+    // Only between two real headways; span and irregular slots keep the rule below.
+    const bothTimed = existing != null && !replacesMaplessWithShape && newHeadway != null && existing.properties.headway != null;
+    const newDaytime = daytime(initialPeriodHeadways);
+    const existingDaytime = existing != null && daytime(existing.properties.headwayByPeriod as HeadwayByPeriod | undefined);
+    if (bothTimed && existingDaytime && !newDaytime) continue;
+    const replacesNightOnly = bothTimed && newDaytime && !existingDaytime;
     // Otherwise skip if: new result is span (null headway) — span never beats a real tier.
     // Or if existing already has an equal or better real headway.
     if (
       existing &&
       !replacesMaplessWithShape &&
+      !replacesNightOnly &&
       (newHeadway == null ||
        (existing.properties.headway != null &&
         (existing.properties.headway as number) <= newHeadway))
