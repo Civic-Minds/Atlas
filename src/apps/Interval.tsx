@@ -32,6 +32,7 @@ import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shar
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { getRegionalView } from '../utils/regionView';
 import { areaFitZoom } from '../../shared/areaIndex';
+import type { AreaSearchResult } from '../../shared/areaSearch';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -151,6 +152,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     () => (initialMapCenter ? null : parseAreaBounds(searchParams)),
     [], // eslint-disable-line react-hooks/exhaustive-deps
   );
+
+  // An area chosen in search: the map zooms to it like opening ?area=<slug>. The nonce re-fits a repeat pick.
+  const [areaFocus, setAreaFocus] = useState<{ bbox: [number, number, number, number]; nonce: number } | null>(null);
+  const handleSelectArea = useCallback((area: AreaSearchResult) => {
+    setAreaFocus(prev => ({ bbox: area.bbox, nonce: (prev?.nonce ?? 0) + 1 }));
+  }, []);
 
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try {
@@ -795,6 +802,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             routesForStop={routesForStop}
             onBoundsChange={onBoundsChange}
             resetViewKey={resetViewKey}
+            areaFocus={areaFocus}
             onLocate={onLocate}
             showMapContext={showMapContext}
             mapContextOpen={mapContextOpen}
@@ -875,6 +883,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 routesForStop={compareStats.routesForStop}
                 onBoundsChange={IGNORE_BOUNDS}
                 resetViewKey={resetViewKey}
+                areaFocus={areaFocus}
                 onLocate={onLocate}
                 showMapContext={false}
                 mapContextOpen={mapContextOpen}
@@ -1205,6 +1214,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         livePollingOnly={livePollingOnly}
         setLivePollingOnly={setLivePollingOnly}
         setSelectedAgencySlug={setSelectedAgencySlug}
+        onSelectArea={handleSelectArea}
         nightServiceView={nightServiceView}
         sidebarLeft={sidebarLeft}
         searchBarWidth={searchBarWidth}

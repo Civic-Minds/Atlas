@@ -1,3 +1,4 @@
+import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { getTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
@@ -78,6 +79,8 @@ interface SidebarControlsProps {
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   setSelectedAgencySlug?: (slug: string | null) => void;
+  /** Zoom the map to a metro area chosen in search. */
+  onSelectArea?: (area: AreaSearchResult) => void;
   nightServiceView?: boolean;
   sidebarLeft?: number;
   searchBarWidth?: number;
@@ -139,6 +142,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   livePollingOnly,
   setLivePollingOnly,
   setSelectedAgencySlug,
+  onSelectArea,
   nightServiceView = false,
   sidebarLeft,
   searchBarWidth,
@@ -849,6 +853,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     ),
     [matchedAgencyGroups, showAllSearchResults],
   );
+  const areaSearchResults = useMemo(
+    () => (!searchFocused || !query.trim() || !onSelectArea ? [] : searchAreas(query, new Set(agencies.map(a => a.slug)))),
+    [agencies, query, searchFocused, onSelectArea],
+  );
   const displayAgencyGroups = agencySearchDisplay.groups;
   const agencySections = useMemo(() => splitAgencyGroups(displayAgencyGroups), [displayAgencyGroups]);
   const routeSearchDisplay = useMemo(
@@ -889,6 +897,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   useEffect(() => {
     if (!searchEnterRef) return;
     searchEnterRef.current = () => {
+      // Areas are listed first, so Enter picks the first one when there is any.
+      const area = areaSearchResults[0];
+      if (area && onSelectArea) {
+        trackEvent('search_submitted', { app: analyticsApp, surface: 'global_search', result_type: 'area', result_count: areaSearchResults.length });
+        saveRecentSearch(query);
+        setQuery('');
+        setSearchFocused?.(false);
+        onSelectArea(area);
+        return;
+      }
       const action = resolveSearchEnterAction(displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops);
       if (!action) return;
       trackEvent('search_submitted', {
@@ -914,7 +932,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     };
     return () => { searchEnterRef.current = null; };
-  }, [searchEnterRef, displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops, setSelectedAgencySlug, setQuery, setSearchFocused, query, saveRecentSearch, setSelectedRoute, selectedRoute, setSelectedStop]);
+  }, [searchEnterRef, areaSearchResults, onSelectArea, analyticsApp, displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops, setSelectedAgencySlug, setQuery, setSearchFocused, query, saveRecentSearch, setSelectedRoute, selectedRoute, setSelectedStop]);
 
   const routesFirst = useMemo(
     () => routesBeforeAgencies(query, displayRouteResults, matchedAgencyGroups),
@@ -1104,6 +1122,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         {searchPanelActive && (searchMatchResults !== null || searchStopMatchResults !== null) && (
           <SearchResultsList
             query={query}
+            areaResults={areaSearchResults}
+            onSelectArea={onSelectArea}
             displayAgencyGroups={displayAgencyGroups}
             displayRouteResults={displayRouteResults}
             displayStopResults={stopSearchDisplay.stops}

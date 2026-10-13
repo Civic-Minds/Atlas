@@ -7,6 +7,7 @@ import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
 import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
+import type { AreaSearchResult } from '../../../shared/areaSearch';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -35,6 +36,9 @@ export function SearchSplitList<T>({
 
 interface SearchResultsListProps {
   query: string;
+  /** Metro areas matching the query; selecting one zooms the map to it. */
+  areaResults?: AreaSearchResult[];
+  onSelectArea?: (area: AreaSearchResult) => void;
   displayAgencyGroups: AgencySearchGroup[];
   displayRouteResults: RouteSearchResult[];
   displayStopResults?: StopSearchResult[];
@@ -63,6 +67,8 @@ interface SearchResultsListProps {
 
 export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   query,
+  areaResults = [],
+  onSelectArea,
   displayAgencyGroups,
   displayRouteResults,
   displayStopResults = [],
@@ -87,6 +93,32 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   hasMoreResults = false,
   onShowMoreResults,
 }) => {
+  const areaBlock = areaResults.length > 0 && onSelectArea ? (
+    <SearchSplitList
+      headLabel={`Areas · ${areaResults.length} ${areaResults.length === 1 ? 'match' : 'matches'}`}
+      inView={areaResults}
+      elsewhere={[]}
+      itemKey={(a: AreaSearchResult) => a.slug}
+      renderItem={(a: AreaSearchResult) => (
+        <RouteListRow
+          shortName={a.name}
+          variant="spaced"
+          onClick={() => {
+            saveRecentSearch(query);
+            setQuery('');
+            setSearchFocused?.(false);
+            onSelectArea(a);
+          }}
+          right={(
+            <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
+              {a.agencyCount} {a.agencyCount === 1 ? 'agency' : 'agencies'}
+            </span>
+          )}
+        />
+      )}
+    />
+  ) : null;
+
   const agencyBlock = displayAgencyGroups.length > 0 && setSelectedAgencySlug ? (
     <SearchSplitList
       headLabel={agencyResultsHeadLabel}
@@ -192,6 +224,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   ) : null;
 
   const noResults =
+    !areaBlock &&
     displayAgencyGroups.length === 0 &&
     displayRouteResults.length === 0 &&
     displayStopResults.length === 0;
@@ -204,13 +237,15 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         </div>
       ) : routesFirst ? (
         <>
-          {routeBlock}
+          {areaBlock}
+          {routeBlock && <div className={areaBlock ? 'pt-3' : undefined}>{routeBlock}</div>}
           {stopBlock && <div className="pt-3">{stopBlock}</div>}
           {agencyBlock && <div className="pt-3">{agencyBlock}</div>}
         </>
       ) : (
         <>
-          {agencyBlock}
+          {areaBlock}
+          {agencyBlock && <div className={areaBlock ? 'pt-3' : undefined}>{agencyBlock}</div>}
           {routeBlock && <div className="pt-3">{routeBlock}</div>}
           {stopBlock && <div className="pt-3">{stopBlock}</div>}
         </>

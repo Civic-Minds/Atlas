@@ -12,6 +12,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Added
 
+- **Search finds metro areas, not just agencies and stops**: typing "Montreal" (accents and case ignored) lists the area at the top, and picking it zooms the map there, like opening a ?area= link
+
 - **Every agency gets its own frequency page, with real numbers and a link into the map**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, an intro sentence naming the agencies it connects with (stops within 150 m), and nearby agencies, so the agency can be found in search once these go public.
 - **An index lists every agency and area page**: /agencies shows the areas first, then every agency by country and state or province with its route count, with a filter box that narrows the list as you type, and it is built from the same data as the pages and the sitemap, so new agencies appear on their own. Beta-only agencies show only on beta builds, like on the map.
 - **Metro area pages compare every agency in a city region**: each page opens with a frequency-band bar, links to every agency page in it, and Open in the map frames the whole area, so "Toronto area" shows the TTC, MiWay, GO and the rest together (Toronto includes Hamilton and Oshawa to match the GTHA).
