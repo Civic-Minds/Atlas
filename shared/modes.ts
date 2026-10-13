@@ -15,7 +15,7 @@ export interface EffectiveModeInput {
 /** Agency feeds whose route_type=0 entries are rail rather than streetcars. */
 export const VIRTUAL_LRT_AGENCIES = ['calgary', 'edmonton', 'gcrta', 'rem', 'octranspo', 'sacrt'] as const;
 
-const LRT_NAME_RE = /(?:CTrain|Capital Line|Metro Line|Valley Line|Valley Metro Rail|Metro [A-Za-z]+ Line|Metro Rail)/i;
+const LRT_NAME_RE = /(?:CTrain|Capital Line|Metro Line|Valley Line|Valley Metro Rail|Metro [A-Za-z]+ Line)/i;
 const SAN_DIEGO_RAIL_RE = /^(?:Blue|Copper|Green|Orange|Silver)$/i;
 
 /** Coerce GeoJSON / MVT routeType to a GTFS base type (defaults to bus). */
@@ -35,6 +35,8 @@ export function isVirtualLrt(p: EffectiveModeInput): boolean {
   if (rt === 0 && VIRTUAL_LRT_AGENCIES.includes(p.agencySlug as typeof VIRTUAL_LRT_AGENCIES[number])) return true;
   if (rt === 0 && /^Line \d/i.test(longName)) return true;
   if (rt === 0 && LRT_NAME_RE.test(longName)) return true;
+  // NFTA's Buffalo Metro Rail only; a generic /Metro Rail/ also matched CapMetro 550 and shifted its tier.
+  if (rt === 0 && p.agencySlug === 'nfta' && /Metro Rail/i.test(longName)) return true;
   if (rt === 0 && p.agencySlug === 'sdmts' && SAN_DIEGO_RAIL_RE.test(shortName)) return true;
   if (rt === 2 && /\bION\b/i.test(longName)) return true;
   return false;
