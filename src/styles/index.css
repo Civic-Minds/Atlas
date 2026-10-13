@@ -31,11 +31,12 @@ html {
   --control-inactive-border: var(--border-primary);
   --control-inactive-fg: var(--text-secondary);
   --control-hover-bg: var(--bg-btn-hover);
-  /* Toggles: pale tinted track with an accent knob when on; faint track with a grey knob when off. */
-  --toggle-on-bg: #b8b8c2;
-  --toggle-off-bg: #e8e8ec;
+  /* Toggles: off is a flat neutral grey track with a plain knob on the left; on is a tinted track
+     with an accent knob on the right, so the two never read alike. */
+  --toggle-on-bg: #a9a9b6;
+  --toggle-off-bg: #d4d4d8;
   --toggle-knob-on: var(--accent);
-  --toggle-knob-off: #9a9aa4;
+  --toggle-knob-off: #ffffff;
   /* Selected list rows keep their text legible, so they get a clear tint plus a solid edge. */
   --selection-active-bg: var(--accent-selected-bg);
   --selection-active-border: var(--accent);
@@ -78,10 +79,10 @@ html {
   --bg-btn: rgba(255, 255, 255, 0.05);
   --bg-btn-hover: rgba(255, 255, 255, 0.1);
   --bg-hover: var(--bg-btn-hover);
-  --toggle-on-bg: #46464e;
-  --toggle-off-bg: #232327;
+  --toggle-on-bg: #55555e;
+  --toggle-off-bg: #2f2f33;
   --toggle-knob-on: var(--accent);
-  --toggle-knob-off: #71717a;
+  --toggle-knob-off: #8b8b93;
   --text-legend: rgba(255, 255, 255, 0.7);
   --dim-route: #334155;
   /* Accent */
@@ -107,10 +108,10 @@ html {
   --control-inactive-border: #4b5563;
   --control-inactive-fg: #111827;
   --control-hover-bg: #f3f4f6;
-  --toggle-on-bg: #c7ccd4;
-  --toggle-off-bg: #f3f4f6;
+  --toggle-on-bg: #9ca3af;
+  --toggle-off-bg: #d1d5db;
   --toggle-knob-on: #111827;
-  --toggle-knob-off: #6b7280;
+  --toggle-knob-off: #ffffff;
   --selection-active-bg: #e5e7eb;
   --selection-active-border: #111827;
   --selection-active-fg: #111827;

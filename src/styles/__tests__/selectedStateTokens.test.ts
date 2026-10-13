@@ -83,8 +83,8 @@ describe.each(Object.entries(THEMES))('selected-state tokens (%s)', (_name, { to
 
   it('toggle on and off are distinct, with a visible accent knob on a pale track', () => {
     expect(contrast(get('--toggle-knob-on'), get('--toggle-on-bg'))).toBeGreaterThanOrEqual(3);
-    expect(contrast(get('--toggle-knob-off'), get('--toggle-off-bg'))).toBeGreaterThanOrEqual(2);
-    expect(contrast(get('--toggle-on-bg'), get('--toggle-off-bg'))).toBeGreaterThanOrEqual(1.2);
+    expect(contrast(get('--toggle-knob-off'), get('--toggle-off-bg'))).toBeGreaterThanOrEqual(1.3);
+    expect(contrast(get('--toggle-on-bg'), get('--toggle-off-bg'))).toBeGreaterThanOrEqual(1.4);
     // The on knob is clearly stronger than the off knob against its own track.
     expect(contrast(get('--toggle-knob-on'), get('--toggle-on-bg'))).toBeGreaterThan(contrast(get('--toggle-knob-off'), get('--toggle-off-bg')));
     // Never a stark track: the on track stays close to the surface.
