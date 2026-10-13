@@ -1,5 +1,16 @@
 # Product decisions
 
+## 2026-10-13 — Modes come from GTFS route_type; known ambiguities are listed overrides
+
+A route's mode is the agency's GTFS route_type, unchanged. Where a feed is ambiguous or wrong
+(light rail published as tram, Miami Metrorail as commuter rail, QLine as rail, a streetcar
+published as a bus), the correction is an explicit per-route `modeOverrides` entry in
+`config/agencies/<slug>.json`, each with the route, the route_type being corrected, the right
+mode and a short reason. Modes are never guessed from names. One shared definition in
+`shared/modes.ts` sets mode order and plain-word labels (Subway/Metro, Light rail, Streetcar,
+Commuter rail, Bus, Ferry, Gondola/aerial tram, On-demand) for the map menu, agency and area
+pages, sentences and counters. Refs #827, #811.
+
 ## 2026-07-29 — Curate History around meaningful service change
 
 Atlas History is intentionally enabled for selected agencies rather than

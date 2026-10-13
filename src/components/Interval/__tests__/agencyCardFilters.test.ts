@@ -12,7 +12,7 @@ describe('agency card filters', () => {
   it('builds mode and subtype chips from routes', () => {
     const chips = buildAgencyRouteFilters(routes);
     expect(chips).toEqual([
-      { key: 'mode:1', label: 'Subway', count: 2 },
+      { key: 'mode:1', label: 'Subway/Metro', count: 2 },
       { key: 'subtype:express', label: 'Express', count: 1 },
     ]);
   });
@@ -28,8 +28,8 @@ describe('agency card filters', () => {
       { routeId: '5', agencySlug: 'ttc', shortName: '5', longName: 'Line 5 Eglinton', headway: 6, limited: false, tier: '10', routeType: 0, busSubType: undefined, matchesFilter: true },
     ]);
     expect(chips).toEqual([
+      { key: 'mode:100', label: 'Light rail', count: 1 },
       { key: 'mode:0', label: 'Streetcar', count: 1 },
-      { key: 'mode:100', label: 'LRT', count: 1 },
     ]);
   });
 

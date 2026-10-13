@@ -12,6 +12,7 @@ import {
   modeLabel,
   type AgencyPageSummary,
 } from './agencyPages';
+import { modeLabelSortIndex } from './modes';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL } from './seo';
@@ -51,7 +52,6 @@ export interface AreaPageData {
   releaseDate: string | null;
 }
 
-const MODE_ORDER = ['Subway', 'Light rail', 'Streetcar', 'Rail', 'Monorail', 'Bus', 'Trolleybus', 'Ferry', 'Cable car', 'Gondola', 'Funicular'];
 const SPAN_VARIES_HOURS = 3;
 
 /** Agencies of the area that have a page (weekday midday service), in the area's own order. */
@@ -94,7 +94,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
   const best = bestRoute(members.flatMap(a => a.routes.map(r => ({ ...r, agency: a.displayName }))));
   const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
   const byMode = [...modeCounts.entries()].map(([label, routes]) => ({ label, routes }))
-    .sort((x, y) => (MODE_ORDER.indexOf(x.label) + 1 || 99) - (MODE_ORDER.indexOf(y.label) + 1 || 99));
+    .sort((x, y) => modeLabelSortIndex(x.label) - modeLabelSortIndex(y.label));
   return {
     area: { slug, name, type, officialName, country, cities, bbox, center, ...(note ? { note } : {}) },
     totalRoutes: allRoutes.length,

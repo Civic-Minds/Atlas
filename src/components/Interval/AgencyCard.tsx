@@ -11,7 +11,7 @@ import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, SIDEBAR_LEFT_FALLBACK } from '.
 import Panel from '../ui/Panel';
 import Pill from '../ui/Pill';
 import { HEADWAY_TIERS } from '../../utils/colors';
-import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT_MODE } from '../../../shared/modes';
+import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
 import { agencyDisplayParts, getRouteLabel, shouldHideNumericRouteShortName, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
@@ -199,14 +199,19 @@ export function buildHeaderSummary(
   return parts.join(' · ');
 }
 
-function railBlurbLabel(route: RouteRow): string | null {
-  const mode = effectiveMode({
+function routeMode(route: RouteRow): number {
+  return effectiveMode({
     routeType: route.routeType,
     routeLongName: route.longName,
+    routeShortName: route.shortName,
     agencySlug: route.agencySlug,
   });
-  if (mode === VIRTUAL_LRT_MODE) return 'LRT';
-  return GTFS_RAIL_MODE_LABELS[mode] ?? null;
+}
+
+/** Mode chip label for non-bus routes (buses are the default and get no chip). */
+function railBlurbLabel(route: RouteRow): string | null {
+  const mode = routeMode(route);
+  return mode === 3 ? null : knownModeLabel(mode);
 }
 
 export type AgencyRouteFilterKey = `mode:${number}` | 'subtype:brt' | 'subtype:express';
@@ -224,22 +229,18 @@ export function buildAgencyRouteFilters(routes: RouteRow[]): AgencyRouteFilter[]
   for (const r of routes) {
     const label = railBlurbLabel(r);
     if (!label) continue;
-    const mode = effectiveMode({
-      routeType: r.routeType,
-      routeLongName: r.longName,
-      agencySlug: r.agencySlug,
-    });
+    const mode = routeMode(r);
     const list = byMode.get(mode) ?? [];
     list.push(r);
     byMode.set(mode, list);
   }
 
-  for (const [mode, rs] of [...byMode.entries()].sort((a, b) => b[1].length - a[1].length)) {
+  for (const [mode, rs] of sortModes(byMode.entries(), ([m]) => m)) {
     const label = railBlurbLabel(rs[0]);
     if (!label) continue;
     chips.push({
       key: `mode:${mode}`,
-      label: titleCase(label),
+      label,
       count: rs.length,
     });
   }
@@ -259,12 +260,7 @@ export function buildAgencyRouteFilters(routes: RouteRow[]): AgencyRouteFilter[]
 
 export function routeMatchesAgencyFilter(r: RouteRow, filter: AgencyRouteFilterKey): boolean {
   if (filter.startsWith('mode:')) {
-    const mode = Number(filter.slice(5));
-    return effectiveMode({
-      routeType: r.routeType,
-      routeLongName: r.longName,
-      agencySlug: r.agencySlug,
-    }) === mode;
+    return routeMode(r) === Number(filter.slice(5));
   }
   if (filter === 'subtype:brt') return r.busSubType === 'brt';
   if (filter === 'subtype:express') return r.busSubType === 'express';

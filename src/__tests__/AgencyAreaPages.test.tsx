@@ -71,9 +71,9 @@ describe('AgencyPage intro', () => {
 
   it('says it once under the title, linking connecting agencies that have a page and counting the rest', () => {
     const d = agencyPageData(withConns, [withConns, HSR], null);
-    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway, 3 bus) in Toronto with 7,566 stops and connects with Hamilton Street Railway, Tiny Transit, C and 1 other.');
+    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway/metro, 3 bus) in Toronto with 7,566 stops and connects with Hamilton Street Railway, Tiny Transit, C and 1 other.');
     view(<AgencyPage data={d} />);
-    const p = screen.getByText(/operates 5 routes \(2 subway, 3 bus\) in Toronto with 7,566 stops/);
+    const p = screen.getByText(/operates 5 routes \(2 subway\/metro, 3 bus\) in Toronto with 7,566 stops/);
     expect(p.textContent).toBe(d.intro);
     expect(document.body.textContent!.split('operates 5 routes (').length - 1).toBe(1);
     expect(screen.getAllByRole('link', { name: 'Hamilton Street Railway' })[0].getAttribute('href')).toBe('/agency/hsr');
@@ -134,7 +134,7 @@ describe('AreaPage', () => {
   it('lists agencies in a table with only the mode columns the area has, and links each agency', () => {
     view(<AreaPage data={data} />);
     const headers = screen.getAllByRole('columnheader').map(h => h.textContent);
-    expect(headers).toEqual(['Agency', 'Subway', 'Bus']);
+    expect(headers).toEqual(['Agency', 'Subway/Metro', 'Bus']);
     expect(screen.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
     const ttcRow = screen.getByRole('link', { name: 'Toronto Transit Commission' }).closest('tr')!;
     const hsrRow = screen.getByRole('link', { name: 'Hamilton Street Railway' }).closest('tr')!;

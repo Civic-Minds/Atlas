@@ -33,7 +33,7 @@ describe('agency page text', () => {
   it('counts routes and groups them by mode', () => {
     const s = agencyStats(TTC);
     expect(s.totalRoutes).toBe(5);
-    expect(s.byMode.map(m => [m.label, m.routes.length])).toEqual([['Subway', 2], ['Bus', 3]]);
+    expect(s.byMode.map(m => [m.label, m.routes.length])).toEqual([['Subway/Metro', 2], ['Bus', 3]]);
   });
 
   it('picks the route with the shortest midday headway, ignoring missing values', () => {
@@ -44,7 +44,7 @@ describe('agency page text', () => {
   });
 
   it('writes the modes line and the weekend label', () => {
-    expect(modesText([{ label: 'Subway', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }])).toBe('3 subway · 2 light rail · 209 bus');
+    expect(modesText([{ label: 'Subway/Metro', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }])).toBe('3 subway/metro · 2 light rail · 209 bus');
     expect(modesText([])).toBe('');
     expect(weekendLabel(true, true)).toBe('Runs Sat & Sun');
     expect(weekendLabel(true, false)).toBe('Runs Saturdays');
@@ -170,8 +170,8 @@ describe('agencyIntroSentence', () => {
   });
 
   it('adds the mode split only with more than one mode', () => {
-    const modes = [{ label: 'Subway', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }];
-    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], modes)).toBe('Hamilton Street Railway operates 1 route (3 subway, 2 light rail, 209 bus) in Toronto with 1,980 stops.');
+    const modes = [{ label: 'Subway/Metro', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }];
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], modes)).toBe('Hamilton Street Railway operates 1 route (3 subway/metro, 2 light rail, 209 bus) in Toronto with 1,980 stops.');
     expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], [{ label: 'Bus', routes: 1 }])).not.toContain('(');
   });
 
