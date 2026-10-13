@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Added
 
+- **Agency pages stay in sync with the weekly data**: the weekly refresh now regenerates their numbers and "Atlas data release" date from the new release instead of going stale until someone reran it by hand.
 - **Every agency gets its own frequency page, with real numbers and a link into the map (beta)**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, and nearby agencies, so the agency can be found in search once these go public.
 - **Metro area pages compare every agency in a city region (beta)**: each page opens with a frequency-band bar, links to every agency page in it, and Open in the map frames the whole area, so "Toronto area" shows the TTC, MiWay, GO and the rest together (Toronto includes Hamilton and Oshawa to match the GTHA).
 - **Atlas is easier to find in search**: every page now has its own title, description and address for search results, About, Docs, Privacy and Terms carry their text in the page itself, a real sitemap and robots file are published, and made-up addresses now return a proper "not found" instead of the map.

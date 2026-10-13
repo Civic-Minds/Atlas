@@ -56,4 +56,22 @@ describe('weekly refresh workflow contract', () => {
     }
     expect(publish).toContain('npm run publish-data-release -- "${allow_args[@]}"');
   });
+
+  it('regenerates agency pages only after the release is published, via an auto-merging PR limited to those files', () => {
+    const workflow = readFileSync(resolve('.github/workflows/refresh-feeds.yml'), 'utf8');
+    const publish = workflow.indexOf('      - name: Publish verified data release');
+    const pr = workflow.indexOf('      - name: Open agency pages pull request');
+    const merge = workflow.indexOf('      - name: Auto-merge agency pages pull request once checks pass');
+    expect(pr).toBeGreaterThan(publish);
+    expect(merge).toBeGreaterThan(pr);
+    const prStep = workflow.slice(pr, merge);
+    expect(prStep).toContain('shared/data/agency-pages.json');
+    expect(prStep).toContain('shared/data/agency-page-slugs.json');
+    expect(prStep).toContain('Regenerate agency pages for release-');
+    expect(prStep).not.toMatch(/push-to-fork|signoff/);
+    expect(workflow.slice(merge)).toContain('gh pr merge');
+    // The generator runs inside publish-data-release, after the pointer moves.
+    const publishSrc = readFileSync(resolve('pipeline/publish-data-release.ts'), 'utf8');
+    expect(publishSrc.indexOf('build-agency-page-summaries.ts')).toBeGreaterThan(publishSrc.indexOf('Published Atlas data release'));
+  });
 });

@@ -176,3 +176,37 @@ jobs:
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # publish-data-release has just regenerated shared/data/agency-pages*.json from the new
+      # release (read-only against the public R2 URL, no extra secrets). Agency pages are
+      # prerendered from those committed files, so they go stale unless this lands on main. main
+      # is protected (required CI check), so it goes in as a small PR that auto-merges once CI is
+      # green: one Vercel deploy per week. A GITHUB_TOKEN PR does not start CI, so add a
+      # PAT/App token as the ATLAS_BOT_TOKEN secret for the auto-merge to complete on its own;
+      # without it the PR waits for a manual merge. Skipped when the files did not change.
+      - name: Read the published release id
+        id: agency-pages-release
+        run: echo "id=$(node -p "require('./shared/data/agency-pages.json').releaseId")" >> "$GITHUB_OUTPUT"
+
+      - name: Open agency pages pull request
+        id: agency-pages-pr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.ATLAS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          add-paths: |
+            shared/data/agency-pages.json
+            shared/data/agency-page-slugs.json
+          commit-message: "Regenerate agency pages for release-${{ steps.agency-pages-release.outputs.id }}"
+          title: "Regenerate agency pages for release-${{ steps.agency-pages-release.outputs.id }}"
+          body: |
+            Automated: agency page data regenerated from the data release that was just published, so agency pages match the live map.
+          branch: automation/agency-pages
+          delete-branch: true
+          labels: data-quality,pipeline
+
+      - name: Auto-merge agency pages pull request once checks pass
+        if: steps.agency-pages-pr.outputs.pull-request-number != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.ATLAS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: gh pr merge "${{ steps.agency-pages-pr.outputs.pull-request-number }}" --auto --squash
