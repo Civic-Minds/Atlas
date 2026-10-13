@@ -31,7 +31,7 @@ import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
-import { trackEvent, trackPageView } from './lib/analytics';
+import { trackEvent } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 import type { NightServiceFrequency } from '../shared/nightService';
@@ -188,10 +188,6 @@ export default function App() {
   useEffect(() => {
     if (gated) navigate('/', { replace: true });
   }, [gated, navigate]);
-
-  useEffect(() => {
-    trackPageView(pathname);
-  }, [pathname]);
 
   function setActiveApp(app: AppId) {
     trackEvent('app_opened', { app });

@@ -36,7 +36,7 @@ import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import { useOnDemandStatus, useReportOnDemandVisible } from '../../hooks/useOnDemandData';
 import { FEATURES } from '../../../shared/config';
-import { withShareTags, SHARE_UTM_MEDIUM_LINK, type ShareMedium } from '../../lib/analytics';
+import { trackEvent, withShareTags, SHARE_UTM_MEDIUM_LINK, type ShareMedium } from '../../lib/analytics';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
@@ -1793,6 +1793,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const handleReportIssue = () => {
     if (!mapContextMenu) return;
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
+    trackEvent('report_issue_opened', { source: 'map_context_menu' });
     const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
     const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
     const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('user-reported')}`;

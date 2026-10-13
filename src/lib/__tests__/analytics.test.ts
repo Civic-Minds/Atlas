@@ -107,3 +107,18 @@ describe('withShareTags', () => {
     expect(parseModesParam(search)).toEqual(parseModesParam(plain));
   });
 });
+
+describe('events stay off for internal sessions', () => {
+  it('queues nothing and sends nothing for outbound_click', async () => {
+    vi.resetModules();
+    vi.stubEnv('PROD', true);
+    vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'G-TEST123');
+    window.history.replaceState({}, '', '/?atlas_internal=1');
+    const { initAnalytics, trackEvent } = await import('../analytics');
+    const gtag = vi.fn();
+    window.gtag = gtag;
+    initAnalytics();
+    trackEvent('outbound_click', { kind: 'fares' });
+    expect(gtag).not.toHaveBeenCalled();
+  });
+});

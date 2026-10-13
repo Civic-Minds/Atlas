@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Added
 
+- Analytics now count map exports, outbound link clicks, report-issue and feedback opens, and page views on the About, Docs, Privacy and Terms pages, so we can see which features get used (internal sessions stay excluded).
 - On the beta site, shared map images now include a link back to the map, and shared links are tagged so shared visits can be counted in analytics.
 - On-demand zones now load from Atlas's data storage only when on-demand is shown, instead of shipping about 1.5 MB of zone data to every visitor, and the map says when they couldn't load instead of showing an empty area. New zones can be added without a site update, after passing checks for broken shapes, eligibility-only service, dropped zones, lost hours and old sources (CIV-50).
 - On-demand zone outlines, fills and stop dots are thin and light when zoomed out to a region, so they no longer outweigh the routes, and reach full strength by street zoom (beta only).

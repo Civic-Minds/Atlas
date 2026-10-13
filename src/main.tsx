@@ -11,6 +11,7 @@ import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
 import AnalyticsConsent from './components/AnalyticsConsent';
 import { ColorVisionProvider } from './context/ColorVisionContext';
+import RouteTracker from './components/RouteTracker';
 import { isInternalTestSession } from './lib/internalTest';
 
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
@@ -34,6 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <ColorVisionProvider>
         <AnalyticsConsent />
+        <RouteTracker />
         <React.Suspense fallback={null}>
           <Routes>
           {/* Maintainer-only research page; it is never included in built bundles. */}
