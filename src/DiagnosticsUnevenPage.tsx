@@ -7,6 +7,7 @@ import { TIME_PERIODS, type PeriodKey } from '../shared/config';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { FLOATING_CARD, CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
 import type { Agency } from './App';
+import { delayAmount, headwayAbout } from './utils/headwayText';
 
 const MAX_CONCURRENT_FETCHES = 8;
 
@@ -236,7 +237,7 @@ export default function DiagnosticsUnevenPage() {
                       <td className="px-4 py-2.5 whitespace-nowrap font-medium">{row.route}</td>
                       <td className="px-4 py-2.5 whitespace-nowrap text-[var(--text-dim)]">{row.period}</td>
                       <td className="px-4 py-2.5 whitespace-nowrap">
-                        {row.maxGap} min <span className="text-[var(--text-dim)]">(usually {row.headway} min)</span>
+                        {delayAmount(row.maxGap)} <span className="text-[var(--text-dim)]">({headwayAbout(row.headway)})</span>
                       </td>
                       <td className="px-4 py-2.5 text-[var(--text-dim)]">{row.headsign}</td>
                     </tr>

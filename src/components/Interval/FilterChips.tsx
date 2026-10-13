@@ -13,6 +13,7 @@ import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorVision } from '../../context/ColorVisionContext';
+import { headwayAmount, headwayBandLabel, headwayFilterLabel, headwayTierLabel } from '../../utils/headwayText';
 
 export { getNowDay };
 
@@ -314,7 +315,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
           {([30, 60] as const).map(value => (
             <button key={value} onClick={() => setNightServiceFrequency(value)} className={compactOptBtn(nightServiceFrequency === value, colorMode === 'friendly')} aria-pressed={nightServiceFrequency === value}>
-              {value} min
+              {headwayAmount(value)}
             </button>
           ))}
         </div>
@@ -339,12 +340,12 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           </div>}
         </div>
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-          {([15, 30] as const).map(value => <button key={value} onClick={() => setResearchFrequency(value)} className={compactOptBtn(researchFrequency === value, colorMode === 'friendly')} aria-pressed={researchFrequency === value}>{value} min</button>)}
+          {([15, 30] as const).map(value => <button key={value} onClick={() => setResearchFrequency(value)} className={compactOptBtn(researchFrequency === value, colorMode === 'friendly')} aria-pressed={researchFrequency === value}>{headwayAmount(value)}</button>)}
         </div>
         {researchFrequency === 30 && (
           <div className="hidden xl:flex items-center gap-2 text-[9px] font-bold text-[var(--text-muted)]" aria-label="30-minute view legend">
-            <span className="flex items-center gap-1"><span className="inline-block h-1 rounded-full" style={{ background: getTierColor('15', colorMode), width: 12 }} />≤15 min</span>
-            <span className="flex items-center gap-1"><span className="inline-block h-0.5 rounded-full" style={{ background: getTierColor('30', colorMode), width: 12 }} />16–30 min</span>
+            <span className="flex items-center gap-1"><span className="inline-block h-1 rounded-full" style={{ background: getTierColor('15', colorMode), width: 12 }} />{headwayTierLabel(15)}</span>
+            <span className="flex items-center gap-1"><span className="inline-block h-0.5 rounded-full" style={{ background: getTierColor('30', colorMode), width: 12 }} />{headwayBandLabel(16, 30)}</span>
           </div>
         )}
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
@@ -376,7 +377,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                 key={label}
                 onClick={() => { setMaxHeadway(max); setOpenChip(null); }}
                 className={rowBtn(isSelected, colorMode === 'friendly')}
-                aria-label={max === Infinity ? 'Show all routes' : `Every ${max} min or better`}
+                aria-label={max === Infinity ? 'Show all routes' : `${headwayFilterLabel(max)}`}
               >
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
                 {label === 'Infrequent' ? 'All' : label}

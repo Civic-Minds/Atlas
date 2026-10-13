@@ -42,6 +42,7 @@ import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../../../shared/routeHeadwayFilter';
 import { expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
+import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -308,7 +309,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const range = routeCardDisplayHeadwayRange(direction, period);
         const isLimited = routeCardDisplayLimited(direction, period);
-        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? `about every ${headway} min` : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
+        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? headwayAbout(headway) : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
@@ -330,7 +331,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       .map(direction => routeCardDisplayHeadway(direction, period))
       .filter((v): v is number => v != null))].sort((a, b) => a - b);
     const sharedLines = shared && branchHeadways.length > 0
-      ? [`- Shared stretch every ${shared.headway} min; each branch every ${branchHeadways.length === 1 ? branchHeadways[0] : `${branchHeadways[0]}-${branchHeadways[branchHeadways.length - 1]}`} min`]
+      ? [`- Shared stretch ${headwayAbout(shared.headway)}; each branch ${branchHeadways.length === 1 ? headwayAbout(branchHeadways[0]) : headwayAboutRange(branchHeadways[0], branchHeadways[branchHeadways.length - 1])}`]
       : [];
     return [...section, ...sharedLines, ...branchLines, ...limitedLines];
   });

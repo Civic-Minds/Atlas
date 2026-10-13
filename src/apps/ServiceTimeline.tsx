@@ -4,6 +4,7 @@ import { TIME_PERIODS, formatPeriodRangeLong } from '../../shared/config';
 import { type RouteGroup } from './corridor-types';
 import { fmtHeadway } from '../utils/format';
 import type { StopEntry } from './corridor-search';
+import { headwayTierLabel } from '../utils/headwayText';
 
 const TIMELINE_PERIODS = TIME_PERIODS.map(p => ({
   key: p.key,
@@ -98,11 +99,11 @@ export function ServiceTimeline({
       <div className="mt-6 flex items-center gap-3 flex-wrap">
         <span className="text-[10px] text-[var(--text-dim)] font-bold">Frequency</span>
         {[
-          { label: '≤10 min', hw: 10 },
-          { label: '≤15 min', hw: 15 },
-          { label: '≤20 min', hw: 20 },
-          { label: '≤30 min', hw: 30 },
-          { label: '≤60 min', hw: 60 },
+          { label: headwayTierLabel(10), hw: 10 },
+          { label: headwayTierLabel(15), hw: 15 },
+          { label: headwayTierLabel(20), hw: 20 },
+          { label: headwayTierLabel(30), hw: 30 },
+          { label: headwayTierLabel(60), hw: 60 },
           { label: '>60 min', hw: 120 },
         ].map(({ label, hw }) => {
           const { bg } = getTimelineHeadwayColor(hw);

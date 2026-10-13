@@ -1,4 +1,5 @@
 import { HEADWAY_TIERS, MAP_ZOOM_HEADWAY_STEPS, MAP_ZOOM_DEFAULT_MAX_HEADWAY, type HeadwayTier } from '../../shared/config';
+import { headwayTierLabel } from './headwayText';
 export { HEADWAY_TIERS };
 
 export interface StatusColor {
@@ -15,11 +16,11 @@ export type ColorVisionMode = 'default' | 'friendly';
  * the palette is not intended to be the only cue.
  */
 export const COLOR_VISION_HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: '#0072b2', label: '≤10m' },
-  { max: 15, color: '#009e73', label: '≤15m' },
-  { max: 20, color: '#56b4e9', label: '≤20m' },
-  { max: 30, color: '#e69f00', label: '≤30m' },
-  { max: 60, color: '#cc79a7', label: '≤60m' },
+  { max: 10, color: '#0072b2', label: headwayTierLabel(10) },
+  { max: 15, color: '#009e73', label: headwayTierLabel(15) },
+  { max: 20, color: '#56b4e9', label: headwayTierLabel(20) },
+  { max: 30, color: '#e69f00', label: headwayTierLabel(30) },
+  { max: 60, color: '#cc79a7', label: headwayTierLabel(60) },
   { max: Infinity, color: '#4d4d4d', label: 'Infrequent' },
 ];
 

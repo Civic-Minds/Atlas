@@ -18,6 +18,7 @@ import { periodKeyForHour } from '../../shared/config';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesEqual, liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
+import { capitalizeFirst, delayAmount, headwayAbout, headwayEvery } from '../utils/headwayText';
 
 interface Props {
   agencies: Agency[];
@@ -56,8 +57,8 @@ const ELIGIBLE_SLUGS = new Set(
 function delayLabel(v: LiveVehicle): string {
   if (v.statusLabel) return v.statusLabel;
   if (v.delayMin === null) return 'No data';
-  if (v.delayMin <= -1.5) return `${Math.round(Math.abs(v.delayMin))}m early`;
-  if (v.delayMin >= 5.5) return `${Math.round(v.delayMin)}m late`;
+  if (v.delayMin <= -1.5) return `${delayAmount(Math.round(Math.abs(v.delayMin)))} early`;
+  if (v.delayMin >= 5.5) return `${delayAmount(Math.round(v.delayMin))} late`;
   return 'On time';
 }
 
@@ -586,8 +587,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     }
 
     return scheduled != null
-      ? `Every ~${gap} min · scheduled every ${Math.round(scheduled)} min`
-      : `Every ~${gap} min`;
+      ? `${capitalizeFirst(headwayAbout(gap))} · scheduled ${headwayEvery(Math.round(scheduled))}`
+      : capitalizeFirst(headwayAbout(gap));
   }, [selectedGroup, headwaysBySlug, layers, localLayers]);
 
   if (!active) return null;

@@ -7,6 +7,7 @@ import { DAY_TYPES } from '../../../shared/dayTypes';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
+import { headwayFilterLabel } from '../../utils/headwayText';
 
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
 
@@ -23,7 +24,7 @@ const option = (active: boolean) =>
   `h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
 
 const PERIOD_OPTIONS = ['all', ...PERIOD_KEYS] as TimePeriod[];
-const frequencyOptionLabel = (max: number) => (max === Infinity ? 'All routes' : `Every ${max} min`);
+const frequencyOptionLabel = (max: number) => (max === Infinity ? 'All routes' : headwayFilterLabel(max));
 
 /** Frequency, day and time buttons for one compare side (the phone filter panel uses this for B). */
 export function CompareSidePicker({ side, onChange }: { side: CompareSide; onChange: (side: CompareSide) => void }) {

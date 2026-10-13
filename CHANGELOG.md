@@ -18,6 +18,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Agencies with unmapped on-demand service say so on their card (beta)**: partly mapped services name the missing part, and the On-demand filter notes that coverage is still growing, so a missing zone no longer looks like no service (CIV-23).
 - **The "In view" list has state and province pills (beta)**: they match the agency list, the What's new panel labels the map data date apart from the app version and merges overlapping notes, and the What's new pill now sits before Feedback.
 
+### Changed
+
+- **Frequency reads the same way everywhere, and Compare now says "or better"**: Compare headings read like a claim about the service rather than the filter, and the same frequency was worded eight different ways ("≤10m", "every 12m", "about every 10 min").
+
 ### Fixed
 
 - **Long names in list cards wrap instead of being cut off**: the full name is now readable, with a tooltip.
