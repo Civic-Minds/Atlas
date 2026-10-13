@@ -46,6 +46,11 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
  * so no other agency's data ships with the page. The dev server has no prerendered HTML and
  * loads from the full summary file instead (dead code in production builds).
  */
+/** A period cell: the card's cadence, "Limited" when the route runs but has no trustworthy cadence, else a dash. */
+function cell(v: number | null, r: { limited?: boolean }): string {
+  return v != null ? headwayEvery(v) : r.limited ? 'Limited' : headwayEvery(null);
+}
+
 export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }) {
   const params = useParams();
   const [data, setData] = useState<AgencyPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));
@@ -136,9 +141,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                         {r.night
                           ? <td colSpan={3} className="py-1.5 text-[var(--text-muted)]">Night only</td>
                           : <>
-                              <td className="py-1.5 pr-4">{headwayEvery(r.midday)}</td>
-                              <td className="py-1.5 pr-4">{headwayEvery(r.am)}</td>
-                              <td className="py-1.5">{headwayEvery(r.pm)}</td>
+                              <td className="py-1.5 pr-4">{cell(r.midday, r)}</td>
+                              <td className="py-1.5 pr-4">{cell(r.am, r)}</td>
+                              <td className="py-1.5">{cell(r.pm, r)}</td>
                             </>}
                       </tr>
                     ))}
