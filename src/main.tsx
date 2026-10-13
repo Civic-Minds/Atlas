@@ -17,6 +17,7 @@ import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
 import { isInternalTestSession } from './lib/internalTest';
 
+const AgencyPage = React.lazy(() => import('./AgencyPage'));
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
 
@@ -57,6 +58,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/about" element={<AboutPage />} />
           {/* Beta-only; on the public site /changelog falls through to the map. */}
           {FEATURES.whatsNew && <Route path="/changelog" element={<ChangelogPage />} />}
+          {FEATURES.agencyPages && <Route path="/agency/:slug" element={<AgencyPage />} />}
           <Route path="/*" element={<App />} />
           </Routes>
         </React.Suspense>
