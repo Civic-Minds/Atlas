@@ -145,12 +145,11 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={bandCounts(agency.routes)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
-            <p className="mt-8 text-sm leading-6 text-[var(--text-muted)]">A dash means no regular service in that period.</p>
             {stats.byMode.map(group => (
               <div key={group.mode} className="mt-4 overflow-x-auto">
                 <table className="w-full min-w-[44rem] table-fixed border-collapse text-left text-sm">
                   <colgroup><col className="w-64" /><col className="w-28" /><col className="w-28" /><col className="w-28" /><col className="w-28" /><col className="w-28" /></colgroup>
-                  <caption className="pb-2 text-left text-base font-black">{group.label} routes <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></caption>
+                  <caption className="pb-2 text-left text-base font-black">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></caption>
                   <thead>
                     <tr className="text-[var(--text-dim)]">
                       <th scope="col" className="py-1.5 pr-4 font-bold">Route</th>
