@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { agencyIndexDescription, buildAgencyIndexData, matchesFilter, resolveAgencyIndexSeo } from './agencyIndex';
+import { agencyIndexDescription, buildAgencyIndexData, resolveAgencyIndexSeo } from './agencyIndex';
 import type { AgencyPageSummary } from './agencyPages';
 
 const ag = (slug: string, name: string, country: string | undefined, region: string | undefined, routeCount: number, midday: number | null = 10): AgencyPageSummary => ({
@@ -19,7 +19,7 @@ describe('buildAgencyIndexData', () => {
   const d = buildAgencyIndexData(agencies, [AREA('toronto', 'Toronto', ['ttc', 'hsr']), AREA('empty', 'Nowhere', ['gone']), AREA('hidden', 'Hidden', ['mta'], false)], '2026-10-13');
 
   it('lists areas that have a page and an agency page, by region name', () => {
-    expect(d.areas).toEqual([{ slug: 'toronto', title: 'Greater Toronto and Hamilton Area' }]);
+    expect(d.areas).toEqual([{ slug: 'toronto', title: 'Greater Toronto and Hamilton Area', shortName: 'Greater Toronto and Hamilton Area' }]);
   });
 
   it('groups agencies by country then region, A to Z, with unknown places last', () => {
@@ -30,7 +30,7 @@ describe('buildAgencyIndexData', () => {
   });
 
   it('writes a description and a canonical, noindex outside public', () => {
-    expect(agencyIndexDescription(d)).toBe('5 transit agencies and 1 metro area, each with a page of route-by-route frequency from the published schedule.');
+    expect(agencyIndexDescription(d)).toBe('5 transit agencies and 1 region, each with a page of route-by-route frequency from the published schedule.');
     const seo = resolveAgencyIndexSeo(d, { mode: 'beta' });
     expect(seo.canonicalUrl).toBe('https://www.transitatlas.fyi/agencies');
     expect(seo.noindex).toBe(true);
@@ -38,10 +38,3 @@ describe('buildAgencyIndexData', () => {
   });
 });
 
-describe('matchesFilter', () => {
-  it('needs every typed word, in any case', () => {
-    expect(matchesFilter('Hamilton Street Railway Ontario Canada', 'hamil ontario')).toBe(true);
-    expect(matchesFilter('Hamilton Street Railway Ontario Canada', 'hamil texas')).toBe(false);
-    expect(matchesFilter('anything', '')).toBe(true);
-  });
-});

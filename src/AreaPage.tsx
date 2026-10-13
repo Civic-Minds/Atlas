@@ -56,7 +56,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
   if (!data) {
     return (
       <PageShell variant="wide">
-          <h1 className="mt-24 text-3xl font-black tracking-tight">No page for this area</h1>
+          <h1 className="mt-24 text-3xl font-black tracking-tight">No page for this region</h1>
           <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Atlas has no frequency page at this address.</p>
           <a href="/" className={`mt-6 inline-flex items-center gap-2 text-sm font-black ${LINK}`}>Open the Atlas map <ArrowRight className="h-4 w-4" /></a>
       </PageShell>
@@ -101,7 +101,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
           </section>
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
-            Area: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). Scheduled service, not live arrivals. {areaDatesText(data)}
+            Region: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). Scheduled service, not live arrivals. {areaDatesText(data)}
           </p>
         </article>
 
