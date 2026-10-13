@@ -134,8 +134,8 @@ export function encodeModesParam(modes: ReadonlySet<number>): string | null {
  * then copies A's frequency.
  *
  * Sharing: the page URL is the share link, so copying it reproduces both maps (A from `h`/`p`/
- * `day`, B from these). TODO: once withShareTags (share-utm branch) lands on main, run compare
- * links through it like every other share link; the compare params need no special handling.
+ * `day`, B from these). Compare links go through withShareTags like every other share link; the
+ * compare params need no special handling and survive tagging untouched.
  */
 export const COMPARE_DAY_PARAM = 'cday';
 export const COMPARE_PERIOD_PARAM = 'cp';

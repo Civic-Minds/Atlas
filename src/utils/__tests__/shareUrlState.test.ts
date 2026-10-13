@@ -13,6 +13,7 @@ import {
   shouldPersistAgencySelection,
 } from '../shareUrlState';
 import { mergeUrlSearchParams } from '../syncUrlParams';
+import { withShareTags } from '../../lib/analytics';
 
 const catalog = (n: number) => Array.from({ length: n }, (_, i) => `agency-${String(i).padStart(3, '0')}`);
 
@@ -222,6 +223,18 @@ describe('compare side B in the URL', () => {
     expect(sp.get('p')).toBe('late');
     expect(parseCompareSideParams(shared, { ...opts, fallbackHeadway: parseHeadwayValue(sp.get('h'))! }))
       .toEqual({ day: 'Weekday', period: 'late', maxHeadway: 20 });
+  });
+
+  it('a tagged compare link keeps both maps and drops the internal marker', () => {
+    const shared = mergeUrlSearchParams('?lat=43.7&lon=-79.4&z=11&atlas_internal=1', {
+      h: '10', p: 'late', ...encodeCompareSideParams({ day: 'Weekday', period: 'late', maxHeadway: 20 }),
+    });
+    const tagged = new URL(withShareTags(`https://atlas.test/?${shared}`, 'link', true));
+    expect(tagged.searchParams.get('utm_medium')).toBe('link');
+    expect(tagged.searchParams.has('atlas_internal')).toBe(false);
+    expect(parseCompareSideParams(tagged.search, { ...opts, fallbackHeadway: 10 }))
+      .toEqual({ day: 'Weekday', period: 'late', maxHeadway: 20 });
+    expect(tagged.searchParams.get('p')).toBe('late');
   });
 
   it('is not a compare link without a known day', () => {
