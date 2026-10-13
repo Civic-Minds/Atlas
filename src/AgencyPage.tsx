@@ -106,9 +106,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
             <a
               href={agencyMapHref(agency)}
-              className="inline-flex h-14 items-center gap-3 rounded-full border-2 border-[var(--accent)] px-8 text-lg font-black text-[var(--accent)] hover:bg-[var(--bg-btn-hover)]"
+              className="inline-flex h-12 items-center gap-2 rounded-full bg-[var(--control-active-bg)] px-6 text-base font-bold text-[var(--control-active-fg)] transition-colors hover:bg-[var(--control-active-border)]"
             >
-              Open in the map <ArrowRight className="h-5 w-5" aria-hidden="true" />
+              Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
             <a className={`text-base font-bold ${LINK}`} href="/about/docs#frequency">How Atlas measures frequency</a>
           </div>
