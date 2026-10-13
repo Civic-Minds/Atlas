@@ -67,6 +67,25 @@ export function sparklineSourceDirections(
   return withHours.filter(d => dirIdNum(d.directionId) === id);
 }
 
+/**
+ * "All directions" hourly series: the worst direction each hour (longest
+ * headway, fewest trips). Matches the filter rule that every direction must
+ * pass. Hours where only one direction runs use that direction.
+ */
+export function worstDirectionByHour(
+  series: Array<Partial<Record<number, number | null>>>,
+  hours: readonly number[],
+): Record<number, number | null> {
+  const out: Record<number, number | null> = {};
+  for (const h of hours) {
+    const values = series
+      .map(s => s[h])
+      .filter((v): v is number => v != null && v > 0);
+    out[h] = values.length > 0 ? Math.max(...values) : null;
+  }
+  return out;
+}
+
 /** Combined trunk headway from scheduled branch cadences on a shared section. */
 function isLimitedBranch(d: ShapeProperties): boolean {
   return d.tier === 'infrequent'
