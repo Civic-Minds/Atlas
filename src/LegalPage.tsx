@@ -9,7 +9,7 @@ type LegalDocument = 'terms' | 'privacy';
 const CONTACT_HREF = 'mailto:hey@ryanisnota.pro?subject=Atlas%20Privacy%20or%20Terms';
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
-  return <section id={id} className="scroll-mt-8"><h2 className="text-base font-black text-[var(--text-primary)] mb-2">{title}</h2><div className="space-y-2">{children}</div></section>;
+  return <section id={id} className="scroll-mt-24"><h2 className="text-base font-black text-[var(--text-primary)] mb-2">{title}</h2><div className="space-y-2">{children}</div></section>;
 }
 
 const CONTENTS = {
@@ -44,7 +44,7 @@ const CONTENTS = {
 export default function LegalPage({ document }: { document: LegalDocument }) {
   const privacy = document === 'privacy';
   return (
-    <PageShell>
+    <PageShell stickyHeader>
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents items={CONTENTS[privacy ? 'privacy' : 'terms'].map(([id, label]) => ({ id, label }))} />
           <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">

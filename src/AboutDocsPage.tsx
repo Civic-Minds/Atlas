@@ -24,7 +24,7 @@ const DOCS_CONTENTS = [
 
 function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-8">
+    <section id={id} className="scroll-mt-24">
       <h2 className="text-base font-black mb-2">{title}</h2>
       <div className="space-y-2 text-sm leading-relaxed text-[var(--text-dim)]">{children}</div>
     </section>
@@ -62,7 +62,7 @@ export default function AboutDocsPage() {
   const showCompare = FEATURES.compareMode;
 
   return (
-    <PageShell>
+    <PageShell stickyHeader>
 
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents items={DOCS_CONTENTS.map(([id, label]) => ({ id, label }))} />
