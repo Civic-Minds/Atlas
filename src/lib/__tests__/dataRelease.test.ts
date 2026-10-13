@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { clearDataReleaseCache, dataReleaseApiUrl, dataReleaseAssetUrl, isCompatibleDataRelease, resolveDataRelease } from '../dataRelease';
+import { clearDataReleaseCache, loadDataReleases, resolveReleaseHistory, dataReleaseApiUrl, dataReleaseAssetUrl, isCompatibleDataRelease, resolveDataRelease } from '../dataRelease';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../../../shared/artifactSchema';
 
 afterEach(() => {
@@ -74,5 +74,31 @@ describe('data releases', () => {
     vi.stubGlobal('fetch', fetchMock);
     await expect(resolveDataRelease('https://data.example')).resolves.toMatchObject({ releaseId: 'release-test' });
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('release history', () => {
+  it('reads the history file and drops malformed entries', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [{ releaseId: 'release-a', generatedAt: '2026-10-01T00:00:00Z' }, { releaseId: 'bad', generatedAt: 'x' }, null],
+    }));
+    expect(await resolveReleaseHistory('https://data.example')).toEqual([{ releaseId: 'release-a', generatedAt: '2026-10-01T00:00:00Z' }]);
+    expect(vi.mocked(fetch).mock.calls[0][0]).toBe('https://data.example/atlas/release-history.json');
+  });
+
+  it('returns null when the history is missing or the request fails', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 404 }));
+    expect(await resolveReleaseHistory('https://data.example')).toBeNull();
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
+    expect(await resolveReleaseHistory('https://data.example')).toBeNull();
+  });
+
+  it('falls back to the live pointer when there is no history, and adds it when the history lags', async () => {
+    const latest = { releaseId: 'release-b', generatedAt: '2026-10-12T00:00:00Z' };
+    expect(await loadDataReleases(async () => null, async () => latest)).toEqual([latest]);
+    const old = { releaseId: 'release-a', generatedAt: '2026-10-01T00:00:00Z' };
+    expect(await loadDataReleases(async () => [old], async () => latest)).toEqual([old, latest]);
+    expect(await loadDataReleases(async () => { throw new Error('x'); }, async () => null)).toEqual([]);
   });
 });

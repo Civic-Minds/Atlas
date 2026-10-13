@@ -90,12 +90,27 @@ interface SidebarControlsProps {
   setHoveredBranch: (b: HoveredBranch | null) => void;
   selectedRouteOutOfFilter?: boolean;
   compareRows?: CompareRouteRow[] | null;
+  /**
+   * Compare mode: each map's label and controls sit in a row at the top, so the panel starts
+   * below that row instead of covering map A's settings.
+   */
+  compareActive?: boolean;
   onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
   analyticsApp?: string;
   onSearchRouteHover?: (key: string | null) => void;
 }
+
+/** Below map A's compare label and controls row (label, then a row of chips, from 68px). */
+const COMPARE_PANEL_TOP = 160;
+
+/**
+ * Phone bottom sheet while comparing: map B is the lower half, with its label and Frequency, Day and
+ * Time chips about 108px into it. The short sheet starts below them, so they stay usable with a card
+ * open; dragging the sheet up still covers them on purpose.
+ */
+const COMPARE_SHEET_HEIGHT = 'h-[calc(50dvh-108px)]';
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
   query,
@@ -139,6 +154,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setHoveredBranch,
   selectedRouteOutOfFilter = false,
   compareRows = null,
+  compareActive = false,
   onDirectFromStop,
   onInfoOpen,
   searchEnterRef,
@@ -1037,6 +1053,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+        ...(compareActive ? { top: `${COMPARE_PANEL_TOP}px`, maxHeight: `calc(100vh - ${COMPARE_PANEL_TOP + 64}px)` } : {}),
         ...(matchSearchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}
     >
@@ -1065,7 +1082,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         onScroll={checkScroll}
         data-report-anchor="true"
         className={sheetMode
-          ? `relative ${FLOATING_CARD} rounded-b-none px-4 pt-0 pb-[max(0.5rem,env(safe-area-inset-bottom))] overflow-y-auto overflow-x-hidden overscroll-contain transition-[height] duration-200 ease-out ${sheetExpanded ? 'h-[calc(100dvh-76px)]' : 'h-[42dvh]'}`
+          ? `relative ${FLOATING_CARD} rounded-b-none px-4 pt-0 pb-[max(0.5rem,env(safe-area-inset-bottom))] overflow-y-auto overflow-x-hidden overscroll-contain transition-[height] duration-200 ease-out ${sheetExpanded ? 'h-[calc(100dvh-76px)]' : compareActive ? COMPARE_SHEET_HEIGHT : 'h-[42dvh]'}`
           : `relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 transition-colors ${TRANSITION_BASE} overflow-y-auto overflow-x-hidden custom-scrollbar`}
       >
         {sheetMode && (

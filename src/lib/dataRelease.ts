@@ -1,4 +1,5 @@
 import { BETA_R2_PUBLIC_URL, R2_PUBLIC_URL } from '../../shared/config';
+import { RELEASE_HISTORY_KEY, parseReleaseHistory, type ReleaseHistoryEntry } from '../../shared/releaseHistory';
 import { isAcceptedTileRulesVersion, ROUTE_ARTIFACT_SCHEMA_VERSION } from '../../shared/artifactSchema';
 
 export interface DataRelease {
@@ -72,6 +73,27 @@ export function resolveDataRelease(baseUrl = R2_PUBLIC_URL): Promise<DataRelease
     .catch(() => null);
   releases.set(key, request);
   return request;
+}
+
+/** Every published data release, or null when the history file is missing or unreadable. */
+export async function resolveReleaseHistory(baseUrl = R2_PUBLIC_URL): Promise<ReleaseHistoryEntry[] | null> {
+  try {
+    const response = await fetch(`${baseUrl.replace(/\/$/, '')}/${RELEASE_HISTORY_KEY}`, { cache: 'no-store' });
+    if (!response.ok) return null;
+    const entries = parseReleaseHistory(await response.json());
+    return entries.length ? entries : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Data releases for the changelog: the history, plus the live pointer in case the history lags; the pointer alone when there is no history. */
+export async function loadDataReleases(
+  loadHistory: () => Promise<ReleaseHistoryEntry[] | null> = resolveReleaseHistory,
+  loadLatest: () => Promise<Partial<ReleaseHistoryEntry> | null> = resolveDataRelease,
+): Promise<Array<Partial<ReleaseHistoryEntry>>> {
+  const [history, latest] = await Promise.all([loadHistory().catch(() => null), loadLatest().catch(() => null)]);
+  return [...(history ?? []), ...(latest ? [latest] : [])];
 }
 
 export function dataReleaseAssetUrl(release: DataRelease, key: string, baseUrl = R2_PUBLIC_URL): string {

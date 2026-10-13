@@ -1,3 +1,4 @@
+import { FEATURES } from '../../shared/config';
 import { isInternalTestSession } from './internalTest';
 
 const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
@@ -83,4 +84,53 @@ export function trackEvent(name: string, parameters: Record<string, string | num
     return;
   }
   window.gtag('event', name, contextualParameters);
+}
+
+export const SHARE_UTM_SOURCE = 'atlas_share';
+export const SHARE_UTM_MEDIUM_IMAGE = 'image';
+export const SHARE_UTM_MEDIUM_LINK = 'link';
+export type ShareMedium = typeof SHARE_UTM_MEDIUM_IMAGE | typeof SHARE_UTM_MEDIUM_LINK;
+
+/**
+ * The one place share links get their analytics tags, so shared visits can be counted (GA and
+ * Vercel read utm_ params natively). Existing utm_source/utm_medium are replaced, never
+ * duplicated, so re-sharing a tagged link stays clean. With `enabled` false (beta flag off) the
+ * URL is returned untouched. Nothing reads these params back: URL-state parsers only look at their
+ * own named params, so an arriving utm tag is ignored.
+ */
+export function withShareTags(url: string, medium?: ShareMedium, enabled: boolean = FEATURES.shareUtm): string {
+  const u = new URL(url);
+  // Always (on public too): a copied link must not carry the internal-session marker, which stays
+  // in the address bar and would exclude whoever opens the link from analytics, nor old utm tags.
+  u.searchParams.delete('atlas_internal');
+  for (const key of Array.from(u.searchParams.keys())) {
+    if (key.startsWith('utm_')) u.searchParams.delete(key);
+  }
+  if (enabled && medium) {
+    u.searchParams.set('utm_source', SHARE_UTM_SOURCE);
+    u.searchParams.set('utm_medium', medium);
+  }
+  return u.toString();
+}
+
+/** True when the URL carries any utm_ param. */
+export function hasUtmParams(url: string): boolean {
+  for (const key of new URL(url).searchParams.keys()) if (key.startsWith('utm_')) return true;
+  return false;
+}
+
+/**
+ * Send the first page view with the full landing URL (utm tags included, so GA can attribute the
+ * visit), then drop the utm params from the address bar. The URL is captured into the event now,
+ * so the strip is safe even though GA loads later and the event may still be queued.
+ */
+export function trackLandingPageView(path: string) {
+  const landing = window.location.href;
+  trackEvent('page_view', { page_path: path, page_location: landing });
+  if (!hasUtmParams(landing)) return;
+  const u = new URL(landing);
+  for (const key of Array.from(u.searchParams.keys())) {
+    if (key.startsWith('utm_')) u.searchParams.delete(key);
+  }
+  window.history.replaceState(window.history.state, '', `${u.pathname}${u.search}${u.hash}`);
 }

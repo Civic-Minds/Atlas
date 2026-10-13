@@ -4,6 +4,8 @@ import { FEATURES } from '../../../shared/config';
 import { version as appVersion } from '../../../package.json';
 import { shortVersion } from '../../data/whatsNew';
 import { WhatsNewPanel } from '../WhatsNewPanel';
+import { trackEvent } from '../../lib/analytics';
+import { OutboundLink } from '../OutboundLink';
 
 const ATTRIB_LINK =
   `${MAP_BADGE_LABEL} text-[var(--text-dim)] no-underline hover:text-[var(--text-primary)]`;
@@ -42,29 +44,28 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
       )}
       <a
         href={feedbackHref}
+        onClick={() => trackEvent('feedback_opened', { source: 'map_attribution' })}
         className={`${MAP_BADGE} h-8 ${MAP_BADGE_LABEL} no-underline hover:text-[var(--text-primary)]`}
       >
         Feedback
       </a>
       <div className={`${MAP_BADGE} h-8`}>
         <p className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>
-          <a
+          <OutboundLink
             href="https://www.openstreetmap.org/copyright"
-            target="_blank"
-            rel="noopener noreferrer"
+            kind="attribution"
             className={ATTRIB_LINK}
           >
             OpenStreetMap
-          </a>
+          </OutboundLink>
           <span className={MAP_BADGE_LABEL}> · </span>
-          <a
+          <OutboundLink
             href="https://carto.com/attributions"
-            target="_blank"
-            rel="noopener noreferrer"
+            kind="attribution"
             className={ATTRIB_LINK}
           >
             CARTO
-          </a>
+          </OutboundLink>
         </p>
       </div>
     </div>

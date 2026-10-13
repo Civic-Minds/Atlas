@@ -36,6 +36,7 @@ import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import { useOnDemandStatus, useReportOnDemandVisible } from '../../hooks/useOnDemandData';
 import { FEATURES } from '../../../shared/config';
+import { trackEvent, withShareTags, SHARE_UTM_MEDIUM_LINK, type ShareMedium } from '../../lib/analytics';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
@@ -325,6 +326,12 @@ interface MapCanvasProps {
    * saved view, has no map controls or context menu, and does not expose itself for debugging.
    */
   secondary?: boolean;
+  /**
+   * Zoom, locate and export buttons. Defaults to on for the main map and off for the second map.
+   * In compare mode the second (right / bottom) map shows them instead, so they sit at the
+   * bottom right of the whole view; the cameras are synced, so one set drives both maps.
+   */
+  showMapControls?: boolean;
   /** Receives the MapLibre map once it has loaded (and null when it is removed), for camera sync. */
   onMapReady?: (map: maplibregl.Map | null) => void;
   /** On-demand agency named in the opening URL (`?ondemand=`); frames its zones when the URL has no lat/lon. */
@@ -399,6 +406,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedAgencies,
   initialMapCenter,
   secondary = false,
+  showMapControls = !secondary,
   onMapReady,
   initialOnDemandSlug = null,
   onTileLoadingChange,
@@ -1769,18 +1777,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     };
   }, [mapLoaded]);
 
-  const buildLocationUrl = (lat: number, lon: number): string => {
+  const buildLocationUrl = (lat: number, lon: number, medium?: ShareMedium): string => {
     const map = mapRef.current;
     const sp = new URLSearchParams(window.location.search);
     sp.set('lat', lat.toFixed(5));
     sp.set('lon', lon.toFixed(5));
     sp.set('z', (map?.getZoom() ?? zoom).toFixed(2));
-    return `${window.location.origin}${window.location.pathname}?${sp.toString()}`;
+    const url = `${window.location.origin}${window.location.pathname}?${sp.toString()}`;
+    return withShareTags(url, medium);
   };
 
   const handleCopyLocationUrl = () => {
     if (!mapContextMenu) return;
-    const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
+    const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon, SHARE_UTM_MEDIUM_LINK);
     navigator.clipboard.writeText(url).then(
       () => showMapHint('Location URL copied'),
       () => showMapHint('Could not copy — clipboard access denied'),
@@ -1791,6 +1800,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const handleReportIssue = () => {
     if (!mapContextMenu) return;
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
+    trackEvent('report_issue_opened', { source: 'map_context_menu' });
     const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
     const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
     const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('user-reported')}`;
@@ -2452,7 +2462,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Map controls — one stack keeps the gaps identical at every map size. */}
-      {!secondary && <div className={`absolute bottom-6 right-3 ${Z_PANEL} flex flex-col gap-2 pointer-events-auto`}>
+      {showMapControls && <div className={`absolute bottom-6 right-3 ${Z_PANEL} flex flex-col gap-2 pointer-events-auto`}>
         {exportEnabled && (
           <button
             onClick={() => setExportDialogOpen(true)}

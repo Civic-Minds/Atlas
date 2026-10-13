@@ -5,6 +5,7 @@ import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { CARD_NOTICE, CARD_NOTICE_ACTION, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
 import { openAtlasProblemEmail } from '../../utils/reportIssue';
+import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
 import { useColorVision } from '../../context/ColorVisionContext';
 
@@ -141,7 +142,8 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
     setReportCardPosition({ top, left, width: cardWidth });
   }, []);
 
-  const openReport = () => {
+  const openReport = (source: string = 'card') => {
+    trackEvent('report_issue_opened', { source });
     setIsOpen(true);
     if (availableCategories.length === 1) setSelectedCategory(availableCategories[0].key);
     requestAnimationFrame(updateReportCardPosition);
@@ -177,7 +179,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
       if (reportReasons.includes(reason as (typeof REPORT_REASONS)[number])) {
         setSelectedReasons(current => current.includes(reason) ? current : [...current, reason]);
       }
-      openReport();
+      openReport('card_value_flag');
     },
   }), [reportReasons]);
 
@@ -239,7 +241,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
       <button
         type="button"
         ref={reportButtonRef}
-        onClick={openReport}
+        onClick={() => openReport()}
         aria-label="Report a problem with this card"
         title="Report a problem with this card"
         className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
