@@ -1,0 +1,25 @@
+{
+  "slug": "dubuque",
+  "name": "Dubuque",
+  "type": "MSA",
+  "officialName": "Dubuque, IA",
+  "country": "United States",
+  "cities": [
+    "Dubuque"
+  ],
+  "bbox": [
+    42.294633999689,
+    -91.13443899990432,
+    42.675081999797854,
+    -90.47379800005845
+  ],
+  "center": [
+    42.484857999743426,
+    -90.80411849998139
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "dubuque"
+  ],
+  "page": false
+}

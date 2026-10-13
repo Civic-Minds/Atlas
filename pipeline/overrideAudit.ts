@@ -34,6 +34,8 @@ export function issueRefFromUrl(issueUrl?: string): string | null {
 
 export type FeedVersionSnapshot = {
   lastFeedExpiry?: string | null;
+  /** Uncapped expiry from the last processing run; preferred over lastFeedExpiry, which caps placeholder dates (#688). */
+  lastPeekedExpiry?: string | null;
   lastFeedVersion?: string | null;
 };
 
@@ -43,15 +45,16 @@ export function upstreamFeedChanged(
   peekedExpiry: string | null,
   peekedVersion: string | null,
 ): boolean {
-  if (!agency.lastFeedExpiry && !agency.lastFeedVersion) return false;
+  const lastExpiry = agency.lastPeekedExpiry ?? agency.lastFeedExpiry;
+  if (!lastExpiry && !agency.lastFeedVersion) return false;
 
-  if (peekedExpiry && agency.lastFeedExpiry) {
-    return peekedExpiry !== agency.lastFeedExpiry;
+  if (peekedExpiry && lastExpiry) {
+    return peekedExpiry !== lastExpiry;
   }
   if (peekedVersion && agency.lastFeedVersion) {
     return peekedVersion !== agency.lastFeedVersion;
   }
-  if (peekedExpiry && peekedExpiry !== agency.lastFeedExpiry) return true;
+  if (peekedExpiry && peekedExpiry !== lastExpiry) return true;
   if (peekedVersion && peekedVersion !== agency.lastFeedVersion) return true;
   return false;
 }

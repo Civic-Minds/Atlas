@@ -1,0 +1,25 @@
+{
+  "slug": "louisville-jefferson-county",
+  "name": "Louisville/Jefferson County",
+  "type": "MSA",
+  "officialName": "Louisville/Jefferson County, KY-IN",
+  "country": "United States",
+  "cities": [
+    "Louisville/Jefferson County"
+  ],
+  "bbox": [
+    37.52295500025971,
+    -86.49086899957123,
+    38.78358800009849,
+    -84.86695199984557
+  ],
+  "center": [
+    38.1532715001791,
+    -85.6789104997084
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "tarc"
+  ],
+  "page": true
+}

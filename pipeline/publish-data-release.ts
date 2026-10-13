@@ -15,6 +15,7 @@
  * is written to tmp/release-diff/<releaseId>.md and .json.
  */
 import fs from 'fs';
+import { spawnSync } from 'child_process';
 import path from 'path';
 import { PMTiles } from 'pmtiles';
 import './loadEnv.js';
@@ -168,3 +169,17 @@ try {
 // A published manifest must not be publishable again from a later run.
 fs.rmSync(manifestPath);
 console.log(`Published Atlas data release ${manifest.releaseId} (${Object.keys(agencyStamps).length} agency snapshots and both tile archives verified).`);
+
+// Refresh the agency page summaries (shared/data/agency-pages*.json) from the release that just
+// went public. Read-only against R2. Strictly after the publish: a failure here, however it
+// fails, must not undo or block the release, so it only logs. The generator writes its files
+// atomically and leaves them untouched when most agencies fail. Commit the changed files afterwards.
+try {
+  const result = spawnSync('npx', ['tsx', 'scripts/build-agency-page-summaries.ts'], { stdio: 'inherit', timeout: 30 * 60 * 1000 });
+  if (result.status !== 0) throw new Error(result.error?.message ?? `exited with ${result.status ?? result.signal}`);
+  console.log('Agency page summaries refreshed from the new release; commit shared/data/agency-pages.json and agency-page-slugs.json.');
+} catch (err) {
+  console.error('\n!!! RELEASE PUBLISHED, BUT THE AGENCY PAGE SUMMARIES WERE NOT REFRESHED !!!');
+  console.error(`    ${err instanceof Error ? err.message : err}`);
+  console.error('    Run: npx tsx scripts/build-agency-page-summaries.ts\n');
+}

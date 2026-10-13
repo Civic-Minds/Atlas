@@ -1,0 +1,26 @@
+{
+  "slug": "burlington-vt",
+  "name": "Burlington",
+  "type": "MSA",
+  "officialName": "Burlington-South Burlington, VT",
+  "country": "United States",
+  "cities": [
+    "Burlington",
+    "South Burlington"
+  ],
+  "bbox": [
+    44.16141199988456,
+    -73.39023099981387,
+    45.01665800001635,
+    -72.53328000030602
+  ],
+  "center": [
+    44.58903499995046,
+    -72.96175550005995
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "ccta"
+  ],
+  "page": false
+}

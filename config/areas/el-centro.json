@@ -1,0 +1,25 @@
+{
+  "slug": "el-centro",
+  "name": "El Centro",
+  "type": "MSA",
+  "officialName": "El Centro, CA",
+  "country": "United States",
+  "cities": [
+    "El Centro"
+  ],
+  "bbox": [
+    32.61844100007823,
+    -116.10618899975225,
+    33.43381399969936,
+    -114.46288999976207
+  ],
+  "center": [
+    33.026127499888794,
+    -115.28453949975716
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "imperial-valley"
+  ],
+  "page": false
+}

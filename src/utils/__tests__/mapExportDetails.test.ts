@@ -85,13 +85,13 @@ describe('pickExportPlace', () => {
 describe('colour key', () => {
   it('lists only tiers whose colour is drawn, in the app order', () => {
     const key = buildExportKey(keyCandidates(BASE), ['#F59E0B', '#22863a', '#123456']);
-    expect(key.map(item => item.label)).toEqual(['≤10m', '≤20m']);
+    expect(key.map(item => item.label)).toEqual(['≤10 min', '≤20 min']);
   });
 
   it('uses the colour-vision palette when that mode is on', () => {
     const state = { ...BASE, colorMode: 'friendly' as const };
     const key = buildExportKey(keyCandidates(state), [COLOR_VISION_HEADWAY_TIERS[0].color]);
-    expect(key).toEqual([{ color: COLOR_VISION_HEADWAY_TIERS[0].color, label: '≤10m' }]);
+    expect(key).toEqual([{ color: COLOR_VISION_HEADWAY_TIERS[0].color, label: '≤10 min' }]);
     expect(buildExportKey(keyCandidates(state), [HEADWAY_TIERS[0].color])).toEqual([]);
   });
 

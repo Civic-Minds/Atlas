@@ -1,0 +1,25 @@
+{
+  "slug": "lubbock",
+  "name": "Lubbock",
+  "type": "MSA",
+  "officialName": "Lubbock, TX",
+  "country": "United States",
+  "cities": [
+    "Lubbock"
+  ],
+  "bbox": [
+    32.95970199975649,
+    -103.05648499959902,
+    33.833624999911706,
+    -101.03839000024988
+  ],
+  "center": [
+    33.3966634998341,
+    -102.04743749992446
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "citibus"
+  ],
+  "page": false
+}

@@ -144,3 +144,16 @@ describe('formatOverrideResolvedLog', () => {
     expect(msg).not.toContain('Closes');
   });
 });
+
+describe('upstreamFeedChanged with a capped recorded expiry (#688)', () => {
+  it('does not report a change when the uncapped expiry matches', () => {
+    expect(upstreamFeedChanged({ lastFeedExpiry: '20281007', lastPeekedExpiry: '20500101' }, '20500101', null)).toBe(false);
+  });
+  it('reports a change when the uncapped expiry differs', () => {
+    expect(upstreamFeedChanged({ lastFeedExpiry: '20281007', lastPeekedExpiry: '20500101' }, '20491231', null)).toBe(true);
+  });
+  it('falls back to the recorded expiry for older records', () => {
+    expect(upstreamFeedChanged({ lastFeedExpiry: '20261231' }, '20261231', null)).toBe(false);
+    expect(upstreamFeedChanged({ lastFeedExpiry: '20261231' }, '20270630', null)).toBe(true);
+  });
+});

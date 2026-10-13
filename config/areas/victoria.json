@@ -1,0 +1,25 @@
+{
+  "slug": "victoria",
+  "name": "Victoria",
+  "type": "CMA",
+  "officialName": "Victoria",
+  "country": "Canada",
+  "cities": [
+    "Victoria"
+  ],
+  "bbox": [
+    48.178352135739615,
+    -124.09596921330635,
+    48.71462062167666,
+    -123.18449009872822
+  ],
+  "center": [
+    48.44648637870814,
+    -123.64022965601728
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "victoria"
+  ],
+  "page": false
+}

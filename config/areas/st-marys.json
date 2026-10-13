@@ -1,0 +1,25 @@
+{
+  "slug": "st-marys",
+  "name": "St. Marys",
+  "type": "MicroSA",
+  "officialName": "St. Marys, PA",
+  "country": "United States",
+  "cities": [
+    "St. Marys"
+  ],
+  "bbox": [
+    41.20185900011712,
+    -79.09518300035224,
+    41.63148099982279,
+    -78.23460200040944
+  ],
+  "center": [
+    41.416669999969955,
+    -78.66489250038083
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "ata"
+  ],
+  "page": false
+}

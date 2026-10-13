@@ -1,0 +1,25 @@
+{
+  "slug": "appleton",
+  "name": "Appleton",
+  "type": "MSA",
+  "officialName": "Appleton, WI",
+  "country": "United States",
+  "cities": [
+    "Appleton"
+  ],
+  "bbox": [
+    43.891511000133185,
+    -88.73976999989027,
+    44.59064399987445,
+    -88.04169600003424
+  ],
+  "center": [
+    44.24107750000382,
+    -88.39073299996225
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "appleton"
+  ],
+  "page": false
+}

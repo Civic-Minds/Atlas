@@ -1,0 +1,25 @@
+{
+  "slug": "corpus-christi",
+  "name": "Corpus Christi",
+  "type": "MSA",
+  "officialName": "Corpus Christi, TX",
+  "country": "United States",
+  "cities": [
+    "Corpus Christi"
+  ],
+  "bbox": [
+    27.558358000082286,
+    -97.94214599981623,
+    28.319238000078162,
+    -96.79043700001414
+  ],
+  "center": [
+    27.938798000080226,
+    -97.36629149991518
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "b-line"
+  ],
+  "page": false
+}

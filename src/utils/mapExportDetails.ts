@@ -6,7 +6,8 @@ import { FILTER_MODES } from '../../shared/modes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { agencyDisplayParts, formatStoredDate } from './format';
-import { getFareTiers, getHeadwayTiers, getNightServiceColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
+import { getHeadwayTiers, getNightServiceColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
+import { headwayBandLabel, headwayFilterLabel, headwayOrBetter, headwayTierLabel } from './headwayText';
 
 /** One entry in the exported image's colour key. */
 export interface MapExportKeyItem {
@@ -38,7 +39,7 @@ export interface MapExportDetails {
 /** Part of the map in CSS pixels ([[left, top], [right, bottom]]) that the image shows. */
 export type MapExportBox = [[number, number], [number, number]];
 
-export type MapExportView = 'frequency' | 'frequent-service' | 'night' | 'fares' | 'other';
+export type MapExportView = 'frequency' | 'frequent-service' | 'night' | 'other';
 
 export interface MapExportState {
   view: MapExportView;
@@ -84,7 +85,7 @@ export function sentenceCase(text: string): string {
 
 /** Same wording as the frequency chip's options. */
 export function describeHeadwayFilter(maxHeadway: number): string {
-  return Number.isFinite(maxHeadway) ? `Every ${maxHeadway} min or better` : 'All routes';
+  return headwayFilterLabel(maxHeadway);
 }
 
 function periodPhrase(period: TimePeriod): string {
@@ -131,13 +132,13 @@ function filterLine(state: MapExportState): string | null {
       const days = state.frequentServiceDays?.length ? joinList(state.frequentServiceDays) : null;
       const window = state.frequentServiceWindow ? FREQUENT_WINDOW_LABELS[state.frequentServiceWindow] : null;
       return [
-        state.frequentServiceFrequency ? `Every ${state.frequentServiceFrequency} min or better` : null,
+        state.frequentServiceFrequency ? headwayFilterLabel(state.frequentServiceFrequency) : null,
         days,
         window,
       ].filter(Boolean).join(' · ') || null;
     }
     case 'night':
-      return state.nightServiceFrequency ? `Night service every ${state.nightServiceFrequency} min or better` : null;
+      return state.nightServiceFrequency ? `Night service ${headwayOrBetter(state.nightServiceFrequency)}` : null;
     default:
       return null;
   }
@@ -150,15 +151,13 @@ export function keyCandidates(state: Pick<MapExportState, 'view' | 'colorMode' |
       return getHeadwayTiers(state.colorMode).map(tier => ({ color: tier.color, label: tier.label }));
     case 'frequent-service':
       return state.frequentServiceFrequency === 15
-        ? [{ color: getTierColor('15', state.colorMode), label: '≤15 min' }]
+        ? [{ color: getTierColor('15', state.colorMode), label: headwayTierLabel(15) }]
         : [
-          { color: getTierColor('15', state.colorMode), label: '≤15 min' },
-          { color: getTierColor('30', state.colorMode), label: '16–30 min' },
+          { color: getTierColor('15', state.colorMode), label: headwayTierLabel(15) },
+          { color: getTierColor('30', state.colorMode), label: headwayBandLabel(16, 30) },
         ];
     case 'night':
       return [{ color: getNightServiceColor(state.colorMode), label: 'Night service' }];
-    case 'fares':
-      return getFareTiers(state.colorMode).map(tier => ({ color: tier.color, label: tier.label }));
     default:
       return [];
   }
@@ -326,8 +325,6 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
     if (state.query?.trim()) lines.push(`Matching “${state.query.trim()}”`);
   }
 
-  // The view name above the heading already says what the colours mean, except for fares.
-  const keyTitle = state.view === 'fares' ? 'Base fare' : undefined;
   return {
     place,
     title: place ?? viewName,
@@ -335,7 +332,6 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
     lines,
     route,
     key,
-    keyTitle,
     citation: buildExportSourceLine(samples, agencies, state.releaseGeneratedAt),
     filename: buildExportFilename(state, place),
   };

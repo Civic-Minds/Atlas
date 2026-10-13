@@ -1,0 +1,25 @@
+{
+  "slug": "wausau",
+  "name": "Wausau",
+  "type": "MSA",
+  "officialName": "Wausau, WI",
+  "country": "United States",
+  "cities": [
+    "Wausau"
+  ],
+  "bbox": [
+    44.68123500003,
+    -90.31698199977313,
+    45.12060800006934,
+    -89.22332799962965
+  ],
+  "center": [
+    44.90092150004967,
+    -89.77015499970139
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "marathon-county"
+  ],
+  "page": false
+}

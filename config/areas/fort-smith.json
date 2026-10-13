@@ -1,0 +1,25 @@
+{
+  "slug": "fort-smith",
+  "name": "Fort Smith",
+  "type": "MSA",
+  "officialName": "Fort Smith, AR-OK",
+  "country": "United States",
+  "cities": [
+    "Fort Smith"
+  ],
+  "bbox": [
+    34.930705999650876,
+    -95.13231400030713,
+    35.76475699995495,
+    -93.89225200023606
+  ],
+  "center": [
+    35.34773149980291,
+    -94.5122830002716
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "fort-smith"
+  ],
+  "page": false
+}

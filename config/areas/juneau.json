@@ -1,0 +1,25 @@
+{
+  "slug": "juneau",
+  "name": "Juneau",
+  "type": "MicroSA",
+  "officialName": "Juneau, AK",
+  "country": "United States",
+  "cities": [
+    "Juneau"
+  ],
+  "bbox": [
+    57.791330999999126,
+    -135.22182499966627,
+    58.97133700005607,
+    -133.17231100014854
+  ],
+  "center": [
+    58.38133400002759,
+    -134.1970679999074
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "juneau"
+  ],
+  "page": false
+}

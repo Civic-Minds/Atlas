@@ -1,0 +1,25 @@
+{
+  "slug": "memphis",
+  "name": "Memphis",
+  "type": "MSA",
+  "officialName": "Memphis, TN-MS-AR",
+  "country": "United States",
+  "cities": [
+    "Memphis"
+  ],
+  "bbox": [
+    34.4238069998386,
+    -90.59178399969254,
+    35.65234600025937,
+    -89.01658600021878
+  ],
+  "center": [
+    35.03807650004899,
+    -89.80418499995565
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "mata"
+  ],
+  "page": true
+}

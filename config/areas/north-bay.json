@@ -1,0 +1,25 @@
+{
+  "slug": "north-bay",
+  "name": "North Bay",
+  "type": "CA",
+  "officialName": "North Bay",
+  "country": "Canada",
+  "cities": [
+    "North Bay"
+  ],
+  "bbox": [
+    45.82865666725162,
+    -80.53947665630226,
+    47.16819358896074,
+    -78.69545880019922
+  ],
+  "center": [
+    46.49842512810618,
+    -79.61746772825074
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "north-bay"
+  ],
+  "page": false
+}

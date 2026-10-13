@@ -1,6 +1,7 @@
 {
   "slug": "caltrain",
   "name": "Caltrain",
+  "labelPlace": "Bay Area",
   "websiteUrl": "http://www.caltrain.com",
   "center": [
     37.4573,

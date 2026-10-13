@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Settings, X, ArrowLeft, Search } from 'lucide-react';
+import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import Pill from '../ui/Pill';
+import Toggle from '../ui/Toggle';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
 import { DAY_TYPES } from '../../../shared/dayTypes';
@@ -21,10 +23,13 @@ interface FilterPanelProps {
   hideLimitedService: boolean;
   setHideLimitedService: (v: boolean | ((prev: boolean) => boolean)) => void;
   limitedServiceRouteCount?: number | null;
+  limitedServiceRoutes?: HiddenRoute[];
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   inFrequency?: boolean;
+  /** 'filters' renders the phone-only Filters sheet; 'settings' (default) renders the Settings sheet. */
+  mode?: 'settings' | 'filters';
 
   // New optional props for mobile filters
   maxHeadway?: number;
@@ -79,22 +84,6 @@ export function updateHiddenRouteRegions(current: Set<string>, region: string): 
   return next;
 }
 
-function Toggle({ on }: { on: boolean }) {
-  return (
-    <span
-      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
-        on ? 'bg-[var(--toggle-on-bg)]' : 'bg-[var(--toggle-off-bg)]'
-      }`}
-    >
-      <span
-        className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${
-          on ? 'translate-x-5' : 'translate-x-1'
-        }`}
-      />
-    </span>
-  );
-}
-
 const SETTINGS = [
   {
     id: 'span',
@@ -112,10 +101,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   hideLimitedService,
   setHideLimitedService,
   limitedServiceRouteCount,
+  limitedServiceRoutes,
   livePollingOnly,
   setLivePollingOnly,
   onInfoOpen,
   inFrequency = true,
+  mode = 'settings',
   maxHeadway,
   setMaxHeadway,
   selectedModes,
@@ -138,10 +129,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setDataSaver,
 }) => {
   const { colorVisionFriendly, setColorVisionFriendly } = useColorVision();
+  const isFilters = mode === 'filters';
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [view, setView] = useState<'settings' | 'hidden-routes' | 'degraded-feeds'>('settings');
+  const [view, setView] = useState<'settings' | 'hidden-routes' | 'limited-routes' | 'degraded-feeds'>('settings');
   const [hiddenRoutes, setHiddenRoutes] = useState<HiddenRoute[]>([]);
   const [hiddenRoutesLoaded, setHiddenRoutesLoaded] = useState(false);
   const [hiddenRoutesLoading, setHiddenRoutesLoading] = useState(false);
@@ -170,7 +162,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [open]);
 
   useEffect(() => {
-    if (!open || hiddenRoutesLoaded) return;
+    if (!open || hiddenRoutesLoaded || isFilters) return;
     let cancelled = false;
     setHiddenRoutesLoading(true);
     fetch(`${R2_PUBLIC_URL}/atlas/hidden-routes.json`, { cache: 'no-store' })
@@ -212,20 +204,34 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     setHiddenRegionFilter(prev => updateHiddenRouteRegions(prev, region));
   };
 
+  // The route-list view serves both filters: irregular routes (global inventory) and
+  // limited-service routes (computed from the loaded map data, so no separate fetch).
+  const limitedView = view === 'limited-routes';
+  const regionBySlug = useMemo(
+    () => new Map((allAgencies ?? agencies ?? []).map(agency => [agency.slug, agency.region ?? null] as const)),
+    [allAgencies, agencies],
+  );
+  const listRoutes = useMemo<HiddenRoute[]>(
+    () => limitedView
+      ? (limitedServiceRoutes ?? []).map(route => ({ ...route, region: regionBySlug.get(route.agencySlug) ?? null }))
+      : hiddenRoutes,
+    [limitedView, limitedServiceRoutes, regionBySlug, hiddenRoutes],
+  );
+
   const filteredHiddenRoutes = useMemo(() => {
     const q = hiddenRoutesQuery.trim().toLowerCase();
-    return hiddenRoutes.filter(route => [
+    return listRoutes.filter(route => [
       route.routeShortName,
       route.routeLongName ?? '',
       route.agencyName,
       route.region ?? '',
     ].some(value => value.toLowerCase().includes(q))
       && (hiddenRegionFilter.size === 0 || hiddenRegionFilter.has(route.region ?? 'Other')));
-  }, [hiddenRoutes, hiddenRoutesQuery, hiddenRegionFilter]);
+  }, [listRoutes, hiddenRoutesQuery, hiddenRegionFilter]);
 
   const hiddenRouteRegions = useMemo(
-    () => [...new Set(hiddenRoutes.map(route => route.region ?? 'Other'))].sort(),
-    [hiddenRoutes],
+    () => [...new Set(listRoutes.map(route => route.region ?? 'Other'))].sort(),
+    [listRoutes],
   );
 
   useEffect(() => {
@@ -287,6 +293,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   );
 
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
+  // Day is not counted: it defaults to today, so it is never "unset".
+  const activeFilterCount = (maxHeadway !== undefined && maxHeadway !== 60 ? 1 : 0)
+    + (period !== undefined && period !== 'all' ? 1 : 0)
+    + (selectedModes && selectedModes.size > 0 ? 1 : 0)
+    + (compare?.side ? 1 : 0);
   const hasActiveFilters = hideSpan || hideLimitedService || livePollingOnly || hasActiveCoreFilter || hideLowQuality;
 
   const values: Record<string, boolean> = {
@@ -319,16 +330,33 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
   return (
     <>
-      <button
-        onClick={() => setOpen(v => !v)}
-        className={`relative ${ICON_BTN}`}
-        aria-label="Settings"
-      >
-        <Settings className="w-4 h-4" />
-        {hasActiveFilters && (
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
-        )}
-      </button>
+      {isFilters ? (
+        maxHeadway !== undefined && (
+          <button
+            onClick={() => setOpen(v => !v)}
+            className={`relative sm:hidden ${ICON_BTN}`}
+            aria-label="Filters"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            {activeFilterCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 flex items-center justify-center rounded-full bg-[var(--accent)] text-xs font-bold text-white">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        )
+      ) : (
+        <button
+          onClick={() => setOpen(v => !v)}
+          className={`relative ${ICON_BTN}`}
+          aria-label="Settings"
+        >
+          <Settings className="w-4 h-4" />
+          {hasActiveFilters && (
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
+          )}
+        </button>
+      )}
 
       {open && (
         <div
@@ -356,22 +384,24 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <h2 id="settings-panel-title" className="text-xs font-black text-[var(--text-primary)]">
                   {view === 'hidden-routes'
                     ? 'Hidden routes'
+                    : view === 'limited-routes'
+                      ? 'Limited-service routes'
                     : view === 'degraded-feeds'
                       ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
-                      : 'Settings'}
+                      : isFilters ? 'Filters' : 'Settings'}
                 </h2>
               </div>
               <button
                 onClick={close}
                 className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
-                aria-label="Close settings"
+                aria-label={isFilters ? 'Close filters' : 'Close settings'}
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
 
             <div className="overflow-y-auto flex flex-col">
-              {view === 'hidden-routes' ? (
+              {view === 'hidden-routes' || view === 'limited-routes' ? (
                 <>
                   <div className="px-5 pt-4 pb-3">
                     <label className={SEARCH_PILL}>
@@ -379,7 +409,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       <input
                         value={hiddenRoutesQuery}
                         onChange={event => setHiddenRoutesQuery(event.target.value)}
-                        placeholder="Search hidden routes…"
+                        placeholder={limitedView ? 'Search limited-service routes…' : 'Search hidden routes…'}
                         className={SEARCH_FIELD}
                         autoFocus
                       />
@@ -389,23 +419,25 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         const key = region === 'All' ? '' : region;
                         const active = key === '' ? hiddenRegionFilter.size === 0 : hiddenRegionFilter.has(key);
                         return (
-                          <button
+                          <Pill
                             key={region}
                             onClick={() => selectHiddenRouteRegion(key)}
-                            aria-pressed={active}
-                            className={`${FILTER_OPTION} shrink-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                            selected={active}
+                            className="shrink-0"
                           >
                             {region}
-                          </button>
+                          </Pill>
                         );
                       })}
                     </div>
                   </div>
-                  {hiddenRoutesLoading ? (
-                    <p className="px-5 py-4 text-[10px] text-[var(--text-muted)]">Loading hidden routes…</p>
+                  {hiddenRoutesLoading && !limitedView ? (
+                    <p className="px-5 py-4 text-xs text-[var(--text-muted)]">Loading hidden routes…</p>
                   ) : filteredHiddenRoutes.length === 0 ? (
-                    <p className="px-5 py-4 text-[10px] text-[var(--text-muted)]">
-                      {hiddenRoutes.length === 0 ? 'The hidden-route list is unavailable right now.' : 'No hidden routes match your search.'}
+                    <p className="px-5 py-4 text-xs text-[var(--text-muted)]">
+                      {listRoutes.length === 0
+                        ? (limitedView ? 'No limited-service routes in view.' : 'The hidden-route list is unavailable right now.')
+                        : (limitedView ? 'No limited-service routes match your search.' : 'No hidden routes match your search.')}
                     </p>
                   ) : (
                     <div className="px-5 pb-4">
@@ -413,7 +445,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         const { primary, secondary } = agencyDisplayParts(group.agencyName, agencyCitiesBySlug.get(agencySlug), agencyDisplayAreasBySlug.get(agencySlug));
                         return (
                         <div key={agencySlug}>
-                          <p className="pt-2 pb-1 text-[11px] font-bold text-[var(--text-primary)]">
+                          <p className="pt-2 pb-1 text-xs font-bold text-[var(--text-primary)]">
                             {primary}
                             {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
                           </p>
@@ -421,10 +453,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             {group.routes.map(route => (
                               <div key={route.key} className="py-2.5">
                                 <div className="flex items-baseline justify-between gap-3">
-                                  <p className="text-[11px] font-bold text-[var(--text-primary)] line-clamp-2 break-words" title={route.routeShortName}>{route.routeShortName}</p>
+                                  <p className="text-xs font-bold text-[var(--text-primary)] line-clamp-2 break-words" title={route.routeShortName}>{route.routeShortName}</p>
                                 </div>
                                 {route.routeLongName && route.routeLongName !== route.routeShortName && (
-                                  <p className="text-[10px] text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5" title={route.routeLongName}>{route.routeLongName}</p>
+                                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5" title={route.routeLongName}>{route.routeLongName}</p>
                                 )}
                               </div>
                             ))}
@@ -437,7 +469,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </>
               ) : view === 'degraded-feeds' ? (
                 <div className="px-5 py-3">
-                  <p className="text-[10px] text-[var(--text-muted)] leading-relaxed pb-2">
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed pb-2">
                     Atlas found serious data problems or an expired schedule in these agencies.
                   </p>
                   {hiddenFeedAgencies.length > 0 && (
@@ -454,20 +486,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       </label>
                       <div className="flex items-center gap-1.5 mt-2">
                         {(['all', 'degraded', 'unusable'] as const).map(status => (
-                          <button
+                          <Pill
                             key={status}
                             onClick={() => setDegradedFeedsStatus(status)}
-                            aria-pressed={degradedFeedsStatus === status}
-                            className={`${FILTER_OPTION} ${degradedFeedsStatus === status ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                            selected={degradedFeedsStatus === status}
                           >
                             {status === 'all' ? 'All' : qualityStatusLabel(status)}
-                          </button>
+                          </Pill>
                         ))}
                         <select
                           value={degradedFeedsSort}
                           onChange={event => setDegradedFeedsSort(event.target.value as 'name' | 'status')}
                           aria-label="Sort degraded feeds"
-                          className="ml-auto h-6 rounded-md bg-[var(--bg-app)] border border-[var(--border-primary)] px-1.5 text-[10px] text-[var(--text-muted)] outline-none"
+                          className="ml-auto h-6 rounded-md bg-[var(--bg-app)] border border-[var(--border-primary)] px-1.5 text-xs text-[var(--text-muted)] outline-none"
                         >
                           <option value="name">Name</option>
                           <option value="status">Status</option>
@@ -476,11 +507,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </>
                   )}
                   {hiddenFeedAgencies.length === 0 ? (
-                    <p className="py-4 text-[10px] text-[var(--text-muted)]">
+                    <p className="py-4 text-xs text-[var(--text-muted)]">
                       No degraded or unusable feeds are currently recorded.
                     </p>
                   ) : filteredDegradedFeeds.length === 0 ? (
-                    <p className="py-4 text-[10px] text-[var(--text-muted)]">
+                    <p className="py-4 text-xs text-[var(--text-muted)]">
                       No feeds match your search or filter.
                     </p>
                   ) : (
@@ -491,16 +522,16 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         const checkedDate = formatStoredDate(quality.checkedAt.slice(0, 10)) || quality.checkedAt;
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">
-                            <p className="text-[11px] font-bold text-[var(--text-primary)] min-w-0">
+                            <p className="text-xs font-bold text-[var(--text-primary)] min-w-0">
                               {primary}
                               {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
                             </p>
                             {quality.reasons.length > 0 && (
-                              <ul className="mt-1.5 space-y-0.5 text-[10px] text-[var(--text-muted)] leading-relaxed">
+                              <ul className="mt-1.5 space-y-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
                                 {quality.reasons.map(reason => <li key={reason}>{presentFeedQualityReason(reason)}</li>)}
                               </ul>
                             )}
-                            <p className="mt-1 text-[9px] text-[var(--text-dim)]">Checked {checkedDate}</p>
+                            <p className="mt-1 text-xs text-[var(--text-dim)]">Checked {checkedDate}</p>
                           </div>
                         );
                       })}
@@ -509,64 +540,47 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </div>
               ) : (
                 <>
+              {!isFilters && (
+              <>
               {/* Appearance. Sections use spacing only, no divider lines (guarded by settingsNoDividers.test.ts). */}
               <div className="px-5 pt-4 pb-1">
-                <p className="text-[9px] font-bold text-[var(--text-dim)]">Appearance</p>
+                <p className="text-xs font-bold text-[var(--text-dim)]">Appearance</p>
               </div>
               <div className="px-5 pb-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center min-w-0">
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Dark mode</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses a dark colour theme across Atlas.</p>
+                      <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Dark mode</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Uses a dark colour theme across Atlas.</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setLightMode(v => !v)}
-                    aria-label="Toggle light/dark mode"
-                    aria-pressed={!lightMode}
-                    className="shrink-0"
-                  >
-                    <Toggle on={!lightMode} />
-                  </button>
+                  <Toggle on={!lightMode} onToggle={() => setLightMode(v => !v)} label="Toggle light/dark mode" />
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-2">
                   <div className="flex items-center min-w-0">
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines for easier route distinction.</p>
+                      <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines for easier route distinction.</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setColorVisionFriendly(v => !v)}
-                    aria-label="Toggle high contrast mode"
-                    className="shrink-0"
-                  >
-                    <Toggle on={colorVisionFriendly} />
-                  </button>
+                  <Toggle on={colorVisionFriendly} onToggle={() => setColorVisionFriendly(v => !v)} label="Toggle high contrast mode" />
                 </div>
               </div>
 
               {FEATURES.beta && (
                 <>
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-[9px] font-bold text-[var(--text-dim)]">Map</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Map</p>
                   </div>
                   <div className="px-5 pb-3">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start min-w-0">
                         <div className="min-w-0">
-                          <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Persistent legend</p>
-                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map legend visible while you explore.</p>
+                          <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Persistent legend</p>
+                          <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map legend visible while you explore.</p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => setShowMapLegend(v => !v)}
-                        aria-label="Toggle persistent legend"
-                        className="mt-0.5 shrink-0"
-                      >
-                        <Toggle on={showMapLegend} />
-                      </button>
+                      <Toggle on={showMapLegend} onToggle={() => setShowMapLegend(v => !v)} label="Toggle persistent legend" className="mt-0.5 shrink-0" />
                     </div>
                   </div>
                 </>
@@ -575,23 +589,17 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {FEATURES.beta && (
                 <>
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-[9px] font-bold text-[var(--text-dim)]">Data &amp; performance</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Data &amp; performance</p>
                   </div>
                   <div className="px-5 pb-3">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start min-w-0">
                         <div className="min-w-0">
-                          <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Data saver</p>
-                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use on slower connections.</p>
+                          <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Data saver</p>
+                          <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use on slower connections.</p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => setDataSaver(v => !v)}
-                        aria-label="Toggle data saver"
-                        className="mt-0.5 shrink-0"
-                      >
-                        <Toggle on={dataSaver} />
-                      </button>
+                      <Toggle on={dataSaver} onToggle={() => setDataSaver(v => !v)} label="Toggle data saver" className="mt-0.5 shrink-0" />
                     </div>
                   </div>
                 </>
@@ -599,9 +607,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
               {/* Filters */}
               <div className="px-5 pt-4 pb-1">
-                <p className="text-[9px] font-bold text-[var(--text-dim)]">Filters</p>
+                <p className="text-xs font-bold text-[var(--text-dim)]">Routes shown</p>
                 {!inFrequency && (
-                  <p className="text-[10px] text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
                 )}
               </div>
               <div className="px-5 pb-3 flex flex-col gap-4 pt-1">
@@ -609,27 +617,30 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <div key={id} className={`flex items-start justify-between gap-4 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
                     <div className="flex items-start min-w-0">
                       <div className="min-w-0">
-                        <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">{label}</p>
-                        <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
+                        <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">{label}</p>
+                        <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
                         {id === 'span' && (
                           <>
                             <button
                               onClick={() => setView('hidden-routes')}
-                              className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
+                              className="mt-1 text-xs text-[var(--accent)] hover:underline"
                             >
                               See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'} →
                             </button>
                           </>
                         )}
                         {id === 'limited' && limitedServiceRouteCount != null && (
-                          <p className="text-[10px] text-[var(--text-muted)] mt-1">
-                            {limitedServiceRouteCount.toLocaleString()} {limitedServiceRouteCount === 1 ? 'route' : 'routes'} affected
-                          </p>
+                          <button
+                            onClick={() => setView('limited-routes')}
+                            className="mt-1 text-xs text-[var(--accent)] hover:underline"
+                          >
+                            {limitedServiceRouteCount.toLocaleString()} {limitedServiceRouteCount === 1 ? 'route' : 'routes'} affected →
+                          </button>
                         )}
                         {id === 'quality' && (
                           <button
                             onClick={() => setView('degraded-feeds')}
-                            className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
+                            className="mt-1 text-xs text-[var(--accent)] hover:underline"
                           >
                             {hideLowQuality ? 'See hidden feeds' : 'Review degraded feeds'}
                             {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''} →
@@ -637,46 +648,42 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         )}
                       </div>
                     </div>
-                    <button
-                      onClick={toggles[id]}
-                      aria-label={label}
-                      className="mt-0.5 shrink-0"
-                    >
-                      <Toggle on={values[id]} />
-                    </button>
+                    <Toggle on={values[id]} onToggle={toggles[id]} label={label} className="mt-0.5 shrink-0" />
                   </div>
                 ))}
               </div>
 
+              </>
+              )}
+
               {/* Mobile-only Core Filters */}
-              {maxHeadway !== undefined && (
+              {isFilters && maxHeadway !== undefined && (
                 <div className="block sm:hidden pb-4">
                   {/* Frequency */}
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Frequency</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Frequency</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {HEADWAY_TIERS.map(({ max, label }) => {
                       const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
                       const active = maxHeadway === max;
                       return (
-                        <button
+                        <Pill
                           key={label}
                           onClick={() => setMaxHeadway?.(max)}
-                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
-                          }`}
+                          size="segment"
+                          selected={active}
                         >
                           <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
                           {label === 'Infrequent' ? 'All routes' : label}
-                        </button>
+                        </Pill>
                       );
                     })}
                   </div>
 
                   {/* Day of Service */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Day of service</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Day of service</p>
                   </div>
                   <div className="px-5 pb-3 flex gap-1.5">
                     {DAY_TYPES.map(dayType => {
@@ -685,7 +692,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <button
                           key={dayType}
                           onClick={() => setDay?.(dayType)}
-                          className={`flex-1 h-7 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
+                          aria-pressed={active}
+                          className={`flex-1 h-7 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
                             active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
@@ -697,21 +705,20 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {/* Time Period */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Time period</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Time period</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {Object.entries(PERIOD_LABELS).map(([key, label]) => {
                       const active = period === key;
                       return (
-                        <button
+                        <Pill
                           key={key}
                           onClick={() => setPeriod?.(key)}
-                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
-                          }`}
+                          size="segment"
+                          selected={active}
                         >
                           {label}
-                        </button>
+                        </Pill>
                       );
                     })}
                   </div>
@@ -719,19 +726,18 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   {compare && (
                     <div className="px-5 pt-2 pb-3">
                       <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-bold text-[var(--text-dim)]">Compare two maps</p>
-                        <button
-                          type="button"
+                        <p className="text-xs font-bold text-[var(--text-dim)]">Compare two maps</p>
+                        <Pill
                           onClick={compare.side ? compare.onExit : compare.onStart}
-                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${compare.side ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
-                          aria-pressed={!!compare.side}
+                          size="segment"
+                          selected={!!compare.side}
                         >
                           Compare
-                        </button>
+                        </Pill>
                       </div>
                       {compare.side && (
                         <div className="mt-2">
-                          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-dim)]"><SideBadge side="B" /> The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps.</p>
+                          <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-[var(--text-dim)]"><SideBadge side="B" /> The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps.</p>
                           <CompareSidePicker side={compare.side} onChange={compare.onChange} />
                         </div>
                       )}
@@ -740,13 +746,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {/* Transit Modes */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Transit modes</p>
+                    <p className="text-xs font-bold text-[var(--text-dim)]">Transit modes</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {AVAILABLE_FILTER_MODES.map(({ id, label }) => {
                       const active = selectedModes?.has(id) ?? false;
                       return (
-                        <button
+                        <Pill
                           key={id}
                           onClick={() => {
                             if (!selectedModes || !setSelectedModes) return;
@@ -754,12 +760,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             if (next.has(id)) next.delete(id); else next.add(id);
                             setSelectedModes(next);
                           }}
-                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
-                          }`}
+                          size="segment"
+                          selected={active}
                         >
                           {label}
-                        </button>
+                        </Pill>
                       );
                     })}
                   </div>

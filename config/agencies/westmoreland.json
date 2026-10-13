@@ -1,6 +1,7 @@
 {
   "slug": "westmoreland",
   "name": "Westmoreland Transit",
+  "labelPlace": "Westmoreland County",
   "region": "Pennsylvania",
   "center": [
     40.3015,

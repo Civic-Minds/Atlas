@@ -1,0 +1,27 @@
+{
+  "slug": "pensacola",
+  "name": "Pensacola",
+  "type": "MSA",
+  "officialName": "Pensacola-Ferry Pass-Brent, FL",
+  "country": "United States",
+  "cities": [
+    "Pensacola",
+    "Ferry Pass",
+    "Brent"
+  ],
+  "bbox": [
+    30.12552999984394,
+    -87.63489599962733,
+    30.99954700037741,
+    -86.78569200016281
+  ],
+  "center": [
+    30.562538500110676,
+    -87.21029399989507
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "ecat"
+  ],
+  "page": false
+}

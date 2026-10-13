@@ -1,0 +1,35 @@
+{
+  "slug": "seattle",
+  "name": "Seattle",
+  "type": "MSA",
+  "officialName": "Seattle-Tacoma-Bellevue, WA",
+  "country": "United States",
+  "cities": [
+    "Seattle",
+    "Tacoma",
+    "Bellevue"
+  ],
+  "bbox": [
+    46.728406000277275,
+    -122.85291799975035,
+    48.298990000187906,
+    -120.90739899982795
+  ],
+  "center": [
+    47.513698000232594,
+    -121.88015849978915
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "communitytransit",
+    "everetttransit",
+    "kingcountymetro",
+    "pierce-county-ferries",
+    "piercetransit",
+    "seattle-monorail",
+    "seattle-streetcar",
+    "snoqualmie-valley",
+    "soundtransit"
+  ],
+  "page": true
+}

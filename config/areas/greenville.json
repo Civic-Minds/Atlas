@@ -1,0 +1,27 @@
+{
+  "slug": "greenville",
+  "name": "Greenville",
+  "type": "MSA",
+  "officialName": "Greenville-Anderson-Greer, SC",
+  "country": "United States",
+  "cities": [
+    "Greenville",
+    "Anderson",
+    "Greer"
+  ],
+  "bbox": [
+    34.20314800018112,
+    -82.9922319996656,
+    35.2154850003125,
+    -81.64354000035698
+  ],
+  "center": [
+    34.709316500246814,
+    -82.3178860000113
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "greenlink"
+  ],
+  "page": false
+}

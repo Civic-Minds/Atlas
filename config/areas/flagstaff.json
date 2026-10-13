@@ -1,0 +1,25 @@
+{
+  "slug": "flagstaff",
+  "name": "Flagstaff",
+  "type": "MSA",
+  "officialName": "Flagstaff, AZ",
+  "country": "United States",
+  "cities": [
+    "Flagstaff"
+  ],
+  "bbox": [
+    34.25841100028922,
+    -113.35417599990018,
+    37.00310200023512,
+    -110.75067099970022
+  ],
+  "center": [
+    35.630756500262166,
+    -112.0524234998002
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "mountainline"
+  ],
+  "page": false
+}

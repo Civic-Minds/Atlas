@@ -1,0 +1,25 @@
+{
+  "slug": "lake-charles",
+  "name": "Lake Charles",
+  "type": "MSA",
+  "officialName": "Lake Charles, LA",
+  "country": "United States",
+  "cities": [
+    "Lake Charles"
+  ],
+  "bbox": [
+    29.527103000224017,
+    -93.92920800022029,
+    30.490522999734978,
+    -92.58308899956587
+  ],
+  "center": [
+    30.008812999979497,
+    -93.25614849989307
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "lake-charles"
+  ],
+  "page": false
+}

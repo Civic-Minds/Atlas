@@ -1,0 +1,25 @@
+{
+  "slug": "syracuse",
+  "name": "Syracuse",
+  "type": "MSA",
+  "officialName": "Syracuse, NY",
+  "country": "United States",
+  "cities": [
+    "Syracuse"
+  ],
+  "bbox": [
+    42.72384400017311,
+    -76.64471199966667,
+    43.707017999837234,
+    -75.23954099964399
+  ],
+  "center": [
+    43.21543100000517,
+    -75.94212649965533
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "centro"
+  ],
+  "page": false
+}

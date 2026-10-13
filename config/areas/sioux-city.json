@@ -1,0 +1,25 @@
+{
+  "slug": "sioux-city",
+  "name": "Sioux City",
+  "type": "MSA",
+  "officialName": "Sioux City, IA-NE-SD",
+  "country": "United States",
+  "cities": [
+    "Sioux City"
+  ],
+  "bbox": [
+    42.211260999836185,
+    -96.80654299984602,
+    43.08387000000952,
+    -95.66914099955181
+  ],
+  "center": [
+    42.64756549992285,
+    -96.23784199969892
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sioux-city"
+  ],
+  "page": false
+}

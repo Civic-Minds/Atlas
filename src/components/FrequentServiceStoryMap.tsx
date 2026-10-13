@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
 import type { Agency } from '../App';
+import { headwayOrBetter } from '../utils/headwayText';
 
 interface Props {
   agencies: Agency[];
@@ -91,7 +92,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
     <figure className="flex h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden border-y border-[var(--border-primary)] bg-[var(--bg-panel)] shadow-sm sm:rounded-[2rem] sm:border">
       <div className="relative min-h-0 flex-1 bg-[var(--bg-app)]">
         {loadState === 'ready' && stagePaths[0] ? (
-          <svg viewBox="0 0 1000 620" className="h-full w-full" role="img" aria-label={stage === 3 ? `Toronto routes with weekday daytime service every ${frequencyMinutes} minutes or better` : 'Toronto routes remaining in the story'}>
+          <svg viewBox="0 0 1000 620" className="h-full w-full" role="img" aria-label={stage === 3 ? `Toronto routes with weekday daytime service ${headwayOrBetter(frequencyMinutes)}` : 'Toronto routes remaining in the story'}>
             <rect width="1000" height="620" fill="var(--bg-app)" />
             <path d={stagePaths[0]} fill="none" stroke="var(--text-dim)" strokeWidth="1.1" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" opacity={stage === 0 ? 0.34 : 0.16} className="transition-opacity duration-700 ease-out" />
             {stagePaths.map((path, index) => path && (
@@ -124,7 +125,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
       </div>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 px-5 pb-6 pt-4 text-xs text-[var(--text-muted)]">
         <span>{researchRecord.agencyName}</span>
-        <span>{stage === 0 ? 'All route patterns' : stage === 1 ? 'Rush-hour-only patterns removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · every ${frequencyMinutes} minutes or better`}</span>
+        <span>{stage === 0 ? 'All route patterns' : stage === 1 ? 'Rush-hour-only patterns removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · ${headwayOrBetter(frequencyMinutes)}`}</span>
       </figcaption>
     </figure>
   );

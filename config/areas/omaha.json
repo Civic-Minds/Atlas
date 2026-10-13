@@ -1,0 +1,25 @@
+{
+  "slug": "omaha",
+  "name": "Omaha",
+  "type": "MSA",
+  "officialName": "Omaha, NE-IA",
+  "country": "United States",
+  "cities": [
+    "Omaha"
+  ],
+  "bbox": [
+    40.783469999891025,
+    -96.90911200028461,
+    41.86630799971903,
+    -95.15461399990569
+  ],
+  "center": [
+    41.324888999805026,
+    -96.03186300009514
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "omahametro"
+  ],
+  "page": false
+}

@@ -1,3 +1,4 @@
+import { headwayTierLabel } from './headwayText';
 /**
  * Shared configuration constants
  */
@@ -39,14 +40,12 @@ export const BETA_R2_PUBLIC_URL = getBetaR2PublicUrl().replace(/\/$/, '');
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
 // and beta can build the same main commit with different feature exposure.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED'): boolean {
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
 
 export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 export const HISTORY_ENABLED = envFlag('VITE_HISTORY_ENABLED');
-// Corridors isn't good enough as a feature yet (Ryan, 2026-07-28) -- off everywhere for now.
-export const CORRIDORS_ENABLED = envFlag('VITE_CORRIDORS_ENABLED');
 // Click-to-flag a specific value on a card (frequency, route name, etc.) to report it directly,
 // no typing required. New/unproven interaction -- beta only until it's been used for real.
 export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABLED');
@@ -71,6 +70,9 @@ function getAtlasMode(): AtlasMode {
 export const ATLAS_MODE = getAtlasMode();
 export const BETA_BUILD = ATLAS_MODE !== 'public';
 export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
+// One static page per agency at /agency/<slug>, built from a committed summary of the data release.
+// Beta and dev only until Ryan has reviewed them; public builds neither route nor prerender them.
+export const AGENCY_PAGES_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
 export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
 // Route and stop cards open as a bottom sheet on phones instead of a narrow floating panel.
 // Beta-only while the layout is tried on real phones (Ryan, 2026-10-10, #647).
@@ -114,7 +116,6 @@ export const FEATURES = {
   researchApps: RESEARCH_APPS_ENABLED,
   live: LIVE_ENABLED,
   history: HISTORY_ENABLED,
-  corridors: CORRIDORS_ENABLED,
   frequentService: RESEARCH_APPS_ENABLED,
   // Map-image export graduated from beta to every deployment (Ryan, 2026-10-10).
   mapExport: true,
@@ -126,10 +127,12 @@ export const FEATURES = {
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
   whatsNew: WHATS_NEW_ENABLED,
+  agencyPages: AGENCY_PAGES_ENABLED,
 } as const;
 
 export const FEATURE_ROUTES = {
   research: '/research',
+  nightService: '/research/night',
   frequentService: {
     map: '/research/frequent-service',
     story: '/research/frequent-service/story',
@@ -276,11 +279,11 @@ export interface HeadwayTier {
 }
 
 export const HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: '#22863a', label: '≤10m' },
-  { max: 15, color: '#3da44d', label: '≤15m' },
-  { max: 20, color: '#f59e0b', label: '≤20m' },
-  { max: 30, color: '#e07b2a', label: '≤30m' },
-  { max: 60, color: '#92400e', label: '≤60m' },
+  { max: 10, color: '#22863a', label: headwayTierLabel(10) },
+  { max: 15, color: '#3da44d', label: headwayTierLabel(15) },
+  { max: 20, color: '#f59e0b', label: headwayTierLabel(20) },
+  { max: 30, color: '#e07b2a', label: headwayTierLabel(30) },
+  { max: 60, color: '#92400e', label: headwayTierLabel(60) },
   { max: Infinity, color: '#6b7280', label: 'Infrequent' },
 ];
 

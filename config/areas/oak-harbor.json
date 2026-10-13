@@ -1,0 +1,25 @@
+{
+  "slug": "oak-harbor",
+  "name": "Oak Harbor",
+  "type": "MicroSA",
+  "officialName": "Oak Harbor, WA",
+  "country": "United States",
+  "cities": [
+    "Oak Harbor"
+  ],
+  "bbox": [
+    47.82809799987474,
+    -122.86307800041095,
+    48.417854999892526,
+    -122.32846300014546
+  ],
+  "center": [
+    48.122976499883634,
+    -122.5957705002782
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "islandtransit"
+  ],
+  "page": false
+}

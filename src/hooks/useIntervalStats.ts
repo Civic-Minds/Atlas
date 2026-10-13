@@ -32,6 +32,14 @@ export interface ShapeProperties extends BaseShapeProperties {
   reliabilityScore?: number;
 }
 
+export interface LimitedServiceRoute {
+  key: string;
+  agencySlug: string;
+  agencyName: string;
+  routeShortName: string;
+  routeLongName?: string | null;
+}
+
 export const routeKey = (p: ShapeProperties) => buildRouteKey(
   p.agencySlug ?? p.agencyName ?? '',
   p.routeId,
@@ -351,16 +359,26 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     };
     const routesOnly = allFeatures.filter(f => (f.properties as any).routeId && activeDay(f) && onScreen(f));
     const visibleRoutesOnly = visibleFeatures.filter(f => (f.properties as any).routeId && activeDay(f) && onScreen(f));
-    const limitedServiceRoutes = new Set(
-      routesOnly
-        .filter(f => isLimitedService(f.properties as ShapeProperties))
-        .map(f => routeKey(f.properties as unknown as ShapeProperties)),
-    );
+    const limitedServiceByKey = new Map<string, LimitedServiceRoute>();
+    for (const f of routesOnly) {
+      const p = f.properties as unknown as ShapeProperties;
+      if (!isLimitedService(p)) continue;
+      const key = routeKey(p);
+      if (limitedServiceByKey.has(key)) continue;
+      limitedServiceByKey.set(key, {
+        key,
+        agencySlug: p.agencySlug ?? p.agencyName ?? '',
+        agencyName: p.agencyName ?? p.agencySlug ?? '',
+        routeShortName: p.routeShortName ?? '',
+        routeLongName: p.routeLongName ?? null,
+      });
+    }
 
     return {
       total: new Set(routesOnly.map(f => routeKey(f.properties as unknown as ShapeProperties))).size,
       matching: new Set(visibleRoutesOnly.map(f => routeKey(f.properties as unknown as ShapeProperties))).size,
-      limitedService: limitedServiceRoutes.size,
+      limitedService: limitedServiceByKey.size,
+      limitedServiceRoutes: [...limitedServiceByKey.values()],
     };
   }, [allFeatures, visibleFeatures, deferredBounds, day]);
 

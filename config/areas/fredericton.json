@@ -1,0 +1,25 @@
+{
+  "slug": "fredericton",
+  "name": "Fredericton",
+  "type": "CMA",
+  "officialName": "Fredericton",
+  "country": "Canada",
+  "cities": [
+    "Fredericton"
+  ],
+  "bbox": [
+    45.308137471591955,
+    -67.660763155765,
+    46.67704448313155,
+    -65.97224369643654
+  ],
+  "center": [
+    45.99259097736176,
+    -66.81650342610077
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "fredericton"
+  ],
+  "page": false
+}

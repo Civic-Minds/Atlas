@@ -1,0 +1,25 @@
+{
+  "slug": "santa-fe",
+  "name": "Santa Fe",
+  "type": "MSA",
+  "officialName": "Santa Fe, NM",
+  "country": "United States",
+  "cities": [
+    "Santa Fe"
+  ],
+  "bbox": [
+    35.0400030002156,
+    -106.25049899989918,
+    36.002320000273855,
+    -105.7144190001189
+  ],
+  "center": [
+    35.52116150024473,
+    -105.98245900000904
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "santafetrails"
+  ],
+  "page": false
+}

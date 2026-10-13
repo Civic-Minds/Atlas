@@ -6,6 +6,7 @@ import RouteListRow from '../RouteListRow';
 import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
 import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
+import ListRow from '../ui/ListRow';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -159,9 +160,10 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       renderItem={(s: StopSearchResult) => {
         const name = `${titleCase(s.stopName)}${s.direction ? ` — ${s.direction}` : ''}`;
         return (
-          <button
-            type="button"
-            className={`${LIST_ROW_SPACED} items-start gap-3 ${selectedStop === s.key ? SELECTION_ACTIVE : ''}`}
+          <ListRow
+            variant="spaced"
+            selected={selectedStop === s.key}
+            className="items-start gap-3"
             onClick={() => {
               saveRecentSearch(query);
               setQuery('');
@@ -175,15 +177,15 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             </div>
             <div className="flex flex-col items-end text-right ml-2 shrink-0 min-w-0 max-w-[34%]">
               {s.routes.length > 0 && (
-                <span className="text-[9px] font-bold text-[var(--text-secondary)] truncate max-w-full">
+                <span className="text-xs font-bold text-[var(--text-secondary)] truncate max-w-full">
                   {s.routes.length === 1 ? `Route ${s.routes[0]}` : `Routes ${s.routes.join(', ')}`}
                 </span>
               )}
-              <span className="text-[10px] font-black text-[var(--text-dim)] truncate max-w-full">
+              <span className="text-xs font-black text-[var(--text-dim)] truncate max-w-full">
                 {shortenAgencyName(s.agencyName || '')}
               </span>
             </div>
-          </button>
+          </ListRow>
         );
       }}
     />
@@ -197,7 +199,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   return (
     <div className="-mx-4 mb-4 flex flex-col gap-5">
       {noResults ? (
-        <div className="px-4 text-[10px] font-bold text-[var(--text-dim)] py-2">
+        <div className="px-4 text-xs font-bold text-[var(--text-dim)] py-2">
           No matches found.
         </div>
       ) : routesFirst ? (
@@ -217,7 +219,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         <button
           type="button"
           onClick={onShowMoreResults}
-          className="mx-4 mt-2 rounded-lg bg-[var(--bg-btn-hover)] px-3 py-2 text-[10px] font-black text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
+          className="mx-4 mt-2 rounded-lg bg-[var(--bg-btn-hover)] px-3 py-2 text-xs font-black text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
         >
           Show more results
         </button>

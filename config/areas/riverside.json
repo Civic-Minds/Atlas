@@ -1,0 +1,36 @@
+{
+  "slug": "riverside",
+  "name": "Riverside",
+  "type": "MSA",
+  "officialName": "Riverside-San Bernardino-Ontario, CA",
+  "country": "United States",
+  "cities": [
+    "Riverside",
+    "San Bernardino",
+    "Ontario"
+  ],
+  "bbox": [
+    33.42593300018274,
+    -117.80253899968784,
+    35.80923600026699,
+    -114.1312109996437
+  ],
+  "center": [
+    34.617584500224865,
+    -115.96687499966578
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "banning",
+    "basin-transit",
+    "beaumont-ca",
+    "corona",
+    "mountain-transit-ca",
+    "needles",
+    "omnitrans",
+    "riverside",
+    "sunline",
+    "vvta"
+  ],
+  "page": true
+}

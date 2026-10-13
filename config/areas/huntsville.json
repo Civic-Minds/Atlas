@@ -1,0 +1,25 @@
+{
+  "slug": "huntsville",
+  "name": "Huntsville",
+  "type": "MSA",
+  "officialName": "Huntsville, AL",
+  "country": "United States",
+  "cities": [
+    "Huntsville"
+  ],
+  "bbox": [
+    34.47563300034662,
+    -87.27863600043591,
+    34.999024000339745,
+    -86.2557709999891
+  ],
+  "center": [
+    34.73732850034318,
+    -86.7672035002125
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "huntsville"
+  ],
+  "page": false
+}

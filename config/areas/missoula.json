@@ -1,0 +1,25 @@
+{
+  "slug": "missoula",
+  "name": "Missoula",
+  "type": "MSA",
+  "officialName": "Missoula, MT",
+  "country": "United States",
+  "cities": [
+    "Missoula"
+  ],
+  "bbox": [
+    46.631577999720584,
+    -115.7593469999833,
+    47.600280999756194,
+    -113.30275799969904
+  ],
+  "center": [
+    47.115929499738385,
+    -114.53105249984117
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "missoula"
+  ],
+  "page": false
+}

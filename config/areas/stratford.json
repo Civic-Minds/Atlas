@@ -1,0 +1,25 @@
+{
+  "slug": "stratford",
+  "name": "Stratford",
+  "type": "CA",
+  "officialName": "Stratford",
+  "country": "Canada",
+  "cities": [
+    "Stratford"
+  ],
+  "bbox": [
+    43.323209455724005,
+    -81.03135169995703,
+    43.40385679232361,
+    -80.93156779139238
+  ],
+  "center": [
+    43.3635331240238,
+    -80.9814597456747
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "stratford"
+  ],
+  "page": false
+}

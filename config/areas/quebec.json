@@ -1,0 +1,26 @@
+{
+  "slug": "quebec",
+  "name": "Québec",
+  "type": "CMA",
+  "officialName": "Québec",
+  "country": "Canada",
+  "cities": [
+    "Québec"
+  ],
+  "bbox": [
+    46.431474870699454,
+    -72.02636618120818,
+    47.369878076790556,
+    -70.65623874574946
+  ],
+  "center": [
+    46.90067647374501,
+    -71.34130246347883
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "rtc",
+    "stlevis"
+  ],
+  "page": true
+}

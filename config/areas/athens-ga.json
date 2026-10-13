@@ -1,0 +1,27 @@
+{
+  "slug": "athens-ga",
+  "name": "Athens",
+  "type": "MSA",
+  "officialName": "Athens-Clarke County, GA",
+  "country": "United States",
+  "cities": [
+    "Athens",
+    "Clarke County"
+  ],
+  "bbox": [
+    33.68986900024158,
+    -83.64703100009729,
+    34.27352999970406,
+    -82.77950599965205
+  ],
+  "center": [
+    33.98169949997282,
+    -83.21326849987466
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "athens-acc",
+    "uga"
+  ],
+  "page": true
+}

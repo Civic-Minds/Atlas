@@ -1,0 +1,25 @@
+{
+  "slug": "salem",
+  "name": "Salem",
+  "type": "MSA",
+  "officialName": "Salem, OR",
+  "country": "United States",
+  "cities": [
+    "Salem"
+  ],
+  "bbox": [
+    44.683835999826776,
+    -123.72577099977386,
+    45.285208000067776,
+    -121.73326800034941
+  ],
+  "center": [
+    44.984521999947276,
+    -122.72951950006163
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cherriots"
+  ],
+  "page": false
+}

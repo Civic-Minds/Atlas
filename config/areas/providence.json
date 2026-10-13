@@ -1,0 +1,26 @@
+{
+  "slug": "providence",
+  "name": "Providence",
+  "type": "MSA",
+  "officialName": "Providence-Warwick, RI-MA",
+  "country": "United States",
+  "cities": [
+    "Providence",
+    "Warwick"
+  ],
+  "bbox": [
+    41.09583399969442,
+    -71.9072579999951,
+    42.09553900017082,
+    -70.7524240002714
+  ],
+  "center": [
+    41.59568649993262,
+    -71.32984100013326
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "ripta"
+  ],
+  "page": true
+}

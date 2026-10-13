@@ -1,0 +1,28 @@
+{
+  "slug": "virginia-beach",
+  "name": "Virginia Beach",
+  "type": "MSA",
+  "officialName": "Virginia Beach-Chesapeake-Norfolk, VA-NC",
+  "country": "United States",
+  "cities": [
+    "Virginia Beach",
+    "Chesapeake",
+    "Norfolk"
+  ],
+  "bbox": [
+    36.028833999668784,
+    -77.15609000000012,
+    37.603173999839804,
+    -75.70907800010572
+  ],
+  "center": [
+    36.816003999754294,
+    -76.43258400005291
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "hrt",
+    "wata"
+  ],
+  "page": true
+}

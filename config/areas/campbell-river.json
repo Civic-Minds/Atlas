@@ -1,0 +1,25 @@
+{
+  "slug": "campbell-river",
+  "name": "Campbell River",
+  "type": "CA",
+  "officialName": "Campbell River",
+  "country": "Canada",
+  "cities": [
+    "Campbell River"
+  ],
+  "bbox": [
+    49.421000662454986,
+    -126.10774586222637,
+    50.19679823638566,
+    -124.93411105879875
+  ],
+  "center": [
+    49.80889944942032,
+    -125.52092846051255
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "campbell-river"
+  ],
+  "page": false
+}

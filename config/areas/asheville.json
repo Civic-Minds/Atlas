@@ -1,0 +1,25 @@
+{
+  "slug": "asheville",
+  "name": "Asheville",
+  "type": "MSA",
+  "officialName": "Asheville, NC",
+  "country": "United States",
+  "cities": [
+    "Asheville"
+  ],
+  "bbox": [
+    35.14418800028621,
+    -82.96289999970108,
+    36.06591700011665,
+    -82.16904899957291
+  ],
+  "center": [
+    35.60505250020143,
+    -82.565974499637
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "asheville"
+  ],
+  "page": false
+}

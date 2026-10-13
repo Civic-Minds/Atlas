@@ -1,0 +1,26 @@
+{
+  "slug": "hanford",
+  "name": "Hanford",
+  "type": "MSA",
+  "officialName": "Hanford-Corcoran, CA",
+  "country": "United States",
+  "cities": [
+    "Hanford",
+    "Corcoran"
+  ],
+  "bbox": [
+    35.78857999999282,
+    -120.31506799983755,
+    36.48896199988061,
+    -119.47435399968282
+  ],
+  "center": [
+    36.13877099993671,
+    -119.89471099976018
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "kart"
+  ],
+  "page": false
+}

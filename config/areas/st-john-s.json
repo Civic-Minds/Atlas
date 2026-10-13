@@ -1,0 +1,25 @@
+{
+  "slug": "st-john-s",
+  "name": "St. John's",
+  "type": "CMA",
+  "officialName": "St. John's",
+  "country": "Canada",
+  "cities": [
+    "St. John's"
+  ],
+  "bbox": [
+    47.12177438095905,
+    -53.31333184085695,
+    47.814722469115296,
+    -52.38986408894474
+  ],
+  "center": [
+    47.468248425037174,
+    -52.85159796490085
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "metrobus"
+  ],
+  "page": false
+}
