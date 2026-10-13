@@ -38,6 +38,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The "Atlas / by Civic Minds" wordmark is tighter**: the two lines sit closer so they read as one unit, in the map header and the page headers.
 - **In view lists keep route numbers and agency names whole**: numbered bus routes (e.g. Toronto's GO Transit and Brampton lines, Kitchener's GRT) no longer lost their number in the In view and search lists, and agency names no longer break mid-word next to the long area link, which now sits underneath.
 - **Menu options stay on one line**: the Time, Mode and Gondola/aerial tram options no longer wrap to two lines.
+- **The agency card and In view panel are full width on phones**: they had shrunk to a sliver the width of the search pill, so the agency name broke into one word per line.
 - **Text is bigger and easier to read**: nothing a person has to read is below 12px any more, and the faint greys, status colours (green, red, amber) and white-on-pastel fare and timeline pills now meet WCAG AA contrast in light, dark and high-contrast modes.
 - **Frequency reads the same way everywhere, and Compare now says "or better"**: Compare headings read like a claim about the service rather than the filter, and the same frequency was worded eight different ways ("≤10m", "every 12m", "about every 10 min").
 - **Night Service moved to `/research/night`**: it now lives with the other research pages, and old `/apps/night` links redirect there with their filters kept.

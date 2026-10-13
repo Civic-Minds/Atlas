@@ -756,7 +756,7 @@ export default function App() {
               moreMenuPortalContainer={moreMenuPortalEl}
               onMoreMenuDone={() => setAppLinksOpen(false)}
               sidebarLeft={sidebarLeft}
-              searchBarWidth={searchBarWidth}
+              searchBarWidth={isPhone ? undefined : searchBarWidth}
               searchEnterRef={searchEnterRef}
               analyticsApp={activeApp}
               hideLowQuality={hideLowQuality}
