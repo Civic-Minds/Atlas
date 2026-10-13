@@ -8,7 +8,7 @@ import {
   agencyMapHref,
   agencyPageH1,
   agencyPagePath,
-  agencySpanText,
+  agencySpanShort,
   agencyStats,
   FREQUENT_MINUTES,
   headwayEvery,
@@ -19,9 +19,16 @@ import {
 } from '../shared/agencyPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
+import { SURFACE } from './styles';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
+/** The app's panel surface (SURFACE) as a rounded card, without FLOATING_CARD's shadow. */
+const TILE = `min-w-0 rounded-2xl p-4 ${SURFACE}`;
+/** Selected pill over a page: identical to CONTROL_ACTIVE_GLASS on fix/selected-state-tokens (opaque panel base with the selected tint on top). Switch to that export once it is on main. */
+const CONTROL_ACTIVE_GLASS = 'bg-[var(--bg-panel)] [background-image:linear-gradient(var(--control-active-bg),var(--control-active-bg))] border-[var(--control-active-border)] text-[var(--control-active-fg)]';
+/** Unselected pill: the faint grey the app uses only for unselected controls (CONTROL_INACTIVE, no hover). */
+const CHIP = 'rounded-full border bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] px-2.5 py-0.5 text-xs font-bold';
 const LINK = 'text-[var(--accent)] hover:underline';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -73,7 +80,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
   }
 
   const stats = agencyStats(agency);
-  const span = agencySpanText(agency);
+  const span = agencySpanShort(agency);
   const crumbs = agencyBreadcrumbs(agency);
   const nearby = data!.nearby;
   const standard = headwayOrBetter(FREQUENT_MINUTES);
@@ -100,10 +107,10 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <Tile value={`${stats.frequentMidday} / ${stats.totalRoutes}`} label={`routes ${standard}, weekday midday`} />
             <Tile value={`${stats.frequentAm} · ${stats.frequentPm}`} label="AM / PM peak, same standard" />
             <Tile value={span ?? 'Not recorded'} label="weekday service" />
-            <div className="rounded-2xl bg-[var(--control-inactive-bg)] p-4">
+            <div className={TILE}>
               <div className="flex flex-wrap gap-1.5">
                 {stats.byMode.map(m => (
-                  <span key={m.mode} className="rounded-full bg-[var(--control-active-bg)] px-2.5 py-0.5 text-xs font-bold text-[var(--control-active-fg)]">
+                  <span key={m.mode} className={CHIP}>
                     {m.routes.length} {m.label.toLowerCase()}
                   </span>
                 ))}
@@ -115,7 +122,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
             <a
               href={agencyMapHref(agency)}
-              className="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--control-active-bg)] px-5 text-sm font-bold text-[var(--control-active-fg)] transition-colors hover:bg-[var(--control-active-border)]"
+              className={`inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-bold ${CONTROL_ACTIVE_GLASS}`}
             >
               Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
@@ -181,8 +188,8 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 /** A flat stat tile: a big number over a short plain label. */
 function Tile({ value, label }: { value: string; label: string }) {
   return (
-    <div className="rounded-2xl bg-[var(--control-inactive-bg)] p-4">
-      <p className="text-3xl font-black tracking-tight">{value}</p>
+    <div className={TILE}>
+      <p className="whitespace-nowrap text-2xl font-black tracking-tight">{value}</p>
       <p className="mt-1 text-sm text-[var(--text-muted)]">{label}</p>
     </div>
   );

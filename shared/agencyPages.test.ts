@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  agencyAboutParagraph, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
+  agencyAboutParagraph, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
   agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary,
 } from './agencyPages';
@@ -37,6 +37,9 @@ describe('agency page text', () => {
     expect(agencySpanText({ span: { first: 5, last: 25 } })).toBe('5am to 2am');
     expect(agencySpanText({ span: { first: 5, last: 28 } })).toBe('Runs 24 hours');
     expect(agencySpanText({ span: null })).toBeNull();
+    expect(agencySpanShort({ span: { first: 5, last: 28 } })).toBe('24 h');
+    expect(agencySpanShort({ span: { first: 5, last: 25 } })).toBe('5am–2am');
+    expect(agencySpanShort({ span: null })).toBeNull();
   });
 
   it('links to the map with only this agency on and the agency area in view', () => {

@@ -158,6 +158,13 @@ export function agencySpanText(a: Pick<AgencyPageSummary, 'span'>): string | nul
   return `${hourLabel(a.span.first)} to ${hourLabel(a.span.last + 1)}`;
 }
 
+/** Short form for a tile: "24 h" or "5am–2am", so it stays on one line. */
+export function agencySpanShort(a: Pick<AgencyPageSummary, 'span'>): string | null {
+  if (!a.span) return null;
+  if (a.span.last + 1 - a.span.first >= 24) return '24 h';
+  return `${hourLabel(a.span.first)}–${hourLabel(a.span.last + 1)}`;
+}
+
 /** The agency's name without its bracketed city: "TTC (Toronto)" becomes "TTC". */
 export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): string {
   const m = /^(.*\S)\s+\([^)]+\)$/.exec(a.displayName);
