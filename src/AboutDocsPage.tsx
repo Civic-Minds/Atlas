@@ -58,6 +58,8 @@ export default function AboutDocsPage() {
   const showLive = FEATURES.live;
   const showHistory = FEATURES.history;
   const showResearch = FEATURES.researchApps;
+  const showAgencyPages = FEATURES.agencyPages;
+  const showCompare = FEATURES.compareMode;
 
   return (
     <PageShell>
@@ -93,6 +95,9 @@ export default function AboutDocsPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Network exploration:</strong> search agencies, routes, stops, and nearby service across a large catalogue.</li>
               <li><strong className="text-[var(--text-primary)]">Frequency analysis:</strong> compare service by day type, time period, route branch, direction, and stop.</li>
+              {showCompare && <li><strong className="text-[var(--text-primary)]">Compare:</strong> two maps side by side, each with its own frequency, day and time.</li>}
+              <li><strong className="text-[var(--text-primary)]">On phones:</strong> a Filters button in the header holds frequency, day, time, modes{showCompare ? ' and compare' : ''}.</li>
+              <li><strong className="text-[var(--text-primary)]">Map image export:</strong> save the map as an image with a poster layout and a source line.</li>
               <li><strong className="text-[var(--text-primary)]">Hourly schedule chart{showBetaFeatures ? ' and trip time' : ''}:</strong> each hour shows the slower direction{showBetaFeatures ? '; the full-day view also shows how long the trip takes by hour' : ''}.</li>
               <li><strong className="text-[var(--text-primary)]">Data quality:</strong> expose source dates, stale schedules, review states, corrections, geometry repairs, and known limitations.</li>
               <li><strong className="text-[var(--text-primary)]">Specialized service:</strong> represent on-demand and GTFS-Flex service as zones or virtual stops where a fixed route is the wrong model.</li>
@@ -120,6 +125,7 @@ export default function AboutDocsPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Frequency:</strong> current scheduled cadence, period filters, route variants, stop-level metrics, and map colouring.</li>
               {showHistory && <li><strong className="text-[var(--text-primary)]">History:</strong> selected agencies with usable archived GTFS periods, showing documented service changes without fabricating missing years.</li>}
+              {showAgencyPages && <li><strong className="text-[var(--text-primary)]">Agency and area pages:</strong> each agency has a page with a bar showing how many of its routes fall in each weekday-midday frequency band, a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, and nearby agencies. Area pages do the same for every agency in a city region, such as the Greater Toronto and Hamilton Area.</li>}
               <li><strong className="text-[var(--text-primary)]">On-demand service:</strong> GTFS-Flex and source-backed service areas represented separately from fixed-route frequency so booking-based service is not misread as a normal route.</li>
               {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> two focused views, night service and frequent service, built on source-reviewed data before anything becomes a general map feature.</li>}
             </ul>
@@ -172,7 +178,7 @@ export default function AboutDocsPage() {
             <p>Period output also carries separate longest-gap and sustained-service signals. These diagnostics can mark a median as unrepresentative without changing the stored median or silently filling the gap with an all-day value.</p>
             <Subsection title="Weekday schedules">
               <p>Atlas evaluates Monday through Friday separately. It does not combine departures from different weekdays into one synthetic schedule, because that can create service that never actually ran on any single day.</p>
-              <p>The frequency tier uses the slowest qualifying weekday. The displayed cadence uses the actual weekday whose trip count is closest to the median weekday trip count, so it represents a real day without letting an unusually busy or unusually quiet day dominate the summary.</p>
+              <p>The frequency tier is the slowest tier among the weekdays the route runs as a regular schedule; a day that only holds the tail of the previous night, or a short burst of a few trips, does not set it. The displayed cadence uses the actual weekday whose trip count is closest to the median weekday trip count, so it represents a real day without letting an unusually busy or unusually quiet day dominate the summary.</p>
               <p>A route that runs on only one or two weekdays is shown as limited on weekdays instead of borrowing a frequency from those days. Weekday stop and time-of-day numbers all describe the same typical weekday.</p>
               <p>When weekdays produce different frequency tiers, the route card says that weekday schedules vary. The notice explains that the tier shown reflects the slowest weekday, while the cadence is a typical weekday value.</p>
             </Subsection>
