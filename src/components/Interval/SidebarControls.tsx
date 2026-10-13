@@ -303,7 +303,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   // Compute notable routes fallback
   const notableRoutes = useMemo(() => {
-    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number; limited: boolean }>();
+    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number; limited: boolean; sharedHeadway?: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -322,15 +322,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const display = routeListDisplay(routeFeatures, period);
         const headway = display.headway ?? 999;
         const limited = display.limited;
+        const sharedHeadway = display.sharedHeadway;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = shortenAgencyName(facts.agencyName);
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, headway, limited });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, headway, limited, sharedHeadway });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
-          if (headway < existing.headway) existing.headway = headway;
+          if (headway < existing.headway) {
+            existing.headway = headway;
+            existing.sharedHeadway = sharedHeadway;
+          }
           existing.limited = existing.headway >= 999 && (existing.limited || limited);
         }
       }

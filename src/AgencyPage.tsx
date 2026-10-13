@@ -18,6 +18,7 @@ import {
   type AgencyPageRoute,
 } from '../shared/agencyPages';
 import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
+import { routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE } from '../shared/config';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
@@ -80,10 +81,14 @@ function Intro({ data }: { data: AgencyPageData }) {
   );
 }
 
-/** A period cell: the card's cadence, "Limited" when the route runs but has no trustworthy cadence, else a dash. */
+/**
+ * A period cell: the card's cadence (a range where alternating branches combine on a shared
+ * stretch), "Limited" when the route runs but has no trustworthy cadence, else a dash.
+ */
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
-  return v != null ? headwayEvery(v) : Array.isArray(r.limited) && r.limited.includes(col) ? 'Limited' : headwayEvery(null);
+  if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
+  return Array.isArray(r.limited) && r.limited.includes(col) ? 'Limited' : headwayEvery(null);
 }
 
 export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }) {

@@ -175,7 +175,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             }}
             right={(() => {
               const display = displayForRouteKey(r.key);
-              return routeRowRight(r.agencyName || '', display.headway, true, display.limited);
+              return routeRowRight(r.agencyName || '', display.headway, true, display.limited, display.sharedHeadway);
             })()}
           />
         );

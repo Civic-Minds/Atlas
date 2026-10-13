@@ -17,10 +17,10 @@ function line(name: string, directionId: number, midday: number | null, extra: R
 }
 
 describe('summarize', () => {
-  it('records a route as its route card lists it (best branch), not by the filter rule', () => {
+  it('records a route by the route card rule, judged by its slower direction (#821)', () => {
     const s = summarize([line('A', 0, 10), line('A', 1, 10), line('B', 0, 8), line('B', 1, 25), line('C', 0, 60), line('C', 1, 60)], 'x', '2026-10-01');
     expect(s.routeCount).toBe(3);
-    expect(s.routes.map(r => [r.name, r.midday, r.am, r.pm])).toEqual([['A', 10, 10, 10], ['B', 8, 8, 8], ['C', 60, 60, 60]]);
+    expect(s.routes.map(r => [r.name, r.midday, r.am, r.pm])).toEqual([['A', 10, 10, 10], ['B', 25, 25, 25], ['C', 60, 60, 60]]);
     expect(s.routes[0].mode).toBe(3);
     expect(s.span).toEqual({ first: 6, last: 25 });
   });
