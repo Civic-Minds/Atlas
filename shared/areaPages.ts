@@ -8,6 +8,7 @@ import {
   bestRoute,
   formatDataDate,
   headwayEvery,
+  modesText,
   modeLabel,
   type AgencyPageSummary,
 } from './agencyPages';
@@ -153,7 +154,7 @@ export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>):
 /** One plain sentence, the same template for every area. */
 export function areaAboutParagraph(d: AreaPageData): string {
   const n = d.agencies.length;
-  const out: string[] = [`${areaRegionSentenceStart(d.area)} has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}.`];
+  const out: string[] = [`${areaRegionSentenceStart(d.area)} has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}.`];
   return out.join(' ');
 }
 

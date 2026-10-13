@@ -113,7 +113,7 @@ export function namesList(names: readonly string[], named = 3): string {
 }
 
 /**
- * One plain sentence, the same template for every agency:
+ * One plain sentence, the same template for every agency (the mode split appears when there is more than one mode):
  * "Hamilton Street Railway operates 31 routes in Hamilton with 1,980 stops and connects with GO Transit and Burlington Transit."
  * Stops are unique places (same-name stops within 150 m count once); the connects-with clause drops when there are none.
  */
@@ -121,10 +121,11 @@ export function agencyIntroSentence(
   a: Pick<AgencyPageSummary, 'name' | 'city' | 'routes' | 'stops'>,
   place: string,
   connections: ReadonlyArray<{ name: string }> = [],
+  modes: ReadonlyArray<{ label: string; routes: number }> = [],
 ): string {
   const n = a.routes.length;
   if (n === 0) return `${a.name} has no weekday routes in the data.`;
-  let s = `${a.name} operates ${n.toLocaleString('en-US')} ${n === 1 ? 'route' : 'routes'} in ${place}`;
+  let s = `${a.name} operates ${n.toLocaleString('en-US')} ${n === 1 ? 'route' : 'routes'}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in ${place}`;
   if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${a.stops === 1 ? 'stop' : 'stops'}`;
   if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
   return `${s}.`;
@@ -151,7 +152,7 @@ export function agencyPageData(
   const place = area && agencySpansArea(a.bbox, area.bbox) ? areaRegionName(area) : a.city;
   const areaRef = area ? { slug: area.slug, name: area.name } : undefined;
   const { connections: _drop, ...agency } = a;
-  return { agency, releaseDate, ...(areaRef ? { area: areaRef } : {}), nearby: others.map(o => ({ slug: o.slug, name: o.name })), intro: agencyIntroSentence(a, place, connections), connections };
+  return { agency, releaseDate, ...(areaRef ? { area: areaRef } : {}), nearby: others.map(o => ({ slug: o.slug, name: o.name })), intro: agencyIntroSentence(a, place, connections, agencyStats(a).byMode.map(m => ({ label: m.label, routes: m.routes.length }))), connections };
 }
 
 const MAX_AREA_LIST = 12;
@@ -241,8 +242,8 @@ export function bestRoute<R extends Pick<AgencyPageRoute, 'midday' | 'name'>>(ro
 }
 
 /** "3 subway · 2 light rail · 209 bus" */
-export function modesText(byMode: ReadonlyArray<{ label: string; routes: number }>): string {
-  return byMode.map(m => `${m.routes} ${m.label.toLowerCase()}`).join(' · ');
+export function modesText(byMode: ReadonlyArray<{ label: string; routes: number }>, separator = ' · '): string {
+  return byMode.map(m => `${m.routes} ${m.label.toLowerCase()}`).join(separator);
 }
 
 /** What the release has for Saturday and Sunday: a short sub-label, or null when unknown. */

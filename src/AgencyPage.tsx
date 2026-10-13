@@ -3,7 +3,6 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import {
   bandCounts,
-  modesText,
   agencyDatesText,
   agencyMapHref,
   agencyPageH1,
@@ -22,7 +21,7 @@ import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { titleCase } from './utils/format';
 import { LINK, PAGE_ACTION } from './pageStyles';
-import { FrequencyBar, StatRow, type StatItem } from './pageParts';
+import { FrequencyBar } from './pageParts';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
@@ -103,9 +102,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
   const stats = agencyStats(agency);
   const nearby = data!.nearby;
-  const items: StatItem[] = [
-    ...(stats.totalRoutes > 0 ? [{ value: String(stats.totalRoutes), label: modesText(stats.byMode.map(m => ({ label: m.label, routes: m.routes.length }))) }] : []),
-  ];
 
   return (
     <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
@@ -123,8 +119,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             </a>
           </div>
           <Intro intro={data!.intro} connections={data!.connections} />
-
-          <StatRow items={items} />
 
           <section className="mt-14" aria-labelledby="routes-heading">
             <h2 id="routes-heading" className="text-xl font-black tracking-tight">Routes and weekday frequency</h2>

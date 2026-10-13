@@ -70,11 +70,11 @@ describe('AgencyPage intro', () => {
 
   it('says it once under the title, linking connecting agencies that have a page and counting the rest', () => {
     const d = agencyPageData(withConns, [withConns, HSR], null);
-    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes in Toronto with 7,566 stops and connects with HSR, Tiny Transit, C and 1 other.');
+    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway, 3 bus) in Toronto with 7,566 stops and connects with HSR, Tiny Transit, C and 1 other.');
     view(<AgencyPage data={d} />);
-    const p = screen.getByText(/operates 5 routes in Toronto with 7,566 stops/);
+    const p = screen.getByText(/operates 5 routes \(2 subway, 3 bus\) in Toronto with 7,566 stops/);
     expect(p.textContent).toBe(d.intro);
-    expect(document.body.textContent!.split('operates 5 routes').length - 1).toBe(1);
+    expect(document.body.textContent!.split('operates 5 routes (').length - 1).toBe(1);
     expect(screen.getByRole('link', { name: 'HSR' }).getAttribute('href')).toBe('/agency/hsr');
     expect(screen.queryByRole('link', { name: 'Tiny Transit' })).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Connects with' })).toBeNull();
