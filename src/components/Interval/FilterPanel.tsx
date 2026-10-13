@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Settings, X, ArrowLeft, Search } from 'lucide-react';
+import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
@@ -26,6 +26,8 @@ interface FilterPanelProps {
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   inFrequency?: boolean;
+  /** 'filters' renders the phone-only Filters sheet; 'settings' (default) renders the Settings sheet. */
+  mode?: 'settings' | 'filters';
 
   // New optional props for mobile filters
   maxHeadway?: number;
@@ -118,6 +120,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setLivePollingOnly,
   onInfoOpen,
   inFrequency = true,
+  mode = 'settings',
   maxHeadway,
   setMaxHeadway,
   selectedModes,
@@ -140,6 +143,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setDataSaver,
 }) => {
   const { colorVisionFriendly, setColorVisionFriendly } = useColorVision();
+  const isFilters = mode === 'filters';
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -172,7 +176,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [open]);
 
   useEffect(() => {
-    if (!open || hiddenRoutesLoaded) return;
+    if (!open || hiddenRoutesLoaded || isFilters) return;
     let cancelled = false;
     setHiddenRoutesLoading(true);
     fetch(`${R2_PUBLIC_URL}/atlas/hidden-routes.json`, { cache: 'no-store' })
@@ -303,6 +307,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   );
 
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
+  // Day is not counted: it defaults to today, so it is never "unset".
+  const activeFilterCount = (maxHeadway !== undefined && maxHeadway !== 60 ? 1 : 0)
+    + (period !== undefined && period !== 'all' ? 1 : 0)
+    + (selectedModes && selectedModes.size > 0 ? 1 : 0)
+    + (compare?.side ? 1 : 0);
   const hasActiveFilters = hideSpan || hideLimitedService || livePollingOnly || hasActiveCoreFilter || hideLowQuality;
 
   const values: Record<string, boolean> = {
@@ -335,16 +344,33 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
   return (
     <>
-      <button
-        onClick={() => setOpen(v => !v)}
-        className={`relative ${ICON_BTN}`}
-        aria-label="Settings"
-      >
-        <Settings className="w-4 h-4" />
-        {hasActiveFilters && (
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
-        )}
-      </button>
+      {isFilters ? (
+        maxHeadway !== undefined && (
+          <button
+            onClick={() => setOpen(v => !v)}
+            className={`relative sm:hidden ${ICON_BTN}`}
+            aria-label="Filters"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            {activeFilterCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 flex items-center justify-center rounded-full bg-[var(--accent)] text-[9px] font-bold text-white">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        )
+      ) : (
+        <button
+          onClick={() => setOpen(v => !v)}
+          className={`relative ${ICON_BTN}`}
+          aria-label="Settings"
+        >
+          <Settings className="w-4 h-4" />
+          {hasActiveFilters && (
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
+          )}
+        </button>
+      )}
 
       {open && (
         <div
@@ -376,13 +402,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       ? 'Limited-service routes'
                     : view === 'degraded-feeds'
                       ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
-                      : 'Settings'}
+                      : isFilters ? 'Filters' : 'Settings'}
                 </h2>
               </div>
               <button
                 onClick={close}
                 className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
-                aria-label="Close settings"
+                aria-label={isFilters ? 'Close filters' : 'Close settings'}
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -529,6 +555,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </div>
               ) : (
                 <>
+              {!isFilters && (
+              <>
               {/* Appearance. Sections use spacing only, no divider lines (guarded by settingsNoDividers.test.ts). */}
               <div className="px-5 pt-4 pb-1">
                 <p className="text-[9px] font-bold text-[var(--text-dim)]">Appearance</p>
@@ -622,7 +650,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
               {/* Filters */}
               <div className="px-5 pt-4 pb-1">
-                <p className="text-[9px] font-bold text-[var(--text-dim)]">Filters</p>
+                <p className="text-[9px] font-bold text-[var(--text-dim)]">Routes shown</p>
                 {!inFrequency && (
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
                 )}
@@ -676,8 +704,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 ))}
               </div>
 
+              </>
+              )}
+
               {/* Mobile-only Core Filters */}
-              {maxHeadway !== undefined && (
+              {isFilters && maxHeadway !== undefined && (
                 <div className="block sm:hidden pb-4">
                   {/* Frequency */}
                   <div className="px-5 pt-4 pb-1">
