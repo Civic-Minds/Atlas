@@ -1,0 +1,52 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+00011160,1940,Conestoga Dr at Mondragon Circle,,43.729816,-79.797005,,,0,,,0
+00011180,1942,Conestoga Dr at Loafers Lake Lane,,43.726167,-79.798632,,,0,,,1
+00012470,2061,Sandalwood Pky E e/of Conestoga Dr,,43.726169,-79.795726,,,0,,,1
+00013240,2129,Kennedy Dr N s/of Conservation Dr,,43.735241,-79.803152,,,0,,,1
+00013250,2130,Kennedy Rd N opp McFadden Dr,,43.734292,-79.801829,,,0,,,1
+00013260,2131,Kennedy Rd N s/of Somerset Dr,,43.731715,-79.798335,,,0,,,1
+00018920,2662,Mayfield Rd opp Summer Valley Dr,,43.736164,-79.822183,,,0,,,1
+00018930,2663,Mayfield Rd w/of Inder Heights Dr,,43.740521,-79.817654,,,0,,,1
+00018940,2664,Mayfield Rd w/of Kennedy Rd,,43.743348,-79.814669,,,0,,,0
+00018950,2665,Kennedy Rd N s/of Kenpark Ave,,43.741911,-79.812274,,,0,,,0
+00018960,2666,Kennedy Rd N at Carnforth Dr,,43.738572,-79.807720,,,0,,,1
+00018970,2667,Kennedy Rd N opp Christie Dr,,43.737268,-79.805923,,,0,,,1
+00019060,2668,Sandalwood Pkwy w/of Kennedy Rd,,43.727864,-79.793488,,,0,,,1
+00019070,2669,Kennedy Rd N opp Piedmont Dr,,43.725764,-79.790272,,,0,,,1
+00019080,2670,Kennedy Rd N opp Heart Lake Medical Bldg,,43.724146,-79.788020,,,0,,,1
+00019090,2671,Kennedy Rd N at Ruth Ave,,43.723020,-79.786494,,,0,,,1
+00019100,2672,Kennedy Rd N btwn Ruth Ave & Wexford Rd,,43.721024,-79.783763,,,0,,,1
+00019110,2673,Kennedy Rd N at Wexford Rd,,43.719507,-79.781711,,,0,,,1
+00019120,2674,Kennedy Rd n/of Bovaird Dr,,43.716266,-79.777378,,,0,,,1
+00019130,2675,Kennedy Rd N btwn Bovaird Dr E & Centre St N,,43.713689,-79.773852,,,0,,,1
+00019140,2676,Kennedy Rd N at Centre St N,,43.711669,-79.771202,,,0,,,1
+00019150,2677,Kennedy Rd N btwn Centre St N & Williams Pky E,,43.709789,-79.768588,,,0,,,1
+00019160,2678,Kennedy Rd n/of Williams Pky,,43.708471,-79.766922,,,0,,,1
+00019170,2680,Kennedy Rd N at Linkdale Rd,,43.706142,-79.763755,,,0,,,1
+00019180,2681,Kennedy Rd at Vodden St,,43.702714,-79.759125,,,0,,,1
+00019190,2682,Kennedy Rd N opp Centennial Mall Private Entrance,,43.701408,-79.757375,,,0,,,1
+00019200,2683,Kennedy Rd N at Edgemont Dr,,43.700032,-79.755547,,,0,,,1
+00019210,2684,Kennedy Rd N at McCaul St,,43.698765,-79.753844,,,0,,,1
+00019220,2685,Kennedy Rd N at Church St E,,43.697750,-79.752485,,,0,,,1
+00019230,2686,Kennedy Rd S s/of Queen St E,,43.695192,-79.749143,,,0,,,1
+00019240,2687,Kennedy Rd S s/of Eastern Ave,,43.693340,-79.746606,,,0,,,0
+00019250,2689,S Kennedy Rd S at Orenda Rd,,43.692361,-79.745272,,,0,,,1
+00019260,2690,Kennedy Rd n/of Clarence St,,43.689892,-79.742022,,,0,,,1
+00019270,2691,Kennedy Rd S at Research Rd,,43.687994,-79.739425,,,0,,,1
+00019280,2692,Kennedy Rd S at Dean St,,43.686851,-79.737877,,,0,,,1
+00019290,2693,Kennedy Rd S at Tullamore Crt (Tullamore Nursing),,43.684991,-79.735370,,,0,,,0
+00019300,2694,Kennedy Rd S s/of Tullamore Crt,,43.683713,-79.733642,,,0,,,1
+00019310,2695,Kennedy Rd S at Chamney Crt,,43.682276,-79.731730,,,0,,,1
+00019320,2696,Kennedy Rd s/of Chamney Crt,,43.681153,-79.730235,,,0,,,1
+00019330,2697,Kennedy Rd S s/of Rambler Dr,,43.678763,-79.727026,,,0,,,1
+00019340,2698,Kennedy Rd S at 365 Kennedy Rd S,,43.677296,-79.725066,,,0,,,1
+00019350,2699,Kennedy Rd n/of Steeles Ave,,43.676309,-79.723769,,,0,,,1
+00019360,2700,Kennedy Rd S s/of Steeles Ave E,,43.674920,-79.721916,,,0,,,1
+00019370,2701,Kennedy Rd S at Hartford Trail,,43.672711,-79.718161,,,0,,,1
+00019372,2702,Kennedy Rd S at Brampton Golf Club (7700 Kennedy),,43.669734,-79.714209,,,0,,,0
+00019375,2703,Kennedy Rd at 7580 Kennedy Rd,,43.667935,-79.711814,,,0,,,1
+00019390,6109,Kennedy Rd S opp Secretariat Court,,43.659340,-79.700225,,,0,,,1
+00019567,6129,S Kennedy Rd S n/of Derry Rd,,43.656437,-79.696367,,,0,,,1
+00019930,3544,Heart Lake Terminal Route 7 / 7A SB - Departure,,43.727939,-79.798234,,,0,place_HTLK,,1
+00042400,3355,Hurontario St at 11975 Hurontario St,,43.733486,-79.824336,,,0,,,1
+25090103,4450,Kennedy Rd at CAA Centre,,43.666081,-79.709515,,,0,,,1
