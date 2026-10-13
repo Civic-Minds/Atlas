@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { WhatsNewItemText } from './components/WhatsNewItemText';
 import PageContents from './components/PageContents';
 import SiteHeader from './components/SiteHeader';
 import SiteFooter from './components/SiteFooter';
@@ -43,8 +44,7 @@ export default function ChangelogPage({ loadReleases = loadDataReleases }: { loa
                   <ul className="list-disc pl-5 space-y-1">
                     {entry.items.map(item => (
                       <li key={item.text}>
-                        {item.text}
-                        {item.beta && <span className="ml-2 text-xs font-bold text-[var(--accent)]">Beta</span>}
+                        <WhatsNewItemText item={item} />
                       </li>
                     ))}
                   </ul>
