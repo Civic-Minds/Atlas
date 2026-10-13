@@ -23,18 +23,82 @@ function medianOfSortedGaps(sortedGaps: number[]): number {
   return sortedGaps.length % 2 === 0 ? (sortedGaps[mid - 1] + sortedGaps[mid]) / 2 : sortedGaps[mid];
 }
 
+// A gap at least this many times the median counts as a long gap for ALTERNATING_LONG_SHARE.
+export const ALTERNATING_LONG_GAP_RATIO = 1.5;
+// A gap over this many times the median is an outlier (a midday break, the daytime hole in a
+// night route, the long half of a paired trip), not part of an alternation: it is left out of
+// both the share and the mean.
+export const ALTERNATING_MAX_GAP_RATIO = 5;
+// When at least this share of the remaining gaps are long, the gaps alternate rather than one
+// odd gap sitting in regular service (#772).
+export const ALTERNATING_LONG_SHARE = 1 / 3;
+// Alternating long gaps read as the wait only when this many times the short gaps: a 90-minute
+// hole between 30s dominates the wait, a 12 between 6s does not (a rider sees the mean, 9).
+export const ALTERNATING_HOLE_RATIO = 3;
+
+/**
+ * The typical wait for a list of gaps in time order: the median, unless short and long gaps
+ * alternate. Long means 1.5x to 5x the median; a gap over 5x is an outlier and is left out. A run
+ * of long gaps that touches either end of the list is a slower start or finish (sbmtd 12X midday:
+ * 70, 70, then every 35), not alternation, so it does not count either. When the long gaps
+ * inside the list make up at least a third of the remaining gaps, the median lands on the short
+ * gap and halves the real wait: the long gaps' median is used when they take up most of the
+ * time in one block or as holes 3x the short gaps, otherwise the mean of the remaining gaps
+ * when larger (#772:
+ * basin transit 1 Saturday midday 60, 120, 60 read 60; saint john 12 read 60 for a 60, 60,
+ * 225, 255, 60 day). One odd gap in regular service (10, 10, 10, 10, 30) stays on its median,
+ * and so does any list of one or two gaps.
+ */
+export function typicalOfGaps(gapsInTimeOrder: readonly number[]): number {
+  const sorted = [...gapsInTimeOrder].sort((a, b) => a - b);
+  const median = medianOfSortedGaps(sorted);
+  if (sorted.length < 3 || median <= 0) return median;
+  const inRange = gapsInTimeOrder.filter(g => g <= median * ALTERNATING_MAX_GAP_RATIO);
+  if (inRange.length < 3) return median;
+  const isLong = inRange.map(g => g >= median * ALTERNATING_LONG_GAP_RATIO);
+  let lead = 0;
+  while (lead < isLong.length && isLong[lead]) lead++;
+  let trail = 0;
+  while (trail < isLong.length - lead && isLong[isLong.length - 1 - trail]) trail++;
+  const innerLong = isLong.slice(lead, isLong.length - trail).filter(Boolean).length;
+  if (innerLong < inRange.length * ALTERNATING_LONG_SHARE) return median;
+  // When the long gaps take up most of the time, most riders wait a long gap: read the long
+  // gaps' median. That holds for one block of long gaps (mata 42 Weekday at Frayser & Woodrow,
+  // midday 30, 30, 60, 60, 60, 30, 30 reads 60, not 43) and for alternation with real holes,
+  // long gaps at least 3x the short ones (30, 90 reads 90). Interleaved pairs such as ttc 100A
+  // (6, 12, 6, 12) read the mean, 9: the wait a rider arriving at random sees. The long-gap
+  // reading needs four gaps or more: on three, one long gap is most of the time on its own (a
+  // 4-trip freedom-transit L-A shape, 120, 285, 115, would read 285). Otherwise the mean, when
+  // larger than the median.
+  const longGaps = inRange.filter((_, i) => isLong[i]).sort((a, b) => a - b);
+  const shortGaps = inRange.filter((_, i) => !isLong[i]).sort((a, b) => a - b);
+  const total = inRange.reduce((sum, g) => sum + g, 0);
+  const longTime = longGaps.reduce((sum, g) => sum + g, 0);
+  const firstLong = isLong.indexOf(true);
+  const oneBlock = isLong.slice(firstLong, isLong.lastIndexOf(true) + 1).every(Boolean);
+  const holes = shortGaps.length > 0
+    && medianOfSortedGaps(longGaps) >= medianOfSortedGaps(shortGaps) * ALTERNATING_HOLE_RATIO;
+  if (inRange.length >= 4 && longTime * 2 > total && (oneBlock || holes)) {
+    return Math.max(median, medianOfSortedGaps(longGaps));
+  }
+  return Math.max(median, total / inRange.length);
+}
+
 export function medianHeadwayInWindow(
   departureTimes: number[],
   start: number,
   end: number,
   minDeps = 2,
+  typical = false,
 ): number | null {
   const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
   if (times.length < minDeps) return null;
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
-  gaps.sort((a, b) => a - b);
-  return Math.round(medianOfSortedGaps(gaps));
+  // `typical` reads alternating gaps honestly (typicalOfGaps, #772): the headline and period
+  // values ask for it. Pooled shared-stretch values keep the plain median, which their own
+  // evenness guard expects.
+  return Math.round(typical ? typicalOfGaps(gaps) : medianOfSortedGaps([...gaps].sort((a, b) => a - b)));
 }
 
 // GTFS lets a trip past midnight be encoded either way: extended notation (>=24:00, continuing
@@ -105,16 +169,17 @@ export function sustainedMedianHeadwayInWindow(
   end: number,
   minDeps = 2,
   dominantGapRatio: number = DOMINANT_GAP_RATIO,
+  typical = false,
 ): number | null {
   const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
   if (times.length < minDeps) return null;
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
-  gaps.sort((a, b) => a - b);
-  const median = medianOfSortedGaps(gaps);
-  const maxGap = gaps[gaps.length - 1];
+  const sorted = [...gaps].sort((a, b) => a - b);
+  const median = medianOfSortedGaps(sorted);
+  const maxGap = sorted[sorted.length - 1];
   if (median > 0 && maxGap / median > dominantGapRatio) return null;
-  return Math.round(median);
+  return Math.round(typical ? typicalOfGaps(gaps) : median);
 }
 
 // Step 4's terminal override can fall back to the raw all-day (6-22h) window when the terminal
@@ -227,6 +292,32 @@ export function headsignOverlapMinHeadway(vals: number[], baseline: number | nul
 // route-report's own threshold for flagging a headway mismatch worth a second look — reused
 // here so "is this a real branch" uses the same bar as "is this worth flagging" elsewhere.
 export const BRANCH_MISMATCH_RATIO = 1.8;
+
+/**
+ * Step 4's headline from the terminal (#772). The branch decision (hasGenuineBranchPattern,
+ * resolveTerminalHeadway) runs on plain medians, exactly as before the alternating-gap reading;
+ * the typical terminal value then only ever raises the result. On typical values alone a
+ * terminal of 30, 30, 60, 60, 30, 30 reads 40 against trunk stops at 60: the ratio falls under
+ * the branch threshold, protection drops and the headline goes from 60 to 40. The typical value
+ * is capped at the headsign's pooled terminal value when one is given.
+ */
+export function resolveTerminalHeadline(
+  plainTerminalHw: number,
+  plainNonTerminalStopHeadways: number[],
+  typicalTerminalHw: number,
+  branchHw: number | null,
+  branchTripCount: number,
+  pooledTerminalHw: number | null = null,
+): number {
+  const plain = hasGenuineBranchPattern(plainTerminalHw, plainNonTerminalStopHeadways)
+    ? resolveTerminalHeadway(plainTerminalHw, branchHw, branchTripCount)
+    : plainTerminalHw;
+  // The typical value never reads slower than the headsign's own pooled terminal value: a thin
+  // shape that won dedupe can have a lopsided sample (ttc 96B's 9 early trips, 12, 12, 12, 27,
+  // 24, 6, read 26 while the headsign runs every 12 to 17 at York Mills).
+  const typical = pooledTerminalHw != null ? Math.min(typicalTerminalHw, pooledTerminalHw) : typicalTerminalHw;
+  return Math.max(plain, typical);
+}
 
 /**
  * Does this route feature actually have a branch for resolveTerminalHeadway to protect?
@@ -421,10 +512,10 @@ export function hasSustainedFrequentService(
 // The median deliberately stays based on departures inside the period. A separate max-gap value
 // below captures the part of every departure gap that overlaps the period, including boundary-
 // crossing gaps, without letting one large gap change the existing median.
-export function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod {
+export function computePeriodHeadways(departureTimes: number[], typical = true): HeadwayByPeriod {
   const result: HeadwayByPeriod = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-    result[key] = medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, end), start, end, 3);
+    result[key] = medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, end), start, end, 3, typical);
   }
   return result;
 }
