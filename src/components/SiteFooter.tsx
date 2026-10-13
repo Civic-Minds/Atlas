@@ -20,6 +20,7 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       links: [
         { href: '/about/docs', label: 'Docs' },
         ...(FEATURES.researchApps ? [{ href: '/research', label: 'Research' }] : []),
+        { href: '/about', label: 'About' },
       ],
     },
   ];

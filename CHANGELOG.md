@@ -8,7 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
-- **Page footer now groups links into Atlas and Learn, with Terms and Privacy beside the copyright**: Map, Agencies, Changelog, Docs and Research are one click away from any content page.
+- **Page footer now groups links into Atlas and Learn, with Terms and Privacy beside the copyright**: Map, Agencies, Changelog, Docs, Research and About are one click away from any content page.
 - **Docs, changelog, terms and privacy pages scroll smoothly and keep the top bar and "On this page" list in view**: long pages were hard to navigate once you scrolled past the top.
 
 ### Added
