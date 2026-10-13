@@ -120,11 +120,12 @@ const IGNORE_BOUNDS = () => {};
 /**
  * Where a compare side's label and controls sit on its map: top right of each half on desktop,
  * centred on phones (where the halves stack). The wrapper ignores pointer events so the map stays
- * draggable around it; the controls inside turn them back on.
+ * draggable around it; the controls inside turn them back on. One step above the panels so a chip's
+ * menu opens over the phone route sheet instead of behind it.
  */
 function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.ReactNode }) {
   return (
-    <div className={`absolute ${side === 'A' ? 'top-[68px]' : 'top-3 sm:top-[68px]'} left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 ${Z_PANEL} pointer-events-none`}>
+    <div className={`absolute ${side === 'A' ? 'top-[68px]' : 'top-3 sm:top-[68px]'} left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 z-[1001] pointer-events-none`}>
       {children}
     </div>
   );
