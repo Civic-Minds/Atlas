@@ -20,6 +20,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Re-processing an agency without a name keeps its display name**: it was being overwritten with the slug (#785).
 - **Redwood Coast Transit 20 shows its southbound route to Eureka**: its two daily trips each used their own shape, so only a stub was drawn ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
 - A route that runs different timetables Monday to Thursday and on Friday now draws and reports the Monday to Thursday one in the Weekday view, so cata-state-college's VE Campus no longer shows Friday's every 21 minutes when its typical weekday is every 24 ([#716](https://github.com/Civic-Minds/Atlas/issues/716)).
 - Agencies whose schedule period's middle falls on a holiday or a timetable change-over, like a university year centred on Christmas break, now read the timetable running near the build date instead ([#686](https://github.com/Civic-Minds/Atlas/issues/686)).
