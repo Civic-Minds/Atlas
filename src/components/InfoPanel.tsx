@@ -769,14 +769,15 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                       </div>
                       <div className="space-y-1">
                         {selectedLiveRoutes.map(r => (
-                          <button
+                          <ListRow
                             key={r.displayRouteShortName}
+                            variant="spaced"
                             onClick={() => { onLiveRouteClick?.(r.slug, r.displayRouteShortName); onClose(); }}
-                            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
+                            className="justify-start gap-2"
                           >
                             <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
                             <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
-                          </button>
+                          </ListRow>
                         ))}
                       </div>
                     </div>
