@@ -100,7 +100,9 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
             <p className="mt-2 text-sm text-[var(--text-muted)]">Mode columns count routes. Each route is judged by its slower direction.</p>
           </section>
 
-          <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
+          <p className="mt-12 text-sm"><a className={`font-black ${LINK}`} href="/agencies">See all agencies →</a></p>
+
+          <p className="mt-6 text-sm leading-6 text-[var(--text-dim)]">
             Region: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). Scheduled service, not live arrivals. {areaDatesText(data)}
           </p>
         </article>

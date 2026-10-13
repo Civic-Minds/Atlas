@@ -160,7 +160,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             </section>
           )}
 
-          <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
+          <p className="mt-12 text-sm"><a className={`font-black ${LINK}`} href="/agencies">See all agencies →</a></p>
+
+          <p className="mt-6 text-sm leading-6 text-[var(--text-dim)]">
             Scheduled service, not live arrivals. {agencyDatesText(agency, data!.releaseDate)}
             {agency.websiteUrl && <> Official site: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{agency.name}</a>.</>}
           </p>
