@@ -74,9 +74,23 @@ export interface AgencyPageData {
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
 export const AGENCY_DATA_SCRIPT_ID = 'agency-page-data';
 
-export function agencyPageData(a: AgencyPageSummary, all: readonly AgencyPageSummary[], releaseDate: string | null = null, area?: { slug: string; name: string }): AgencyPageData {
-  return { agency: a, releaseDate, ...(area ? { area } : {}), nearby: nearbyAgencies(a, all).map(o => ({ slug: o.slug, displayName: o.displayName })) };
+export function agencyPageData(
+  a: AgencyPageSummary,
+  all: readonly AgencyPageSummary[],
+  releaseDate: string | null = null,
+  area?: { slug: string; name: string },
+  areaMembers?: readonly AgencyPageSummary[],
+): AgencyPageData {
+  // With an area page, the list is the area's other agencies (nearest first); otherwise same-region neighbours.
+  const others = areaMembers
+    ? areaMembers.filter(o => o.slug !== a.slug)
+        .sort((x, y) => (a.center && x.center ? distanceKm(a.center, x.center) : 0) - (a.center && y.center ? distanceKm(a.center, y.center) : 0))
+        .slice(0, MAX_AREA_LIST)
+    : nearbyAgencies(a, all);
+  return { agency: a, releaseDate, ...(area ? { area } : {}), nearby: others.map(o => ({ slug: o.slug, displayName: o.displayName })) };
 }
+
+const MAX_AREA_LIST = 12;
 
 export const AGENCY_PATH_PREFIX = '/agency/';
 
