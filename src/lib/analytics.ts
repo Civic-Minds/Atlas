@@ -1,3 +1,4 @@
+import { FEATURES } from '../../shared/config';
 import { isInternalTestSession } from './internalTest';
 
 const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
@@ -83,4 +84,24 @@ export function trackEvent(name: string, parameters: Record<string, string | num
     return;
   }
   window.gtag('event', name, contextualParameters);
+}
+
+export const SHARE_UTM_SOURCE = 'atlas_share';
+export const SHARE_UTM_MEDIUM_IMAGE = 'image';
+export const SHARE_UTM_MEDIUM_LINK = 'link';
+export type ShareMedium = typeof SHARE_UTM_MEDIUM_IMAGE | typeof SHARE_UTM_MEDIUM_LINK;
+
+/**
+ * The one place share links get their analytics tags, so shared visits can be counted (GA and
+ * Vercel read utm_ params natively). Existing utm_source/utm_medium are replaced, never
+ * duplicated, so re-sharing a tagged link stays clean. With `enabled` false (beta flag off) the
+ * URL is returned untouched. Nothing reads these params back: URL-state parsers only look at their
+ * own named params, so an arriving utm tag is ignored.
+ */
+export function withShareTags(url: string, medium: ShareMedium, enabled: boolean = FEATURES.shareUtm): string {
+  if (!enabled) return url;
+  const u = new URL(url);
+  u.searchParams.set('utm_source', SHARE_UTM_SOURCE);
+  u.searchParams.set('utm_medium', medium);
+  return u.toString();
 }

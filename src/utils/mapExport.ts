@@ -1,3 +1,5 @@
+import { FEATURES } from '../../shared/config';
+import { withShareTags, SHARE_UTM_MEDIUM_IMAGE } from '../lib/analytics';
 import { slugifyForFilename } from './mapExportDetails';
 
 export const MAP_EXPORT_SIZES = [
@@ -631,5 +633,8 @@ export async function shareMapExport(blob: Blob, title: string, filename: string
     title: `${title.trim() || 'Transit map'} · Atlas`,
     text: 'Map exported from Atlas by Civic Minds',
     files: [file],
+    ...(FEATURES.shareUtm && typeof window !== 'undefined'
+      ? { url: withShareTags(window.location.href, SHARE_UTM_MEDIUM_IMAGE) }
+      : {}),
   });
 }

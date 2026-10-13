@@ -1,6 +1,9 @@
 // Run on a deployed hostname; jsdom defaults to localhost, which analytics skips.
 // @vitest-environment-options {"url": "https://transitatlas.fyi/"}
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { FEATURES } from '../../../shared/config';
+import { parseAgencyUrlRule, parseModesParam } from '../../utils/shareUrlState';
+import { withShareTags } from '../analytics';
 
 describe('analytics startup queue', () => {
   beforeEach(() => {
@@ -65,5 +68,42 @@ describe('analytics startup queue', () => {
     initAnalytics();
 
     expect(document.head.querySelector('script[src*="googletagmanager"]')).toBeNull();
+  });
+});
+
+describe('withShareTags', () => {
+  const base = 'https://atlas.example/?lat=43.65&lon=-79.38&z=11.00';
+
+  it('tags with source and medium', () => {
+    const u = new URL(withShareTags(base, 'link', true));
+    expect(u.searchParams.get('utm_source')).toBe('atlas_share');
+    expect(u.searchParams.get('utm_medium')).toBe('link');
+    expect(u.searchParams.get('lat')).toBe('43.65');
+  });
+
+  it('replaces existing tags instead of duplicating them', () => {
+    const tagged = withShareTags(base, 'link', true);
+    const u = new URL(withShareTags(tagged, 'image', true));
+    expect(u.searchParams.getAll('utm_source')).toEqual(['atlas_share']);
+    expect(u.searchParams.getAll('utm_medium')).toEqual(['image']);
+  });
+
+  it('never adds atlas_internal', () => {
+    expect(withShareTags(base, 'image', true)).not.toContain('atlas_internal');
+  });
+
+  it('returns the URL untouched when the flag is off', () => {
+    expect(withShareTags(base, 'link', false)).toBe(base);
+  });
+
+  it('is off by default outside beta', () => {
+    expect(withShareTags(base, 'link')).toBe(FEATURES.shareUtm ? withShareTags(base, 'link', true) : base);
+  });
+
+  it('utm params do not affect URL-state parsing', () => {
+    const search = '?agencies=ttc.go&m=3&utm_source=atlas_share&utm_medium=link';
+    const plain = '?agencies=ttc.go&m=3';
+    expect(parseAgencyUrlRule(search)).toEqual(parseAgencyUrlRule(plain));
+    expect(parseModesParam(search)).toEqual(parseModesParam(plain));
   });
 });

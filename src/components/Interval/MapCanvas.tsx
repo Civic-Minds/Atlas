@@ -36,6 +36,7 @@ import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import { useOnDemandStatus, useReportOnDemandVisible } from '../../hooks/useOnDemandData';
 import { FEATURES } from '../../../shared/config';
+import { withShareTags, SHARE_UTM_MEDIUM_LINK, type ShareMedium } from '../../lib/analytics';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
@@ -1769,18 +1770,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     };
   }, [mapLoaded]);
 
-  const buildLocationUrl = (lat: number, lon: number): string => {
+  const buildLocationUrl = (lat: number, lon: number, medium?: ShareMedium): string => {
     const map = mapRef.current;
     const sp = new URLSearchParams(window.location.search);
     sp.set('lat', lat.toFixed(5));
     sp.set('lon', lon.toFixed(5));
     sp.set('z', (map?.getZoom() ?? zoom).toFixed(2));
-    return `${window.location.origin}${window.location.pathname}?${sp.toString()}`;
+    const url = `${window.location.origin}${window.location.pathname}?${sp.toString()}`;
+    return medium ? withShareTags(url, medium) : url;
   };
 
   const handleCopyLocationUrl = () => {
     if (!mapContextMenu) return;
-    const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
+    const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon, SHARE_UTM_MEDIUM_LINK);
     navigator.clipboard.writeText(url).then(
       () => showMapHint('Location URL copied'),
       () => showMapHint('Could not copy — clipboard access denied'),

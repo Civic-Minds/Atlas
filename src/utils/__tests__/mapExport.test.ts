@@ -270,3 +270,36 @@ describe('waitForMapExportReady', () => {
     })).rejects.toMatchObject({ reason: 'failed-networks' });
   });
 });
+
+describe('shareMapExport url tagging', () => {
+  async function run(shareUtm: boolean) {
+    vi.resetModules();
+    vi.doMock('../../../shared/config', async () => {
+      const actual = await vi.importActual<typeof import('../../../shared/config')>('../../../shared/config');
+      return { ...actual, FEATURES: { ...actual.FEATURES, shareUtm } };
+    });
+    const share = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal('navigator', { share, canShare: () => true });
+    window.history.replaceState(null, '', '/?lat=1&lon=2&z=3&utm_source=atlas_share&utm_medium=link');
+    const mod = await import('../mapExport');
+    await mod.shareMapExport(new Blob(['x']), 'Test');
+    return share.mock.calls[0][0] as { url?: string };
+  }
+  afterEach(() => {
+    vi.doUnmock('../../../shared/config');
+    vi.unstubAllGlobals();
+  });
+
+  it('adds a tagged map url (replacing old tags) when the flag is on', async () => {
+    const data = await run(true);
+    const u = new URL(data.url!);
+    expect(u.searchParams.get('lat')).toBe('1');
+    expect(u.searchParams.getAll('utm_source')).toEqual(['atlas_share']);
+    expect(u.searchParams.getAll('utm_medium')).toEqual(['image']);
+  });
+
+  it('sends no url when the flag is off', async () => {
+    const data = await run(false);
+    expect('url' in data).toBe(false);
+  });
+});
