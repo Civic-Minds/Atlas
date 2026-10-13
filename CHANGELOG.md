@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Added
 
+- **Phones get a separate Filters button**: the gear used to mix Settings with the map filters. Frequency, day, time, transit modes and compare now open from a Filters button in the header (with a count of active filters); the gear shows Settings only.
 - **Analytics count more of what people use**: map exports, outbound link clicks, report-issue and feedback opens, and page views on the About, Docs, Privacy and Terms pages were missing, and internal sessions stay excluded.
 - **Shared map images and copied links are tagged (beta)**: shared images now link back to the map, and tags let shared visits be counted in analytics.
 - **A Changelog page lists every app version and map data update (beta)**: newest first by date, and the What's new panel now shows just the latest version with a "See all changes" link.

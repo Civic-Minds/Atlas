@@ -1117,6 +1117,43 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           </div>
           {!hideFilterPanel && (
               <FilterPanel
+              mode="filters"
+              lightMode={lightMode}
+              setLightMode={setLightMode}
+              hideSpan={hideSpan}
+              hideLimitedService={hideLimitedService}
+              setHideSpan={setHideSpan}
+                setHideLimitedService={setHideLimitedService}
+                limitedServiceRouteCount={stats?.limitedService ?? null}
+              livePollingOnly={livePollingOnly}
+              setLivePollingOnly={setLivePollingOnly}
+              onInfoOpen={onInfoOpen}
+              inFrequency={showUi}
+              maxHeadway={maxHeadway}
+              setMaxHeadway={setMaxHeadway}
+              selectedModes={selectedModes}
+              setSelectedModes={setSelectedModes}
+              day={day}
+              setDay={setDay}
+              period={period}
+              setPeriod={setPeriod}
+              agencies={agencies}
+              allAgencies={allAgencies}
+              selectedAgencies={selectedAgencies}
+              setSelectedAgencies={setSelectedAgenciesByUser}
+              bounds={bounds}
+              hideLowQuality={hideLowQuality}
+              setHideLowQuality={setHideLowQuality}
+              feedQualityEnabled={feedQualityEnabled}
+              showMapLegend={showMapLegend}
+              setShowMapLegend={setShowMapLegend}
+              dataSaver={dataSaver}
+              setDataSaver={setDataSaver}
+              compare={compareAvailable ? { side: compareActive ? compareSide : null, onStart: startCompare, onExit: exitCompare, onChange: setCompareSide } : undefined}
+            />
+          )}
+          {!hideFilterPanel && (
+              <FilterPanel
               lightMode={lightMode}
               setLightMode={setLightMode}
               hideSpan={hideSpan}
