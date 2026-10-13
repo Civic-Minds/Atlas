@@ -262,6 +262,7 @@ interface AgencyEntry {
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
   staged?: boolean;
+  hiddenInProduction?: boolean;
   fare?: number;
   issueUrl?: string;
   issueUrls?: string[];
@@ -383,7 +384,7 @@ async function refreshAgency(
 
   recordFeedCheck(agency as FeedCheckFields, { feedExpiry: peekedExpiry, todayYmd: today });
 
-  if (isFeedExpired(peekedExpiry, today)) {
+  if (peekedExpiry && isFeedExpired(peekedExpiry, today)) {
     const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
     const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
     writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
