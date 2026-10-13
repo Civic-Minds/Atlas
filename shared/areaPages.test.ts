@@ -62,10 +62,10 @@ describe('buildAreaPageData', () => {
   });
 
   it('writes the title, heading, subtitle and lead from the numbers', () => {
-    expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area frequency map: 2 transit agencies compared | Transit Atlas');
+    expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area transit frequency');
     expect(areaPageH1(d)).toBe('Greater Toronto and Hamilton Area');
     expect(areaSubtitle(d)).toBe('Toronto, Hamilton');
-    expect(areaPageDescription(d)).toContain('6 weekday routes across 2 transit agencies in the Greater Toronto and Hamilton Area');
+    expect(areaPageDescription(d)).toContain('Compare 2 transit agencies in the Greater Toronto and Hamilton Area');
     expect(areaPageDescription(d)).not.toMatch(/frequent\b|15 min/i);
     expect(areaSpanShort(d)).toBe('24 h');
   });

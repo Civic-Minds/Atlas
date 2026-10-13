@@ -66,7 +66,7 @@ export function matchesFilter(text: string, query: string): boolean {
 }
 
 export function agencyIndexTitle(): string {
-  return 'All transit agencies and areas: frequency pages | Transit Atlas';
+  return 'All transit agencies and areas | Transit Atlas';
 }
 
 export function agencyIndexDescription(d: Pick<AgencyIndexData, 'agencyCount' | 'areas'>): string {

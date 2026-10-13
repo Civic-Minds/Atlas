@@ -35,9 +35,11 @@ function readEmbeddedData(slug: string | undefined): AreaPageData | null {
 export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
   const params = useParams();
   const [data, setData] = useState<AreaPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));
+  // Not found is only shown once the lookup has finished; until then the page is blank, never a 404 flash.
+  const [lookedUp, setLookedUp] = useState(() => !!data || !import.meta.env.DEV);
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
-    void import('./areaPageDevData').then(m => setData(m.devAreaPageData(params.slug)));
+    void import('./areaPageDevData').then(m => { setData(m.devAreaPageData(params.slug)); setLookedUp(true); });
   }, [data, params.slug]);
 
   useEffect(() => {
@@ -47,6 +49,8 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
       origin: ATLAS_MODE === 'public' ? undefined : window.location.origin,
     }));
   }, [data]);
+
+  if (!data && !lookedUp) return <main className="min-h-screen bg-[var(--bg-app)]" aria-busy="true" />;
 
   if (!data) {
     return (

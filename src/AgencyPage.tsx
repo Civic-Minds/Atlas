@@ -72,9 +72,11 @@ function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPa
 export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }) {
   const params = useParams();
   const [data, setData] = useState<AgencyPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));
+  // Not found is only shown once the lookup has finished; until then the page is blank, never a 404 flash.
+  const [lookedUp, setLookedUp] = useState(() => !!data || !import.meta.env.DEV);
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
-    void import('./agencyPageDevData').then(m => setData(m.devAgencyPageData(params.slug)));
+    void import('./agencyPageDevData').then(m => { setData(m.devAgencyPageData(params.slug)); setLookedUp(true); });
   }, [data, params.slug]);
   const agency = data?.agency;
 
@@ -86,6 +88,8 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
       intro: data?.intro,
     }));
   }, [agency, data?.intro]);
+
+  if (!agency && !lookedUp) return <main className="min-h-screen bg-[var(--bg-app)]" aria-busy="true" />;
 
   if (!agency) {
     return (
