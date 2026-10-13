@@ -1175,7 +1175,7 @@
     {
       "slug": "sarnia",
       "name": "Sarnia Transit",
-      "websiteUrl": "http://www.city.sarnia.on.ca/living-here/getting-around/sarnia-transit",
+      "websiteUrl": "https://www.sarnia.ca/transit",
       "center": [
         42.97,
         -82.4
@@ -2742,7 +2742,7 @@
     {
       "slug": "edmonton",
       "name": "Edmonton Transit Service (ETS)",
-      "websiteUrl": "http://www.takeets.com",
+      "websiteUrl": "https://www.edmonton.ca/ets",
       "region": "Alberta",
       "center": [
         53.5461,
@@ -4130,7 +4130,7 @@
       "slug": "mbta",
       "name": "Massachusetts Bay Transportation Authority",
       "displayArea": "Boston",
-      "websiteUrl": "http://www.capecodrta.org/",
+      "websiteUrl": "https://www.mbta.com/",
       "region": "Massachusetts",
       "center": [
         42.361,
@@ -5837,7 +5837,7 @@
     {
       "slug": "trimet",
       "name": "TriMet (Portland, OR)",
-      "websiteUrl": "https://portlandstreetcar.org/",
+      "websiteUrl": "https://trimet.org/",
       "center": [
         45.494,
         -122.6593
@@ -15521,7 +15521,7 @@
     {
       "slug": "montgomery-transit",
       "name": "Montgomery Transit (The M)",
-      "websiteUrl": "http://www.montgomerytransit.com",
+      "websiteUrl": "https://themtransit.com/",
       "center": [
         32.37,
         -86.25
@@ -16794,7 +16794,7 @@
     {
       "slug": "wave-mobile",
       "name": "Wave Transit (Mobile)",
-      "websiteUrl": "http://www.thewavetransit.com",
+      "websiteUrl": "https://thewavetransit.com/",
       "center": [
         30.68,
         -88.1
@@ -17757,7 +17757,7 @@
     {
       "slug": "racine",
       "name": "Ryde Racine",
-      "websiteUrl": "https://www.cityofracine.org/RydeRacine/",
+      "websiteUrl": "https://cityofracinewi.gov/transit/",
       "center": [
         42.73,
         -87.78
@@ -18646,7 +18646,7 @@
       "name": "Roswell Transit",
       "hiddenInProduction": true,
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/759",
-      "websiteUrl": "AMERICA/DENVER",
+      "websiteUrl": "https://www.roswell-nm.gov/287/Roswell-Transit",
       "region": "New Mexico",
       "center": [
         33.39,
@@ -20006,7 +20006,7 @@
     {
       "slug": "ccta",
       "name": "CCTA / Green Mountain Transit (Burlington, VT)",
-      "websiteUrl": "https://sstarides.org/",
+      "websiteUrl": "https://www.ridegmt.com/",
       "center": [
         44.48,
         -73.21
@@ -22279,7 +22279,7 @@
     {
       "slug": "seattle-streetcar",
       "name": "Seattle Streetcar",
-      "websiteUrl": "https://kingcounty.gov/en/dept/metro",
+      "websiteUrl": "https://www.seattlestreetcar.org/",
       "region": "Washington",
       "center": [
         47.6114,
@@ -22499,7 +22499,7 @@
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
-      "websiteUrl": "https://www.synchro.grandchambery.fr/",
+      "websiteUrl": "https://synchro.grandchambery.fr/",
       "cities": [
         "Chambéry, France"
       ],
@@ -22589,7 +22589,7 @@
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
-      "websiteUrl": "https://www.ametois.fr/",
+      "websiteUrl": "https://www.ametis.fr/",
       "cities": [
         "Amiens, France"
       ],
@@ -22954,7 +22954,7 @@
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
-      "websiteUrl": "https://www.tangonimes.fr/",
+      "websiteUrl": "https://www.tangobus.fr/",
       "cities": [
         "Nîmes, France"
       ],
@@ -23118,7 +23118,7 @@
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
-      "websiteUrl": "https://www.strann.fr/",
+      "websiteUrl": "https://yceo-mobilite.fr/",
       "cities": [
         "Saint-Nazaire, France"
       ],
@@ -23405,7 +23405,7 @@
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
-      "websiteUrl": "https://www.palmbus.fr/",
+      "websiteUrl": "https://palmdeplacements.fr/",
       "cities": [
         "Cannes, France"
       ],
@@ -23595,7 +23595,7 @@
     {
       "slug": "epinal",
       "name": "Imagine (Épinal)",
-      "websiteUrl": "https://www.keolis.com/",
+      "websiteUrl": "https://www.imaginelebus.com/fr/",
       "region": "Grand Est",
       "center": [
         48.1734,
@@ -23828,7 +23828,7 @@
     {
       "slug": "quimperle",
       "name": "TBK (Quimperlé)",
-      "websiteUrl": "http://www.giro.ca",
+      "websiteUrl": "https://www.tbk.bzh/",
       "region": "Bretagne",
       "center": [
         47.8725,
@@ -23917,7 +23917,7 @@
     {
       "slug": "saintes",
       "name": "Buséau (Saintes)",
-      "websiteUrl": "https://www.ratpdev.com",
+      "websiteUrl": "https://www.buss-saintes.com/",
       "region": "Nouvelle-Aquitaine",
       "center": [
         45.7463,
@@ -24296,7 +24296,7 @@
       "cities": [
         "Moulins, France"
       ],
-      "websiteUrl": "https://www.aleo-moulins.fr/",
+      "websiteUrl": "https://www.moulins-bus.com/",
       "timezone": "Europe/Paris"
     },
     {
@@ -24606,7 +24606,7 @@
     {
       "slug": "haguenau",
       "name": "Haguenau",
-      "websiteUrl": "https:\\\\www.ritmo.fr",
+      "websiteUrl": "https://www.ritmo.fr/",
       "region": "Grand Est",
       "center": [
         48.8156,
