@@ -36,8 +36,7 @@ describe('buildAreaPageData', () => {
     expect(d.newestRefresh).toBe('2026-09-01');
   });
 
-  it('takes the typical wait and the quickest route across the whole area', () => {
-    expect(d.typicalWait).toBe(12); // 4, 10, 12, 20, 30: the middle one
+  it('takes the quickest route across the whole area', () => {
     expect(d.best).toEqual({ name: '1', headway: 4, agency: 'TTC (Toronto)' });
     const none = buildAreaPageData({ ...AREA, agencies: ['hsr'] }, new Map([['hsr', ag('hsr', 'HSR', [r('A', 3, null), r('B', 3, 20)])]]), null);
     expect(none.best?.headway).toBe(20);
@@ -97,14 +96,10 @@ describe('areaAboutParagraph', () => {
     ...buildAreaPageData(AREA, ALL, null), ...over,
   });
 
-  it('uses one template with the typical wait', () => {
-    expect(areaAboutParagraph(base({}))).toBe('The Toronto area has 2 transit agencies running 6 routes. At weekday midday, the typical wait is every 12 min.');
-  });
-
-  it('handles singular and no midday service', () => {
-    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1, typicalWait: 10 });
-    expect(areaAboutParagraph(one)).toBe('The Toronto area has 1 transit agency running 1 route. At weekday midday, the typical wait is every 10 min.');
-    expect(areaAboutParagraph(base({ typicalWait: null }))).not.toContain('typical wait');
+  it('is one sentence with the agency and route counts', () => {
+    expect(areaAboutParagraph(base({}))).toBe('The Toronto area has 2 transit agencies running 6 routes.');
+    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1 });
+    expect(areaAboutParagraph(one)).toBe('The Toronto area has 1 transit agency running 1 route.');
   });
 });
 

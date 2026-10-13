@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   agencyAboutParagraph, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
   agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
-  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, typicalWait, weekendLabel,
+  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, weekendLabel,
 } from './agencyPages';
 import { agencyPageSummaries, getAgencyPageSummary } from './agencyPagesData';
 
@@ -23,7 +23,7 @@ describe('agency page text', () => {
   });
 
   it('writes a standalone lead sentence from the route numbers', () => {
-    expect(agencyLeadSentence(TTC)).toBe('5 weekday routes; the typical weekday midday wait is every 16 min.');
+    expect(agencyLeadSentence(TTC)).toBe('5 weekday routes.');
     expect(agencyPageDescription(TTC)).toContain('5 weekday routes');
     expect(agencyLeadSentence(TTC)).not.toMatch(/frequent|15 min/i);
   });
@@ -32,14 +32,6 @@ describe('agency page text', () => {
     const s = agencyStats(TTC);
     expect(s.totalRoutes).toBe(5);
     expect(s.byMode.map(m => [m.label, m.routes.length])).toEqual([['Subway', 2], ['Bus', 3]]);
-  });
-
-  it('derives the typical wait as the median midday headway', () => {
-    expect(typicalWait(TTC.routes)).toBe(16); // 4, 12, 20, 30: the middle two average to 16
-    expect(typicalWait([r('a', 3, 10), r('b', 3, 20), r('c', 3, 40)])).toBe(20);
-    expect(typicalWait([r('a', 3, 10), r('b', 3, 15)])).toBe(13); // 12.5 rounds to 13
-    expect(typicalWait([r('a', 3, null)])).toBeNull();
-    expect(typicalWait([])).toBeNull();
   });
 
   it('picks the route with the shortest midday headway, ignoring missing values', () => {
@@ -147,27 +139,17 @@ describe('dates', () => {
 });
 
 describe('agencyAboutParagraph', () => {
-  const base = { displayName: 'TTC (Toronto)', city: 'Toronto', span: { first: 5, last: 25 } };
+  const base = { displayName: 'TTC (Toronto)', city: 'Toronto' };
   const rs = (...mids: Array<[number, number | null]>) => mids.map(([mode, h], i) => r(`R${i}`, mode, h));
 
-  it('uses one template: routes, typical midday wait, the span', () => {
-    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10], [3, 12], [1, 5], [3, 40], [3, null]) })).toBe(
-      'TTC runs 5 routes in Toronto. At weekday midday, the typical wait is every 11 min. Across all routes, weekday service runs from 5am to 2am.');
-  });
-
-  it('handles one route, no midday service and zero routes', () => {
-    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10]) })).toContain('runs 1 route in Toronto. At weekday midday, the typical wait is every 10 min.');
-    expect(agencyAboutParagraph({ ...base, routes: rs([3, null]) })).not.toContain('typical wait');
-    expect(agencyAboutParagraph({ ...base, routes: [], span: null })).toBe('TTC has no weekday routes in the data.');
+  it('is one sentence: the route count in the city', () => {
+    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10], [3, 12], [1, 5], [3, 40], [3, null]) })).toBe('TTC runs 5 routes in Toronto.');
+    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10]) })).toBe('TTC runs 1 route in Toronto.');
+    expect(agencyAboutParagraph({ ...base, routes: [] })).toBe('TTC has no weekday routes in the data.');
   });
 
   it('puts each route in one weekday-midday frequency band', () => {
     expect(bandCounts([{ midday: 10 }, { midday: 12 }, { midday: 15 }, { midday: 20 }, { midday: 30 }, { midday: 45 }, { midday: 90 }, { midday: null }])).toEqual([1, 2, 1, 1, 1, 1, 1]);
     expect(bandCounts([])).toEqual([0, 0, 0, 0, 0, 0, 0]);
-  });
-
-  it('says 24 hours when the span wraps the day, and drops the span when unknown', () => {
-    expect(agencyAboutParagraph({ ...base, span: { first: 5, last: 28 }, routes: rs([3, 30]) })).toContain('covers all 24 hours of the day.');
-    expect(agencyAboutParagraph({ ...base, span: null, routes: rs([3, 30]) })).not.toContain('Across all routes');
   });
 });

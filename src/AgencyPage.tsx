@@ -5,7 +5,6 @@ import {
   agencyAboutParagraph,
   bandCounts,
   modesText,
-  typicalWait,
   agencyDatesText,
   agencyMapHref,
   agencyPageH1,
@@ -79,10 +78,8 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
   }
 
   const stats = agencyStats(agency);
-  const wait = typicalWait(agency.routes);
   const nearby = data!.nearby;
   const items: StatItem[] = [
-    ...(wait != null ? [{ value: headwayEvery(wait), label: 'typical wait, weekday midday' }] : []),
     ...(stats.totalRoutes > 0 ? [{ value: String(stats.totalRoutes), label: modesText(stats.byMode.map(m => ({ label: m.label, routes: m.routes.length }))) }] : []),
   ];
 
