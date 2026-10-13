@@ -44,10 +44,11 @@ describe('AgencyPage', () => {
   it('shows the frequency band bar with counts and no fixed threshold', () => {
     view(<AgencyPage data={data} />);
     expect(screen.queryByText(/15 min or better/)).toBeNull();
-    expect(screen.getByRole('img', { name: /1 route every 10 min or better/ })).toBeTruthy();
-    expect(screen.getByText(/route every 16–20 min/)).toBeTruthy();
-    expect(screen.getByText(/with no regular midday service/)).toBeTruthy();
-    expect(screen.queryByRole('button', { name: /min$/ })).toBeNull();
+    expect(screen.getByRole('button', { name: /1 route every 10 min or better/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /route every 16–20 min/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /with no regular midday service/ })).toBeTruthy();
+    fireEvent.focus(screen.getByRole('button', { name: /route every 16–20 min/ }));
+    expect(screen.getByRole('tooltip').textContent).toMatch(/route every 16–20 min/);
     expect(screen.queryByText(/pick a standard/i)).toBeNull();
   });
 
@@ -91,6 +92,6 @@ describe('AreaPage', () => {
   it('shows the band bar and no fixed threshold', () => {
     view(<AreaPage data={data} />);
     expect(screen.queryByText(/15 min or better/)).toBeNull();
-    expect(screen.getByRole('img', { name: /every 10 min or better/ })).toBeTruthy();
+    expect(screen.getAllByRole('button', { name: /every 10 min or better/ }).length).toBeGreaterThan(0);
   });
 });
