@@ -8,6 +8,7 @@ import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
+import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
@@ -26,6 +27,8 @@ export interface GtfsTransformOptions {
   mergeEquivalentShapeVariantsAllModes?: boolean;
   /** Keep shapes whole across long point-to-point steps (rural highways, #776). Read at parse time. */
   keepLongShapeJumps?: boolean;
+  /** Draw a headsign whose trips each have their own shape on one shape (RCT 20 southbound, #776). */
+  poolSingleTripShapes?: boolean;
   /** Read the feed as of the run date instead of the detected reference date (#774). */
   referenceDateFromRunDate?: boolean;
 }
@@ -113,6 +116,13 @@ export function normalizeGtfs(
       onStatus?.(
         `Equivalent shape variants: merged ${merged.mergedTrips} platform trips across ${merged.mergedGroups} shape groups`,
       );
+    }
+  }
+  if (options?.poolSingleTripShapes) {
+    const pooled = poolSingleTripShapes(gtfs);
+    gtfs = pooled.gtfs;
+    if (pooled.pooledTrips > 0) {
+      onStatus?.(`Single-trip shapes: drew ${pooled.pooledTrips} trips on one shape across ${pooled.pooledGroups} headsign groups`);
     }
   }
   return synthesizeMissingDirections(gtfs);
