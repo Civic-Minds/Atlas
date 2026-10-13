@@ -59,6 +59,22 @@ describe('AgencyPage', () => {
   });
 });
 
+describe('AgencyPage other agencies list', () => {
+  it('is titled by the area, links the area, and links every agency', () => {
+    const withArea = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);
+    expect(withArea.nearby.map(n => n.slug)).toEqual(['hsr']);
+    view(<AgencyPage data={withArea} />);
+    const heading = screen.getByRole('heading', { name: 'Other agencies in the Toronto area' });
+    expect(heading.querySelector('a')?.getAttribute('href')).toBe('/area/toronto');
+    expect(screen.getByRole('link', { name: 'HSR' }).getAttribute('href')).toBe('/agency/hsr');
+  });
+
+  it('keeps "Nearby agencies" when there is no area page', () => {
+    view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
+    expect(screen.getByRole('heading', { name: 'Nearby agencies' })).toBeTruthy();
+  });
+});
+
 describe('AreaPage', () => {
   const data = buildAreaPageData(AREA, new Map([[TTC.slug, TTC], [HSR.slug, HSR]]), '2026-10-13T00:00:00Z');
 

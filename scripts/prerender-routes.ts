@@ -41,8 +41,14 @@ if (mod.BUILD_FLAGS.agencyPages) {
       .map(f => JSON.parse(readFileSync(join('config/areas', f), 'utf8')) as AreaConfig).filter(a => a.page);
     const areaOf = new Map<string, { slug: string; name: string }>();
     for (const area of areas) for (const slug of area.agencies) areaOf.set(slug, { slug: area.slug, name: area.name });
+    const bySlug = new Map(agencies.map(x => [x.slug, x]));
+    const areaMembers = new Map<string, typeof agencies>();
+    for (const area of areas) {
+      const members = area.agencies.map(s => bySlug.get(s)).filter((x): x is (typeof agencies)[number] => !!x);
+      for (const m of members) areaMembers.set(m.slug, members);
+    }
     for (const a of agencies) {
-      const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug));
+      const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
       const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin });
       const embedded = `<script type="application/json" id="${AGENCY_DATA_SCRIPT_ID}">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n</body>`;
       const ld = `  <script type="application/ld+json">${JSON.stringify(agencyPageJsonLd(a, seo.canonicalUrl, origin, areaOf.get(a.slug))).replace(/</g, '\\u003c')}</script>\n</head>`;

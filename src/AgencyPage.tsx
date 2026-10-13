@@ -153,10 +153,12 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">
-              <h2 id="nearby-heading" className="text-xl font-black tracking-tight">Nearby agencies</h2>
+              <h2 id="nearby-heading" className="text-xl font-black tracking-tight">
+                {data!.area ? <>Other agencies in the <a className="underline underline-offset-2" href={`/area/${data!.area.slug}`}>{data!.area.name} area</a></> : 'Nearby agencies'}
+              </h2>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (
-                  <li key={o.slug}><a className={LINK} href={agencyPagePath(o.slug)}>{o.displayName}</a></li>
+                  <li key={o.slug}><a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(o.slug)}>{o.displayName.replace(/\s*\([^)]*\)\s*$/, '')}</a></li>
                 ))}
               </ul>
             </section>
