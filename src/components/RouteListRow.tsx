@@ -27,6 +27,7 @@ export default function RouteListRow({
   variant = 'divided',
   className
 }: RouteListRowProps) {
+  const fullName = name && name !== shortName ? `${shortName} ${name}` : shortName;
   return (
     <button
       onClick={onClick}
@@ -36,7 +37,7 @@ export default function RouteListRow({
     >
       {stacked ? (
         <div className="min-w-0 flex-1">
-          <p className={`${LIST_ROW_PRIMARY} truncate ${selected ? SELECTION_ACTIVE_TEXT : ''}`}>
+          <p className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words ${selected ? SELECTION_ACTIVE_TEXT : ''}`} title={fullName}>
             <span>{shortName}</span>
             {name && name !== shortName && (
               <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{name}</span>
@@ -47,7 +48,7 @@ export default function RouteListRow({
       ) : (
         <>
           <div className="min-w-0 flex-1">
-            <p className={`${LIST_ROW_PRIMARY} truncate ${selected ? SELECTION_ACTIVE_TEXT : ''}`}>
+            <p className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words ${selected ? SELECTION_ACTIVE_TEXT : ''}`} title={fullName}>
               <span>{shortName}</span>
               {name && name !== shortName && (
                 <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{name}</span>

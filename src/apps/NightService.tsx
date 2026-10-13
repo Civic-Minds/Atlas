@@ -230,7 +230,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
                   onClick={() => route.routeId && onRouteSelect?.(agency.slug, route.routeId)}
                   className="w-full text-left px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--surface-hover)] disabled:cursor-default"
                 >
-                  <div className="text-xs font-black text-[var(--text-primary)] truncate">
+                  <div className="text-xs font-black text-[var(--text-primary)] line-clamp-2 break-words" title={[route.routeShortName, route.routeLongName].filter(Boolean).join(" — ")}>
                     {route.routeShortName || route.routeLongName || 'Unnamed route'}
                     {route.routeShortName && route.routeLongName && <span className="font-normal text-[var(--text-dim)]"> — {route.routeLongName}</span>}
                   </div>

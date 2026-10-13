@@ -421,10 +421,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             {group.routes.map(route => (
                               <div key={route.key} className="py-2.5">
                                 <div className="flex items-baseline justify-between gap-3">
-                                  <p className="text-[11px] font-bold text-[var(--text-primary)] truncate">{route.routeShortName}</p>
+                                  <p className="text-[11px] font-bold text-[var(--text-primary)] line-clamp-2 break-words" title={route.routeShortName}>{route.routeShortName}</p>
                                 </div>
                                 {route.routeLongName && route.routeLongName !== route.routeShortName && (
-                                  <p className="text-[10px] text-[var(--text-secondary)] truncate mt-0.5">{route.routeLongName}</p>
+                                  <p className="text-[10px] text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5" title={route.routeLongName}>{route.routeLongName}</p>
                                 )}
                               </div>
                             ))}
