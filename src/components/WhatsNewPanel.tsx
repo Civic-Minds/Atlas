@@ -60,7 +60,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
         </div>
         <div className="overflow-y-auto custom-scrollbar px-5 py-4 space-y-4 text-xs">
           {dataDate && (
-            <p className="pb-3 border-b border-[var(--border-primary)] text-[11px] font-bold text-[var(--text-muted)]">Map data updated {dataDate}</p>
+            <p className="pb-3 text-[11px] font-bold text-[var(--text-muted)]">Map data updated {dataDate}</p>
           )}
           {visible.map(release => (
             <section key={release.version} aria-label={`App version ${shortVersion(release.version)}`}>
