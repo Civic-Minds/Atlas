@@ -113,13 +113,33 @@ describe('segmentsByTier', () => {
     // Rail has no every-gap grade: the headway alone decides.
     expect(segmentsByTier(along(['s0', 's1']), () => ({ tier: null, headway: 12 }))).toEqual([{ start: 0, end: 1, tier: '15', headway: 12 }]);
   });
-  it('a stop with no all-day value is its own limited-service piece, never the trunk\'s pooled colour (#810)', () => {
+  it('an outer run of stops with no all-day value is its own limited-service piece, never the trunk\'s pooled colour (#810)', () => {
     // A peak-only outer tail (s0, s1) before a pooled trunk: the tail reads span, the trunk 10.
     const g: Record<string, { tier: string | null; headway: number | null }> = { ...grades, s0: { tier: null, headway: null }, s1: { tier: '10', headway: null } };
     expect(segmentsByTier(along(seq(0, 4)), id => g[id])).toEqual([
       { start: 0, end: 0.375, tier: 'span', headway: null },
       { start: 0.375, end: 0.625, tier: '10', headway: 8 },
       { start: 0.625, end: 1, tier: '20', headway: 16 },
+    ]);
+    // A valueless run at the far end reads limited service too (GO 21: the last two stops).
+    const tail: Record<string, { tier: string | null; headway: number | null }> = { ...grades, s3: { tier: null, headway: null }, s4: { tier: null, headway: null } };
+    expect(segmentsByTier(along(seq(0, 4)), id => tail[id])).toEqual([
+      { start: 0, end: 0.625, tier: '10', headway: 8 },
+      { start: 0.625, end: 1, tier: 'span', headway: null },
+    ]);
+    // The last stop alone is where the line ends: without a value it joins the run before it
+    // rather than reading limited service (a terminal's few departures are not the service to it).
+    const end: Record<string, { tier: string | null; headway: number | null }> = { ...grades, s4: { tier: null, headway: null } };
+    expect(segmentsByTier(along(seq(0, 4)), id => end[id])).toEqual([
+      { start: 0, end: 0.625, tier: '10', headway: 8 },
+      { start: 0.625, end: 1, tier: '20', headway: 16 },
+    ]);
+    // A valueless stop between valued stops is one the line's trips pass: it joins the worse
+    // neighbouring run (TTC 12's Variety Village stop, 12 of its trips).
+    const inner: Record<string, { tier: string | null; headway: number | null }> = { ...grades, s2: { tier: null, headway: null } };
+    expect(segmentsByTier(along(seq(0, 4)), id => inner[id])).toEqual([
+      { start: 0, end: 0.375, tier: '10', headway: 8 },
+      { start: 0.375, end: 1, tier: '20', headway: 16 },
     ]);
   });
   it('a stop with no reading joins the worse neighbouring run; a one-stop tail is its own segment', () => {

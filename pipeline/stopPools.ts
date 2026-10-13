@@ -159,13 +159,18 @@ export const NO_VALUE_SEGMENT_TIER = 'span';
 /**
  * Cuts a drawn line into runs of equal tier over every stop of its pattern, valued or not. A
  * stop's tier is the worse of its every-gap grade and the tier its (pooled) headway implies, so
- * a segment is never coloured better than either reading. A stop with no all-day value reads
- * NO_VALUE_SEGMENT_TIER: a peak-only outer tail, or an outer stop a few trips reach, shows the
- * limited-service styling rather than the trunk's pooled value (#810: the route headline still
- * reads the terminal there when no destination pool applies). A stop with no reading at all
- * joins the neighbouring run with the worse tier. A run can be one stop long: a terminal tail
- * that only one variant serves is a real segment. Segments change colour half way between two
- * stops rather than on a stop; the first starts at its first stop, the last ends at its last.
+ * a segment is never coloured better than either reading. An outer run of stops with no all-day
+ * value, at either end of the line, reads NO_VALUE_SEGMENT_TIER: a peak-only outer tail, or
+ * outer stops a few trips reach, shows the limited-service styling rather than the trunk's pooled
+ * value (#810: the route headline still reads the terminal there when no destination pool
+ * applies). Two exceptions: the last stop alone, since the line ends there and its departures
+ * are not the service to it (YRT Viva Blue's Newmarket Terminal: 11 pre-dawn departures, every
+ * arrival of the day); and a valueless stop between valued stops, which the line's trips pass
+ * on their way (TTC 12's Variety Village stop, 12 of its trips), so it joins the neighbouring
+ * run with the worse tier, as a stop with no reading at all does. A run can be one stop long: a
+ * terminal tail that only one variant serves is a real segment. Segments change colour half way
+ * between two stops rather than on a stop; the first starts at its first stop, the last ends at
+ * its last.
  */
 export function segmentsByTier(
   stops: ReadonlyArray<{ stopId: string; t: number }>,
@@ -173,15 +178,23 @@ export function segmentsByTier(
 ): LineSegment[] {
   const rank = (tier: string | null | undefined) => tier == null ? Infinity : (TIER_RANK[tier] ?? 99);
   const worse = (a: string | null, b: string | null) => a == null ? b : b == null ? a : rank(a) >= rank(b) ? a : b;
+  const grades = stops.map(({ stopId }) => gradeAt(stopId));
+  const valued = grades.map(g => g?.headway != null);
+  const firstValued = valued.indexOf(true);
+  const lastValued = valued.lastIndexOf(true);
   const tiers: Array<string | null> = [];
   const headways: Array<number | null> = [];
-  for (const { stopId } of stops) {
-    const g = gradeAt(stopId);
-    if (!g) { tiers.push(null); headways.push(null); continue; }
-    if (g.headway == null) { tiers.push(NO_VALUE_SEGMENT_TIER); headways.push(null); continue; }
+  grades.forEach((g, i) => {
+    if (!g) { tiers.push(null); headways.push(null); return; }
+    if (g.headway == null) {
+      const outer = firstValued < 0 || i < firstValued || (i > lastValued && lastValued < stops.length - 2);
+      tiers.push(outer ? NO_VALUE_SEGMENT_TIER : null);
+      headways.push(null);
+      return;
+    }
     tiers.push(worse(g.tier, headwayToTier(g.headway)));
     headways.push(g.headway);
-  }
+  });
   // Ungraded stops take the worse of their graded neighbours.
   for (let i = 0; i < tiers.length; i++) {
     if (tiers[i] != null) continue;
