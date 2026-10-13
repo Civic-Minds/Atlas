@@ -1,0 +1,26 @@
+{
+  "slug": "st-catharines",
+  "name": "St. Catharines",
+  "type": "CMA",
+  "officialName": "St. Catharines - Niagara",
+  "country": "Canada",
+  "cities": [
+    "St. Catharines",
+    "Niagara"
+  ],
+  "bbox": [
+    42.79492796095579,
+    -79.6123820312157,
+    43.32375815507767,
+    -78.81957710426326
+  ],
+  "center": [
+    43.05934305801673,
+    -79.21597956773948
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "niagara"
+  ],
+  "page": false
+}

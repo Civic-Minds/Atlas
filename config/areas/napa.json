@@ -1,0 +1,25 @@
+{
+  "slug": "napa",
+  "name": "Napa",
+  "type": "MSA",
+  "officialName": "Napa, CA",
+  "country": "United States",
+  "cities": [
+    "Napa"
+  ],
+  "bbox": [
+    38.154932999909356,
+    -122.64661599965719,
+    38.864300000262524,
+    -122.06139700039876
+  ],
+  "center": [
+    38.50961650008594,
+    -122.35400650002796
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "vine"
+  ],
+  "page": false
+}

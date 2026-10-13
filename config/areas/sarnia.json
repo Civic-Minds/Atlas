@@ -1,0 +1,25 @@
+{
+  "slug": "sarnia",
+  "name": "Sarnia",
+  "type": "CA",
+  "officialName": "Sarnia",
+  "country": "Canada",
+  "cities": [
+    "Sarnia"
+  ],
+  "bbox": [
+    42.58598140429924,
+    -82.52027110695045,
+    43.155203679997214,
+    -81.96835542887369
+  ],
+  "center": [
+    42.87059254214823,
+    -82.24431326791208
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sarnia"
+  ],
+  "page": false
+}

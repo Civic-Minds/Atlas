@@ -1,0 +1,26 @@
+{
+  "slug": "cape-coral",
+  "name": "Cape Coral",
+  "type": "MSA",
+  "officialName": "Cape Coral-Fort Myers, FL",
+  "country": "United States",
+  "cities": [
+    "Cape Coral",
+    "Fort Myers"
+  ],
+  "bbox": [
+    26.31624200022006,
+    -82.46201199974115,
+    26.789551000261792,
+    -81.56218000009592
+  ],
+  "center": [
+    26.552896500240927,
+    -82.01209599991853
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "leetran"
+  ],
+  "page": false
+}

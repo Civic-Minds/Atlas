@@ -1,6 +1,7 @@
 {
   "slug": "foothill",
   "name": "Foothill Transit",
+  "labelPlace": "San Gabriel Valley",
   "websiteUrl": "https://www.foothilltransit.org",
   "center": [
     34.06,

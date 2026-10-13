@@ -1,0 +1,25 @@
+{
+  "slug": "jefferson-city",
+  "name": "Jefferson City",
+  "type": "MSA",
+  "officialName": "Jefferson City, MO",
+  "country": "United States",
+  "cities": [
+    "Jefferson City"
+  ],
+  "bbox": [
+    38.28813999982967,
+    -92.84197999964705,
+    39.06449299968829,
+    -91.63399799989355
+  ],
+  "center": [
+    38.67631649975898,
+    -92.2379889997703
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "jefftran"
+  ],
+  "page": false
+}

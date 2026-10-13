@@ -1,0 +1,25 @@
+{
+  "slug": "moncton",
+  "name": "Moncton",
+  "type": "CMA",
+  "officialName": "Moncton",
+  "country": "Canada",
+  "cities": [
+    "Moncton"
+  ],
+  "bbox": [
+    45.517877420059214,
+    -65.51287338282243,
+    46.45555908403508,
+    -64.26844936845512
+  ],
+  "center": [
+    45.98671825204715,
+    -64.89066137563879
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "codiac"
+  ],
+  "page": false
+}

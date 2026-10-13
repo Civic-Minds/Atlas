@@ -1,0 +1,25 @@
+{
+  "slug": "rockford",
+  "name": "Rockford",
+  "type": "MSA",
+  "officialName": "Rockford, IL",
+  "country": "United States",
+  "cities": [
+    "Rockford"
+  ],
+  "bbox": [
+    42.15026600017877,
+    -89.40142300041272,
+    42.50056299976496,
+    -88.70538900000672
+  ],
+  "center": [
+    42.32541449997186,
+    -89.05340600020972
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "rockford"
+  ],
+  "page": false
+}

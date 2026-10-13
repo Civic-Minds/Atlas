@@ -1,0 +1,27 @@
+{
+  "slug": "ottawa",
+  "name": "Ottawa",
+  "type": "CMA",
+  "officialName": "Ottawa - Gatineau (Ontario part / partie de l'Ontario)",
+  "country": "Canada",
+  "cities": [
+    "Ottawa",
+    "Gatineau"
+  ],
+  "bbox": [
+    44.775313366066584,
+    -76.77387165565617,
+    46.15013403904624,
+    -74.89773525307207
+  ],
+  "center": [
+    45.46272370255642,
+    -75.83580345436411
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "octranspo",
+    "sto"
+  ],
+  "page": true
+}

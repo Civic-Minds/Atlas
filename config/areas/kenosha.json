@@ -1,0 +1,25 @@
+{
+  "slug": "kenosha",
+  "name": "Kenosha",
+  "type": "MSA",
+  "officialName": "Kenosha, WI",
+  "country": "United States",
+  "cities": [
+    "Kenosha"
+  ],
+  "bbox": [
+    42.49171999995949,
+    -88.30589100030257,
+    42.669906000262124,
+    -87.01986300035549
+  ],
+  "center": [
+    42.58081300011081,
+    -87.66287700032902
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "kenosha"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "kamloops",
+  "name": "Kamloops",
+  "type": "CMA",
+  "officialName": "Kamloops",
+  "country": "Canada",
+  "cities": [
+    "Kamloops"
+  ],
+  "bbox": [
+    50.17887463209021,
+    -121.65257431818705,
+    51.49256634962129,
+    -119.44361692047356
+  ],
+  "center": [
+    50.83572049085575,
+    -120.5480956193303
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "kamloops"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "zanesville",
+  "name": "Zanesville",
+  "type": "MicroSA",
+  "officialName": "Zanesville, OH",
+  "country": "United States",
+  "cities": [
+    "Zanesville"
+  ],
+  "bbox": [
+    39.75557200011699,
+    -82.2339740001141,
+    40.16687999978632,
+    -81.69110399981716
+  ],
+  "center": [
+    39.96122599995165,
+    -81.96253899996563
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "seat"
+  ],
+  "page": false
+}

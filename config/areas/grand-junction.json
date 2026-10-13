@@ -1,0 +1,25 @@
+{
+  "slug": "grand-junction",
+  "name": "Grand Junction",
+  "type": "MSA",
+  "officialName": "Grand Junction, CO",
+  "country": "United States",
+  "cities": [
+    "Grand Junction"
+  ],
+  "bbox": [
+    38.49998299978302,
+    -109.06015200020647,
+    39.36671100031332,
+    -107.37747899959193
+  ],
+  "center": [
+    38.93334700004817,
+    -108.2188154998992
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "grand-junction"
+  ],
+  "page": false
+}

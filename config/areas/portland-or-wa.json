@@ -1,0 +1,36 @@
+{
+  "slug": "portland-or-wa",
+  "name": "Portland",
+  "type": "MSA",
+  "officialName": "Portland-Vancouver-Hillsboro, OR-WA",
+  "country": "United States",
+  "cities": [
+    "Portland",
+    "Vancouver",
+    "Hillsboro"
+  ],
+  "bbox": [
+    44.88571400000117,
+    -123.78556700003011,
+    46.388629000251775,
+    -121.51438000035621
+  ],
+  "center": [
+    45.63717150012647,
+    -122.64997350019317
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "cat-or",
+    "columbia-area-transit",
+    "ctran",
+    "grovelink",
+    "rivercities",
+    "sam",
+    "smart-or",
+    "tillamook",
+    "trimet",
+    "yamhill"
+  ],
+  "page": true
+}

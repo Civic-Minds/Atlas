@@ -1,0 +1,26 @@
+{
+  "slug": "watertown",
+  "name": "Watertown",
+  "type": "MSA",
+  "officialName": "Watertown-Fort Drum, NY",
+  "country": "United States",
+  "cities": [
+    "Watertown",
+    "Fort Drum"
+  ],
+  "bbox": [
+    43.668142999948735,
+    -76.73472500034245,
+    44.403360999747534,
+    -75.4462770001054
+  ],
+  "center": [
+    44.03575199984813,
+    -76.09050100022392
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "watertowncitibus"
+  ],
+  "page": false
+}

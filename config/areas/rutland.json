@@ -1,0 +1,25 @@
+{
+  "slug": "rutland",
+  "name": "Rutland",
+  "type": "MicroSA",
+  "officialName": "Rutland, VT",
+  "country": "United States",
+  "cities": [
+    "Rutland"
+  ],
+  "bbox": [
+    43.290550999936784,
+    -73.4312289999617,
+    43.858059999984356,
+    -72.6997950002212
+  ],
+  "center": [
+    43.57430549996057,
+    -73.06551200009145
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "marble-valley"
+  ],
+  "page": false
+}

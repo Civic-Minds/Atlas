@@ -1,0 +1,36 @@
+{
+  "slug": "montreal",
+  "name": "Montréal",
+  "type": "CMA",
+  "officialName": "Montréal",
+  "country": "Canada",
+  "cities": [
+    "Montréal"
+  ],
+  "bbox": [
+    45.00788274329085,
+    -74.53415691313938,
+    46.137785380364356,
+    -72.90970992732287
+  ],
+  "center": [
+    45.572834061827606,
+    -73.72193342023112
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "exo",
+    "exo-laurentides",
+    "exo-lrrs",
+    "exo-presquile",
+    "exo-sudouest",
+    "exo-terrebonne",
+    "exo-vallee-richelieu",
+    "rem",
+    "rtl",
+    "sjsr",
+    "stl",
+    "stm"
+  ],
+  "page": true
+}

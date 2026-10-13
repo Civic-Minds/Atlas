@@ -1,0 +1,25 @@
+{
+  "slug": "prince-albert",
+  "name": "Prince Albert",
+  "type": "CA",
+  "officialName": "Prince Albert",
+  "country": "Canada",
+  "cities": [
+    "Prince Albert"
+  ],
+  "bbox": [
+    52.89119260196749,
+    -106.19669122343313,
+    53.56268127666502,
+    -104.95251413336472
+  ],
+  "center": [
+    53.22693693931625,
+    -105.57460267839892
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "prince-albert"
+  ],
+  "page": false
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "stockton",
+  "name": "Stockton",
+  "type": "MSA",
+  "officialName": "Stockton-Lodi, CA",
+  "country": "United States",
+  "cities": [
+    "Stockton",
+    "Lodi"
+  ],
+  "bbox": [
+    37.48178300034248,
+    -121.5850779998163,
+    38.30025200004766,
+    -120.92057999975478
+  ],
+  "center": [
+    37.89101750019507,
+    -121.25282899978555
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sjrtd"
+  ],
+  "page": false
+}

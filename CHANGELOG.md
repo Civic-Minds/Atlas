@@ -6,9 +6,17 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+### Changed
+
+- **Beta: route lines are drawn in segments coloured by the service at each stop**: every trip that serves a stop counts, so the trunk TTC 29A and 29C share reads every 8 while each branch's tail keeps its own 16; the route-level frequency and tier still decide the filter ([#690](https://github.com/Civic-Minds/Atlas/issues/690)).
+- **Text is bigger and easier to read**: nothing a person has to read is below 12px any more, and the faint greys, status colours (green, red, amber) and white-on-pastel fare and timeline pills now meet WCAG AA contrast in light, dark and high-contrast modes.
+
 ### Added
 
+- **Every agency gets its own frequency page, with real numbers and a link into the map (beta)**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, and nearby agencies, so the agency can be found in search once these go public.
+- **Metro area pages compare every agency in a city region (beta)**: each page opens with a frequency-band bar, links to every agency page in it, and Open in the map frames the whole area, so "Toronto area" shows the TTC, MiWay, GO and the rest together (Toronto includes Hamilton and Oshawa to match the GTHA).
 - **Atlas is easier to find in search**: every page now has its own title, description and address for search results, About, Docs, Privacy and Terms carry their text in the page itself, a real sitemap and robots file are published, and made-up addresses now return a proper "not found" instead of the map.
+- **Phones get a separate Filters button**: the gear used to mix Settings with the map filters. Frequency, day, time, transit modes and compare now open from a Filters button in the header (with a count of active filters); the gear shows Settings only.
 - **Analytics count more of what people use**: map exports, outbound link clicks, report-issue and feedback opens, and page views on the About, Docs, Privacy and Terms pages were missing, and internal sessions stay excluded.
 - **Shared map images and copied links are tagged (beta)**: shared images now link back to the map, and tags let shared visits be counted in analytics.
 - **A Changelog page lists every app version and map data update (beta)**: newest first by date, and the What's new panel now shows just the latest version with a "See all changes" link.
@@ -19,6 +27,16 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Agencies with unmapped on-demand service say so on their card (beta)**: partly mapped services name the missing part, and the On-demand filter notes that coverage is still growing, so a missing zone no longer looks like no service (CIV-23).
 - **The "In view" list has state and province pills (beta)**: they match the agency list, the What's new panel labels the map data date apart from the app version and merges overlapping notes, and the What's new pill now sits before Feedback.
 
+### Changed
+
+- **Frequency reads the same way everywhere, and Compare now says "or better"**: Compare headings read like a claim about the service rather than the filter, and the same frequency was worded eight different ways ("≤10m", "every 12m", "about every 10 min").
+- **Night Service moved to `/research/night`**: it now lives with the other research pages, and old `/apps/night` links redirect there with their filters kept.
+- The full-day schedule view now shows how long the trip takes by hour, e.g. "Trip time: 35–51 min, slowest 4 p.m.", with minutes on hover (beta only).
+- On-demand zones now load from Atlas's data storage only when on-demand is shown, instead of shipping about 1.5 MB of zone data to every visitor, and the map says when they couldn't load instead of showing an empty area. New zones can be added without a site update, after passing checks for broken shapes, eligibility-only service, dropped zones, lost hours and old sources (CIV-50).
+- On-demand zone outlines, fills and stop dots are thin and light when zoomed out to a region, so they no longer outweigh the routes, and reach full strength by street zoom (beta only).
+- On the beta site, agencies that run on-demand service Atlas hasn't mapped yet now say so on their card, partly mapped services name the part that's missing, and the On-demand filter shows a note that coverage is still growing, so a missing zone no longer looks like no service (CIV-23).
+- On the beta site, the "In view" route list now has the same state and province pills as the agency list, the What's new panel labels the map data date apart from the app version and merges overlapping notes, and the What's new pill now sits before Feedback.
+
 ### Fixed
 
 - **Re-processing an agency without a name keeps its display name**: it was being overwritten with the slug (#785).
@@ -26,6 +44,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Weekday shows a route's typical weekday, not its Friday timetable**: CATA VE Campus had shown Friday's every 21 instead of its usual every 24 ([#716](https://github.com/Civic-Minds/Atlas/issues/716)).
 - **Agencies read the timetable running now, not a holiday week**: a schedule period centred on a holiday, like a university year on Christmas break, was read from that week ([#686](https://github.com/Civic-Minds/Atlas/issues/686)).
 - **A build on a timetable's last day publishes the next one**: it had published the ending period, wrong from the next morning, like PART's summer weekend routes after Oct 12 ([#743](https://github.com/Civic-Minds/Atlas/issues/743)).
+- **Selected pills, tabs and "on" switches stand out with a soft tint and firmer outline**: the old grey selection looked dimmer than unselected, and dark-mode switches looked off.
 - **Long names in list cards wrap instead of being cut off**: the full name is now readable, with a tooltip.
 - **A route's small hourly chart shows the slower direction each hour**: before, it showed only the first direction and could hide a weaker one; the full-day view also drops the "All directions" pill, opens on the slower direction, and names pills by destination ("To Downtown") instead of "Direction 1".
 - **The hourly schedule chart sizes bars from zero**: the least frequent hour used to shrink to a stub, and the full-day view now labels each hour's minutes between trips, explains the colours, and its direction pills switch the chart and show which one is picked.

@@ -1,0 +1,26 @@
+{
+  "slug": "mount-vernon",
+  "name": "Mount Vernon",
+  "type": "MSA",
+  "officialName": "Mount Vernon-Anacortes, WA",
+  "country": "United States",
+  "cities": [
+    "Mount Vernon",
+    "Anacortes"
+  ],
+  "bbox": [
+    48.29594500022337,
+    -122.76440399982289,
+    48.65700300027915,
+    -120.68609700029087
+  ],
+  "center": [
+    48.47647400025126,
+    -121.72525050005689
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "skagittransit"
+  ],
+  "page": false
+}

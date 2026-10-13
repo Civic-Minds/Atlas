@@ -126,15 +126,15 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id="map-export-title" className="text-sm font-black text-[var(--text-primary)]">Export map image</h2>
-            <p className="mt-1 text-[11px] font-bold text-[var(--text-dim)]">{selectedOutput.width} × {selectedOutput.height} PNG with whose schedules it shows, when the data was updated, and the Atlas link.</p>
+            <p className="mt-1 text-xs font-bold text-[var(--text-dim)]">{selectedOutput.width} × {selectedOutput.height} PNG with whose schedules it shows, when the data was updated, and the Atlas link.</p>
           </div>
           <button type="button" onClick={onClose} aria-label="Close export dialog" className="text-[var(--text-dim)] hover:text-[var(--text-primary)]">
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {waitingForMap && <p role="status" className="mt-2 text-[11px] font-bold text-[var(--text-dim)]">Map still loading. The image will save once every route is drawn.</p>}
-        {error && <p role="alert" className="mt-2 text-[11px] font-bold text-red-500">{error}</p>}
+        {waitingForMap && <p role="status" className="mt-2 text-xs font-bold text-[var(--text-dim)]">Map still loading. The image will save once every route is drawn.</p>}
+        {error && <p role="alert" className="mt-2 text-xs font-bold text-[var(--status-negative-text)]">{error}</p>}
 
         <div className="mt-5 grid grid-cols-3 gap-1 rounded-xl border border-[var(--border-primary)] p-1">
           {MAP_EXPORT_SIZES.map(size => (
@@ -143,10 +143,10 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
               type="button"
               onClick={() => setSelectedSizeId(size.id)}
               aria-pressed={selectedSizeId === size.id}
-              className={`rounded-lg px-2 py-2 text-[10px] font-black transition-colors ${selectedSizeId === size.id ? 'bg-[var(--accent-bg)] text-[var(--accent)]' : 'text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]'}`}
+              className={`rounded-lg px-2 py-2 text-xs font-black transition-colors ${selectedSizeId === size.id ? 'bg-[var(--control-active-bg)] text-[var(--control-active-fg)]' : 'text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]'}`}
             >
               <span className="block">{size.label}</span>
-              <span className="mt-0.5 block text-[9px] font-bold opacity-75">{outputSize(size).width} × {outputSize(size).height}</span>
+              <span className="mt-0.5 block text-xs font-bold opacity-75">{outputSize(size).width} × {outputSize(size).height}</span>
             </button>
           ))}
         </div>

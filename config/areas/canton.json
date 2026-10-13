@@ -1,0 +1,26 @@
+{
+  "slug": "canton",
+  "name": "Canton",
+  "type": "MSA",
+  "officialName": "Canton-Massillon, OH",
+  "country": "United States",
+  "cities": [
+    "Canton",
+    "Massillon"
+  ],
+  "bbox": [
+    40.42469999965997,
+    -81.64910999978457,
+    40.98871699971189,
+    -80.86082200030964
+  ],
+  "center": [
+    40.70670849968593,
+    -81.2549660000471
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sarta"
+  ],
+  "page": false
+}

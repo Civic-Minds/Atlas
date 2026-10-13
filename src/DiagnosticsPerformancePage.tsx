@@ -83,7 +83,7 @@ export default function DiagnosticsPerformancePage() {
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
-            <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
+            <span className="text-2xs text-[var(--text-dim)]">by Civic Minds</span>
           </div>
         </a>
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
@@ -99,10 +99,10 @@ export default function DiagnosticsPerformancePage() {
 
       <main className="p-6 max-w-4xl mx-auto space-y-5">
         <div className={`${FLOATING_CARD} p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm`}>
-          <div><div className="text-[10px] text-[var(--text-dim)]">Mode</div><div className="font-black">{ATLAS_MODE}</div></div>
-          <div><div className="text-[10px] text-[var(--text-dim)]">Visible agencies</div><div className="font-black">{agenciesLoadState === 'ready' ? agencies.length : 'Loading…'}</div></div>
-          <div><div className="text-[10px] text-[var(--text-dim)]">URL</div><div className="font-black">{window.location.pathname}</div></div>
-          <div><div className="text-[10px] text-[var(--text-dim)]">Captured</div><div className="font-black">{new Date().toLocaleTimeString()}</div></div>
+          <div><div className="text-xs text-[var(--text-dim)]">Mode</div><div className="font-black">{ATLAS_MODE}</div></div>
+          <div><div className="text-xs text-[var(--text-dim)]">Visible agencies</div><div className="font-black">{agenciesLoadState === 'ready' ? agencies.length : 'Loading…'}</div></div>
+          <div><div className="text-xs text-[var(--text-dim)]">URL</div><div className="font-black">{window.location.pathname}</div></div>
+          <div><div className="text-xs text-[var(--text-dim)]">Captured</div><div className="font-black">{new Date().toLocaleTimeString()}</div></div>
         </div>
 
         <section className={`${FLOATING_CARD} overflow-hidden`} aria-labelledby="performance-metrics-heading">
@@ -110,7 +110,7 @@ export default function DiagnosticsPerformancePage() {
           <div className="divide-y divide-[var(--border-primary)]">
             {rows.map(metric => (
               <div key={metric.label} className="px-5 py-3 flex items-center justify-between gap-4">
-                <div><div className="text-sm font-bold">{metric.label}</div>{metric.detail && <div className="text-[10px] text-[var(--text-dim)]">{metric.detail}</div>}</div>
+                <div><div className="text-sm font-bold">{metric.label}</div>{metric.detail && <div className="text-xs text-[var(--text-dim)]">{metric.detail}</div>}</div>
                 <div className="text-sm font-black text-right whitespace-nowrap">{metric.value}</div>
               </div>
             ))}

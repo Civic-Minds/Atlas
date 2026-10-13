@@ -1,0 +1,28 @@
+{
+  "slug": "sainte",
+  "name": "Sainte",
+  "type": "CA",
+  "officialName": "Sainte-Agathe-des-Monts",
+  "country": "Canada",
+  "cities": [
+    "Sainte",
+    "Agathe",
+    "des",
+    "Monts"
+  ],
+  "bbox": [
+    45.93181136902637,
+    -74.4378052071567,
+    46.162188909489274,
+    -74.08970710830131
+  ],
+  "center": [
+    46.04700013925782,
+    -74.263756157729
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "linter"
+  ],
+  "page": false
+}

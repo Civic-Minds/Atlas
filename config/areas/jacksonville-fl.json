@@ -1,0 +1,26 @@
+{
+  "slug": "jacksonville-fl",
+  "name": "Jacksonville",
+  "type": "MSA",
+  "officialName": "Jacksonville, FL",
+  "country": "United States",
+  "cities": [
+    "Jacksonville"
+  ],
+  "bbox": [
+    29.62243199991495,
+    -82.45979300019094,
+    30.82992400010241,
+    -81.15081700001681
+  ],
+  "center": [
+    30.22617800000868,
+    -81.80530500010389
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "jta",
+    "sunshine-bus"
+  ],
+  "page": true
+}

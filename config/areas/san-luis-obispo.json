@@ -1,0 +1,27 @@
+{
+  "slug": "san-luis-obispo",
+  "name": "San Luis Obispo",
+  "type": "MSA",
+  "officialName": "San Luis Obispo-Paso Robles, CA",
+  "country": "United States",
+  "cities": [
+    "San Luis Obispo",
+    "Paso Robles"
+  ],
+  "bbox": [
+    34.89747500000933,
+    -121.43817600014431,
+    35.79665500035294,
+    -119.47248900013494
+  ],
+  "center": [
+    35.34706500018113,
+    -120.45533250013963
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "slorta",
+    "slotransit"
+  ],
+  "page": true
+}

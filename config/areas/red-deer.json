@@ -1,0 +1,25 @@
+{
+  "slug": "red-deer",
+  "name": "Red Deer",
+  "type": "CMA",
+  "officialName": "Red Deer",
+  "country": "Canada",
+  "cities": [
+    "Red Deer"
+  ],
+  "bbox": [
+    52.20016035195415,
+    -113.90995153184775,
+    52.3573513316196,
+    -113.68931710613383
+  ],
+  "center": [
+    52.278755841786875,
+    -113.7996343189908
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "red-deer"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "akron",
+  "name": "Akron",
+  "type": "MSA",
+  "officialName": "Akron, OH",
+  "country": "United States",
+  "cities": [
+    "Akron"
+  ],
+  "bbox": [
+    40.90650200025151,
+    -81.68849100008164,
+    41.35116800029952,
+    -81.0020149997385
+  ],
+  "center": [
+    41.128835000275515,
+    -81.34525299991007
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "akron"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "sheboygan",
+  "name": "Sheboygan",
+  "type": "MSA",
+  "officialName": "Sheboygan, WI",
+  "country": "United States",
+  "cities": [
+    "Sheboygan"
+  ],
+  "bbox": [
+    43.541433000223144,
+    -88.16227400038571,
+    43.89515499969249,
+    -87.07533500041582
+  ],
+  "center": [
+    43.718293999957815,
+    -87.61880450040076
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sheboygan-county"
+  ],
+  "page": false
+}

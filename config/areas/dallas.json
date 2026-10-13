@@ -1,0 +1,29 @@
+{
+  "slug": "dallas",
+  "name": "Dallas",
+  "type": "MSA",
+  "officialName": "Dallas-Fort Worth-Arlington, TX",
+  "country": "United States",
+  "cities": [
+    "Dallas",
+    "Fort Worth",
+    "Arlington"
+  ],
+  "bbox": [
+    32.05208700030397,
+    -98.06683599975322,
+    33.43405700014864,
+    -95.85864499970195
+  ],
+  "center": [
+    32.743072000226306,
+    -96.96274049972759
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "dart",
+    "dcta",
+    "trinitymetro"
+  ],
+  "page": true
+}

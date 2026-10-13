@@ -1,0 +1,26 @@
+{
+  "slug": "harrisburg",
+  "name": "Harrisburg",
+  "type": "MSA",
+  "officialName": "Harrisburg-Carlisle, PA",
+  "country": "United States",
+  "cities": [
+    "Harrisburg",
+    "Carlisle"
+  ],
+  "bbox": [
+    39.94407700028924,
+    -77.67176099966902,
+    40.65959500013688,
+    -76.5354139997091
+  ],
+  "center": [
+    40.30183600021306,
+    -77.10358749968907
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cat-harrisburg"
+  ],
+  "page": false
+}

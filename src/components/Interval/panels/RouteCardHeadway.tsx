@@ -5,6 +5,8 @@ import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
 import { titleCase, getRouteLabel, shortenAgencyName, resolveBranchLabel, formatBranchLabel } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
+import { getCachedAgencyGeo } from '../../../lib/agencyGeo';
+import { tripTimeSeriesFor, type PublishedRunningTimes } from '../../../utils/tripTime';
 import RouteCardTitle from '../../RouteCardTitle';
 import {
   CardDirectionRow,
@@ -42,6 +44,7 @@ import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../../../shared/routeHeadwayFilter';
 import { expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
+import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -308,7 +311,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const range = routeCardDisplayHeadwayRange(direction, period);
         const isLimited = routeCardDisplayLimited(direction, period);
-        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? `about every ${headway} min` : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
+        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? headwayAbout(headway) : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
@@ -330,7 +333,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       .map(direction => routeCardDisplayHeadway(direction, period))
       .filter((v): v is number => v != null))].sort((a, b) => a - b);
     const sharedLines = shared && branchHeadways.length > 0
-      ? [`- Shared stretch every ${shared.headway} min; each branch every ${branchHeadways.length === 1 ? branchHeadways[0] : `${branchHeadways[0]}-${branchHeadways[branchHeadways.length - 1]}`} min`]
+      ? [`- Shared stretch ${headwayAbout(shared.headway)}; each branch ${branchHeadways.length === 1 ? headwayAbout(branchHeadways[0]) : headwayAboutRange(branchHeadways[0], branchHeadways[branchHeadways.length - 1])}`]
       : [];
     return [...section, ...sharedLines, ...branchLines, ...limitedLines];
   });
@@ -390,7 +393,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {liveRouteInfo && liveStatus !== 'noData' && (
         <div className="flex items-center gap-1.5 -mt-1 mb-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-dim)] shrink-0" />
-          <span className="text-[10px] font-black text-[var(--text-dim)]">Scheduled</span>
+          <span className="text-xs font-black text-[var(--text-dim)]">Scheduled</span>
         </div>
       )}
       <SidebarCardHeaderBlock>
@@ -415,14 +418,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {compareRows && (() => {
         const { headline, lines } = compareCardSummary(compareRows);
         return (
-          <div className="mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2 text-[11px] font-bold text-[var(--text-primary)]" data-testid="compare-card-summary">
+          <div className="mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2 text-xs font-bold text-[var(--text-primary)]" data-testid="compare-card-summary">
             {headline && <p className="text-xs font-black">{headline}</p>}
             {lines.map(line => <p key={line} className={headline ? 'mt-0.5 text-[var(--text-dim)]' : 'py-0.5'}>{line}</p>)}
           </div>
         );
       })()}
       {FEATURES.beta && variantFamily && (
-        <p className="text-[10px] text-[var(--text-dim)] -mt-1 mb-3">
+        <p className="text-xs text-[var(--text-dim)] -mt-1 mb-3">
           Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
         </p>
       )}
@@ -485,10 +488,21 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           currentRoute.routeShortName ?? '',
           currentRoute.routeLongName ?? '',
         );
+        // Beta only, and only from data already in the agency file: the full-day view's trip time.
+        const runningTimes = FEATURES.beta && routeSlug
+          ? (getCachedAgencyGeo(routeSlug) as { runningTimes?: PublishedRunningTimes } | undefined)?.runningTimes
+          : undefined;
+        const tripTimeFor = (group: DirectionGroup) => {
+          const dir = group.realTier[0] ?? group.span[0];
+          if (!runningTimes || !dir) return null;
+          const routeIds = [...new Set([...group.realTier, ...group.span].map(d => d.routeId))];
+          return tripTimeSeriesFor(runningTimes, routeIds, dir.directionId, dir.day as string);
+        };
         const directionOptions = perDirection.map(({ group, byHour }, index) => ({
           key: `direction-${group.dirId}-${index}`,
           label: pillLabels[index],
           byHour,
+          tripTime: tripTimeFor(group),
         }));
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;
@@ -512,12 +526,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       })()}
       {periodNotice && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
-          <p className="text-[10px] font-normal text-[var(--text-primary)]">{periodNotice}</p>
+          <p className="text-xs font-normal text-[var(--text-primary)]">{periodNotice}</p>
         </div>
       )}
       {unevenNotice && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
-          <p className="text-[10px] font-black text-[var(--text-primary)]">{unevenNotice}</p>
+          <p className="text-xs font-black text-[var(--text-primary)]">{unevenNotice}</p>
         </div>
       )}
       <SidebarCardList>
@@ -600,7 +614,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   <>
                     <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                     {!hasVisibleDirectionRows && selectedPeriod && (
-                      <p className="mt-2 mb-2 text-[10px] font-bold text-[var(--text-dim)]">
+                      <p className="mt-2 mb-2 text-xs font-bold text-[var(--text-dim)]">
                         No {selectedPeriod.label.toLowerCase()} service.
                       </p>
                     )}

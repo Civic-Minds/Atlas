@@ -1,0 +1,25 @@
+{
+  "slug": "anchorage",
+  "name": "Anchorage",
+  "type": "MSA",
+  "officialName": "Anchorage, AK",
+  "country": "United States",
+  "cities": [
+    "Anchorage"
+  ],
+  "bbox": [
+    60.73297700004738,
+    -153.00188099970322,
+    63.477653000020474,
+    -146.4239839999781
+  ],
+  "center": [
+    62.105315000033926,
+    -149.71293249984066
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "anchorage"
+  ],
+  "page": false
+}

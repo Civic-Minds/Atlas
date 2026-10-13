@@ -1,0 +1,26 @@
+{
+  "slug": "sierra-vista",
+  "name": "Sierra Vista",
+  "type": "MSA",
+  "officialName": "Sierra Vista-Douglas, AZ",
+  "country": "United States",
+  "cities": [
+    "Sierra Vista",
+    "Douglas"
+  ],
+  "bbox": [
+    31.332348000358696,
+    -110.46091600019255,
+    32.427649999689066,
+    -109.04791799976059
+  ],
+  "center": [
+    31.87999900002388,
+    -109.75441699997657
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sierra-vista"
+  ],
+  "page": false
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "denver",
+  "name": "Denver",
+  "type": "MSA",
+  "officialName": "Denver-Aurora-Centennial, CO",
+  "country": "United States",
+  "cities": [
+    "Denver",
+    "Aurora",
+    "Centennial"
+  ],
+  "bbox": [
+    38.69308900019148,
+    -106.21017299977098,
+    40.044144000059006,
+    -103.70569500033653
+  ],
+  "center": [
+    39.36861650012524,
+    -104.95793400005375
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "roundabout",
+    "rtd-denver"
+  ],
+  "page": true
+}

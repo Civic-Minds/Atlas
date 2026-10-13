@@ -1,0 +1,25 @@
+{
+  "slug": "st-louis",
+  "name": "St. Louis",
+  "type": "MSA",
+  "officialName": "St. Louis, MO-IL",
+  "country": "United States",
+  "cities": [
+    "St. Louis"
+  ],
+  "bbox": [
+    38.00349899991849,
+    -91.41863700040317,
+    39.5233160000441,
+    -89.13833700000704
+  ],
+  "center": [
+    38.7634074999813,
+    -90.2784870002051
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "metrostlouis"
+  ],
+  "page": true
+}

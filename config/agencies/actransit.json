@@ -1,6 +1,7 @@
 {
   "slug": "actransit",
   "name": "Alameda-Contra Costa Transit District (AC Transit)",
+  "shortName": "AC Transit",
   "center": [
     37.7688,
     -122.1937

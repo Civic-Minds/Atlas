@@ -1,0 +1,25 @@
+{
+  "slug": "el-paso",
+  "name": "El Paso",
+  "type": "MSA",
+  "officialName": "El Paso, TX",
+  "country": "United States",
+  "cities": [
+    "El Paso"
+  ],
+  "bbox": [
+    30.629258000143093,
+    -106.64564599964328,
+    32.0026500003734,
+    -104.90712199975002
+  ],
+  "center": [
+    31.315954000258245,
+    -105.77638399969665
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sun-metro"
+  ],
+  "page": false
+}

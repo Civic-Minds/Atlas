@@ -1,0 +1,25 @@
+{
+  "slug": "evansville",
+  "name": "Evansville",
+  "type": "MSA",
+  "officialName": "Evansville, IN",
+  "country": "United States",
+  "cities": [
+    "Evansville"
+  ],
+  "bbox": [
+    37.771671999691385,
+    -88.09789199999273,
+    38.246122999797,
+    -87.01742299997402
+  ],
+  "center": [
+    38.008897499744194,
+    -87.55765749998338
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "evansville"
+  ],
+  "page": false
+}

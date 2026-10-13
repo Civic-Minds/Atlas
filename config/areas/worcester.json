@@ -1,0 +1,25 @@
+{
+  "slug": "worcester",
+  "name": "Worcester",
+  "type": "MSA",
+  "officialName": "Worcester, MA",
+  "country": "United States",
+  "cities": [
+    "Worcester"
+  ],
+  "bbox": [
+    42.008052999761894,
+    -72.31587899956894,
+    42.72161500014021,
+    -71.47802699957006
+  ],
+  "center": [
+    42.36483399995105,
+    -71.89695299956949
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "wrta"
+  ],
+  "page": false
+}

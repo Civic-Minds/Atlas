@@ -3,6 +3,7 @@ import { isHourInPeriod } from '../../shared/config';
 import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripSafeHeadway } from './pairedTripFloor';
+import { delayAmount, headwayAbout, headwayAboutRange } from './headwayText';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -92,7 +93,7 @@ export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): st
   const range = routeCardDisplayHeadwayRange(p, period);
   if (range) return range;
   const median = p.headwayByPeriod?.[period];
-  return median == null ? undefined : `about every ${median} min`;
+  return median == null ? undefined : headwayAbout(median);
 }
 
 /** Rider-facing range for an irregular period, scoped to this destination/branch. */
@@ -100,10 +101,10 @@ export function routeCardDisplayHeadwayRange(p: ShapeProperties, period: TimePer
   if (p.tier === 'span' || period === 'all' || p.headwayByPeriodSustained?.[period] !== false) return null;
   const range = p.headwayRangeByPeriod?.[period];
   if (!range) return null;
-  const rangeText = range.min === range.max ? `about every ${range.min} min` : `about every ${range.min}–${range.max} min`;
+  const rangeText = headwayAboutRange(range.min, range.max);
   const longestGap = p.maxGapByPeriod?.[period];
   return longestGap != null && longestGap > range.max + 5
-    ? `${rangeText} · longest gap ${longestGap} min`
+    ? `${rangeText} · longest gap ${delayAmount(longestGap)}`
     : rangeText;
 }
 

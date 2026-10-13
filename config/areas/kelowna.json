@@ -1,0 +1,25 @@
+{
+  "slug": "kelowna",
+  "name": "Kelowna",
+  "type": "CMA",
+  "officialName": "Kelowna",
+  "country": "Canada",
+  "cities": [
+    "Kelowna"
+  ],
+  "bbox": [
+    49.54142131169867,
+    -120.22857320521697,
+    50.42940145222424,
+    -118.70737578509411
+  ],
+  "center": [
+    49.985411381961455,
+    -119.46797449515554
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "kelowna"
+  ],
+  "page": false
+}

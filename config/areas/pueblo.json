@@ -1,0 +1,26 @@
+{
+  "slug": "pueblo",
+  "name": "Pueblo",
+  "type": "MSA",
+  "officialName": "Pueblo, CO",
+  "country": "United States",
+  "cities": [
+    "Pueblo"
+  ],
+  "bbox": [
+    37.73470400002697,
+    -105.0506779995675,
+    38.52243500034771,
+    -104.05392100032775
+  ],
+  "center": [
+    38.12856950018734,
+    -104.55229949994762
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bustang-outrider",
+    "pueblo-transit"
+  ],
+  "page": true
+}

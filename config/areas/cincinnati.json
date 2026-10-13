@@ -1,0 +1,27 @@
+{
+  "slug": "cincinnati",
+  "name": "Cincinnati",
+  "type": "MSA",
+  "officialName": "Cincinnati, OH-KY-IN",
+  "country": "United States",
+  "cities": [
+    "Cincinnati"
+  ],
+  "bbox": [
+    38.47303900013289,
+    -85.29862299975373,
+    39.591024000088765,
+    -83.67301800003222
+  ],
+  "center": [
+    39.03203150011083,
+    -84.48582049989298
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "butler-county-rta",
+    "cincinnatimetro",
+    "tank"
+  ],
+  "page": true
+}

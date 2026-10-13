@@ -1,0 +1,47 @@
+{
+  "slug": "new-york",
+  "name": "New York",
+  "type": "MSA",
+  "officialName": "New York-Newark-Jersey City, NY-NJ",
+  "country": "United States",
+  "cities": [
+    "New York",
+    "Newark",
+    "Jersey City"
+  ],
+  "bbox": [
+    39.475197999955704,
+    -75.19549600029069,
+    41.5271940001506,
+    -71.77749099965166
+  ],
+  "center": [
+    40.501196000053156,
+    -73.48649349997117
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "beeline",
+    "jfk-airtrain",
+    "lirr",
+    "mnr",
+    "mta-bus-company",
+    "nice",
+    "njt-bus",
+    "njt-rail",
+    "nyc-ferry",
+    "nyct-bus-bronx",
+    "nyct-bus-brooklyn",
+    "nyct-bus-manhattan",
+    "nyct-bus-queens",
+    "nyct-bus-si",
+    "nyct-subway",
+    "part",
+    "path",
+    "rioc-tram",
+    "sct",
+    "staten-island-ferry",
+    "tor"
+  ],
+  "page": true
+}

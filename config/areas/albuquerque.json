@@ -1,0 +1,25 @@
+{
+  "slug": "albuquerque",
+  "name": "Albuquerque",
+  "type": "MSA",
+  "officialName": "Albuquerque, NM",
+  "country": "United States",
+  "cities": [
+    "Albuquerque"
+  ],
+  "bbox": [
+    34.25977199999923,
+    -107.62651100020969,
+    36.21989599989094,
+    -105.29012500035822
+  ],
+  "center": [
+    35.239833999945084,
+    -106.45831800028395
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "abqride"
+  ],
+  "page": false
+}

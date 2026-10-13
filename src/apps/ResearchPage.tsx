@@ -1,34 +1,46 @@
 import { Moon, Zap } from 'lucide-react';
 import { FEATURE_ROUTES } from '../../shared/config';
-import { FLOATING_CARD } from '../styles';
+import PageShell from '../components/ui/PageShell';
+import SiteFooter from '../components/SiteFooter';
+import { SURFACE } from '../styles';
+
+const CARDS = [
+  {
+    href: FEATURE_ROUTES.nightService,
+    Icon: Moon,
+    title: 'Night service',
+    body: 'Find routes with sustained service from 2am to 6am.',
+  },
+  {
+    href: FEATURE_ROUTES.frequentService.story,
+    Icon: Zap,
+    title: 'Frequent service',
+    body: 'See what frequent service means and which routes meet Atlas’s sustained-frequency thresholds.',
+  },
+];
 
 export default function ResearchPage() {
   return (
-    <div className="absolute inset-0 overflow-y-auto px-6 pt-28 pb-12 sm:px-10 lg:px-16">
-      <div className="mx-auto max-w-4xl">
-        <div className="max-w-2xl">
-          <h1 className="mt-3 text-3xl font-black tracking-tight text-[var(--text-primary)] sm:text-5xl">Explore the patterns behind transit service.</h1>
-          <p className="mt-4 text-sm font-bold leading-7 text-[var(--text-muted)] sm:text-base">
-            Explore the service patterns that the everyday frequency map cannot show on its own.
-          </p>
+    <PageShell>
+        <div className="mt-10 lg:max-w-[42rem] lg:ml-[15rem]">
+          <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
+            <header>
+              <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">Research</h1>
+              <p className="mt-3">Views of transit service that the main map does not show.</p>
+            </header>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {CARDS.map(({ href, Icon, title, body }) => (
+                <a key={href} href={href} className={`${SURFACE} group block rounded-2xl p-5 transition-colors hover:border-[var(--accent-border)]`}>
+                  <Icon className="h-4 w-4 text-[var(--text-dim)]" aria-hidden="true" />
+                  <h2 className="mt-4 text-base font-black text-[var(--text-primary)]">{title}</h2>
+                  <p className="mt-2">{body}</p>
+                  <span className="mt-4 inline-block text-xs font-bold text-[var(--text-muted)] group-hover:text-[var(--accent)]">Open →</span>
+                </a>
+              ))}
+            </div>
+            <SiteFooter />
+          </article>
         </div>
-
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          <a href="/apps/night" className={`${FLOATING_CARD} group p-5 transition-colors hover:border-[var(--accent-border)]`}>
-            <Moon className="h-5 w-5 text-[var(--accent)]" />
-            <h2 className="mt-5 text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">Night Service</h2>
-            <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Find routes with sustained service from 2am to 6am.</p>
-            <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">See overnight routes →</span>
-          </a>
-
-          <a href={FEATURE_ROUTES.frequentService.story} className={`${FLOATING_CARD} group p-5 transition-colors hover:border-[var(--accent-border)]`}>
-            <Zap className="h-5 w-5 text-[var(--accent)]" />
-            <h2 className="mt-5 text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">Frequent Service</h2>
-            <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Learn what frequent service means, then explore routes that meet Atlas’s sustained-frequency thresholds.</p>
-            <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">Understand the threshold →</span>
-          </a>
-        </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }

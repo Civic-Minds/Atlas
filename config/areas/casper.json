@@ -1,0 +1,25 @@
+{
+  "slug": "casper",
+  "name": "Casper",
+  "type": "MSA",
+  "officialName": "Casper, WY",
+  "country": "United States",
+  "cities": [
+    "Casper"
+  ],
+  "bbox": [
+    42.43048800019055,
+    -107.54352599970197,
+    43.50189700019399,
+    -106.07056899970546
+  ],
+  "center": [
+    42.96619250019227,
+    -106.80704749970371
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "casper"
+  ],
+  "page": false
+}

@@ -1,0 +1,38 @@
+{
+  "slug": "washington",
+  "name": "Washington",
+  "type": "MSA",
+  "officialName": "Washington-Arlington-Alexandria, DC-VA-MD-WV",
+  "country": "United States",
+  "cities": [
+    "Washington",
+    "Arlington",
+    "Alexandria"
+  ],
+  "bbox": [
+    37.99068800009861,
+    -78.39470400027483,
+    39.72004500031894,
+    -76.66251399989035
+  ],
+  "center": [
+    38.855366500208774,
+    -77.52860900008258
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "art",
+    "cue-bus",
+    "dash",
+    "fairfax",
+    "fred-transit",
+    "loudoun-transit",
+    "marc",
+    "omniride",
+    "pgc-the-bus",
+    "rideon",
+    "vre",
+    "wmata"
+  ],
+  "page": true
+}

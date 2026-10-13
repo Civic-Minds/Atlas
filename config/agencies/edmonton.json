@@ -1,6 +1,7 @@
 {
   "slug": "edmonton",
   "name": "Edmonton Transit Service (ETS)",
+  "shortName": "ETS",
   "websiteUrl": "https://www.edmonton.ca/ets",
   "region": "Alberta",
   "center": [

@@ -1,0 +1,25 @@
+{
+  "slug": "crescent-city",
+  "name": "Crescent City",
+  "type": "MicroSA",
+  "officialName": "Crescent City, CA",
+  "country": "United States",
+  "cities": [
+    "Crescent City"
+  ],
+  "bbox": [
+    41.38077599967645,
+    -124.44070700004534,
+    42.00078700025335,
+    -123.51791100027951
+  ],
+  "center": [
+    41.6907814999649,
+    -123.97930900016243
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "rct"
+  ],
+  "page": false
+}

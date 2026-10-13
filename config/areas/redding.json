@@ -1,0 +1,26 @@
+{
+  "slug": "redding",
+  "name": "Redding",
+  "type": "MSA",
+  "officialName": "Redding, CA",
+  "country": "United States",
+  "cities": [
+    "Redding"
+  ],
+  "bbox": [
+    40.285374999889655,
+    -123.06883800018078,
+    41.184977999738614,
+    -121.31997600025001
+  ],
+  "center": [
+    40.73517649981413,
+    -122.19440700021539
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "raba",
+    "trinity"
+  ],
+  "page": true
+}

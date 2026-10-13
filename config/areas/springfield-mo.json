@@ -1,0 +1,25 @@
+{
+  "slug": "springfield-mo",
+  "name": "Springfield",
+  "type": "MSA",
+  "officialName": "Springfield, MO",
+  "country": "United States",
+  "cities": [
+    "Springfield"
+  ],
+  "bbox": [
+    36.80917800002837,
+    -93.63243899988996,
+    37.904232000003574,
+    -92.67896999959505
+  ],
+  "center": [
+    37.35670500001597,
+    -93.15570449974251
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "springfield-mo"
+  ],
+  "page": false
+}

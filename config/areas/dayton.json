@@ -1,0 +1,27 @@
+{
+  "slug": "dayton",
+  "name": "Dayton",
+  "type": "MSA",
+  "officialName": "Dayton-Kettering-Beavercreek, OH",
+  "country": "United States",
+  "cities": [
+    "Dayton",
+    "Kettering",
+    "Beavercreek"
+  ],
+  "bbox": [
+    39.55025400027352,
+    -84.48565300002511,
+    40.200003999712564,
+    -83.64716499999159
+  ],
+  "center": [
+    39.87512899999304,
+    -84.06640900000835
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "dayton"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "bozeman",
+  "name": "Bozeman",
+  "type": "MSA",
+  "officialName": "Bozeman, MT",
+  "country": "United States",
+  "cities": [
+    "Bozeman"
+  ],
+  "bbox": [
+    44.476798000319775,
+    -111.80537999956474,
+    46.192879000179026,
+    -110.78383300011627
+  ],
+  "center": [
+    45.334838500249404,
+    -111.29460649984051
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "streamline"
+  ],
+  "page": false
+}

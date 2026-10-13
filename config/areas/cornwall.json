@@ -1,0 +1,25 @@
+{
+  "slug": "cornwall",
+  "name": "Cornwall",
+  "type": "CA",
+  "officialName": "Cornwall",
+  "country": "Canada",
+  "cities": [
+    "Cornwall"
+  ],
+  "bbox": [
+    44.88154006435435,
+    -75.19881990467371,
+    45.24776271509225,
+    -74.60661021602112
+  ],
+  "center": [
+    45.064651389723295,
+    -74.90271506034742
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cornwall"
+  ],
+  "page": false
+}

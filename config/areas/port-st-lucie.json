@@ -1,0 +1,25 @@
+{
+  "slug": "port-st-lucie",
+  "name": "Port St. Lucie",
+  "type": "MSA",
+  "officialName": "Port St. Lucie, FL",
+  "country": "United States",
+  "cities": [
+    "Port St. Lucie"
+  ],
+  "bbox": [
+    26.9566229996855,
+    -80.88563900028252,
+    27.558735999959193,
+    -80.02275400040068
+  ],
+  "center": [
+    27.257679499822345,
+    -80.4541965003416
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "martin-county"
+  ],
+  "page": false
+}

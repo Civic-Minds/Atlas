@@ -1,0 +1,28 @@
+{
+  "slug": "blacksburg",
+  "name": "Blacksburg",
+  "type": "MSA",
+  "officialName": "Blacksburg-Christiansburg-Radford, VA",
+  "country": "United States",
+  "cities": [
+    "Blacksburg",
+    "Christiansburg",
+    "Radford"
+  ],
+  "bbox": [
+    36.70871800018715,
+    -81.0144890003839,
+    37.48167200014058,
+    -80.10441300041248
+  ],
+  "center": [
+    37.09519500016386,
+    -80.55945100039818
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "blacksburg",
+    "radford"
+  ],
+  "page": true
+}

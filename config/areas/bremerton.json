@@ -1,0 +1,28 @@
+{
+  "slug": "bremerton",
+  "name": "Bremerton",
+  "type": "MSA",
+  "officialName": "Bremerton-Silverdale-Port Orchard, WA",
+  "country": "United States",
+  "cities": [
+    "Bremerton",
+    "Silverdale",
+    "Port Orchard"
+  ],
+  "bbox": [
+    47.40309099999175,
+    -123.03840400002629,
+    47.9729530002479,
+    -122.42702300003239
+  ],
+  "center": [
+    47.68802200011982,
+    -122.73271350002935
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "kitsaptransit",
+    "wsf"
+  ],
+  "page": true
+}

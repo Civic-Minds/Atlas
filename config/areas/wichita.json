@@ -1,0 +1,25 @@
+{
+  "slug": "wichita",
+  "name": "Wichita",
+  "type": "MSA",
+  "officialName": "Wichita, KS",
+  "country": "United States",
+  "cities": [
+    "Wichita"
+  ],
+  "bbox": [
+    36.998545999717834,
+    -97.80835800012392,
+    38.17508099972906,
+    -96.52278200008847
+  ],
+  "center": [
+    37.58681349972345,
+    -97.16557000010619
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "wichita"
+  ],
+  "page": false
+}

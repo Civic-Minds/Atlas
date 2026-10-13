@@ -1,4 +1,5 @@
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
+import { delayAmount, headwayAbout } from '../utils/headwayText';
 
 /** Shared user-facing copy for every expired-feed notice. */
 export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
@@ -14,7 +15,7 @@ export function selectedRouteFilterNotice(options: {
   activeRange: string;
   periodRange: string;
 }): string {
-  return `Service runs about every 30 minutes from ${options.activeRange}, but not throughout the selected ${options.periodRange} period.`;
+  return `Service runs ${headwayAbout(30)} from ${options.activeRange}, but not throughout the selected ${options.periodRange} period.`;
 }
 
 export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
@@ -24,7 +25,7 @@ export function periodServiceNotice(periodRange: string, partial: boolean, activ
 }
 
 export function unevenServiceNotice(longestGap: number): string {
-  return `Service runs throughout the selected period, but not consistently. Longest gap: ${longestGap} minutes.`;
+  return `Service runs throughout the selected period, but not consistently. Longest gap: ${delayAmount(longestGap)}.`;
 }
 
 export const NO_ROUTE_SHAPE_NOTICE = 'Route map unavailable.';

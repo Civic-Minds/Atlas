@@ -1,0 +1,26 @@
+{
+  "slug": "chatham",
+  "name": "Chatham",
+  "type": "CA",
+  "officialName": "Chatham-Kent",
+  "country": "Canada",
+  "cities": [
+    "Chatham",
+    "Kent"
+  ],
+  "bbox": [
+    41.981630708558285,
+    -82.59471719630115,
+    42.72258917395365,
+    -81.63475277956279
+  ],
+  "center": [
+    42.35210994125597,
+    -82.11473498793197
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "chatham-kent"
+  ],
+  "page": false
+}

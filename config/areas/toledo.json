@@ -1,0 +1,25 @@
+{
+  "slug": "toledo",
+  "name": "Toledo",
+  "type": "MSA",
+  "officialName": "Toledo, OH",
+  "country": "United States",
+  "cities": [
+    "Toledo"
+  ],
+  "bbox": [
+    41.16575100016661,
+    -84.39955099999172,
+    41.959410000268015,
+    -82.99557199967236
+  ],
+  "center": [
+    41.56258050021731,
+    -83.69756149983203
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "tarta"
+  ],
+  "page": false
+}

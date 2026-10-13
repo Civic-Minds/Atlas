@@ -1,14 +1,12 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
-import { getTierColor, getFareColor } from '../../utils/colors';
+import { getTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
-import type { Agency, FareOverride } from '../../App';
+import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { findVariantFamily } from '../../utils/routeVariants';
 import { getRouteLabel, shortenAgencyName, searchOverlayHidesPanel, titleCase } from '../../utils/format';
-import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -80,9 +78,7 @@ interface SidebarControlsProps {
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   setSelectedAgencySlug?: (slug: string | null) => void;
-  fareView?: boolean;
   nightServiceView?: boolean;
-  fareOverrides?: Record<string, FareOverride>;
   sidebarLeft?: number;
   searchBarWidth?: number;
   bounds?: ViewportBounds | null;
@@ -95,7 +91,6 @@ interface SidebarControlsProps {
    * below that row instead of covering map A's settings.
    */
   compareActive?: boolean;
-  onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
   analyticsApp?: string;
@@ -144,9 +139,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   livePollingOnly,
   setLivePollingOnly,
   setSelectedAgencySlug,
-  fareView = false,
   nightServiceView = false,
-  fareOverrides = {},
   sidebarLeft,
   searchBarWidth,
   bounds = null,
@@ -155,7 +148,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   selectedRouteOutOfFilter = false,
   compareRows = null,
   compareActive = false,
-  onDirectFromStop,
   onInfoOpen,
   searchEnterRef,
   onSearchRouteHover,
@@ -366,28 +358,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .map(candidate => candidate.properties as ShapeProperties) ?? [];
     return routeListDisplay(routeFeatures, period);
   }, [nonCorridorLayers, period, currentDay]);
-
-  const suggestedFareAgencies = useMemo(() => {
-    if (!fareView) return [];
-
-    // Only show agencies loaded for the current viewport — never fall back to the
-    // global list. REM/RTL/exo have baseFare:null, so a "has baseFare" filter
-    // would drop them all and trigger the global fallback, surfacing TransLink, MBTA, etc.
-    // Dedup by name+region: multi-feed brands that still share a display name collapse to one row.
-    const loadedInView = new Set(Object.keys(nonCorridorLayers));
-    const seenNames = new Set<string>();
-    const result: Array<{ slug: string; name: string }> = [];
-
-    for (const agency of agencies) {
-      if (!agency.gtfsFares) continue;
-      if (!loadedInView.has(agency.slug)) continue;
-      if (seenNames.has(agency.name)) continue;
-      seenNames.add(agency.name);
-      result.push({ slug: agency.slug, name: agency.name });
-    }
-
-    return result;
-  }, [agencies, fareView, nonCorridorLayers]);
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -865,19 +835,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return details;
   }, [disambiguationRoutes, nonCorridorLayers]);
 
-  const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0 || (fareView && suggestedFareAgencies.length > 0);
-
-  // In Fares mode: show fare info card for matched agencies
-  const fareViewMatchedAgencies = fareView && query !== ''
-    ? suggestedFareAgencies
-        .map(a => ({ ...a, agencyData: agencies.find(ag => ag.slug === a.slug) }))
-        .filter(a => a.name.toLowerCase().includes(query.toLowerCase()) || (a.agencyData?.region || '').toLowerCase().includes(query.toLowerCase()))
-    : [];
+  const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0;
 
   const matchedAgencyGroups = useMemo(() => {
-    if (!query.trim() || fareView || !searchFocused) return [];
+    if (!query.trim() || !searchFocused) return [];
     return searchAgencyGroups(agencies, query, bounds, new Set(Object.keys(layers)));
-  }, [agencies, query, bounds, fareView, layers, searchFocused]);
+  }, [agencies, query, bounds, layers, searchFocused]);
 
   const agencySearchDisplay = useMemo(
     () => prepareAgencyGroupsForDisplay(
@@ -967,7 +930,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const searchPanelActive = searchFocused && query !== '';
   const hasSearchResults = searchPanelActive && (
-    fareView ? fareViewMatchedAgencies.length > 0 : (searchMatchResults !== null || searchStopMatchResults !== null)
+    searchMatchResults !== null || searchStopMatchResults !== null
   );
 
   const panelStop = currentStop && !searchOverlayHidesPanel(searchFocused, query);
@@ -1028,9 +991,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       ? (currentRoute as any).agencySlug as string | undefined
       : undefined;
   const routeAgency = routeSlug ? agencies.find(a => a.slug === routeSlug) : undefined;
-  const routeBaseFare = fareView && routeSlug
-    ? (((currentRoute as any).baseFare as number | undefined) ?? fareOverrides[routeSlug]?.adult ?? routeAgency?.fare ?? null)
-    : null;
   const routeIsStale = (() => {
     return isFeedExpired(routeAgency ? effectiveFeedExpiry(routeAgency) : null);
   })();
@@ -1062,11 +1022,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           recentSearches={recentSearches}
           clearRecentSearches={clearRecentSearches}
           setQuery={setQuery}
-          suggestedFareAgencies={suggestedFareAgencies}
           recentlyViewed={recentlyViewed}
           suggestedRoutes={suggestedRoutes}
           pickRoute={pickRoute}
-          fareView={fareView}
           displayForRouteKey={displayForRouteKey}
         />
       )}
@@ -1112,60 +1070,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             liveStop={currentStop.agencySlug && currentStop.stopId
               ? { slug: currentStop.agencySlug as string, stopId: currentStop.stopId as string, lat: currentStop.lat as number, lon: currentStop.lon as number }
               : null}
-            onDirectFromStop={onDirectFromStop ? () => {
-              const stopName = currentStop.stopName as string;
-              const agencySlug = currentStop.agencySlug as string;
-              const agency = agencies.find(a => a.slug === agencySlug);
-              onDirectFromStop({
-                stopId: currentStop.stopId as string,
-                name: stopName,
-                displayName: normalizeStopName(stopName),
-                lat: currentStop.lat as number,
-                lon: currentStop.lon as number,
-                agencySlug,
-                agencyName: agency?.name ?? agencySlug,
-              });
-            } : undefined}
           />
         )}
 
         {panelRoute && (
-          fareView ? (
-              <>
-                <div className="flex items-start gap-2 mb-3">
-                  <button
-                    onClick={() => setSelectedRoute(null)}
-                    className="p-0.5 -ml-0.5 mt-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-                    aria-label="Back to route list"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                  </button>
-                  <div className="flex-1 mt-2">
-                    <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
-                      {routeAgency?.name ?? routeSlug}
-                    </h3>
-                    {routeAgency?.region && (
-                      <span className="text-[9px] font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5 mt-1 inline-block">
-                        {routeAgency.region}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center justify-between px-3 py-2.5 bg-[var(--bg-app)] rounded-xl">
-                  <span className="text-[10px] font-bold text-[var(--text-dim)]">Base adult fare</span>
-                  {routeBaseFare != null ? (
-                    <span
-                      className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
-                      style={{ background: getFareColor(routeBaseFare, colorMode) }}
-                    >
-                      ${routeBaseFare.toFixed(2)}
-                    </span>
-                  ) : (
-                    <span className="text-xs text-[var(--text-dim)]">fare varies</span>
-                  )}
-                </div>
-              </>
-            ) : (
               <>
                 <RouteCardHeadway
                   currentRoute={currentRoute}
@@ -1191,35 +1099,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   onInfoOpen={onInfoOpen}
                 />
               </>
-            )
         )}
 
-        {searchPanelActive && fareView && fareViewMatchedAgencies.length > 0 && (
-          <div className="mb-4 flex flex-col gap-2">
-            {fareViewMatchedAgencies.map(({ slug, name, agencyData }) => {
-              const baseFare = fareOverrides[slug]?.adult ?? agencyData?.fare ?? null;
-              return (
-                <div key={slug} className="border border-[var(--border-primary)] rounded-xl overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3">
-                    <span className="text-sm font-bold text-[var(--text-primary)]">{name}</span>
-                    {baseFare != null ? (
-                      <span
-                        className="text-sm font-black px-2 py-0.5 rounded-full text-white"
-                        style={{ background: getFareColor(baseFare, colorMode) }}
-                      >
-                        ${baseFare.toFixed(2)}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-[var(--text-dim)]">fare varies</span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {searchPanelActive && !fareView && (searchMatchResults !== null || searchStopMatchResults !== null) && (
+        {searchPanelActive && (searchMatchResults !== null || searchStopMatchResults !== null) && (
           <SearchResultsList
             query={query}
             displayAgencyGroups={displayAgencyGroups}

@@ -30,7 +30,7 @@ describe('What\'s new link', () => {
     render(<MapAttribution whatsNewEnabled />);
     const [major, minor] = version.split('.');
     const button = screen.getByRole('button', { name: `v${major}.${minor} · What's new` });
-    expect(button.className).toContain('text-[10px]');
+    expect(button.className).toContain('text-xs');
     const pills = [...button.parentElement!.children].map(el => el.textContent);
     expect(pills.indexOf(button.textContent)).toBeLessThan(pills.indexOf('Feedback'));
     fireEvent.click(button);
@@ -53,7 +53,7 @@ describe('What\'s new flag', () => {
 describe('WhatsNewPanel', () => {
   it('shows only the latest version and links to the full changelog', () => {
     render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => null} />);
-    expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(['App version 3.3 · October 2026']);
+    expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(['Version 3.3 · October 2026']);
     expect(screen.getByRole('link', { name: 'See all changes' })).toHaveAttribute('href', '/changelog');
   });
 
@@ -61,7 +61,7 @@ describe('WhatsNewPanel', () => {
     const { unmount } = render(
       <WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => null} />,
     );
-    expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Public change one.', 'Beta change.Beta', 'Public change two.']);
+    expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Public change one.', 'Beta change. Beta', 'Public change two.']);
     unmount();
 
     render(<WhatsNewPanel onClose={() => {}} includeBeta={false} releases={RELEASES} loadRelease={async () => null} />);
@@ -70,7 +70,7 @@ describe('WhatsNewPanel', () => {
 
   it('shows the data date from the release manifest', async () => {
     render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => ({ generatedAt: '2026-10-09T05:21:01.950Z' })} />);
-    expect(await screen.findByText('Map data updated Oct 9, 2026')).toBeInTheDocument();
+    expect(await screen.findByText(/map data updated Oct 9, 2026/)).toBeInTheDocument();
   });
 
   it.each([

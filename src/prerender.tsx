@@ -7,11 +7,15 @@ import type { ReactElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
+import type { AgencyPageData } from '../shared/agencyPages';
 import type { SeoFlags } from '../shared/seo';
 import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
 import LegalPage from './LegalPage';
 import ResearchPage from './apps/ResearchPage';
+import AgencyPage from './AgencyPage';
+import AreaPage from './AreaPage';
+import type { AreaPageData } from '../shared/areaPages';
 
 const PAGES: Record<string, () => ReactElement> = {
   '/about': () => <AboutPage />,
@@ -28,7 +32,7 @@ export const BUILD_FLAGS: SeoFlags = {
   whatsNew: FEATURES.whatsNew,
   live: FEATURES.live,
   history: FEATURES.history,
-  corridors: FEATURES.corridors,
+  agencyPages: FEATURES.agencyPages,
 };
 
 export function renderPage(path: string): string {
@@ -38,3 +42,11 @@ export function renderPage(path: string): string {
 }
 
 export const PRERENDER_PATHS = Object.keys(PAGES);
+
+export function renderAgencyPage(data: AgencyPageData): string {
+  return renderToString(<StaticRouter location={`/agency/${data.agency.slug}`}><AgencyPage data={data} /></StaticRouter>);
+}
+
+export function renderAreaPage(data: AreaPageData): string {
+  return renderToString(<StaticRouter location={`/area/${data.area.slug}`}><AreaPage data={data} /></StaticRouter>);
+}

@@ -1,5 +1,6 @@
 import { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cleanHeadsign';
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
+import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';
 export { cleanHeadsign, formatRemDisplay, getRouteLabel };
 
 /**
@@ -61,21 +62,16 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
 // Articles/prepositions that stay lowercase unless they open the string
 const KEEP_LOWER = /^(of|to|the|a|an|and|or|in|at|by|for|via)$/i;
 
+/**
+ * Headway wording lives in headwayText.ts. These two keep the older names working:
+ * fmtHeadway is "about every N min" (or the bare "N min" with style 'compact').
+ */
 export function fmtHeadway(minutes: number | null | undefined, style: 'narrative' | 'compact' = 'narrative'): string {
-  if (minutes == null) return style === 'compact' ? '—' : '—';
-  if (style === 'compact') {
-    if (minutes >= 60) return `${Math.round(minutes / 60)}h`;
-    return `${Math.round(minutes)} min`;
-  }
-  if (minutes <= 60) return `about every ${minutes} min`;
-  const hrs = Math.round(minutes / 30) / 2;
-  return `about every ${hrs}h`;
+  return style === 'compact' ? headwayAmount(minutes) : headwayAbout(minutes);
 }
 
-// "about every 6–12 min" when both fit in minutes; fall back to two separate strings otherwise.
 export function fmtHeadwayRange(low: number, high: number): string {
-  if (low <= 60 && high <= 60) return `about every ${low}–${high} min`;
-  return `${fmtHeadway(low)} – ${fmtHeadway(high)}`;
+  return headwayAboutRange(low, high);
 }
 
 export function titleCase(s: string): string {
@@ -128,6 +124,8 @@ export function titleCase(s: string): string {
       return TRANSIT_ACRONYMS[m] ?? TRANSIT_ACRONYMS[m.toLowerCase()] ?? m;
     })
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
+    // Mc surnames in all-caps feeds: "MCKNIGHT" -> "McKnight"
+    .replace(/\bMc(\p{L})/gu, (_, c: string) => 'Mc' + c.toUpperCase())
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");
 }

@@ -1,0 +1,26 @@
+{
+  "slug": "augusta",
+  "name": "Augusta",
+  "type": "MSA",
+  "officialName": "Augusta-Richmond County, GA-SC",
+  "country": "United States",
+  "cities": [
+    "Augusta",
+    "Richmond County"
+  ],
+  "bbox": [
+    32.80370699999105,
+    -82.64970499987174,
+    33.984195000244235,
+    -81.18723800024875
+  ],
+  "center": [
+    33.39395100011764,
+    -81.91847150006025
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "augusta"
+  ],
+  "page": false
+}

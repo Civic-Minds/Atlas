@@ -1,0 +1,28 @@
+{
+  "slug": "san-diego",
+  "name": "San Diego",
+  "type": "MSA",
+  "officialName": "San Diego-Chula Vista-Carlsbad, CA",
+  "country": "United States",
+  "cities": [
+    "San Diego",
+    "Chula Vista",
+    "Carlsbad"
+  ],
+  "bbox": [
+    32.52950800017594,
+    -117.61108100030137,
+    33.50537899972443,
+    -116.08087999968474
+  ],
+  "center": [
+    33.01744349995018,
+    -116.84598049999306
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "nctd",
+    "sdmts"
+  ],
+  "page": true
+}

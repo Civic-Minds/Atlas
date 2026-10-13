@@ -1,0 +1,25 @@
+{
+  "slug": "springfield-ma",
+  "name": "Springfield",
+  "type": "MSA",
+  "officialName": "Springfield, MA",
+  "country": "United States",
+  "cities": [
+    "Springfield"
+  ],
+  "bbox": [
+    41.997685000102855,
+    -73.07508600004785,
+    42.3438599999439,
+    -72.1350040004424
+  ],
+  "center": [
+    42.170772500023375,
+    -72.60504500024513
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "pvta"
+  ],
+  "page": false
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "racine",
+  "name": "Racine",
+  "type": "MSA",
+  "officialName": "Racine-Mount Pleasant, WI",
+  "country": "United States",
+  "cities": [
+    "Racine",
+    "Mount Pleasant"
+  ],
+  "bbox": [
+    42.610817000156224,
+    -88.30805999962405,
+    42.843609000232796,
+    -87.04389899963049
+  ],
+  "center": [
+    42.72721300019451,
+    -87.67597949962726
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "racine"
+  ],
+  "page": false
+}
