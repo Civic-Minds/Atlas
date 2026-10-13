@@ -17,7 +17,7 @@
  */
 import { AREA_INDEX, AREA_PARAM, areaMatchingSelection, lookupArea, type AreaIndex } from '../../shared/areaIndex';
 import { FEATURES } from '../../shared/config';
-import { FILTER_MODES, ON_DEMAND_MODE } from '../../shared/modes';
+import { filterModeOptions } from '../../shared/modes';
 
 export const AGENCY_URL_MAX_SLUGS = 60;
 export const AGENCIES_PARAM = 'agencies';
@@ -26,9 +26,7 @@ export const MODES_PARAM = 'm';
 const SEP = '.';
 
 /** Modes offered in the filter UI. On-demand is internal-only. */
-export const AVAILABLE_FILTER_MODES: ReadonlyArray<{ id: number; label: string }> = FEATURES.onDemand
-  ? [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }]
-  : FILTER_MODES;
+export const AVAILABLE_FILTER_MODES: ReadonlyArray<{ id: number; label: string }> = filterModeOptions(FEATURES.onDemand);
 
 export type AgencyUrlRule =
   | { kind: 'include'; slugs: ReadonlySet<string> }

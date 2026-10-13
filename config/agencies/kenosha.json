@@ -47,5 +47,13 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://kenoshatransit.com/gtfs"
+  "lastFeedSourceUrl": "https://kenoshatransit.com/gtfs",
+  "modeOverrides": [
+    {
+      "routeType": 3,
+      "routeShortName": "SC",
+      "mode": 0,
+      "reason": "Kenosha Streetcar is a streetcar, published as route_type 3 (bus)"
+    }
+  ]
 }

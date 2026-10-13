@@ -5,6 +5,7 @@
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
 import { headwayEvery } from './headwayText';
+import { modeLabel, sortModes } from './modes';
 import { areaRegionName, areaRegionTitle } from './areaRegions';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
@@ -16,7 +17,7 @@ export const MAX_NEARBY = 8;
 export interface AgencyPageRoute {
   name: string;
   longName: string | null;
-  /** effectiveMode(): 0 streetcar, 1 subway, 2 rail, 3 bus, 4 ferry, 100 light rail, ... */
+  /** effectiveMode() (shared/modes.ts): 0 streetcar, 1 subway/metro, 2 commuter rail, 3 bus, 4 ferry, 100 light rail, ... */
   mode: number;
   /** Weekday headway in minutes (worst direction, like the map filter); null with no sustained service. */
   midday: number | null;
@@ -187,24 +188,7 @@ export function agencyPageH1(a: Pick<AgencyPageSummary, 'displayName'>): string 
   return m ? `${m[1]} · ${m[2]}` : a.displayName;
 }
 
-const MODE_LABELS: Record<number, [singular: string, plural: string]> = {
-  1: ['Subway', 'Subway'],
-  100: ['Light rail', 'Light rail'],
-  0: ['Streetcar', 'Streetcar'],
-  2: ['Rail', 'Rail'],
-  3: ['Bus', 'Bus'],
-  11: ['Trolleybus', 'Trolleybus'],
-  4: ['Ferry', 'Ferry'],
-  12: ['Monorail', 'Monorail'],
-  5: ['Cable car', 'Cable car'],
-  6: ['Gondola', 'Gondola'],
-  7: ['Funicular', 'Funicular'],
-};
-const MODE_ORDER = [1, 100, 0, 2, 12, 3, 11, 4, 5, 6, 7];
-
-export function modeLabel(mode: number): string {
-  return MODE_LABELS[mode]?.[0] ?? 'Other';
-}
+export { modeLabel };
 
 /** Weekday-midday frequency bands, best first; the last one is routes with no regular midday service. */
 export const FREQUENCY_BANDS = [
@@ -233,18 +217,10 @@ export interface AgencyPageStats {
   byMode: Array<{ mode: number; label: string; routes: AgencyPageRoute[] }>;
 }
 
-function modeOrder(modes: Iterable<number>): number[] {
-  return [...new Set(modes)].sort((x, y) => {
-    const ix = MODE_ORDER.indexOf(x);
-    const iy = MODE_ORDER.indexOf(y);
-    return (ix < 0 ? 99 : ix) - (iy < 0 ? 99 : iy) || x - y;
-  });
-}
-
 export function agencyStats(a: Pick<AgencyPageSummary, 'routes'>): AgencyPageStats {
   return {
     totalRoutes: a.routes.length,
-    byMode: modeOrder(a.routes.map(r => r.mode)).map(mode => ({ mode, label: modeLabel(mode), routes: a.routes.filter(r => r.mode === mode) })),
+    byMode: sortModes(new Set(a.routes.map(r => r.mode)), mode => mode).map(mode => ({ mode, label: modeLabel(mode), routes: a.routes.filter(r => r.mode === mode) })),
   };
 }
 

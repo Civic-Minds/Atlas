@@ -9,7 +9,7 @@ import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
 import { agencyDisplayParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
-import { FILTER_MODES, ON_DEMAND_MODE } from '../../../shared/modes';
+import { filterModeOptions } from '../../../shared/modes';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
@@ -51,9 +51,7 @@ interface FilterChipsProps {
   groupLabel?: string;
 }
 
-const MODES = FEATURES.onDemand
-  ? [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }]
-  : FILTER_MODES;
+const MODES = filterModeOptions(FEATURES.onDemand);
 
 export function getNowPeriod(): TimePeriod {
   return periodKeyForHour(new Date().getHours()) ?? 'all';
@@ -339,8 +337,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         </div>
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
-          {openChip === 'mode' && <div className={`${PANEL} w-36`}>
-            {MODES.map(mode => <button key={mode.id} onClick={() => toggleMode(mode.id)} className={researchButton(modeIsActive(mode.id))}>{mode.label}</button>)}
+          {openChip === 'mode' && <div className={`${PANEL} w-56`}>
+            <div className="flex flex-wrap gap-1">
+              {MODES.map(mode => <Pill key={mode.id} size="segment" onClick={() => toggleMode(mode.id)} selected={modeIsActive(mode.id)}>{mode.label}</Pill>)}
+            </div>
           </div>}
         </div>
       </div>
@@ -455,17 +455,14 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <Dot show={selectedModes.size > 0} />
       </button>
       {openChip === 'mode' && (
-        <div className={`${PANEL} w-36`}>
-          {MODES.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => toggleMode(m.id)}
-              className={rowBtn(modeIsActive(m.id))}
-              aria-pressed={modeIsActive(m.id)}
-            >
-              {m.label}
-            </button>
-          ))}
+        <div className={`${PANEL} w-56`}>
+          <div className="flex flex-wrap gap-1">
+            {MODES.map((m) => (
+              <Pill key={m.id} size="segment" onClick={() => toggleMode(m.id)} selected={modeIsActive(m.id)}>
+                {m.label}
+              </Pill>
+            ))}
+          </div>
         </div>
       )}
     </div>

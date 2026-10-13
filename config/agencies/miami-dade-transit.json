@@ -46,5 +46,13 @@
     "checkedAt": "2026-09-17"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
+  "modeOverrides": [
+    {
+      "routeType": 2,
+      "routeShortName": "2600",
+      "mode": 1,
+      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
+    }
+  ]
 }

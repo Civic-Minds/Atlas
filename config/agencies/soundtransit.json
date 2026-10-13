@@ -55,5 +55,25 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip"
+  "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "1 Line",
+      "mode": 100,
+      "reason": "Link (1 Line, 2 Line, T Line) is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "2 Line",
+      "mode": 100,
+      "reason": "Link (1 Line, 2 Line, T Line) is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "T Line",
+      "mode": 100,
+      "reason": "Link (1 Line, 2 Line, T Line) is light rail, published as route_type 0 (tram)"
+    }
+  ]
 }

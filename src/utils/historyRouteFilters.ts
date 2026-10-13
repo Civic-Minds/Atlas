@@ -1,5 +1,4 @@
-import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../shared/modes';
-import { titleCase } from './format';
+import { effectiveMode, knownModeLabel, sortModes } from '../../shared/modes';
 
 export type HistoryRouteFilterKey = `mode:${number}` | 'subtype:brt' | 'subtype:express';
 
@@ -19,9 +18,7 @@ export interface HistoryRouteFilter {
 
 export function historyRouteModeLabel(route: HistoryRouteFilterRoute): string | null {
   const mode = effectiveMode(route);
-  if (mode === VIRTUAL_LRT_MODE) return 'LRT';
-  const label = GTFS_RAIL_MODE_LABELS[mode];
-  return label ? titleCase(label) : null;
+  return mode === 3 ? null : knownModeLabel(mode);
 }
 
 export function buildHistoryRouteFilters(routes: HistoryRouteFilterRoute[]): HistoryRouteFilter[] {
@@ -36,7 +33,7 @@ export function buildHistoryRouteFilters(routes: HistoryRouteFilterRoute[]): His
     modes.set(mode, { label, count: (current?.count ?? 0) + 1 });
   }
 
-  for (const [mode, value] of [...modes.entries()].sort((a, b) => b[1].count - a[1].count)) {
+  for (const [mode, value] of sortModes(modes.entries(), ([m]) => m)) {
     filters.push({ key: `mode:${mode}`, label: value.label, count: value.count });
   }
 

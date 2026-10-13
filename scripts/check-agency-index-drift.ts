@@ -14,7 +14,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { CATALOG_MODES, generateAgencyCatalog, generateAgencyIndex } from './agencyIndexGeneration.js';
+import { CATALOG_MODES, generateAgencyCatalog, generateAgencyIndex, generateModeOverrides } from './agencyIndexGeneration.js';
 import { publicAgenciesExcludedFromRelease } from '../pipeline/releaseGuard.js';
 
 const root = resolve(import.meta.dirname, '..');
@@ -46,6 +46,11 @@ function describeIndexDrift(committed: string): string[] {
 }
 
 const drifted: string[] = [];
+const modeOverridesPath = resolve(root, 'shared/data/mode-overrides.json');
+if (!existsSync(modeOverridesPath) || readFileSync(modeOverridesPath, 'utf8') !== generateModeOverrides(index.agencies).contents) {
+  console.error('shared/data/mode-overrides.json is out of date with config/agencies modeOverrides — run npm run build:agency-index');
+  process.exit(1);
+}
 for (const [name, contents] of expected) {
   const path = resolve(dataDir, name);
   const committed = existsSync(path) ? readFileSync(path, 'utf8') : null;
