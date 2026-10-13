@@ -31,7 +31,5 @@
   "feedRefreshErrorAt": "20261012",
   "feedRefreshRetryCount": 3,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip",
-  "hiddenInProduction": true,
-  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
+  "lastFeedSourceUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip"
 }

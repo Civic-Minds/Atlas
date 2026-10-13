@@ -15065,9 +15065,7 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2426/mdb-2426-202504011416/mdb-2426-202504011416.zip",
-      "hiddenInProduction": true,
-      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2426/mdb-2426-202504011416/mdb-2426-202504011416.zip"
     },
     {
       "slug": "omniride",
@@ -16684,9 +16682,7 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-335/latest.zip",
-      "hiddenInProduction": true,
-      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-335/latest.zip"
     },
     {
       "slug": "rts",
@@ -18747,9 +18743,7 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip",
-      "hiddenInProduction": true,
-      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
+      "lastFeedSourceUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip"
     },
     {
       "slug": "texarkana",
@@ -20276,9 +20270,7 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
-      "hiddenInProduction": true,
-      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip"
     },
     {
       "slug": "yellowknife",
@@ -21569,9 +21561,7 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip",
-      "hiddenInProduction": true,
-      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
+      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip"
     },
     {
       "slug": "rapid-city",
