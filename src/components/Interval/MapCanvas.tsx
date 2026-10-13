@@ -325,6 +325,12 @@ interface MapCanvasProps {
    * saved view, has no map controls or context menu, and does not expose itself for debugging.
    */
   secondary?: boolean;
+  /**
+   * Zoom, locate and export buttons. Defaults to on for the main map and off for the second map.
+   * In compare mode the second (right / bottom) map shows them instead, so they sit at the
+   * bottom right of the whole view; the cameras are synced, so one set drives both maps.
+   */
+  showMapControls?: boolean;
   /** Receives the MapLibre map once it has loaded (and null when it is removed), for camera sync. */
   onMapReady?: (map: maplibregl.Map | null) => void;
   /** On-demand agency named in the opening URL (`?ondemand=`); frames its zones when the URL has no lat/lon. */
@@ -399,6 +405,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedAgencies,
   initialMapCenter,
   secondary = false,
+  showMapControls = !secondary,
   onMapReady,
   initialOnDemandSlug = null,
   onTileLoadingChange,
@@ -2452,7 +2459,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Map controls — one stack keeps the gaps identical at every map size. */}
-      {!secondary && <div className={`absolute bottom-6 right-3 ${Z_PANEL} flex flex-col gap-2 pointer-events-auto`}>
+      {showMapControls && <div className={`absolute bottom-6 right-3 ${Z_PANEL} flex flex-col gap-2 pointer-events-auto`}>
         {exportEnabled && (
           <button
             onClick={() => setExportDialogOpen(true)}

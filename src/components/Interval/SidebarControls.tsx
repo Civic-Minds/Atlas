@@ -90,12 +90,20 @@ interface SidebarControlsProps {
   setHoveredBranch: (b: HoveredBranch | null) => void;
   selectedRouteOutOfFilter?: boolean;
   compareRows?: CompareRouteRow[] | null;
+  /**
+   * Compare mode: each map's label and controls sit in a row at the top, so the panel starts
+   * below that row instead of covering map A's settings.
+   */
+  compareActive?: boolean;
   onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
   analyticsApp?: string;
   onSearchRouteHover?: (key: string | null) => void;
 }
+
+/** Below map A's compare label and controls row (label, then a row of chips, from 68px). */
+const COMPARE_PANEL_TOP = 160;
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
   query,
@@ -139,6 +147,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setHoveredBranch,
   selectedRouteOutOfFilter = false,
   compareRows = null,
+  compareActive = false,
   onDirectFromStop,
   onInfoOpen,
   searchEnterRef,
@@ -1037,6 +1046,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+        ...(compareActive ? { top: `${COMPARE_PANEL_TOP}px`, maxHeight: `calc(100vh - ${COMPARE_PANEL_TOP + 64}px)` } : {}),
         ...(matchSearchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}
     >
