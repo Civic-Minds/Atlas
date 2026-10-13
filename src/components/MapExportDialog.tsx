@@ -143,7 +143,7 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
               type="button"
               onClick={() => setSelectedSizeId(size.id)}
               aria-pressed={selectedSizeId === size.id}
-              className={`rounded-lg px-2 py-2 text-[10px] font-black transition-colors ${selectedSizeId === size.id ? 'bg-[var(--accent-bg)] text-[var(--accent)]' : 'text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]'}`}
+              className={`rounded-lg px-2 py-2 text-[10px] font-black transition-colors ${selectedSizeId === size.id ? 'bg-[var(--control-active-bg)] text-[var(--control-active-fg)]' : 'text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]'}`}
             >
               <span className="block">{size.label}</span>
               <span className="mt-0.5 block text-[9px] font-bold opacity-75">{outputSize(size).width} × {outputSize(size).height}</span>

@@ -33,6 +33,7 @@ export default function RouteListRow({
       onClick={onClick}
       onMouseEnter={onHoverChange ? () => onHoverChange(true) : undefined}
       onMouseLeave={onHoverChange ? () => onHoverChange(false) : undefined}
+      aria-current={selected ? 'true' : undefined}
       className={`${variant === 'spaced' ? LIST_ROW_SPACED : LIST_ROW} ${stacked || subtitle ? 'items-start' : ''} ${selected ? SELECTION_ACTIVE : ''} ${className ?? ''}`}
     >
       {stacked ? (

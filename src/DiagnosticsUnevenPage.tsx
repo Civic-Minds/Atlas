@@ -175,6 +175,7 @@ export default function DiagnosticsUnevenPage() {
                   key={d}
                   type="button"
                   onClick={() => setDay(d)}
+                  aria-pressed={day === d}
                   className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
                     day === d
                       ? CONTROL_ACTIVE

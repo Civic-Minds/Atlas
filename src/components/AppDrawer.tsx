@@ -79,6 +79,7 @@ export default function AppDrawer({ activeApp, onSelect }: Props) {
               <button
                 key={app.id}
                 disabled={!app.available || isActive}
+                aria-current={isActive ? 'true' : undefined}
                 onClick={() => {
                   if (app.available && !isActive) {
                     onSelect(app.id);
@@ -88,7 +89,7 @@ export default function AppDrawer({ activeApp, onSelect }: Props) {
                 className={[
                   'w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors',
                   isActive
-                    ? 'opacity-40 cursor-default'
+                    ? 'bg-[var(--selection-active-bg)] border-l-2 border-[var(--selection-active-border)] cursor-default'
                     : app.available
                       ? 'hover:bg-[var(--bg-hover)] cursor-pointer'
                       : 'opacity-40 cursor-not-allowed',

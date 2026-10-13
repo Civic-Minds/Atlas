@@ -22,18 +22,23 @@ html {
   --bg-btn: rgba(0, 0, 0, 0.05);
   --bg-btn-hover: rgba(0, 0, 0, 0.1);
   --bg-hover: var(--bg-btn-hover);
-  --control-active-bg: var(--accent-bg);
-  --control-active-border: var(--accent-border);
-  --control-active-fg: var(--accent);
+  /* Selected / on controls are a solid accent fill with on-accent text, so they read as selected
+     in every theme. Soft tints (--accent-bg) are for hints and hovers, not selection. */
+  --control-active-bg: var(--accent);
+  --control-active-border: var(--accent);
+  --control-active-fg: var(--accent-fg);
   --control-inactive-bg: var(--bg-btn);
   --control-inactive-border: var(--border-primary);
   --control-inactive-fg: var(--text-primary);
   --control-hover-bg: var(--bg-btn-hover);
   --toggle-on-bg: var(--accent);
-  --toggle-off-bg: #d1d5db;
-  --selection-active-bg: var(--accent-bg);
-  --selection-active-border: var(--accent-border);
-  --selection-active-fg: var(--accent);
+  --toggle-off-bg: #9ca3af;
+  --toggle-knob-on: #ffffff;
+  --toggle-knob-off: #ffffff;
+  /* Selected list rows keep their text legible, so they get a clear tint plus a solid edge. */
+  --selection-active-bg: var(--accent-selected-bg);
+  --selection-active-border: var(--accent);
+  --selection-active-fg: var(--text-primary);
   --action-primary-bg: var(--accent);
   --action-primary-border: var(--accent);
   --action-primary-fg: #ffffff;
@@ -48,6 +53,8 @@ html {
   --accent: #3f3f46;
   --accent-bg: rgba(63, 63, 70, 0.08);
   --accent-border: rgba(63, 63, 70, 0.2);
+  --accent-fg: #ffffff;
+  --accent-selected-bg: rgba(63, 63, 70, 0.16);
   /* Status badges (feed quality, etc.) */
   --status-warn-bg: #fffbeb;
   --status-warn-text: #92400e;
@@ -71,13 +78,16 @@ html {
   --bg-btn-hover: rgba(255, 255, 255, 0.1);
   --bg-hover: var(--bg-btn-hover);
   --toggle-on-bg: var(--accent);
-  --toggle-off-bg: #4b5563;
+  --toggle-off-bg: #52525b;
+  --toggle-knob-on: #0a0a0a;
   --text-legend: rgba(255, 255, 255, 0.7);
   --dim-route: #334155;
   /* Accent */
   --accent: #e4e4e7;
   --accent-bg: rgba(228, 228, 231, 0.08);
   --accent-border: rgba(228, 228, 231, 0.18);
+  --accent-fg: #0a0a0a;
+  --accent-selected-bg: rgba(228, 228, 231, 0.2);
   /* Status badges (feed quality, etc.) */
   --status-warn-bg: rgba(245, 158, 11, 0.12);
   --status-warn-text: #fbbf24;
@@ -88,15 +98,15 @@ html {
 }
 
 [data-color-vision='high-contrast'] {
-  --control-active-bg: #e5e7eb;
+  --control-active-bg: #111827;
   --control-active-border: #111827;
-  --control-active-fg: #111827;
+  --control-active-fg: #ffffff;
   --control-inactive-bg: #ffffff;
   --control-inactive-border: #4b5563;
   --control-inactive-fg: #111827;
   --control-hover-bg: #f3f4f6;
   --toggle-on-bg: #111827;
-  --toggle-off-bg: #d1d5db;
+  --toggle-off-bg: #6b7280;
   --selection-active-bg: #e5e7eb;
   --selection-active-border: #111827;
   --selection-active-fg: #111827;
