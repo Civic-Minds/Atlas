@@ -21,6 +21,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **A route's line comes from its daytime pattern, not a few pre-dawn trips**: those trips had been drawn with no daytime values, like TTC 100 via Linkwood ([#740](https://github.com/Civic-Minds/Atlas/issues/740))
+- **A route's tier no longer drops for one gap in its drawn pattern**: the destination's other trips fill that gap, so Brampton 7 Kennedy South reads every 20 instead of 60 ([#728](https://github.com/Civic-Minds/Atlas/issues/728))
 - **TTC 47 Lansdowne and 63 Ossington no longer read every 2 min**: each bus was counted twice where it ends one trip and starts the next at the same stop ([#341](https://github.com/Civic-Minds/Atlas/issues/341)).
 - **Streamline Goldline in Bozeman follows its streets again**: a shape-repair step cut its out-and-back stretch on Durston and Babcock, leaving six stops off the line ([#433](https://github.com/Civic-Minds/Atlas/issues/433)).
 - **Amarillo shows all its stops**: its feed leaves times blank between timed stops, so only 41 of 293 appeared ([#753](https://github.com/Civic-Minds/Atlas/issues/753))
