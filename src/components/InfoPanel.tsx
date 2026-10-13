@@ -401,13 +401,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 </button>
               </div>
 
-              <div className="text-xs text-[var(--text-dim)] whitespace-nowrap">
+              <div className="text-xs text-[var(--text-dim)] flex flex-wrap items-center gap-x-1.5 gap-y-1">
                 <a href="/about/docs" className="hover:text-[var(--accent)] hover:underline">Documentation</a>
-                <span className="mx-1.5">·</span>
+                <span aria-hidden="true">·</span>
                 <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
-                <span className="mx-1.5">·</span>
+                <span aria-hidden="true">·</span>
                 <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy Policy</a>
-                <span className="mx-1.5">·</span>
+                <span aria-hidden="true">·</span>
                 <span>© 2026 Civic Minds.</span>
               </div>
             </div>
