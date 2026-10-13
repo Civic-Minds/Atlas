@@ -22,12 +22,12 @@ export function StatRow({ items }: { items: StatItem[] }) {
 const BAND_PHRASES = [...FREQUENCY_BANDS.map(b => b.phrase), NO_MIDDAY_PHRASE];
 /** Light to stronger tints of the accent, best frequency last-to-first; the final entry is the neutral no-service grey. */
 const BAND_FILLS = [
-  'color-mix(in srgb, var(--accent) 80%, var(--bg-app))',
-  'color-mix(in srgb, var(--accent) 64%, var(--bg-app))',
-  'color-mix(in srgb, var(--accent) 50%, var(--bg-app))',
-  'color-mix(in srgb, var(--accent) 38%, var(--bg-app))',
-  'color-mix(in srgb, var(--accent) 28%, var(--bg-app))',
-  'color-mix(in srgb, var(--accent) 20%, var(--bg-app))',
+  'color-mix(in srgb, var(--accent) 58%, var(--bg-app))',
+  'color-mix(in srgb, var(--accent) 48%, var(--bg-app))',
+  'color-mix(in srgb, var(--accent) 39%, var(--bg-app))',
+  'color-mix(in srgb, var(--accent) 31%, var(--bg-app))',
+  'color-mix(in srgb, var(--accent) 24%, var(--bg-app))',
+  'color-mix(in srgb, var(--accent) 18%, var(--bg-app))',
   'var(--control-inactive-bg)',
 ];
 
