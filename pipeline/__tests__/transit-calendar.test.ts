@@ -454,4 +454,64 @@ describe('detectReferenceDate all-singleton calendar with an ended nested servic
     expect(ref > '20260823').toBe(true);
     expect([...getActiveServiceIds(calendar, [], 'Monday', ref)]).toEqual(['Regular_Wk']);
   });
+
+});
+
+describe('getActiveServiceIds calendar_dates additions for calendar.txt services (#751)', () => {
+  // Brandon Transit: two identical weekday services, A (Mon/Thu/Fri) and B (Tue/Wed), swapped
+  // with calendar_dates. A one-day holiday service H sits a month earlier.
+  const calendar = [
+    cal('A', 'mothfr', '20261008', '20261227'),
+    cal('B', 'tuwe', '20261008', '20261227'),
+  ];
+  // Every Friday from Oct 16 to Dec 18 is swapped (A removed, B added), except Nov 27.
+  const swappedFridays = ['20261016', '20261023', '20261030', '20261106', '20261113', '20261120', '20261204', '20261211', '20261218'];
+  const calendarDates = [
+    ...swappedFridays.flatMap(d => [removed('A', d), added('B', d)]),
+    added('H', '20261012'),
+  ];
+
+  it('runs a calendar.txt service added on the checked date', () => {
+    // Reference Mon Nov 16: Friday is Nov 20, where A is removed and B added.
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Friday', '20261116')]).toEqual(['B']);
+  });
+
+  it('keeps the calendar.txt service when nothing is swapped that day', () => {
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Thursday', '20261116')]).toEqual(['A']);
+  });
+
+  it('ignores an addition on top of service that still runs that day', () => {
+    // Every Monday in the window adds a Saturday service S while A keeps running: S is an
+    // extra, not a replacement, and stays out (as before #751).
+    const extra = [cal('A', 'mothfr', '20261008', '20261227'), cal('S', 'sa', '20261008', '20261227')];
+    const mondays = ['20261019', '20261026', '20261102', '20261109', '20261116', '20261123', '20261130', '20261207'];
+    expect([...getActiveServiceIds(extra, mondays.map(d => added('S', d)), 'Monday', '20261116')]).toEqual(['A']);
+  });
+
+  it('never pools the swapped services or the one-off holiday service', () => {
+    // Every reference in the period gives exactly one of the two identical services.
+    for (const ref of ['20261019', '20261102', '20261123', '20261207']) {
+      const friday = [...getActiveServiceIds(calendar, calendarDates, 'Friday', ref)];
+      expect(friday).toHaveLength(1);
+      expect(['A', 'B']).toContain(friday[0]);
+    }
+  });
+
+  it('keeps a holiday that removes the weekday service and adds the weekend one (Bay Transit, Labor Day)', () => {
+    const cal2 = [
+      cal('WK', 'motuwethfr', '20260524', '20260907'),
+      cal('WE', 'sasu', '20260524', '20260907'),
+    ];
+    // Both periods end on Labor Day, Mon Sep 7 (no typical week after it): WK removed, WE added.
+    const cd2 = [removed('WK', '20260907'), added('WE', '20260907')];
+    const monday = [...getActiveServiceIds(cal2, cd2, 'Monday', '20260905')];
+    expect(monday).not.toContain('WE');
+  });
+
+  it('leaves a calendar_dates-only feed unchanged', () => {
+    // No calendar.txt rows: additions are read by the calendar_dates-only step, as before.
+    const fridays = ['20261016', '20261023', '20261030', '20261106', '20261113', '20261120', '20261127'];
+    const cd3 = fridays.map(d => added('F', d));
+    expect([...getActiveServiceIds([], cd3, 'Friday', '20261116')]).toEqual(['F']);
+  });
 });

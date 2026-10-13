@@ -8,6 +8,7 @@
     -122.957
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44",
+  "mergeEquivalentShapeVariantsAllModes": true,
   "lastFeedExpiry": "20261122",
   "lastFeedVersion": "202610120/20261011 21:00:00/20261012 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2583/latest.zip",
