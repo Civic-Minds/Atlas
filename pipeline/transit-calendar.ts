@@ -686,7 +686,33 @@ export function getActiveServiceIds(
         const atypical = week.atypicalDays.has(day);
         if (atypical && week.shiftDays !== 0) holidaySwap = { holiday: nearest, typical: checkDate };
         const hadActive = active.size > 0;
-        for (const id of removalsByDate.get(checkDate) ?? []) active.delete(id);
+        let removedRunning = false;
+        for (const id of removalsByDate.get(checkDate) ?? []) {
+            if (active.delete(id)) removedRunning = true;
+        }
+        // An explicit addition on the checked date for a service that has a calendar.txt row
+        // runs that day even when its own weekday flag is 0, but only as a replacement: when a
+        // service that would run that day was removed, or the day is otherwise empty. Brandon
+        // Transit swaps two identical weekday services (Mon/Thu/Fri and Tue/Wed): on a swapped
+        // Friday the Mon/Thu/Fri service is removed and the Tue/Wed one added. Only the removal
+        // was read, so the day emptied, the single-occurrence fallback picked a one-off holiday
+        // service (hourly), and real 30-minute service read as 60 (#751). Additions next to
+        // service that still runs (extra services on top) are left as before.
+        // The added service must itself be a service of this day's kind (a weekday service on
+        // a weekday, a Saturday service on Saturday, a Sunday service on Sunday). A holiday
+        // that removes the weekday service and adds the Saturday or Sunday one (Bay Transit on
+        // Labor Day, Douai in the school holidays) stays a holiday, as before.
+        const sameKindFields: (keyof GtfsCalendar)[] = day === 'Saturday' ? ['saturday']
+            : day === 'Sunday' ? ['sunday']
+            : ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+        const calendarById = new Map(calendar.map(c => [c.service_id, c]));
+        if (removedRunning || active.size === 0) {
+            for (const cd of (calendarDates ?? [])) {
+                if (cd.exception_type !== '1' || cd.date !== checkDate) continue;
+                const row = calendarById.get(cd.service_id);
+                if (row && sameKindFields.some(f => row[f] === '1')) active.add(cd.service_id);
+            }
+        }
         // The removals emptied a day whose calendar.txt service normally runs (a holiday
         // with no typical week to use instead, e.g. a one-week feed): skip the
         // single-occurrence fallback below rather than pick the holiday service.
