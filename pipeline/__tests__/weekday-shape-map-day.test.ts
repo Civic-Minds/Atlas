@@ -51,16 +51,17 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     expect(nb.tier).toBe('infrequent');
   });
 
-  it('keeps the own data of a shape that carries its day (cata-state-college VE Friday)', async () => {
+  it('draws the representative weekday\'s shape, so line and stop data agree (cata-state-college VE, #716)', async () => {
     // Real cata-state-college archive (20261213), route VE (route_id 44). Mon-Thu and
-    // Friday run different shapes; the Campus feature is drawn on the Friday shape
-    // 17786_shp, which carries 31 of the 32 Friday trips. It keeps its own shape data:
-    // reading the Mon-Thu headsign pool gave 24 at its terminal. Hand count, Wed Oct 14 and
-    // Fri Oct 16 2026: every 21 in both directions on both days.
+    // Friday run different shape ids for Campus: 17779_shp (30 trips Mon-Thu) and 17786_shp
+    // (31 Friday trips). The representative weekday is Monday, so the Campus feature is
+    // drawn on 17779_shp and its headway and stop data come from the same Mon-Thu service
+    // (midday every 24). Before #716 the Friday shape won the slot and showed 21.
     const weekday = await weekdayFeatures('cata-ve-friday-shape', 'cata-state-college', '44');
     const campus = weekday.find((p: any) => p.headsign === 'Campus');
-    expect(campus.headway).toBe(21);
-    expect(campus.worstDirectionHeadway).toBe(21);
+    expect(campus.headway).toBe(24);
+    expect(campus.headwayByPeriod.midday).toBe(24);
+    expect(campus.worstDirectionHeadway).toBe(24);
   });
 
   it('keeps the own data of a shape that runs every weekday (TTC 20, shape Monday, route Tuesday)', async () => {

@@ -895,6 +895,8 @@ export async function processGtfsBuffer(
   // Feature → the shapeId it was actually built from, so the per-stop headway
   // resolution loop below can pool departures scoped to that exact physical path.
   const featureShapeId = new Map<GeoJsonFeature, string>();
+  // Feature → whether its pattern runs on the slot's representative weekday (Weekday only).
+  const featureRepWeekday = new Map<GeoJsonFeature, { runs: boolean; carries: boolean }>();
   // Feature → its stop-map group name (routeGroupName), which differs from the displayed
   // routeShortName when the feed's short name is empty (#717).
   const featureGroupName = new Map<GeoJsonFeature, string>();
@@ -952,11 +954,37 @@ export async function processGtfsBuffer(
     const existingHasShape = existing?.geometry.type === 'LineString';
     if (existing && existingHasShape && !hasRouteShape) continue;
     const replacesMaplessWithShape = existing != null && !existingHasShape && hasRouteShape;
+    // Weekday: among patterns competing for one slot, the drawn line comes from a pattern that
+    // runs on the slot's representative weekday, so the line and its stop data describe the
+    // same service (#716: cata-state-college VE Campus drew the Friday-only shape although
+    // the route's typical weekday is Mon-Thu). Only decides between two drawn lines where
+    // one carries that day and the other does not run on it; every other case keeps the
+    // headway rule below.
+    const repWeekday = result.day === 'Weekday'
+      ? (cleanedForDedup ? representativeWeekday.headsign.get(`${groupName}::${result.dir}::${cleanedForDedup}`) : undefined)
+        ?? representativeWeekday.group.get(`${groupName}::${result.dir}`)
+      : undefined;
+    // A pattern "carries" the representative weekday when it has at least half of the slot's
+    // departures on it. A thin fragment (capmetro gives nearly every trip its own shape) is
+    // never preferred over a more frequent pattern just for running on that day.
+    const repIndex = repWeekday != null ? WEEKDAYS.indexOf(repWeekday) : -1;
+    const slotCounts = repWeekday == null ? undefined
+      : (cleanedForDedup ? weekdayCounts.headsign.get(`${groupName}::${result.dir}::${cleanedForDedup}`) : undefined)
+        ?? weekdayCounts.group.get(`${groupName}::${result.dir}`);
+    const shapeCounts = result.shapeId ? weekdayCounts.shape.get(result.shapeId) : undefined;
+    const newRunsOnRepDay = repWeekday != null && (result.daysIncluded?.includes(repWeekday) ?? false);
+    const newCarriesRepDay = newRunsOnRepDay && shapeCounts != null && slotCounts != null
+      && shapeCounts[repIndex] * 2 >= slotCounts[repIndex];
+    const bothDrawn = existing != null && existingHasShape && hasRouteShape && repWeekday != null;
+    const existingRep = bothDrawn ? featureRepWeekday.get(existing) : undefined;
+    if (bothDrawn && existingRep?.carries && !newRunsOnRepDay) continue;
+    const prefersRepDayShape = bothDrawn && !existingRep?.runs && newCarriesRepDay;
     // Otherwise skip if: new result is span (null headway) — span never beats a real tier.
     // Or if existing already has an equal or better real headway.
     if (
       existing &&
       !replacesMaplessWithShape &&
+      !prefersRepDayShape &&
       (newHeadway == null ||
        (existing.properties.headway != null &&
         (existing.properties.headway as number) <= newHeadway))
@@ -1019,6 +1047,7 @@ export async function processGtfsBuffer(
     };
     if (existing) maplessStopSequence.delete(existing);
     dedupedFeatures.set(dedupeKey, newFeature);
+    featureRepWeekday.set(newFeature, { runs: newRunsOnRepDay, carries: newCarriesRepDay });
     if (!hasRouteShape) maplessStopSequence.set(newFeature, maplessSequence);
     if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
     featureGroupName.set(newFeature, groupName);
