@@ -15,7 +15,7 @@ import {
 const PUBLIC: SeoContext = { mode: 'public', flags: {} };
 const BETA: SeoContext = {
   mode: 'beta',
-  flags: { researchApps: true, whatsNew: true, live: false, history: true, corridors: true },
+  flags: { researchApps: true, whatsNew: true, live: false, history: true },
 };
 
 describe('route metadata table', () => {
@@ -44,7 +44,7 @@ describe('route metadata table', () => {
     const main = readFileSync('src/main.tsx', 'utf8');
     const app = readFileSync('src/App.tsx', 'utf8');
     const routePaths = [...main.matchAll(/<Route path="(\/[^"*]*)"/g)].map(m => m[1])
-      .filter(p => !p.startsWith('/apps/diagnostics'));
+      .filter(p => !p.startsWith('/dev/') && p !== '/apps/night'); // /apps/night only redirects
     const appPaths = [...app.matchAll(/'(\/apps\/[a-z]+)':/g)].map(m => m[1]);
     const research = [...readFileSync('shared/config.ts', 'utf8').matchAll(/: '(\/research[^']*)'/g)].map(m => m[1]);
     const known = new Set([...SEO_ROUTES.map(r => r.path), ...UNREACHABLE_APP_PATHS]);
@@ -74,7 +74,7 @@ describe('resolveSeo', () => {
   });
 
   it('marks beta-only routes noindex in a beta build', () => {
-    for (const path of ['/apps/night', '/apps/history', '/research', '/changelog']) {
+    for (const path of ['/research/night', '/apps/history', '/research', '/changelog']) {
       const seo = resolveSeo(path, BETA);
       expect(seo.noindex).toBe(true);
       expect(seo.matchedPath).toBe(path);
@@ -88,7 +88,7 @@ describe('resolveSeo', () => {
   });
 
   it('treats a route missing from the build as the map, indexable only as the home page', () => {
-    for (const path of ['/research', '/changelog', '/apps/night', '/apps/live', '/nope']) {
+    for (const path of ['/research', '/changelog', '/research/night', '/apps/live', '/nope']) {
       const seo = resolveSeo(path, PUBLIC);
       expect(seo.matchedPath).toBe('/');
       expect(seo.canonicalUrl).toBe(`${SITE_URL}/`);
@@ -118,7 +118,7 @@ describe('head tag rewriting', () => {
   });
 
   it('adds noindex for staging builds', () => {
-    expect(applySeoToHtml(html, resolveSeo('/apps/night', BETA))).toContain('<meta name="robots" content="noindex" />');
+    expect(applySeoToHtml(html, resolveSeo('/research/night', BETA))).toContain('<meta name="robots" content="noindex" />');
   });
 
   it('fills the root and refuses a page without an empty root', () => {

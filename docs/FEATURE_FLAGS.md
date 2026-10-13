@@ -9,11 +9,12 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `LIVE_ENABLED` | Live pill, `/apps/live`, `LiveVehicles.tsx` | off | off | Live vehicle coverage is paused everywhere until the data pipeline and scope are ready. GTFS-RT Worker cron triggers are off; existing `atlas-live` objects age out under the bucket’s 30-day lifecycle — resuming Live requires restoring archiving first, not only flipping this flag. |
 | `HISTORY_ENABLED` | History control, Agency-list History filter and coverage pills, `/apps/history`, `History.tsx` | off | on | Covers a handful of cities out of the current public catalog. |
 | `CARD_CLICK_TO_FLAG_ENABLED` | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
-| `CORRIDORS_ENABLED` | `/apps/corridors`, `Corridors.tsx` | off | off | Not good enough as a feature yet (Ryan, 2026-07-28). The panel is intentionally invisible in layout (not a CSS accident) — do not “fix” positioning until the feature is ready to ship. |
 | `UNEVEN_BANNER_ENABLED` | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
 | `MOBILE_ROUTE_SHEET_ENABLED` | Route and stop cards open as a bottom sheet on phones (`SidebarControls.tsx`) | off | on (follows `beta`/`dev` mode) | New phone layout to try on real phones before replacing the floating card for everyone ([#647](https://github.com/Civic-Minds/Atlas/issues/647)). |
 | `COMPARE_MODE_ENABLED` | Compare mode: two synced maps side by side with one shared filter, each side with its own day and time (`Interval.tsx`, `CompareControl.tsx`) | off | on (follows `beta`/`dev` mode) | New feature; the second map doubles map rendering work, so it is tried on beta first. The `cday`/`cp` URL params are ignored when off. |
 | `WHATS_NEW_ENABLED` | "What's new" link in the map's bottom bar and its panel (`MapAttribution.tsx`, `WhatsNewPanel.tsx`, list in `src/data/whatsNew.ts`) | off | on (follows `beta`/`dev` mode) | New; wording and placement are tried on beta first (CIV-83). |
+| `SHARE_UTM_ENABLED` | Shared links and shared map images carry `utm` tags so analytics can count shared visits (`shared/config.ts`) | off | on (follows `beta`/`dev` mode) | Not env-driven; tried on beta until it is seen working end to end. |
+| `COLLAPSE_MODE_TABS_ENABLED` | While Live, History or Compare is on, the other top-bar mode tabs shrink to icons (`App.tsx`) | off | on (follows `beta`/`dev` mode) | Not env-driven; layout is tried on beta first. |
 | `ATLAS_MODE=preview` | Preview title and research-app visibility | off | not configured for the stable domains | Stable Preview uses the Beta project's production deployment; there is no separate Preview project or verified `preview` mode. |
 
 ## How it works
@@ -29,7 +30,7 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 
 **Why env vars, not a `const true`/`false`:** Public and Beta use the same repository, while their Vercel project environments decide which features are exposed. Configure deployment-specific values in Vercel, not in source control.
 
-`MOBILE_ROUTE_SHEET_ENABLED` and the research apps (Night Service, Frequent Service, the `/research` page) are not env flags: they follow the Atlas mode and are on in `beta` and `dev` only. All of them read through the `FEATURES` registry in `shared/config.ts`.
+`MOBILE_ROUTE_SHEET_ENABLED`, `SHARE_UTM_ENABLED`, `COLLAPSE_MODE_TABS_ENABLED` and the research apps (Night Service at `/research/night`, Frequent Service, the `/research` page) are not env flags: they follow the Atlas mode and are on in `beta` and `dev` only. All of them read through the `FEATURES` registry in `shared/config.ts`.
 
 Live is unset/false in every deployment. Do not add a beta override until the Live feature is intentionally re-enabled.
 
@@ -51,7 +52,7 @@ Live is unset/false in every deployment. Do not add a beta override until the Li
 
 Use `npm run dev:public`, `npm run dev:beta`, or `npm run dev:all` for local testing. The mode owns the deployment-level differences; the remaining feature flags are for individual features that are not tied to a deployment mode. If `VITE_ATLAS_MODE` is unset, deployed builds infer `preview`, `beta`, or `public` from the legacy flags, while Vite development infers `dev`.
 
-When running locally, open `/apps/diagnostics/performance` to see browser navigation timings, paint timings, Atlas readiness marks, the active mode, and the visible agency count. Use its reload button for a fresh measurement.
+When running locally, open `/dev/diagnostics/performance` to see browser navigation timings, paint timings, Atlas readiness marks, the active mode, and the visible agency count. Use its reload button for a fresh measurement.
 
 **Each flag gates three things**, in `src/App.tsx`:
 1. The pill/button that surfaces the feature.

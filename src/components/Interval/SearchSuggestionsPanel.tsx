@@ -4,7 +4,6 @@ import {
   FLOATING_CARD,
   PANEL_SECTION_HEAD,
   LIST_ROW,
-  LIST_ROW_PRIMARY,
   LIST_ROW_DIM,
 } from '../../styles';
 import {
@@ -39,11 +38,9 @@ interface SearchSuggestionsPanelProps {
   recentSearches: string[];
   clearRecentSearches: () => void;
   setQuery: (q: string) => void;
-  suggestedFareAgencies: Array<{ slug: string; name: string }>;
   recentlyViewed: RecentRoute[];
   suggestedRoutes: SuggestedRoute[];
   pickRoute: (key: string) => void;
-  fareView: boolean;
   displayForRouteKey: (key: string) => RouteListDisplay;
 }
 
@@ -94,11 +91,9 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
   recentSearches,
   clearRecentSearches,
   setQuery,
-  suggestedFareAgencies,
   recentlyViewed,
   suggestedRoutes,
   pickRoute,
-  fareView,
   displayForRouteKey,
 }) => {
   return (
@@ -129,33 +124,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
         </>
       )}
 
-      {fareView ? (
-        <>
-          {suggestedFareAgencies.length > 0 && (
-            <>
-              {recentSearches.length > 0 && <div className="mx-4 border-t border-[var(--border-primary)]" />}
-              <div className={PANEL_SECTION_HEAD}>
-                Suggested agencies
-              </div>
-              <div>
-                {suggestedFareAgencies.map((a) => (
-                  <button
-                    key={a.slug}
-                    onClick={() => setQuery(a.name)}
-                    className={`${LIST_ROW} border-b-0`}
-                  >
-                    <span className={LIST_ROW_PRIMARY}>{shortenAgencyName(a.name)}</span>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-          {suggestedFareAgencies.length === 0 && recentSearches.length === 0 && (
-            <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No agencies with fare data in this area.</p>
-          )}
-        </>
-      ) : (
-        <>
+      <>
           {recentlyViewed.length > 0 && (
             <>
               {recentSearches.length > 0 && <div className="mx-4 border-t border-[var(--border-primary)]" />}
@@ -210,8 +179,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
           {recentSearches.length === 0 && recentlyViewed.length === 0 && suggestedRoutes.length === 0 && (
             <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
           )}
-        </>
-      )}
+      </>
     </div>
   );
 };

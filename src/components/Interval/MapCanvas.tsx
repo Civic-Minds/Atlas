@@ -4,12 +4,11 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag, Download } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, getHeadwayTiers, getTierColor, getNightServiceColor, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../utils/colors';
+import { HEADWAY_TIERS, getHeadwayTiers, getTierColor, getNightServiceColor, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
-import { useCorridorLayer } from './map/useCorridorLayer';
 import { useHistoryLayer } from './map/useHistoryLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
@@ -45,7 +44,6 @@ import { buildRouteSortKeyExpression } from '../../utils/routeSort';
 import { fitTargetForPoints, routeFitTarget } from '../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../shared/routeGeometry';
 
-const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
 // Selected on-demand features keep their normal paint; the rest fade like routes behind a selection.
 const ON_DEMAND_FOCUS_MATCH = ['!=', ['get', ON_DEMAND_FOCUSED_PROP], false];
@@ -296,9 +294,6 @@ interface MapCanvasProps {
   } | null;
   showRouteLayers?: boolean;
   liveRoutesOnly?: boolean;
-  showCorridorBand?: boolean;
-  showCorridors?: boolean;
-  selectedCorridorFamily?: { agencySlug: string; routeIds: string[] } | null;
   hideSpan?: boolean;
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
@@ -311,7 +306,6 @@ interface MapCanvasProps {
   selectedOnDemandSlug?: string | null;
   /** Selected zone within selectedOnDemandSlug; null focuses the whole service. */
   selectedOnDemandZoneId?: string | null;
-  fareView?: boolean;
   nightServiceView?: boolean;
   nightServiceFrequency?: NightServiceFrequency;
   frequentServiceView?: boolean;
@@ -382,9 +376,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   routesForStop,
   showRouteLayers = true,
   liveRoutesOnly = false,
-  showCorridorBand = false,
-  showCorridors = false,
-  selectedCorridorFamily = null,
   hideSpan = false,
   filterToAgencies = false,
   onHistoryRouteClick,
@@ -395,7 +386,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onOnDemandZoneClick,
   selectedOnDemandSlug = null,
   selectedOnDemandZoneId = null,
-  fareView = false,
   nightServiceView = false,
   nightServiceFrequency = 60,
   frequentServiceView = false,
@@ -476,19 +466,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // filters that are on screen right now.
   const exportStateRef = useRef({
     agencies, maxHeadway, period, day, q, selectedRoute, selectedModes, colorMode, exportTitle,
-    fareView, nightServiceView, nightServiceFrequency, frequentServiceView, frequentServiceDays,
+    nightServiceView, nightServiceFrequency, frequentServiceView, frequentServiceDays,
     frequentServiceFrequency, frequentServiceWindow, liveRoutesOnly, lightMode,
   });
   exportStateRef.current = {
     agencies, maxHeadway, period, day, q, selectedRoute, selectedModes, colorMode, exportTitle,
-    fareView, nightServiceView, nightServiceFrequency, frequentServiceView, frequentServiceDays,
+    nightServiceView, nightServiceFrequency, frequentServiceView, frequentServiceDays,
     frequentServiceFrequency, frequentServiceWindow, liveRoutesOnly, lightMode,
   };
   const describeExport = useCallback((box?: MapExportBox): MapExportDetails => {
     const map = mapRef.current;
     const state = exportStateRef.current;
-    const view: MapExportView = state.fareView ? 'fares'
-      : state.nightServiceView ? 'night'
+    const view: MapExportView = state.nightServiceView ? 'night'
       : state.frequentServiceView ? 'frequent-service'
       : state.liveRoutesOnly || state.exportTitle !== 'Transit Frequency' ? 'other'
       : 'frequency';
@@ -822,7 +811,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const setDisambiguationRoutesRef = useRef(setDisambiguationRoutes);
   const setQueryRef = useRef(setQuery);
   const onHistoryRouteClickRef = useRef(onHistoryRouteClick);
-  const fareViewRef = useRef(fareView);
   const setSelectedAgencySlugRef = useRef(setSelectedAgencySlug);
   const selectedAgencySlugRef = useRef(selectedAgencySlug);
   const onOnDemandStopClickRef = useRef(onOnDemandStopClick);
@@ -986,9 +974,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           const slug = props.agencySlug as string;
           const rsn = props.routeShortName as string;
           if (slug && rsn) onHistoryRouteClickRef.current(slug, rsn);
-        } else if (fareViewRef.current && setSelectedAgencySlugRef.current) {
-          const slug = props.agencySlug as string;
-          if (slug) setSelectedAgencySlugRef.current(slug);
         } else if (uniqueRouteKeys.length > 1) {
           if (map.getZoom() < 11) {
             setDisambiguationRoutesRef.current(null);
@@ -1016,7 +1001,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     setDisambiguationRoutesRef.current = setDisambiguationRoutes;
     setQueryRef.current = setQuery;
     onHistoryRouteClickRef.current = onHistoryRouteClick;
-    fareViewRef.current = fareView;
     setSelectedAgencySlugRef.current = setSelectedAgencySlug;
     onOnDemandStopClickRef.current = onOnDemandStopClick;
     onOnDemandZoneClickRef.current = onOnDemandZoneClick;
@@ -1040,11 +1024,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const frequencySegmentOverlay = useMemo(() => {
     // nightServiceView colors routes by a boolean nightService flag, not by headway tier --
     // the #317 overlay is a frequency-filter concept and doesn't apply there.
-    if (!showRouteLayers || fareView || nightServiceView || frequentServiceView || !filteredLayers) {
+    if (!showRouteLayers || nightServiceView || frequentServiceView || !filteredLayers) {
       return { segments: [], partialMatches: [] };
     }
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
-  }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, frequentServiceView, colorMode]);
+  }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, colorMode]);
 
   const sharedHoverSegments = useMemo(
     () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day, colorMode),
@@ -1443,24 +1427,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         filter: buildHighlightFilter(highlightRoutesRef.current),
       });
 
-      // Corridor static shapes layer
-      map.addLayer({
-        id: 'corridor-shapes-layer',
-        type: 'line',
-        source: 'atlas-pmtiles',
-        'source-layer': 'corridors',
-        paint: {
-          'line-color': CORRIDOR_BAND_COLOR,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 14, 2.5, 17, 3.5],
-          'line-dasharray': [0.1, 1.4],
-          'line-opacity': 0.65
-        },
-        layout: {
-          'line-cap': 'round',
-          'line-join': 'round'
-        },
-        filter: ['==', ['get', 'agencySlug'], ''] as any
-      });
 
       // Stops points layer
       map.addLayer({
@@ -1539,26 +1505,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'line-opacity': 1,
         },
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-      });
-
-      // Corridor dynamic line layer (loaded in Corridors app)
-      map.addSource('corridor-dynamic', {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] }
-      });
-      map.addLayer({
-        id: 'corridor-dynamic-layer',
-        type: 'line',
-        source: 'corridor-dynamic',
-        paint: {
-          'line-color': ['get', 'color'],
-          'line-width': 4,
-          'line-opacity': 0.85
-        },
-        layout: {
-          'line-cap': 'round',
-          'line-join': 'round'
-        }
       });
 
       // History route shape dynamic layer (for historical period shapes, AI-162/AI-161)
@@ -2079,14 +2025,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     let routeFilter: any = null;
     if (!showRouteLayers) {
       routeFilter = ['==', ['get', 'agencySlug'], ''];
-    } else if (fareView) {
-      const hasFare = ['has', 'baseFare'];
-      const searchClause = ql
-        ? (matchedAgencySlug
-            ? ['==', ['get', 'agencySlug'], matchedAgencySlug]
-            : searchAnyField)
-        : null;
-      routeFilter = concatFilters(hasFare, searchClause);
     } else if (nightServiceView || frequentServiceView) {
       // Night Service is rendered from the loaded local GeoJSON overlay below. Keep the
       // global PMTiles route layer empty so it cannot duplicate or hide the local result.
@@ -2131,7 +2069,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // Keep the transparent hit target in sync with the route line's zoom/headway
       // visibility gate. Without this, a route with no service in the active period
       // has an invisible but clickable 18px-wide hitbox (e.g. GO 37 at midday).
-      const hitRouteFilter = (!fareView && !nightServiceView && !frequentServiceView)
+      const hitRouteFilter = (!nightServiceView && !frequentServiceView)
         ? concatFilters(
             routeFilter,
             buildZoomHeadwayGateExpression(headwayExpr),
@@ -2142,11 +2080,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }
 
     if (hasOverviewRoutes || hasRoutes || hasLocalRoutes || hasFrequentRoutes) {
-      // Apply color paint styling — fare view if requested and baseFare present, else tier
+      // Apply color paint styling: night service, frequent service, or headway tier
       let lineColorExpr: any;
-      if (fareView) {
-        lineColorExpr = buildFareColorExpression(colorMode);
-      } else if (nightServiceView) {
+      if (nightServiceView) {
         lineColorExpr = getNightServiceColor(colorMode);
       } else if (frequentServiceView) {
         lineColorExpr = '#f59e0b';
@@ -2367,7 +2303,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {
@@ -2377,8 +2313,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     resetRoutesLayerDefaultPaint(map);
   }, [selectedRoute, mapLoaded, historyOverlay, onDemandFocus]);
 
-  // Overlay layers (corridors, history, live vehicles) — extracted to hooks
-  useCorridorLayer(mapRef, mapLoaded, showCorridorBand || showCorridors, selectedCorridorFamily);
+  // Overlay layers (history, live vehicles) — extracted to hooks
   useHistoryLayer(mapRef, mapLoaded);
   // Clean up deck overlay on unmount
   useEffect(() => {

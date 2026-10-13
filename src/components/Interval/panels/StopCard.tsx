@@ -58,7 +58,6 @@ export interface StopCardProps {
   filteredStopRoutes: StopRoute[];
   period: TimePeriod;
   nearbyConnections: NearbyConnection[];
-  onDirectFromStop?: () => void;
   /** Live arrivals lookup — set when the stop belongs to a live-capable agency. */
   liveStop?: { slug: string; stopId: string; lat: number; lon: number } | null;
 }
@@ -73,7 +72,6 @@ export const StopCard: React.FC<StopCardProps> = ({
   filteredStopRoutes,
   period,
   nearbyConnections,
-  onDirectFromStop,
   liveStop,
 }) => {
   const reportRef = React.useRef<CardReportButtonHandle>(null);
@@ -131,16 +129,6 @@ export const StopCard: React.FC<StopCardProps> = ({
           />
         </div>
       </SidebarCardHeaderBlock>
-
-      {onDirectFromStop && (
-        <button
-          type="button"
-          onClick={onDirectFromStop}
-          className="mb-3 text-[10px] font-bold text-[var(--accent)] hover:opacity-80 transition-opacity text-left"
-        >
-          Corridors from here…
-        </button>
-      )}
 
       {liveStop && <LiveStopArrivals slug={liveStop.slug} stopId={liveStop.stopId} lat={liveStop.lat} lon={liveStop.lon} />}
 

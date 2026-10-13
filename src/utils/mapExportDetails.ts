@@ -6,7 +6,7 @@ import { FILTER_MODES } from '../../shared/modes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { agencyDisplayParts, formatStoredDate } from './format';
-import { getFareTiers, getHeadwayTiers, getNightServiceColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
+import { getHeadwayTiers, getNightServiceColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
 
 /** One entry in the exported image's colour key. */
 export interface MapExportKeyItem {
@@ -38,7 +38,7 @@ export interface MapExportDetails {
 /** Part of the map in CSS pixels ([[left, top], [right, bottom]]) that the image shows. */
 export type MapExportBox = [[number, number], [number, number]];
 
-export type MapExportView = 'frequency' | 'frequent-service' | 'night' | 'fares' | 'other';
+export type MapExportView = 'frequency' | 'frequent-service' | 'night' | 'other';
 
 export interface MapExportState {
   view: MapExportView;
@@ -157,8 +157,6 @@ export function keyCandidates(state: Pick<MapExportState, 'view' | 'colorMode' |
         ];
     case 'night':
       return [{ color: getNightServiceColor(state.colorMode), label: 'Night service' }];
-    case 'fares':
-      return getFareTiers(state.colorMode).map(tier => ({ color: tier.color, label: tier.label }));
     default:
       return [];
   }
@@ -326,8 +324,6 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
     if (state.query?.trim()) lines.push(`Matching “${state.query.trim()}”`);
   }
 
-  // The view name above the heading already says what the colours mean, except for fares.
-  const keyTitle = state.view === 'fares' ? 'Base fare' : undefined;
   return {
     place,
     title: place ?? viewName,
@@ -335,7 +331,6 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
     lines,
     route,
     key,
-    keyTitle,
     citation: buildExportSourceLine(samples, agencies, state.releaseGeneratedAt),
     filename: buildExportFilename(state, place),
   };

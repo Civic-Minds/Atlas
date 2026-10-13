@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { clipBetweenStopIndices, clipLinestring } from '../corridor-geometry';
+import { clipBetweenStopIndices, clipLinestring } from '../lineClip';
 
 describe('clipLinestring', () => {
   const line = [[0, 0], [1, 0], [2, 0], [3, 0]];

@@ -10,7 +10,7 @@ export const SITE_URL = 'https://www.transitatlas.fyi';
 export const SITE_NAME = 'Transit Atlas';
 export const ORG_NAME = 'Civic Minds';
 
-export type SeoGate = 'researchApps' | 'whatsNew' | 'live' | 'history' | 'corridors';
+export type SeoGate = 'researchApps' | 'whatsNew' | 'live' | 'history';
 export type SeoMode = 'public' | 'preview' | 'beta' | 'dev';
 export type SeoFlags = Partial<Record<SeoGate, boolean>>;
 
@@ -83,13 +83,6 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     includeInSitemap: true,
   },
   {
-    path: '/apps/corridors',
-    title: 'Corridors: Transit Atlas',
-    description: 'Explore transit corridors by combined frequency across agencies.',
-    indexable: false,
-    gate: 'corridors',
-  },
-  {
     path: '/apps/history',
     title: 'Service history: Transit Atlas',
     description: 'See how scheduled transit service changed over time, using dated snapshots of agency schedules.',
@@ -104,7 +97,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     gate: 'live',
   },
   {
-    path: '/apps/night',
+    path: '/research/night',
     title: 'Night service: Transit Atlas',
     description: 'Find routes with sustained scheduled service between 2am and 6am.',
     indexable: false,

@@ -19,6 +19,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Agencies with unmapped on-demand service say so on their card (beta)**: partly mapped services name the missing part, and the On-demand filter notes that coverage is still growing, so a missing zone no longer looks like no service (CIV-23).
 - **The "In view" list has state and province pills (beta)**: they match the agency list, the What's new panel labels the map data date apart from the app version and merges overlapping notes, and the What's new pill now sits before Feedback.
 
+### Changed
+
+- **Night Service moved to `/research/night`**: it now lives with the other research pages, and old `/apps/night` links redirect there with their filters kept.
+
 ### Fixed
 
 - **Re-processing an agency without a name keeps its display name**: it was being overwritten with the slug (#785).

@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { FEATURES } from '../shared/config';
+import { FEATURES, FEATURE_ROUTES } from '../shared/config';
 import SiteHeader from './components/SiteHeader';
 import SiteFooter from './components/SiteFooter';
 
@@ -56,7 +56,7 @@ export default function AboutPage() {
               <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">A source-backed look at what frequent service means across transit networks.</p>
               <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)]">Read the story <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
             </a>
-            <a href="/apps/night" className="group border-l-2 border-[var(--accent-border)] pl-4">
+            <a href={FEATURE_ROUTES.nightService} className="group border-l-2 border-[var(--accent-border)] pl-4">
               <h3 className="text-lg font-black group-hover:text-[var(--accent)]">What still runs overnight?</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Find routes with sustained scheduled service from 2am to 6am.</p>
               <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)]">Explore Night Service <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>

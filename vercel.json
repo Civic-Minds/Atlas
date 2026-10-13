@@ -68,14 +68,6 @@
       "destination": "/index.html"
     },
     {
-      "source": "/apps/corridors",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/apps/corridors/",
-      "destination": "/index.html"
-    },
-    {
       "source": "/apps/history",
       "destination": "/index.html"
     },
@@ -105,6 +97,14 @@
     },
     {
       "source": "/research/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/research/night",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/research/night/",
       "destination": "/index.html"
     },
     {

@@ -54,9 +54,3 @@ export function clipBetweenStopIndices(
     : stopPositions[toIdx];
   return clipLinestring(coords, tStart, tEnd);
 }
-
-export function formatRouteColor(routeColor: string | null | undefined, fallback = '#555555'): string {
-  if (!routeColor) return fallback;
-  const hex = routeColor.replace('#', '').trim();
-  return hex.length >= 6 ? `#${hex.slice(0, 6)}` : fallback;
-}

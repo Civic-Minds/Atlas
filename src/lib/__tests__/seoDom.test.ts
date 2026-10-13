@@ -21,7 +21,7 @@ describe('applySeoToDocument', () => {
   });
 
   it('adds noindex on a beta-only route and removes it on leaving', () => {
-    applySeoToDocument(document, resolveSeo('/apps/night', BETA));
+    applySeoToDocument(document, resolveSeo('/research/night', BETA));
     expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex');
     applySeoToDocument(document, resolveSeo('/about', PUBLIC));
     expect(document.querySelector('meta[name="robots"]')).toBeNull();
