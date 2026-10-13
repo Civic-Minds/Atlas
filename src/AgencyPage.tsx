@@ -18,6 +18,7 @@ import {
 } from '../shared/agencyPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
+import { titleCase } from './utils/format';
 import { LINK, PAGE_ACTION } from './pageStyles';
 import { FrequencyBar, StatRow, type StatItem } from './pageParts';
 import SiteFooter from './components/SiteFooter';
@@ -124,7 +125,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                   <tbody>
                     {group.routes.map(r => (
                       <tr key={`${r.name}-${r.longName ?? ''}`}>
-                        <th scope="row" className="py-1.5 pr-4 font-normal"><span className="font-black">{r.name}</span>{r.longName && r.longName !== r.name ? <span className="text-[var(--text-muted)]"> {r.longName}</span> : null}</th>
+                        <th scope="row" className="py-1.5 pr-4 font-normal"><span className="font-black">{titleCase(r.name)}</span>{r.longName && r.longName !== r.name ? <span className="text-[var(--text-muted)]"> {titleCase(r.longName)}</span> : null}</th>
                         <td className="py-1.5 pr-4">{cell('am', r)}</td>
                         <td className="py-1.5 pr-4">{cell('midday', r)}</td>
                         <td className="py-1.5 pr-4">{cell('pm', r)}</td>

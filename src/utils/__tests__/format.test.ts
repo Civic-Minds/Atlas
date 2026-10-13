@@ -93,6 +93,8 @@ describe('shortenAgencyName', () => {
 
 describe('titleCase', () => {
   it('title-cases three-letter service names while preserving short route codes', () => {
+    expect(titleCase('MCKNIGHT')).toBe('McKnight');
+    expect(titleCase('KING / B-LINE EXPRESS')).toBe('King / B-Line Express');
     expect(titleCase('RED')).toBe('Red');
     expect(titleCase('Gold')).toBe('Gold');
     expect(titleCase('GO')).toBe('GO');
