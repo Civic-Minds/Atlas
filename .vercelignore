@@ -11,4 +11,6 @@ pipeline/
 scripts/*
 !scripts/build-agency-catalog.ts
 !scripts/agencyIndexGeneration.ts
+!scripts/build-sitemap.ts
+!scripts/prerender-routes.ts
 types/

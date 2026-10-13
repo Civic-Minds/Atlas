@@ -24,7 +24,119 @@
       "destination": "https://pub-5f1c48f86b024c42a8d174a4a5dd69ca.r2.dev/:path*"
     },
     {
-      "source": "/((?!api/|@vite|@react-refresh|node_modules/|src/).*)",
+      "source": "/about",
+      "destination": "/about/index.html"
+    },
+    {
+      "source": "/about/",
+      "destination": "/about/index.html"
+    },
+    {
+      "source": "/about/docs",
+      "destination": "/about/docs/index.html"
+    },
+    {
+      "source": "/about/docs/",
+      "destination": "/about/docs/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy/index.html"
+    },
+    {
+      "source": "/privacy/",
+      "destination": "/privacy/index.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms/index.html"
+    },
+    {
+      "source": "/terms/",
+      "destination": "/terms/index.html"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/frequency",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/frequency/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/corridors",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/corridors/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/history",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/history/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/night",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/night/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/research",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/research/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/research/frequent-service",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/research/frequent-service/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/research/frequent-service/story",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/research/frequent-service/story/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/changelog",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/changelog/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/fares",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/fares/",
       "destination": "/index.html"
     }
   ]
