@@ -34,6 +34,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Siskiyou County routes now have lines on the map, once the data is republished**: the feed gives every trip its own shape, so each route was dropped for having one trip per shape; five of its six routes now draw, and the one route with a single trip each way still does not ([#492](https://github.com/Civic-Minds/Atlas/issues/492)).
 - **Re-processing an agency without a name keeps its display name**: it was being overwritten with the slug (#785).
 - **Redwood Coast Transit 20 shows its southbound route to Eureka**: its two daily trips each used their own shape, so only a stub was drawn ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
 - **Weekday shows a route's typical weekday, not its Friday timetable**: CATA VE Campus had shown Friday's every 21 instead of its usual every 24 ([#716](https://github.com/Civic-Minds/Atlas/issues/716)).
