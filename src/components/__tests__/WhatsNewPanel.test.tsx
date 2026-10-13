@@ -53,7 +53,7 @@ describe('What\'s new flag', () => {
 describe('WhatsNewPanel', () => {
   it('shows only the latest version and links to the full changelog', () => {
     render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => null} />);
-    expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(['App version 3.3 · October 2026']);
+    expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(['Version 3.3 · October 2026']);
     expect(screen.getByRole('link', { name: 'See all changes' })).toHaveAttribute('href', '/changelog');
   });
 
@@ -70,7 +70,7 @@ describe('WhatsNewPanel', () => {
 
   it('shows the data date from the release manifest', async () => {
     render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => ({ generatedAt: '2026-10-09T05:21:01.950Z' })} />);
-    expect(await screen.findByText('Map data updated Oct 9, 2026')).toBeInTheDocument();
+    expect(await screen.findByText(/map data updated Oct 9, 2026/)).toBeInTheDocument();
   });
 
   it.each([

@@ -61,14 +61,11 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
           </button>
         </div>
         <div className="overflow-y-auto custom-scrollbar px-5 py-4 space-y-4 text-xs">
-          {dataDate && (
-            <p className="pb-3 text-xs font-bold text-[var(--text-muted)]">Map data updated {dataDate}</p>
-          )}
-          {visible.map(release => (
-            <section key={release.version} aria-label={`App version ${shortVersion(release.version)}`}>
+          {visible.map((release, index) => (
+            <section key={release.version} aria-label={`Version ${shortVersion(release.version)}`}>
               <h3 className="text-xs font-black text-[var(--text-primary)]">
-                App version {shortVersion(release.version)}
-                <span className="font-semibold text-[var(--text-dim)]"> · {release.month}</span>
+                Version {shortVersion(release.version)}
+                <span className="font-semibold text-[var(--text-dim)]"> · {index === 0 && dataDate ? `map data updated ${dataDate}` : release.month}</span>
               </h3>
               <ul className="mt-2 space-y-2">
                 {release.items.map(item => (
