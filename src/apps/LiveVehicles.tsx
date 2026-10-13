@@ -68,7 +68,7 @@ function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
     <button
       type="button"
       onClick={() => onInfoOpen('agencies', { featureFilter: 'live' })}
-      className="text-[10px] font-bold text-[var(--accent)] hover:underline px-4 pb-2"
+      className="text-xs font-bold text-[var(--accent)] hover:underline px-4 pb-2"
     >
       Browse all live agencies
     </button>
@@ -453,7 +453,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               <div className="flex items-center gap-1.5 shrink-0 ml-3">
                 <span className={`${LIST_ROW_DIM} shrink-0`}>{g.vehicles.length} veh</span>
                 {statusLabel && (
-                  <span style={{ color: colors.border }} className="text-[10px] font-bold">
+                  <span style={{ color: colors.border }} className="text-xs font-bold">
                     · {statusLabel}
                   </span>
                 )}
@@ -654,7 +654,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               <>
               <div className="px-4 py-4">
                 {selectedRouteHeadwayLine && (
-                  <div className="text-[10px] font-black text-[var(--text-dim)] mb-4">
+                  <div className="text-xs font-black text-[var(--text-dim)] mb-4">
                     {selectedRouteHeadwayLine}
                   </div>
                 )}
@@ -693,12 +693,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                               {liveVehicleRowLabel(v, i, selectedRouteModeWord)}
                             </p>
                             {v.speedKmh != null && (
-                              <p className="text-[10px] font-bold text-[var(--text-dim)] mt-0.5">{v.speedKmh} km/h</p>
+                              <p className="text-xs font-bold text-[var(--text-dim)] mt-0.5">{v.speedKmh} km/h</p>
                             )}
                           </div>
                           <span
                             style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                            className={`text-[11px] font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
+                            className={`text-xs font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
                           >
                             {delayLabel(v)}
                           </span>
@@ -729,7 +729,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             ) : isLoading && totalVehicles === 0 ? (
               <div className="flex items-center justify-center gap-2 px-4 py-6">
                 <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
-                <span className="text-[10px] font-bold text-[var(--text-muted)]">Loading feed…</span>
+                <span className="text-xs font-bold text-[var(--text-muted)]">Loading feed…</span>
               </div>
             ) : hasAnyError ? (
               <div className="py-6 text-center px-4 flex flex-col items-center gap-3">
@@ -744,7 +744,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     return (
                       <div>
                         <p className="text-xs font-bold text-[var(--text-primary)]">{agencyNames[0]}</p>
-                        <p className="text-[10px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
+                        <p className="text-xs text-[var(--text-muted)] mt-0.5 leading-relaxed">
                           {message}
                           {stuck ? ' — still trying, but this has been down for a while.' : ' It will retry automatically.'}
                         </p>
@@ -754,7 +754,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   return (
                     <div>
                       <p className="text-xs font-bold text-[var(--text-primary)]">Live feeds unavailable</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5 leading-relaxed">
                         {allStuck
                           ? 'Still trying, but these have been down for a while.'
                           : "Can't reach the live feeds in this area right now. They'll retry automatically."}
@@ -769,8 +769,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               ) : (
                 <div className="py-5 px-4 flex flex-col gap-3">
                   <div className="text-center">
-                    <p className="text-[11px] font-bold text-[var(--text-primary)]">Nothing active on tracked routes</p>
-                    <p className="text-[10px] font-bold text-[var(--text-muted)] mt-1 leading-relaxed">
+                    <p className="text-xs font-bold text-[var(--text-primary)]">Nothing active on tracked routes</p>
+                    <p className="text-xs font-bold text-[var(--text-muted)] mt-1 leading-relaxed">
                       Buses appear here when they are running on a monitored route.
                     </p>
                   </div>
@@ -783,7 +783,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                         {monitoredRoutes.map(r => (
                           <span
                             key={r.key}
-                            className="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1"
+                            className="text-xs font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1"
                           >
                             {r.agencyName} {r.label}
                           </span>
@@ -797,7 +797,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             ) : (
               <>
                 {errors.length > 0 && (
-                  <div className="flex items-center gap-1.5 px-4 py-2 border-b border-[var(--border-primary)] text-[10px] font-bold text-[var(--status-caution)]">
+                  <div className="flex items-center gap-1.5 px-4 py-2 border-b border-[var(--border-primary)] text-xs font-bold text-[var(--status-caution-text)]">
                     <WifiOff className="w-3 h-3 shrink-0" />
                     <span className="truncate">
                       {Object.entries(errorBySlug)

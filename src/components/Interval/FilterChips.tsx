@@ -85,10 +85,10 @@ type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact';
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
 
 const compactOptBtn = (active: boolean) =>
-  `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
+  `h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
 
 const rowBtn = (active: boolean) =>
-  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
+  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border text-left min-w-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
 
 interface AgenciesPanelProps {
   agencies: Agency[];
@@ -155,7 +155,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           value={agencyQuery}
           onChange={e => setAgencyQuery(e.target.value)}
           placeholder="Search…"
-          className="flex-1 bg-transparent text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
+          className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
         />
       </div>
       <div className="flex gap-1 px-1 pt-1">
@@ -178,11 +178,11 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
       </div>
       <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
         {byRegion.size === 0 && (
-          <p className="px-2 py-2 text-[10px] text-[var(--text-dim)]">No agencies in view.</p>
+          <p className="px-2 py-2 text-xs text-[var(--text-dim)]">No agencies in view.</p>
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
           <div key={region}>
-            <p className="px-2 pt-2 pb-0.5 text-[10px] font-black text-[var(--text-dim)]">{region}</p>
+            <p className="px-2 pt-2 pb-0.5 text-xs font-black text-[var(--text-dim)]">{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
               const { primary, secondary } = agencyDisplayParts(g.name, g.cities, g.displayArea);
@@ -212,7 +212,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
         {!agencyQuery && (
           <button
             onClick={() => setShowAll(v => !v)}
-            className="mt-1 mb-0.5 mx-2 text-[10px] font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors text-left"
+            className="mt-1 mb-0.5 mx-2 text-xs font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors text-left"
           >
             {showAll ? '← In view only' : `All agencies (${allGroups.length}) →`}
           </button>
@@ -331,7 +331,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           {([15, 30] as const).map(value => <button key={value} onClick={() => setResearchFrequency(value)} className={compactOptBtn(researchFrequency === value)} aria-pressed={researchFrequency === value}>{headwayAmount(value)}</button>)}
         </div>
         {researchFrequency === 30 && (
-          <div className="hidden xl:flex items-center gap-2 text-[9px] font-bold text-[var(--text-muted)]" aria-label="30-minute view legend">
+          <div className="hidden xl:flex items-center gap-2 text-xs font-bold text-[var(--text-muted)]" aria-label="30-minute view legend">
             <span className="flex items-center gap-1"><span className="inline-block h-1 rounded-full" style={{ background: getTierColor('15', colorMode), width: 12 }} />{headwayTierLabel(15)}</span>
             <span className="flex items-center gap-1"><span className="inline-block h-0.5 rounded-full" style={{ background: getTierColor('30', colorMode), width: 12 }} />{headwayBandLabel(16, 30)}</span>
           </div>
@@ -417,7 +417,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               aria-pressed={period === p}
             >
               <span>{PERIOD_LABELS[p]}</span>
-              <span className="text-[9px] opacity-70 shrink-0">{formatPeriodRange(p)}</span>
+              <span className="text-xs opacity-70 shrink-0">{formatPeriodRange(p)}</span>
             </button>
           ))}
         </div>
@@ -487,7 +487,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return (
       <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label="Filters for both maps">
         <span className="h-8 px-3 flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">
-          <span className="inline-flex h-4 px-1 items-center justify-center rounded-full bg-[var(--text-primary)] text-[9px] font-black text-[var(--bg-panel)]" aria-hidden="true">A+B</span>
+          <span className="inline-flex h-4 px-1 items-center justify-center rounded-full bg-[var(--text-primary)] text-2xs font-black text-[var(--bg-panel)]" aria-hidden="true">A+B</span>
           Both maps
         </span>
         {modeChip('')}
@@ -509,7 +509,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <div className={`absolute top-10 right-0 ${FLOATING_CARD} p-3 w-72 ${PANEL_ENTER_TOP} flex flex-col gap-3`}>
             {/* Frequency */}
             <div>
-              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Frequency</p>
+              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Frequency</p>
               <div className="flex flex-wrap gap-1">
                 {HEADWAY_TIERS.map(({ max, label }) => {
                   const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
@@ -524,7 +524,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             </div>
             {/* Day */}
             <div>
-              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Day</p>
+              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Day</p>
               <div className="flex gap-1">
                 {DAY_TYPES.map(d => (
                   <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d)} aria-pressed={day === d}>
@@ -535,7 +535,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             </div>
             {/* Time */}
             <div>
-              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Time</p>
+              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Time</p>
               <div className="flex flex-wrap gap-1">
                 {PERIOD_KEYS.map(p => (
                   <button key={p} onClick={() => setPeriod(p)} className={compactOptBtn(period === p)} aria-pressed={period === p}>
@@ -546,7 +546,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             </div>
             {/* Mode */}
             <div>
-              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Mode</p>
+              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Mode</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
                   <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(modeIsActive(m.id))} aria-pressed={modeIsActive(m.id)}>

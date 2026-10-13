@@ -13,7 +13,7 @@ export function TripTimeStrip({ series, label }: { series: TripTimeSeries | null
   const STRIP_H = 16;
   return (
     <div className="mt-3" data-testid="trip-time-strip">
-      <div className="text-center text-[10px] font-bold text-[var(--text-muted)]">
+      <div className="text-center text-xs font-bold text-[var(--text-muted)]">
         {summary}
         {series.loop ? ' (one full loop)' : ''}
       </div>

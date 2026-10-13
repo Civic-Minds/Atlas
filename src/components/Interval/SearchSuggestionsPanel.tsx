@@ -105,7 +105,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
             <span>Recent searches</span>
             <button
               onClick={clearRecentSearches}
-              className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+              className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
             >
               Clear
             </button>
@@ -118,7 +118,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                 className={`${LIST_ROW} border-b-0`}
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">{s}</span>
-                <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
+                <span className="text-xs text-[var(--text-dim)] font-mono">↵</span>
               </button>
             ))}
           </div>
@@ -178,7 +178,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
             </>
           )}
           {recentSearches.length === 0 && recentlyViewed.length === 0 && suggestedRoutes.length === 0 && (
-            <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
+            <p className="text-xs text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
           )}
       </>
     </div>

@@ -91,10 +91,23 @@ export function getVehicleColors(status: 'early' | 'late' | 'on_time' | 'no_data
   return statusPalette(mode)[status];
 }
 
+/** Dark or white text, whichever reads better (WCAG contrast) on a hex background. */
+export function readableTextOn(hex: string): string {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return '#ffffff';
+  const lin = (i: number) => {
+    const c = parseInt(m[1].slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  const l = 0.2126 * lin(0) + 0.7152 * lin(2) + 0.0722 * lin(4);
+  // Contrast with white is 1.05 / (l + 0.05); with near-black (#111827, luminance ~0.009) it is (l + 0.05) / 0.059.
+  return 1.05 / (l + 0.05) >= (l + 0.05) / 0.059 ? '#ffffff' : '#111827';
+}
+
 export function getTimelineHeadwayColor(hw: number | null, mode: ColorVisionMode = 'default'): { bg: string; fg: string } {
   if (hw == null) return { bg: 'var(--bg-hover)', fg: 'var(--text-dim)' };
   const bg = headwayToTierColor(hw, mode);
-  return { bg, fg: '#fff' };
+  return { bg, fg: readableTextOn(bg) };
 }
 
 /** Flat line color for Night Service view — every visible route already passed the

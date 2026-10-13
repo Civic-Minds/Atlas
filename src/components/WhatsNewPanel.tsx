@@ -61,11 +61,11 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
         </div>
         <div className="overflow-y-auto custom-scrollbar px-5 py-4 space-y-4 text-xs">
           {dataDate && (
-            <p className="pb-3 text-[11px] font-bold text-[var(--text-muted)]">Map data updated {dataDate}</p>
+            <p className="pb-3 text-xs font-bold text-[var(--text-muted)]">Map data updated {dataDate}</p>
           )}
           {visible.map(release => (
             <section key={release.version} aria-label={`App version ${shortVersion(release.version)}`}>
-              <h3 className="text-[11px] font-black text-[var(--text-primary)]">
+              <h3 className="text-xs font-black text-[var(--text-primary)]">
                 App version {shortVersion(release.version)}
                 <span className="font-semibold text-[var(--text-dim)]"> · {release.month}</span>
               </h3>
@@ -76,7 +76,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
                     <span>
                       {item.text}
                       {item.beta && (
-                        <span className="ml-1.5 inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px text-[9px] font-bold leading-tight text-[var(--accent)] align-middle">
+                        <span className="ml-1.5 inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px text-xs font-bold leading-tight text-[var(--accent)] align-middle">
                           Beta
                         </span>
                       )}
@@ -86,7 +86,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
               </ul>
             </section>
           ))}
-          <a href="/changelog" className="block text-[11px] font-bold text-[var(--accent)] hover:underline">See all changes</a>
+          <a href="/changelog" className="block text-xs font-bold text-[var(--accent)] hover:underline">See all changes</a>
         </div>
       </div>
     </div>

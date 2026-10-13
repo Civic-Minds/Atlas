@@ -51,10 +51,10 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
 
   if (limitedHint) {
     return (
-      <div className="flex items-start gap-1.5 text-[10px]">
+      <div className="flex items-start gap-1.5 text-xs">
         <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: getTierColor(null, colorMode) }} />
         <span className="font-bold text-[var(--text-primary)] leading-snug">{label}</span>
-        <span className="ml-1.5 text-[8px] font-bold text-[var(--text-legend)] border border-[var(--border-primary)] rounded-full px-1.5 py-px whitespace-nowrap">limited</span>
+        <span className="ml-1.5 text-xs font-bold text-[var(--text-legend)] border border-[var(--border-primary)] rounded-full px-1.5 py-px whitespace-nowrap">limited</span>
       </div>
     );
   }
@@ -65,7 +65,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
       tabIndex={clickable ? 0 : undefined}
       onClick={onClick}
       onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } } : undefined}
-      className={`text-[11px] transition-opacity duration-150 rounded-lg -mx-1 px-1 py-0.5 ${faded ? 'opacity-35' : ''} ${interactive || clickable ? 'cursor-pointer' : ''} ${branchHovered ? 'bg-[var(--bg-hover)] opacity-100' : ''} ${clickable ? 'hover:text-[var(--accent)]' : ''}`}
+      className={`text-xs transition-opacity duration-150 rounded-lg -mx-1 px-1 py-0.5 ${faded ? 'opacity-35' : ''} ${interactive || clickable ? 'cursor-pointer' : ''} ${branchHovered ? 'bg-[var(--bg-hover)] opacity-100' : ''} ${clickable ? 'hover:text-[var(--accent)]' : ''}`}
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}
     >
@@ -88,7 +88,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
           </button>
         )}
         {limited && (
-          <span className="inline-flex items-center gap-1 text-[11px] font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap">
+          <span className="inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
             limited
           </span>
@@ -97,14 +97,14 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
           <HeadwayBadge headway={headway} colorHeadway={colorHeadway} live={live} suffix={headwaySuffix} label={headwayLabel} />
         )}
         {!limited && rangeText && (
-          <span className="inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-[11px] leading-snug shrink-0">
+          <span className="inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
             <span className="whitespace-nowrap">{rangeText}</span>
           </span>
         )}
       </div>
       {subLabel && (
-        <span className="text-[9px] font-bold text-[var(--text-dim)] block mt-0.5 truncate">{subLabel}</span>
+        <span className="text-xs font-bold text-[var(--text-dim)] block mt-0.5 truncate">{subLabel}</span>
       )}
     </div>
   );

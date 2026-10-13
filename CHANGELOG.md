@@ -6,6 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+### Changed
+
+- **Text is bigger and easier to read**: nothing a person has to read is below 12px any more, and the faint greys, status colours (green, red, amber) and white-on-pastel fare and timeline pills now meet WCAG AA contrast in light, dark and high-contrast modes.
+
 ### Added
 
 - **Atlas is easier to find in search**: every page now has its own title, description and address for search results, About, Docs, Privacy and Terms carry their text in the page itself, a real sitemap and robots file are published, and made-up addresses now return a proper "not found" instead of the map.

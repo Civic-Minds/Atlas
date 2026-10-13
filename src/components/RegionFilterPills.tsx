@@ -23,7 +23,7 @@ export default function RegionFilterPills({
           onClick={() => setSelectedRegions(new Set())}
           aria-pressed={selectedRegions.size === 0}
           title="Clear region filters"
-          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedRegions.size === 0 ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+          className={`px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedRegions.size === 0 ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
         >
           All
         </button>
@@ -39,7 +39,7 @@ export default function RegionFilterPills({
             return next;
           })}
           aria-pressed={selectedRegions.has(region)}
-          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedRegions.has(region) ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+          className={`px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedRegions.has(region) ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
         >
           {region}
         </button>

@@ -43,7 +43,7 @@ export default function ChangelogPage({ loadReleases = loadDataReleases }: { loa
                         <span>
                           {item.text}
                           {item.beta && (
-                            <span className="ml-2 inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px text-[10px] font-bold text-[var(--accent)] align-middle">Beta</span>
+                            <span className="ml-2 inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px text-xs font-bold text-[var(--accent)] align-middle">Beta</span>
                           )}
                         </span>
                       </li>

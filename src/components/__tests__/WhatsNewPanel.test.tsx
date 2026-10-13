@@ -30,7 +30,7 @@ describe('What\'s new link', () => {
     render(<MapAttribution whatsNewEnabled />);
     const [major, minor] = version.split('.');
     const button = screen.getByRole('button', { name: `v${major}.${minor} · What's new` });
-    expect(button.className).toContain('text-[10px]');
+    expect(button.className).toContain('text-xs');
     const pills = [...button.parentElement!.children].map(el => el.textContent);
     expect(pills.indexOf(button.textContent)).toBeLessThan(pills.indexOf('Feedback'));
     fireEvent.click(button);

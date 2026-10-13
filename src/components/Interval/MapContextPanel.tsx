@@ -56,7 +56,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
       <div className={PANEL_TITLE_BAR}>
         <div className="min-w-0 flex-1">
           <div className={PANEL_TITLE}>In view</div>
-          <div className="text-[11px] font-bold text-[var(--text-primary)]">
+          <div className="text-xs font-bold text-[var(--text-primary)]">
             {count} {count === 1 ? (mode === 'agencies' ? 'agency' : 'route') : (mode === 'agencies' ? 'agencies' : 'routes')}
           </div>
         </div>
@@ -84,7 +84,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               <span className={`${LIST_ROW_PRIMARY} min-w-0 break-words text-left`} title={agency.name}>{agency.name}</span>
             </button>
           )) : (
-            <div className="px-4 py-3 text-[10px] font-bold text-[var(--text-dim)]">No matching agencies.</div>
+            <div className="px-4 py-3 text-xs font-bold text-[var(--text-dim)]">No matching agencies.</div>
           )
         ) : (
           filteredRouteGroups.length > 0 ? filteredRouteGroups.map(group => (
@@ -105,7 +105,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               })}
             </section>
           )) : (
-            <div className="px-4 py-3 text-[10px] font-bold text-[var(--text-dim)]">No matching routes.</div>
+            <div className="px-4 py-3 text-xs font-bold text-[var(--text-dim)]">No matching routes.</div>
           )
         )}
       </div>
