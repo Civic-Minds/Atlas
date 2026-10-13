@@ -535,7 +535,7 @@ export default function App() {
           <MapIcon className="w-3.5 h-3.5 text-white" />
         </button>
 
-        {!phoneSearchExpanded && <AtlasBrand />}
+        {!phoneSearchExpanded && <AtlasBrand hideByline />}
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">

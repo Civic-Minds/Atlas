@@ -37,6 +37,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **The phone search bar shows its "Search" hint**: it was squeezed to a sliver showing only "S", so the "by Civic Minds" line under the logo is hidden on phones to give it room ([#824](https://github.com/Civic-Minds/Atlas/issues/824))
+
 - **Unknown addresses show a not-found page instead of the map**: the live site already answered them with a 404, and the app itself now does the same when it is opened or navigated to a made-up address ([#823](https://github.com/Civic-Minds/Atlas/issues/823))
 
 - **CARTA Chattanooga is no longer listed on the San Francisco area page**: its map center had been set to California, so it also sorted as a nearby agency in the wrong place ([#825](https://github.com/Civic-Minds/Atlas/issues/825))
