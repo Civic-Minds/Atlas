@@ -243,6 +243,7 @@ interface AgencyEntry {
   supplementalFeedUrls?: string[];
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastFeedExpiry?: string | null;
+  lastPeekedExpiry?: string | null;
   lastFeedVersion?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
@@ -436,6 +437,7 @@ async function refreshAgency(
     peekedExpiry,
     peekedVersion,
     lastFeedExpiry: agency.lastFeedExpiry,
+    lastPeekedExpiry: agency.lastPeekedExpiry,
     lastFeedVersion: agency.lastFeedVersion,
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
   });

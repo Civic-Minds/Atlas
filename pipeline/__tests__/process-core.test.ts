@@ -446,3 +446,33 @@ describe('processGtfsBuffer frequencies.txt expansion', () => {
     expect(line.stopHeadways).toMatchObject({ f1: 10, f2: 10, f3: 10 });
   });
 });
+
+describe('feed expiry from calendar dates (#687)', () => {
+  const ymd = (offsetDays: number) => new Date(Date.now() + offsetDays * 86_400_000).toISOString().slice(0, 10).replaceAll('-', '');
+  const run = async (feedInfoEnd: string | null, calendarEnd: string) => {
+    const zip = maplessFixtureZip({ shapedFirst: true });
+    zip.file('calendar.txt', `service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nweekday,1,1,1,1,1,0,0,${ymd(-400)},${calendarEnd}\n`);
+    if (feedInfoEnd) zip.file('feed_info.txt', `feed_publisher_name,feed_publisher_url,feed_lang,feed_end_date\nX,https://example.test,en,${feedInfoEnd}\n`);
+    return processGtfsBuffer(await zip.generateAsync({ type: 'nodebuffer' }), undefined, { slug: 'expiry-fixture' });
+  };
+
+  it('does not call a feed expired when only feed_info is stale and the calendar runs on', async () => {
+    const result = await run(ymd(-10), ymd(90));
+    expect(result.feedExpiry).toBe(ymd(-10));
+    expect(result.calendarExpiry).toBe(ymd(90));
+    expect(result.feedQuality.reasons).not.toContain('The schedule dates in this feed have passed.');
+  });
+
+  it('still marks a feed expired when both feed_info and the calendar have ended', async () => {
+    const result = await run(ymd(-10), ymd(-10));
+    expect(result.feedQuality.status).toBe('degraded');
+    expect(result.feedQuality.reasons).toContain('The schedule dates in this feed have passed.');
+  });
+
+  it('reports the calendar end for a feed without feed_info', async () => {
+    const result = await run(null, ymd(90));
+    expect(result.feedExpiry).toBeNull();
+    expect(result.calendarExpiry).toBe(ymd(90));
+    expect(result.feedQuality.reasons).not.toContain('The schedule dates in this feed have passed.');
+  });
+});

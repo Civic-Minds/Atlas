@@ -28,6 +28,7 @@ import {
 } from './r2.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
+import { recordedFeedExpiry } from './refreshMeta.js';
 import { isActiveProductionFeed, isStalePrimaryProductionFeed, type FeedAvailabilityEntry, todayUtcYmd } from '../shared/feedAvailability.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 
@@ -152,11 +153,14 @@ async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ ag
     await r2PutCurrentFeed(agency.slug, candidate.body);
   }
 
+  // Same rule as refresh: the later of feed_info's end and the capped calendar end (#687).
+  const lastFeedExpiry = recordedFeedExpiry(result.feedExpiry, result.calendarExpiry, today);
   const updated: Agency = {
     ...agency,
     center: result.center ?? agency.center,
     timezone: result.timezone ?? agency.timezone,
-    lastFeedExpiry: result.feedExpiry,
+    lastFeedExpiry,
+    lastPeekedExpiry: result.calendarExpiry,
     lastFeedVersion: result.feedVersion,
     lastRawArchiveKey: rawFeedArchiveKey(result.feedExpiry, result.feedVersion, candidate.body),
     lastRefreshedAt: todayUtcYmd(),

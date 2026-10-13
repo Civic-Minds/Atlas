@@ -196,3 +196,28 @@ describe('decideRefreshSkipUnchanged with a run-date reference (#774)', () => {
     expect(decideRefreshSkipUnchanged({ ...same, referenceDateFromRunDate: true }).skip).toBe(false);
   });
 });
+
+describe('unchanged-feed check with a placeholder calendar end (#688)', () => {
+  // bc-ferries: calendar ends 20500101, recorded expiry is capped near today + 2 years.
+  const base = { forceRefresh: false, hasSupplementals: false, feedExpired: false, peekedExpiry: '20500101', peekedVersion: null, lastFeedExpiry: '20281007', lastFeedVersion: null };
+
+  it('stamps the uncapped expiry next to the capped one', () => {
+    const agency: Record<string, unknown> = {};
+    stampFeedMeta(agency, { feedExpiry: null, feedVersion: null, peekedExpiry: '20500101', peekedVersion: null, todayYmd: '2026-10-07' });
+    expect(agency.lastFeedExpiry).toBe('20281007');
+    expect(agency.lastPeekedExpiry).toBe('20500101');
+  });
+
+  it('skips an unchanged feed whose recorded expiry was capped', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, lastPeekedExpiry: '20500101' }).skip).toBe(true);
+  });
+
+  it('still reprocesses when the placeholder date itself changes', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, lastPeekedExpiry: '20490101' }).skip).toBe(false);
+  });
+
+  it('keeps comparing against the recorded expiry for records without an uncapped one', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedExpiry: '20261231', lastFeedExpiry: '20261231' }).skip).toBe(true);
+    expect(decideRefreshSkipUnchanged(base).skip).toBe(false);
+  });
+});

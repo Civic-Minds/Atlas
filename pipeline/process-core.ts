@@ -30,6 +30,8 @@ import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-s
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
 import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
+import { effectiveFeedExpiry } from './feedFreshness.js';
+import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { isRailLikeRoute } from '../shared/modes.js';
@@ -398,6 +400,8 @@ export interface ProcessResult {
   center: [number, number] | null;
   timezone: string | null;     // agency_timezone from agency.txt (IANA name, e.g. "America/Toronto"), or null if absent
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
+  /** Latest service date across feed_info, calendar.txt and added calendar_dates; uncapped. Feed with `feedExpiry` through recordedFeedExpiry() to get the value to store. */
+  calendarExpiry: string | null;
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
@@ -2127,6 +2131,11 @@ export async function processGtfsBuffer(
   }
 
   const feedInfo = gtfs.feedInfo?.[0];
+  const calendarExpiry = effectiveFeedExpiry({
+    feedInfoEnd: feedInfo?.feed_end_date,
+    calendarEnds: gtfs.calendar?.map(calendar => calendar.end_date) ?? [],
+    calendarDates: gtfs.calendarDates,
+  });
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   // Scheduled running time (CIV-84): card data in its own top-level block of the agency JSON,
   // beside the features, so route features and map tiles are untouched.
@@ -2147,7 +2156,9 @@ export async function processGtfsBuffer(
     shapeAnomalies: gtfs.shapeAnomalies?.length ?? 0,
     routeHeadwayMismatches,
     featureCount: routeFeatures.length,
-    feedExpiry: feedInfo?.feed_end_date ?? null,
+    // Same rule as the registry's lastFeedExpiry, so a stale feed_info end date
+    // does not mark a feed whose calendar runs on as expired (#687).
+    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, new Date().toISOString().slice(0, 10)),
   });
 
   let livePollingSidecar: Record<string, any> | undefined;
@@ -2201,6 +2212,7 @@ export async function processGtfsBuffer(
     center,
     timezone,
     feedExpiry: feedInfo?.feed_end_date ?? null,
+    calendarExpiry,
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,
