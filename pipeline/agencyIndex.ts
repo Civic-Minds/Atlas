@@ -13,7 +13,7 @@ export interface AgencyIndexSourceEntry {
   slug: string;
   name: string;
   center?: [number, number];
-  region?: string;
+  region?: string | null;
   bbox?: [number, number, number, number];
   staged?: boolean;
   hiddenInProduction?: boolean;

@@ -57,7 +57,7 @@ async function auditAgency(agency: RegistryAgency): Promise<AuditResult> {
     const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
     // Shape repair is intentionally audited separately: grouping every shape in
     // all 466 feeds makes this read-only inventory unnecessarily expensive.
-    const gtfs = await parseGtfsZip(arrayBuffer, undefined, { skipShapes: true, skipOptionalFiles: true });
+    const gtfs = await parseGtfsZip(arrayBuffer);
     const fullValidation = validateGtfs(gtfs, agency.name ?? agency.slug);
     // The parser deliberately omitted shapes for this inventory pass, so do not
     // report the synthetic "shapes.txt missing" warning it would create.
