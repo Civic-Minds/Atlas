@@ -1,7 +1,7 @@
-import type { HTMLAttributes } from 'react';
+import type { ComponentProps, HTMLAttributes } from 'react';
 import { FLOATING_CARD, PANEL_BODY, PANEL_ENTER, PANEL_SIDEBAR, PANEL_TITLE_BAR, SIDEBAR_PANEL_WIDTH } from '../../styles';
 
-interface PanelProps extends HTMLAttributes<HTMLDivElement> {
+interface PanelProps extends ComponentProps<'div'> {
   /** Anchor below the search bar on the left, at the shared sidebar width (needs --sidebar-left). */
   sidebar?: boolean;
   /** Play the shared entrance animation. */

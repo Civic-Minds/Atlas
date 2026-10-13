@@ -11,6 +11,8 @@ const VARIANTS = {
 } as const;
 
 interface ListRowProps extends HTMLAttributes<HTMLElement> {
+  /** Only meaningful when rendered as a button. */
+  disabled?: boolean;
   variant?: keyof typeof VARIANTS;
   /** Marks the row as the current one (selected tint plus aria-current). */
   selected?: boolean;

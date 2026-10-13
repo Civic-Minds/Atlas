@@ -7,7 +7,9 @@ import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
+import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import Panel from '../ui/Panel';
+import Pill from '../ui/Pill';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { agencyDisplayParts, getRouteLabel, shouldHideNumericRouteShortName, titleCase } from '../../utils/format';
@@ -408,10 +410,12 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
     const runningNote = onDemandRunningNote(zone.availability, day, period);
     return (
-      <div
+      <Panel
         ref={ref}
         data-report-anchor="true"
-        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+        sidebar
+        enter
+        className="max-h-[calc(100vh-104px)]"
         style={{
           '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
           ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
@@ -475,15 +479,17 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             </div>
           )}
         </div>
-      </div>
+      </Panel>
     );
   }
 
   return (
-    <div
+    <Panel
       ref={ref}
       data-report-anchor="true"
-      className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+      sidebar
+      enter
+      className="max-h-[calc(100vh-104px)]"
       style={{
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
         ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
@@ -563,18 +569,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               {routeFilters.map(f => {
                 const on = activeFilter === f.key;
                 return (
-                  <button
+                  <Pill
                     key={f.key}
-                    type="button"
                     onClick={() => setActiveFilter(on ? null : f.key)}
-                    aria-pressed={on}
-                    className={`text-xs font-bold px-2 py-0.5 rounded-full border transition-colors ${
-                      on ? CONTROL_ACTIVE : CONTROL_INACTIVE
-                    }`}
+                    selected={on}
                   >
                     {f.label}
                     <span className={on ? 'opacity-80' : 'text-[var(--text-dim)]'}> {f.count}</span>
-                  </button>
+                  </Pill>
                 );
               })}
             </div>
@@ -679,6 +681,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           />
         )}
       </div>
-    </div>
+    </Panel>
   );
 });
