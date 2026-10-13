@@ -13,6 +13,7 @@ import { injectSpeedInsights } from '@vercel/speed-insights';
 import AnalyticsConsent from './components/AnalyticsConsent';
 import { ColorVisionProvider } from './context/ColorVisionContext';
 import RouteTracker from './components/RouteTracker';
+import RouteSeo from './components/RouteSeo';
 import { isInternalTestSession } from './lib/internalTest';
 
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
@@ -25,18 +26,13 @@ if (import.meta.env.PROD && !isInternalTestSession()) {
   injectSpeedInsights();
 }
 
-if (FEATURES.preview) {
-  document.title = `[Preview] ${document.title}`;
-} else if (FEATURES.beta) {
-  document.title = `[Beta] ${document.title}`;
-}
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <ColorVisionProvider>
         <AnalyticsConsent />
         <RouteTracker />
+        <RouteSeo />
         <React.Suspense fallback={null}>
           <Routes>
           {/* Maintainer-only research page; it is never included in built bundles. */}
