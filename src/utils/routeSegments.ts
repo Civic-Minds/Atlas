@@ -7,14 +7,12 @@ import { getTierColor, type ColorVisionMode } from './colors';
  * Route lines drawn in segments (#690, beta only: FEATURES.segmentColours).
  *
  * The pipeline cuts each drawn line into runs of equal pooled tier (`segments` on the route
- * feature: stretches of the line as fractions of its length, graded on every trip at each stop
- * of the drawn pattern, pipeline/stopPools.ts segmentsByTier). This module turns those stretches
- * into clipped GeoJSON pieces coloured by their tier, drawn over the route's base line. The
- * pipeline places each piece from half way before its first stop to half way after its last
- * (the terminals take the stop's own position), so the colours change half way between two
- * stops rather than on a stop; a stop with no all-day value is its own limited-service piece
- * (#810). The route-level tier and headway still decide the filter; the segments only show
- * where along the line the service is better or worse.
+ * feature: inclusive stop-index ranges graded on every trip at each stop, pipeline/stopPools.ts
+ * segmentsByTier). This module turns those ranges into clipped GeoJSON pieces coloured by their
+ * tier, drawn over the route's base line. Each piece runs from the midpoint before its first stop
+ * to the midpoint after its last stop (the terminals take the line's own end), so the colours
+ * change half way between two stops rather than on a stop. The route-level tier and headway still
+ * decide the filter; the segments only show where along the line the service is better or worse.
  *
  * Segments are all-day readings, so pieces are built only for the all-day period: a period view
  * keeps one colour per line.
@@ -32,16 +30,19 @@ export interface RouteSegmentProperties {
 }
 
 export interface LineSegmentRange {
-  start: number;
-  end: number;
+  from: number;
+  to: number;
   tier: string;
   headway: number | null;
 }
 
-/** The clipped coordinates of one stretch of the line, start to end as fractions of its length. */
-export function clipSegmentRange(coords: number[][], start: number, end: number): number[][] | null {
-  if (!(start >= 0 && end <= 1 && end > start)) return null;
-  return clipLinestring(coords, start, end);
+/** The clipped coordinates of one inclusive stop-index range, midpoint to midpoint. */
+export function clipSegmentRange(coords: number[][], stopPositions: number[], from: number, to: number): number[][] | null {
+  if (from < 0 || to < from || to >= stopPositions.length || stopPositions.length < 2) return null;
+  const tStart = from > 0 ? (stopPositions[from] + stopPositions[from - 1]) / 2 : stopPositions[from];
+  const tEnd = to < stopPositions.length - 1 ? (stopPositions[to] + stopPositions[to + 1]) / 2 : stopPositions[to];
+  if (tEnd <= tStart) return null;
+  return clipLinestring(coords, tStart, tEnd);
 }
 
 /** True when a selected-route key (`slug::routeId` or `slug::routeId::branch`) names this route. */
@@ -67,9 +68,11 @@ export function buildRouteSegmentFeatures(
       const segments = p?.segments;
       if (!p || !Array.isArray(segments) || segments.length === 0) continue;
       if (accept && !accept({ agencySlug: p.agencySlug ?? slug, routeId: String(p.routeId), day: p.day ?? null })) continue;
+      const stopPositions = p.stopPositions;
+      if (!Array.isArray(stopPositions) || !Array.isArray(p.stopOrder) || stopPositions.length !== p.stopOrder.length) continue;
       for (const segment of segments) {
-        if (!segment || typeof segment.tier !== 'string' || typeof segment.start !== 'number' || typeof segment.end !== 'number') continue;
-        const coordinates = clipSegmentRange(feature.geometry.coordinates, segment.start, segment.end);
+        if (!segment || typeof segment.tier !== 'string') continue;
+        const coordinates = clipSegmentRange(feature.geometry.coordinates, stopPositions, segment.from, segment.to);
         if (!coordinates || coordinates.length < 2) continue;
         out.push({
           type: 'Feature',
