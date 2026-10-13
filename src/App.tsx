@@ -248,6 +248,10 @@ export default function App() {
   const [viewTabsPortalEl, setViewTabsPortalEl] = useState<Element | null>(null);
   const viewTabsPortalRef = useCallback((el: HTMLDivElement | null) => { setViewTabsPortalEl(el); }, []);
 
+  // Phones: Compare sits in the More menu beside History and Live (the menu mounts only while open).
+  const [moreMenuPortalEl, setMoreMenuPortalEl] = useState<Element | null>(null);
+  const moreMenuPortalRef = useCallback((el: HTMLDivElement | null) => { setMoreMenuPortalEl(el); }, []);
+
   const headerLeftRef = useRef<HTMLDivElement>(null);
   const appLinksRef = useRef<HTMLDivElement>(null);
   const searchBarRef = useRef<HTMLDivElement>(null);
@@ -380,6 +384,7 @@ export default function App() {
   const activeModeTab = inLive ? 'live' : activeApp === 'history' ? 'history' : compareActive ? 'compare' : null;
   const liveTabCollapsed = modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'live');
   const historyTabCollapsed = modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'history');
+  const showCompareControl = FEATURES.compareMode && inFrequency;
   const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
   ));
@@ -620,7 +625,7 @@ export default function App() {
 
         {/* Phones fold Live and History into one menu. Research is reached from the About page,
             not the map's top bar (#651). */}
-        {(showLiveControl || showHistoryControl) && !phoneSearchExpanded && (
+        {(showLiveControl || showHistoryControl || showCompareControl) && !phoneSearchExpanded && (
           <>
             <span className="sm:hidden w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
@@ -630,7 +635,7 @@ export default function App() {
                 onClick={() => setAppLinksOpen(open => !open)}
                 aria-label="More Atlas views"
                 aria-expanded={appLinksOpen}
-                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
                 <span>More</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
@@ -661,6 +666,7 @@ export default function App() {
                       {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
                     </a>
                   )}
+                  <div ref={moreMenuPortalRef} className="contents" />
                 </div>
               )}
             </div>
@@ -744,6 +750,8 @@ export default function App() {
               onCompareActiveChange={setCompareActive}
               headerPortalContainer={headerPortalEl}
               viewTabsPortalContainer={viewTabsPortalEl}
+              moreMenuPortalContainer={moreMenuPortalEl}
+              onMoreMenuDone={() => setAppLinksOpen(false)}
               sidebarLeft={sidebarLeft}
               searchBarWidth={searchBarWidth}
               searchEnterRef={searchEnterRef}
