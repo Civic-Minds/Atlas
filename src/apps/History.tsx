@@ -16,6 +16,7 @@ import {
 } from '../../shared/historyEligibility';
 import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayText';
 import Panel, { PanelTitleBar } from '../components/ui/Panel';
+import ListRow from '../components/ui/ListRow';
 
 export interface RouteSnapshot {
   label: string;
@@ -269,7 +270,7 @@ function RouteHistoryCard({
               : 'text-[var(--text-dim)]';
             const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
             return (
-              <div key={snap.label} className={LIST_ROW}>
+              <ListRow as="div" key={snap.label}>
                 <span className={`text-xs font-bold ${isLatest ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
                   {snap.label}
                 </span>
@@ -281,7 +282,7 @@ function RouteHistoryCard({
                   )}
                   <span className={`text-xs font-black tabular-nums ${hwColor}`}>{headwayAmount(hw)}</span>
                 </div>
-              </div>
+              </ListRow>
             );
           })}
         </div>
@@ -796,13 +797,14 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                 <div key={region}>
                   <p className="px-5 pt-3 pb-1 text-xs font-bold text-[var(--text-dim)]">{region}</p>
                   {agencies.map(agency => (
-                    <button
+                    <ListRow
                       key={agency.slug}
+                      variant="agency"
                       onClick={() => {
                         saveRecentSearch(query);
                         setSelectedSlug(agency.slug);
                       }}
-                      className={`${AGENCY_LIST_ROW} border-b border-[var(--border-primary)] last:border-0`}
+                      className="border-b border-[var(--border-primary)] last:border-0"
                     >
                       <span className="min-w-0">
                         <span className={AGENCY_LIST_PRIMARY} title={agency.name}>{shortenAgencyName(agency.name)}</span>
@@ -811,7 +813,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                         </span>
                       </span>
                       <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
-                    </button>
+                    </ListRow>
                   ))}
                 </div>
               ))}

@@ -15,6 +15,7 @@ import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
 import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
+import ListRow from './ui/ListRow';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -484,10 +485,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
-                            <button
+                            <ListRow
                               key={a.slug}
+                              variant="agency"
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
-                              className={AGENCY_LIST_ROW}
                             >
                               <span className={AGENCY_LIST_PRIMARY} title={listLabel}>
                                 {primary}
@@ -512,7 +513,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                   )}
                                 </div>
                               )}
-                            </button>
+                            </ListRow>
                           );
                         })}
                       </div>

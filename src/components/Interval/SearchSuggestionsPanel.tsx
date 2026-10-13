@@ -2,7 +2,6 @@ import React from 'react';
 import type { Agency } from '../../App';
 import {
   PANEL_SECTION_HEAD,
-  LIST_ROW,
   LIST_ROW_DIM,
 } from '../../styles';
 import Panel from '../ui/Panel';
@@ -16,6 +15,7 @@ import {
 import RouteListRow from '../RouteListRow';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import { headwayEvery } from '../../utils/headwayText';
+import ListRow from '../ui/ListRow';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -112,14 +112,14 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
           </div>
           <div>
             {recentSearches.map((s, i) => (
-              <button
+              <ListRow
                 key={i}
                 onClick={() => setQuery(s)}
-                className={`${LIST_ROW} border-b-0`}
+                className="border-b-0"
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">{s}</span>
                 <span className="text-xs text-[var(--text-dim)] font-mono">↵</span>
-              </button>
+              </ListRow>
             ))}
           </div>
         </>

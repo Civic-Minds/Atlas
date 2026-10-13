@@ -5,6 +5,7 @@ import { fmtHeadway, titleCase } from '../../utils/format';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX, LIST_ROW, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_BODY, PANEL_EMPTY } from '../../styles';
 import { PanelBody, PanelTitleBar } from '../ui/Panel';
+import ListRow from '../ui/ListRow';
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
@@ -48,10 +49,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       ) : (
         <PanelBody>
           {routes.map(r => (
-            <button
+            <ListRow
               key={r.rKey}
               onClick={() => setSelectedRoute(r.rKey)}
-              className={LIST_ROW}
             >
               <div className="flex flex-col min-w-0 flex-1 gap-0.5">
                 <div className="flex items-start gap-2">
@@ -85,7 +85,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   {titleCase(r.nearestStopName)} · {fmtDist(r.distanceMeters)}
                 </p>
               </div>
-            </button>
+            </ListRow>
           ))}
         </PanelBody>
       )}

@@ -7,6 +7,7 @@ import RouteListRow from '../RouteListRow';
 import { routeRowLabels } from './SearchSuggestionsPanel';
 import RegionFilterPills from '../RegionFilterPills';
 import Panel, { PanelTitleBar } from '../ui/Panel';
+import ListRow from '../ui/ListRow';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -82,13 +83,13 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
             const area = areaLinkFor(agency.slug, FEATURES.agencyPages);
             return (
               <div key={agency.slug} className="flex items-center">
-                <button
-                  type="button"
+                <ListRow
+                  variant="spaced"
                   onClick={() => onSelectAgency?.(agency.slug)}
-                  className={`${LIST_ROW_SPACED} min-w-0 flex-1 ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
+                  className={`min-w-0 flex-1 ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
                 >
                   <span className={`${LIST_ROW_PRIMARY} min-w-0 break-words text-left`} title={agency.name}>{agency.name}</span>
-                </button>
+                </ListRow>
                 {area && <a href={area.href} className="mr-4 shrink-0 text-xs text-[var(--accent)] hover:underline">{area.label}</a>}
               </div>
             );
