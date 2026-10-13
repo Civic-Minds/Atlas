@@ -47,6 +47,9 @@ interface Agency extends FeedAvailabilityEntry {
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
+  mergeEquivalentShapeVariantsAllModes?: boolean;
+  keepLongShapeJumps?: boolean;
+  referenceDateFromRunDate?: boolean;
   fare?: number;
   lastFeedVersion?: string | null;
   lastRawArchiveKey?: string | null;

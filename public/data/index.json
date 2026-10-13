@@ -138,6 +138,7 @@
       "slug": "brampton",
       "name": "Brampton Transit",
       "websiteUrl": "http://www.bramptontransit.com",
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/770",
       "region": "Ontario",
       "center": [
         43.7315,
@@ -148,6 +149,25 @@
         -80.26,
         44.13,
         -79.26
+      ],
+      "excludeTripHeadsigns": [
+        "DROP OFF ONLY - NOT IN SERVICE",
+        "SORRY...NOT IN SERVICE"
+      ],
+      "correctionNotices": [
+        {
+          "type": "excludedNonRevenueTrips",
+          "routeShortNames": [
+            "1",
+            "14",
+            "15",
+            "18",
+            "23",
+            "30",
+            "50",
+            "57"
+          ]
+        }
       ],
       "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
       "lastFeedExpiry": "20261101",
@@ -6645,6 +6665,7 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2708/latest.zip",
       "lastFeedExpiry": "20261114",
       "lastFeedVersion": "Revision2",
+      "mergeEquivalentShapeVariantsAllModes": true,
       "lastRefreshedAt": "2026-10-03",
       "cities": [
         "South San Francisco, California",
@@ -7736,6 +7757,7 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-20/latest.zip",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "Updated: Aug 19, 2026, 11:14 PM",
+      "keepLongShapeJumps": true,
       "lastRefreshedAt": "2026-10-03",
       "websiteUrl": "http://www.redwoodcoasttransit.org/",
       "timezone": "America/Los_Angeles",
@@ -10129,7 +10151,7 @@
     {
       "slug": "embark",
       "name": "Embark (Oklahoma City)",
-      "websiteUrl": "https://www.ou.edu/cart",
+      "websiteUrl": "https://embarkok.com",
       "center": [
         35.47,
         -97.52
@@ -12447,6 +12469,7 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-509/latest.zip",
       "lastFeedExpiry": "20270313",
       "lastFeedVersion": null,
+      "mergeEquivalentShapeVariantsAllModes": true,
       "lastRefreshedAt": "2026-10-12",
       "cities": [
         "Plainfield, New Jersey",
@@ -17513,7 +17536,7 @@
     {
       "slug": "knoxville",
       "name": "Knoxville Area Transit",
-      "websiteUrl": "https://www.tahoetransportation.org/",
+      "websiteUrl": "https://katbus.com/",
       "center": [
         35.96,
         -83.92
@@ -20938,6 +20961,11 @@
       "feedUrl": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "20250228",
+      "referenceDateFromRunDate": true,
+      "excludeRouteShortNames": [
+        "FTB",
+        "GRK"
+      ],
       "lastRefreshedAt": "2026-08-10",
       "region": "North Carolina",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2245/latest.zip",

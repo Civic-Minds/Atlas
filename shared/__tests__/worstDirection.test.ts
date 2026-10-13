@@ -315,3 +315,105 @@ describe('stampWorstDirectionHeadways', () => {
     });
   });
 });
+
+describe('all-day worst-direction headline sets aside occasional patterns (#749)', () => {
+  const ALL = ['amPeak', 'midday', 'pmPeak', 'evening'];
+  // Full-window waits for the periods a pattern runs in; the value is not read by this rule.
+  const cov = (...periods: string[]) => Object.fromEntries(periods.map(pk => [pk, 60]));
+  const pat = (dir: number, hw: number, o: Partial<Parameters<typeof feat>[0]> = {}) =>
+    feat({ routeShortName: 'R', day: 'Weekday', directionId: dir, headway: hw, tier: 'infrequent', ...o });
+  const steadyMain = (dir: number, hw: number, o: Partial<Parameters<typeof feat>[0]> = {}) =>
+    pat(dir, hw, { headwayByPeriod: { amPeak: hw, midday: hw, pmPeak: hw, evening: hw }, periodCoverageHeadway: cov(...ALL), ...o });
+  const wdh = (features: WorstDirectionFeature[]) => {
+    stampWorstDirectionHeadways(features);
+    return new Set(features.map(f => f.properties.worstDirectionHeadway));
+  };
+
+  it('TTC 102 Weekday: a 3-trip short turn in 2 periods does not set 657', () => {
+    expect(wdh([
+      steadyMain(0, 12, { headwayByPeriod: { amPeak: 6, midday: 5, pmPeak: 13, evening: 7, late: 5 }, headwayByPeriodSustained: { late: false }, periodCoverageHeadway: cov(...ALL, 'late', 'overnight') }),
+      pat(0, 657, { headwayByPeriod: {}, periodCoverageHeadway: cov('midday', 'evening') }),
+      steadyMain(1, 16, { tier: '20' }),
+      steadyMain(1, 30, { tier: '60' }),
+    ])).toEqual(new Set([30]));
+  });
+
+  it('TriMet 12 Weekday: 1-trip patterns in both directions do not set 1141', () => {
+    expect(wdh([
+      pat(0, 1141, { headwayByPeriod: {}, periodCoverageHeadway: cov('amPeak') }),
+      steadyMain(0, 15),
+      pat(1, 1138, { periodCoverageHeadway: cov('pmPeak') }),
+      steadyMain(1, 15),
+    ])).toEqual(new Set([15]));
+  });
+
+  it('Dayton 07 Sunday: a variant whose only period value is unsustained does not set 131', () => {
+    expect(wdh([
+      feat({ routeShortName: 'R', day: 'Sunday', directionId: 0, headway: 131, tier: 'infrequent', headwayByPeriod: { midday: 131 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: cov('midday') }),
+      feat({ routeShortName: 'R', day: 'Sunday', directionId: 0, headway: 38, tier: 'infrequent', headwayByPeriod: { amPeak: 38, midday: 38, pmPeak: 38 }, periodCoverageHeadway: cov(...ALL) }),
+      feat({ routeShortName: 'R', day: 'Sunday', directionId: 1, headway: 38, tier: 'infrequent', headwayByPeriod: { amPeak: 38, midday: 38, pmPeak: 38 }, periodCoverageHeadway: cov(...ALL) }),
+    ])).toEqual(new Set([38]));
+  });
+
+  it('keeps a real slow all-day destination that is steady nowhere (every 4 h vs a peak-only every 15)', () => {
+    // Five trips every 4 hours leave under three departures in every period, so the pattern is
+    // steady nowhere, but it runs in every period: midday riders really wait 4 hours.
+    expect(wdh([
+      pat(0, 240, { headwayByPeriod: {}, periodCoverageHeadway: cov(...ALL) }),
+      pat(0, 15, { headwayByPeriod: { amPeak: 15, pmPeak: 15 }, periodCoverageHeadway: cov('amPeak', 'pmPeak') }),
+      steadyMain(1, 20),
+    ])).toEqual(new Set([240]));
+  });
+
+  it('Dayton 17: West Loop every 114 in every daytime period keeps the bar over East Loop 87', () => {
+    expect(wdh([
+      pat(1, 114, { headwayByPeriod: {}, periodCoverageHeadway: cov(...ALL) }),
+      pat(1, 87, { headwayByPeriod: { midday: 87 }, periodCoverageHeadway: cov(...ALL) }),
+      pat(1, 460, { headwayByPeriod: {}, periodCoverageHeadway: cov('amPeak', 'pmPeak') }),
+      steadyMain(0, 57),
+    ])).toEqual(new Set([114]));
+  });
+
+  it('keeps a genuinely sparse route whose only pattern is steady in no period', () => {
+    expect(wdh([
+      pat(0, 300, { headwayByPeriod: {}, periodCoverageHeadway: cov('amPeak', 'pmPeak') }),
+      pat(1, 290, { periodCoverageHeadway: cov('amPeak', 'pmPeak') }),
+    ])).toEqual(new Set([300]));
+  });
+
+  it('keeps a direction whose patterns are all unsteady in the check (never vanishes)', () => {
+    expect(wdh([
+      steadyMain(0, 20),
+      pat(1, 240, { headwayByPeriod: {}, periodCoverageHeadway: cov('midday') }),
+      pat(1, 180, { headwayByPeriod: { midday: 180 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: cov('midday') }),
+    ])).toEqual(new Set([240]));
+  });
+
+  it('keeps the slower of two steady branches (each genuinely every 30 vs 20)', () => {
+    expect(wdh([
+      steadyMain(0, 20, { tier: '30' }),
+      steadyMain(0, 30, { tier: '30' }),
+      steadyMain(1, 20, { tier: '30' }),
+      steadyMain(1, 30, { tier: '30' }),
+    ])).toEqual(new Set([30]));
+  });
+
+  it('TransLink 100 Weekday: never raises the headline when the regular main pattern is unsteady everywhere', () => {
+    const allUnsustained = { amPeak: false, midday: false, pmPeak: false, evening: false, late: false };
+    expect(wdh([
+      pat(0, 62, { headwayByPeriod: { amPeak: 41, midday: 62 }, periodCoverageHeadway: cov(...ALL) }),
+      pat(0, 14, { tier: '30', headwayByPeriod: { amPeak: 8, midday: 14 }, headwayByPeriodSustained: allUnsustained, periodCoverageHeadway: cov(...ALL) }),
+      steadyMain(1, 9, { tier: '20' }),
+    ])).toEqual(new Set([14]));
+  });
+
+  it('CARTA 16 Saturday: a variant steady in some period still counts, and tiers are untouched', () => {
+    const features = [
+      pat(0, 100, { headwayByPeriod: { midday: 100 }, periodCoverageHeadway: cov('midday') }),
+      pat(0, 40, { headwayByPeriod: { amPeak: 40, midday: 40 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: cov(...ALL) }),
+      steadyMain(1, 40, { tier: '60' }),
+    ];
+    expect(wdh(features)).toEqual(new Set([100]));
+    expect(features.map(f => f.properties.tier)).toEqual(['infrequent', 'infrequent', '60']);
+  });
+});

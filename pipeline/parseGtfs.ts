@@ -446,7 +446,8 @@ export function synthesizeCalendarFromDates(calendarDates: GtfsCalendarDate[]): 
  */
 export const parseGtfsZip = async (
     file: File | ArrayBuffer,
-    onStatus?: (message: string) => void
+    onStatus?: (message: string) => void,
+    options: { keepLongShapeJumps?: boolean } = {},
 ): Promise<GtfsData> => {
     onStatus?.('Loading ZIP archive...');
     const zip = await JSZip.loadAsync(file);
@@ -506,9 +507,14 @@ export const parseGtfsZip = async (
                 }))
                 .map(route => route.route_id),
         );
+        // Agency opt-in: rural highway shapes can have several multi-kilometre steps between
+        // town sections, which the jump guard reads as corruption. Redwood Coast Transit 20
+        // (Eureka-Crescent City, median step ~40 m, steps up to 2.7-3 km on US 101) was cut
+        // to its first 2-3 km, so the trunk had no route line (#776). Such agencies exempt
+        // every shape, like rail.
         const railShapeIds = new Set(
             (gtfsData.trips ?? [])
-                .filter(trip => railRouteIds.has(trip.route_id) && trip.shape_id)
+                .filter(trip => (options.keepLongShapeJumps || railRouteIds.has(trip.route_id)) && trip.shape_id)
                 .map(trip => trip.shape_id as string),
         );
         const { shapes, anomalies } = groupShapes(rawShapes, railShapeIds);

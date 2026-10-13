@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { detectReferenceDate, getActiveServiceIds } from '../transit-calendar.js';
 import type { GtfsCalendar, GtfsCalendarDate } from '../../types/gtfs.js';
 
@@ -206,6 +206,40 @@ describe('getActiveServiceIds', () => {
     expect(active.has('special_monday')).toBe(true);
     expect(active.has('weekend')).toBe(false);
   });
+
+  it('takes only the closest date when every operating day is its own service (WSF, #744)', () => {
+    // Saturdays Oct 3 - Nov 28, two one-day services per date (one per route); Oct 3 ran extra sailings.
+    const saturdays = ['20261003', '20261010', '20261017', '20261024', '20261031', '20261107', '20261114', '20261121', '20261128'];
+    const calendar = saturdays.flatMap(d => [cal(`a-${d}`, 'sa', d, d), cal(`b-${d}`, 'sa', d, d)]);
+    const active = getActiveServiceIds(calendar, [], 'Saturday', '20261027');
+    // Oct 24 is 3 days from the reference, Oct 31 is 4: only Oct 24's services, both of them.
+    expect([...active].sort()).toEqual(['a-20261024', 'b-20261024']);
+  });
+
+  it('breaks a tie between equally close dates toward the later one', () => {
+    const calendar = [cal('before', 'mo', '20240610', '20240610'), cal('after', 'mo', '20240624', '20240624')];
+    expect([...getActiveServiceIds(calendar, [], 'Monday', '20240617')]).toEqual(['after']);
+  });
+
+  it('skips a closest date whose one-day services are all cancelled (#744 review)', () => {
+    const saturdays = ['20261003', '20261010', '20261017', '20261024', '20261031', '20261107'];
+    const calendar = saturdays.map(d => cal(`s-${d}`, 'sa', d, d));
+    const removed = [{ service_id: 's-20261024', date: '20261024', exception_type: '2' }];
+    // Oct 24 is cancelled; Oct 17 and Oct 31 are equally close, the later wins.
+    expect([...getActiveServiceIds(calendar, removed as any, 'Saturday', '20261024')]).toEqual(['s-20261031']);
+  });
+
+  it('a one-day row flagged for every weekday only answers the weekday its date falls on (#744 review)', () => {
+    const saturdays = ['20261003', '20261010', '20261017', '20261024', '20261031', '20261107'];
+    const calendar = [...saturdays.map(d => cal(`s-${d}`, 'sa', d, d)), cal('holiday-mon', 'mo,tu,we,th,fr,sa,su', '20261026', '20261026')];
+    expect([...getActiveServiceIds(calendar, [], 'Saturday', '20261027')]).toEqual(['s-20261024']);
+    expect([...getActiveServiceIds(calendar, [], 'Monday', '20261027')]).toEqual(['holiday-mon']);
+  });
+
+  it('keeps every single-day service without a reference date', () => {
+    const calendar = [cal('d1', 'sa', '20261003', '20261003'), cal('d2', 'sa', '20261010', '20261010')];
+    expect([...getActiveServiceIds(calendar, [], 'Saturday')].sort()).toEqual(['d1', 'd2']);
+  });
 });
 
 describe('getActiveServiceIds holiday in the reference week (#658)', () => {
@@ -284,5 +318,140 @@ describe('getActiveServiceIds holiday in the reference week (#658)', () => {
       added('hol', '20261012'),
     ];
     expect([...getActiveServiceIds([], dates, 'Monday', '20261015')]).toEqual(['wk']);
+  });
+});
+
+describe('detectReferenceDate all-singleton calendar with an ended nested service (#767)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+  const today = (d: string) => vi.useFakeTimers({ toFake: ['Date'], now: new Date(`${d}T12:00:00`) });
+  const all = 'motuwethfrsasu';
+  const tripsFor = (counts: Record<string, [string, number]>) =>
+    Object.entries(counts).flatMap(([service_id, [route_id, n]]) => Array.from({ length: n }, () => ({ service_id, route_id })));
+
+  it('moves the reference out of an ended summer service nested in the running main calendar (Avon)', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('mon-tues-wed-thurs-fri-sat-sun', all, '20260331', '20261125'),
+      cal('beaver-express-summer', all, '20260523', '20260913'),
+    ];
+    const trips = tripsFor({ 'mon-tues-wed-thurs-fri-sat-sun': ['rt_red', 62], 'beaver-express-summer': ['rt_beaver', 93] });
+    const ref = detectReferenceDate(calendar, [], trips);
+    expect(ref).toBe('20260914');
+    for (const day of ['Monday', 'Saturday', 'Sunday'] as const) {
+      expect([...getActiveServiceIds(calendar, [], day, ref)]).toEqual(['mon-tues-wed-thurs-fri-sat-sun']);
+    }
+  });
+
+  it('keeps the median when every service is a one-day entry (WSF-style)', () => {
+    today('2026-10-12');
+    const calendar = ['20261001', '20261002', '20261003', '20261004', '20261005']
+      .map((d, i) => cal(`day-${i}`, all, d, d));
+    const trips = tripsFor({ 'day-0': ['r', 5], 'day-1': ['r', 5], 'day-2': ['r', 5], 'day-3': ['r', 5], 'day-4': ['r', 5] });
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20261003');
+  });
+
+  it('takes the running service, not a future one, in place of a one-day median', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('regular', all, '20260101', '20261231'),
+      ...['20261012', '20261013', '20261014'].map((d, i) => cal(`day-${i}`, all, d, d)),
+      cal('winter', all, '20261101', '20270331'),
+    ];
+    const trips = tripsFor({ regular: ['r', 20], 'day-0': ['r', 5], 'day-1': ['r', 5], 'day-2': ['r', 5], winter: ['w', 20] });
+    // Starts: 0101, 1012, 1013, 1014, 1101 -> median 1013, a one-day entry. The running
+    // regular service stands in for it, not the winter calendar that starts Nov 1.
+    const ref = detectReferenceDate(calendar, [], trips);
+    expect([...getActiveServiceIds(calendar, [], 'Monday', ref)]).toEqual(['regular']);
+  });
+
+  it('keeps the median of a stale feed: one ended multi-day service and later one-day entries', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('summer', all, '20260601', '20260831'),
+      ...['20260905', '20260912', '20260919'].map((d, i) => cal(`event-${i}`, all, d, d)),
+    ];
+    const trips = tripsFor({ summer: ['r', 20], 'event-0': ['r', 5], 'event-1': ['r', 5], 'event-2': ['r', 5] });
+    // Starts: 0601, 0905, 0912, 0919 -> median 0912, a one-day entry. No multi-day service is
+    // running, so the plain median stands (the summer service is not substituted for it).
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20260912');
+  });
+
+  it.each(['2026-10-09', '2026-10-10', '2026-10-12'])('moves off the one-day holiday median into the running timetables, build on %s (Mont-Tremblant, #764)', buildDate => {
+    today(buildDate);
+    // Real calendar.txt of the Mont-Tremblant feed (service to 2026-12-20).
+    const calendar = [
+      cal('cal1-mon-tue-wed-thu-1', 'motuweth', '20260908', '20261217'),
+      cal('cal2-fri', 'fr', '20260911', '20261009'),
+      cal('cal3-sat', 'sa', '20260912', '20260919'),
+      cal('cal4-sun-3', 'su', '20260913', '20261220'),
+      cal('cal5-sat', 'sa', '20260926', '20261003'),
+      cal('cal6-sun', 'su', '20260927', '20261004'),
+      cal('cal7-sat', 'sa', '20261010', '20261010'),
+      cal('cal8-sun', 'su', '20261011', '20261011'),
+      cal('cal9-mon', 'mo', '20261012', '20261012'),
+      cal('cal10-fri-1', 'fr', '20261016', '20261218'),
+      cal('cal11-sat-1', 'sa', '20261017', '20261219'),
+      cal('cal12-fri', 'fr', '20261211', '20261211'),
+      cal('cal13-sat', 'sa', '20261212', '20261212'),
+    ];
+    const calendarDates = [
+      removed('cal1-mon-tue-wed-thu-1', '20261012'), removed('cal4-sun-3', '20260927'), removed('cal4-sun-3', '20261004'),
+      removed('cal4-sun-3', '20261011'), removed('cal10-fri-1', '20261211'), removed('cal11-sat-1', '20261212'),
+    ];
+    const trips = calendar.flatMap(c => tripsFor({ [c.service_id]: ['1', 20] }));
+    const ref = detectReferenceDate(calendar, calendarDates, trips);
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Friday', ref)]).toEqual(['cal10-fri-1']);
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Saturday', ref)]).toEqual(['cal11-sat-1']);
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Monday', ref)]).toEqual(['cal1-mon-tue-wed-thu-1']);
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Sunday', ref)]).toEqual(['cal4-sun-3']);
+  });
+
+  it('keeps the median when nothing has ended', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('main', all, '20260101', '20261231'),
+      cal('winter', all, '20261001', '20270331'),
+    ];
+    const trips = tripsFor({ main: ['a', 20], winter: ['b', 20] });
+    // Median start is the winter service (Oct 1-Mar 31); its midpoint is unchanged.
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20261230');
+  });
+
+  it('keeps the old reference when the running service carries too few routes (route-share guard)', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('year-round', all, '20260331', '20261125'),
+      cal('summer', all, '20260523', '20260913'),
+    ];
+    const trips = [
+      ...['y1', 'y2'].flatMap(r => tripsFor({ 'year-round': [r, 10] })),
+      ...['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8'].flatMap(r => tripsFor({ summer: [r, 10] })),
+    ];
+    // 10 routes in range on the summer midpoint, 2 after summer ends: no switch.
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20260718');
+  });
+
+  it('keeps the median for a stale feed where nothing is running', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('main', all, '20250101', '20251231'),
+      cal('summer', all, '20250601', '20250831'),
+    ];
+    const trips = tripsFor({ main: ['a', 20], summer: ['b', 20] });
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20250716');
+  });
+
+  it('leaves multi-entry calendars to the #734 running-period choice', () => {
+    today('2026-10-14');
+    const calendar = [
+      cal('Regular_Wk', 'motuwethfr', '20251201', '20261231'),
+      cal('Regular_Sa', 'sa', '20251201', '20261231'),
+      cal('Summer_Wk', 'motuwethfr', '20260612', '20260823'),
+      cal('Summer_Sa', 'sa', '20260612', '20260823'),
+    ];
+    const trips = tripsFor({ Regular_Wk: ['117', 10], Regular_Sa: ['117', 5], Summer_Wk: ['117', 10], Summer_Sa: ['117', 5] });
+    const ref = detectReferenceDate(calendar, [], trips);
+    expect(ref > '20260823').toBe(true);
+    expect([...getActiveServiceIds(calendar, [], 'Monday', ref)]).toEqual(['Regular_Wk']);
   });
 });

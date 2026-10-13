@@ -40,7 +40,7 @@ export function assertRouteArtifactSchema(
  * fingerprint test in pipeline/__tests__/releaseGuard.test.ts forces the
  * decision whenever the underlying files change.
  */
-export const TILE_RULES_VERSION = 2;
+export const TILE_RULES_VERSION = 3;
 
 /** Releases published before the stamp existed count as the baseline rules. */
 export function releaseTileRulesVersion(release: { tileRulesVersion?: unknown }): number | null {
@@ -59,7 +59,9 @@ export function releaseTileRulesVersion(release: { tileRulesVersion?: unknown })
  * TODO(#703): Drop tile-rules v1 support after the v2 release is live.
  * https://github.com/Civic-Minds/Atlas/issues/703
  */
-export const ACCEPTED_TILE_RULES_VERSIONS: readonly number[] = [1, 2];
+// v3 (#749): the all-day worst-direction headline sets aside patterns steady in no period. The
+// app keeps drawing the live v2 release until the v3 release is published.
+export const ACCEPTED_TILE_RULES_VERSIONS: readonly number[] = [1, 2, 3];
 
 export function isAcceptedTileRulesVersion(release: { tileRulesVersion?: unknown }): boolean {
   const version = releaseTileRulesVersion(release);

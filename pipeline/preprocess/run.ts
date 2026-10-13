@@ -22,6 +22,12 @@ export interface GtfsTransformOptions {
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
+  /** Also merge equivalent shape variants on non-light-rail routes (SamTrans 120, #775). */
+  mergeEquivalentShapeVariantsAllModes?: boolean;
+  /** Keep shapes whole across long point-to-point steps (rural highways, #776). Read at parse time. */
+  keepLongShapeJumps?: boolean;
+  /** Read the feed as of the run date instead of the detected reference date (#774). */
+  referenceDateFromRunDate?: boolean;
 }
 
 /** Parse → filter → merge branches → agency preprocess → synthesize trip metadata. */
@@ -100,8 +106,8 @@ export function normalizeGtfs(
     onStatus?.('Brantford route labels: removed feed-supplied leading separators');
   }
   gtfs = synthesizeTripHeadsigns(gtfs);
-  if (options?.mergeEquivalentShapeVariants) {
-    const merged = mergeEquivalentShapeVariants(gtfs);
+  if (options?.mergeEquivalentShapeVariants || options?.mergeEquivalentShapeVariantsAllModes) {
+    const merged = mergeEquivalentShapeVariants(gtfs, { allModes: options.mergeEquivalentShapeVariantsAllModes === true });
     gtfs = merged.gtfs;
     if (merged.mergedTrips > 0) {
       onStatus?.(

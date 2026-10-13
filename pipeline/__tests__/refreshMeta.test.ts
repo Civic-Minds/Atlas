@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isFeedExpired, markFeedStale, recordedFeedExpiry, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, recordedFeedExpiry, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -182,5 +182,17 @@ describe('supplemental feed metadata (#630)', () => {
     };
     stampSupplementalFeedMeta(agency, []);
     expect(agency).not.toHaveProperty('lastSupplementalFeeds');
+  });
+});
+
+describe('decideRefreshSkipUnchanged with a run-date reference (#774)', () => {
+  // NCSU Wolfline: same feed_version and calendar end every week, but the timetable in force
+  // changes with the semester (calendar_dates), so the feed must be reprocessed each run.
+  const same = { forceRefresh: false, hasSupplementals: false, feedExpired: false, peekedExpiry: '20271231', peekedVersion: '20250228', lastFeedExpiry: '20271231', lastFeedVersion: '20250228' };
+  it('skips an unchanged feed by default', () => {
+    expect(decideRefreshSkipUnchanged(same).skip).toBe(true);
+  });
+  it('never skips an agency read as of the run date', () => {
+    expect(decideRefreshSkipUnchanged({ ...same, referenceDateFromRunDate: true }).skip).toBe(false);
   });
 });

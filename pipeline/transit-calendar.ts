@@ -127,17 +127,51 @@ export function detectReferenceDate(
     const newestStarted = pastOrPresentMultiStarts.length > 0 ? pastOrPresentMultiStarts[pastOrPresentMultiStarts.length - 1] : undefined;
     const runningStarts = pastOrPresentMultiStarts.filter(s => groupEnd(s) >= todayStr);
     const longRunningStarts = runningStarts.filter(s => daysBetween(s, groupEnd(s)) >= MIN_RUNNING_PERIOD_DAYS);
+    // All-singleton calendars (every service starts on its own date, so there are no
+    // multi-entry periods) fall back to the median start below, which the running-period
+    // choice above never sees. Avon's two services are a year-long main calendar
+    // (Mar 31-Nov 25) and a summer-only one nested in it (May 23-Sep 13); the median is
+    // the summer start, so the reference landed in July and the ended BC Express showed
+    // every day in October (#767). Only when that median service spans several days and
+    // has ended, take the newest multi-day service of 28+ days still running instead.
+    // A one-day median (WSF-style feeds, holiday entries) keeps the fallback. The
+    // route-share guard below still applies: a running service carrying under half the
+    // routes in range on the old reference keeps the old reference.
+    const singletonMultiDayStarts = rawMultiStarts.length === 0
+        ? sortedStarts.filter(s => groupEnd(s) > s)
+        : [];
+    // A one-day median (Mont-Tremblant's Thanksgiving Saturday, Oct 10, between periods that end
+    // Oct 3-9 and start Oct 16-17) is a holiday, not a timetable: when a multi-day service is
+    // running today, the newest running one (28+ days preferred, as below) stands in for it
+    // (#764). Running, not the median of all multi-day starts, which can be a future service
+    // (a winter calendar from Nov 1). This holds before, on and after the holiday, so the result
+    // does not depend on the build date. WSF-style feeds (every service one day) and stale feeds
+    // with no multi-day service running keep the plain median.
+    const overallMedianStart = sortedStarts[Math.floor(sortedStarts.length / 2)];
+    const runningMultiDayStarts = singletonMultiDayStarts.filter(s => s <= todayStr && groupEnd(s) >= todayStr);
+    const longRunningMultiDayStarts = runningMultiDayStarts.filter(s => daysBetween(s, groupEnd(s)) >= MIN_RUNNING_PERIOD_DAYS);
+    const medianStart = rawMultiStarts.length === 0 && overallMedianStart != null
+        && groupEnd(overallMedianStart) === overallMedianStart && runningMultiDayStarts.length > 0
+        ? (longRunningMultiDayStarts.at(-1) ?? runningMultiDayStarts.at(-1)!)
+        : overallMedianStart;
+    const singletonRunningStart = rawMultiStarts.length === 0 && medianStart != null
+        && groupEnd(medianStart) > medianStart && groupEnd(medianStart) < todayStr
+        ? singletonMultiDayStarts
+            .filter(s => s <= todayStr && groupEnd(s) >= todayStr && daysBetween(s, groupEnd(s)) >= MIN_RUNNING_PERIOD_DAYS)
+            .pop()
+        : undefined;
     const runningStart = newestStarted != null && groupEnd(newestStarted) >= todayStr
         ? newestStarted
         : longRunningStarts.length > 0
         ? longRunningStarts[longRunningStarts.length - 1]
-        : runningStarts.length > 0 ? runningStarts[runningStarts.length - 1] : undefined;
+        : runningStarts.length > 0 ? runningStarts[runningStarts.length - 1]
+        : singletonRunningStart;
     // The period chosen before #734: the newest started, else the newest, else the median.
     const previousStart = newestStarted != null
         ? newestStarted
         : multiStarts.length > 0
             ? multiStarts[multiStarts.length - 1]
-            : sortedStarts[Math.floor(sortedStarts.length / 2)];
+            : medianStart;
     const removalsByDate = new Map<string, Set<string>>();
     for (const cd of (calendarDates ?? [])) {
         if (cd.exception_type !== '2') continue;
@@ -155,7 +189,7 @@ export function detectReferenceDate(
         // inside the running period.
         const outsideEndedOverlay = (ref: string): string => {
             let result = ref;
-            for (const s of multiStarts) {
+            for (const s of singletonRunningStart != null ? singletonMultiDayStarts : multiStarts) {
                 const end = groupEnd(s);
                 if (s > bestStartDate && end < todayStr && s <= result && result <= end) {
                     const next = addDaysYmd(end, 1);
@@ -564,9 +598,14 @@ export function getActiveServiceIds(
     //   nothing — otherwise the holiday trips get merged with the regular weekday
     //   pool, halving the apparent headway (Burlington Route 1: 30m→10m).
     const singleDayCalEntries: GtfsCalendar[] = [];
+    const DOW_NAMES_B: DayName[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     for (const cal of calendar) {
         if (cal[field] !== '1') continue;
         if (cal.start_date === cal.end_date) {
+            // A one-day service only counts for the weekday its date falls on: a holiday row
+            // flagged for every day of the week (Burlington's Victoria Day Monday) must not
+            // answer a Saturday query (#744).
+            if (DOW_NAMES_B[ymdToDate(cal.start_date).getDay()] !== day) continue;
             if (referenceDate) {
                 const sy = parseInt(cal.start_date.substring(0, 4)), sm = parseInt(cal.start_date.substring(4, 6)) - 1, sd = parseInt(cal.start_date.substring(6, 8));
                 const ry = parseInt(referenceDate.substring(0, 4)), rm = parseInt(referenceDate.substring(4, 6)) - 1, rd = parseInt(referenceDate.substring(6, 8));
@@ -580,9 +619,37 @@ export function getActiveServiceIds(
             active.add(cal.service_id);
         }
     }
-    // Pass B: only include single-day calendar entries when no multi-day service was found
-    if (active.size === 0) {
-        for (const cal of singleDayCalEntries) active.add(cal.service_id);
+    // Pass B: only include single-day calendar entries when no multi-day service was found.
+    // With a reference date, only the services of the ONE matching date closest to it are
+    // used (later on a tie), as Step 2 does for date-only feeds. WSF gives every operating
+    // day its own one-day service, so taking every match within 90 days pooled 8
+    // Saturdays; one weekend's extra sailings then halved Port Townsend's 90-minute
+    // weekend headway to 45 (#744).
+    if (active.size === 0 && singleDayCalEntries.length > 0) {
+        let chosen = singleDayCalEntries;
+        if (referenceDate) {
+            // A date whose one-day services are all cancelled in calendar_dates.txt is not a
+            // candidate; the cancellation would otherwise empty the whole day type.
+            const removedOn = new Map<string, Set<string>>();
+            for (const cd of (calendarDates ?? [])) {
+                if (cd.exception_type !== '2') continue;
+                if (!removedOn.has(cd.date)) removedOn.set(cd.date, new Set());
+                removedOn.get(cd.date)!.add(cd.service_id);
+            }
+            const candidates = [...new Set(singleDayCalEntries.map(c => c.start_date))]
+                .filter(date => singleDayCalEntries.some(c => c.start_date === date && !removedOn.get(date)?.has(c.service_id)));
+            if (candidates.length > 0) {
+                const distance = (date: string) => Math.abs(ymdToDate(date).getTime() - ymdToDate(referenceDate).getTime());
+                const closest = candidates.reduce((best, date) => {
+                    const d = distance(date), b = distance(best);
+                    return d < b || (d === b && date > best) ? date : best;
+                });
+                chosen = singleDayCalEntries.filter(c => c.start_date === closest);
+            } else {
+                chosen = [];
+            }
+        }
+        for (const cal of chosen) active.add(cal.service_id);
     }
 
     // calendar_dates.txt can override a calendar.txt service_id for a specific date

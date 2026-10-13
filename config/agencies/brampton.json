@@ -2,6 +2,7 @@
   "slug": "brampton",
   "name": "Brampton Transit",
   "websiteUrl": "http://www.bramptontransit.com",
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/770",
   "region": "Ontario",
   "center": [
     43.7315,
@@ -12,6 +13,25 @@
     -80.26,
     44.13,
     -79.26
+  ],
+  "excludeTripHeadsigns": [
+    "DROP OFF ONLY - NOT IN SERVICE",
+    "SORRY...NOT IN SERVICE"
+  ],
+  "correctionNotices": [
+    {
+      "type": "excludedNonRevenueTrips",
+      "routeShortNames": [
+        "1",
+        "14",
+        "15",
+        "18",
+        "23",
+        "30",
+        "50",
+        "57"
+      ]
+    }
   ],
   "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
   "lastFeedExpiry": "20261101",
