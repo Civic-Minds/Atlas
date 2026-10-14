@@ -40,7 +40,7 @@ export default function SiteFooter() {
           <a href="/" aria-label="Atlas by Civic Minds">
             <AtlasBrand size="page" />
           </a>
-          <p className="mt-2">See how often transit routes actually run.</p>
+          <p className="mt-2">Understanding transit service, from schedule to street.</p>
         </div>
         <nav className="grid grid-cols-3 gap-x-4 gap-y-5 sm:flex sm:gap-x-20" aria-label="Footer links">
           {footerGroups().map(group => (
