@@ -123,4 +123,78 @@ describe('useAgencyData failure handling', () => {
     await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(2));
     expect(fetchAgencyGeo).toHaveBeenLastCalledWith(expect.objectContaining({ slug: 'selected-away' }));
   });
+
+  it('holds viewport agencies back until the load gate opens, then starts with one at a time', async () => {
+    const resolvers: Array<() => void> = [];
+    fetchAgencyGeo.mockImplementation(() => new Promise<GeoJSON.FeatureCollection>(resolve => { resolvers.push(() => resolve(emptyFc)); }));
+    const agencies = [agency('a', 43.65, -79.38), agency('b', 43.66, -79.37), agency('c', 43.67, -79.36)];
+
+    const { result, rerender } = renderHook(
+      ({ open }: { open: boolean }) => useAgencyData(agencies, viewport, { viewportLoadOpen: open }),
+      { initialProps: { open: false } },
+    );
+
+    await waitFor(() => expect(result.current.requestedCount).toBe(3));
+    expect(fetchAgencyGeo).not.toHaveBeenCalled();
+    expect(result.current.isLoading).toBe(true);
+
+    rerender({ open: true });
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(1));
+    expect(fetchAgencyGeo).toHaveBeenCalledTimes(1);
+    resolvers.shift()!();
+    await waitFor(() => expect(result.current.loadedCount).toBe(1));
+  });
+
+  it('fetches a priority agency at once, even from outside the viewport, and promotes a waiting one', async () => {
+    fetchAgencyGeo.mockResolvedValue(emptyFc);
+    const agencies = [agency('near', 43.65, -79.38), agency('far', 45.32, -75.69)];
+
+    const { rerender } = renderHook(
+      ({ priority }: { priority: string[] }) => useAgencyData(agencies, viewport, { viewportLoadOpen: false, priorityAgencySlugs: priority }),
+      { initialProps: { priority: [] as string[] } },
+    );
+    expect(fetchAgencyGeo).not.toHaveBeenCalled();
+
+    rerender({ priority: ['far'] });
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledWith(expect.objectContaining({ slug: 'far' })));
+
+    rerender({ priority: ['far', 'near'] });
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledWith(expect.objectContaining({ slug: 'near' })));
+  });
+
+  it('loads the viewport right away when it is marked urgent', async () => {
+    fetchAgencyGeo.mockResolvedValue(emptyFc);
+    const agencies = [agency('near', 43.65, -79.38)];
+    renderHook(() => useAgencyData(agencies, viewport, { viewportLoadOpen: false, urgentViewport: true }));
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(1));
+  });
+
+  it('drops the backlog of a view the map has left, and keeps the loading count to the current view', async () => {
+    fetchAgencyGeo.mockImplementation(() => new Promise<GeoJSON.FeatureCollection>(() => {}));
+    const toronto = [agency('t1', 43.65, -79.38), agency('t2', 43.66, -79.37)];
+    const ottawa = [agency('o1', 45.42, -75.7)];
+    const agencies = [...toronto, ...ottawa];
+    const ottawaView: ViewportBounds = { s: 45, w: -76, n: 46, e: -75 };
+
+    const { result, rerender } = renderHook(
+      ({ bounds }: { bounds: ViewportBounds }) => useAgencyData(agencies, bounds, { viewportLoadOpen: false }),
+      { initialProps: { bounds: viewport } },
+    );
+    await waitFor(() => expect(result.current.requestedCount).toBe(2));
+
+    rerender({ bounds: ottawaView });
+    await waitFor(() => expect(result.current.requestedCount).toBe(1));
+    expect(fetchAgencyGeo).not.toHaveBeenCalled();
+  });
+
+  it('widens the low-priority queue after the first fetch settles', async () => {
+    const resolvers: Array<() => void> = [];
+    fetchAgencyGeo.mockImplementation(() => new Promise<GeoJSON.FeatureCollection>(resolve => { resolvers.push(() => resolve(emptyFc)); }));
+    const agencies = ['a', 'b', 'c', 'd', 'e'].map((slug, i) => agency(slug, 43.65 + i * 0.01, -79.38));
+    renderHook(() => useAgencyData(agencies, viewport, { viewportLoadOpen: true }));
+    // Open gate and nothing else loading: the first one goes alone.
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(1));
+    resolvers.shift()!();
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(4));
+  });
 });

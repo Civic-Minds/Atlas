@@ -20,6 +20,7 @@ import path from 'path';
 import { PMTiles } from 'pmtiles';
 import './loadEnv.js';
 import { r2Put } from './r2.js';
+import { pruneOldReleases } from './pruneReleases.js';
 import { RELEASE_HISTORY_KEY, appendReleaseHistory } from '../shared/releaseHistory.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { isBuiltIntoTiles, type TileInclusionAgency } from './pmtilesCoverage.js';
@@ -165,6 +166,13 @@ try {
     appendReleaseHistory(history, { releaseId: manifest.releaseId, generatedAt: manifest.generatedAt }), null, 2));
 } catch (err) {
   console.warn(`Release published, but ${RELEASE_HISTORY_KEY} was not updated: ${err instanceof Error ? err.message : err}`);
+}
+// Retention: keep the live release plus the previous two. Like the history write, a failure
+// here never undoes the publish.
+try {
+  await pruneOldReleases({ dryRun: process.argv.includes('--prune-dry-run') });
+} catch (err) {
+  console.warn(`Release published, but pruning old releases failed: ${err instanceof Error ? err.message : err}`);
 }
 // A published manifest must not be publishable again from a later run.
 fs.rmSync(manifestPath);

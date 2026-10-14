@@ -1,7 +1,7 @@
 #!/usr/bin/env npx tsx
 /**
  * build-pmtiles-incremental.ts — add ONE new, geographically isolated
- * agency's routes/stops/corridors into the existing deployed atlas.pmtiles
+ * agency routes and stops into the existing deployed atlas.pmtiles
  * without re-tippecanoeing all ~467 agencies (see build-pmtiles.ts / npm run
  * build-pmtiles for the full rebuild).
  *
@@ -192,7 +192,7 @@ async function getZxyWithRetry(pmtiles: PMTiles, zoom: number, x: number, y: num
 
 /**
  * Scan the deployed PMTiles (via HTTP range requests — no full download) for
- * every agencySlug present in the routes/stops/corridors layers within the
+ * every agencySlug present in the routes/stops layers within the
  * given bbox's tiles at a fixed zoom. Bounded to MAX_PRESENCE_SCAN_TILES.
  */
 async function scanDeployedSlugsNearBbox(pmtilesUrl: string, bbox: Bbox): Promise<Set<string>> {
@@ -217,11 +217,10 @@ async function scanDeployedSlugsNearBbox(pmtilesUrl: string, bbox: Bbox): Promis
   return found;
 }
 
-async function collectAgencyFeatures(slug: string): Promise<{ routes: Feature[]; stops: Feature[]; corridors: Feature[] }> {
+async function collectAgencyFeatures(slug: string): Promise<{ routes: Feature[]; stops: Feature[] }> {
   const arts = getAgencyArtifactUrls(slug);
   const routes: Feature[] = [];
   const stops: Feature[] = [];
-  const corridors: Feature[] = [];
 
   // 1. Routes — required. Matches build-pmtiles.ts's fail-closed behavior:
   // an agency with no fetchable route artifact must not be silently built
@@ -258,17 +257,7 @@ async function collectAgencyFeatures(slug: string): Promise<{ routes: Feature[];
     });
   }
 
-  // 3. Corridors — best effort, matching build-pmtiles.ts.
-  const corridorsData = await fetchJson(arts.corridorsUrl);
-  if (corridorsData && corridorsData.features) {
-    corridorsData.features.forEach(f => {
-      f.properties = f.properties || {};
-      f.properties.agencySlug = slug;
-      corridors.push(f);
-    });
-  }
-
-  return { routes, stops, corridors };
+  return { routes, stops };
 }
 
 function parseArgs(argv: string[]): { slug: string; dryRun: boolean; allowStaleData: boolean; forceCountryLaunch: boolean } {
@@ -347,9 +336,9 @@ async function main() {
   fs.mkdirSync(tmpDir, { recursive: true });
 
   try {
-    console.log(`Downloading route/stops/corridors GeoJSON for "${slug}"...`);
-    const { routes, stops, corridors } = await collectAgencyFeatures(slug);
-    console.log(`Collected features for "${slug}" — routes: ${routes.length}, stops: ${stops.length}, corridors: ${corridors.length}`);
+    console.log(`Downloading route/stops GeoJSON for "${slug}"...`);
+    const { routes, stops } = await collectAgencyFeatures(slug);
+    console.log(`Collected features for "${slug}" — routes: ${routes.length}, stops: ${stops.length}`);
     if (routes.length === 0) console.warn(`WARNING: 0 route features for "${slug}" — routes layer contribution will be empty!`);
 
     // LOD annotation — identical to build-pmtiles.ts.
@@ -360,14 +349,11 @@ async function main() {
 
     const routesPath = path.join(tmpDir, 'routes.geojson');
     const stopsPath = path.join(tmpDir, 'stops.geojson');
-    const corridorsPath = path.join(tmpDir, 'corridors.geojson');
     fs.writeFileSync(routesPath, JSON.stringify({ type: 'FeatureCollection', features: routes }));
     fs.writeFileSync(stopsPath, JSON.stringify({ type: 'FeatureCollection', features: stops }));
-    fs.writeFileSync(corridorsPath, JSON.stringify({ type: 'FeatureCollection', features: corridors }));
 
     const routesPm = path.join(tmpDir, 'routes.pmtiles');
     const stopsPm = path.join(tmpDir, 'stops.pmtiles');
-    const corridorsPm = path.join(tmpDir, 'corridors.pmtiles');
 
     console.log(`Building routes.pmtiles for "${slug}"...`);
     // Exact same flags as build-pmtiles.ts's full build, so the incremental
@@ -376,9 +362,6 @@ async function main() {
 
     console.log(`Building stops.pmtiles for "${slug}"...`);
     execSync(`tippecanoe -o "${stopsPm}" -z14 --drop-densest-as-needed -l stops "${stopsPath}" --force`, { stdio: 'inherit' });
-
-    console.log(`Building corridors.pmtiles for "${slug}"...`);
-    execSync(`tippecanoe -o "${corridorsPm}" -z14 --no-tile-size-limit -l corridors "${corridorsPath}" --force`, { stdio: 'inherit' });
 
     const existingAtlasPath = path.join(tmpDir, 'atlas.existing.pmtiles');
     console.log(`Downloading currently deployed atlas.pmtiles (${pmtilesUrl}) to merge into...`);
@@ -393,7 +376,7 @@ async function main() {
     // existing agency, this only adds new tiles in "${slug}"'s area and leaves
     // every existing tile's contents untouched.
     execSync(
-      `tile-join -o "${mergedPath}" --force --no-tile-size-limit "${existingAtlasPath}" "${routesPm}" "${stopsPm}" "${corridorsPm}"`,
+      `tile-join -o "${mergedPath}" --force --no-tile-size-limit "${existingAtlasPath}" "${routesPm}" "${stopsPm}"`,
       { stdio: 'inherit' },
     );
 
@@ -402,10 +385,10 @@ async function main() {
 
     console.log(`\n=== Report ===`);
     console.log(`Agency: ${slug} (${(agency as any).name ?? 'unknown name'})`);
-    console.log(`New features — routes: ${routes.length}, stops: ${stops.length}, corridors: ${corridors.length}`);
+    console.log(`New features — routes: ${routes.length}, stops: ${stops.length}`);
     console.log(`Existing atlas.pmtiles: ${(existingSize / 1024 / 1024).toFixed(1)} MB`);
     console.log(`Merged atlas.pmtiles:   ${(mergedSize / 1024 / 1024).toFixed(1)} MB (${deltaMb >= 0 ? '+' : ''}${deltaMb.toFixed(1)} MB)`);
-    console.log(`Layers changed: routes (+${routes.length}), stops (+${stops.length}), corridors (+${corridors.length})`);
+    console.log(`Layers changed: routes (+${routes.length}), stops (+${stops.length})`);
 
     if (dryRun) {
       console.log(`\n--dry-run: nothing uploaded. Merged file left at ${mergedPath} for inspection.`);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, recordedFeedExpiry, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, recordedFeedExpiry, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -219,5 +219,39 @@ describe('unchanged-feed check with a placeholder calendar end (#688)', () => {
   it('keeps comparing against the recorded expiry for records without an uncapped one', () => {
     expect(decideRefreshSkipUnchanged({ ...base, peekedExpiry: '20261231', lastFeedExpiry: '20261231' }).skip).toBe(true);
     expect(decideRefreshSkipUnchanged(base).skip).toBe(false);
+  });
+});
+
+describe('stampReprocessedFeedExpiry (#837)', () => {
+  const todayYmd = '20261013';
+
+  it('records the processed feed expiry over an older one, as mcts needed', () => {
+    const agency = { lastFeedExpiry: '20260920', lastPeekedExpiry: '20260920', lastFeedVersion: 'v1', lastRefreshedAt: '2026-09-01' };
+    expect(stampReprocessedFeedExpiry(agency, { feedExpiry: null, calendarExpiry: '20261205', todayYmd })).toBe(true);
+    expect(agency).toEqual({ lastFeedExpiry: '20261205', lastPeekedExpiry: '20261205', lastFeedVersion: 'v1', lastRefreshedAt: '2026-09-01' });
+  });
+
+  it('caps a placeholder calendar end like a refresh does', () => {
+    const agency = { lastFeedExpiry: '20261001' };
+    stampReprocessedFeedExpiry(agency, { feedExpiry: '20270101', calendarExpiry: '20991231', todayYmd });
+    expect(agency).toEqual({ lastFeedExpiry: recordedFeedExpiry('20270101', '20991231', todayYmd), lastPeekedExpiry: '20991231' });
+    expect(agency.lastFeedExpiry).toBe('20281013');
+  });
+
+  it('keeps a later feed_info end over an earlier calendar end', () => {
+    const agency = { lastFeedExpiry: '20261001' };
+    stampReprocessedFeedExpiry(agency, { feedExpiry: '20270115', calendarExpiry: '20261231', todayYmd });
+    expect(agency.lastFeedExpiry).toBe('20270115');
+  });
+
+  it('reports no change when the record already matches', () => {
+    const agency = { lastFeedExpiry: '20261205', lastPeekedExpiry: '20261205' };
+    expect(stampReprocessedFeedExpiry(agency, { feedExpiry: null, calendarExpiry: '20261205', todayYmd })).toBe(false);
+  });
+
+  it('leaves the record alone when the feed has no dates', () => {
+    const agency = { lastFeedExpiry: '20261205', lastPeekedExpiry: '20261205' };
+    expect(stampReprocessedFeedExpiry(agency, { feedExpiry: null, calendarExpiry: null, todayYmd })).toBe(false);
+    expect(agency).toEqual({ lastFeedExpiry: '20261205', lastPeekedExpiry: '20261205' });
   });
 });

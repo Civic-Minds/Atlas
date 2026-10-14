@@ -212,7 +212,8 @@ export function computeHeadwayStats(times: number[]) {
     const avg = gaps.length ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 0;
     const plainMedian = computeMedian(gaps);
     // Alternating short and long gaps read their typical wait, not the short gap (#772).
-    const median = gaps.length >= 3 ? typicalOfGaps(gaps) : plainMedian;
+    // The whole day's gaps, so a break between runs reads the median (#834).
+    const median = gaps.length >= 3 ? typicalOfGaps(gaps, true) : plainMedian;
 
     // Peak detection: 2-hour sliding window, O(n) two-pointer
     let peakHeadway = avg;

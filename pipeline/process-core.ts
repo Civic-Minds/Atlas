@@ -2205,11 +2205,12 @@ export async function processGtfsBuffer(
       };
       // Step 4.2 and 4.3 (routeGrading.ts): the headline, then the tier it supports.
       // A midday value read off three uneven departures is a two-gap mean (wsf 131 Anacortes,
-      // 205 and 100 read 153): keep the phase 2 branch value, as for a thin all-day sample (#745).
+      // 205 and 100 read 153): keep the phase 2 branch value, as for a thin all-day sample (#745),
+      // unless a gap is a midday hole that value would hide (#833).
       const unevenMiddayTerminal = !poolUsed
         && branchHw != null
         && terminalMiddayHw != null
-        && isUnevenTwoGapMiddayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount);
+        && isUnevenTwoGapMiddayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount, branchHw);
       const headway = !lineHasReading ? null
         : ((!terminalHasReading || !ownTerminalHasReading) && !poolUsed && scoped == null && lineRunsByDay() && worstReadingStop() != null) ? worstReadingStop()!
         : decideHeadline({

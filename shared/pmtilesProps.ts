@@ -47,3 +47,35 @@ export function flattenPeriodHeadwayProps(props: Record<string, unknown>): void 
 export function periodHeadwayFlatKeys(period: PeriodKey): [string, string, string] {
   return [`msph_${period}`, `wdph_${period}`, `hph_${period}`];
 }
+
+/**
+ * Scalar route properties kept in the route tiles. Everything else is dropped, above all the
+ * nested stop-by-stop and per-hour tables (stopPeriodCoverageHeadways, stopPeriodHeadways,
+ * stopHeadways, stopOrder, stopPositions, maxGapByHour, headwayByHour, ...). Tippecanoe stores
+ * nested objects as strings no style expression can read, and the client takes those tables from
+ * the agency JSON, so in tiles they were about 95% of the bytes and never read.
+ *
+ * Add a key here when a style expression or a queryRenderedFeatures reader needs it from the tile
+ * (shared/__tests__/tileRouteProperties.test.ts fails when one is missing). The period maps are
+ * kept as the flat pch_/wdpch_/hps_/msph_/wdph_/hph_/pws_ keys that flattenPeriodHeadwayProps adds.
+ */
+export const TILE_ROUTE_SCALAR_KEYS: readonly string[] = [
+  'agencySlug', 'agencyName',
+  'routeId', 'routeBranch', 'routeShortName', 'routeLongName', 'routeVariant', 'routeType', 'routeColor',
+  'busSubType', 'directionId', 'headsign', 'day',
+  'serviceClass', 'tier', 'weekdayTierVariation', 'edgeGapAllowance',
+  'headway', 'worstDirectionHeadway', 'minStopHeadway',
+  'routeHasIrregularDirection', 'routeHasLimitedDirection',
+  'noRouteShape', 'frequentService', 'nightService', 'nightService30', 'nightService60',
+];
+
+export const TILE_ROUTE_FLAT_KEY = /^(pch|wdpch|hps|msph|wdph|hph|pws)_/;
+
+/** The route properties that go into tiles: the allowed scalars plus the flat period keys. */
+export function pickTileRouteProperties(props: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(props)) {
+    if (TILE_ROUTE_SCALAR_KEYS.includes(key) || TILE_ROUTE_FLAT_KEY.test(key)) out[key] = value;
+  }
+  return out;
+}

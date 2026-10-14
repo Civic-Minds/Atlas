@@ -578,6 +578,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             // CIV-82: real pooled departures replace the reciprocal-of-medians estimate when the
             // data has them ("Shared stretch every N"; branch rows keep each branch's own M).
             const groupShared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
+            // A route that fails the filter as a whole can still have a shared stretch that passes.
+            const onlySharedPasses = groupShared != null && maxHeadway !== Infinity
+              && group.realTier.some(d => !featurePassesHeadwayFilter(d, period, maxHeadway));
             const groupHasCoreSummary = groupShared != null || shouldShowTrunkSummary(group.realTier, period);
             const groupCoreHeadway = groupShared?.headway ?? (groupHasCoreSummary
               ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)
@@ -619,6 +622,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       </p>
                     )}
                   </>
+                )}
+                {onlySharedPasses && (
+                  <p className="mt-2 mb-2 text-xs font-bold text-[var(--text-dim)]">
+                    Only the shared section meets this filter. The branches do not.
+                  </p>
                 )}
                 {groupHasCoreSummary && groupCoreHeadway != null && (
                   <>

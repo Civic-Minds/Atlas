@@ -54,9 +54,13 @@ export default {
       const value = upstream.headers.get(name);
       if (value) headers.set(name, value);
     }
+    // A release's archive never changes (the release id is in the URL), so browsers can keep the
+    // ranges they fetched. Errors are never cached.
     headers.set(
       'Cache-Control',
-      upstream.ok ? 'public, s-maxage=3600, stale-while-revalidate=86400' : 'no-store',
+      upstream.ok
+        ? 'public, max-age=31536000, immutable, s-maxage=3600, stale-while-revalidate=86400'
+        : 'no-store',
     );
     headers.set('Access-Control-Allow-Origin', '*');
     headers.set('Access-Control-Expose-Headers', FORWARDED_HEADERS.join(', '));

@@ -10,7 +10,7 @@ import { isRailLikeRoute } from '../shared/modes.js';
 export const parseCsv = <T>(text: string): T[] => {
     const result = Papa.parse(text, {
         header: true,
-        skipEmptyLines: true,
+        skipEmptyLines: 'greedy',
         transform: (value: string) => value.trim(),
         // Strip surrounding quotes and leading BOM from header names.
         // Some agencies (e.g. Saint John Transit, Metrolink, OCTA) wrap headers in double

@@ -53,7 +53,8 @@ describe('prepareAgencyRouteFeaturesForTiles', () => {
     for (const f of routes) {
       expect(f.properties?.agencySlug).toBe('ttc');
       expect(f.properties?.worstDirectionHeadway).toBe(10);
-      expect(f.properties?.worstDirectionHeadwayByPeriod).toEqual({ midday: 10 });
+      // The nested copy stays in the agency JSON; tiles carry only the flat keys below.
+      expect(f.properties?.worstDirectionHeadwayByPeriod).toBeUndefined();
       // Flat tile keys used by MapLibre period filter
       expect(f.properties?.wdph_midday).toBe(10);
     }

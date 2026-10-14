@@ -135,7 +135,14 @@ async function main() {
   const releaseId = `${dryRun ? 'local' : 'release'}-${Date.now().toString(36)}`;
   console.log(`Loading agency index from public/data/index.json...`);
   const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as { agencies: any[] };
-  const agencies = index.agencies || [];
+  // Local sample builds: `--dry-run --only-slug ttc --only-slug yrt` builds tiles for just those
+  // agencies (a size/render check that never touches R2). The coverage check needs the full set, so
+  // it is skipped for a sample.
+  const onlySlugs = process.argv.flatMap((arg, i) => (arg === '--only-slug' ? [process.argv[i + 1]] : []));
+  if (onlySlugs.length > 0 && !dryRun) throw new Error('--only-slug builds a partial map, so it only works with --dry-run.');
+  const agencies = onlySlugs.length > 0
+    ? (index.agencies || []).filter(agency => onlySlugs.includes(agency.slug))
+    : index.agencies || [];
   
   console.log(`Found ${agencies.length} agencies to process.`);
 
@@ -147,7 +154,6 @@ async function main() {
 
   const allRoutes: Feature[] = [];
   const allStops: Feature[] = [];
-  const allCorridors: Feature[] = [];
   const failedRouteFetches: string[] = [];
 
   const downloadTasks = agencies.map(agency => async () => {
@@ -217,7 +223,8 @@ async function main() {
       }
     }
 
-    // 3. Corridors
+    // 3. Corridors: published with the release for the agency JSON, but no longer drawn from tiles
+    // (nothing reads a corridors tile layer), so they are not collected for the tile build.
     if (corridorsUrl) {
       const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}-corridors.json`) : null;
       const data = localPath && fs.existsSync(localPath)
@@ -225,11 +232,6 @@ async function main() {
         : await fetchJson(corridorsUrl);
       if (data && data.features) {
         fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-corridors.json`), JSON.stringify(data));
-        data.features.forEach(f => {
-          f.properties = f.properties || {};
-          f.properties.agencySlug = slug;
-          allCorridors.push(f);
-        });
       }
     }
   });
@@ -246,7 +248,7 @@ async function main() {
     );
   }
 
-  console.log(`Collected features — routes: ${allRoutes.length}, stops: ${allStops.length}, corridors: ${allCorridors.length}`);
+  console.log(`Collected features — routes: ${allRoutes.length}, stops: ${allStops.length}`);
   if (allRoutes.length === 0) console.warn("WARNING: 0 routes features — routes layer will be missing from PMTiles!");
   if (allStops.length === 0) console.warn("WARNING: 0 stops features — stops layer will be missing from PMTiles!");
 
@@ -266,7 +268,6 @@ async function main() {
   // Write temporary files
   const routesPath = path.join(tmpDir, 'routes.geojson');
   const stopsPath = path.join(tmpDir, 'stops.geojson');
-  const corridorsPath = path.join(tmpDir, 'corridors.geojson');
   const pmtilesPath = path.join(tmpDir, 'atlas.pmtiles');
   const overviewRoutesPath = path.join(tmpDir, 'overview-routes.geojson');
   const overviewPmtilesPath = path.join(tmpDir, 'atlas-overview.pmtiles');
@@ -275,7 +276,6 @@ async function main() {
   await Promise.all([
     writeGeoJsonFeatureCollection(routesPath, allRoutes),
     writeGeoJsonFeatureCollection(stopsPath, allStops),
-    writeGeoJsonFeatureCollection(corridorsPath, allCorridors),
     writeGeoJsonFeatureCollection(overviewRoutesPath, buildOverviewRoutes(allRoutes)),
   ]);
 
@@ -283,7 +283,6 @@ async function main() {
   // then merge into a single atlas.pmtiles with tile-join.
   const routesPm = path.join(tmpDir, 'routes.pmtiles');
   const stopsPm = path.join(tmpDir, 'stops.pmtiles');
-  const corridorsPm = path.join(tmpDir, 'corridors.pmtiles');
   const overviewRoutesPm = path.join(tmpDir, 'overview-routes.pmtiles');
 
   console.log("Building routes.pmtiles ...");
@@ -294,14 +293,11 @@ async function main() {
   console.log("Building stops.pmtiles ...");
   execSync(`tippecanoe -o "${stopsPm}" -z14 --drop-densest-as-needed -l stops "${stopsPath}" --force`, { stdio: 'inherit' });
 
-  console.log("Building corridors.pmtiles ...");
-  execSync(`tippecanoe -o "${corridorsPm}" -z14 --no-tile-size-limit -l corridors "${corridorsPath}" --force`, { stdio: 'inherit' });
-
   console.log("Building atlas-overview.pmtiles ...");
   execSync(`tippecanoe -o "${overviewRoutesPm}" -z7 --no-tile-size-limit -n "${releaseId}" -l routes "${overviewRoutesPath}" --force`, { stdio: 'inherit' });
 
   console.log("Merging into atlas.pmtiles via tile-join ...");
-  execSync(`tile-join -o "${pmtilesPath}" --force --no-tile-size-limit --name="${releaseId}" "${routesPm}" "${stopsPm}" "${corridorsPm}"`, { stdio: 'inherit' });
+  execSync(`tile-join -o "${pmtilesPath}" --force --no-tile-size-limit --name="${releaseId}" "${routesPm}" "${stopsPm}"`, { stdio: 'inherit' });
 
   const size = fs.statSync(pmtilesPath).size;
   console.log(`atlas.pmtiles size: ${(size/1024/1024).toFixed(1)} MB`);
@@ -311,11 +307,15 @@ async function main() {
   // Verify the complete archive locally before uploading it. The same check
   // over R2 requires tens of thousands of range requests and can fail because
   // of transient object-store/network errors, even when the archive is sound.
-  console.log('Verifying full PMTiles coverage locally before upload...');
-  execSync('npm run verify-pmtiles-coverage', {
-    stdio: 'inherit',
-    env: { ...process.env, PMTILES_LOCAL_PATH: pmtilesPath, PMTILES_AGENCY_ARTIFACT_DIR: releaseAgencyDir },
-  });
+  if (onlySlugs.length === 0) {
+    console.log('Verifying full PMTiles coverage locally before upload...');
+    execSync('npm run verify-pmtiles-coverage', {
+      stdio: 'inherit',
+      env: { ...process.env, PMTILES_LOCAL_PATH: pmtilesPath, PMTILES_AGENCY_ARTIFACT_DIR: releaseAgencyDir },
+    });
+  } else {
+    console.log('Sample build: skipping the full-coverage check.');
+  }
 
   if (dryRun) {
     console.log(`Dry run complete: ${pmtilesPath}`);

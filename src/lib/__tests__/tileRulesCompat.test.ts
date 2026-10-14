@@ -7,8 +7,6 @@ import {
 } from '../../../shared/artifactSchema';
 import { isCompatibleDataRelease } from '../dataRelease';
 
-// Temporary v1 + v2 acceptance during the #665 rollout (drop v1 in #703), and v2 + v3 during
-// the #749 rollout.
 describe('accepted tile-rules versions', () => {
   const release = {
     releaseId: 'release-test',
@@ -19,13 +17,13 @@ describe('accepted tile-rules versions', () => {
   };
 
   const accepted: Array<[string, unknown]> = [
-    ['version 1', 1],
-    ['version 2', 2],
     ['version 3', 3],
-    ['no stamp (counts as 1)', undefined],
   ];
   const rejected: Array<[string, unknown]> = [
     ['version 0', 0],
+    ['version 1', 1],
+    ['version 2', 2],
+    ['no stamp (counts as 1)', undefined],
     ['version 4', 4],
     ['a string', '2'],
     ['garbage text', 'garbage'],
@@ -39,18 +37,18 @@ describe('accepted tile-rules versions', () => {
     expect(ACCEPTED_TILE_RULES_VERSIONS).toContain(TILE_RULES_VERSION);
   });
 
-  it('accepts exactly versions 1, 2 and 3', () => {
-    expect([...ACCEPTED_TILE_RULES_VERSIONS].sort()).toEqual([1, 2, 3]);
+  it('accepts exactly version 3', () => {
+    expect([...ACCEPTED_TILE_RULES_VERSIONS].sort()).toEqual([3]);
   });
 
   it.each(accepted)('accepts %s', (_label, tileRulesVersion) => {
-    const stamp = tileRulesVersion === undefined ? {} : { tileRulesVersion };
-    expect(isAcceptedTileRulesVersion(stamp)).toBe(true);
-    expect(isCompatibleDataRelease({ ...release, ...stamp } as never)).toBe(true);
+    expect(isAcceptedTileRulesVersion({ tileRulesVersion })).toBe(true);
+    expect(isCompatibleDataRelease({ ...release, tileRulesVersion } as never)).toBe(true);
   });
 
   it.each(rejected)('rejects %s', (_label, tileRulesVersion) => {
-    expect(isAcceptedTileRulesVersion({ tileRulesVersion })).toBe(false);
-    expect(isCompatibleDataRelease({ ...release, tileRulesVersion } as never)).toBe(false);
+    const stamp = tileRulesVersion === undefined ? {} : { tileRulesVersion };
+    expect(isAcceptedTileRulesVersion(stamp)).toBe(false);
+    expect(isCompatibleDataRelease({ ...release, ...stamp } as never)).toBe(false);
   });
 });
