@@ -1,0 +1,25 @@
+{
+  "slug": "laredo",
+  "name": "Laredo",
+  "type": "MSA",
+  "officialName": "Laredo, TX",
+  "country": "United States",
+  "cities": [
+    "Laredo"
+  ],
+  "bbox": [
+    27.25956200024015,
+    -100.2121890003657,
+    28.204627000391973,
+    -98.79808700009394
+  ],
+  "center": [
+    27.732094500316062,
+    -99.50513800022982
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "laredo"
+  ],
+  "page": false
+}

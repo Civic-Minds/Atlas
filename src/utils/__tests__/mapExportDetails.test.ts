@@ -85,13 +85,13 @@ describe('pickExportPlace', () => {
 describe('colour key', () => {
   it('lists only tiers whose colour is drawn, in the app order', () => {
     const key = buildExportKey(keyCandidates(BASE), ['#F59E0B', '#22863a', '#123456']);
-    expect(key.map(item => item.label)).toEqual(['≤10m', '≤20m']);
+    expect(key.map(item => item.label)).toEqual(['≤10 min', '≤20 min']);
   });
 
   it('uses the colour-vision palette when that mode is on', () => {
     const state = { ...BASE, colorMode: 'friendly' as const };
     const key = buildExportKey(keyCandidates(state), [COLOR_VISION_HEADWAY_TIERS[0].color]);
-    expect(key).toEqual([{ color: COLOR_VISION_HEADWAY_TIERS[0].color, label: '≤10m' }]);
+    expect(key).toEqual([{ color: COLOR_VISION_HEADWAY_TIERS[0].color, label: '≤10 min' }]);
     expect(buildExportKey(keyCandidates(state), [HEADWAY_TIERS[0].color])).toEqual([]);
   });
 
@@ -116,7 +116,7 @@ describe('describeMapExport', () => {
   it('includes the selected route and modes', () => {
     const details = describeMapExport({ ...BASE, routeLabel: '505 — Dundas', routeShortName: '505', routeColor: '#15803d', selectedModes: [3, 1] }, samples({ ttc: 30 }), AGENCIES);
     expect(details.route).toEqual({ label: 'Route 505 — Dundas', color: '#15803d' });
-    expect(details.lines).toEqual(['Every 20 min or better · Saturday midday · Subway and Bus']);
+    expect(details.lines).toEqual(['Every 20 min or better · Saturday midday · Subway/Metro and Bus']);
     expect(details.filename).toBe('atlas-toronto-route-505-20min-saturday-midday.png');
   });
 

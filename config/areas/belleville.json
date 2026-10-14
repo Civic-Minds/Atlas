@@ -1,0 +1,26 @@
+{
+  "slug": "belleville",
+  "name": "Belleville",
+  "type": "CMA",
+  "officialName": "Belleville - Quinte West",
+  "country": "Canada",
+  "cities": [
+    "Belleville",
+    "Quinte West"
+  ],
+  "bbox": [
+    43.93487818243625,
+    -77.84736903116638,
+    44.50409990861309,
+    -76.98665625100612
+  ],
+  "center": [
+    44.21948904552467,
+    -77.41701264108625
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "belleville"
+  ],
+  "page": false
+}

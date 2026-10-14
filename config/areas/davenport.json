@@ -1,0 +1,28 @@
+{
+  "slug": "davenport",
+  "name": "Davenport",
+  "type": "MSA",
+  "officialName": "Davenport-Moline-Rock Island, IA-IL",
+  "country": "United States",
+  "cities": [
+    "Davenport",
+    "Moline",
+    "Rock Island"
+  ],
+  "bbox": [
+    41.0636450000462,
+    -91.11418600032684,
+    41.782964000154436,
+    -89.85661300028524
+  ],
+  "center": [
+    41.423304500100315,
+    -90.48539950030604
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bettendorf",
+    "davenport"
+  ],
+  "page": true
+}

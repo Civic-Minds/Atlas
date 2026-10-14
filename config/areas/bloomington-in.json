@@ -1,0 +1,25 @@
+{
+  "slug": "bloomington-in",
+  "name": "Bloomington",
+  "type": "MSA",
+  "officialName": "Bloomington, IN",
+  "country": "United States",
+  "cities": [
+    "Bloomington"
+  ],
+  "bbox": [
+    38.9906990000681,
+    -87.05492100028155,
+    39.473345000121796,
+    -86.31737999991469
+  ],
+  "center": [
+    39.23202200009494,
+    -86.68615050009812
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bloomington"
+  ],
+  "page": false
+}

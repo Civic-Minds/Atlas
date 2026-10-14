@@ -1,0 +1,29 @@
+{
+  "slug": "bakersfield",
+  "name": "Bakersfield",
+  "type": "MSA",
+  "officialName": "Bakersfield-Delano, CA",
+  "country": "United States",
+  "cities": [
+    "Bakersfield",
+    "Delano"
+  ],
+  "bbox": [
+    34.7886550001579,
+    -120.19436900001054,
+    35.79839200020098,
+    -117.61651699983466
+  ],
+  "center": [
+    35.29352350017944,
+    -118.9054429999226
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "arvin",
+    "get",
+    "kern-transit",
+    "taft"
+  ],
+  "page": true
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "waco",
+  "name": "Waco",
+  "type": "MSA",
+  "officialName": "Waco, TX",
+  "country": "United States",
+  "cities": [
+    "Waco"
+  ],
+  "bbox": [
+    30.98603100020938,
+    -98.00546200000429,
+    32.20740300001891,
+    -96.59686200028641
+  ],
+  "center": [
+    31.596717000114143,
+    -97.30116200014535
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "waco"
+  ],
+  "page": false
+}

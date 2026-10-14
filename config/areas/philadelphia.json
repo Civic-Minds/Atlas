@@ -1,0 +1,28 @@
+{
+  "slug": "philadelphia",
+  "name": "Philadelphia",
+  "type": "MSA",
+  "officialName": "Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",
+  "country": "United States",
+  "cities": [
+    "Philadelphia",
+    "Camden",
+    "Wilmington"
+  ],
+  "bbox": [
+    39.29028100000969,
+    -76.23327900016568,
+    40.608579999868745,
+    -74.38970799981756
+  ],
+  "center": [
+    39.94943049993922,
+    -75.31149349999163
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "patco",
+    "septa"
+  ],
+  "page": true
+}

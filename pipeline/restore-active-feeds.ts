@@ -4,8 +4,10 @@
  * processed artifacts were removed by the old "current-only" cleanup.
  *
  * Archive snapshots are inspected by their actual GTFS service dates, then
- * processed and promoted to atlas/gtfs/{slug}.zip. The selected archive object
- * is deleted only after its processed artifacts are public and verified.
+ * processed and published as atlas/{slug}*.json. Raw zips live only in the
+ * private archive bucket (no public gtfs/{slug}.zip any more); the archive
+ * object is left in place, and a feed downloaded because no archive existed
+ * is archived under its stamped key.
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -18,16 +20,15 @@ import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds } from '.
 import { resolveFeedUrl } from './feedUrl.js';
 import {
   rawFeedArchiveKey,
-  r2CopyCurrentFeedToArchive,
   r2Get,
   r2GetArchiveBuffer,
   r2ListArchive,
-  r2MoveArchiveFeedToCurrent,
   r2Put,
-  r2PutCurrentFeed,
+  r2PutArchive,
 } from './r2.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
+import { recordedFeedExpiry } from './refreshMeta.js';
 import { isActiveProductionFeed, isStalePrimaryProductionFeed, type FeedAvailabilityEntry, todayUtcYmd } from '../shared/feedAvailability.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 
@@ -49,6 +50,7 @@ interface Agency extends FeedAvailabilityEntry {
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
   keepLongShapeJumps?: boolean;
+  skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
   fare?: number;
@@ -124,12 +126,6 @@ async function newestArchiveCandidate(slug: string): Promise<Candidate | null> {
   return candidates.at(-1) ?? null;
 }
 
-async function archiveExistingActive(agency: Agency): Promise<void> {
-  const previousKey = agency.lastRawArchiveKey ?? agency.lastFeedExpiry ?? agency.lastFeedVersion ?? `unknown-${today}`;
-  const copied = await r2CopyCurrentFeedToArchive(agency.slug, previousKey);
-  if (copied) console.log(`  archived prior active raw feed as ${copied}.zip`);
-}
-
 async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ agency: Agency; hiddenRoutes: ReturnType<typeof buildHiddenRoutesForAgency> }> {
   console.log(`\n${agency.slug}: ${candidate.stem} (service through ${candidate.info.expiry ?? 'unknown'})`);
   // Supplementals (e.g. a separate rail zip) are not archived, so they come from
@@ -138,7 +134,11 @@ async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ ag
   const result = await processAgencyFeeds(candidate.body, supplementalFeeds, agency, {}, message => console.log(`  ${message}`));
   if (result.featureCount === 0) throw new Error('processed feed produced 0 route features');
 
-  await archiveExistingActive(agency);
+  const rawArchiveKey = candidate.stem || rawFeedArchiveKey(result.feedExpiry, result.feedVersion, candidate.body);
+  // A feed fetched from its URL has no archive copy yet; keep it so the data can be rebuilt.
+  if (!candidate.stem) {
+    await r2PutArchive(`gtfs/archive/${agency.slug}/${rawArchiveKey}.zip`, candidate.body, 'application/zip');
+  }
   await Promise.all([
     r2Put(`atlas/${agency.slug}.json`, result.geojson),
     r2Put(`atlas/${agency.slug}-stops.json`, result.stopsJson),
@@ -146,19 +146,17 @@ async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ ag
     r2Put(`atlas/${agency.slug}-trips.json`, result.tripsJson),
     r2Put(`atlas/${agency.slug}-stops-meta.json`, result.stopsMetaJson),
   ]);
-  if (candidate.stem) {
-    await r2MoveArchiveFeedToCurrent(agency.slug, candidate.stem);
-  } else {
-    await r2PutCurrentFeed(agency.slug, candidate.body);
-  }
 
+  // Same rule as refresh: the later of feed_info's end and the capped calendar end (#687).
+  const lastFeedExpiry = recordedFeedExpiry(result.feedExpiry, result.calendarExpiry, today);
   const updated: Agency = {
     ...agency,
     center: result.center ?? agency.center,
     timezone: result.timezone ?? agency.timezone,
-    lastFeedExpiry: result.feedExpiry,
+    lastFeedExpiry,
+    lastPeekedExpiry: result.calendarExpiry,
     lastFeedVersion: result.feedVersion,
-    lastRawArchiveKey: rawFeedArchiveKey(result.feedExpiry, result.feedVersion, candidate.body),
+    lastRawArchiveKey: rawArchiveKey,
     lastRefreshedAt: todayUtcYmd(),
   };
   return {

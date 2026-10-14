@@ -1,0 +1,25 @@
+{
+  "slug": "ukiah",
+  "name": "Ukiah",
+  "type": "MicroSA",
+  "officialName": "Ukiah, CA",
+  "country": "United States",
+  "cities": [
+    "Ukiah"
+  ],
+  "bbox": [
+    38.758118999870796,
+    -124.1348890003635,
+    40.00247000024827,
+    -122.8213549996417
+  ],
+  "center": [
+    39.380294500059534,
+    -123.4781220000026
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "mendocino"
+  ],
+  "page": false
+}

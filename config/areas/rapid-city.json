@@ -1,0 +1,25 @@
+{
+  "slug": "rapid-city",
+  "name": "Rapid City",
+  "type": "MSA",
+  "officialName": "Rapid City, SD",
+  "country": "United States",
+  "cities": [
+    "Rapid City"
+  ],
+  "bbox": [
+    43.476843999761314,
+    -104.05548700012488,
+    45.03965799976426,
+    -101.99998099960852
+  ],
+  "center": [
+    44.25825099976279,
+    -103.02773399986671
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "rapid-city"
+  ],
+  "page": false
+}

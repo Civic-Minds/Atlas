@@ -7,7 +7,6 @@ import AtlasBrand from './components/AtlasBrand';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 const Interval = React.lazy(() => import('./apps/Interval'));
-import type { StopEntry } from './apps/corridor-search';
 import { useDebouncedValue } from './hooks/useDebouncedValue';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from './hooks/useMediaQuery';
 const NightService = React.lazy(() => import('./apps/NightService'));
@@ -15,10 +14,8 @@ const NightService = React.lazy(() => import('./apps/NightService'));
 // of what main's build actually fetches, not just hidden behind a runtime check.
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
-const Corridors = React.lazy(() => import('./apps/Corridors'));
-import type { AppId } from './components/AppDrawer';
+import { isAppGated, type AppId } from './utils/appGate';
 import { ModeTabLabel, modeTabCollapsed, modeTabSpacing } from './components/ModeTabLabel';
-import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
@@ -29,7 +26,6 @@ import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
-import { isAppGated } from './utils/appGate';
 import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
@@ -42,17 +38,6 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-
-export interface FareOverride {
-  adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
-  adultCash?: number;  // cash fare if different from card fare
-  zones?: boolean;     // true if fare varies by zone (display "from $X")
-  free?: boolean;      // service is currently free
-  label?: string;      // payment method name shown in UI (e.g. "OPUS", "Compass", "PRESTO")
-  currency?: 'CAD' | 'USD';
-  fareUrl?: string;    // link to full public fare page
-  source?: string;     // URL where data was sourced (internal reference)
-}
 
 export interface Agency {
   slug: string;
@@ -138,20 +123,16 @@ export interface Agency {
 const PATH_TO_APP: Record<string, AppId> = {
   '/': 'frequency',
   '/apps/frequency': 'frequency',
-  '/apps/corridors': 'corridors',
-  '/apps/fares': 'fares',
   '/apps/history': 'history',
   '/apps/live': 'live',
-  '/apps/night': 'night',
+  [FEATURE_ROUTES.nightService]: 'night',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
   frequency: '/',
-  corridors: '/apps/corridors',
-  fares: '/apps/fares',
   history: '/apps/history',
   live: '/apps/live',
-  night: '/apps/night',
+  night: FEATURE_ROUTES.nightService,
 };
 
 /** Fill in R2 artifact URLs for catalog entries that don't carry their own. */
@@ -178,8 +159,8 @@ export default function App() {
   const inFrequentService = frequentServiceMapView;
   const inResearch = FEATURES.researchApps && pathname === FEATURE_ROUTES.research;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
-  // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
-  // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
+  // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
+  // gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
   const gated = isAppGated(routedApp, FEATURES)
     || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FEATURES.frequentService);
@@ -266,6 +247,10 @@ export default function App() {
   // Interval renders its Compare view tab here, beside History and Live.
   const [viewTabsPortalEl, setViewTabsPortalEl] = useState<Element | null>(null);
   const viewTabsPortalRef = useCallback((el: HTMLDivElement | null) => { setViewTabsPortalEl(el); }, []);
+
+  // Phones: Compare sits in the More menu beside History and Live (the menu mounts only while open).
+  const [moreMenuPortalEl, setMoreMenuPortalEl] = useState<Element | null>(null);
+  const moreMenuPortalRef = useCallback((el: HTMLDivElement | null) => { setMoreMenuPortalEl(el); }, []);
 
   const headerLeftRef = useRef<HTMLDivElement>(null);
   const appLinksRef = useRef<HTMLDivElement>(null);
@@ -389,9 +374,14 @@ export default function App() {
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
-  const inCorridors = activeApp === 'corridors';
+
+  // Interval reloads all its agency data whenever this list's identity changes, so it must stay the same
+  // array until its contents change (a fresh filter() every render looped History at phone width).
+  const intervalAgencies = useMemo(
+    () => inHistory && historyAgencySlugs ? visibleAgencies.filter(a => historyAgencySlugs.has(a.slug)) : visibleAgencies,
+    [inHistory, historyAgencySlugs, visibleAgencies],
+  );
   const inLive = activeApp === 'live';
-  const inFares = activeApp === 'fares';
   const inNight = activeApp === 'night';
   const loadedAgencySlugs = useMemo(
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
@@ -401,6 +391,7 @@ export default function App() {
   const activeModeTab = inLive ? 'live' : activeApp === 'history' ? 'history' : compareActive ? 'compare' : null;
   const liveTabCollapsed = modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'live');
   const historyTabCollapsed = modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'history');
+  const showCompareControl = FEATURES.compareMode && inFrequency;
   const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
   ));
@@ -421,20 +412,13 @@ export default function App() {
   const historyAgencyForView = null;
   const searchPlaceholder = inFrequency
     ? 'Search routes'
-    : inFares ? 'Search agencies'
     : inHistory ? 'Find an agency…'
-    : inCorridors ? 'Search corridors…'
     : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
 
   function handleSearchClear() {
     setQuery('');
   }
-
-  const handleDirectFromStop = useCallback((stop: StopEntry) => {
-    setQuery(stop.displayName);
-    setActiveApp('corridors');
-  }, [setQuery]);
 
   useEffect(() => {
     const measure = () => {
@@ -453,7 +437,7 @@ export default function App() {
     // The search box also changes size on its own when it expands on phones.
     if (searchBarRef.current) ro.observe(searchBarRef.current);
     return () => ro.disconnect();
-  }, [inCorridors]);
+  }, []);
 
   useEffect(() => {
     if (activeApp === 'live') setLiveMounted(true);
@@ -535,7 +519,6 @@ export default function App() {
     <ViewportProvider>
     <OnDemandStatusProvider data={onDemandData}>
     <OnDemandViewportLoader data={onDemandData} />
-    <CorridorMapOverlayProvider>
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
@@ -559,7 +542,7 @@ export default function App() {
           <MapIcon className="w-3.5 h-3.5 text-white" />
         </button>
 
-        {!phoneSearchExpanded && <AtlasBrand />}
+        {!phoneSearchExpanded && <AtlasBrand hideByline />}
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
@@ -620,7 +603,7 @@ export default function App() {
             title={liveTabCollapsed ? 'Live vehicles' : undefined}
             className={`hidden sm:flex h-8 ${modeTabSpacing(liveTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
-            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--control-active-fg)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
             <ModeTabLabel collapsed={liveTabCollapsed}>
               <span>Live</span>
               <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
@@ -632,7 +615,7 @@ export default function App() {
           <a
             href={inHistory ? '/' : '/apps/history'}
             aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
-            aria-pressed={inHistory}
+            aria-current={inHistory ? 'page' : undefined}
             title={historyTabCollapsed ? 'Historical service' : undefined}
             className={`hidden sm:flex h-8 ${modeTabSpacing(historyTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
@@ -649,7 +632,7 @@ export default function App() {
 
         {/* Phones fold Live and History into one menu. Research is reached from the About page,
             not the map's top bar (#651). */}
-        {(showLiveControl || showHistoryControl) && !phoneSearchExpanded && (
+        {(showLiveControl || showHistoryControl || showCompareControl) && !phoneSearchExpanded && (
           <>
             <span className="sm:hidden w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
@@ -659,7 +642,7 @@ export default function App() {
                 onClick={() => setAppLinksOpen(open => !open)}
                 aria-label="More Atlas views"
                 aria-expanded={appLinksOpen}
-                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
                 <span>More</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
@@ -670,9 +653,10 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => { setActiveApp(inLive ? 'frequency' : 'live'); setAppLinksOpen(false); }}
+                      aria-pressed={inLive}
                       className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${inLive ? 'bg-[var(--control-active-fg)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
                       <span>Live</span>
                       <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
                     </button>
@@ -689,6 +673,7 @@ export default function App() {
                       {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
                     </a>
                   )}
+                  <div ref={moreMenuPortalRef} className="contents" />
                 </div>
               )}
             </div>
@@ -722,13 +707,7 @@ export default function App() {
             <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`)} />
           ) : <>
             <Interval
-              agencies={
-                inHistory && historyAgencySlugs 
-                  ? visibleAgencies.filter(a => historyAgencySlugs.has(a.slug))
-                : inFares
-                    ? visibleAgencies.filter(a => a.gtfsFares)
-                    : visibleAgencies
-              }
+              agencies={intervalAgencies}
               allAgencies={agencies}
               lightMode={lightMode}
               setLightMode={setLightMode}
@@ -737,14 +716,13 @@ export default function App() {
               resetViewKey={resetViewKey}
               showUi={inFrequency || inFrequentService}
               showSelectionUi={inLive || inNight}
-              showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors || inNight || inFrequentService}
+              showRouteLayers={inFrequency || inLive || inHistory || inNight || inFrequentService}
               liveRoutesOnly={inLive}
-              fareView={inFares}
               nightServiceView={inNight}
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
               exportEnabled={FEATURES.mapExport || inFrequentService}
-              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Night Service' : inHistory ? 'Service History' : inFares ? 'Transit Fares' : inLive ? 'Live Transit' : 'Transit Frequency'}
+              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Night Service' : inHistory ? 'Service History' : inLive ? 'Live Transit' : 'Transit Frequency'}
               frequentServiceView={inFrequentService}
               frequentServiceDays={frequentServiceDays}
               frequentServiceFrequency={frequentServiceFrequency}
@@ -754,10 +732,9 @@ export default function App() {
               setFrequentServiceWindow={setFrequentServiceWindow}
               showMapContext={FEATURES.beta}
               showMatchPercentage={FEATURES.beta}
-              filterToAgencies={inHistory || inFares}
+              filterToAgencies={inHistory}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
-              onDirectFromStop={inFrequency && FEATURES.corridors ? handleDirectFromStop : undefined}
-              hideFilterPanel={inCorridors || inLive || inHistory || inFares || inNight || inFrequentService}
+              hideFilterPanel={inLive || inHistory || inNight || inFrequentService}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
@@ -776,8 +753,10 @@ export default function App() {
               onCompareActiveChange={setCompareActive}
               headerPortalContainer={headerPortalEl}
               viewTabsPortalContainer={viewTabsPortalEl}
+              moreMenuPortalContainer={moreMenuPortalEl}
+              onMoreMenuDone={() => setAppLinksOpen(false)}
               sidebarLeft={sidebarLeft}
-              searchBarWidth={searchBarWidth}
+              searchBarWidth={isPhone ? undefined : searchBarWidth}
               searchEnterRef={searchEnterRef}
               analyticsApp={activeApp}
               hideLowQuality={hideLowQuality}
@@ -788,16 +767,6 @@ export default function App() {
               dataSaver={dataSaver}
               setDataSaver={setDataSaver}
             />
-            {FEATURES.corridors && (
-              <React.Suspense fallback={null}>
-                <Corridors
-                  agencies={visibleAgencies}
-                  day={day}
-                  active={inCorridors}
-                  sidebarLeft={sidebarLeft}
-                />
-              </React.Suspense>
-            )}
             {FEATURES.history && (
               <React.Suspense fallback={null}>
                 <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
@@ -872,7 +841,6 @@ export default function App() {
     </div>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>
-    </CorridorMapOverlayProvider>
     </OnDemandStatusProvider>
     </ViewportProvider>
   );

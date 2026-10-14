@@ -1,0 +1,25 @@
+{
+  "slug": "los-alamos",
+  "name": "Los Alamos",
+  "type": "MicroSA",
+  "officialName": "Los Alamos, NM",
+  "country": "United States",
+  "cities": [
+    "Los Alamos"
+  ],
+  "bbox": [
+    35.754274000311945,
+    -106.41885499997113,
+    35.97338899994839,
+    -106.17185199983108
+  ],
+  "center": [
+    35.86383150013017,
+    -106.2953534999011
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "los-alamos-county"
+  ],
+  "page": false
+}

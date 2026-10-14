@@ -1,0 +1,25 @@
+{
+  "slug": "traverse-city",
+  "name": "Traverse City",
+  "type": "MSA",
+  "officialName": "Traverse City, MI",
+  "country": "United States",
+  "cities": [
+    "Traverse City"
+  ],
+  "bbox": [
+    44.51031399999505,
+    -86.8469279998195,
+    45.58443300009419,
+    -84.84713899958587
+  ],
+  "center": [
+    45.047373500044614,
+    -85.84703349970269
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bata"
+  ],
+  "page": false
+}

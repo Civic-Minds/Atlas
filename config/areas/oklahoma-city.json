@@ -1,0 +1,25 @@
+{
+  "slug": "oklahoma-city",
+  "name": "Oklahoma City",
+  "type": "MSA",
+  "officialName": "Oklahoma City, OK",
+  "country": "United States",
+  "cities": [
+    "Oklahoma City"
+  ],
+  "bbox": [
+    34.68116300011662,
+    -98.31347300019539,
+    36.16477700004466,
+    -96.61934799965779
+  ],
+  "center": [
+    35.42297000008064,
+    -97.46641049992658
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "embark"
+  ],
+  "page": true
+}

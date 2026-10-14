@@ -1,7 +1,7 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import type { AgencyLayers } from '../hooks/useAgencyData';
 import type { PeriodKey } from '../../shared/config';
-import { clipBetweenStopIndices, clipLinestring } from '../apps/corridor-geometry';
+import { clipBetweenStopIndices, clipLinestring } from './lineClip';
 import { headwayToTierColor, type ColorVisionMode } from './colors';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { PERIOD_KEYS } from '../../shared/config';

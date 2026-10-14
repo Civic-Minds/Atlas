@@ -1,0 +1,25 @@
+{
+  "slug": "boise-city",
+  "name": "Boise City",
+  "type": "MSA",
+  "officialName": "Boise City, ID",
+  "country": "United States",
+  "cities": [
+    "Boise City"
+  ],
+  "bbox": [
+    41.99611500030146,
+    -117.03257800014309,
+    44.510813000069334,
+    -114.96734299985965
+  ],
+  "center": [
+    43.253464000185396,
+    -115.99996050000138
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "valley-regional-transit"
+  ],
+  "page": false
+}

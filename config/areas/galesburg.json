@@ -1,0 +1,25 @@
+{
+  "slug": "galesburg",
+  "name": "Galesburg",
+  "type": "MicroSA",
+  "officialName": "Galesburg, IL",
+  "country": "United States",
+  "cities": [
+    "Galesburg"
+  ],
+  "bbox": [
+    40.71236100017773,
+    -90.44433899987231,
+    41.15211000016267,
+    -89.98455700001527
+  ],
+  "center": [
+    40.9322355001702,
+    -90.21444799994379
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "knox-county"
+  ],
+  "page": false
+}

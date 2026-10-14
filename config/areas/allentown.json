@@ -1,0 +1,27 @@
+{
+  "slug": "allentown",
+  "name": "Allentown",
+  "type": "MSA",
+  "officialName": "Allentown-Bethlehem-Easton, PA-NJ",
+  "country": "United States",
+  "cities": [
+    "Allentown",
+    "Bethlehem",
+    "Easton"
+  ],
+  "bbox": [
+    40.4186340000588,
+    -75.99763599988721,
+    41.13397999976093,
+    -74.76942499994738
+  ],
+  "center": [
+    40.77630699990986,
+    -75.3835304999173
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "lanta"
+  ],
+  "page": false
+}

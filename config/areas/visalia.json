@@ -1,0 +1,26 @@
+{
+  "slug": "visalia",
+  "name": "Visalia",
+  "type": "MSA",
+  "officialName": "Visalia, CA",
+  "country": "United States",
+  "cities": [
+    "Visalia"
+  ],
+  "bbox": [
+    35.78893500009301,
+    -119.57319399995224,
+    36.744816000005024,
+    -117.9807609997942
+  ],
+  "center": [
+    36.26687550004902,
+    -118.77697749987323
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "tulare-county-transit",
+    "visalia"
+  ],
+  "page": true
+}

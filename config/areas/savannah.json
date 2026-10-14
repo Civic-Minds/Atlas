@@ -1,0 +1,25 @@
+{
+  "slug": "savannah",
+  "name": "Savannah",
+  "type": "MSA",
+  "officialName": "Savannah, GA",
+  "country": "United States",
+  "cities": [
+    "Savannah"
+  ],
+  "bbox": [
+    31.70519800006007,
+    -81.78171199962136,
+    32.595415999978826,
+    -80.78296000023906
+  ],
+  "center": [
+    32.150307000019446,
+    -81.28233599993021
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cat-savannah"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "coeur-d-alene",
+  "name": "Coeur d'Alene",
+  "type": "MSA",
+  "officialName": "Coeur d'Alene, ID",
+  "country": "United States",
+  "cities": [
+    "Coeur d'Alene"
+  ],
+  "bbox": [
+    47.36603100020297,
+    -117.04230899956,
+    47.991510999780076,
+    -116.32940599996421
+  ],
+  "center": [
+    47.67877099999153,
+    -116.68585749976211
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "citylink-north"
+  ],
+  "page": false
+}

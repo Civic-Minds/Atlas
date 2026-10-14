@@ -1,0 +1,26 @@
+{
+  "slug": "kennewick",
+  "name": "Kennewick",
+  "type": "MSA",
+  "officialName": "Kennewick-Richland, WA",
+  "country": "United States",
+  "cities": [
+    "Kennewick",
+    "Richland"
+  ],
+  "bbox": [
+    45.83619799974483,
+    -119.87672500031182,
+    46.73910499973518,
+    -118.19822799975522
+  ],
+  "center": [
+    46.28765149974001,
+    -119.03747650003352
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "ben-franklin"
+  ],
+  "page": false
+}

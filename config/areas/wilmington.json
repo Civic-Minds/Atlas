@@ -1,0 +1,25 @@
+{
+  "slug": "wilmington",
+  "name": "Wilmington",
+  "type": "MSA",
+  "officialName": "Wilmington, NC",
+  "country": "United States",
+  "cities": [
+    "Wilmington"
+  ],
+  "bbox": [
+    33.752877999797406,
+    -78.65088100033816,
+    34.732629999985875,
+    -77.4845379998917
+  ],
+  "center": [
+    34.24275399989164,
+    -78.06770950011493
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "wilmington-nc"
+  ],
+  "page": false
+}

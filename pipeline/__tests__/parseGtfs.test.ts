@@ -284,6 +284,35 @@ describe('repairClusteredJumps', () => {
 
 });
 
+describe('groupShapes skipClusteredJumpRepair (#433)', () => {
+  // Nancy Reseau Stan 10757$STAN-56$14 excerpt with its interleaved detour (points 284-285).
+  const points: [number, number][] = [
+    ...Array.from({ length: 30 }, (_, i) => [48.678 + i * 0.00023, 6.160 + i * 0.00023] as [number, number]),
+    [48.682273864746094, 6.166215896606445],
+    [48.68454360961914, 6.168026924133301],
+    [48.686790466308594, 6.168015956878662],
+    [48.68354797363281, 6.168540954589844],
+    [48.68381118774414, 6.17014217376709], [48.683937072753906, 6.170985221862793],
+    [48.6840934753418, 6.171936988830566], [48.68427276611328, 6.172421932220459],
+    [48.68476867675781, 6.1738200187683105],
+    [48.6883544921875, 6.173195838928223], [48.69043731689453, 6.175655841827393],
+    ...Array.from({ length: 20 }, (_, i) => [48.6905 + i * 0.00023, 6.1757 + i * 0.00023] as [number, number]),
+  ];
+  const rows = points.map(([lat, lon], i) => ({ shape_id: 's', shape_pt_lat: String(lat), shape_pt_lon: String(lon), shape_pt_sequence: String(i + 1) }));
+
+  it('repairs a flagged shape by default', () => {
+    const { shapes, anomalies } = groupShapes(rows);
+    expect(anomalies[0]).toMatchObject({ clusteredJumps: true, repairedClusteredJumps: true });
+    expect(shapes[0].points.length).toBeLessThan(points.length);
+  });
+
+  it('leaves it raw, still flagged, when the agency opts out (Streamline Goldline)', () => {
+    const { shapes, anomalies } = groupShapes(rows, new Set(), { skipClusteredJumpRepair: true });
+    expect(anomalies[0]).toMatchObject({ clusteredJumps: true, repairedClusteredJumps: false });
+    expect(shapes[0].points).toEqual(points);
+  });
+});
+
 describe('excludeKnownIsolatedPoints', () => {
   // These are the two real isolated-single-point corruption cases the general
   // findClusteredJumpRanges deliberately doesn't catch (see its doc comment) --

@@ -1,0 +1,25 @@
+{
+  "slug": "orillia",
+  "name": "Orillia",
+  "type": "CA",
+  "officialName": "Orillia",
+  "country": "Canada",
+  "cities": [
+    "Orillia"
+  ],
+  "bbox": [
+    44.448018853803575,
+    -79.50900131172153,
+    44.64960628437363,
+    -79.22185955174969
+  ],
+  "center": [
+    44.548812569088604,
+    -79.3654304317356
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "orillia"
+  ],
+  "page": false
+}

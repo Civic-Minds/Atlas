@@ -22,7 +22,7 @@ describe('terminalReading', () => {
 });
 
 const inputs = (over: Partial<HeadlineInputs> = {}): HeadlineInputs => ({
-  branchHw: 20, branchTripCount: 40, terminalComputedHw: 20, hasPool: false, thinTerminalSample: false, scoped: null,
+  unevenMiddayTerminal: false, branchHw: 20, branchTripCount: 40, terminalComputedHw: 20, hasPool: false, thinTerminalSample: false, scoped: null,
   worstDrawnStopHw: undefined, plainTerminalComputedHw: 20, plainNonTerminalStopHws: [20, 20], pooledPlainTerminalHw: 20, ...over,
 });
 

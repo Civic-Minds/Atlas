@@ -46,12 +46,14 @@ export const GLASS_PILL = 'backdrop-blur-md rounded-full shadow-lg';
 export const CHIP_BASE = `${GLASS_PILL} bg-[var(--bg-panel)] border`;
 
 /** Shared mode-aware control states. */
+/** Same selected tint for pills that float over the map: an opaque panel base with the tint laid on top. */
+export const CONTROL_ACTIVE_GLASS = 'bg-[var(--bg-panel)] [background-image:linear-gradient(var(--control-active-bg),var(--control-active-bg))] border-[var(--control-active-border)] text-[var(--control-active-fg)]';
 export const CONTROL_ACTIVE = 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]';
 export const CONTROL_INACTIVE = 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]';
 /** Compact filter option button used across agency, hidden-route, and feed lists. */
-export const FILTER_OPTION = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap';
+export const FILTER_OPTION = 'px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap';
 /** App switchers use the same glass pill surface as the filter chips. */
-export const APP_TAB_ACTIVE = `${GLASS_PILL} bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]`;
+export const APP_TAB_ACTIVE = `${GLASS_PILL} ${CONTROL_ACTIVE_GLASS}`;
 export const APP_TAB_INACTIVE = `${GLASS_PILL} bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--accent)]`;
 export const SELECTION_ACTIVE = 'bg-[var(--selection-active-bg)] border-l-2 border-[var(--selection-active-border)]';
 export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';
@@ -60,7 +62,7 @@ export const ACTION_PRIMARY = 'bg-[var(--action-primary-bg)] border-[var(--actio
 /** Bottom map HUD badge (routes, coverage, loading, attribution) */
 export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3';
 export const MAP_BADGE_COUNT = 'text-xs font-black text-[var(--text-primary)]';
-export const MAP_BADGE_LABEL = 'text-[10px] font-semibold leading-none text-[var(--text-muted)]';
+export const MAP_BADGE_LABEL = 'text-xs font-semibold leading-none text-[var(--text-muted)]';
 
 /** Full-width border-b list row — suggestion lists, route lists, any clickable row inside a panel */
 export const LIST_ROW = 'flex items-center justify-between w-full px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group';
@@ -72,7 +74,7 @@ export const LIST_ROW_SPACED = 'flex items-center justify-between w-full px-4 py
 export const LIST_ROW_PRIMARY = 'text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight';
 
 /** Dim sub-label inside a LIST_ROW */
-export const LIST_ROW_DIM = 'text-[10px] text-[var(--text-muted)] font-bold';
+export const LIST_ROW_DIM = 'text-xs text-[var(--text-muted)] font-bold';
 
 /** Shared agency-browser row used by Info and History agency lists. */
 export const AGENCY_LIST_ROW = 'w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left';
@@ -82,38 +84,38 @@ export const AGENCY_LIST_PRIMARY = 'text-xs text-[var(--text-primary)] min-w-0 l
 export const PANEL_TITLE_BAR = 'flex items-center gap-1.5 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
 
 /** Title text inside PANEL_TITLE_BAR */
-export const PANEL_TITLE = 'text-[10px] font-black text-[var(--text-dim)] tracking-wide';
+export const PANEL_TITLE = 'text-xs font-black text-[var(--text-dim)] tracking-wide';
 
 /** Compact explanatory line beneath a research panel title. */
-export const PANEL_HELPER = 'px-4 pt-2 pb-2 text-[10px] text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]';
+export const PANEL_HELPER = 'px-4 pt-2 pb-2 text-xs text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]';
 
 /** Back + card title row inside a floating panel */
 export const PANEL_CARD_HEADER = 'flex items-start gap-2 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
 
 /** Section label inside a floating panel list */
-export const PANEL_SECTION_HEAD = 'px-4 py-2 text-[10px] font-black tracking-wide text-[var(--text-dim)]';
+export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black tracking-wide text-[var(--text-dim)]';
 
 /** Accent group label in search results */
-export const PANEL_SEARCH_HEAD = 'px-4 text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5';
+export const PANEL_SEARCH_HEAD = 'px-4 text-xs font-bold text-[var(--accent)] tracking-wide mb-1.5';
 
 /** Sub-section label (In this area / Elsewhere) */
-export const PANEL_SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-[10px] font-bold text-[var(--text-dim)]';
+export const PANEL_SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-xs font-bold text-[var(--text-dim)]';
 
 /** Scrollable body inside a floating panel */
 export const PANEL_BODY = 'flex-1 overflow-y-auto custom-scrollbar min-h-0';
 
 /** Empty / loading copy inside a panel row */
-export const PANEL_EMPTY = 'px-4 py-3 text-[11px] text-[var(--text-muted)] font-bold';
+export const PANEL_EMPTY = 'px-4 py-3 text-xs text-[var(--text-muted)] font-bold';
 
 /**
  * Inline notice / warning (outdated schedule, corrected data, outside filters).
  * Use via CardHelpNotice — these tokens keep one visual language.
  */
-export const CARD_NOTICE = 'text-[9px] font-bold text-[var(--text-dim)]';
+export const CARD_NOTICE = 'text-xs font-normal text-[var(--text-dim)]';
 export const CARD_NOTICE_ACTION =
-  'text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold cursor-pointer';
-/** Footer block under card content (border-t + dim) */
-export const CARD_NOTICE_FOOTER = 'mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80';
+  'text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-normal cursor-pointer';
+/** Footer block under card content (spacing only, no divider) */
+export const CARD_NOTICE_FOOTER = 'mt-2 pt-1';
 /** In-list notice padding (e.g. outside-filters control) */
 export const CARD_NOTICE_INLINE = 'px-4 pt-2 pb-1 opacity-80';
 

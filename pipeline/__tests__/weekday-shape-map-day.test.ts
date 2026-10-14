@@ -119,16 +119,14 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     // went 10 -> 17 and tier 15 -> 20.
     const weekday = await weekdayFeatures('ttc-35-branches', 'ttc', '35');
     const byKey = Object.fromEntries(weekday.map((p: any) => [`${p.directionId} ${p.headsign}`, [p.headway, p.tier]]));
-    // 35A Mount Dennis is drawn on shape 1122587 (4 trips 05:12-05:41), whose own sample gives
-    // no stop headway. Hand count, 35A at Mount Dennis (16598), 79 weekday trips: median gap 15
-    // over 6-22h (16 all day, 17 midday). The shape's own early value (10 here, 12 on the full
-    // feed) over-claims the branch.
-    expect(byKey['0 Mount Dennis']).toEqual([15, '15']);
-    // Via Hullmar is drawn on shape 1122586 (5 trips 05:03-05:44). Hand count, 35B at Mount
-    // Dennis (16598), 77 weekday trips: median gap 15 over 6-22h (16 all day, 17 midday, 12-13
-    // in the 5-7 AM burst). The burst's own 10 and its three-departure terminal mean (12) both
-    // over-claim the branch.
-    expect(byKey['0 Mount Dennis via Hullmar']).toEqual([15, '15']);
+    // Hand count at Mount Dennis (16598): 35A, 79 weekday trips, median gap 15 over 6-22h, 16
+    // all day, 17 midday; 35B (via Hullmar), 77 trips, the same 15 / 16 / 17. Each branch's
+    // all-day shape now holds its slot over the thin pre-dawn shapes (1122587, 4 trips 05:12-05:41;
+    // 1122586, 5 trips 05:03-05:44), so the headline is the branch's own midday 17 and every
+    // daytime period and hour is filled. Before #746's dedupe rule the pre-dawn shapes won and
+    // read 15 from the 6-22h scoped sample, with the daytime periods null.
+    expect(byKey['0 Mount Dennis']).toEqual([17, '20']);
+    expect(byKey['0 Mount Dennis via Hullmar']).toEqual([17, '20']);
     expect(byKey['1 Pioneer Village']).toEqual([17, '20']);
     expect(byKey['1 Pioneer Village via Hullmar']).toEqual([17, '20']);
   });
@@ -136,15 +134,19 @@ describe('Weekday shape maps on a non-representative weekday', () => {
   it('reads only the branch at a last stop where two branches converge (TTC 94 Castle Frank)', async () => {
     // Real TTC fresh feed (20261031), route 94, Saturday and Sunday. Eastbound runs from
     // Ossington (26 stops) and from Wellesley Station (the last 11), one headsign to Castle
-    // Frank. The feature is drawn on the late-night Ossington shape 1123435 (7 trips). Hand count,
+    // Frank. The feature was drawn on the late-night Ossington shape 1123435 (7 trips). Hand count,
     // Sat Oct 17 / Sun Oct 18: Ossington trips every 19-20 at Castle Frank, both patterns
-    // together every 10. The headline is the branch, not the pooled terminal.
+    // together every 10. The headline is the branch, not the pooled terminal. Since the #746
+    // dedupe rule an all-day Ossington shape holds the slot over the late-night one, so Sunday
+    // reads the branch's 19 (tier 20) instead of 20 (tier 30) from the scoped sample. With #690
+    // the headline is never better than the worst drawn stop of the pooled branch, so both days
+    // read 20 (the hand count is 19-20 either way); the tier stays 20 on both days.
     const result = await processGtfsBuffer(await fixtureZip('ttc-94-converging'), undefined, { slug: 'ttc' });
     const castleFrank = JSON.parse(result.geojson).features
       .map((feature: any) => feature.properties)
       .filter((p: any) => p.routeId === '94' && p.directionId === 0 && p.stopId == null)
       .map((p: any) => [p.day, p.headway, p.tier]);
-    expect(castleFrank).toEqual([['Saturday', 19, '20'], ['Sunday', 20, '30']]);
+    expect(castleFrank).toEqual([['Saturday', 20, '20'], ['Sunday', 20, '20']]);
   });
 });
 

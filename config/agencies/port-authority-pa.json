@@ -39,5 +39,25 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "modeOverrides": [
+    {
+      "routeType": 2,
+      "routeShortName": "BLUE",
+      "mode": 100,
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+    },
+    {
+      "routeType": 2,
+      "routeShortName": "RED",
+      "mode": 100,
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+    },
+    {
+      "routeType": 2,
+      "routeShortName": "SLVR",
+      "mode": 100,
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+    }
+  ]
 }

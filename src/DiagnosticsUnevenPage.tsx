@@ -5,8 +5,11 @@ import type { ShapeProperties } from './hooks/useAgencyData';
 import { isRiderMeaningfulGap } from './utils/routeCardUneven';
 import { TIME_PERIODS, type PeriodKey } from '../shared/config';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
-import { FLOATING_CARD, CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
+import { FLOATING_CARD } from './styles';
+import Pill from './components/ui/Pill';
+import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import type { Agency } from './App';
+import { delayAmount, headwayAbout } from './utils/headwayText';
 
 const MAX_CONCURRENT_FETCHES = 8;
 
@@ -153,6 +156,29 @@ export default function DiagnosticsUnevenPage() {
     { key: 'excess', label: 'Gap vs. normal' },
   ];
 
+  const sortHeader = (col: (typeof columns)[number]) => (
+    <button
+      type="button"
+      onClick={() => toggleSort(col.key)}
+      className="flex items-center gap-1 hover:text-[var(--text-primary)] transition-colors"
+    >
+      {col.label}
+      <ArrowUpDown className={`w-3 h-3 ${sortKey === col.key ? 'opacity-100' : 'opacity-30'}`} />
+    </button>
+  );
+  const tableColumns: DataTableColumn<(typeof sorted)[number]>[] = [
+    { key: 'agency', header: sortHeader(columns[0]), cell: row => row.agencyName, className: 'whitespace-nowrap' },
+    { key: 'route', header: sortHeader(columns[1]), cell: row => row.route, className: 'whitespace-nowrap font-medium' },
+    { key: 'period', header: sortHeader(columns[2]), cell: row => row.period, className: 'whitespace-nowrap text-[var(--text-dim)]' },
+    {
+      key: 'excess',
+      header: sortHeader(columns[3]),
+      cell: row => <>{delayAmount(row.maxGap)} <span className="text-[var(--text-dim)]">({headwayAbout(row.headway)})</span></>,
+      className: 'whitespace-nowrap',
+    },
+    { key: 'headsign', header: 'Headsign', cell: row => row.headsign, className: 'text-[var(--text-dim)]' },
+  ];
+
   return (
     <div className="min-h-screen w-full bg-[var(--bg-app)] text-[var(--text-primary)] font-sans">
       <div className="sticky top-0 z-10 bg-[var(--bg-app)]/95 backdrop-blur-md border-b border-[var(--border-primary)] px-6 py-4 flex items-center gap-2">
@@ -160,9 +186,9 @@ export default function DiagnosticsUnevenPage() {
           <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity">
             <MapIcon className="w-3.5 h-3.5 text-white" />
           </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
-            <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
+          <div className="flex flex-col gap-px">
+            <span className="text-xs sm:text-sm leading-none font-black text-[var(--text-primary)]">Atlas</span>
+            <span className="text-2xs leading-none text-[var(--text-dim)]">by Civic Minds</span>
           </div>
         </a>
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
@@ -171,18 +197,14 @@ export default function DiagnosticsUnevenPage() {
           <div className="ml-auto flex items-center gap-3">
             <div className="flex gap-1.5">
               {DAY_TYPES.map(d => (
-                <button
+                <Pill
                   key={d}
-                  type="button"
                   onClick={() => setDay(d)}
-                  className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                    day === d
-                      ? CONTROL_ACTIVE
-                      : CONTROL_INACTIVE
-                  }`}
+                  size="segment"
+                  selected={day === d}
                 >
                   {d}
-                </button>
+                </Pill>
               ))}
             </div>
             <span className="text-sm text-[var(--text-dim)]">{sorted.length} flagged</span>
@@ -196,13 +218,7 @@ export default function DiagnosticsUnevenPage() {
         ) : agenciesLoadState === 'error' ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-sm text-[var(--text-dim)]">
             <p>Could not load agency data.</p>
-            <button
-              type="button"
-              className="px-3 py-1.5 rounded-full bg-[var(--bg-btn-hover)] text-[var(--text-primary)]"
-              onClick={retry}
-            >
-              Retry
-            </button>
+            <Pill tone="outline" size="segment" onClick={retry}>Retry</Pill>
           </div>
         ) : sorted.length === 0 ? (
           <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">
@@ -211,38 +227,12 @@ export default function DiagnosticsUnevenPage() {
         ) : (
           <div className={`${FLOATING_CARD} overflow-hidden`}>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[var(--border-primary)] text-left text-[var(--text-dim)]">
-                    {columns.map(col => (
-                      <th key={col.key} className="px-4 py-3 font-medium whitespace-nowrap">
-                        <button
-                          type="button"
-                          onClick={() => toggleSort(col.key)}
-                          className="flex items-center gap-1 hover:text-[var(--text-primary)] transition-colors"
-                        >
-                          {col.label}
-                          <ArrowUpDown className={`w-3 h-3 ${sortKey === col.key ? 'opacity-100' : 'opacity-30'}`} />
-                        </button>
-                      </th>
-                    ))}
-                    <th className="px-4 py-3 font-medium whitespace-nowrap">Headsign</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sorted.map(row => (
-                    <tr key={row.key} className="border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)]/40 transition-colors">
-                      <td className="px-4 py-2.5 whitespace-nowrap">{row.agencyName}</td>
-                      <td className="px-4 py-2.5 whitespace-nowrap font-medium">{row.route}</td>
-                      <td className="px-4 py-2.5 whitespace-nowrap text-[var(--text-dim)]">{row.period}</td>
-                      <td className="px-4 py-2.5 whitespace-nowrap">
-                        {row.maxGap} min <span className="text-[var(--text-dim)]">(usually {row.headway} min)</span>
-                      </td>
-                      <td className="px-4 py-2.5 text-[var(--text-dim)]">{row.headsign}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <DataTable
+                variant="card"
+                columns={tableColumns}
+                rows={sorted}
+                rowKey={row => row.key}
+              />
             </div>
           </div>
         )}

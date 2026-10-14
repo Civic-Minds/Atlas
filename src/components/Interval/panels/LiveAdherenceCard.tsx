@@ -1,6 +1,6 @@
 import React from 'react';
 import type { LiveStatus } from '../../../hooks/useLiveAdherence';
-import { FLOATING_CARD, PANEL_ENTER } from '../../../styles';
+import Panel from '../../ui/Panel';
 
 export interface LiveAdherenceStopRow {
   stopId: string;
@@ -28,12 +28,12 @@ export const LiveAdherenceCard: React.FC<LiveAdherenceCardProps> = ({
   setSelectedStop,
 }) => {
   return (
-    <div className={`p-4 ${FLOATING_CARD} ${PANEL_ENTER} space-y-2 shrink-0`}>
+    <Panel enter className="p-4 space-y-2 shrink-0">
       <div className="flex items-center gap-1.5">
         <span className={`w-1.5 h-1.5 rounded-full bg-[var(--status-positive)] shrink-0 ${liveStatus === 'live' ? 'animate-pulse' : 'opacity-40'}`} />
-        <span className="text-[10px] font-black text-[var(--status-positive)]">Live</span>
+        <span className="text-xs font-black text-[var(--status-positive-text)]">Live</span>
         {liveStatus === 'pending' && (
-          <span className="text-[10px] font-bold text-[var(--text-dim)]">fetching…</span>
+          <span className="text-xs font-bold text-[var(--text-dim)]">fetching…</span>
         )}
       </div>
       {liveStatus === 'live' && (
@@ -51,13 +51,13 @@ export const LiveAdherenceCard: React.FC<LiveAdherenceCardProps> = ({
                   : stop.delta > 0 ? `+${Math.round(stop.delta)} min`
                   : `${Math.round(stop.delta)} min`;
                 const deltaColor = absDelta == null ? ''
-                  : absDelta >= 5 ? 'text-[var(--status-negative)]'
-                  : absDelta >= 2 ? 'text-[var(--status-caution)]'
-                  : 'text-[var(--status-positive)]';
+                  : absDelta >= 5 ? 'text-[var(--status-negative-text)]'
+                  : absDelta >= 2 ? 'text-[var(--status-caution-text)]'
+                  : 'text-[var(--status-positive-text)]';
                 return (
                   <button
                     key={stop.stopId}
-                    className="text-[11px] w-full text-left hover:opacity-70 transition-opacity"
+                    className="text-xs w-full text-left hover:opacity-70 transition-opacity"
                     onClick={() => { setSelectedRoute(null); setSelectedStop(`${liveRouteInfo.agencySlug}::${stop.stopId}`); }}
                   >
                     <span className="font-bold text-[var(--text-muted)] block truncate">
@@ -67,7 +67,7 @@ export const LiveAdherenceCard: React.FC<LiveAdherenceCardProps> = ({
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
                       {stop.avgGap != null ? `${Math.round(stop.avgGap)} min` : '—'}
                       {deltaLabel != null && (
-                        <span className={`text-[10px] font-bold tabular-nums ${deltaColor}`}>{deltaLabel}</span>
+                        <span className={`text-xs font-bold tabular-nums ${deltaColor}`}>{deltaLabel}</span>
                       )}
                     </span>
                   </button>
@@ -78,6 +78,6 @@ export const LiveAdherenceCard: React.FC<LiveAdherenceCardProps> = ({
         </>
       )}
 
-    </div>
+    </Panel>
   );
 };

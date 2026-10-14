@@ -1,0 +1,27 @@
+{
+  "slug": "las-vegas",
+  "name": "Las Vegas",
+  "type": "MSA",
+  "officialName": "Las Vegas-Henderson-North Las Vegas, NV",
+  "country": "United States",
+  "cities": [
+    "Las Vegas",
+    "Henderson",
+    "North Las Vegas"
+  ],
+  "bbox": [
+    35.00185699992408,
+    -115.89692499994415,
+    36.85366200006578,
+    -114.04281899991499
+  ],
+  "center": [
+    35.927759499994934,
+    -114.96987199992957
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "rtcsnv"
+  ],
+  "page": true
+}

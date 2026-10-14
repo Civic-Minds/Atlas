@@ -1,0 +1,26 @@
+{
+  "slug": "san-antonio",
+  "name": "San Antonio",
+  "type": "MSA",
+  "officialName": "San Antonio-New Braunfels, TX",
+  "country": "United States",
+  "cities": [
+    "San Antonio",
+    "New Braunfels"
+  ],
+  "bbox": [
+    28.612658000287766,
+    -99.60332300019805,
+    30.138953999968138,
+    -97.6309849995892
+  ],
+  "center": [
+    29.37580600012795,
+    -98.61715399989362
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "via"
+  ],
+  "page": true
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "breckenridge",
+  "name": "Breckenridge",
+  "type": "MicroSA",
+  "officialName": "Breckenridge, CO",
+  "country": "United States",
+  "cities": [
+    "Breckenridge"
+  ],
+  "bbox": [
+    39.05607299966115,
+    -106.58633800018195,
+    39.92491399974015,
+    -105.77570199963125
+  ],
+  "center": [
+    39.49049349970065,
+    -106.1810199999066
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "breck-free-ride",
+    "summit-stage"
+  ],
+  "page": false
+}

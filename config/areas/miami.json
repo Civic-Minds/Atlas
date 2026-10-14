@@ -1,0 +1,29 @@
+{
+  "slug": "miami",
+  "name": "Miami",
+  "type": "MSA",
+  "officialName": "Miami-Fort Lauderdale-West Palm Beach, FL",
+  "country": "United States",
+  "cities": [
+    "Miami",
+    "Fort Lauderdale",
+    "West Palm Beach"
+  ],
+  "bbox": [
+    25.137419999722823,
+    -80.886052999661,
+    26.970942999733445,
+    -79.97430600031043
+  ],
+  "center": [
+    26.054181499728134,
+    -80.43017949998571
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "broward-transit",
+    "miami-dade-transit",
+    "palm-tran"
+  ],
+  "page": true
+}

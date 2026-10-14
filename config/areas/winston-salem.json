@@ -1,0 +1,25 @@
+{
+  "slug": "winston-salem",
+  "name": "Winston-Salem",
+  "type": "MSA",
+  "officialName": "Winston-Salem, NC",
+  "country": "United States",
+  "cities": [
+    "Winston-Salem"
+  ],
+  "bbox": [
+    35.504141000156345,
+    -80.88159100027113,
+    36.550665000134956,
+    -80.0273389998142
+  ],
+  "center": [
+    36.027403000145654,
+    -80.45446500004266
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "winston-salem"
+  ],
+  "page": false
+}

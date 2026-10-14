@@ -43,5 +43,13 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfsdata.ridetm.org/gtfs/fwtatransitdata.zip"
+  "lastFeedSourceUrl": "https://gtfsdata.ridetm.org/gtfs/fwtatransitdata.zip",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeLongName": "TEXRail",
+      "mode": 2,
+      "reason": "TEXRail is commuter rail, published as route_type 0 (tram)"
+    }
+  ]
 }

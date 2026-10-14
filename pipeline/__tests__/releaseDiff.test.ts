@@ -172,6 +172,18 @@ describe('release diff gate: red flags', () => {
     expect(names(evaluateAgency({ slug: 'moose-jaw', live, next: live, service: { end: '20240331' }, allowMissingLive: true }, [], TODAY)))
       .toEqual(['moose-jaw:expired:yellow']);
   });
+
+  it('keeps expired agencies that are already live yellow, and still blocks a new-to-release expired one until allowed', () => {
+    const live = countsOnly(193, 193, 6);
+    // Stale agency: refresh kept its live data, so the release copy is unchanged.
+    expect(names(evaluateAgency({ slug: 'ecat', live, next: live, service: { end: '20221101' }, allowMissingLive: true }, [], TODAY)))
+      .toEqual(['ecat:expired:yellow']);
+    // Expired and not in the live release yet: red, accepted only by an explicit allow.
+    const flags = evaluateAgency({ slug: 'xpress-ga', live: null, next: live, service: { end: '20250705' }, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(expect.arrayContaining(['xpress-ga:expired:red']));
+    expect(applyOverrides(flags, { allow: [], allowDrop: false }).blocked).toEqual(['xpress-ga']);
+    expect(applyOverrides(flags, { allow: ['xpress-ga:expired'], allowDrop: false }).blocked).toEqual([]);
+  });
 });
 
 describe('release diff gate: yellow and clean cases', () => {
@@ -459,5 +471,27 @@ describe('release diff gate: overrides', () => {
     expect(readFileSync(paths.md, 'utf8')).toMatch(/\*\*Blocked \(1\):\*\* amarillo/);
     expect(readFileSync(paths.md, 'utf8')).toMatch(/\| sct \| red \(allowed\) \| drop \|/);
     expect(JSON.parse(readFileSync(paths.json, 'utf8')).blocked).toEqual(['amarillo']);
+  });
+});
+
+describe('release diff gate: route gains weekday service (#714)', () => {
+  const line = (routeId: string, day: string, headway: number) => ({
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: [[routeId.length, day.length], [1, 1]] },
+    properties: { routeId, directionId: 0, day, tier: headway <= 30 ? '30' : '60', headway },
+  });
+  const artifact = (features: unknown[]) => summarizeArtifact(JSON.stringify({ type: 'FeatureCollection', features }), null);
+  const live = artifact([line('1', 'Weekday', 30), line('2', 'Saturday', 60)]);
+
+  it('flags a weekend-only live route that now has weekday rows', () => {
+    const next = artifact([line('1', 'Weekday', 30), line('2', 'Saturday', 60), line('2', 'Weekday', 5)]);
+    const flags = evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['x:route-shift:yellow']);
+    expect(flags[0].message).toBe('1 route with no weekday service live now runs on weekdays (2 new weekday service, 5 min)');
+  });
+
+  it('stays quiet for brand-new routes and routes that already had weekday rows', () => {
+    const next = artifact([line('1', 'Weekday', 30), line('2', 'Saturday', 60), line('3', 'Weekday', 5)]);
+    expect(evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY)).toEqual([]);
   });
 });

@@ -1,0 +1,25 @@
+{
+  "slug": "ames",
+  "name": "Ames",
+  "type": "MSA",
+  "officialName": "Ames, IA",
+  "country": "United States",
+  "cities": [
+    "Ames"
+  ],
+  "bbox": [
+    41.86257200019862,
+    -94.1649109998749,
+    42.21003999983462,
+    -93.23144300016071
+  ],
+  "center": [
+    42.03630600001662,
+    -93.69817700001781
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cyride"
+  ],
+  "page": false
+}

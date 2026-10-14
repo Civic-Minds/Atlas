@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, X, Search, TrendingUp, History as HistoryIco
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
+import { FLOATING_CARD, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, AGENCY_LIST_PRIMARY, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName, titleCase } from '../utils/format';
 import { buildHistoryRouteFilters, historyRouteMatchesFilter, type HistoryRouteFilterKey } from '../utils/historyRouteFilters';
@@ -14,6 +14,10 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
+import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayText';
+import Panel, { PanelTitleBar } from '../components/ui/Panel';
+import ListRow from '../components/ui/ListRow';
+import Pill from '../components/ui/Pill';
 
 export interface RouteSnapshot {
   label: string;
@@ -72,7 +76,7 @@ function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: strin
   if (Math.abs(fHw - lHw) < 2) return null;
   const worse = lHw > fHw;
   return {
-    text: `Every ${fHw} min → every ${lHw} min`,
+    text: `${capitalizeFirst(headwayEvery(fHw))} → ${headwayEvery(lHw)}`,
     subtext: `${first.label} to ${last.label}`,
     worse,
   };
@@ -171,7 +175,7 @@ function RouteHistoryCard({
   }
 
   return (
-    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
+    <Panel enter>
       {/* Header */}
       <div className="shrink-0 px-4 pt-3 pb-2">
         <button
@@ -180,7 +184,7 @@ function RouteHistoryCard({
           aria-label="Back to routes"
         >
           <ChevronLeft className="w-3 h-3 shrink-0" />
-          <span className="text-[10px] font-bold">{shortenAgencyName(agencyName)} routes</span>
+          <span className="text-xs font-bold">{shortenAgencyName(agencyName)} routes</span>
         </button>
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
@@ -194,6 +198,7 @@ function RouteHistoryCard({
               onClick={() => setShowChart(v => !v)}
               className={`w-7 h-7 flex items-center justify-center rounded-full border transition-colors shrink-0 ${showChart ? CONTROL_ACTIVE : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
               aria-label="Toggle chart"
+              aria-pressed={showChart}
             >
               <TrendingUp className="w-3.5 h-3.5" />
             </button>
@@ -241,7 +246,7 @@ function RouteHistoryCard({
                   <g key={i}>
                     <circle cx={p.x} cy={p.y} r="3" fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
                     <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
-                      {p.hw}m
+                      {headwayAmount(p.hw)}
                     </text>
                     {showXLabel && (
                       <text x={xPos} y={height - 3} textAnchor={xAnchor} fontSize="7.5" fontWeight="600" fill="var(--text-muted)" fontFamily="inherit">
@@ -262,32 +267,32 @@ function RouteHistoryCard({
             const hw = snapHeadway(snap);
             const isLatest = i === 0;
             const hwColor = isLatest
-              ? worse ? 'text-[var(--status-negative)]' : better ? 'text-[var(--status-positive)]' : 'text-[var(--text-primary)]'
+              ? worse ? 'text-[var(--status-negative-text)]' : better ? 'text-[var(--status-positive-text)]' : 'text-[var(--text-primary)]'
               : 'text-[var(--text-dim)]';
             const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
             return (
-              <div key={snap.label} className={LIST_ROW}>
-                <span className={`text-[10px] font-bold ${isLatest ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
+              <ListRow as="div" key={snap.label}>
+                <span className={`text-xs font-bold ${isLatest ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
                   {snap.label}
                 </span>
                 <div className="flex items-center gap-2">
                   {delta !== null && delta !== 0 && (
-                    <span className={`text-[9px] font-bold ${delta > 0 ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>
+                    <span className={`text-xs font-bold ${delta > 0 ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>
                       {delta > 0 ? `+${delta}` : `${delta}`}
                     </span>
                   )}
-                  <span className={`text-xs font-black tabular-nums ${hwColor}`}>{hw} min</span>
+                  <span className={`text-xs font-black tabular-nums ${hwColor}`}>{headwayAmount(hw)}</span>
                 </div>
-              </div>
+              </ListRow>
             );
           })}
         </div>
 
         {summary && (
           <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-[var(--status-negative-bg)]' : 'bg-[var(--status-positive-bg)]'}`}>
-            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>{summary.text}</p>
-            <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
-            <p className="text-[10px] text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
+            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>{summary.text}</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
+            <p className="text-xs text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
           </div>
         )}
 
@@ -296,13 +301,13 @@ function RouteHistoryCard({
             <p className="text-xs font-bold leading-tight text-[var(--text-primary)]">
               Trip time: {route.tripDuration.firstMinutes} min ({route.tripDuration.firstLabel}) → {route.tripDuration.lastMinutes} min ({route.tripDuration.lastLabel})
             </p>
-            <p className="text-[10px] text-[var(--text-dim)] mt-1">
+            <p className="text-xs text-[var(--text-dim)] mt-1">
               End-to-end scheduled time on a representative weekday trip. Only shown when the route's stops and alignment haven't changed between these years.
             </p>
           </div>
         )}
       </div>
-    </div>
+    </Panel>
   );
 }
 
@@ -388,7 +393,7 @@ function HistoryAgencyPanel({
   }, [activeFilter, agencyHistory.slug, routeRows]);
 
   return (
-    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] ${PANEL_ENTER}`}>
+    <Panel enter className="max-h-[calc(100vh-104px)]">
       {/* Header */}
       <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div className="flex items-start justify-between gap-2">
@@ -396,11 +401,11 @@ function HistoryAgencyPanel({
             <div className="flex items-center gap-1.5 min-w-0">
               <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{shortenAgencyName(agencyHistory.name)}</h2>
             </div>
-            <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
+            <p className="text-xs font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
               {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
             </p>
             {!routeQuery && !activeFilter && (
-              <p className="text-[9px] text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
+              <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
             )}
           </div>
         </div>
@@ -424,20 +429,18 @@ function HistoryAgencyPanel({
         </div>
         {routeFilters.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5 mt-2">
-            <span className="text-[9px] font-bold text-[var(--text-dim)]">Current mode</span>
+            <span className="text-xs font-bold text-[var(--text-dim)]">Current mode</span>
             {routeFilters.map(filter => {
               const active = activeFilter === filter.key;
               return (
-                <button
+                <Pill
                   key={filter.key}
-                  type="button"
                   onClick={() => setActiveFilter(active ? null : filter.key)}
-                  aria-pressed={active}
+                  selected={active}
                   title="Filters by current route metadata"
-                  className={`text-[9px] font-bold px-2 py-0.5 rounded-full border transition-colors ${active ? CONTROL_ACTIVE : 'bg-transparent border-[var(--border-primary)] text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]'}`}
                 >
                   {filter.label} {filter.count}
-                </button>
+                </Pill>
               );
             })}
           </div>
@@ -446,7 +449,7 @@ function HistoryAgencyPanel({
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {visibleRouteRows.length === 0 && (
-          <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">
+          <p className="text-xs text-[var(--text-dim)] px-4 py-3">
             {routeQuery || activeFilter ? 'No routes match.' : 'No data for this period.'}
           </p>
         )}
@@ -461,7 +464,7 @@ function HistoryAgencyPanel({
           />
         ))}
       </div>
-    </div>
+    </Panel>
   );
 }
 
@@ -571,7 +574,6 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
       setOverlay({
         slug: agency.slug,
         routeShortName: selectedRouteShortName ?? '',
-        stops: [],
         agencyCenter: agency.center,
         routeGeometry,
         selectedYear: selectedYear > 0 ? selectedYear : undefined,
@@ -736,17 +738,17 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
           className={`${FLOATING_CARD} max-h-[calc(100vh-104px)] overflow-y-auto custom-scrollbar transition-[opacity,transform] duration-200 ease-out ${showAgencyChooser || searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
           onMouseDown={e => e.preventDefault()}
         >
-          <div className={PANEL_TITLE_BAR}>
+          <PanelTitleBar>
             <HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
             <span className={PANEL_TITLE}>Historical service</span>
-          </div>
+          </PanelTitleBar>
           {query === '' && recentSearches.length > 0 ? (
             <>
               <div className="px-5 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">
-                <p className="text-[10px] font-bold text-[var(--text-muted)]">Recent searches</p>
+                <p className="text-xs font-bold text-[var(--text-muted)]">Recent searches</p>
                 <button
                   onClick={clearRecentSearches}
-                  className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+                  className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
                 >
                   Clear
                 </button>
@@ -757,7 +759,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                   shortName={s}
                   onClick={() => setQuery(s)}
                   variant="spaced"
-                  right={<span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>}
+                  right={<span className="text-xs text-[var(--text-dim)] font-mono">↵</span>}
                 />
               ))}
             </>
@@ -773,42 +775,43 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                 </div>
               )}
               {historyData === null && (
-                <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">Loading…</p>
+                <p className="text-xs text-[var(--text-dim)] px-4 py-3">Loading…</p>
               )}
               {historyData !== null && historyLoadFailed && (
                 <div className="px-4 py-3">
-                  <p className="text-[11px] text-[var(--text-dim)]">Couldn't load history data. Check your connection and try again.</p>
+                  <p className="text-xs text-[var(--text-dim)]">Couldn't load history data. Check your connection and try again.</p>
                   <button
                     onClick={loadHistoryConfig}
-                    className="mt-2 text-[11px] font-medium text-[var(--accent)] hover:underline"
+                    className="mt-2 text-xs font-medium text-[var(--accent)] hover:underline"
                   >
                     Retry
                   </button>
                 </div>
               )}
               {historyData !== null && !historyLoadFailed && agenciesByRegion.length === 0 && (
-                <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
+                <p className="text-xs text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
               )}
               {agenciesByRegion.map(([region, agencies]) => (
                 <div key={region}>
-                  <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
+                  <p className="px-5 pt-3 pb-1 text-xs font-bold text-[var(--text-dim)]">{region}</p>
                   {agencies.map(agency => (
-                    <button
+                    <ListRow
                       key={agency.slug}
+                      variant="agency"
                       onClick={() => {
                         saveRecentSearch(query);
                         setSelectedSlug(agency.slug);
                       }}
-                      className={`${AGENCY_LIST_ROW} border-b border-[var(--border-primary)] last:border-0`}
+                      className="border-b border-[var(--border-primary)] last:border-0"
                     >
                       <span className="min-w-0">
                         <span className={AGENCY_LIST_PRIMARY} title={agency.name}>{shortenAgencyName(agency.name)}</span>
-                        <span className="block text-[10px] text-[var(--text-muted)]">
+                        <span className="block text-xs text-[var(--text-muted)]">
                           {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
                         </span>
                       </span>
                       <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
-                    </button>
+                    </ListRow>
                   ))}
                 </div>
               ))}
@@ -820,13 +823,13 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
 
       {showScrubber && (
         <div
-          className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] h-8 flex items-center gap-2 px-2.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-[10px]`}
+          className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] h-8 flex items-center gap-2 px-2.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-xs`}
           title="Older to newer"
           onPointerDown={event => event.stopPropagation()}
           onPointerMove={event => event.stopPropagation()}
           onWheel={event => event.stopPropagation()}
         >
-            <span className="text-[9px] font-bold text-[var(--text-dim)] tabular-nums">{availableYears[0]}</span>
+            <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">{availableYears[0]}</span>
             <input
               type="range"
               min={0}
@@ -837,7 +840,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
               aria-label="History year"
               className="time-scrubber-range flex-1 min-w-0"
             />
-            <span className="text-[9px] font-bold text-[var(--text-dim)] tabular-nums">
+            <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">
               {selectedYear === availableYears[availableYears.length - 1] ? 'now' : availableYears[availableYears.length - 1]}
             </span>
             <span className="rounded-md bg-[var(--accent-bg)] border border-[var(--accent-border)] px-1.5 py-0.5 text-xs font-black text-[var(--text-primary)] tabular-nums">{selectedYear}</span>

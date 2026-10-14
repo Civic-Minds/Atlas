@@ -1,0 +1,25 @@
+{
+  "slug": "lynchburg",
+  "name": "Lynchburg",
+  "type": "MSA",
+  "officialName": "Lynchburg, VA",
+  "country": "United States",
+  "cities": [
+    "Lynchburg"
+  ],
+  "bbox": [
+    37.005838999971985,
+    -79.85840500033227,
+    37.81415199985442,
+    -78.59435200029372
+  ],
+  "center": [
+    37.4099954999132,
+    -79.22637850031299
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "gltc"
+  ],
+  "page": false
+}

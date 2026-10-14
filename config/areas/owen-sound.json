@@ -1,0 +1,25 @@
+{
+  "slug": "owen-sound",
+  "name": "Owen Sound",
+  "type": "CA",
+  "officialName": "Owen Sound",
+  "country": "Canada",
+  "cities": [
+    "Owen Sound"
+  ],
+  "bbox": [
+    44.42967453268819,
+    -81.20468221032661,
+    44.88439301449477,
+    -80.8153387705395
+  ],
+  "center": [
+    44.65703377359148,
+    -81.01001049043305
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "owen-sound"
+  ],
+  "page": false
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "london",
+  "name": "London",
+  "type": "CMA",
+  "officialName": "London",
+  "country": "Canada",
+  "cities": [
+    "London"
+  ],
+  "bbox": [
+    42.60310727356191,
+    -81.86578472027095,
+    43.30461744146143,
+    -80.83177264644432
+  ],
+  "center": [
+    42.95386235751167,
+    -81.34877868335764
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "london",
+    "st-thomas"
+  ],
+  "page": true
+}

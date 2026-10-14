@@ -1,0 +1,25 @@
+{
+  "slug": "johnson-city",
+  "name": "Johnson City",
+  "type": "MSA",
+  "officialName": "Johnson City, TN",
+  "country": "United States",
+  "cities": [
+    "Johnson City"
+  ],
+  "bbox": [
+    35.95387100023787,
+    -82.70256599984639,
+    36.51061399986969,
+    -81.93306499971088
+  ],
+  "center": [
+    36.23224250005378,
+    -82.31781549977863
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "washington-county"
+  ],
+  "page": false
+}

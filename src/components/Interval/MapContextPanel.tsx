@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE_BAR, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels } from './SearchSuggestionsPanel';
 import RegionFilterPills from '../RegionFilterPills';
+import Panel, { PanelTitleBar } from '../ui/Panel';
+import ListRow from '../ui/ListRow';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -46,21 +48,22 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
   }, [routes]);
 
   return (
-    <div
-      className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-132px)] ${FLOATING_CARD} flex flex-col overflow-hidden pointer-events-auto`}
+    <Panel
+      sidebar
+      className="max-h-[calc(100vh-132px)] pointer-events-auto"
       style={{
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
         ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}
     >
-      <div className={PANEL_TITLE_BAR}>
+      <PanelTitleBar>
         <div className="min-w-0 flex-1">
           <div className={PANEL_TITLE}>In view</div>
-          <div className="text-[11px] font-bold text-[var(--text-primary)]">
+          <div className="text-xs font-bold text-[var(--text-primary)]">
             {count} {count === 1 ? (mode === 'agencies' ? 'agency' : 'route') : (mode === 'agencies' ? 'agencies' : 'routes')}
           </div>
         </div>
-      </div>
+      </PanelTitleBar>
 
       {showRegionPills && (
         <div className="shrink-0 flex gap-1.5 overflow-x-auto items-center px-4 py-2 border-b border-[var(--border-primary)] [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
@@ -74,24 +77,27 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
 
       <div className="custom-scrollbar overflow-y-auto py-1">
         {mode === 'agencies' ? (
-          agencies.length > 0 ? agencies.map(agency => (
-            <button
-              key={agency.slug}
-              type="button"
-              onClick={() => onSelectAgency?.(agency.slug)}
-              className={`${LIST_ROW_SPACED} ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
-            >
-              <span className={`${LIST_ROW_PRIMARY} min-w-0 break-words text-left`} title={agency.name}>{agency.name}</span>
-            </button>
-          )) : (
-            <div className="px-4 py-3 text-[10px] font-bold text-[var(--text-dim)]">No matching agencies.</div>
+          agencies.length > 0 ? agencies.map(agency => {
+            return (
+              <div key={agency.slug} className="flex items-center">
+                <ListRow
+                  variant="spaced"
+                  onClick={() => onSelectAgency?.(agency.slug)}
+                  className={`min-w-0 flex-1 ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
+                >
+                  <span className={`${LIST_ROW_PRIMARY} min-w-0 text-left`} title={agency.name}>{agency.name}</span>
+                </ListRow>
+              </div>
+            );
+          }) : (
+            <div className="px-4 py-3 text-xs font-bold text-[var(--text-dim)]">No matching agencies.</div>
           )
         ) : (
           filteredRouteGroups.length > 0 ? filteredRouteGroups.map(group => (
             <section key={group.agencyName}>
               <div className={`${PANEL_SECTION_HEAD.replace('tracking-wide', '')} pt-2 pb-1`}>{group.agencyName}</div>
               {group.routes.map((route: MapContextRoute) => {
-                const labels = routeRowLabels(route.shortName, route.longName);
+                const labels = routeRowLabels(route.shortName, route.longName, route.routeType);
                 return (
                   <RouteListRow
                     key={route.key}
@@ -105,10 +111,10 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               })}
             </section>
           )) : (
-            <div className="px-4 py-3 text-[10px] font-bold text-[var(--text-dim)]">No matching routes.</div>
+            <div className="px-4 py-3 text-xs font-bold text-[var(--text-dim)]">No matching routes.</div>
           )
         )}
       </div>
-    </div>
+    </Panel>
   );
 };

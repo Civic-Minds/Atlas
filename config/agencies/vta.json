@@ -1,6 +1,7 @@
 {
   "slug": "vta",
   "name": "Santa Clara Valley Transportation Authority (VTA)",
+  "shortName": "VTA",
   "websiteUrl": "https://www.vta.org",
   "center": [
     37.3241,
@@ -47,5 +48,25 @@
     "checkedAt": "2026-09-07"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.vta.org/gtfs_vta.zip"
+  "lastFeedSourceUrl": "https://gtfs.vta.org/gtfs_vta.zip",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "Blue Line",
+      "mode": 100,
+      "reason": "VTA light rail is published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "Green Line",
+      "mode": 100,
+      "reason": "VTA light rail is published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "Orange Line",
+      "mode": 100,
+      "reason": "VTA light rail is published as route_type 0 (tram)"
+    }
+  ]
 }

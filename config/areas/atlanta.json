@@ -1,0 +1,30 @@
+{
+  "slug": "atlanta",
+  "name": "Atlanta",
+  "type": "MSA",
+  "officialName": "Atlanta-Sandy Springs-Roswell, GA",
+  "country": "United States",
+  "cities": [
+    "Atlanta",
+    "Sandy Springs",
+    "Roswell"
+  ],
+  "bbox": [
+    32.84464000023559,
+    -85.3865810000125,
+    34.73489300002412,
+    -83.26919600013211
+  ],
+  "center": [
+    33.78976650012986,
+    -84.3278885000723
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "cobblinc",
+    "gwinnett-transit",
+    "marta",
+    "xpress-ga"
+  ],
+  "page": true
+}

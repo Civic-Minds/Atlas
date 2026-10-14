@@ -1,0 +1,25 @@
+{
+  "slug": "lincoln",
+  "name": "Lincoln",
+  "type": "MSA",
+  "officialName": "Lincoln, NE",
+  "country": "United States",
+  "cities": [
+    "Lincoln"
+  ],
+  "bbox": [
+    40.52301299969141,
+    -97.36844499970479,
+    41.04694699989228,
+    -96.46361799966888
+  ],
+  "center": [
+    40.784979999791844,
+    -96.91603149968684
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "lincoln"
+  ],
+  "page": false
+}

@@ -1,0 +1,718 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+47,1,50807997,South - 47 Lansdowne towards Queen,,0,2234018,1122794,1,1
+47,1,50807998,South - 47 Lansdowne towards Queen,,0,2234054,1122794,1,1
+47,1,50807996,South - 47 Lansdowne towards Queen,,0,2234013,1122794,1,1
+47,1,50807995,South - 47 Lansdowne towards Queen,,0,2234020,1122805,1,1
+47,1,50807994,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50807993,South - 47 Lansdowne towards Queen,,0,2234018,1122805,1,1
+47,1,50807926,South - 47 Lansdowne towards Queen,,0,2234020,1122804,1,1
+47,1,50807992,South - 47 Lansdowne towards Queen,,0,2234054,1122805,1,1
+47,1,50807925,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50808075,South - 47 Lansdowne towards Queen,,0,2234057,1122805,1,1
+47,1,50807924,South - 47 Lansdowne towards Queen,,0,2234018,1122804,1,1
+47,1,50808074,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50807923,South - 47 Lansdowne towards Queen,,0,2234054,1122804,1,1
+47,1,50808073,South - 47 Lansdowne towards Queen,,0,2234056,1122805,1,1
+47,1,50807922,South - 47 Lansdowne towards Queen,,0,2234057,1122804,1,1
+47,1,50808072,South - 47 Lansdowne towards Queen,,0,2234020,1122805,1,1
+47,1,50807921,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50807900,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50807920,South - 47 Lansdowne towards Queen,,0,2234056,1122804,1,1
+47,1,50808070,South - 47 Lansdowne towards Queen,,0,2234018,1122805,1,1
+47,1,50807919,South - 47 Lansdowne towards Queen,,0,2234020,1122804,1,1
+47,1,50808069,South - 47 Lansdowne towards Queen,,0,2234054,1122805,1,1
+47,1,50807918,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50808068,South - 47 Lansdowne towards Queen,,0,2234057,1122805,1,1
+47,1,50807917,South - 47 Lansdowne towards Queen,,0,2234018,1122804,1,1
+47,1,50808067,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50807916,South - 47 Lansdowne towards Queen,,0,2234054,1122804,1,1
+47,1,50808066,South - 47 Lansdowne towards Queen,,0,2234056,1122805,1,1
+47,1,50807915,South - 47 Lansdowne towards Queen,,0,2234057,1122804,1,1
+47,1,50807881,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50807914,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50807882,South - 47 Lansdowne towards Queen,,0,2234020,1122805,1,1
+47,1,50807883,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50807913,South - 47 Lansdowne towards Queen,,0,2234056,1122804,1,1
+47,1,50808065,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808005,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50808064,South - 47 Lansdowne towards Queen,,0,2234018,1122805,1,1
+47,1,50808006,South - 47 Lansdowne towards Queen,,0,2234020,1122804,1,1
+47,1,50808063,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808007,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50808062,South - 47 Lansdowne towards Queen,,0,2234054,1122805,1,1
+47,1,50808061,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50807912,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50807911,South - 47 Lansdowne towards Queen,,0,2234018,1122804,1,1
+47,1,50808060,South - 47 Lansdowne towards Queen,,0,2234057,1122805,1,1
+47,1,50808059,South - 47 Lansdowne towards Queen,,0,2234017,1122805,1,1
+47,1,50807910,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807909,South - 47 Lansdowne towards Queen,,0,2234054,1122804,1,1
+47,1,50808058,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50808057,South - 47 Lansdowne towards Queen,,0,2234056,1122805,1,1
+47,1,50807908,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50807907,South - 47 Lansdowne towards Queen,,0,2234057,1122804,1,1
+47,1,50808056,South - 47 Lansdowne towards Queen,,0,2234015,1122805,1,1
+47,1,50808055,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50807906,South - 47 Lansdowne towards Queen,,0,2234017,1122804,1,1
+47,1,50807905,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50808054,South - 47 Lansdowne towards Queen,,0,2234020,1122805,1,1
+47,1,50808053,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50807904,South - 47 Lansdowne towards Queen,,0,2234056,1122804,1,1
+47,1,50807903,South - 47 Lansdowne towards Queen,,0,2234015,1122804,1,1
+47,1,50808052,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808051,South - 47 Lansdowne towards Queen,,0,2234018,1122805,1,1
+47,1,50807844,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807843,South - 47 Lansdowne towards Queen,,0,2234020,1122804,1,1
+47,1,50808050,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808049,South - 47 Lansdowne towards Queen,,0,2234054,1122805,1,1
+47,1,50807842,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50807841,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50808048,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50807840,South - 47 Lansdowne towards Queen,,0,2234018,1122804,1,1
+47,1,50808047,South - 47 Lansdowne towards Queen,,0,2234017,1122805,1,1
+47,1,50807839,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807838,South - 47 Lansdowne towards Queen,,0,2234054,1122804,1,1
+47,1,50808046,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50807837,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50808045,South - 47 Lansdowne towards Queen,,0,2234015,1122805,1,1
+47,1,50807836,South - 47 Lansdowne towards Queen,,0,2234017,1122804,1,1
+47,1,50807875,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50807835,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50807874,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50807979,South - 47 Lansdowne towards Queen,,0,2234015,1122804,1,1
+47,1,50807873,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50807978,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807872,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50807977,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50807871,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50807976,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50807870,South - 47 Lansdowne towards Queen,,0,2234017,1122805,1,1
+47,1,50807975,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807869,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50807974,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50807868,South - 47 Lansdowne towards Queen,,0,2234015,1122805,1,1
+47,1,50807973,South - 47 Lansdowne towards Queen,,0,2234017,1122804,1,1
+47,1,50807867,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50807972,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50807866,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50807971,South - 47 Lansdowne towards Queen,,0,2234015,1122804,1,1
+47,1,50807865,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50807970,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807864,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50807969,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50807863,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50807968,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50807862,South - 47 Lansdowne towards Queen,,0,2234017,1122805,1,1
+47,1,50807967,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807861,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50807966,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50807860,South - 47 Lansdowne towards Queen,,0,2234015,1122805,1,1
+47,1,50807965,South - 47 Lansdowne towards Queen,,0,2234017,1122804,1,1
+47,1,50807859,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50807964,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50807858,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50807963,South - 47 Lansdowne towards Queen,,0,2234015,1122804,1,1
+47,1,50807857,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50807962,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807856,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50807961,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50807855,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50807960,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50807854,South - 47 Lansdowne towards Queen,,0,2234017,1122805,1,1
+47,1,50807959,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807853,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50807958,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50807852,South - 47 Lansdowne towards Queen,,0,2234015,1122805,1,1
+47,1,50807902,South - 47 Lansdowne towards Queen,,0,2234017,1122804,1,1
+47,1,50807851,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50807991,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50807850,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50807990,South - 47 Lansdowne towards Queen,,0,2234015,1122804,1,1
+47,1,50807849,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50807989,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807848,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50807988,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50807847,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50807901,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50807987,South - 47 Lansdowne towards Queen,,0,2234017,1122805,1,1
+47,1,50808039,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807846,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50808038,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50807845,South - 47 Lansdowne towards Queen,,0,2234015,1122805,1,1
+47,1,50808037,South - 47 Lansdowne towards Queen,,0,2234017,1122804,1,1
+47,1,50807957,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808036,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50807956,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50808035,South - 47 Lansdowne towards Queen,,0,2234015,1122804,1,1
+47,1,50807955,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808034,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807954,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808033,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50807986,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50808032,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50807953,South - 47 Lansdowne towards Queen,,0,2234017,1122805,1,1
+47,1,50808031,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807832,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50807831,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50808030,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50807952,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50807834,South - 47 Lansdowne towards Queen,,0,2234015,1122805,1,1
+47,1,50808029,South - 47 Lansdowne towards Queen,,0,2234017,1122804,1,1
+47,1,50808002,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50807833,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808001,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50807951,South - 47 Lansdowne towards Queen,,0,2234055,1122805,1,1
+47,1,50808028,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50807950,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50808004,South - 47 Lansdowne towards Queen,,0,2234015,1122804,1,1
+47,1,50807949,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808003,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807948,South - 47 Lansdowne towards Queen,,0,2234051,1122805,1,1
+47,1,50808027,South - 47 Lansdowne towards Queen,,0,2234055,1122804,1,1
+47,1,50807947,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808026,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50807946,South - 47 Lansdowne towards Queen,,0,2234058,1122805,1,1
+47,1,50808025,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50807945,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50808024,South - 47 Lansdowne towards Queen,,0,2234051,1122804,1,1
+47,1,50807944,South - 47 Lansdowne towards Queen,,0,2234052,1122805,1,1
+47,1,50808023,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807943,South - 47 Lansdowne towards Queen,,0,2234017,1122805,1,1
+47,1,50808022,South - 47 Lansdowne towards Queen,,0,2234058,1122804,1,1
+47,1,50807942,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50808021,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50807941,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50808020,South - 47 Lansdowne towards Queen,,0,2234052,1122804,1,1
+47,1,50807940,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808019,South - 47 Lansdowne towards Queen,,0,2234017,1122804,1,1
+47,1,50807939,South - 47 Lansdowne towards Queen,,0,2234015,1122805,1,1
+47,1,50808018,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50807938,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808017,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50807937,South - 47 Lansdowne towards Queen,,0,2234055,1122805,1,1
+47,1,50808016,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50807936,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50808015,South - 47 Lansdowne towards Queen,,0,2234015,1122804,1,1
+47,1,50807935,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808014,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807934,South - 47 Lansdowne towards Queen,,0,2234051,1122805,1,1
+47,1,50808012,South - 47 Lansdowne towards Queen,,0,2234055,1122804,1,1
+47,1,50807933,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808011,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50807932,South - 47 Lansdowne towards Queen,,0,2234058,1122805,1,1
+47,1,50808010,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50807931,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50808009,South - 47 Lansdowne towards Queen,,0,2234051,1122804,1,1
+47,1,50807930,South - 47 Lansdowne towards Queen,,0,2234052,1122805,1,1
+47,1,50808008,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807929,South - 47 Lansdowne towards Queen,,0,2234017,1122805,1,1
+47,1,50808102,South - 47 Lansdowne towards Queen,,0,2234058,1122804,1,1
+47,1,50807928,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50808101,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50807927,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50808100,South - 47 Lansdowne towards Queen,,0,2234052,1122804,1,1
+47,1,50808013,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808099,South - 47 Lansdowne towards Queen,,0,2234017,1122804,1,1
+47,1,50808043,South - 47 Lansdowne towards Queen,,0,2234015,1122805,1,1
+47,1,50808098,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50808042,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808097,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50808041,South - 47 Lansdowne towards Queen,,0,2234055,1122805,1,1
+47,1,50808096,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50808040,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50808095,South - 47 Lansdowne towards Queen,,0,2234015,1122804,1,1
+47,1,50808071,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808094,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807985,South - 47 Lansdowne towards Queen,,0,2234051,1122805,1,1
+47,1,50808093,South - 47 Lansdowne towards Queen,,0,2234055,1122804,1,1
+47,1,50807984,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808092,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50807983,South - 47 Lansdowne towards Queen,,0,2234058,1122805,1,1
+47,1,50808091,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50807982,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50808090,South - 47 Lansdowne towards Queen,,0,2234051,1122804,1,1
+47,1,50807981,South - 47 Lansdowne towards Queen,,0,2234052,1122805,1,1
+47,1,50808089,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807980,South - 47 Lansdowne towards Queen,,0,2234017,1122805,1,1
+47,1,50808088,South - 47 Lansdowne towards Queen,,0,2234058,1122804,1,1
+47,1,50807899,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50808087,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50807898,South - 47 Lansdowne towards Queen,,0,2234013,1122805,1,1
+47,1,50808086,South - 47 Lansdowne towards Queen,,0,2234052,1122804,1,1
+47,1,50807897,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808085,South - 47 Lansdowne towards Queen,,0,2234017,1122804,1,1
+47,1,50807896,South - 47 Lansdowne towards Queen,,0,2234015,1122805,1,1
+47,1,50808084,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50807895,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808083,South - 47 Lansdowne towards Queen,,0,2234013,1122804,1,1
+47,1,50807894,South - 47 Lansdowne towards Queen,,0,2234055,1122805,1,1
+47,1,50808082,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50807893,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50808081,South - 47 Lansdowne towards Queen,,0,2234015,1122804,1,1
+47,1,50807892,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808080,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807830,South - 47 Lansdowne towards Queen,,0,2234051,1122805,1,1
+47,1,50808079,South - 47 Lansdowne towards Queen,,0,2234055,1122804,1,1
+47,1,50807891,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808078,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50807829,South - 47 Lansdowne towards Queen,,0,2234011,1122805,1,1
+47,1,50808077,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50807890,South - 47 Lansdowne towards Queen,,0,2234052,1122805,1,1
+47,1,50808000,South - 47 Lansdowne towards Queen,,0,2234051,1122804,1,1
+47,1,50808076,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50807889,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50807999,South - 47 Lansdowne towards Queen,,0,2234011,1122804,1,1
+47,1,50807888,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808044,South - 47 Lansdowne towards Queen,,0,2234052,1122804,1,1
+47,1,50807887,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50807880,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50807886,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50807879,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50807885,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50807878,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50807884,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50807877,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50808164,South - 47 Lansdowne towards Queen,,0,2234052,1122805,1,1
+47,1,50807876,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50808163,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50808131,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50808162,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808130,South - 47 Lansdowne towards Queen,,0,2234052,1122804,1,1
+47,1,50808161,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808129,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50808160,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50808128,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50808159,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808127,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50808158,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808126,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50808157,South - 47 Lansdowne towards Queen,,0,2234052,1122805,1,1
+47,1,50808125,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50808156,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50808124,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50808155,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808123,South - 47 Lansdowne towards Queen,,0,2234052,1122804,1,1
+47,1,50808154,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808122,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50808153,South - 47 Lansdowne towards Queen,,0,2234019,1122805,1,1
+47,1,50808121,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50808152,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808120,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50808151,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808119,South - 47 Lansdowne towards Queen,,0,2234019,1122804,1,1
+47,1,50808118,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50808103,South - 47 Lansdowne towards Queen,,0,2234052,1122805,1,1
+47,1,50808186,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50808105,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50808180,South - 47 Lansdowne towards Queen,,0,2234052,1122804,1,1
+47,1,50808104,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808182,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50808132,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808181,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50808150,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808183,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50808149,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808117,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50808148,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50808116,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50808147,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808115,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50808146,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808114,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50808145,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808113,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50808144,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808112,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50808143,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50808111,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50808142,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808110,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50808141,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808109,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50808140,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808108,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50808139,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808107,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50808138,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50808106,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50808137,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808168,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50808136,South - 47 Lansdowne towards Queen,,0,2234014,1122805,1,1
+47,1,50808167,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50808135,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808166,South - 47 Lansdowne towards Queen,,0,2234014,1122804,1,1
+47,1,50808134,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808165,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50808133,South - 47 Lansdowne towards Queen,,0,2234012,1122805,1,1
+47,1,50808185,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50808176,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808184,South - 47 Lansdowne towards Queen,,0,2234012,1122804,1,1
+47,1,50808171,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50808177,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808172,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50808178,South - 47 Lansdowne towards Queen,,0,2234016,1122805,1,1
+47,1,50808173,South - 47 Lansdowne towards Queen,,0,2234016,1122804,1,1
+47,1,50808179,South - 47 Lansdowne towards Queen,,0,2234053,1122805,1,1
+47,1,50808174,South - 47 Lansdowne towards Queen,,0,2234053,1122804,1,1
+47,1,50808175,South - 47 Lansdowne towards Queen,,0,2234001,1122805,1,1
+47,1,50808169,South - 47 Lansdowne towards Queen,,0,2234001,1122804,1,1
+47,1,50808170,South - 47 Lansdowne towards Queen,,0,2234016,1122794,1,1
+47,1,50808302,North - 47 Lansdowne towards Caledonia Station,,1,2233578,1122807,1,1
+47,1,50808301,North - 47 Lansdowne towards Caledonia Station,,1,2234018,1122807,1,1
+47,1,50808303,North - 47 Lansdowne towards Caledonia Station,,1,2234054,1122807,1,1
+47,1,50808304,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808347,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808251,North - 47 Lansdowne towards Caledonia Station,,1,2234056,1122818,1,1
+47,1,50808296,North - 47 Lansdowne towards Caledonia Station,,1,2234020,1122818,1,1
+47,1,50808390,North - 47 Lansdowne towards Caledonia Station,,1,2234056,1122817,1,1
+47,1,50808295,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808213,North - 47 Lansdowne towards Caledonia Station,,1,2234020,1122817,1,1
+47,1,50808294,North - 47 Lansdowne towards Caledonia Station,,1,2234018,1122818,1,1
+47,1,50808212,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808293,North - 47 Lansdowne towards Caledonia Station,,1,2234054,1122818,1,1
+47,1,50808211,North - 47 Lansdowne towards Caledonia Station,,1,2234018,1122817,1,1
+47,1,50808292,North - 47 Lansdowne towards Caledonia Station,,1,2234057,1122818,1,1
+47,1,50808210,North - 47 Lansdowne towards Caledonia Station,,1,2234054,1122817,1,1
+47,1,50808291,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808209,North - 47 Lansdowne towards Caledonia Station,,1,2234057,1122817,1,1
+47,1,50808290,North - 47 Lansdowne towards Caledonia Station,,1,2234056,1122818,1,1
+47,1,50808397,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808289,North - 47 Lansdowne towards Caledonia Station,,1,2234020,1122818,1,1
+47,1,50808396,North - 47 Lansdowne towards Caledonia Station,,1,2234056,1122817,1,1
+47,1,50808288,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808395,North - 47 Lansdowne towards Caledonia Station,,1,2234020,1122817,1,1
+47,1,50808287,North - 47 Lansdowne towards Caledonia Station,,1,2234018,1122818,1,1
+47,1,50808394,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808286,North - 47 Lansdowne towards Caledonia Station,,1,2234054,1122818,1,1
+47,1,50808393,North - 47 Lansdowne towards Caledonia Station,,1,2234018,1122817,1,1
+47,1,50808285,North - 47 Lansdowne towards Caledonia Station,,1,2234057,1122818,1,1
+47,1,50808392,North - 47 Lansdowne towards Caledonia Station,,1,2234054,1122817,1,1
+47,1,50808305,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808391,North - 47 Lansdowne towards Caledonia Station,,1,2234057,1122817,1,1
+47,1,50808208,North - 47 Lansdowne towards Caledonia Station,,1,2234056,1122818,1,1
+47,1,50808348,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808356,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808355,North - 47 Lansdowne towards Caledonia Station,,1,2234020,1122818,1,1
+47,1,50808389,North - 47 Lansdowne towards Caledonia Station,,1,2234056,1122817,1,1
+47,1,50808354,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808327,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808207,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808326,North - 47 Lansdowne towards Caledonia Station,,1,2234020,1122817,1,1
+47,1,50808206,North - 47 Lansdowne towards Caledonia Station,,1,2234018,1122818,1,1
+47,1,50808325,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808205,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808388,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808204,North - 47 Lansdowne towards Caledonia Station,,1,2234054,1122818,1,1
+47,1,50808387,North - 47 Lansdowne towards Caledonia Station,,1,2234018,1122817,1,1
+47,1,50808203,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808386,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808202,North - 47 Lansdowne towards Caledonia Station,,1,2234057,1122818,1,1
+47,1,50808385,North - 47 Lansdowne towards Caledonia Station,,1,2234054,1122817,1,1
+47,1,50808201,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122818,1,1
+47,1,50808384,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808200,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808383,North - 47 Lansdowne towards Caledonia Station,,1,2234057,1122817,1,1
+47,1,50808199,North - 47 Lansdowne towards Caledonia Station,,1,2234056,1122818,1,1
+47,1,50808382,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122817,1,1
+47,1,50808198,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122818,1,1
+47,1,50808381,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808197,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808380,North - 47 Lansdowne towards Caledonia Station,,1,2234056,1122817,1,1
+47,1,50808196,North - 47 Lansdowne towards Caledonia Station,,1,2234020,1122818,1,1
+47,1,50808379,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122817,1,1
+47,1,50808195,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808378,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808194,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808377,North - 47 Lansdowne towards Caledonia Station,,1,2234020,1122817,1,1
+47,1,50808353,North - 47 Lansdowne towards Caledonia Station,,1,2234018,1122818,1,1
+47,1,50808376,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808193,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808375,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808192,North - 47 Lansdowne towards Caledonia Station,,1,2234054,1122818,1,1
+47,1,50808324,North - 47 Lansdowne towards Caledonia Station,,1,2234018,1122817,1,1
+47,1,50808352,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808374,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808373,North - 47 Lansdowne towards Caledonia Station,,1,2234054,1122817,1,1
+47,1,50808191,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122818,1,1
+47,1,50808323,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808190,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808372,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122817,1,1
+47,1,50808189,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122818,1,1
+47,1,50808371,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808188,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808370,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122817,1,1
+47,1,50808187,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808369,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808512,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808368,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808511,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808367,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808510,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808346,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808509,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122818,1,1
+47,1,50808471,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808508,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808470,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122817,1,1
+47,1,50808507,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122818,1,1
+47,1,50808469,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808506,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808468,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122817,1,1
+47,1,50808505,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808467,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808504,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808466,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808319,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808465,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808318,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808464,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808317,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122818,1,1
+47,1,50808463,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808316,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808462,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122817,1,1
+47,1,50808315,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122818,1,1
+47,1,50808461,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808314,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808460,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122817,1,1
+47,1,50808313,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808459,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808545,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808458,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808544,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808457,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808543,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808456,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808542,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122818,1,1
+47,1,50808455,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808541,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808454,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122817,1,1
+47,1,50808540,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122818,1,1
+47,1,50808453,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808539,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808452,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122817,1,1
+47,1,50808538,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808451,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808537,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808450,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808536,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808449,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808535,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808448,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808534,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122818,1,1
+47,1,50808447,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808533,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808446,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122817,1,1
+47,1,50808532,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122818,1,1
+47,1,50808445,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808531,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808444,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122817,1,1
+47,1,50808530,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808443,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808529,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808442,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808528,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808441,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808527,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808498,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808526,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122818,1,1
+47,1,50808525,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808250,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808524,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808440,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122817,1,1
+47,1,50808523,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808249,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808522,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122818,1,1
+47,1,50808248,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808521,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808247,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808520,North - 47 Lansdowne towards Caledonia Station,,1,2234055,1122818,1,1
+47,1,50808246,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122817,1,1
+47,1,50808519,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808245,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808518,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808244,North - 47 Lansdowne towards Caledonia Station,,1,2234055,1122817,1,1
+47,1,50808517,North - 47 Lansdowne towards Caledonia Station,,1,2234051,1122818,1,1
+47,1,50808243,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808516,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808242,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808515,North - 47 Lansdowne towards Caledonia Station,,1,2234058,1122818,1,1
+47,1,50808241,North - 47 Lansdowne towards Caledonia Station,,1,2234051,1122817,1,1
+47,1,50808513,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808240,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808503,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122818,1,1
+47,1,50808239,North - 47 Lansdowne towards Caledonia Station,,1,2234058,1122817,1,1
+47,1,50808502,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122818,1,1
+47,1,50808238,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808501,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808237,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122817,1,1
+47,1,50808500,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808236,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122817,1,1
+47,1,50808499,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808235,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808497,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122818,1,1
+47,1,50808234,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808496,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808233,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808495,North - 47 Lansdowne towards Caledonia Station,,1,2234055,1122818,1,1
+47,1,50808232,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122817,1,1
+47,1,50808494,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808231,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808493,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808230,North - 47 Lansdowne towards Caledonia Station,,1,2234055,1122817,1,1
+47,1,50808492,North - 47 Lansdowne towards Caledonia Station,,1,2234051,1122818,1,1
+47,1,50808229,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808491,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808228,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808490,North - 47 Lansdowne towards Caledonia Station,,1,2234058,1122818,1,1
+47,1,50808227,North - 47 Lansdowne towards Caledonia Station,,1,2234051,1122817,1,1
+47,1,50808489,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808226,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808488,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122818,1,1
+47,1,50808225,North - 47 Lansdowne towards Caledonia Station,,1,2234058,1122817,1,1
+47,1,50808487,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122818,1,1
+47,1,50808224,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808486,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808223,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122817,1,1
+47,1,50808485,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808222,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122817,1,1
+47,1,50808484,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808221,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808483,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122818,1,1
+47,1,50808220,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808482,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808219,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808481,North - 47 Lansdowne towards Caledonia Station,,1,2234055,1122818,1,1
+47,1,50808218,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122817,1,1
+47,1,50808480,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808428,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808479,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808427,North - 47 Lansdowne towards Caledonia Station,,1,2234055,1122817,1,1
+47,1,50808478,North - 47 Lansdowne towards Caledonia Station,,1,2234051,1122818,1,1
+47,1,50808426,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808477,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808425,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808476,North - 47 Lansdowne towards Caledonia Station,,1,2234058,1122818,1,1
+47,1,50808424,North - 47 Lansdowne towards Caledonia Station,,1,2234051,1122817,1,1
+47,1,50808475,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808423,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808474,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122818,1,1
+47,1,50808422,North - 47 Lansdowne towards Caledonia Station,,1,2234058,1122817,1,1
+47,1,50808473,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122818,1,1
+47,1,50808421,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808312,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808420,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122817,1,1
+47,1,50808311,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122818,1,1
+47,1,50808419,North - 47 Lansdowne towards Caledonia Station,,1,2234017,1122817,1,1
+47,1,50808310,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808418,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808309,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122818,1,1
+47,1,50808417,North - 47 Lansdowne towards Caledonia Station,,1,2234013,1122817,1,1
+47,1,50808308,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808416,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808284,North - 47 Lansdowne towards Caledonia Station,,1,2234055,1122818,1,1
+47,1,50808415,North - 47 Lansdowne towards Caledonia Station,,1,2234015,1122817,1,1
+47,1,50808306,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808414,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808307,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808411,North - 47 Lansdowne towards Caledonia Station,,1,2234055,1122817,1,1
+47,1,50808412,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808350,North - 47 Lansdowne towards Caledonia Station,,1,2234051,1122818,1,1
+47,1,50808413,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808262,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808321,North - 47 Lansdowne towards Caledonia Station,,1,2234051,1122817,1,1
+47,1,50808349,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122818,1,1
+47,1,50808431,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808283,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122818,1,1
+47,1,50808320,North - 47 Lansdowne towards Caledonia Station,,1,2234011,1122817,1,1
+47,1,50808282,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808410,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122817,1,1
+47,1,50808281,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808409,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808280,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808408,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808279,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808407,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808278,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808406,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808277,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808405,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808276,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122818,1,1
+47,1,50808404,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808275,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808403,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122817,1,1
+47,1,50808274,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808402,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808273,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808401,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808272,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808400,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808271,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808399,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808270,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808472,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808269,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122818,1,1
+47,1,50808439,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808268,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808438,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122817,1,1
+47,1,50808267,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808437,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808266,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808436,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808265,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122818,1,1
+47,1,50808435,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808264,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808434,North - 47 Lansdowne towards Caledonia Station,,1,2234019,1122817,1,1
+47,1,50808263,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808433,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808351,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122818,1,1
+47,1,50808432,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808261,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808322,North - 47 Lansdowne towards Caledonia Station,,1,2234052,1122817,1,1
+47,1,50808260,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808430,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808259,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808429,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808514,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808258,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808345,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808257,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808344,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808256,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808343,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808255,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808342,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808254,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808341,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808253,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808340,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808252,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808339,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808398,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808338,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808546,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808337,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808366,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808336,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808365,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808335,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808364,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808334,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808363,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808333,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808362,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808332,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808361,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122818,1,1
+47,1,50808331,North - 47 Lansdowne towards Caledonia Station,,1,2234014,1122817,1,1
+47,1,50808360,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808330,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808359,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808329,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808358,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122818,1,1
+47,1,50808328,North - 47 Lansdowne towards Caledonia Station,,1,2234012,1122817,1,1
+47,1,50808298,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808215,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1
+47,1,50808299,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122818,1,1
+47,1,50808216,North - 47 Lansdowne towards Caledonia Station,,1,2234001,1122817,1,1
+47,1,50808300,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122818,1,1
+47,1,50808217,North - 47 Lansdowne towards Caledonia Station,,1,2234016,1122817,1,1
+47,1,50808297,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122818,1,1
+47,1,50808214,North - 47 Lansdowne towards Caledonia Station,,1,2234053,1122817,1,1

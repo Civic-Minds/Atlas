@@ -141,4 +141,16 @@ describe('findVariantFamily', () => {
     ] as ShapeProperties[];
     expect(findVariantFamily(features, '1', 'midday', 'some-other-agency')).toBeNull();
   });
+
+  // #724: coast-rta, clemson-cat and MBTA Commuter Rail have blank short names. The sidebar
+  // falls back to the route ID as the name; blank-named features never join a family.
+  it('does not group blank-named routes into one family (#724)', () => {
+    const features = [
+      feature('101', '', 20),
+      feature('102', '', 30),
+      feature('103', '', 40),
+    ];
+    expect(findVariantFamily(features, '101', 'midday', 'coast-rta')).toBeNull();
+    expect(findVariantFamily(features, '', 'midday', 'coast-rta')).toBeNull();
+  });
 });

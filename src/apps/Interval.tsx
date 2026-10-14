@@ -14,25 +14,25 @@ import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
 import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../styles';
-import type { Agency, FareOverride } from '../App';
+import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
-import type { StopEntry } from './corridor-search';
-import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL, VIEWPORT_BBOX_PAD } from '../../shared/config';
+import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import type * as maplibregl from 'maplibre-gl';
-import { CompareSideBar, CompareTab, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
+import { CompareSideBar, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareOtherPhrase } from '../utils/compareSides';
 import { buildCompareRow } from '../utils/compareRows';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
-import { findVariantFamily } from '../utils/routeVariants';
 import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
-import { encodeAgencySelection, encodeCompareSideParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseCompareSideParams, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
+import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { getRegionalView } from '../utils/regionView';
+import { areaFitZoom } from '../../shared/areaIndex';
+import type { AreaSearchResult } from '../../shared/areaSearch';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -65,7 +65,6 @@ interface Props {
   hideFilterPanel?: boolean;
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
-  onDirectFromStop?: (stop: StopEntry) => void;
   onOnDemandZoneClick?: (selection: { slug: string; zoneId: string }) => void;
   day: DayType;
   setDay: (d: DayType) => void;
@@ -77,7 +76,9 @@ interface Props {
   headerPortalContainer?: Element | null;
   /** Top-bar slot beside History and Live where the Compare view tab renders. */
   viewTabsPortalContainer?: Element | null;
-  fareView?: boolean;
+  /** Phone version: the top bar's More menu, where Compare sits beside History and Live. */
+  moreMenuPortalContainer?: Element | null;
+  onMoreMenuDone?: () => void;
   nightServiceView?: boolean;
   nightServiceFrequency?: NightServiceFrequency;
   setNightServiceFrequency?: (frequency: NightServiceFrequency) => void;
@@ -131,7 +132,7 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
   );
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, fareView = false, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -145,6 +146,18 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     if (isFinite(lat) && isFinite(lon) && isFinite(zoom)) return { lat, lon, zoom };
     return undefined;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ?area=<slug>: fit the map to that area. Explicit lat/lon/z win.
+  const initialMapBounds = useMemo(
+    () => (initialMapCenter ? null : parseAreaBounds(searchParams)),
+    [], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  // An area chosen in search: the map zooms to it like opening ?area=<slug>. The nonce re-fits a repeat pick.
+  const [areaFocus, setAreaFocus] = useState<{ bbox: [number, number, number, number]; nonce: number } | null>(null);
+  const handleSelectArea = useCallback((area: AreaSearchResult) => {
+    setAreaFocus(prev => ({ bbox: area.bbox, nonce: (prev?.nonce ?? 0) + 1 }));
+  }, []);
 
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try {
@@ -343,7 +356,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   // Compare mode (beta): side A is the normal day, time and frequency; side B has its own day, time
   // and frequency. Modes, agencies and the irregular-route settings are shared by both maps.
-  const compareAvailable = FEATURES.compareMode && showRouteLayers && !fareView && !nightServiceView
+  const compareAvailable = FEATURES.compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
   const [compareSide, setCompareSide] = useState<CompareSide | null>(() => {
     if (!compareAvailable) return null;
@@ -411,7 +424,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   }, [agencies.length, analyticsApp, day, hideSpan, livePollingOnly, maxHeadway, period, selectedAgencies, selectedModes]);
 
   const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
-  const showSidebar = showUi || fareView || selectionUiVisible;
+  const showSidebar = showUi || selectionUiVisible;
 
   useEffect(() => {
     const selectedAgency = selectedRoute?.split('::')[0] ?? selectedStop?.split('::')[0] ?? selectedAgencySlug ?? null;
@@ -421,19 +434,15 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     onSelectionActiveChange?.(selectionUiVisible);
   }, [onSelectionActiveChange, selectionUiVisible]);
-  const [fareOverrides, setFareOverrides] = useState<Record<string, FareOverride>>({});
-  useEffect(() => {
-    if (!fareView) return;
-    fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`)
-      .then(r => r.ok ? r.json() : {})
-      .then(data => setFareOverrides(data as Record<string, FareOverride>))
-      .catch(() => {});
-  }, [fareView]);
 
   // Start agency loading from a deep-linked map location instead of waiting for
   // MapLibre to report its first move. A stalled route tile must not leave the
   // data loader using the Toronto default while the map is elsewhere.
   const initialAgencyBounds = useMemo<ViewportBounds | null>(() => {
+    if (!initialMapCenter && initialMapBounds) {
+      const [s, w, n, e] = initialMapBounds;
+      return { s, w, n, e };
+    }
     if (!initialMapCenter) return null;
     return {
       s: initialMapCenter.lat - VIEWPORT_BBOX_PAD.lat,
@@ -441,9 +450,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       n: initialMapCenter.lat + VIEWPORT_BBOX_PAD.lat,
       e: initialMapCenter.lon + VIEWPORT_BBOX_PAD.lon,
     };
-  }, [initialMapCenter]);
+  }, [initialMapCenter, initialMapBounds]);
   const [bounds, setBounds] = useState<ViewportBounds | null>(initialAgencyBounds);
-  const [mapZoom, setMapZoom] = useState(initialMapCenter?.zoom ?? getRegionalView(agencies).zoom);
+  const [mapZoom, setMapZoom] = useState(initialMapCenter?.zoom ?? (initialMapBounds ? areaFitZoom(initialMapBounds) : undefined) ?? getRegionalView(agencies).zoom);
   const onBoundsChange = useCallback((b: ViewportBounds, z?: number) => {
     setBounds(b);
     if (z !== undefined) setMapZoom(z);
@@ -463,25 +472,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     selectedAgencySlug,
   });
 
-  const selectedCorridorFamily = useMemo(() => {
-    if (!selectedRoute) return null;
-    const separator = selectedRoute.indexOf('::');
-    if (separator < 0) return null;
-    const agencySlug = selectedRoute.slice(0, separator);
-    const routeId = selectedRoute.slice(separator + 2);
-    const features = layers[agencySlug]?.features ?? [];
-    const props = features
-      .map(f => f.properties as ShapeProperties)
-      .filter(p => p?.routeId && p.routeShortName);
-    const selected = props.find(p => String(p.routeId) === routeId);
-    if (!selected) return null;
-    const family = findVariantFamily(props, selected.routeShortName, period, agencySlug);
-    if (!family || family.members.length < 2) return null;
-    return {
-      agencySlug,
-      routeIds: family.members.map(member => member.routeId),
-    };
-  }, [layers, period, selectedRoute]);
 
   useEffect(() => {
     onLayersChange?.(layers);
@@ -656,7 +646,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     if (agencies.length === 0) return;
     if (agencyUrlRuleRef.current && !agencySelectionUserChangedRef.current) return;
-    syncUrlParams(encodeAgencySelection(selectedAgencies, agencies.map(a => a.slug)));
+    syncUrlParams(encodeSelectionParams(selectedAgencies, agencies.map(a => a.slug)));
   }, [selectedAgencies, agencies]);
   useEffect(() => {
     syncUrlParams({ m: encodeModesParam(selectedModes) });
@@ -812,6 +802,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             routesForStop={routesForStop}
             onBoundsChange={onBoundsChange}
             resetViewKey={resetViewKey}
+            areaFocus={areaFocus}
             onLocate={onLocate}
             showMapContext={showMapContext}
             mapContextOpen={mapContextOpen}
@@ -822,9 +813,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             day={day}
             showRouteLayers={showRouteLayers}
             liveRoutesOnly={liveRoutesOnly}
-            showCorridorBand={false}
-            showCorridors={false}
-            selectedCorridorFamily={selectedCorridorFamily}
             hideSpan={hideSpan}
             filterToAgencies={filterToAgencies}
             onHistoryRouteClick={onHistoryRouteClick}
@@ -835,7 +823,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onOnDemandZoneClick={handleOnDemandZoneClick}
             selectedOnDemandSlug={selectedRoute || selectedStop ? null : selectedOnDemandSlug}
             selectedOnDemandZoneId={selectedOnDemandZoneId}
-            fareView={fareView}
             nightServiceView={nightServiceView}
             nightServiceFrequency={nightServiceFrequency}
             exportEnabled={exportEnabled && !compareActive}
@@ -849,6 +836,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             selectedModes={selectedModes}
             selectedAgencies={selectedAgencies}
             initialMapCenter={initialMapCenter}
+            initialMapBounds={initialMapBounds}
             initialOnDemandSlug={initialMapCenter ? null : searchParams.get('ondemand')?.split('::', 1)[0] ?? null}
             onTileLoadingChange={setIsTilesLoading}
             onBasemapLoadingChange={setIsBasemapLoading}
@@ -895,6 +883,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 routesForStop={compareStats.routesForStop}
                 onBoundsChange={IGNORE_BOUNDS}
                 resetViewKey={resetViewKey}
+                areaFocus={areaFocus}
                 onLocate={onLocate}
                 showMapContext={false}
                 mapContextOpen={mapContextOpen}
@@ -902,9 +891,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 day={compareB.day}
                 showRouteLayers={showRouteLayers}
                 liveRoutesOnly={liveRoutesOnly}
-                showCorridorBand={false}
-                showCorridors={false}
-                selectedCorridorFamily={selectedCorridorFamily}
                 hideSpan={hideSpan}
                 filterToAgencies={filterToAgencies}
                 onHistoryRouteClick={onHistoryRouteClick}
@@ -915,7 +901,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 onOnDemandZoneClick={handleOnDemandZoneClick}
                 selectedOnDemandSlug={selectedRoute || selectedStop ? null : selectedOnDemandSlug}
                 selectedOnDemandZoneId={selectedOnDemandZoneId}
-                fareView={fareView}
                 nightServiceView={nightServiceView}
                 nightServiceFrequency={nightServiceFrequency}
                 exportEnabled={false}
@@ -929,6 +914,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 selectedModes={selectedModes}
                 selectedAgencies={selectedAgencies}
                 initialMapCenter={initialMapCenter}
+            initialMapBounds={initialMapBounds}
                 initialOnDemandSlug={null}
                 setQuery={setQuery}
                 onClearSelection={clearMapSelection}
@@ -954,7 +940,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
       <MapAttribution />
 
-      {showMapLegend && !fareView && !nightServiceView && <PersistentMapLegend />}
+      {showMapLegend && !nightServiceView && <PersistentMapLegend />}
 
       {((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
         <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -1024,7 +1010,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         </div>
       )}
 
-      {(showUi || fareView || showSelectionUi) && selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
+      {(showUi || showSelectionUi) && selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedOnDemandSlug);
         return agency ? (
           <AgencyCard
@@ -1040,8 +1026,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onRouteSelect={() => {}}
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
-            fareView={false}
-            fareOverride={fareOverrides[agency.slug]}
             onInfoOpen={onInfoOpen}
             onDemandFocus
             onDemandZoneId={selectedOnDemandZoneId}
@@ -1049,7 +1033,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         ) : null;
       })()}
 
-      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
+      {(showUi || showSelectionUi) && selectedAgencySlug && !selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
         return agency ? (
           <AgencyCard
@@ -1065,8 +1049,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
-            fareView={fareView}
-            fareOverride={fareOverrides[agency.slug]}
             onInfoOpen={onInfoOpen}
           />
         ) : null;
@@ -1084,6 +1066,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       {viewTabsPortalContainer && compareAvailable && createPortal(
         <CompareTab active={compareActive} onStart={startCompare} onExit={exitCompare} />,
         viewTabsPortalContainer,
+      )}
+
+      {moreMenuPortalContainer && compareAvailable && createPortal(
+        <CompareMenuItem active={compareActive} onStart={startCompare} onExit={exitCompare} onDone={() => onMoreMenuDone?.()} />,
+        moreMenuPortalContainer,
       )}
 
       {headerPortalContainer && createPortal(
@@ -1117,6 +1104,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           </div>
           {!hideFilterPanel && (
               <FilterPanel
+              mode="filters"
               lightMode={lightMode}
               setLightMode={setLightMode}
               hideSpan={hideSpan}
@@ -1124,6 +1112,43 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               setHideSpan={setHideSpan}
                 setHideLimitedService={setHideLimitedService}
                 limitedServiceRouteCount={stats?.limitedService ?? null}
+              livePollingOnly={livePollingOnly}
+              setLivePollingOnly={setLivePollingOnly}
+              onInfoOpen={onInfoOpen}
+              inFrequency={showUi}
+              maxHeadway={maxHeadway}
+              setMaxHeadway={setMaxHeadway}
+              selectedModes={selectedModes}
+              setSelectedModes={setSelectedModes}
+              day={day}
+              setDay={setDay}
+              period={period}
+              setPeriod={setPeriod}
+              agencies={agencies}
+              allAgencies={allAgencies}
+              selectedAgencies={selectedAgencies}
+              setSelectedAgencies={setSelectedAgenciesByUser}
+              bounds={bounds}
+              hideLowQuality={hideLowQuality}
+              setHideLowQuality={setHideLowQuality}
+              feedQualityEnabled={feedQualityEnabled}
+              showMapLegend={showMapLegend}
+              setShowMapLegend={setShowMapLegend}
+              dataSaver={dataSaver}
+              setDataSaver={setDataSaver}
+              compare={compareAvailable ? { side: compareActive ? compareSide : null, onStart: startCompare, onExit: exitCompare, onChange: setCompareSide } : undefined}
+            />
+          )}
+          {!hideFilterPanel && (
+              <FilterPanel
+              lightMode={lightMode}
+              setLightMode={setLightMode}
+              hideSpan={hideSpan}
+              hideLimitedService={hideLimitedService}
+              setHideSpan={setHideSpan}
+                setHideLimitedService={setHideLimitedService}
+                limitedServiceRouteCount={stats?.limitedService ?? null}
+                limitedServiceRoutes={stats?.limitedServiceRoutes}
               livePollingOnly={livePollingOnly}
               setLivePollingOnly={setLivePollingOnly}
               onInfoOpen={onInfoOpen}
@@ -1189,9 +1214,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         livePollingOnly={livePollingOnly}
         setLivePollingOnly={setLivePollingOnly}
         setSelectedAgencySlug={setSelectedAgencySlug}
-        fareView={fareView}
+        onSelectArea={handleSelectArea}
         nightServiceView={nightServiceView}
-        fareOverrides={fareOverrides}
         sidebarLeft={sidebarLeft}
         searchBarWidth={searchBarWidth}
         analyticsApp={analyticsApp}
@@ -1201,7 +1225,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         selectedRouteOutOfFilter={selectedRouteOutOfFilter && !compareActive}
         compareRows={compareRows}
         compareActive={compareActive}
-        onDirectFromStop={onDirectFromStop}
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}
       />

@@ -9,7 +9,7 @@
   "feedUrl": "https://gismap.augustaga.gov/AugGAgis/GISWebLinks/Transit/GTFS/google_transit.zip",
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
-  "lastFeedExpiry": "20240224",
+  "lastFeedExpiry": "20261201",
   "lastFeedVersion": null,
   "lastRefreshedAt": "20260811",
   "timezone": "America/New_York",

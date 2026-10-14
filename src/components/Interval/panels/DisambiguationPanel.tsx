@@ -1,6 +1,7 @@
 import React from 'react';
 import { titleCase, getRouteLabel } from '../../../utils/format';
-import { FLOATING_CARD, PANEL_ENTER, LIST_ROW, LIST_ROW_PRIMARY } from '../../../styles';
+import { FLOATING_CARD, PANEL_ENTER, LIST_ROW_PRIMARY } from '../../../styles';
+import ListRow from '../../ui/ListRow';
 
 export interface DisambigRoute {
   key: string;
@@ -35,14 +36,13 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
           <div key={g.agencyName}>
             {g.agencyName && (
               <div className="px-4 pt-2.5 pb-1">
-                <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">{g.agencyName}</span>
+                <span className="text-xs font-black tracking-wide text-[var(--text-dim)]">{g.agencyName}</span>
               </div>
             )}
             {g.routes.map(r => (
-              <button
+              <ListRow
                 key={r.key}
                 onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
-                className={LIST_ROW}
               >
                 <div className="min-w-0 flex-1 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
@@ -50,7 +50,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
                     {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
                   </span>
                 </div>
-              </button>
+              </ListRow>
             ))}
           </div>
         ))}

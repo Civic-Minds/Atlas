@@ -1,0 +1,25 @@
+{
+  "slug": "pocatello",
+  "name": "Pocatello",
+  "type": "MSA",
+  "officialName": "Pocatello, ID",
+  "country": "United States",
+  "cities": [
+    "Pocatello"
+  ],
+  "bbox": [
+    42.256276000115,
+    -112.75234100027359,
+    43.022589000275914,
+    -111.87547500039878
+  ],
+  "center": [
+    42.639432500195454,
+    -112.31390800033618
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "pocatello"
+  ],
+  "page": false
+}

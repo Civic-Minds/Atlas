@@ -1,0 +1,26 @@
+{
+  "slug": "naples",
+  "name": "Naples",
+  "type": "MSA",
+  "officialName": "Naples-Marco Island, FL",
+  "country": "United States",
+  "cities": [
+    "Naples",
+    "Marco Island"
+  ],
+  "bbox": [
+    25.800784999651512,
+    -82.24495300020915,
+    26.517068999774324,
+    -80.87255399971686
+  ],
+  "center": [
+    26.158926999712918,
+    -81.558753499963
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "collier"
+  ],
+  "page": false
+}

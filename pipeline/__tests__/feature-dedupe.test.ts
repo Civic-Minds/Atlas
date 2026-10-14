@@ -5,7 +5,7 @@ import { MIN_ALL_DAY_TERMINAL_DEPARTURES } from '../headway-utils';
 // The dedupe rules in order (#596, #716, #740, #772), each on the case that introduced it.
 
 const pattern = (over: Partial<DedupePattern> = {}): DedupePattern => ({
-  hasShape: true, dedupeHeadway: 20, headway: 20, departures: 40, hasDaytime: true, runsOnRepDay: true, carriesRepDay: true, ...over,
+  hasShape: true, dedupeHeadway: 20, headway: 20, departures: 40, hasDaytime: true, runsInDay: true, runsMidday: true, runsOnRepDay: true, carriesRepDay: true, ...over,
 });
 
 describe('decideDedupe', () => {

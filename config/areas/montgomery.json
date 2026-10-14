@@ -1,0 +1,25 @@
+{
+  "slug": "montgomery",
+  "name": "Montgomery",
+  "type": "MSA",
+  "officialName": "Montgomery, AL",
+  "country": "United States",
+  "cities": [
+    "Montgomery"
+  ],
+  "bbox": [
+    31.961600999623844,
+    -86.92123700034631,
+    32.769225000001676,
+    -85.8526250003066
+  ],
+  "center": [
+    32.36541299981276,
+    -86.38693100032646
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "montgomery-transit"
+  ],
+  "page": false
+}

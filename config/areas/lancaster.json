@@ -1,0 +1,25 @@
+{
+  "slug": "lancaster",
+  "name": "Lancaster",
+  "type": "MSA",
+  "officialName": "Lancaster, PA",
+  "country": "United States",
+  "cities": [
+    "Lancaster"
+  ],
+  "bbox": [
+    39.72113099977792,
+    -76.72161999968529,
+    40.315971000021555,
+    -75.8733750002956
+  ],
+  "center": [
+    40.01855099989974,
+    -76.29749749999044
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "lancaster"
+  ],
+  "page": false
+}

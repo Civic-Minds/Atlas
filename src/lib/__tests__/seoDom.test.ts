@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { resolveSeo } from '../../../shared/seo';
-import { applySeoToDocument } from '../seoDom';
+import { applySeoToDocument, safeHttpUrl } from '../seoDom';
 
 const BETA = { mode: 'beta', flags: { researchApps: true } } as const;
 const PUBLIC = { mode: 'public', flags: {} } as const;
@@ -21,10 +21,19 @@ describe('applySeoToDocument', () => {
   });
 
   it('adds noindex on a beta-only route and removes it on leaving', () => {
-    applySeoToDocument(document, resolveSeo('/apps/night', BETA));
+    applySeoToDocument(document, resolveSeo('/research/night', BETA));
     expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex');
     applySeoToDocument(document, resolveSeo('/about', PUBLIC));
     expect(document.querySelector('meta[name="robots"]')).toBeNull();
     expect(document.querySelectorAll('link[rel="canonical"]')).toHaveLength(1);
+  });
+});
+
+describe('safeHttpUrl', () => {
+  it('keeps http(s) URLs and rejects anything else', () => {
+    expect(safeHttpUrl('https://www.transitatlas.fyi/agency/ttc')).toBe('https://www.transitatlas.fyi/agency/ttc');
+    expect(safeHttpUrl('http://localhost:5180/')).toBe('http://localhost:5180/');
+    expect(safeHttpUrl('javascript:alert(1)')).toBeNull();
+    expect(safeHttpUrl('not a url')).toBeNull();
   });
 });

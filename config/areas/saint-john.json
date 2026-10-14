@@ -1,0 +1,25 @@
+{
+  "slug": "saint-john",
+  "name": "Saint John",
+  "type": "CMA",
+  "officialName": "Saint John",
+  "country": "Canada",
+  "cities": [
+    "Saint John"
+  ],
+  "bbox": [
+    44.77934149145654,
+    -66.77051209407107,
+    45.96917644016189,
+    -65.04175807171393
+  ],
+  "center": [
+    45.37425896580922,
+    -65.90613508289249
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "saint-john"
+  ],
+  "page": false
+}

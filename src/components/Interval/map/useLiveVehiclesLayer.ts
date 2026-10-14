@@ -8,14 +8,15 @@ import { cleanRouteShortName } from '../../../utils/format';
 import { escapeHtml } from '../../../lib/escapeHtml';
 import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint';
 import { useColorVision } from '../../../context/ColorVisionContext';
+import { delayAmount } from '../../../utils/headwayText';
 
 /** Exported for unit tests — GTFS-RT text must be escaped before innerHTML. */
 export function vehicleTooltipHtml(v: LiveVehicle): string | null {
   if (!v.routeShortName) return null;
   const delayMin = v.delayMin;
   const label = delayMin === null ? null
-    : delayMin <= -1.5 ? `${Math.round(Math.abs(delayMin))}m early`
-    : delayMin >= 5.5  ? `${Math.round(delayMin)}m late`
+    : delayMin <= -1.5 ? `${delayAmount(Math.round(Math.abs(delayMin)))} early`
+    : delayMin >= 5.5  ? `${delayAmount(Math.round(delayMin))} late`
     : 'On time';
   const statusColor: Record<string, string> = {
     on_time: '#38a169', early: '#3182ce', late: '#e53e3e', no_data: '#718096',

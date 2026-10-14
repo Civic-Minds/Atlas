@@ -1,0 +1,25 @@
+{
+  "slug": "colorado-springs",
+  "name": "Colorado Springs",
+  "type": "MSA",
+  "officialName": "Colorado Springs, CO",
+  "country": "United States",
+  "cities": [
+    "Colorado Springs"
+  ],
+  "bbox": [
+    38.519440000321005,
+    -105.33038199999112,
+    39.13004000017725,
+    -104.05156799998491
+  ],
+  "center": [
+    38.82474000024913,
+    -104.69097499998801
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "mountainmetro"
+  ],
+  "page": false
+}

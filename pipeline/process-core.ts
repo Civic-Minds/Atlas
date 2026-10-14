@@ -21,7 +21,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, isThinAllDayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -30,13 +30,15 @@ import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-s
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
 import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
+import { effectiveFeedExpiry } from './feedFreshness.js';
+import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
-import { decideDedupe, type DedupePattern } from './featureDedupe.js';
+import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, segmentsByTier, type StopSharers } from './stopPools.js';
@@ -136,6 +138,44 @@ export function isStretchedBlockTrip(
 }
 
 /**
+ * Departures per frequency trip, used to pick the representative weekday. Same
+ * rule as the route and stop levels: single-trip windows count once and
+ * overlapping rows dedupe, so phantom departures cannot sway which weekday is
+ * picked (#723). Trips with no valid window are absent.
+ */
+export function frequencyDepartureCounts(
+  frequencies: ReadonlyArray<{ trip_id: string; start_time: string; end_time: string; headway_secs: string | number }> | undefined,
+  stopTimes: ReadonlyArray<{ trip_id: string; arrival_time?: string; departure_time?: string }> | undefined,
+): Map<string, number> {
+  const windowsByTripId = new Map<string, FrequencyWindow[]>();
+  for (const frequency of frequencies ?? []) {
+    const window = parseFrequencyWindow(frequency);
+    if (!window) continue;
+    const rows = windowsByTripId.get(frequency.trip_id) ?? [];
+    rows.push(window);
+    windowsByTripId.set(frequency.trip_id, rows);
+  }
+  const spanBounds = new Map<string, [number, number]>();
+  if (windowsByTripId.size > 0) {
+    for (const st of stopTimes ?? []) {
+      if (!windowsByTripId.has(st.trip_id)) continue;
+      const mins = t2m(st.departure_time || st.arrival_time || '');
+      if (mins === null) continue;
+      const bounds = spanBounds.get(st.trip_id);
+      if (!bounds) spanBounds.set(st.trip_id, [mins, mins]);
+      else { bounds[0] = Math.min(bounds[0], mins); bounds[1] = Math.max(bounds[1], mins); }
+    }
+  }
+  const counts = new Map<string, number>();
+  for (const [tripId, windows] of windowsByTripId) {
+    const bounds = spanBounds.get(tripId);
+    const count = expandTripFrequencyWindows(windows, bounds ? bounds[1] - bounds[0] : undefined).length;
+    if (count > 0) counts.set(tripId, count);
+  }
+  return counts;
+}
+
+/**
  * Offsets for every frequencies.txt row of one trip, with overlapping rows
  * deduplicated (#711): a departure generated by a later row inside an earlier
  * row's window is dropped, so two window sets describing the same hours (uga
@@ -228,6 +268,52 @@ export function windowsRepeatedByTimetable(
     }
   }
   return repeated;
+}
+
+const CHAINED_TRIP_MAX_LAYOVER_MIN = 10;
+
+/**
+ * Stop times where a bus ends one trip and the same block continues from that stop on the next
+ * trip of the same service, route and direction within 10 minutes (#341). Keyed
+ * trip|stop|stop_sequence of the ending trip's last stop; the value says whether the continuing
+ * trip keeps the headsign. Trips without a block_id, hand-overs between different blocks, and
+ * layovers over 10 minutes are not chained.
+ */
+export function findChainedTripEnds(
+  trips: ReadonlyArray<{ trip_id: string; route_id: string; service_id: string; block_id?: string; direction_id?: string; trip_headsign?: string }>,
+  stopTimesByTripId: ReadonlyMap<string, ReadonlyArray<{ stop_id: string; stop_sequence: string | number; arrival_time?: string; departure_time?: string }> | undefined>,
+  firstDepartureByTripId: ReadonlyMap<string, number>,
+): Map<string, boolean> {
+  const chained = new Map<string, boolean>();
+  const tripsByBlock = new Map<string, Array<(typeof trips)[number]>>();
+  for (const trip of trips) {
+    const block = trip.block_id?.trim();
+    if (!block || !firstDepartureByTripId.has(trip.trip_id)) continue;
+    const key = `${block}::${trip.service_id}`;
+    const list = tripsByBlock.get(key) ?? [];
+    list.push(trip);
+    tripsByBlock.set(key, list);
+  }
+  const endpoints = (tripId: string) => {
+    const ordered = [...(stopTimesByTripId.get(tripId) ?? [])]
+      .sort((a, b) => Number(a.stop_sequence) - Number(b.stop_sequence));
+    return { first: ordered[0], last: ordered[ordered.length - 1] };
+  };
+  for (const list of tripsByBlock.values()) {
+    if (list.length < 2) continue;
+    list.sort((a, b) => firstDepartureByTripId.get(a.trip_id)! - firstDepartureByTripId.get(b.trip_id)!);
+    for (let i = 0; i + 1 < list.length; i++) {
+      const ending = list[i], next = list[i + 1];
+      if (ending.route_id !== next.route_id || (ending.direction_id ?? '') !== (next.direction_id ?? '')) continue;
+      const a = endpoints(ending.trip_id).last, b = endpoints(next.trip_id).first;
+      if (!a || !b || a.stop_id !== b.stop_id) continue;
+      const arrive = t2m(a.arrival_time || a.departure_time || ''), leave = t2m(b.departure_time || b.arrival_time || '');
+      if (arrive === null || leave === null || leave < arrive || leave - arrive > CHAINED_TRIP_MAX_LAYOVER_MIN) continue;
+      chained.set(`${ending.trip_id}|${a.stop_id}|${a.stop_sequence}`,
+        (ending.trip_headsign ?? '').trim() === (next.trip_headsign ?? '').trim());
+    }
+  }
+  return chained;
 }
 
 /**
@@ -394,6 +480,8 @@ export interface ProcessResult {
   center: [number, number] | null;
   timezone: string | null;     // agency_timezone from agency.txt (IANA name, e.g. "America/Toronto"), or null if absent
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
+  /** Latest service date across feed_info, calendar.txt and added calendar_dates; uncapped. Feed with `feedExpiry` through recordedFeedExpiry() to get the value to store. */
+  calendarExpiry: string | null;
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
@@ -564,7 +652,7 @@ export async function processGtfsBuffer(
   onStatus?: (msg: string) => void,
   options?: ProcessOptions,
 ): Promise<ProcessResult> {
-  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps });
+  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair });
   gtfs = normalizeGtfs(gtfs, options, onStatus);
 
   const validation = validateGtfs(gtfs, options?.slug ?? 'feed');
@@ -709,15 +797,7 @@ export async function processGtfsBuffer(
     const headsign = resolveDisplayHeadsign(rawHeadsign, shortName, longName);
     stopTripMeta.set(trip.trip_id, { shortName: groupName, dirId: String(trip.direction_id ?? '0'), headsign, shapeId: trip.shape_id || null });
   }
-  const frequencyDepartureCount = new Map<string, number>();
-  for (const frequency of gtfs.frequencies ?? []) {
-    const start = t2m(frequency.start_time);
-    const end = t2m(frequency.end_time);
-    const headway = Number(frequency.headway_secs) / 60;
-    // Same validity rule as phase 1's expandFrequencies: headway_secs under 60 is ignored.
-    if (start === null || end === null || !Number.isFinite(headway) || headway < 1 || end <= start) continue;
-    frequencyDepartureCount.set(frequency.trip_id, (frequencyDepartureCount.get(frequency.trip_id) ?? 0) + Math.ceil((end - start) / headway));
-  }
+  const frequencyDepartureCount = frequencyDepartureCounts(gtfs.frequencies, gtfs.stopTimes);
   // Stop maps are keyed by short name + direction (plus headsign and shape), while phase 2
   // groups by route_id + direction + headsign + shape. That difference is deliberate: stop
   // maps merge route_ids that share a short name (GO date-prefixed ids), and each map picks
@@ -868,6 +948,14 @@ export async function processGtfsBuffer(
     tripStops.push(st);
     stopTimesByTripId.set(st.trip_id, tripStops);
   }
+  // A bus that ends one trip at a stop and leaves it again on the next trip of the same block,
+  // route and direction is one vehicle passing, not two: TTC splits each 47 Lansdowne run at
+  // Lansdowne Station (arrive 10:52, depart 10:54 on the next trip), so that stop counted every
+  // bus twice and read every 2 min against the route's 7 (#341). The ending trip's arrival there
+  // is left out of the pooled stop departures (route group, headsign when the next trip keeps
+  // it, shared stretch), where the continuing trip's departure is also counted. The shape's own
+  // map keeps it, so the ending trip's terminal stays in its stop list.
+  const chainedTripEnds = findChainedTripEnds(gtfs.trips ?? [], stopTimesByTripId, firstDepartureByTripId);
   // Routes whose feed has no usable shape are published as a Point with noRouteShape. Their stop
   // order comes from one representative trip's stop_sequence (the matching trip that serves the
   // most stops), not from the order stops happen to appear in stop_times.txt.
@@ -954,7 +1042,7 @@ export async function processGtfsBuffer(
       : `${groupName}::${result.dir}::${result.day}::${branchKey}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const incumbent = dedupedPattern.get(dedupeKey);
-    const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
+    const isRailRoute = String(route?.route_type) === '2';
     const initialPeriodHeadways = computePeriodHeadways(result.times);
     const notRated = result.partialWeekday || result.previousNightTailOnly || result.serviceClass === 'irregular' || result.tier === 'span';
     const newHeadway = notRated ? null : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
@@ -985,6 +1073,8 @@ export async function processGtfsBuffer(
       headway: newHeadway,
       departures: new Set(result.times).size,
       hasDaytime: result.times.some(t => t >= 540 && t < 1140),
+      runsInDay: runsInDay(initialPeriodHeadways),
+      runsMidday: initialPeriodHeadways.midday != null,
       runsOnRepDay: newRunsOnRepDay,
       carriesRepDay: newCarriesRepDay,
     };
@@ -1130,6 +1220,7 @@ export async function processGtfsBuffer(
     }
 
     // Per-stop departure collection
+    const chainedEnd = chainedTripEnds.get(`${st.trip_id}|${st.stop_id}|${st.stop_sequence}`);
     const tripGroups = frequencyTemplateTripIds.has(st.trip_id) ? [] : (tripGroupByTripId.get(st.trip_id) ?? []);
     for (const grp of tripGroups) {
       const timeStr = st.departure_time || st.arrival_time;
@@ -1149,15 +1240,17 @@ export async function processGtfsBuffer(
           };
           const night = mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF;
           const pushAll = (stopId: string) => {
-            if (grp.inGroup) pushDep(stopDepsByGroup, gKey, stopId, mins);
-            if (hsKey && grp.inHeadsign) pushDep(stopDepsByHeadsignGroup, hsKey, stopId, mins);
+            const pooledOk = chainedEnd === undefined;
+            const headsignOk = chainedEnd !== true;
+            if (grp.inGroup && pooledOk) pushDep(stopDepsByGroup, gKey, stopId, mins);
+            if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroup, hsKey, stopId, mins);
             if (shKey && grp.inShape) pushDep(stopDepsByShapeGroup, shKey, stopId, mins);
             // Drop-off-only stop times (pickup_type 1) are not departures a rider can take.
-            if (smKey && grp.inGroup && st.pickup_type?.trim() !== '1') pushDep(stopDepsBySharedMember, smKey, stopId, mins);
+            if (smKey && grp.inGroup && pooledOk && st.pickup_type?.trim() !== '1') pushDep(stopDepsBySharedMember, smKey, stopId, mins);
             // Night-service-only shift (#297) -- see stopDepsByGroupNight declaration above.
             if (night) {
-              if (grp.inGroup) pushDep(stopDepsByGroupNight, gKey, stopId, mins + 1440);
-              if (hsKey && grp.inHeadsign) pushDep(stopDepsByHeadsignGroupNight, hsKey, stopId, mins + 1440);
+              if (grp.inGroup && pooledOk) pushDep(stopDepsByGroupNight, gKey, stopId, mins + 1440);
+              if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroupNight, hsKey, stopId, mins + 1440);
             }
           };
           // Only count first visit per (trip, stop) — loop routes visit the terminus
@@ -1833,7 +1926,7 @@ export async function processGtfsBuffer(
       // The pool must be all-day service with daytime departures of its own (the same guard as
       // the thin-shape rescue), so a night route's pre-dawn pieces never pool into a headline.
       const sorted = [...pool].sort((a, b) => a - b);
-      if (!scopedTerminalHeadline(sorted, day, featureRoute?.route_type ?? '', railFeature)) return null;
+      if (!scopedTerminalHeadline(sorted, day as DayType, featureRoute?.route_type ?? '', railFeature)) return null;
       // And even enough to read as one service (pooledHeadwayInWindow's guard): two branches
       // bunched 3 minutes apart keep the own pattern's headline.
       return pooledStepOneHeadway(sorted) != null ? sorted : null;
@@ -1908,7 +2001,7 @@ export async function processGtfsBuffer(
           if (!times || times.length === 0) return null;
           const headway = allStopHw[stopId] ?? null;
           if (headway == null && !lineRunsByDay) return null;
-          const graded = scopedTerminalHeadline(times, day, featureRoute?.route_type ?? '', railFeature);
+          const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
           return { tier: graded?.tier ?? null, headway };
         });
         if (segments.length > 0) feature.properties.segments = segments;
@@ -1931,7 +2024,7 @@ export async function processGtfsBuffer(
             featureHeadsign && coverageStops.length > 1
               ? branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId)
               : selectTerminalDepartureTimes(shapeMap?.get(terminalId), headsignMap?.get(terminalId)),
-            day,
+            day as DayType,
             featureRoute?.route_type ?? '',
             railFeature,
           )
@@ -1969,7 +2062,7 @@ export async function processGtfsBuffer(
       const headlinePool = pooledHeadlineTimes(terminalId);
       const hwVals = onShape.map(({ stopId }) => ownStopHw[stopId]).filter((v): v is number => v != null).sort((a, b) => a - b);
       // Step 4.1 (routeGrading.ts): the terminal's value, from the pool or the own pattern.
-      const { ownTerminalMiddayHw, terminalHw, allStopMedian, terminalComputedHw } = terminalReading({ terminalId, ownTerminalTimes, pool: headlinePool, ownStopHwsSorted: hwVals });
+      const { ownTerminalMiddayHw, terminalHw, terminalMiddayHw, allStopMedian, terminalComputedHw } = terminalReading({ terminalId, ownTerminalTimes, pool: headlinePool, ownStopHwsSorted: hwVals });
 
       // If the terminal stop is shared, the combined terminal headway might be lower (better)
       // than the branch-specific headway. Do not override with the combined headway in that case.
@@ -2000,7 +2093,7 @@ export async function processGtfsBuffer(
           featureHeadsign && coverageStops.length > 1
             ? branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId!)
             : selectTerminalDepartureTimes(shapeMap?.get(terminalId!), headsignMap?.get(terminalId!)),
-          day,
+          day as DayType,
           featureRoute?.route_type ?? '',
           railFeature,
         )
@@ -2026,7 +2119,13 @@ export async function processGtfsBuffer(
         return vals.length ? Math.max(...(vals as number[])) : undefined;
       };
       // Step 4.2 and 4.3 (routeGrading.ts): the headline, then the tier it supports.
+      // A midday value read off three uneven departures is a two-gap mean (wsf 131 Anacortes,
+      // 205 and 100 read 153): keep the phase 2 branch value, as for a thin all-day sample (#745).
+      const unevenMiddayTerminal = branchHw != null
+        && terminalMiddayHw != null
+        && isUnevenTwoGapMiddayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount);
       const headway = decideHeadline({
+        unevenMiddayTerminal,
         branchHw,
         branchTripCount,
         terminalComputedHw,
@@ -2069,11 +2168,66 @@ export async function processGtfsBuffer(
           feature.properties.tier = liftTierOnDestinationPool({
             currentTier: feature.properties.tier as string,
             headway,
-            day,
+            day: day as DayType,
             drawnStopIds: drawnIds,
-            gradeAt: (stopId, weekday) => scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day, featureRoute?.route_type ?? '', railFeature)?.tier ?? null,
+            gradeAt: (stopId, weekday) => scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature)?.tier ?? null,
             otherWeekdays: () => otherWeekdayPools(hsKey),
           });
+        }
+      }
+      // #728: the tier is phase 2's every-gap grade of the one shape that won dedupe, while the
+      // period values below read the whole destination at the terminal. A shape that covers part
+      // of the day or has one hole is graded 60 or infrequent beside periods of 8-20 (Brampton 7
+      // Kennedy South: the 7 shape has one 38-minute evening gap, the destination runs every 8). When the
+      // destination's branch-scoped pool (the headsign's trips serving at least two thirds of
+      // the drawn stops and every stop of the last third) has more unique departures at the
+      // terminal than the shape and at least MIN_POOLED_TIER_DEPARTURES, grade that pool with
+      // the same every-gap rule over the same window at every drawn stop (the same trips can
+      // leave a longer gap at an earlier stop: guelph 19 Sunday, 31 minutes at one outer stop
+      // against 25 at the terminal) and take the worst grade, never past what the headline
+      // supports. A drawn stop at which the pool has no all-day grade (too few daytime departures,
+      // or a daytime hole among the trips that serve it: the first stop of septa 2 Johnston, where
+      // 50 of the 61 pool trips start and leave a 96-minute evening hole the other 11 fill further
+      // in; rtcsnv 110 Eastern Northbound, a 121-minute hole at the first stop) refuses the lift:
+      // the lifted tier would overstate that stop. Unique times only: phase 1 drops duplicate departures, and a
+      // zero-minute gap would loosen the allowance (wsf 73: 161 trips, 23 distinct times). Rail
+      // and irregular lines are left alone; nothing here changes a headway.
+      if (!railFeature && featureHeadsign && coverageStops.length > 1 && terminalId
+        && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span' && headway != null) {
+        const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
+        const drawnIds = coverageStops.map(p => p.stopId);
+        const shapeTerminalDepartures = new Set(shapeMap?.get(terminalId) ?? []).size;
+        const poolDepartures = new Set(branchPoolTimesAt(hsKey, drawnIds, terminalId, true)).size;
+        if (poolDepartures >= MIN_POOLED_TIER_DEPARTURES && poolDepartures > shapeTerminalDepartures) {
+          const worse = (a: string | null, b: string) => a == null || (TIER_RANK[b] ?? 99) > (TIER_RANK[a] ?? 99) ? b : a;
+          // The pool's worst every-gap grade over the drawn stops; null when a stop has no grade.
+          const gradePool = (weekday?: { name: DayName; tripIds: Set<string> }): string | null => {
+            let worst: string | null = null;
+            for (const stopId of drawnIds) {
+              const graded = scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature);
+              if (!graded?.tier) return null;
+              worst = worse(worst, graded.tier);
+            }
+            return worst;
+          };
+          let pooledTier = gradePool();
+          // A Weekday pool is graded on every weekday whose trips differ, and the worst day
+          // counts: the lift must hold on each weekday the line runs.
+          if (pooledTier && day === 'Weekday') {
+            for (const weekday of otherWeekdayPools(hsKey)) {
+              const graded = gradePool(weekday);
+              if (!graded) { pooledTier = null; break; }
+              pooledTier = worse(pooledTier, graded);
+            }
+          }
+          const headlineTier = headwayToTier(headway);
+          if (pooledTier) {
+            const liftedTier = (TIER_RANK[pooledTier] ?? 99) >= (TIER_RANK[headlineTier] ?? 99) ? pooledTier : headlineTier;
+            const current = feature.properties.tier as string;
+            if ((TIER_RANK[liftedTier] ?? 99) < (TIER_RANK[current] ?? 99)) {
+              feature.properties.tier = liftedTier;
+            }
+          }
         }
       }
 
@@ -2221,7 +2375,7 @@ export async function processGtfsBuffer(
         const vals = onShape
           .map(({ stopId }) => hsPeriodHw[stopId]?.[pk])
           .filter((v): v is number => v != null);
-        const minHw = headsignOverlapMinHeadway(vals, periodMedians[pk]);
+        const minHw = headsignOverlapMinHeadway(vals, periodMedians[pk] ?? null);
         if (minHw != null) headsignPeriodMins[pk] = minHw;
       }
       if (Object.keys(headsignPeriodMins).length > 0) {
@@ -2296,7 +2450,7 @@ export async function processGtfsBuffer(
   // single-operator corridors where combined frequency is not meaningful, and the stop-pair
   // chord geometry creates misleading straight-line visuals over the actual shaped route.
   const allRailFeed = (gtfs.routes ?? []).length > 0 &&
-    (gtfs.routes ?? []).every(r => r.route_type === '2' || r.route_type === 2);
+    (gtfs.routes ?? []).every(r => String(r.route_type) === '2');
 
   onStatus?.('Calculating combined corridors...');
   const corridorFeatures: GeoJsonFeature[] = [];
@@ -2336,12 +2490,12 @@ export async function processGtfsBuffer(
           if (pairIndex < 0) return null;
           if (stopPositions && stopPositions.length === stopOrder.length) {
             return clipLineBetweenPositions(
-              feature.geometry.coordinates,
+              feature.geometry.coordinates as number[][],
               stopPositions[pairIndex],
               stopPositions[pairIndex + 1],
             );
           }
-          return clipLineBetweenStops(feature.geometry.coordinates, from, to);
+          return clipLineBetweenStops(feature.geometry.coordinates as number[][], from, to);
         })
         .find((geometry): geometry is number[][] => geometry != null);
       // A corridor without a matching shaped route is safer to omit than to render as a
@@ -2412,6 +2566,11 @@ export async function processGtfsBuffer(
   }
 
   const feedInfo = gtfs.feedInfo?.[0];
+  const calendarExpiry = effectiveFeedExpiry({
+    feedInfoEnd: feedInfo?.feed_end_date,
+    calendarEnds: gtfs.calendar?.map(calendar => calendar.end_date) ?? [],
+    calendarDates: gtfs.calendarDates,
+  });
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   // Scheduled running time (CIV-84): card data in its own top-level block of the agency JSON,
   // beside the features, so route features and map tiles are untouched.
@@ -2432,7 +2591,9 @@ export async function processGtfsBuffer(
     shapeAnomalies: gtfs.shapeAnomalies?.length ?? 0,
     routeHeadwayMismatches,
     featureCount: routeFeatures.length,
-    feedExpiry: feedInfo?.feed_end_date ?? null,
+    // Same rule as the registry's lastFeedExpiry, so a stale feed_info end date
+    // does not mark a feed whose calendar runs on as expired (#687).
+    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, new Date().toISOString().slice(0, 10)),
   });
 
   let livePollingSidecar: Record<string, any> | undefined;
@@ -2486,6 +2647,7 @@ export async function processGtfsBuffer(
     center,
     timezone,
     feedExpiry: feedInfo?.feed_end_date ?? null,
+    calendarExpiry,
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,

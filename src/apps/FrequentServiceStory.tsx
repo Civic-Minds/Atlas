@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
+import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
 import { frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServicePublishedMapCollage from '../components/FrequentServicePublishedMapCollage';
@@ -11,6 +12,14 @@ interface Props {
   onExploreMap: () => void;
   agencies: Agency[];
 }
+
+type CoverageRow = (typeof frequentServiceCoverageStats)[number];
+const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
+  { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-black text-[var(--text-primary)]' },
+  { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute, className: 'tabular-nums text-[var(--text-muted)]' },
+  { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute, className: 'tabular-nums text-[var(--text-muted)]' },
+  { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min`, className: 'text-[var(--text-muted)]' },
+];
 
 export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
   const [selectedMinutes, setSelectedMinutes] = useState(15);
@@ -45,7 +54,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
     <div ref={storyScrollRef} className="h-full overflow-x-hidden overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]">
       <article className="mx-auto max-w-6xl px-5 pb-24 pt-28 sm:px-8 sm:pt-32">
         <header className="mx-auto max-w-4xl text-center">
-          <p className="text-[0.7rem] font-black text-[var(--accent)]">Atlas research</p>
+          <p className="text-xs font-black text-[var(--accent)]">Atlas research</p>
           <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What happens when you miss the bus?</h1>
           <div className="mx-auto mt-6 max-w-2xl space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
             <p>Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.</p>
@@ -134,27 +143,13 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               </p>
             </div>
             <div className="mt-8 overflow-x-auto">
-              <table className="w-full min-w-[34rem] text-left text-sm">
-                <caption className="sr-only">Population within a ten-minute walk of frequent transit by headway threshold</caption>
-                <thead className="border-b border-[var(--border-primary)] text-xs text-[var(--text-dim)]">
-                  <tr>
-                    <th className="pb-3 pr-4 font-black">Country</th>
-                    <th className="pb-3 pr-4 font-black">15 min</th>
-                    <th className="pb-3 pr-4 font-black">30 min</th>
-                    <th className="pb-3 font-black">Scope</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {frequentServiceCoverageStats.map(row => (
-                    <tr key={row.country} className="border-b border-[var(--border-primary)] last:border-0">
-                      <th scope="row" className="py-4 pr-4 font-black text-[var(--text-primary)]">{row.country}</th>
-                      <td className="py-4 pr-4 tabular-nums text-[var(--text-muted)]">{row.fifteenMinute}</td>
-                      <td className="py-4 pr-4 tabular-nums text-[var(--text-muted)]">{row.thirtyMinute}</td>
-                      <td className="py-4 text-[var(--text-muted)]">{row.metros} · {row.fifteenMinuteMetros} at 15 min</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <DataTable
+                variant="ruled"
+                caption="Population within a ten-minute walk of frequent transit by headway threshold"
+                columns={COVERAGE_COLUMNS}
+                rows={frequentServiceCoverageStats}
+                rowKey={row => row.country}
+              />
             </div>
             <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
             <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service. Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>

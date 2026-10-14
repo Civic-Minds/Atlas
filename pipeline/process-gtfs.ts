@@ -37,7 +37,7 @@ import {
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
 import { readConfigAgencyName, resolveAgencyName } from './agencyName.js';
-import { candidateIsOlderThanActive } from './refreshMeta.js';
+import { candidateIsOlderThanActive, recordedFeedExpiry } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   assertCountryMayWriteToR2,
@@ -201,7 +201,7 @@ async function main() {
   // Supplemental feeds (e.g. a separate rail zip) always come from the agency's
   // configured URLs; any failure aborts rather than publishing a main-only artifact.
   const supplementalFeeds = await loadSupplementalFeeds(agencyConfig, downloadToBuffer);
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies, feedQuality, supplementalFeatureCounts } = await processAgencyFeeds(buf, supplementalFeeds, agencyConfig, { manualBaseFare, force }, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry: feedInfoExpiry, calendarExpiry, feedVersion, shapeAnomalies, feedQuality, supplementalFeatureCounts } = await processAgencyFeeds(buf, supplementalFeeds, agencyConfig, { manualBaseFare, force }, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   });
   for (const supp of supplementalFeatureCounts) {
@@ -210,6 +210,8 @@ async function main() {
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const todayYmd = todayUtcYmd().replace(/-/g, '');
+  // Same rule as refresh: the later of feed_info's end and the capped calendar end (#687).
+  const feedExpiry = recordedFeedExpiry(feedInfoExpiry, calendarExpiry, todayYmd);
   // --force is the explicit maintainer override for a known-current source that omits or
   // misstates feed_info metadata; validation and the zero-feature guard still apply below.
   if (!dryRun && !force && candidateIsOlderThanActive({ candidateExpiry: feedExpiry, existingExpiry: previousFeedExpiry })) {
@@ -288,11 +290,12 @@ async function main() {
       center,
       timezone: timezone ?? prev.timezone,
       lastFeedExpiry: feedExpiry,
+      lastPeekedExpiry: calendarExpiry,
       lastFeedVersion: feedVersion,
       lastRefreshedAt: todayUtcYmd(),
       feedQuality,
     };
-    if (upstreamFeedChanged(prev, feedExpiry, feedVersion)) {
+    if (upstreamFeedChanged(prev, calendarExpiry, feedVersion)) {
       updated.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[slug] ?? []) ? 'review' : undefined;
       delete updated.issueUrl;
       delete updated.overrideNote;
@@ -300,7 +303,7 @@ async function main() {
     }
     index.agencies[existing] = updated;
   } else {
-    index.agencies.push({ slug, name: agencyName, center, timezone, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd(), feedQuality });
+    index.agencies.push({ slug, name: agencyName, center, timezone, feedUrl: null, lastFeedExpiry: feedExpiry, lastPeekedExpiry: calendarExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd(), feedQuality });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   const savedAgency = index.agencies.find(a => a.slug === slug);

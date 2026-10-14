@@ -1,6 +1,7 @@
 {
   "slug": "wmata",
   "name": "WMATA (Washington, DC)",
+  "shortName": "WMATA",
   "region": "Washington DC",
   "center": [
     38.9072,

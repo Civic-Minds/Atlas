@@ -74,10 +74,13 @@ describe('drawn line per destination: daytime service wins a headway tie (#740)'
     expect(lines.map(shapeOf)).toEqual(['B']);
   });
 
-  it('an early burst of 4+ departures still wins on a better headway, as before', async () => {
-    // A: 4 early trips every 10 (no daytime, but not thin). B: all day every 15. A scores 10.
+  it('an early burst of 4+ departures loses the line to all-day service with a midday sample (#746)', async () => {
+    // A: 4 early trips every 10 (no daytime, but not thin). B: all day every 15, 61 departures.
+    // Re-pinned for #746: A scored 10 and won before, the YRT Viva Blue case, where 11 pre-dawn
+    // trips took Newmarket from the 85 all-day Finch trips (dry run: 12/t15 with no periods ->
+    // 16/t20, midday every 16 as hand-counted).
     const lines = await weekdayLines(await twoShapeFeed([330, 340, 350, 360], every(420, 1320, 15)), 'synthetic');
-    expect(lines.map(shapeOf)).toEqual(['A']);
+    expect(lines.map(shapeOf)).toEqual(['B']);
   });
 
   it('a tie between two all-day shapes keeps the first result, as before', async () => {

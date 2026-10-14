@@ -1,0 +1,28 @@
+{
+  "slug": "san-jose",
+  "name": "San Jose",
+  "type": "MSA",
+  "officialName": "San Jose-Sunnyvale-Santa Clara, CA",
+  "country": "United States",
+  "cities": [
+    "San Jose",
+    "Sunnyvale",
+    "Santa Clara"
+  ],
+  "bbox": [
+    36.196847999825025,
+    -122.20265299957687,
+    37.484637000190375,
+    -120.59656200036432
+  ],
+  "center": [
+    36.8407425000077,
+    -121.39960749997059
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "stanford",
+    "vta"
+  ],
+  "page": true
+}

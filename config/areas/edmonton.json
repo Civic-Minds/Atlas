@@ -1,0 +1,25 @@
+{
+  "slug": "edmonton",
+  "name": "Edmonton",
+  "type": "CMA",
+  "officialName": "Edmonton",
+  "country": "Canada",
+  "cities": [
+    "Edmonton"
+  ],
+  "bbox": [
+    52.77749280856467,
+    -115.29674491290687,
+    54.16410665013256,
+    -112.44031262662631
+  ],
+  "center": [
+    53.47079972934861,
+    -113.86852876976658
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "edmonton"
+  ],
+  "page": true
+}

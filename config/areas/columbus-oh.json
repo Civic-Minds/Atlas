@@ -1,0 +1,25 @@
+{
+  "slug": "columbus-oh",
+  "name": "Columbus",
+  "type": "MSA",
+  "officialName": "Columbus, OH",
+  "country": "United States",
+  "cities": [
+    "Columbus"
+  ],
+  "bbox": [
+    39.36156600032309,
+    -83.65338600042077,
+    40.712729999798,
+    -82.02421900003634
+  ],
+  "center": [
+    40.03714800006054,
+    -82.83880250022855
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "cota"
+  ],
+  "page": true
+}

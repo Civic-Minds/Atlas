@@ -1,0 +1,25 @@
+{
+  "slug": "san-angelo",
+  "name": "San Angelo",
+  "type": "MSA",
+  "officialName": "San Angelo, TX",
+  "country": "United States",
+  "cities": [
+    "San Angelo"
+  ],
+  "bbox": [
+    31.07937900036981,
+    -101.27479900025934,
+    31.705418000189635,
+    -100.11123400030313
+  ],
+  "center": [
+    31.39239850027972,
+    -100.69301650028123
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "san-angelo"
+  ],
+  "page": false
+}

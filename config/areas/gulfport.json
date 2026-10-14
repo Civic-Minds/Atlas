@@ -1,0 +1,26 @@
+{
+  "slug": "gulfport",
+  "name": "Gulfport",
+  "type": "MSA",
+  "officialName": "Gulfport-Biloxi, MS",
+  "country": "United States",
+  "cities": [
+    "Gulfport",
+    "Biloxi"
+  ],
+  "bbox": [
+    30.139845000075447,
+    -89.69058899974142,
+    30.910788000067207,
+    -88.38443100024054
+  ],
+  "center": [
+    30.525316500071327,
+    -89.03750999999099
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "coast-transit-ms"
+  ],
+  "page": false
+}

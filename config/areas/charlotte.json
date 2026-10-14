@@ -1,0 +1,29 @@
+{
+  "slug": "charlotte",
+  "name": "Charlotte",
+  "type": "MSA",
+  "officialName": "Charlotte-Concord-Gastonia, NC-SC",
+  "country": "United States",
+  "cities": [
+    "Charlotte",
+    "Concord",
+    "Gastonia"
+  ],
+  "bbox": [
+    34.45777599984297,
+    -81.53759900012457,
+    36.05880999990038,
+    -79.84847900002337
+  ],
+  "center": [
+    35.25829299987168,
+    -80.69303900007398
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "cats",
+    "concord-kannapolis",
+    "gaston-county"
+  ],
+  "page": true
+}

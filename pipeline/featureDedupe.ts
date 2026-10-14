@@ -32,10 +32,19 @@ export interface DedupePattern {
   departures: number;
   /** Any departure 09:00-19:00. */
   hasDaytime: boolean;
+  /** A period value in the AM peak, midday, PM peak or evening (#746). */
+  runsInDay: boolean;
+  /** A midday period value (#746). */
+  runsMidday: boolean;
   /** Weekday only: the pattern runs on the slot's representative weekday. */
   runsOnRepDay: boolean;
   /** Weekday only: the pattern has at least half of the slot's departures on that weekday. */
   carriesRepDay: boolean;
+}
+
+/** #746: the pattern has a period value somewhere in the day (AM peak to evening). */
+export function runsInDay(p: Partial<{ amPeak: number | null; midday: number | null; pmPeak: number | null; evening: number | null }> | undefined): boolean {
+  return p != null && (p.amPeak != null || p.midday != null || p.pmPeak != null || p.evening != null);
 }
 
 /** #740: no daytime departures and fewer than the all-day sample minimum. */
@@ -70,7 +79,20 @@ export function decideDedupe(
   if (bothDrawn && incumbent.carriesRepDay && !candidate.runsOnRepDay) return 'keep';
   const prefersRepDayShape = bothDrawn && !incumbent.runsOnRepDay && candidate.carriesRepDay;
 
-  // Step 3 (#740): a thin result with no daytime service never holds the drawn line against a
+  // Step 3 (#746): a pattern that runs only late at night or before dawn never wins the slot
+  // from one that runs through the midday, whatever its headway: YRT Viva Blue's 11 pre-dawn
+  // Richmond Hill-Newmarket trips (median 11) took the Newmarket slot from the 85 all-day Finch
+  // trips. Only that pair: a pattern with some daytime service but none at midday (a night
+  // route's first Sunday-morning trips, TTC 304 and 320) keeps the headway rule. Only between
+  // two rated patterns, and the midday side must be a real sample (MIN_THIN_REPLACING_DEPARTURES,
+  // the same floor as Step 4): in a feed that gives every 3-5 trip block its own shape (CapMetro,
+  // #737) a midday block reads its own few trips (320 Springdale Sunday 110 -> 153).
+  const bothTimed = !replacesMaplessWithShape && candidate.headway != null && incumbent.headway != null;
+  if (bothTimed && incumbent.runsMidday && incumbent.departures >= MIN_THIN_REPLACING_DEPARTURES && !candidate.runsInDay) return 'keep';
+  const replacesNightOnly = bothTimed && candidate.runsMidday && candidate.departures >= MIN_THIN_REPLACING_DEPARTURES
+    && !incumbent.runsInDay;
+
+  // Step 4 (#740): a thin result with no daytime service never holds the drawn line against a
   // sibling with daytime service under the same destination (TTC 100 via Linkwood's 3 trips
   // before 06:30 scored their own median, 15, against the 31-trip peak shape's 18). The daytime
   // sibling must be a real sample (MIN_THIN_REPLACING_DEPARTURES): in a feed that gives every
@@ -82,10 +104,10 @@ export function decideDedupe(
   const daytimeReplacesThin = isThinNoDaytime(incumbent) && candidate.hasDaytime && candidate.headway != null
     && candidate.departures >= MIN_THIN_REPLACING_DEPARTURES;
 
-  // Step 4 (#772): otherwise the slot goes to the better plain-median headway. A span result
+  // Step 5 (#772): otherwise the slot goes to the better plain-median headway. A span result
   // (null) never beats a rated one, and the incumbent keeps an equal headway; the plain median
   // decides so that reading alternating gaps honestly never swaps which shape is drawn.
-  if (!replacesMaplessWithShape && !prefersRepDayShape && !daytimeReplacesThin
+  if (!replacesMaplessWithShape && !prefersRepDayShape && !replacesNightOnly && !daytimeReplacesThin
     && (candidate.dedupeHeadway == null
       || (incumbent.dedupeHeadway != null && incumbent.dedupeHeadway <= candidate.dedupeHeadway))) return 'keep';
   return 'replace';

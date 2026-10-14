@@ -52,7 +52,7 @@ async function main() {
   // Rail routes only (route_type=2)
   const railRouteIds = new Set(
     (gtfs.routes ?? [])
-      .filter(r => r.route_type === '2' || r.route_type === 2)
+      .filter(r => String(r.route_type) === '2')
       .map(r => r.route_id)
   );
   const railRouteById = new Map(

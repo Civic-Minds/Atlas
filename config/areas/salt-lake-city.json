@@ -1,0 +1,26 @@
+{
+  "slug": "salt-lake-city",
+  "name": "Salt Lake City",
+  "type": "MSA",
+  "officialName": "Salt Lake City-Murray, UT",
+  "country": "United States",
+  "cities": [
+    "Salt Lake City",
+    "Murray"
+  ],
+  "bbox": [
+    39.90365500025756,
+    -114.04702599993504,
+    41.07688800009499,
+    -111.5531879997636
+  ],
+  "center": [
+    40.49027150017628,
+    -112.80010699984932
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "uta"
+  ],
+  "page": true
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getMapContextAgencies, isMapContextOutsideClick } from '../mapContext';
+import { dedupeMapContextByDisplay, getMapContextAgencies, isMapContextOutsideClick } from '../mapContext';
 
 const agencies = [
   { slug: 'near', name: 'Near Transit', center: [43, -79] as [number, number], url: '' },
@@ -44,5 +44,12 @@ describe('mapContext', () => {
         { key: 'near::2', agencySlug: 'near', agencyName: 'Near Transit', shortName: '2', longName: null },
       ],
     }]);
+  });
+
+  it('collapses route IDs with the same rider-visible label in the count and list', () => {
+    const route = (id: string, shortName: string) => ({ key: `a::${id}`, agencySlug: 'a', agencyName: 'A', shortName, longName: null });
+    const [agency] = dedupeMapContextByDisplay([{ slug: 'a', name: 'A', routeCount: 3, routes: [route('1', '301'), route('2', '301'), route('3', '302')] }]);
+    expect(agency.routeCount).toBe(2);
+    expect(agency.routes.map(r => r.key)).toEqual(['a::1', 'a::3']);
   });
 });

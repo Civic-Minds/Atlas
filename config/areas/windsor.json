@@ -1,0 +1,25 @@
+{
+  "slug": "windsor",
+  "name": "Windsor",
+  "type": "CMA",
+  "officialName": "Windsor",
+  "country": "Canada",
+  "cities": [
+    "Windsor"
+  ],
+  "bbox": [
+    41.907740054924986,
+    -83.1736870153539,
+    42.38819086923524,
+    -82.41263976293419
+  ],
+  "center": [
+    42.14796546208011,
+    -82.79316338914404
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "windsor"
+  ],
+  "page": false
+}

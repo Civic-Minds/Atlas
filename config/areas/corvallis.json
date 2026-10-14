@@ -1,0 +1,25 @@
+{
+  "slug": "corvallis",
+  "name": "Corvallis",
+  "type": "MSA",
+  "officialName": "Corvallis, OR",
+  "country": "United States",
+  "cities": [
+    "Corvallis"
+  ],
+  "bbox": [
+    44.276694000016846,
+    -123.81683300003779,
+    44.721269999895114,
+    -123.07313200023948
+  ],
+  "center": [
+    44.49898199995598,
+    -123.44498250013864
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "corvallis"
+  ],
+  "page": false
+}

@@ -1,61 +1,41 @@
-import { useEffect, useState } from 'react';
-import SiteHeader from './components/SiteHeader';
+import { WhatsNewItemText } from './components/WhatsNewItemText';
+import PageContents from './components/PageContents';
+import PageShell from './components/ui/PageShell';
 import SiteFooter from './components/SiteFooter';
-import { loadDataReleases } from './lib/dataRelease';
 import { buildChangelog } from './lib/changelog';
 import { WHATS_NEW, visibleWhatsNew } from './data/whatsNew';
 import { FEATURES } from '../shared/config';
 
-type DataRelease = { releaseId?: string; generatedAt?: string };
-
-export default function ChangelogPage({ loadReleases = loadDataReleases }: { loadReleases?: () => Promise<DataRelease[]> } = {}) {
-  const [dataReleases, setDataReleases] = useState<DataRelease[]>([]);
-
-  useEffect(() => {
-    let cancelled = false;
-    loadReleases()
-      .then(releases => { if (!cancelled) setDataReleases(releases); })
-      .catch(() => { if (!cancelled) setDataReleases([]); });
-    return () => { cancelled = true; };
-  }, [loadReleases]);
-
-  const entries = buildChangelog(visibleWhatsNew(FEATURES.beta, WHATS_NEW), dataReleases);
+export default function ChangelogPage() {
+  const entries = buildChangelog(visibleWhatsNew(FEATURES.beta, WHATS_NEW));
 
   return (
-    <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
-      <div className="mx-auto max-w-3xl">
-        <SiteHeader />
-        <section className="pb-16 pt-16 sm:pt-24">
-          <h1 className="text-4xl font-black tracking-[-0.04em] sm:text-6xl">Changelog</h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-[var(--text-muted)]">What changed in Atlas and when the map data was refreshed, newest first.</p>
-          <ol className="mt-12 space-y-10">
+    <PageShell stickyHeader>
+        <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
+          <PageContents title="Changelog" items={entries.map(entry => ({ id: entry.key, label: entry.label }))} />
+          <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
+            <header>
+              <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">Changelog</h1>
+              <p className="mt-3">What changed in Atlas.</p>
+            </header>
             {entries.map(entry => (
-              <li key={entry.key} className="border-t border-[var(--border-primary)] pt-5">
-                <h2 className="text-lg font-black">
+              <section key={entry.key} id={entry.key} className="scroll-mt-24">
+                <h2 className="text-base font-black text-[var(--text-primary)] mb-2">
                   {entry.label}
-                  {entry.kind === 'app' && <span className="font-semibold text-[var(--text-dim)]"> · {entry.month}</span>}
+                  <span className="font-normal text-[var(--text-dim)]"> · {entry.month}</span>
                 </h2>
-                {entry.kind === 'app' && (
-                  <ul className="mt-4 space-y-3">
-                    {entry.items.map(item => (
-                      <li key={item.text} className="flex items-start gap-3 text-sm leading-6 text-[var(--text-muted)]">
-                        <span aria-hidden="true" className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-[var(--text-muted)]" />
-                        <span>
-                          {item.text}
-                          {item.beta && (
-                            <span className="ml-2 inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px text-[10px] font-bold text-[var(--accent)] align-middle">Beta</span>
-                          )}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
+                <ul className="list-disc pl-5 space-y-1">
+                  {entry.items.map(item => (
+                    <li key={item.text}>
+                      <WhatsNewItemText item={item} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ))}
-          </ol>
-        </section>
-        <SiteFooter />
-      </div>
-    </main>
+            <SiteFooter />
+          </article>
+        </div>
+    </PageShell>
   );
 }

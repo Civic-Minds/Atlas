@@ -2,7 +2,7 @@ import type { GeoJSON } from 'geojson';
 import type { Agency } from '../App';
 import type { DayType } from '../../shared/dayTypes';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
-import { buildRouteKey } from './routeKey';
+import { buildRouteKey, dedupeRouteKeysByDisplay } from './routeKey';
 
 export interface MapContextRoute {
   key: string;
@@ -10,6 +10,7 @@ export interface MapContextRoute {
   agencyName: string;
   shortName: string;
   longName: string | null;
+  routeType?: number;
 }
 
 export interface MapContextAgency {
@@ -52,6 +53,7 @@ function addMapContextFeature(
     routeBranch?: string | null;
     routeShortName?: string;
     routeLongName?: string | null;
+    routeType?: number;
   } | null;
   if (!properties?.routeId) return;
   const agencyName = agencies.find(agency => agency.slug === slug)?.name ?? slug;
@@ -64,6 +66,7 @@ function addMapContextFeature(
       agencyName,
       shortName: properties.routeShortName ?? properties.routeId,
       longName: properties.routeLongName ?? null,
+      routeType: properties.routeType,
     });
   }
   routesByAgency.set(slug, routes);
@@ -139,4 +142,18 @@ export function getMapContextAgenciesFromFeatures(
     addMapContextFeature(agencies, routesByAgency, properties.agencySlug, feature as MapContextFeature);
   }
   return buildMapContextAgencies(agencies, routesByAgency);
+}
+
+/**
+ * Collapse feed route IDs that show the same label to a rider, so the In view
+ * count and list match the distinct lines on the map (e.g. one overnight line
+ * published under several route IDs).
+ */
+export function dedupeMapContextByDisplay(agencies: MapContextAgency[]): MapContextAgency[] {
+  return agencies.map(agency => {
+    const keep = new Set(dedupeRouteKeysByDisplay(agency.routes));
+    if (keep.size === agency.routes.length) return agency;
+    const routes = agency.routes.filter(route => keep.has(route.key));
+    return { ...agency, routeCount: routes.length, routes };
+  });
 }

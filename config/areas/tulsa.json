@@ -1,0 +1,25 @@
+{
+  "slug": "tulsa",
+  "name": "Tulsa",
+  "type": "MSA",
+  "officialName": "Tulsa, OK",
+  "country": "United States",
+  "cities": [
+    "Tulsa"
+  ],
+  "bbox": [
+    35.376655999990305,
+    -97.0644890000961,
+    36.99941399983879,
+    -95.20791799957108
+  ],
+  "center": [
+    36.18803499991455,
+    -96.13620349983358
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "tulsa-transit"
+  ],
+  "page": false
+}

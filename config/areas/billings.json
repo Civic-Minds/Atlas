@@ -1,0 +1,25 @@
+{
+  "slug": "billings",
+  "name": "Billings",
+  "type": "MSA",
+  "officialName": "Billings, MT",
+  "country": "United States",
+  "cities": [
+    "Billings"
+  ],
+  "bbox": [
+    44.999440000101245,
+    -110.06458299969464,
+    46.49604300028245,
+    -107.46265099986282
+  ],
+  "center": [
+    45.74774150019185,
+    -108.76361699977872
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "billings"
+  ],
+  "page": false
+}

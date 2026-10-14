@@ -1,0 +1,25 @@
+{
+  "slug": "klamath-falls",
+  "name": "Klamath Falls",
+  "type": "MicroSA",
+  "officialName": "Klamath Falls, OR",
+  "country": "United States",
+  "cities": [
+    "Klamath Falls"
+  ],
+  "bbox": [
+    41.992987999859515,
+    -122.28997200032624,
+    43.61670699969833,
+    -120.87980500008798
+  ],
+  "center": [
+    42.80484749977892,
+    -121.58488850020711
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bts-or"
+  ],
+  "page": false
+}

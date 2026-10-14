@@ -161,7 +161,7 @@ describe('route filter headway and card display', () => {
     expect(routeFilterHeadway(p, 'all')).toBe(9);
   });
 
-  it('uses the best active-period display cadence across route directions', () => {
+  it('uses the best active-period display cadence across branches of one direction', () => {
     const slower = { ...base, headway: 9, headwayByPeriod: { pmPeak: 9 } } as ShapeProperties;
     const faster = { ...base, headway: 3, headwayByPeriod: { pmPeak: 3 } } as ShapeProperties;
     expect(routeListDisplayHeadway([slower, faster], 'pmPeak')).toBe(3);

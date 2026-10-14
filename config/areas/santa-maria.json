@@ -1,0 +1,27 @@
+{
+  "slug": "santa-maria",
+  "name": "Santa Maria",
+  "type": "MSA",
+  "officialName": "Santa Maria-Santa Barbara, CA",
+  "country": "United States",
+  "cities": [
+    "Santa Maria",
+    "Santa Barbara"
+  ],
+  "bbox": [
+    33.411024000016205,
+    -120.73438200017449,
+    35.11467800004009,
+    -118.96272799965227
+  ],
+  "center": [
+    34.26285100002815,
+    -119.84855499991338
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sbmtd",
+    "smat"
+  ],
+  "page": true
+}

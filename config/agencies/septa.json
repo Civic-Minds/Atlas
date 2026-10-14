@@ -1,6 +1,7 @@
 {
   "slug": "septa",
   "name": "SEPTA (Philadelphia)",
+  "shortName": "SEPTA",
   "displayArea": "Philadelphia",
   "websiteUrl": "https://septa.org/",
   "region": "Pennsylvania",
@@ -65,6 +66,56 @@
       "feedExpiry": "20261121",
       "feedVersion": "v202609271",
       "rawArchiveKey": "20261121-c908d0f0e8098bc6"
+    }
+  ],
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "D1",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "D2",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "G1",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "T1",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "T2",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "T3",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "T4",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "T5",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
     }
   ]
 }

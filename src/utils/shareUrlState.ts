@@ -5,6 +5,7 @@
  *   - everything on (the default)          -> nothing in the URL
  *   - a few on                             -> ?agencies=a.b.c   (include list)
  *   - most on, a few hidden                -> ?hide=x.y         (exclude list)
+ *   - exactly one metro area's agencies         -> ?area=<slug>   (slugs from config/areas)
  *   - whichever of the two is shorter wins; if even that is over AGENCY_URL_MAX_SLUGS
  *     slugs, the selection is left out of the URL entirely.
  * Slugs are [a-z0-9-], so `.` is used as the separator: URLSearchParams leaves it
@@ -14,8 +15,9 @@
  * the agency catalog loads after the map mounts. Unknown or removed slugs simply never
  * match, so they are ignored.
  */
+import { AREA_INDEX, AREA_PARAM, areaMatchingSelection, lookupArea, type AreaIndex } from '../../shared/areaIndex';
 import { FEATURES } from '../../shared/config';
-import { FILTER_MODES, ON_DEMAND_MODE } from '../../shared/modes';
+import { filterModeOptions } from '../../shared/modes';
 
 export const AGENCY_URL_MAX_SLUGS = 60;
 export const AGENCIES_PARAM = 'agencies';
@@ -24,9 +26,7 @@ export const MODES_PARAM = 'm';
 const SEP = '.';
 
 /** Modes offered in the filter UI. On-demand is internal-only. */
-export const AVAILABLE_FILTER_MODES: ReadonlyArray<{ id: number; label: string }> = FEATURES.onDemand
-  ? [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }]
-  : FILTER_MODES;
+export const AVAILABLE_FILTER_MODES: ReadonlyArray<{ id: number; label: string }> = filterModeOptions(FEATURES.onDemand);
 
 export type AgencyUrlRule =
   | { kind: 'include'; slugs: ReadonlySet<string> }
@@ -40,8 +40,11 @@ function toSearchParams(search: string | URLSearchParams): URLSearchParams {
   return typeof search === 'string' ? new URLSearchParams(search.startsWith('?') ? search.slice(1) : search) : search;
 }
 
-/** Read the agency rule from a query string. `agencies` wins if both params are present. */
-export function parseAgencyUrlRule(search: string | URLSearchParams): AgencyUrlRule | null {
+/**
+ * Read the agency rule from a query string. `agencies` wins over `hide`, and both win over
+ * `area`. An unknown area slug is ignored.
+ */
+export function parseAgencyUrlRule(search: string | URLSearchParams, areas: AreaIndex = AREA_INDEX): AgencyUrlRule | null {
   const sp = toSearchParams(search);
   const include = sp.get(AGENCIES_PARAM);
   if (include != null) {
@@ -53,7 +56,17 @@ export function parseAgencyUrlRule(search: string | URLSearchParams): AgencyUrlR
     const slugs = splitList(exclude);
     if (slugs.length > 0) return { kind: 'exclude', slugs: new Set(slugs) };
   }
+  const area = lookupArea(sp.get(AREA_PARAM), areas);
+  if (area && area.agencies.length > 0) return { kind: 'include', slugs: new Set(area.agencies) };
   return null;
+}
+
+/** The area bounds a link asks the map to fit to, when it names a known area. */
+export function parseAreaBounds(
+  search: string | URLSearchParams,
+  areas: AreaIndex = AREA_INDEX,
+): [number, number, number, number] | null {
+  return lookupArea(toSearchParams(search).get(AREA_PARAM), areas)?.bbox ?? null;
 }
 
 /**
@@ -103,6 +116,22 @@ export function encodeAgencySelection(
   const count = useInclude ? on.length : off.length;
   if (count > AGENCY_URL_MAX_SLUGS) return none;
   return useInclude ? { agencies: includeStr, hide: null } : { agencies: null, hide: excludeStr };
+}
+
+/**
+ * URL params for the current selection, preferring `area=` when the selection is exactly one
+ * metro area's agencies. Always sets all three keys so the stale ones are cleared.
+ */
+export function encodeSelectionParams(
+  selected: ReadonlySet<string>,
+  catalogSlugs: readonly string[],
+  areas: AreaIndex = AREA_INDEX,
+): { area: string | null; agencies: string | null; hide: string | null } {
+  const base = encodeAgencySelection(selected, catalogSlugs);
+  // Everything on is the default and stays out of the URL even if an area covers the whole catalog.
+  if (base.agencies == null && base.hide == null) return { area: null, ...base };
+  const area = areaMatchingSelection(selected, catalogSlugs, areas);
+  return area ? { area, agencies: null, hide: null } : { area: null, ...base };
 }
 
 /** Mode filter from the URL. Unknown ids are dropped; empty means no restriction. */

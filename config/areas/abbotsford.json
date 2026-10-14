@@ -1,0 +1,26 @@
+{
+  "slug": "abbotsford",
+  "name": "Abbotsford",
+  "type": "CMA",
+  "officialName": "Abbotsford - Mission",
+  "country": "Canada",
+  "cities": [
+    "Abbotsford",
+    "Mission"
+  ],
+  "bbox": [
+    48.91029892508754,
+    -122.66852823181894,
+    49.39063754350814,
+    -122.01911365798523
+  ],
+  "center": [
+    49.15046823429784,
+    -122.34382094490209
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bc-fraser-valley"
+  ],
+  "page": false
+}

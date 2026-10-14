@@ -1,6 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import type { AgencyLayers } from '../hooks/useAgencyData';
-import { clipLinestring } from '../apps/corridor-geometry';
+import { clipLinestring } from './lineClip';
 import { getTierColor, type ColorVisionMode } from './colors';
 
 /**

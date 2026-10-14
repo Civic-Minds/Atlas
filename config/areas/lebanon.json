@@ -1,0 +1,26 @@
+{
+  "slug": "lebanon",
+  "name": "Lebanon",
+  "type": "MicroSA",
+  "officialName": "Lebanon-Claremont, NH-VT",
+  "country": "United States",
+  "cities": [
+    "Lebanon",
+    "Claremont"
+  ],
+  "bbox": [
+    43.128806999702306,
+    -72.98024600010923,
+    44.4063510002711,
+    -71.34665599979468
+  ],
+  "center": [
+    43.7675789999867,
+    -72.16345099995195
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "advance-transit"
+  ],
+  "page": false
+}

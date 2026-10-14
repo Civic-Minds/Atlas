@@ -1,0 +1,27 @@
+{
+  "slug": "palm-bay",
+  "name": "Palm Bay",
+  "type": "MSA",
+  "officialName": "Palm Bay-Melbourne-Titusville, FL",
+  "country": "United States",
+  "cities": [
+    "Palm Bay",
+    "Melbourne",
+    "Titusville"
+  ],
+  "bbox": [
+    27.822057999796847,
+    -80.98724999957291,
+    28.79139600035233,
+    -80.38506900033991
+  ],
+  "center": [
+    28.306727000074588,
+    -80.6861594999564
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "space-coast"
+  ],
+  "page": false
+}

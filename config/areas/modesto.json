@@ -1,0 +1,26 @@
+{
+  "slug": "modesto",
+  "name": "Modesto",
+  "type": "MSA",
+  "officialName": "Modesto, CA",
+  "country": "United States",
+  "cities": [
+    "Modesto"
+  ],
+  "bbox": [
+    37.13477400018037,
+    -121.4867749998473,
+    38.07742099965496,
+    -120.38732899962005
+  ],
+  "center": [
+    37.60609749991767,
+    -120.93705199973368
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "ace",
+    "modesto"
+  ],
+  "page": false
+}

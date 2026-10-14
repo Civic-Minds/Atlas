@@ -1,0 +1,26 @@
+{
+  "slug": "montrose",
+  "name": "Montrose",
+  "type": "MicroSA",
+  "officialName": "Montrose, CO",
+  "country": "United States",
+  "cities": [
+    "Montrose"
+  ],
+  "bbox": [
+    38.152227999858084,
+    -109.060204000085,
+    38.66856800015906,
+    -107.50002000029892
+  ],
+  "center": [
+    38.41039800000857,
+    -108.28011200019196
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "all-points-transit",
+    "smart-telluride"
+  ],
+  "page": false
+}

@@ -85,6 +85,8 @@ export function terminalReading(args: {
 }
 
 export interface HeadlineInputs {
+  /** The own terminal's midday value is a two-gap mean of three uneven departures (#745). */
+  unevenMiddayTerminal: boolean;
   /** Phase 2's own headway of the drawn pattern. */
   branchHw: number | null;
   branchTripCount: number;
@@ -109,6 +111,9 @@ export interface HeadlineInputs {
 
 /** Step 2: the headline headway. */
 export function decideHeadline(i: HeadlineInputs): number | null {
+  // Three uneven midday departures (#745): the midday value is a two-gap mean (wsf 131 Anacortes,
+  // 205 and 100 read 153), so the phase 2 branch value stands, as for a thin all-day sample.
+  if (i.unevenMiddayTerminal) return i.branchHw;
   // Thin shape (#733): the branch value stands, or its rescue sample's reading (ttc 35B).
   if (i.thinTerminalSample) return i.scoped?.headway ?? i.branchHw;
   // Destination pool (#690): the pool is the branch itself, so it needs no protection against a

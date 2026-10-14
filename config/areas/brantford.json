@@ -1,0 +1,25 @@
+{
+  "slug": "brantford",
+  "name": "Brantford",
+  "type": "CMA",
+  "officialName": "Brantford",
+  "country": "Canada",
+  "cities": [
+    "Brantford"
+  ],
+  "bbox": [
+    42.916772083794264,
+    -80.64608325784829,
+    43.34936404461178,
+    -79.94939537432252
+  ],
+  "center": [
+    43.13306806420302,
+    -80.2977393160854
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "brantford"
+  ],
+  "page": false
+}

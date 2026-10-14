@@ -93,6 +93,8 @@ describe('shortenAgencyName', () => {
 
 describe('titleCase', () => {
   it('title-cases three-letter service names while preserving short route codes', () => {
+    expect(titleCase('MCKNIGHT')).toBe('McKnight');
+    expect(titleCase('KING / B-LINE EXPRESS')).toBe('King / B-Line Express');
     expect(titleCase('RED')).toBe('Red');
     expect(titleCase('Gold')).toBe('Gold');
     expect(titleCase('GO')).toBe('GO');
@@ -121,6 +123,6 @@ describe('titleCase', () => {
 describe('fmtHeadway', () => {
   it('uses cautious wording for scheduled cadence', () => {
     expect(fmtHeadway(10)).toBe('about every 10 min');
-    expect(fmtHeadway(90)).toBe('about every 1.5h');
+    expect(fmtHeadway(90)).toBe('about every 1.5 h');
   });
 });

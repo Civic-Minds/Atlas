@@ -1,0 +1,26 @@
+{
+  "slug": "new-orleans",
+  "name": "New Orleans",
+  "type": "MSA",
+  "officialName": "New Orleans-Metairie, LA",
+  "country": "United States",
+  "cities": [
+    "New Orleans",
+    "Metairie"
+  ],
+  "bbox": [
+    28.855127000300833,
+    -90.9637549996039,
+    30.29898499973743,
+    -88.75838800007364
+  ],
+  "center": [
+    29.577056000019134,
+    -89.86107149983877
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "norta"
+  ],
+  "page": false
+}

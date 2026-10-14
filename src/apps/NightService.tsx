@@ -4,11 +4,7 @@ import { getNightServiceColor } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
 import { useViewport } from '../context/ViewportContext';
 import {
-  FLOATING_CARD,
-  PANEL_ENTER,
-  PANEL_TITLE_BAR,
   PANEL_TITLE,
-  PANEL_BODY,
   PANEL_EMPTY,
   Z_PANEL,
   SIDEBAR_LEFT_FALLBACK,
@@ -17,6 +13,8 @@ import {
 import { R2_PUBLIC_URL } from '../../shared/config';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { nightServiceKey } from '../../shared/nightService';
+import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
+import ListRow from '../components/ui/ListRow';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -173,14 +171,15 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
   if (!active) return null;
 
   return (
-      <div
-        className={`absolute top-[4.5rem] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col pointer-events-auto ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+      <Panel
+        enter
+        className={`absolute top-[4.5rem] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] pointer-events-auto`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
-        <div className={PANEL_TITLE_BAR}>
+        <PanelTitleBar>
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
           <span className={PANEL_TITLE}>Night Service</span>
-        </div>
+        </PanelTitleBar>
 
         {data && !introDismissed && (
           <div className="relative px-4 pt-2.5 pb-3 border-b border-[var(--border-primary)]">
@@ -191,25 +190,25 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
             >
               <X className="w-3.5 h-3.5" />
             </button>
-            <p className="pr-5 text-[11px] font-black text-[var(--text-primary)] leading-snug">
+            <p className="pr-5 text-xs font-black text-[var(--text-primary)] leading-snug">
               Which routes actually run through the night?
             </p>
-            <p className="mt-1 pr-5 text-[10px] text-[var(--text-dim)] font-bold leading-snug">
+            <p className="mt-1 pr-5 text-xs text-[var(--text-dim)] font-bold leading-snug">
               A route counts here only if it has a departure at least every {frequency} minutes,
               2am to 6am, with no gap at either end of the core overnight window.
             </p>
-            <p className="mt-1.5 text-[10px] font-bold" style={{ color: getNightServiceColor(colorMode) }}>
+            <p className="mt-1.5 text-xs font-bold" style={{ color: getNightServiceColor(colorMode) }}>
               {data.routeCount} qualifying route patterns across {data.agencyCount} agencies.
             </p>
           </div>
         )}
         {data && introDismissed && (
-          <p className="px-4 pt-2 pb-1 text-[10px] text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
+          <p className="px-4 pt-2 pb-1 text-xs text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
             At least one departure every {frequency} minutes, 2am–6am local time, with no gap at either end of the window.
           </p>
         )}
 
-        <div className={PANEL_BODY}>
+        <PanelBody>
           {loadState === 'loading' && <p className={PANEL_EMPTY}>Loading…</p>}
           {loadState === 'error' && <p className={PANEL_EMPTY}>Couldn't load night service data.</p>}
           {loadState === 'ready' && agencies.length === 0 && (
@@ -217,33 +216,34 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
           )}
           {loadState === 'ready' && agencies.map(agency => (
             <div key={agency.slug}>
-              <div className="px-4 pt-2.5 pb-1 text-[10px] font-black text-[var(--text-primary)]">
+              <div className="px-4 pt-2.5 pb-1 text-xs font-black text-[var(--text-primary)]">
                 {agency.agencyName}
                 {agency.region && <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.region}</span>}
                 <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.routes.length} {agency.routes.length === 1 ? 'route' : 'routes'}</span>
               </div>
               {agency.routes.map(route => (
-                <button
+                <ListRow
                   key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`}
-                  type="button"
                   disabled={!route.routeId || !onRouteSelect}
                   onClick={() => route.routeId && onRouteSelect?.(agency.slug, route.routeId)}
-                  className="w-full text-left px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--surface-hover)] disabled:cursor-default"
+                  className="disabled:cursor-default"
                 >
+                  <div className="min-w-0 flex-1">
                   <div className="text-xs font-black text-[var(--text-primary)] line-clamp-2 break-words" title={[route.routeShortName, route.routeLongName].filter(Boolean).join(" — ")}>
                     {route.routeShortName || route.routeLongName || 'Unnamed route'}
                     {route.routeShortName && route.routeLongName && <span className="font-normal text-[var(--text-dim)]"> — {route.routeLongName}</span>}
                   </div>
                   {route.destinations.length > 0 && (
-                    <div className="mt-0.5 text-[10px] font-bold text-[var(--text-dim)] truncate" title={route.destinations.join(' · ')}>
+                    <div className="mt-0.5 text-xs font-bold text-[var(--text-dim)] truncate" title={route.destinations.join(' · ')}>
                       To {route.destinations.join(' · ')}
                     </div>
                   )}
-                </button>
+                  </div>
+                </ListRow>
               ))}
             </div>
           ))}
-        </div>
-      </div>
+        </PanelBody>
+      </Panel>
   );
 }

@@ -1,0 +1,25 @@
+{
+  "slug": "green-bay",
+  "name": "Green Bay",
+  "type": "MSA",
+  "officialName": "Green Bay, WI",
+  "country": "United States",
+  "cities": [
+    "Green Bay"
+  ],
+  "bbox": [
+    44.24038000024939,
+    -88.68006599969554,
+    45.37893099973732,
+    -86.778397999856
+  ],
+  "center": [
+    44.809655499993355,
+    -87.72923199977578
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "green-bay"
+  ],
+  "page": false
+}

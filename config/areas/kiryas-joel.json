@@ -1,0 +1,28 @@
+{
+  "slug": "kiryas-joel",
+  "name": "Kiryas Joel",
+  "type": "MSA",
+  "officialName": "Kiryas Joel-Poughkeepsie-Newburgh, NY",
+  "country": "United States",
+  "cities": [
+    "Kiryas Joel",
+    "Poughkeepsie",
+    "Newburgh"
+  ],
+  "bbox": [
+    41.143063000190075,
+    -74.76262299973516,
+    42.08090599973821,
+    -73.487318999615
+  ],
+  "center": [
+    41.611984499964144,
+    -74.12497099967507
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "dutchess",
+    "hudsonlink"
+  ],
+  "page": true
+}
