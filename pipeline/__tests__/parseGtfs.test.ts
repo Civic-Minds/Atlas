@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import JSZip from 'jszip';
-import { parseGtfsZip, truncateAtImplausibleJump, groupShapes, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints, synthesizeCalendarFromDates } from '../parseGtfs.js';
+import { parseCsv, parseGtfsZip, truncateAtImplausibleJump, groupShapes, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints, synthesizeCalendarFromDates } from '../parseGtfs.js';
 import type { GtfsCalendarDate } from '../../types/gtfs.js';
 
 /** YYYYMMDD for a date offset by `days` from 2025-01-05 (a Sunday), for building fixture date lists. */
@@ -487,5 +487,16 @@ describe('parseGtfsZip keepLongShapeJumps (#776)', () => {
   it('keeps the whole shape when the agency opts in', async () => {
     const gtfs = await parseGtfsZip(await feed(), undefined, { keepLongShapeJumps: true });
     expect(gtfs.shapes.find(s => s.id === 'trunk')!.points).toHaveLength(20);
+  });
+});
+
+describe('parseCsv blank lines (#835)', () => {
+  const base = 'route_id,service_id,trip_id\r\n1,a,t1\r\n';
+  it.each([
+    ['a spaces-only line', '  \r\n'],
+    ['a tab-only line', '\t\r\n'],
+    ['a commas-only line', ',,,\r\n'],
+  ])('ignores %s', (_name, tail) => {
+    expect(parseCsv<{ trip_id: string }>(base + tail)).toEqual([{ route_id: '1', service_id: 'a', trip_id: 't1' }]);
   });
 });
