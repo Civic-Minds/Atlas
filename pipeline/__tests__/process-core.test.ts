@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import JSZip from 'jszip';
 import {
   normalizeNrtAnalysisResult,
@@ -10,6 +10,17 @@ import {
   scopedTerminalHeadline,
   selectPeriodCoverageHeadway,
 } from '../process-core';
+
+// The fixture calendars end 2026-12-31 and detectReferenceDate reads the clock, so with a
+// live clock this file fails from January 2027. Pin Date to a holiday-free mid-week day
+// inside the calendars (the #687 expiry tests below use dates relative to the pinned day).
+const PINNED_NOW = '2026-09-16T12:00:00';
+beforeAll(() => {
+  vi.useFakeTimers({ toFake: ['Date'], now: new Date(PINNED_NOW) });
+});
+afterAll(() => {
+  vi.useRealTimers();
+});
 
 describe('selectPeriodCoverageHeadway', () => {
   it('follows the terminal when the display selects its median', () => {
