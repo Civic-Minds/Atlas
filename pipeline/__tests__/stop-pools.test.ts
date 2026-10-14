@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow } from '../stopPools';
+import { buildPooledStopMap, collapseBunched, computeStopSharers, pooledHeadwayInWindow } from '../stopPools';
 import type { SharedStretchPattern } from '../sharedStretch';
 
 // #690: who pools with whom at each stop, and how a line is cut into segments.
@@ -108,5 +108,16 @@ describe('pooledHeadwayInWindow evenness guard', () => {
     // A 30-minute hole against an every-20 list (#813) stays out: 30 is past 20 plus the grace.
     const hole = every(540, 900, 20).filter(t => t !== 700);
     expect(pooledHeadwayInWindow(hole, 540, 900)).toBeNull();
+  });
+});
+
+describe('bunched departures', () => {
+  const every = (from: number, to: number, step: number) => { const out: number[] = []; for (let t = from; t <= to; t += step) out.push(t); return out; };
+  it('two every-10 patterns one minute apart read every 10, not 9 or 5', () => {
+    expect(collapseBunched([600, 601, 610, 611, 620])).toEqual([600, 610, 620]);
+    const merged = [...every(540, 900, 10), ...every(541, 901, 10)].sort((a, b) => a - b);
+    expect(pooledHeadwayInWindow(merged, 540, 900)).toBe(10);
+    // Two minutes apart is kept: a subway trunk really runs every 2.
+    expect(collapseBunched([600, 602, 604])).toEqual([600, 602, 604]);
   });
 });
