@@ -98,7 +98,8 @@ describe('scheduled running time (CIV-84)', () => {
   it('keys a blank direction like shape selection for the lookup, and like route features for output', () => {
     const trips: Trip[] = [
       ...[480, 495].map((s, i) => ({ id: `main${i}`, dir: '', start: s, stops: line, minutes: 55 })),
-      ...[485, 500, 510].map((s, i) => ({ id: `other${i}`, dir: '', shape: 'other', start: s, stops: line, minutes: 20 })),
+      // A short turn on another shape: a different terminal pair, so it never joins the main pattern.
+      ...[485, 500, 510].map((s, i) => ({ id: `other${i}`, dir: '', shape: 'other', start: s, stops: line.slice(0, 4), minutes: 20 })),
     ];
     // Shape selection keys a blank direction as 'r1::' and picked 'main'; output uses direction '0'.
     const rt = run(feed(trips), ['wk'], new Map([['r1::', new Set(['main'])]]));
@@ -157,3 +158,21 @@ describe('scheduled running time (CIV-84)', () => {
   });
 });
 
+
+describe('one full pattern under several shape ids (#852)', () => {
+  it('pools same-stop trips whatever their shape_id, so a shape per time band still gives every hour', () => {
+    // TTC gives the identical Finch to Vaughan run a shape per time band (6-9h, 9-16h, ...).
+    const bands = [['s6', 360, 540], ['s9', 540, 960], ['s16', 960, 1140], ['s19', 1140, 1260]] as const;
+    const trips: Trip[] = bands.flatMap(([shape, from, to]) => {
+      const out: Trip[] = [];
+      for (let start = from; start < to; start += 10) out.push({ id: `${shape}-${start}`, shape, start, stops: line, minutes: 50 });
+      return out;
+    });
+    // Only one band's shape is the busiest or the analysis shape: before the fix the other hours were blank.
+    const rt = run(feed(trips), ['wk'], new Map([['r1::0', new Set(['s9'])]]));
+    const hours = Object.keys(rt.get('r1::0::Weekday')!.byHour).map(Number).sort((a, b) => a - b);
+    expect(hours[0]).toBe(6);
+    expect(hours[hours.length - 1]).toBe(20);
+    expect(rt.get('r1::0::Weekday')!.byHour['7']).toBe(50);
+  });
+});
