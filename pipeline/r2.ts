@@ -87,7 +87,24 @@ export function isRetryableR2Error(err: unknown): boolean {
   return false;
 }
 
-async function rclonePutFile(key: string, filePath: string, bucket: string): Promise<void> {
+/**
+ * Cache-Control for objects whose key never gets new content, such as the PMTiles archives under
+ * atlas/releases/<releaseId>/. R2 sends no Cache-Control unless the object carries one, so
+ * browsers loading tiles straight from the data domain would re-download ranges (#840).
+ */
+export const IMMUTABLE_CACHE_CONTROL = 'public, max-age=31536000, immutable';
+
+export interface R2PutOptions {
+  /** Stored on the object and served as its Cache-Control header. */
+  cacheControl?: string;
+}
+
+/** The S3 object metadata shared by every upload path, so single PUT, multipart and rclone agree. */
+export function r2ObjectHeaders(contentType: string, options: R2PutOptions = {}): { ContentType: string; CacheControl?: string } {
+  return options.cacheControl ? { ContentType: contentType, CacheControl: options.cacheControl } : { ContentType: contentType };
+}
+
+async function rclonePutFile(key: string, filePath: string, bucket: string, options: R2PutOptions = {}): Promise<void> {
   const { mkdtemp, writeFile, rm } = await import('node:fs/promises');
   const { tmpdir } = await import('node:os');
   const { execFile } = await import('node:child_process');
@@ -109,6 +126,7 @@ async function rclonePutFile(key: string, filePath: string, bucket: string): Pro
       '--disable-http2',
       '--retries', '10',
       '--low-level-retries', '20',
+      ...(options.cacheControl ? ['--header-upload', `Cache-Control: ${options.cacheControl}`] : []),
     ], { maxBuffer: 2 * 1024 * 1024 });
   } finally {
     await rm(configDir, { recursive: true, force: true });
@@ -116,14 +134,14 @@ async function rclonePutFile(key: string, filePath: string, bucket: string): Pro
   console.log(`  rclone upload complete: ${key}`);
 }
 
-async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadStream, contentType: string, bucket: string, contentLength?: number): Promise<void> {
+async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadStream, contentType: string, bucket: string, contentLength?: number, options: R2PutOptions = {}): Promise<void> {
   const client = getR2Client();
   const maxAttempts = 4;
   let lastErr: unknown;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const params: any = { Bucket: bucket, Key: key, Body: body, ContentType: contentType };
+      const params: any = { Bucket: bucket, Key: key, Body: body, ...r2ObjectHeaders(contentType, options) };
       if (contentLength != null) params.ContentLength = contentLength;
       await client.send(new PutObjectCommand(params));
       return;
@@ -154,7 +172,7 @@ export async function r2PutBuffer(key: string, body: Buffer, contentType: string
  * files where single-PUT hits SSL "bad record mac" errors mid-stream on Node 24).
  * Falls back to buffered PutObject for small files.
  */
-export async function r2PutFile(key: string, filePath: string, contentType: string): Promise<string> {
+export async function r2PutFile(key: string, filePath: string, contentType: string, options: R2PutOptions = {}): Promise<string> {
   const { statSync, readFileSync, createReadStream } = await import('fs');
   const size = statSync(filePath).size;
   const bucket = requireEnv('R2_BUCKET_NAME');
@@ -167,7 +185,7 @@ export async function r2PutFile(key: string, filePath: string, contentType: stri
     for (let attempt = 1; attempt <= maxPartRetries; attempt++) {
       const up = new Upload({
         client,
-        params: { Bucket: bucket, Key: key, Body: createReadStream(filePath), ContentType: contentType, ContentLength: size },
+        params: { Bucket: bucket, Key: key, Body: createReadStream(filePath), ...r2ObjectHeaders(contentType, options), ContentLength: size },
         partSize: 32 * 1024 * 1024,
         leavePartsOnError: false,
         queueSize: 1,
@@ -191,7 +209,7 @@ export async function r2PutFile(key: string, filePath: string, contentType: stri
           continue;
         }
         if (isRetryableR2Error(err)) {
-          await rclonePutFile(key, filePath, bucket);
+          await rclonePutFile(key, filePath, bucket, options);
           return r2PublicUrl(key);
         }
         throw err;
@@ -200,7 +218,7 @@ export async function r2PutFile(key: string, filePath: string, contentType: stri
   }
 
   const body = readFileSync(filePath);
-  await r2PutRaw(key, body, contentType, bucket, body.length);
+  await r2PutRaw(key, body, contentType, bucket, body.length, options);
   return r2PublicUrl(key);
 }
 

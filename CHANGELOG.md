@@ -62,6 +62,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Fixed
 
 - **An agency whose refresh produces no route lines is no longer marked up to date**: a feed with stops but no drawable routes (El Monte) was stamped "current", so nothing flagged it as broken; it now keeps its last good data and is marked as needing another try. (#634)
+- **Map tiles stay cached in the browser**: each release's tile archives are now uploaded with a long cache header, so zooming back or revisiting no longer re-downloads tiles now that they load straight from storage. (#840)
 - **The map loads its route tiles directly from storage**: tiles no longer pass through a Vercel function, which had used up the hosting plan's free transfer allowance and put the site at risk of being paused. (#854)
 - **Selecting a route that only shows its shared stretch now draws the route**: with a frequency filter on, TTC 52 and similar routes drew nothing when selected, and hovering their branch rows highlighted nothing. (#850)
 - **Routes with a long midday gap no longer show their rush-hour frequency as the headline**: a rule meant for ferries with three midday sailings also fired on bus routes whose only midday trips were split by a 3 to 5 hour gap, so lines like RTL 25 and TTC 39 read every 18 to 30 min (#833).
