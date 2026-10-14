@@ -61,6 +61,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Rebuilds no longer get stuck on, or pick, an old archived feed**: when an expired feed had been re-uploaded after the current one, or two archived files had misleading names, rebuilds either used the expired feed (GRT) or refused the agency; they now pick by the service dates inside each file. (#859)
 - **The Roosevelt Island Tramway stays an aerial tram**: its feed now labels the tram as light rail, which would have shown it as a streetcar; it keeps its gondola/aerial tram mode. (#861)
 - **An agency whose refresh produces no route lines is no longer marked up to date**: a feed with stops but no drawable routes (El Monte) was stamped "current", so nothing flagged it as broken; it now keeps its last good data and is marked as needing another try. (#634)
 - **Map tiles stay cached in the browser**: each release's tile archives are now uploaded with a long cache header, so zooming back or revisiting no longer re-downloads tiles now that they load straight from storage. (#840)
