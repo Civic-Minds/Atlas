@@ -2100,6 +2100,7 @@ export async function processGtfsBuffer(
         drawnStopIds,
         gradeAt: (stopId, weekday) => (weekday ? (lift ? lift.gradeOnWeekday(stopId, weekday) : null) : stopTiers[stopId] ?? null),
         otherWeekdays: () => (lift ? lift.otherWeekdays() : []),
+        tiers: routeTierScale(),
       });
     };
     const publishStopData = (): { onShape: typeof coverageStops; stopHeadways: Record<string, number> } | null => {
@@ -2393,6 +2394,7 @@ export async function processGtfsBuffer(
             drawnStopIds: drawnIds,
             gradeAt: (stopId, weekday) => scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature)?.tier ?? null,
             otherWeekdays: () => otherWeekdayPools(hsKey),
+            tiers: routeTierScale(),
           });
         }
       }

@@ -106,9 +106,13 @@ describe('liftTierOnDestinationPool', () => {
     const stops = ['a', 'b'];
     // A line at tier 8 is never lowered by a lift, and a line graded 8 at every stop lifts to its
     // headline's tier, not to the stops' 8 (the headline reads surface tiers).
-    expect(liftTierOnDestinationPool({ currentTier: '8', headway: 8, day: 'Saturday', drawnStopIds: stops, gradeAt: () => '15', otherWeekdays: () => [] })).toBe('8');
-    expect(liftTierOnDestinationPool({ currentTier: 'infrequent', headway: 8, day: 'Saturday', drawnStopIds: stops, gradeAt: () => '8', otherWeekdays: () => [] })).toBe('10');
-    expect(liftTierOnDestinationPool({ currentTier: '15', headway: 4, day: 'Saturday', drawnStopIds: stops, gradeAt: () => '5', otherWeekdays: () => [] })).toBe('10');
+    const rail = [5, 8, 10, 15, 30, 60];
+    expect(liftTierOnDestinationPool({ currentTier: '8', headway: 8, day: 'Saturday', drawnStopIds: stops, gradeAt: () => '15', otherWeekdays: () => [], tiers: rail })).toBe('8');
+    // A streetcar every 8 graded 8 at every stop lifts to 8 on its own scale (settleTier reads the same scale).
+    expect(liftTierOnDestinationPool({ currentTier: 'infrequent', headway: 8, day: 'Saturday', drawnStopIds: stops, gradeAt: () => '8', otherWeekdays: () => [], tiers: rail })).toBe('8');
+    expect(liftTierOnDestinationPool({ currentTier: '15', headway: 4, day: 'Saturday', drawnStopIds: stops, gradeAt: () => '5', otherWeekdays: () => [], tiers: rail })).toBe('5');
+    // On the surface scale a bus every 8 lifts no further than 10.
+    expect(liftTierOnDestinationPool({ currentTier: 'infrequent', headway: 8, day: 'Saturday', drawnStopIds: stops, gradeAt: () => '10', otherWeekdays: () => [] })).toBe('10');
   });
   const stops = ['a', 'b', 'c'];
   it('lifts to the pool\'s worst drawn-stop grade, never past the headline', () => {
