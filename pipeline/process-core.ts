@@ -2076,6 +2076,10 @@ export async function processGtfsBuffer(
       // so the 3 origin stops only those 4 trips serve are limited.
       if (!isMapless && drawnPatternStops().length > 1) {
         const runsByDay = lineRunsByDay();
+        // CIV-152: each drawn stop's every-gap grade, the method the route tier uses, on the
+        // stop's own (pooled) list, never worse than its headway's tier. The client colours the
+        // line section by section from these; a stop with no all-day reading is left out.
+        const stopTiers: Record<string, string> = {};
         const segments = segmentsByTier(drawnPatternStops(), stopId => {
           const times = stopMetricMap.get(stopId);
           if (!times || times.length === 0) return null;
@@ -2086,9 +2090,14 @@ export async function processGtfsBuffer(
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
           const headway = stopHasReading(stopId) ? allStopHw[stopId] ?? null : null;
           if (headway == null && !runsByDay) return null;
+          if (headway != null) {
+            const byHeadway = headwayToTier(headway);
+            stopTiers[stopId] = graded?.tier != null && (TIER_RANK[graded.tier] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? graded.tier : byHeadway;
+          }
           return { tier: graded?.tier ?? null, headway };
         });
         if (segments.length > 0) feature.properties.segments = segments;
+        if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
       }
       return { onShape, stopHeadways };
     };
