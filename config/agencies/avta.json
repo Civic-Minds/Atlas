@@ -9,7 +9,7 @@
   "lastFeedExpiry": "20270228",
   "lastFeedVersion": "20260709",
   "region": "California",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-14",
   "websiteUrl": "http://www.avta.com",
   "cities": [
     "Lancaster, California",
@@ -29,5 +29,25 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.avta.com/userfiles/files/AVTA_GTFS.zip"
+  "lastFeedSourceUrl": "https://www.avta.com/userfiles/files/AVTA_GTFS.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "48 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 48,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 82
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20270228",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

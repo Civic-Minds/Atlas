@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "20260803",
   "region": "Kentucky",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-14",
   "cities": [
     "Louisville, Kentucky"
   ],
@@ -19,7 +19,27 @@
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
-  "timezone": "America/Kentucky/Louisville",
+  "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://tarc.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "https://tarc.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "36 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 36,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 113
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20270109",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -9408,7 +9408,7 @@
       "lastFeedExpiry": "20270228",
       "lastFeedVersion": "20260709",
       "region": "California",
-      "lastRefreshedAt": "20260811",
+      "lastRefreshedAt": "2026-10-14",
       "websiteUrl": "http://www.avta.com",
       "cities": [
         "Lancaster, California",
@@ -9428,7 +9428,27 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270228",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.avta.com/userfiles/files/AVTA_GTFS.zip"
+      "lastFeedSourceUrl": "https://www.avta.com/userfiles/files/AVTA_GTFS.zip",
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "48 route shapes needed adjustment before display."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 48,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 82
+        },
+        "checkedAt": "2026-10-14"
+      },
+      "lastPeekedExpiry": "20270228",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0
     },
     {
       "slug": "sdmts",
@@ -11124,7 +11144,7 @@
       "lastFeedExpiry": "20270109",
       "lastFeedVersion": "20260803",
       "region": "Kentucky",
-      "lastRefreshedAt": "2026-08-10",
+      "lastRefreshedAt": "2026-10-14",
       "cities": [
         "Louisville, Kentucky"
       ],
@@ -11133,9 +11153,29 @@
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270109",
-      "timezone": "America/Kentucky/Louisville",
+      "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://tarc.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://tarc.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "36 route shapes needed adjustment before display."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 36,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 113
+        },
+        "checkedAt": "2026-10-14"
+      },
+      "lastPeekedExpiry": "20270109",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0
     },
     {
       "slug": "mcts",
@@ -22676,7 +22716,7 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-3364/latest.zip",
       "lastFeedExpiry": "20270201",
       "lastFeedVersion": "UTC: 22-Jul-2026 20:17",
-      "lastRefreshedAt": "2026-08-10",
+      "lastRefreshedAt": "2026-10-14",
       "cities": [
         "Astoria, New York",
         "Manhattan, New York"
@@ -22695,7 +22735,25 @@
           "mode": 6,
           "reason": "The Roosevelt Island Tramway is an aerial tramway, published as route_type 0 (tram/light rail) since the 2026-07 feed"
         }
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 10
+        },
+        "checkedAt": "2026-10-14"
+      },
+      "lastPeekedExpiry": "20270201",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0
     },
     {
       "slug": "guadalajara",
