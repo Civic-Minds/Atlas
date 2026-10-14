@@ -1,6 +1,5 @@
 import { FetchSource, type Source, type RangeResponse } from 'pmtiles';
 import { takeEarlyHeader } from './earlyData';
-import type { TileFetchGate } from './tileFetchGate';
 
 /** The PMTiles library reads the header and root directory as the first 16 KB of the archive. */
 const HEADER_BYTES = 16384;
@@ -15,14 +14,11 @@ const HEADER_BYTES = 16384;
 export class RetryingFetchSource implements Source {
   private inner: FetchSource;
   private maxRetries: number;
-  private gate?: TileFetchGate;
   private url: string;
 
-  /** `gate` holds back everything except the header while the user is zooming. */
-  constructor(url: string, maxRetries = 4, gate?: TileFetchGate) {
+  constructor(url: string, maxRetries = 4) {
     this.inner = new FetchSource(url);
     this.maxRetries = maxRetries;
-    this.gate = gate;
     this.url = url;
   }
 
@@ -36,8 +32,6 @@ export class RetryingFetchSource implements Source {
       // index.html already asked for these bytes while the app code was still loading.
       const early = await takeEarlyHeader(this.url);
       if (early) return { data: early.data, etag: early.etag && !early.etag.startsWith('W/') ? early.etag : undefined };
-    } else if (this.gate) {
-      await this.gate.wait(signal);
     }
     for (let attempt = 0; ; attempt++) {
       try {

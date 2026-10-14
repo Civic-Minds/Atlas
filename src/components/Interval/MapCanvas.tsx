@@ -13,7 +13,7 @@ import { useHistoryLayer } from './map/useHistoryLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
-import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle, getActiveDataRelease, detailTileGate } from '../../lib/mapStyle';
+import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
 import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
@@ -1187,12 +1187,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     });
 
     cleanupMap = map;
-
-    // A scroll or pinch zoom passes through zoom levels nobody stops at; hold the detailed route
-    // tiles back until it ends instead of downloading each level (see TileFetchGate). Zooms the
-    // app starts itself (flyTo, fit bounds) have no originalEvent and load as they go.
-    map.on('zoomstart', event => { if ((event as { originalEvent?: Event }).originalEvent) detailTileGate.hold(); });
-    map.on('zoomend', () => detailTileGate.release());
       mapRef.current = map;
 
       map.on('load', async () => {
@@ -1610,7 +1604,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return () => {
       cancelled = true;
       onMapReadyRef.current?.(null);
-      detailTileGate.release();
       cleanupMap?.remove();
       if (mapRef.current === cleanupMap) mapRef.current = null;
     };
