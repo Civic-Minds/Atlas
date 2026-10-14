@@ -22,5 +22,6 @@
   "expiredFeedCheckExpiry": "20261107",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip"
+  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
+  "lastPeekedExpiry": "20261107"
 }

@@ -22,5 +22,6 @@
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Detroit",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.remix.com/bwat_porthuron_mi_us.zip"
+  "lastFeedSourceUrl": "https://gtfs.remix.com/bwat_porthuron_mi_us.zip",
+  "lastPeekedExpiry": "20261231"
 }

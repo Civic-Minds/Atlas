@@ -47,5 +47,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip"
+  "lastFeedSourceUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
+  "lastPeekedExpiry": "20261128"
 }

@@ -51,5 +51,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip"
+  "lastFeedSourceUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
+  "lastPeekedExpiry": "20261114"
 }

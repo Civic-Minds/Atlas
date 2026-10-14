@@ -44,5 +44,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/capeann-ma-us/capeann-ma-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/capeann-ma-us/capeann-ma-us.zip",
+  "lastPeekedExpiry": "20270301"
 }

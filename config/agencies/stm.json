@@ -58,5 +58,6 @@
   },
   "timezone": "America/Montreal",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip"
+  "lastFeedSourceUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
+  "lastPeekedExpiry": "20261025"
 }

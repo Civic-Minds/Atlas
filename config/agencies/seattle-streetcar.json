@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
   "agencyId": "23",
-  "lastFeedExpiry": "20271231",
+  "lastFeedExpiry": "20270326",
   "lastFeedVersion": "FAL26-161.2",
   "lastRefreshedAt": "2026-10-12",
   "lastFeedCheckAt": "20261012",
@@ -43,5 +43,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip"
+  "lastFeedSourceUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
+  "lastPeekedExpiry": "20270326"
 }

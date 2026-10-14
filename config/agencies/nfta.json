@@ -67,5 +67,6 @@
       "mode": 100,
       "reason": "Buffalo Metro Rail is light rail, published as route_type 0 (tram); replaces the former agency-name rule (#811)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20261205"
 }

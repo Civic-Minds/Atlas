@@ -34,5 +34,6 @@
   "expiredFeedCheckExpiry": "20270109",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://countyconnection.com/GTFS/google_transit.zip"
+  "lastFeedSourceUrl": "https://countyconnection.com/GTFS/google_transit.zip",
+  "lastPeekedExpiry": "20270109"
 }

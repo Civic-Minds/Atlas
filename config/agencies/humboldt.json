@@ -41,5 +41,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs"
+  "lastFeedSourceUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs",
+  "lastPeekedExpiry": "20270630"
 }

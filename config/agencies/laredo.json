@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.remix.com/el_metro_laredo_transit_us.zip"
+  "lastFeedSourceUrl": "https://gtfs.remix.com/el_metro_laredo_transit_us.zip",
+  "lastPeekedExpiry": "20261231"
 }

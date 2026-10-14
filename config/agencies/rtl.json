@@ -53,5 +53,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip"
+  "lastFeedSourceUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
+  "lastPeekedExpiry": "20261101"
 }

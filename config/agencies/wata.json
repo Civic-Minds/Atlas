@@ -45,5 +45,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip"
+  "lastFeedSourceUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
+  "lastPeekedExpiry": "20261112"
 }

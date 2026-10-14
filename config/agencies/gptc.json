@@ -38,5 +38,6 @@
   "expiredFeedCheckExpiry": "20300129",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip"
+  "lastFeedSourceUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip",
+  "lastPeekedExpiry": "20300129"
 }

@@ -37,5 +37,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-sarnia.zip"
+  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-sarnia.zip",
+  "lastPeekedExpiry": "20261231"
 }

@@ -28,5 +28,6 @@
   "expiredFeedCheckExpiry": "20261031",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/TOR_Transport_of_Rockland.zip"
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/TOR_Transport_of_Rockland.zip",
+  "lastPeekedExpiry": "20261031"
 }

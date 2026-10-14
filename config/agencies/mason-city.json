@@ -42,5 +42,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/masoncity-ia-us/masoncity-ia-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/masoncity-ia-us/masoncity-ia-us.zip",
+  "lastPeekedExpiry": "20270101"
 }

@@ -74,5 +74,6 @@
       "mode": 100,
       "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20270130"
 }

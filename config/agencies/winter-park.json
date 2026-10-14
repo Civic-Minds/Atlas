@@ -8,7 +8,7 @@
     -105.7631
   ],
   "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedExpiry": "20501230",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-21",
   "cities": [
@@ -37,5 +37,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx"
+  "lastFeedSourceUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+  "lastPeekedExpiry": "20501230"
 }

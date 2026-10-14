@@ -33,5 +33,6 @@
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip"
+  "lastFeedSourceUrl": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip",
+  "lastPeekedExpiry": "20271231"
 }

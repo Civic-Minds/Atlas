@@ -33,5 +33,6 @@
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://butlerivl.availtec.com/InfoPoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "https://butlerivl.availtec.com/InfoPoint/gtfs-zip.ashx",
+  "lastPeekedExpiry": "20271231"
 }

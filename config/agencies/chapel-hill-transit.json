@@ -7,7 +7,7 @@
     -79.05
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-89/latest.zip",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "Fall 2026 Update (No Special Services)",
   "region": "North Carolina",
   "lastRefreshedAt": "2026-10-12",
@@ -37,5 +37,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastPeekedExpiry": "20991231"
 }

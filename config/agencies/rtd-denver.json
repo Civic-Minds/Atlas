@@ -88,5 +88,6 @@
       "mode": 100,
       "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20270102"
 }

@@ -47,5 +47,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip",
+  "lastPeekedExpiry": "20270305"
 }

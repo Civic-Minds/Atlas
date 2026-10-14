@@ -25,5 +25,6 @@
   "expiredFeedCheckExpiry": "20270123",
   "timezone": "America/Juneau",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://sjrtd.com/RTD-GTFS/RTD-GTFS.zip"
+  "lastFeedSourceUrl": "http://sjrtd.com/RTD-GTFS/RTD-GTFS.zip",
+  "lastPeekedExpiry": "20270123"
 }

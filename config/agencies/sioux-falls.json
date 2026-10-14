@@ -45,5 +45,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip"
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
+  "lastPeekedExpiry": "20271007"
 }

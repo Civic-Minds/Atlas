@@ -49,5 +49,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip"
+  "lastFeedSourceUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip",
+  "lastPeekedExpiry": "20270109"
 }

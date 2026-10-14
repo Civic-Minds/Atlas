@@ -39,5 +39,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://developers.cata.org/gtfsdownload.ashx?data=base"
+  "lastFeedSourceUrl": "http://developers.cata.org/gtfsdownload.ashx?data=base",
+  "lastPeekedExpiry": "20261220"
 }

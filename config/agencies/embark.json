@@ -7,7 +7,7 @@
     -97.52
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2062/latest.zip",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "10/10/2026-22:30",
   "region": "Oklahoma",
   "lastRefreshedAt": "2026-10-12",
@@ -43,5 +43,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastPeekedExpiry": "20301231"
 }

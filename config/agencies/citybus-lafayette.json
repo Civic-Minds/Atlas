@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://bus.gocitybus.com/GTFSRT/citybus-lafayette-in-us.zip"
+  "lastFeedSourceUrl": "https://bus.gocitybus.com/GTFSRT/citybus-lafayette-in-us.zip",
+  "lastPeekedExpiry": "20261231"
 }

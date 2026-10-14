@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://rmwb-gtfsrt.civilia.ca/gtfs"
+  "lastFeedSourceUrl": "https://rmwb-gtfsrt.civilia.ca/gtfs",
+  "lastPeekedExpiry": "20261210"
 }

@@ -26,5 +26,6 @@
   "expiredFeedCheckExpiry": "20270807",
   "timezone": "America/Toronto",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter"
+  "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter",
+  "lastPeekedExpiry": "20270807"
 }

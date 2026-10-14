@@ -44,5 +44,6 @@
   "expiredFeedCheckExpiry": "20301031",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1011A0"
+  "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1011A0",
+  "lastPeekedExpiry": "20301031"
 }

@@ -1,0 +1,77 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+14111,14111,Finch Station - Southbound Platform,,43.780147,-79.415692,,,,,,1
+13789,13789,North York Centre Station - Southbound Platform,,43.767347,-79.412492,,,,,,1
+13860,13860,Sheppard-Yonge Station - Southbound Platform,,43.760348,-79.410691,,,,,,1
+13792,13792,York Mills Station - Southbound Platform,,43.743248,-79.405991,,,,,,1
+13793,13793,Lawrence Station - Southbound Platform,,43.725348,-79.40229,,,,,,1
+13795,13795,Eglinton Station - Southbound Platform,,43.704648,-79.39889,,,,,,1
+13798,13798,Davisville Station - Southbound Platform,,43.697048,-79.39689,,,,,,1
+13799,13799,St Clair Station - Southbound Platform,,43.687449,-79.393089,,,,,,1
+13802,13802,Summerhill Station - Southbound Platform,,43.682049,-79.390789,,,,,,1
+13803,13803,Rosedale Station - Southbound Platform,,43.676049,-79.388089,,,,,,1
+13864,13864,Bloor Station - Southbound Platform,,43.670049,-79.385389,,,,,,1
+13806,13806,Wellesley Station - Southbound Platform,,43.664949,-79.383488,,,,,,1
+13807,13807,College Station - Southbound Platform,,43.660149,-79.382688,,,,,,2
+13810,13810,TMU Station - Southbound Platform,,43.655949,-79.380788,,,,,,1
+13811,13811,Queen Station - Southbound Platform,,43.652149,-79.379188,,,,,,1
+13814,13814,King Station - Southbound Platform,,43.648449,-79.377688,,,,,,2
+13815,13815,Union Station - Northbound Platform Towards Vaughan Metropolitan Centre,,43.645549,-79.381488,,,,,,1
+13817,13817,St Andrew Station - Northbound Platform,,43.648249,-79.385088,,,,,,1
+13820,13820,Osgoode Station - Northbound Platform,,43.651749,-79.386888,,,,,,1
+13821,13821,St Patrick Station - Northbound Platform,,43.655249,-79.388388,,,,,,1
+13824,13824,Queen's Park Station - Northbound Platform,,43.660549,-79.390689,,,,,,1
+13825,13825,Museum Station - Northbound Platform,,43.667249,-79.393389,,,,,,2
+13858,13858,St George Station - Northbound Platform,,43.668249,-79.399689,,,,,,1
+13853,13853,Spadina Station - Northbound Platform,,43.670249,-79.405189,,,,,,2
+13828,13828,Dupont Station - Northbound Platform,,43.674949,-79.40709,,,,,,1
+13829,13829,St Clair West Station - Northbound Platform,,43.685148,-79.41589,,,,,,1
+13832,13832,Cedarvale Station - Northbound Platform,,43.700648,-79.436691,,,,,,1
+13833,13833,Glencairn Station - Northbound Platform,,43.709148,-79.440892,,,,,,1
+13836,13836,Lawrence West Station - Northbound Platform,,43.715784,-79.444038,,,,,,1
+13837,13837,Yorkdale Station - Northbound Platform,,43.725248,-79.447692,,,,,,2
+13840,13840,Wilson Station - Northbound Platform,,43.735048,-79.450192,,,,,,1
+14945,14945,Sheppard West Station - Northbound Platform,,43.750204,-79.462781,,,,,,1
+14110,14110,Sheppard West Station - Southbound Platform,,43.749147,-79.461993,,,,,,1
+13839,13839,Wilson Station - Southbound Platform,,43.733848,-79.449892,,,,,,1
+13838,13838,Yorkdale Station - Southbound Platform,,43.723948,-79.447292,,,,,,1
+13835,13835,Lawrence West Station - Southbound Platform,,43.714748,-79.443791,,,,,,1
+13834,13834,Glencairn Station - Southbound Platform,,43.708048,-79.440191,,,,,,1
+13831,13831,Cedarvale Station - Southbound Platform,,43.699348,-79.436291,,,,,,1
+13830,13830,St Clair West Station - Southbound Platform,,43.683948,-79.41539,,,,,,1
+13827,13827,Dupont Station - Southbound Platform,,43.673749,-79.406689,,,,,,1
+13854,13854,Spadina Station - Southbound Platform,,43.669049,-79.404789,,,,,,2
+13857,13857,St George Station - Southbound Platform,,43.668549,-79.397889,,,,,,1
+13826,13826,Museum Station - Southbound Platform,,43.665949,-79.392989,,,,,,2
+13823,13823,Queen's Park Station - Southbound Platform,,43.659249,-79.390289,,,,,,1
+13822,13822,St Patrick Station - Southbound Platform,,43.654049,-79.387988,,,,,,1
+13819,13819,Osgoode Station - Southbound Platform,,43.650449,-79.386488,,,,,,1
+13818,13818,St Andrew Station - Southbound Platform,,43.647049,-79.384488,,,,,,1
+13816,13816,Union Station - Northbound Platform Towards Finch,,43.645849,-79.379688,,,,,,1
+13813,13813,King Station - Northbound Platform,,43.649649,-79.378088,,,,,,2
+13812,13812,Queen Station - Northbound Platform,,43.653349,-79.379588,,,,,,1
+13809,13809,TMU Station - Northbound Platform,,43.657149,-79.381188,,,,,,1
+13808,13808,College Station - Northbound Platform,,43.661449,-79.383088,,,,,,2
+13805,13805,Wellesley Station - Northbound Platform,,43.666149,-79.383788,,,,,,1
+13863,13863,Bloor Station - Northbound Platform,,43.671044,-79.385918,,,,,,1
+13804,13804,Rosedale Station - Northbound Platform,,43.677249,-79.388589,,,,,,1
+13801,13801,Summerhill Station - Northbound Platform,,43.683349,-79.391189,,,,,,1
+13800,13800,St Clair Station - Northbound Platform,,43.688649,-79.393489,,,,,,1
+13797,13797,Davisville Station - Northbound Platform,,43.698248,-79.39729,,,,,,1
+13796,13796,Eglinton Station - Northbound Platform,,43.706548,-79.39839,,,,,,1
+13794,13794,Lawrence Station - Northbound Platform,,43.726548,-79.40249,,,,,,1
+13791,13791,York Mills Station - Northbound Platform,,43.744448,-79.406191,,,,,,1
+13859,13859,Sheppard-Yonge Station - Northbound Platform,,43.761648,-79.410891,,,,,,1
+13790,13790,North York Centre Station - Northbound Platform,,43.768547,-79.412592,,,,,,1
+14944,14944,Finch Station - Subway Platform,,43.780847,-79.415291,,,,,,1
+15657,15657,Pioneer Village Station - Southbound Platform,,43.77675,-79.509372,,,,,,1
+15656,15656,Pioneer Village Station - Northbound Platform,,43.776741,-79.509334,,,,,,1
+15666,15666,York University - Northbound Platform,,43.774097,-79.499888,,,,,,1
+15667,15667,York University - Southbound Platform,,43.774097,-79.499888,,,,,,1
+15659,15659,Finch West Station - Northbound Platform,,43.764855,-79.491118,,,,,,1
+15658,15658,Finch West Station - Southbound Platform,,43.764855,-79.491118,,,,,,1
+15664,15664,Downsview Park Station - Northbound Platform,,43.753311,-79.478693,,,,,,1
+15665,15665,Downsview Park Station - Southbound Platform,,43.753311,-79.478693,,,,,,1
+15661,15661,Highway 407 Station - Northbound Platform,,43.783359,-79.523454,,,,,,1
+15660,15660,Highway 407 Station - Southbound Platform,,43.783359,-79.523454,,,,,,1
+15662,15662,Vaughan Metropolitan Centre Station - Subway Platform,,43.794021,-79.527906,,,,,,1
+15663,15663,Vaughan Metropolitan Centre Station - Southbound Platform,,43.794021,-79.527906,,,,,,1

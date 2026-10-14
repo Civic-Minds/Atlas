@@ -38,5 +38,6 @@
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://gtfs.bigbluebus.com/current.zip"
+  "lastFeedSourceUrl": "http://gtfs.bigbluebus.com/current.zip",
+  "lastPeekedExpiry": "20261212"
 }

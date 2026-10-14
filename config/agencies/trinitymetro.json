@@ -51,5 +51,6 @@
       "mode": 2,
       "reason": "TEXRail is commuter rail, published as route_type 0 (tram)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20270130"
 }

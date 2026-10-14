@@ -38,5 +38,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.avon.org/DocumentCenter/View/25051/TownOfAvon_gtfs"
+  "lastFeedSourceUrl": "https://www.avon.org/DocumentCenter/View/25051/TownOfAvon_gtfs",
+  "lastPeekedExpiry": "20261125"
 }

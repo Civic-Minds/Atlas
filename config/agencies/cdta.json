@@ -37,5 +37,6 @@
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.cdta.org/schedules/google_transit.zip"
+  "lastFeedSourceUrl": "https://www.cdta.org/schedules/google_transit.zip",
+  "lastPeekedExpiry": "20261128"
 }

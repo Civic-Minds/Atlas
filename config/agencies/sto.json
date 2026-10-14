@@ -50,5 +50,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://contenu.sto.ca/GTFS/GTFS.zip"
+  "lastFeedSourceUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
+  "lastPeekedExpiry": "20261204"
 }

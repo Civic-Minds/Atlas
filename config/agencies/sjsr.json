@@ -46,5 +46,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu"
+  "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu",
+  "lastPeekedExpiry": "20270531"
 }

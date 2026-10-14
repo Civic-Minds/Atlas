@@ -45,5 +45,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://schedule.ivtransit.com/gtfs/data.zip"
+  "lastFeedSourceUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
+  "lastPeekedExpiry": "20261231"
 }

@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1036A0"
+  "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1036A0",
+  "lastPeekedExpiry": "20270206"
 }

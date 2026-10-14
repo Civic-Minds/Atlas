@@ -46,5 +46,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://opengis.regina.ca/reginagtfs/google_transit.zip"
+  "lastFeedSourceUrl": "https://opengis.regina.ca/reginagtfs/google_transit.zip",
+  "lastPeekedExpiry": "20270109"
 }

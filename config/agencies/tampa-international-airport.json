@@ -38,5 +38,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
+  "lastPeekedExpiry": "20270102"
 }

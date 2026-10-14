@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://myride.cityofdubuque.org/gtfs/google_transit.zip"
+  "lastFeedSourceUrl": "https://myride.cityofdubuque.org/gtfs/google_transit.zip",
+  "lastPeekedExpiry": "20280330"
 }
