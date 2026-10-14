@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
+import SelectionLoadPanel from '../components/Interval/SelectionLoadPanel';
 import { useAgencyData } from '../hooks/useAgencyData';
 import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
@@ -132,6 +133,8 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
     </div>
   );
 }
+
+const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
 export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
@@ -687,6 +690,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     onPendingLiveRouteHandled?.();
   }, [pendingLiveRoute, layers, day]);
 
+  // If the agency never loads, give up on the handoff instead of waiting forever.
+  useEffect(() => {
+    if (!pendingLiveRoute) return;
+    const timer = setTimeout(() => onPendingLiveRouteHandled?.(), PENDING_ROUTE_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [pendingLiveRoute, onPendingLiveRouteHandled]);
+
   const prevPendingNightRoute = useRef<typeof pendingNightRoute>(null);
   useEffect(() => {
     if (!pendingNightRoute) return;
@@ -704,6 +714,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
     onPendingNightRouteHandled?.();
   }, [pendingNightRoute, layers, onPendingNightRouteHandled]);
+
+  useEffect(() => {
+    if (!pendingNightRoute) return;
+    const timer = setTimeout(() => onPendingNightRouteHandled?.(), PENDING_ROUTE_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [pendingNightRoute, onPendingNightRouteHandled]);
 
   // Clear map selection states when switching away from the Frequency app
   useEffect(() => {
@@ -1065,6 +1081,24 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onInfoOpen={onInfoOpen}
           />
         ) : null;
+      })()}
+
+      {(showUi || showSelectionUi) && (() => {
+        const key = selectedRoute ?? selectedStop;
+        const slug = key ? key.split('::')[0] : null;
+        if (!key || !slug || layers[slug]) return null;
+        const known = agencies.some(a => a.slug === slug && !a.onDemandOnly);
+        if (!known && agencies.some(a => a.slug === slug)) return null;
+        return (
+          <SelectionLoadPanel
+            key={key}
+            kind={selectedRoute ? 'route' : 'stop'}
+            failed={!known || failedSlugs.has(slug)}
+            onClose={clearMapSelection}
+            sidebarLeft={sidebarLeft}
+            searchBarWidth={searchBarWidth}
+          />
+        );
       })()}
 
       {showUi && userLocation && (

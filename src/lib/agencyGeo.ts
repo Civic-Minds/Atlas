@@ -5,6 +5,9 @@ import { CACHE_BUILD } from '../../shared/cacheBuild';
 import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter';
 import { dataReleaseAgencyUrl, NoVerifiedDataReleaseError, resolveDataRelease, verifiedReleaseRequired } from './dataRelease';
 
+/** Adds the cache-busting version unless the URL already carries one (release URLs do). */
+export const withVersion = (url: string, ver: string) => (/[?&]v=/.test(url) ? url : `${url}${url.includes('?') ? '&' : '?'}v=${ver}`);
+
 export interface AgencyGeoSource {
   slug: string;
   name: string;
@@ -211,7 +214,7 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
           lruSet(cache, agency.slug, cached);
           return cached;
         }
-        const r = await fetch(`${fetchUrl}?v=${dataVer}`, { cache: 'default' });
+        const r = await fetch(withVersion(fetchUrl, dataVer), { cache: 'default' });
         if (!r.ok) throw new Error(`${agency.slug} geo ${r.status}`);
         const data = await r.json() as GeoJSON.FeatureCollection;
         for (const f of data.features) {
@@ -280,7 +283,7 @@ export async function fetchAgencyCorridors(slug: string, corridorsUrl: string): 
           lruSet(corridorsCache, slug, cached);
           return cached;
         }
-        const r = await fetch(`${fetchUrl}?v=${dataVer}`, { cache: 'default' });
+        const r = await fetch(withVersion(fetchUrl, dataVer), { cache: 'default' });
         if (!r.ok) throw new Error(`${slug} corridors ${r.status}`);
         const data = await r.json() as GeoJSON.FeatureCollection;
         for (const f of data.features) {
