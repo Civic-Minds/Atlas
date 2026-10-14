@@ -13,7 +13,7 @@ self.addEventListener('message', async (e: MessageEvent) => {
       return;
     }
 
-    const r = await fetch(withVersion(url, weekVer), { cache: 'default' });
+    const r = await fetch(withVersion(url, weekVer), { cache: 'default', signal: typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(60_000) : undefined });
     if (!r.ok) {
       throw new Error(`HTTP ${r.status}`);
     }

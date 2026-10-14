@@ -29,8 +29,9 @@ function buildInitialBounds(): ViewportBounds {
 }
 const INITIAL_BOUNDS = buildInitialBounds();
 const MAX_CONCURRENT_AGENCY_FETCHES = 6;
-/** Viewport agencies that wait for the tiles are fetched this many at a time, and only while nothing else downloads. */
-const LOW_PRIORITY_CONCURRENCY = 1;
+/** Viewport agencies that wait for the tiles go one at a time until the first settles, then this many at once. */
+const LOW_PRIORITY_CONCURRENCY_FIRST = 1;
+const LOW_PRIORITY_CONCURRENCY = 3;
 export const DETAIL_GEOJSON_MIN_ZOOM = 8;
 
 export function shouldLoadAgencyDetails(zoom: number | undefined, searchQuery: string): boolean {
@@ -46,6 +47,8 @@ interface AgencyLoadSession {
   lowQueue: Agency[];
   /** Whether low-priority fetches may start (the tiles have settled). */
   lowEnabled: boolean;
+  /** Set once any fetch has settled, which lets the low-priority queue widen. */
+  anySettled: boolean;
   activeFetches: number;
 }
 
@@ -129,6 +132,7 @@ export function useAgencyData(
       fetchQueue: [],
       lowQueue: [],
       lowEnabled: viewportLoadOpenRef.current,
+      anySettled: false,
       activeFetches: 0,
     };
     loadSession.current = session;
@@ -170,8 +174,9 @@ export function useAgencyData(
 
   const pumpFetchQueue = useCallback((session: AgencyLoadSession) => {
     while (!session.cancelled) {
-      // Low-priority agencies go one at a time, and only while nothing else is downloading.
-      const takeLow = session.fetchQueue.length === 0 && session.lowEnabled && session.activeFetches < LOW_PRIORITY_CONCURRENCY && session.lowQueue.length > 0;
+      // Low-priority agencies wait for the tiles, go one at a time at first, and never compete with priority fetches.
+      const lowLimit = session.anySettled ? LOW_PRIORITY_CONCURRENCY : LOW_PRIORITY_CONCURRENCY_FIRST;
+      const takeLow = session.fetchQueue.length === 0 && session.lowEnabled && session.activeFetches < lowLimit && session.lowQueue.length > 0;
       if (!takeLow && !(session.activeFetches < MAX_CONCURRENT_AGENCY_FETCHES && session.fetchQueue.length > 0)) break;
       const agency = (takeLow ? session.lowQueue : session.fetchQueue).shift()!;
       session.queuedSlugs.delete(agency.slug);
@@ -180,6 +185,7 @@ export function useAgencyData(
       attemptFetchAgency(agency, false, session).finally(() => {
         session.activeFetches--;
         if (session.cancelled) return;
+        session.anySettled = true;
         setLoadedCount(n => n + 1);
         pumpFetchQueue(session);
       });
@@ -260,6 +266,24 @@ export function useAgencyData(
     // Agencies the tiles do not carry are drawn from their JSON, so they cannot wait.
     const viewportAgencies = byDistance(agencies.filter(a => viewportSlugs.has(a.slug) && !priority.includes(a)));
     const viewportLimited = dataSaver ? viewportAgencies.slice(0, priority.length > 0 ? 0 : 1) : viewportAgencies;
+    // Agencies that were waiting for a view the map has since left are dropped, so the backlog only
+    // ever holds the current view (and the loading count reflects it).
+    const session = loadSession.current;
+    if (session && !session.cancelled && session.lowQueue.length > 0) {
+      const keep = new Set(viewportLimited.map(a => a.slug));
+      const dropped = session.lowQueue.filter(a => !keep.has(a.slug));
+      if (dropped.length > 0) {
+        session.lowQueue = session.lowQueue.filter(a => keep.has(a.slug));
+        for (const a of dropped) {
+          session.queuedSlugs.delete(a.slug);
+          session.loadedSlugs.delete(a.slug);
+        }
+        setRequestedCount(n => Math.max(0, n - dropped.length));
+      }
+      // Nearest to the new centre first.
+      const order = new Map(viewportLimited.map((a, i) => [a.slug, i]));
+      session.lowQueue.sort((a, b) => (order.get(a.slug) ?? 0) - (order.get(b.slug) ?? 0));
+    }
     priority.forEach(a => queueAgency(a));
     viewportLimited.forEach(a => queueAgency(a, !urgentViewport && !(a.betaOnly && a.pmtilesPending)));
   }, [agencies, bounds, dataSaver, priorityKey, queueAgency, searchQuery, selectedAgencySlug, urgentViewport, zoom]);

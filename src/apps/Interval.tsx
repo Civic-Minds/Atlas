@@ -486,7 +486,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     dataSaver,
     selectedAgencySlug,
     priorityAgencySlugs,
-    urgentViewport: searchFocused || nightServiceView || frequentServiceView || userLocation !== null,
+    urgentViewport: searchFocused || nightServiceView || frequentServiceView || userLocation !== null || compareActive,
     viewportLoadOpen,
   });
 
@@ -1095,13 +1095,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         const key = selectedRoute ?? selectedStop;
         const slug = key ? key.split('::')[0] : null;
         if (!key || !slug || layers[slug]) return null;
-        const known = agencies.some(a => a.slug === slug && !a.onDemandOnly);
-        if (!known && agencies.some(a => a.slug === slug)) return null;
+        // An agency this view does not list (filtered out, or on-demand only) has no card to wait for.
+        if (!agencies.some(a => a.slug === slug && !a.onDemandOnly)) return null;
         return (
           <SelectionLoadPanel
             key={key}
             kind={selectedRoute ? 'route' : 'stop'}
-            failed={!known || failedSlugs.has(slug)}
+            failed={failedSlugs.has(slug)}
             onClose={clearMapSelection}
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}

@@ -124,7 +124,7 @@ describe('useAgencyData failure handling', () => {
     expect(fetchAgencyGeo).toHaveBeenLastCalledWith(expect.objectContaining({ slug: 'selected-away' }));
   });
 
-  it('holds viewport agencies back until the load gate opens, then fetches them one at a time', async () => {
+  it('holds viewport agencies back until the load gate opens, then starts with one at a time', async () => {
     const resolvers: Array<() => void> = [];
     fetchAgencyGeo.mockImplementation(() => new Promise<GeoJSON.FeatureCollection>(resolve => { resolvers.push(() => resolve(emptyFc)); }));
     const agencies = [agency('a', 43.65, -79.38), agency('b', 43.66, -79.37), agency('c', 43.67, -79.36)];
@@ -140,9 +140,9 @@ describe('useAgencyData failure handling', () => {
 
     rerender({ open: true });
     await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(1));
+    expect(fetchAgencyGeo).toHaveBeenCalledTimes(1);
     resolvers.shift()!();
-    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(2));
-    expect(result.current.loadedCount).toBe(1);
+    await waitFor(() => expect(result.current.loadedCount).toBe(1));
   });
 
   it('fetches a priority agency at once, even from outside the viewport, and promotes a waiting one', async () => {
@@ -167,5 +167,34 @@ describe('useAgencyData failure handling', () => {
     const agencies = [agency('near', 43.65, -79.38)];
     renderHook(() => useAgencyData(agencies, viewport, { viewportLoadOpen: false, urgentViewport: true }));
     await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(1));
+  });
+
+  it('drops the backlog of a view the map has left, and keeps the loading count to the current view', async () => {
+    fetchAgencyGeo.mockImplementation(() => new Promise<GeoJSON.FeatureCollection>(() => {}));
+    const toronto = [agency('t1', 43.65, -79.38), agency('t2', 43.66, -79.37)];
+    const ottawa = [agency('o1', 45.42, -75.7)];
+    const agencies = [...toronto, ...ottawa];
+    const ottawaView: ViewportBounds = { s: 45, w: -76, n: 46, e: -75 };
+
+    const { result, rerender } = renderHook(
+      ({ bounds }: { bounds: ViewportBounds }) => useAgencyData(agencies, bounds, { viewportLoadOpen: false }),
+      { initialProps: { bounds: viewport } },
+    );
+    await waitFor(() => expect(result.current.requestedCount).toBe(2));
+
+    rerender({ bounds: ottawaView });
+    await waitFor(() => expect(result.current.requestedCount).toBe(1));
+    expect(fetchAgencyGeo).not.toHaveBeenCalled();
+  });
+
+  it('widens the low-priority queue after the first fetch settles', async () => {
+    const resolvers: Array<() => void> = [];
+    fetchAgencyGeo.mockImplementation(() => new Promise<GeoJSON.FeatureCollection>(resolve => { resolvers.push(() => resolve(emptyFc)); }));
+    const agencies = ['a', 'b', 'c', 'd', 'e'].map((slug, i) => agency(slug, 43.65 + i * 0.01, -79.38));
+    renderHook(() => useAgencyData(agencies, viewport, { viewportLoadOpen: true }));
+    // Open gate and nothing else loading: the first one goes alone.
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(1));
+    resolvers.shift()!();
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(4));
   });
 });
