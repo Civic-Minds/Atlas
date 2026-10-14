@@ -334,7 +334,7 @@ export const BRANCH_MISMATCH_RATIO = 1.8;
  */
 export function resolveTerminalHeadline(
   plainTerminalHw: number,
-  plainNonTerminalStopHeadways: number[],
+  plainNonTerminalStopHeadways: readonly number[],
   typicalTerminalHw: number,
   branchHw: number | null,
   branchTripCount: number,
@@ -366,7 +366,7 @@ export function resolveTerminalHeadline(
  */
 export function hasGenuineBranchPattern(
   terminalComputedHw: number,
-  nonTerminalStopHeadways: number[],
+  nonTerminalStopHeadways: readonly number[],
   ratioThreshold: number = BRANCH_MISMATCH_RATIO,
 ): boolean {
   if (nonTerminalStopHeadways.length === 0 || terminalComputedHw <= 0) return true;
