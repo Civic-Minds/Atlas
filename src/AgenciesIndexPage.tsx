@@ -10,7 +10,6 @@ import { areaPagePath } from '../shared/areas';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { LINK } from './pageStyles';
-import SiteFooter from './components/SiteFooter';
 import PageShell from './components/ui/PageShell';
 
 /** Read this page's data from the JSON the prerender embedded next to the app root. */
@@ -87,8 +86,6 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
             </section>
           ))}
         </article>
-
-        <SiteFooter />
     </PageShell>
   );
 }
