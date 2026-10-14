@@ -390,36 +390,120 @@ export function detectHolds(
 
 export type TripStopStatus =
   | 'ran' // a pass was timed at this stop
-  | 'timing_gap' // the trip was seen before and after this stop, but not timed here
-  | 'not_seen' // the trip never appeared in the live feed while the feed was healthy
-  | 'ended_early' // the trip was seen, then turned back before this stop
-  | 'joined_late' // the trip first appeared after this stop
-  | 'feed_gap'; // the whole feed was down around this time: unknown, excluded
+  | 'timing_gap' // the vehicle was reporting around then, but this stop wasn't timed
+  | 'off_route' // the vehicle was reporting but off the route shape (detour) around then
+  | 'not_seen' // no vehicle reported this trip, while the feed was healthy for the whole trip
+  | 'started_other_trip' // the vehicle turned back and started another trip before this stop
+  | 'joined_late' // the vehicle first reported this trip after it would have passed here
+  | 'stopped_reporting' // the vehicle stopped reporting this trip before it would have passed here
+  | 'feed_gap'; // the feed was down or degraded: unknown, excluded
+
+/** Plain-language labels for the statuses (for the card, after review). */
+export const TRIP_STOP_STATUS_LABELS: Record<TripStopStatus, string> = {
+  ran: 'Timed here',
+  timing_gap: 'Reporting, but not timed at this stop',
+  off_route: "Off this trip's route here (detour, or running another branch)",
+  not_seen: 'No vehicle reported this trip. It may have been cancelled, run under another trip number, or had its tracker off.',
+  started_other_trip: 'Vehicle started another trip partway along',
+  joined_late: 'Vehicle started reporting this trip after this stop',
+  stopped_reporting: 'Vehicle stopped reporting this trip before this stop',
+  feed_gap: 'Live feed was down or incomplete; not counted',
+};
 
 /**
  * Status of each scheduled stop of one trip on one service day, from what the
- * live feed showed. "not_seen" is the only status that suggests the trip
- * didn't run, and even then it can be a vehicle that wasn't reporting.
+ * live feed showed. Untimed stops are placed in time by offsetting the nearest
+ * timed pass by the timetable's running time, then compared with when the
+ * vehicle was reporting this trip.
  */
 export function classifyTripStops(input: {
   stopIds: string[]; // the trip's stops, in order
   scheduledT: number[]; // timetable time at each stop
-  passedStopIds: Set<string>; // stops with a timed pass for this trip
-  seen: boolean; // any position for this trip in its time window
-  endedEarlyAfterIndex?: number | null; // last stop index before a confirmed turn-back
-  feedDown: (t: number) => boolean;
+  passT: Map<string, number>; // timed pass per stop
+  pings: number[]; // times this trip's vehicle reported (empty: never seen)
+  offRoute?: [number, number][]; // intervals the vehicle was off the shape
+  startedOtherTripAfterIndex?: number | null; // confirmed turn-back after this stop index
+  feedDown: (t: number) => boolean; // feed down or degraded around t
+  slackSec?: number;
 }): TripStopStatus[] {
-  const { stopIds, scheduledT, passedStopIds, seen, feedDown } = input;
-  const idx = stopIds.map((s, i) => (passedStopIds.has(s) ? i : -1)).filter(i => i >= 0);
-  const first = idx.length ? idx[0] : null;
-  const last = idx.length ? idx[idx.length - 1] : null;
+  const { stopIds, scheduledT, passT, feedDown } = input;
+  const slack = input.slackSec ?? 60;
+  const n = stopIds.length;
+  // A trip nobody reported, overlapping any feed trouble, is unknown rather than missing.
+  if (input.pings.length === 0) {
+    const troubled = scheduledT.some(t => feedDown(t)) || feedDown(scheduledT[0] - 600) || feedDown(scheduledT[n - 1] + 600);
+    return stopIds.map(() => (troubled ? 'feed_gap' : 'not_seen'));
+  }
+  const timed = stopIds.map((s, i) => (passT.has(s) ? i : -1)).filter(i => i >= 0);
+  const estimate = (i: number): number => {
+    if (!timed.length) return scheduledT[i];
+    let k = timed[0];
+    for (const j of timed) if (Math.abs(j - i) < Math.abs(k - i)) k = j;
+    return passT.get(stopIds[k])! + (scheduledT[i] - scheduledT[k]);
+  };
+  // Reporting stretches: pings more than 5 min apart mean the vehicle wasn't reporting in between.
+  const sorted = [...input.pings].sort((a, b) => a - b);
+  const stretches: [number, number][] = [];
+  for (const t of sorted) {
+    const last = stretches[stretches.length - 1];
+    if (last && t - last[1] <= 300) last[1] = t; else stretches.push([t, t]);
+  }
+  const firstPing = sorted[0];
   return stopIds.map((s, i) => {
-    if (passedStopIds.has(s)) return 'ran';
-    if (feedDown(scheduledT[i])) return 'feed_gap';
-    if (!seen) return 'not_seen';
-    if (input.endedEarlyAfterIndex != null && i > input.endedEarlyAfterIndex) return 'ended_early';
-    if (first != null && i < first) return 'joined_late';
-    if (last != null && i > last) return 'timing_gap'; // stopped reporting, but no confirmed turn-back
+    if (passT.has(s)) return 'ran';
+    if (input.startedOtherTripAfterIndex != null && i > input.startedOtherTripAfterIndex) return 'started_other_trip';
+    const t = estimate(i);
+    if (feedDown(t)) return 'feed_gap';
+    if (t < firstPing - slack) return 'joined_late';
+    if (!stretches.some(([a, b]) => t >= a - slack && t <= b + slack)) return 'stopped_reporting';
+    if ((input.offRoute ?? []).some(([a, b]) => t >= a - slack && t <= b + slack)) return 'off_route';
     return 'timing_gap';
   });
+}
+
+/**
+ * A trip counts as "vehicle started another trip partway along" only when it
+ * stopped well short of the route end (not a terminal loop) and the same
+ * vehicle then started a trip in the *opposite* direction close by and soon
+ * after. A same-direction follow-on is a trip-number change, not a turn-back.
+ */
+export function isTurnBack(input: {
+  metresFromRouteEnd: number;
+  nextTripSameDirection: boolean;
+  gapSec: number;
+  distanceM: number;
+  stoppedBeforeScheduledEndSec: number;
+}): boolean {
+  return input.metresFromRouteEnd >= 1000
+    && !input.nextTripSameDirection
+    && input.gapSec <= 1200
+    && input.distanceM <= 500
+    && input.stoppedBeforeScheduledEndSec >= 180;
+}
+
+/**
+ * Whether a stationary spell counts as "stood still near this stop": not
+ * within 10 min of a trip-number change or the car leaving the feed, not at
+ * either end of the pattern, not near a carhouse, inside the trip's scheduled
+ * span, and longer than the timetable's own dwell there by 2+ min. Returns the
+ * excess seconds, or null.
+ */
+export function standingStillExcess(input: {
+  start: number;
+  end: number;
+  runFirst: number;
+  runLast: number;
+  stopIndex: number;
+  patternStops: number;
+  nearCarhouse: boolean;
+  scheduledStart: number;
+  scheduledEnd: number;
+  scheduledDwellSec: number;
+}): number | null {
+  if (input.start - input.runFirst < 600 || input.runLast - input.end < 600) return null;
+  if (input.stopIndex < 2 || input.stopIndex > input.patternStops - 3) return null;
+  if (input.nearCarhouse) return null;
+  if (input.start < input.scheduledStart || input.end > input.scheduledEnd) return null;
+  const excess = (input.end - input.start) - input.scheduledDwellSec;
+  return excess >= 120 ? excess : null;
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildShape } from '../shapeProjection.js';
 import {
-  aggregateSegments, averageWaitSec, bandForHour, classifyTripStops, detectHolds, headwayBandStat, headwayWindows, percentile, projectRun,
+  aggregateSegments, averageWaitSec, bandForHour, classifyTripStops, detectHolds, headwayBandStat, isTurnBack, standingStillExcess, headwayWindows, percentile, projectRun,
   segmentObservations, stopPassages, type Pattern, type ScheduledRunTimes,
 } from '../segmentDelay.js';
 
@@ -146,15 +146,60 @@ describe('detectHolds', () => {
 
 describe('classifyTripStops', () => {
   const base = { stopIds: ['A', 'B', 'C', 'D', 'E'], scheduledT: [0, 100, 200, 300, 400], feedDown: () => false };
-  it('separates a feed outage from a trip that never appeared', () => {
-    expect(classifyTripStops({ ...base, passedStopIds: new Set(), seen: false })).toEqual(Array(5).fill('not_seen'));
-    expect(classifyTripStops({ ...base, passedStopIds: new Set(), seen: false, feedDown: t => t >= 200 }))
-      .toEqual(['not_seen', 'not_seen', 'feed_gap', 'feed_gap', 'feed_gap']);
+  const pass = (entries: [string, number][]) => new Map(entries);
+
+  it('a trip nobody reported is "not seen" only if the feed was healthy for the whole trip', () => {
+    expect(classifyTripStops({ ...base, passT: pass([]), pings: [] })).toEqual(Array(5).fill('not_seen'));
+    // Blocker 1: one degraded minute anywhere in the trip makes the whole unseen trip unknown.
+    expect(classifyTripStops({ ...base, passT: pass([]), pings: [], feedDown: t => t === 300 }))
+      .toEqual(Array(5).fill('feed_gap'));
   });
-  it('marks stops after a confirmed turn-back, and gaps inside a seen trip as timing gaps', () => {
-    expect(classifyTripStops({ ...base, passedStopIds: new Set(['A', 'C']), seen: true, endedEarlyAfterIndex: 2 }))
-      .toEqual(['ran', 'timing_gap', 'ran', 'ended_early', 'ended_early']);
-    expect(classifyTripStops({ ...base, passedStopIds: new Set(['C', 'D']), seen: true }))
-      .toEqual(['joined_late', 'joined_late', 'ran', 'ran', 'timing_gap']);
+
+  it('a vehicle reporting before its first stop is a timing gap there, not "joined late"', () => {
+    // Blocker 2: pinged from t=-30 at the terminal; first timed pass at B.
+    expect(classifyTripStops({ ...base, passT: pass([['B', 100], ['C', 200], ['D', 300], ['E', 400]]), pings: [-30, 30, 90, 150, 400] })[0])
+      .toBe('timing_gap');
+    expect(classifyTripStops({ ...base, passT: pass([['D', 300], ['E', 400]]), pings: [290, 350, 400] }).slice(0, 3))
+      .toEqual(['joined_late', 'joined_late', 'joined_late']);
+  });
+
+  it('stops after the vehicle went quiet are "stopped reporting", not timing gaps', () => {
+    // Blocker 5, including a quiet stretch in the middle of the trip.
+    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['B', 100]]), pings: [0, 60, 110] }))
+      .toEqual(['ran', 'ran', 'stopped_reporting', 'stopped_reporting', 'stopped_reporting']);
+    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['E', 400]]), pings: [0, 30, 60, 400] }))
+      .toEqual(['ran', 'timing_gap', 'stopped_reporting', 'stopped_reporting', 'ran']);
+  });
+
+  it('labels untimed stops during a detour as off route, and stops after a turn-back separately', () => {
+    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['E', 400]]), pings: [0, 60, 120, 180, 240, 300, 360, 400], offRoute: [[180, 260]] }))
+      .toEqual(['ran', 'timing_gap', 'off_route', 'off_route', 'ran']);
+    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['B', 100]]), pings: [0, 100], startedOtherTripAfterIndex: 1 }).slice(2))
+      .toEqual(['started_other_trip', 'started_other_trip', 'started_other_trip']);
+  });
+});
+
+describe('isTurnBack', () => {
+  const ok = { metresFromRouteEnd: 3000, nextTripSameDirection: false, gapSec: 300, distanceM: 100, stoppedBeforeScheduledEndSec: 900 };
+  it('needs the opposite direction and distance from the route end (blocker 3)', () => {
+    expect(isTurnBack(ok)).toBe(true);
+    expect(isTurnBack({ ...ok, nextTripSameDirection: true })).toBe(false); // trip-number change
+    expect(isTurnBack({ ...ok, metresFromRouteEnd: 400 })).toBe(false); // terminal loop
+  });
+});
+
+describe('standingStillExcess', () => {
+  const ok = {
+    start: 5000, end: 5300, runFirst: 1000, runLast: 9000, stopIndex: 10, patternStops: 40,
+    nearCarhouse: false, scheduledStart: 1000, scheduledEnd: 9000, scheduledDwellSec: 60,
+  };
+  it('counts only time beyond the timetable dwell, away from trip changes, ends and carhouses (blocker 4)', () => {
+    expect(standingStillExcess(ok)).toBe(240);
+    expect(standingStillExcess({ ...ok, runLast: 5500 })).toBeNull(); // car left the feed / changed trip soon after
+    expect(standingStillExcess({ ...ok, start: 1200 })).toBeNull(); // right after a trip change
+    expect(standingStillExcess({ ...ok, stopIndex: 1 })).toBeNull(); // pattern end
+    expect(standingStillExcess({ ...ok, nearCarhouse: true })).toBeNull();
+    expect(standingStillExcess({ ...ok, end: 9500, runLast: 20000 })).toBeNull(); // outside the trip's span
+    expect(standingStillExcess({ ...ok, scheduledDwellSec: 240 })).toBeNull(); // only 60 s over the timetable
   });
 });

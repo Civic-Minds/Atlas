@@ -10,9 +10,9 @@
  */
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
-import { buildShape, projectOntoShape, type Shape } from '../shared/shapeProjection.js';
+import { buildShape, haversineM, projectOntoShape, type Shape } from '../shared/shapeProjection.js';
 import {
-  aggregateSegments, bandForHour, classifyTripStops, detectHolds, headwayBandStat, headwayWindows, median, projectRun, segmentKey,
+  SEGMENT_DEFAULTS, TRIP_STOP_STATUS_LABELS, aggregateSegments, bandForHour, classifyTripStops, isTurnBack, standingStillExcess, detectHolds, headwayBandStat, headwayWindows, median, projectRun, segmentKey,
   segmentObservations, stopPassages,
   type HoldEvent, type Pattern, type TripStopStatus, type PositionSample, type ScheduledRunTimes, type SegmentObservation, type TimeBand,
 } from '../shared/segmentDelay.js';
@@ -161,11 +161,13 @@ function scheduleKey(services: string[]): string {
 const files = readdirSync(ARCHIVE).filter(f => f.startsWith(`${ROUTE}-`) && f.endsWith('.jsonl')).sort();
 const runs = new Map<string, PositionSample[]>();
 const snapshotTimes: number[] = [];
+const snapshotQuality: { ts: number; vehicles: number; newest: number }[] = [];
 for (const f of files) {
   for (const line of readFileSync(join(ARCHIVE, f), 'utf8').split('\n')) {
     if (!line) continue;
     const snap = JSON.parse(line) as { ts: number; v: [string, string, number, number, number | null][] };
     snapshotTimes.push(snap.ts);
+    snapshotQuality.push({ ts: snap.ts, vehicles: snap.v.length, newest: snap.v.reduce((m, v) => Math.max(m, v[4] ?? 0), 0) });
     for (const [id, tripId, lat, lon, t] of snap.v) {
       const k = `${id}|${tripId}`;
       const l = runs.get(k) ?? [];
@@ -203,6 +205,14 @@ const holds: (HoldEvent & { directionId: number })[] = [];
 // Per vehicle: its runs in time order (for turn-backs); per trip: when it was seen.
 const vehicleRuns = new Map<string, { tripId: string; first: PositionSample; last: PositionSample }[]>();
 const tripSeenTimes = new Map<string, number[]>();
+const tripOffRoute = new Map<string, [number, number][]>();
+// TTC streetcar carhouses: cars entering or leaving service stand still nearby.
+const CARHOUSES: [number, number][] = [
+  [43.6400, -79.4477], // Roncesvalles
+  [43.6655, -79.3205], // Russell
+  [43.6620, -79.3300], // Leslie Barns
+];
+const nearCarhouse = (lat: number, lon: number) => CARHOUSES.some(([a, b]) => haversineM(lat, lon, a, b) <= 400);
 for (const [key, samples] of runs) {
   const tripId = key.split('|')[1];
   samples.sort((a, b) => a.t - b.t);
@@ -213,11 +223,7 @@ for (const [key, samples] of runs) {
     const run = dedup.slice(start, i);
     start = i;
     runsTotal++;
-    const trip = tripById.get(tripId);
-    if (!trip) { runsUnmatched++; continue; }
-    const pattern = patternFor(trip.shape_id);
-    if (!pattern || run.length < 2) continue;
-    runsMatched++;
+    // Any ping (even a single one) counts as the trip being seen.
     const vehicleId = key.split('|')[0];
     const vr = vehicleRuns.get(vehicleId) ?? [];
     vr.push({ tripId, first: run[0], last: run[run.length - 1] });
@@ -225,8 +231,35 @@ for (const [key, samples] of runs) {
     const seenTimes = tripSeenTimes.get(tripId) ?? [];
     for (const smp of run) seenTimes.push(smp.t);
     tripSeenTimes.set(tripId, seenTimes);
+    const trip = tripById.get(tripId);
+    if (!trip) { runsUnmatched++; continue; }
+    const pattern = patternFor(trip.shape_id);
+    if (!pattern || run.length < 2) continue;
+    runsMatched++;
     const projected = projectRun(run, pattern);
-    for (const h of detectHolds(projected, pattern)) holds.push({ ...h, directionId: pattern.directionId });
+    // Off-route stretches (detours), for labelling untimed stops.
+    const off = tripOffRoute.get(tripId) ?? [];
+    for (const p of projected) {
+      if (p.perpM <= SEGMENT_DEFAULTS.maxPerpM) continue;
+      const lastOff = off[off.length - 1];
+      if (lastOff && p.t - lastOff[1] <= 180) lastOff[1] = p.t; else off.push([p.t, p.t]);
+    }
+    tripOffRoute.set(tripId, off);
+    const times = timesByTrip.get(tripId) ?? [];
+    for (const h of detectHolds(projected, pattern)) {
+      if (!times.length) continue;
+      const stop = stopsById.get(h.stopId);
+      const base = serviceDayStart(serviceDateOf(h.start));
+      const st = times.find(x => x.stopId === h.stopId);
+      const excess = standingStillExcess({
+        start: h.start, end: h.end, runFirst: run[0].t, runLast: run[run.length - 1].t,
+        stopIndex: pattern.stops.findIndex(x => x.stopId === h.stopId), patternStops: pattern.stops.length,
+        nearCarhouse: !!stop && nearCarhouse(Number(stop.stop_lat), Number(stop.stop_lon)),
+        scheduledStart: base + times[0].dep, scheduledEnd: base + times[times.length - 1].arr,
+        scheduledDwellSec: st ? st.dep - st.arr : 0,
+      });
+      if (excess != null) holds.push({ ...h, end: h.start + excess, directionId: pattern.directionId });
+    }
     const legs = stopPassages(projected, pattern);
     for (const o of segmentObservations(legs, pattern, '')) observations.push({ ...o, date: serviceDateOf(o.departT) });
     for (const leg of legs) for (const p of leg) {
@@ -327,7 +360,43 @@ for (const p of busiest) {
 
 // --- v2: missed trips, short turns, holds (not on the card yet) ---
 for (const l of vehicleRuns.values()) l.sort((a, b) => a.first.t - b.first.t);
-const feedDown = (t: number) => outages.some(([x, y]) => x < t + 120 && y > t - 120);
+
+// Feed health per minute: an outage (no snapshot), an empty or stale snapshot, or
+// far fewer vehicles than the timetable has in service all count as degraded.
+const scheduledInService = new Map<number, number>();
+const tripInstanceList: { svcDate: string; trip: typeof trips[number]; base: number }[] = [];
+for (const svcDate of dates) {
+  const services = activeServices(svcDate)!;
+  const base = serviceDayStart(svcDate);
+  for (const trip of trips) {
+    if (!services.includes(trip.service_id)) continue;
+    const times = timesByTrip.get(trip.trip_id) ?? [];
+    if (times.length < 2) continue;
+    tripInstanceList.push({ svcDate, trip, base });
+    for (let m = Math.floor((base + times[0].dep) / 60); m <= Math.floor((base + times[times.length - 1].arr) / 60); m++) {
+      scheduledInService.set(m, (scheduledInService.get(m) ?? 0) + 1);
+    }
+  }
+}
+const degradedMinutes = new Set<number>();
+let degradedEmpty = 0, degradedStale = 0, degradedThin = 0;
+snapshotQuality.sort((a, b) => a.ts - b.ts);
+snapshotQuality.forEach((q, i) => {
+  const m = Math.floor(q.ts / 60);
+  const expected = scheduledInService.get(m) ?? 0;
+  const prev = snapshotQuality[i - 1];
+  if (expected >= 4 && q.vehicles === 0) { degradedEmpty++; degradedMinutes.add(m); }
+  else if (q.vehicles > 0 && (q.newest < q.ts - 300 || (prev && prev.newest === q.newest && q.ts - prev.ts >= 50))) { degradedStale++; degradedMinutes.add(m); }
+  else if (expected >= 4 && q.vehicles < 0.5 * expected) { degradedThin++; degradedMinutes.add(m); }
+});
+const firstSnap = snapshotTimes[0], lastSnap = snapshotTimes[snapshotTimes.length - 1];
+const feedDown = (t: number) => {
+  if (t - 120 < firstSnap || t + 120 > lastSnap) return true;
+  if (outages.some(([x, y]) => x < t + 120 && y > t - 120)) return true;
+  for (let m = Math.floor((t - 120) / 60); m <= Math.floor((t + 120) / 60); m++) if (degradedMinutes.has(m)) return true;
+  return false;
+};
+
 const passByTrip = new Map<string, number[]>(); // `${tripId}|${stopId}` -> pass times
 for (const [k, list] of passagesAt) {
   const stopId = k.split('|')[0];
@@ -339,68 +408,80 @@ for (const [k, list] of passagesAt) {
   }
 }
 type Counts = Record<TripStopStatus, number> & { days: Set<string> };
-const newCounts = (): Counts => ({ ran: 0, timing_gap: 0, not_seen: 0, ended_early: 0, joined_late: 0, feed_gap: 0, days: new Set() });
+const newCounts = (): Counts => ({ ran: 0, timing_gap: 0, off_route: 0, not_seen: 0, started_other_trip: 0, joined_late: 0, stopped_reporting: 0, feed_gap: 0, days: new Set() });
 const statusByStop = new Map<string, Map<TimeBand | 'all', Counts>>();
 const shortTurnsAt = new Map<string, Map<TimeBand | 'all', { n: number; days: Set<string> }>>();
+let firstStopJoinedLate = 0;
 let tripInstances = 0, tripsNotSeen = 0, tripsShortTurned = 0, tripsFeedGap = 0;
-for (const svcDate of dates) {
-  const services = activeServices(svcDate)!;
-  const base = serviceDayStart(svcDate);
-  for (const trip of trips) {
-    if (!services.includes(trip.service_id)) continue;
-    const times = timesByTrip.get(trip.trip_id) ?? [];
-    if (times.length < 2) continue;
-    const stopIds = times.map(x => x.stopId);
-    const scheduledT = times.map(x => base + x.dep);
-    const start = scheduledT[0], end = scheduledT[scheduledT.length - 1];
-    if (end > snapshotTimes[snapshotTimes.length - 1]) continue; // not finished yet
-    tripInstances++;
-    const lo = start - 1800, hi = end + 3600;
-    const seen = (tripSeenTimes.get(trip.trip_id) ?? []).some(t => t >= lo && t <= hi);
-    const passed = new Set(stopIds.filter(st => (passByTrip.get(`${trip.trip_id}|${st}`) ?? []).some(t => t >= lo && t <= hi)));
-    // Turn-back: the trip's last position is well short of its end, and the same
-    // vehicle starts another trip within 20 min, within 500 m of where it stopped.
-    let endedEarlyAfterIndex: number | null = null;
-    const lastIdx = Math.max(-1, ...stopIds.map((st, i) => (passed.has(st) ? i : -1)));
-    if (seen && lastIdx >= 0 && lastIdx < stopIds.length - 3) {
-      for (const runs of vehicleRuns.values()) {
-        const i = runs.findIndex(r => r.tripId === trip.trip_id && r.last.t >= lo && r.last.t <= hi);
-        if (i < 0) continue;
-        const r = runs[i], next = runs[i + 1];
-        if (next && next.tripId !== trip.trip_id && next.first.t - r.last.t <= 1200 && r.last.t < end - 180
-          && haversine(r.last, next.first) <= 500 && !feedDown(r.last.t)) endedEarlyAfterIndex = lastIdx;
-        break;
-      }
-    }
-    const statuses = classifyTripStops({ stopIds, scheduledT, passedStopIds: passed, seen, endedEarlyAfterIndex, feedDown });
-    if (!seen && statuses.some(st => st === 'not_seen')) tripsNotSeen++;
-    if (statuses.every(st => st === 'feed_gap' || st === 'ran')) { if (statuses.includes('feed_gap')) tripsFeedGap++; }
-    if (endedEarlyAfterIndex != null) {
-      tripsShortTurned++;
-      const k = `${stopIds[endedEarlyAfterIndex]}|${trip.direction_id}`;
-      const m = shortTurnsAt.get(k) ?? new Map();
-      for (const b of [bandForHour(hourOf(scheduledT[endedEarlyAfterIndex])), 'all'] as const) {
-        const c = m.get(b) ?? { n: 0, days: new Set<string>() };
-        c.n++; c.days.add(svcDate); m.set(b, c);
-      }
-      shortTurnsAt.set(k, m);
-    }
-    statuses.forEach((st, i) => {
-      const k = `${stopIds[i]}|${trip.direction_id}`;
-      const m = statusByStop.get(k) ?? new Map();
-      for (const b of [bandForHour(hourOf(scheduledT[i])), 'all'] as const) {
-        const c = m.get(b) ?? newCounts();
-        c[st]++; c.days.add(svcDate); m.set(b, c);
-      }
-      statusByStop.set(k, m);
-    });
+for (const { svcDate, trip, base } of tripInstanceList) {
+  const times = timesByTrip.get(trip.trip_id)!;
+  const stopIds = times.map(x => x.stopId);
+  const scheduledT = times.map(x => base + x.dep);
+  const start = scheduledT[0], end = scheduledT[scheduledT.length - 1];
+  if (end + 3600 > lastSnap) continue; // not finished yet
+  tripInstances++;
+  const lo = start - 1800, hi = end + 3600;
+  const pings = (tripSeenTimes.get(trip.trip_id) ?? []).filter(t => t >= lo && t <= hi);
+  const firstPing = pings.length ? Math.min(...pings) : null;
+  const passT = new Map<string, number>();
+  for (const st of stopIds) {
+    const t = (passByTrip.get(`${trip.trip_id}|${st}`) ?? []).find(x => x >= lo && x <= hi);
+    if (t != null) passT.set(st, t);
   }
-}
-function haversine(a: PositionSample, b: PositionSample): number {
-  const R = 6_371_000, toRad = (d: number) => (d * Math.PI) / 180;
-  const dLat = toRad(b.lat - a.lat), dLon = toRad(b.lon - a.lon);
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h));
+  // Turn-back: well short of the route end, the same car starts a trip in the
+  // opposite direction within 20 min and 500 m of where it stopped.
+  let startedOtherTripAfterIndex: number | null = null;
+  const lastIdx = Math.max(-1, ...stopIds.map((st, i) => (passT.has(st) ? i : -1)));
+  const pattern = patternFor(trip.shape_id);
+  const alongOf = (stopId: string) => pattern?.stops.find(x => x.stopId === stopId)?.along;
+  const lastAlong = lastIdx >= 0 ? alongOf(stopIds[lastIdx]) : undefined;
+  if (firstPing != null && lastIdx >= 0 && pattern && lastAlong != null) {
+    for (const vr of vehicleRuns.values()) {
+      const i = vr.findIndex(r => r.tripId === trip.trip_id && r.last.t >= lo && r.last.t <= hi);
+      if (i < 0) continue;
+      const r = vr[i], next = vr[i + 1];
+      const nextDir = next ? tripById.get(next.tripId)?.direction_id : undefined;
+      if (next && nextDir != null && !feedDown(r.last.t) && isTurnBack({
+        metresFromRouteEnd: pattern.stops[pattern.stops.length - 1].along - lastAlong,
+        nextTripSameDirection: nextDir === trip.direction_id,
+        gapSec: next.first.t - r.last.t,
+        distanceM: haversineM(r.last.lat, r.last.lon, next.first.lat, next.first.lon),
+        stoppedBeforeScheduledEndSec: end - r.last.t,
+      })) startedOtherTripAfterIndex = lastIdx;
+      break;
+    }
+  }
+  // A detour is 2+ pings in a row off the shape; a single stray fix is just GPS noise.
+  const offRoute = (tripOffRoute.get(trip.trip_id) ?? []).filter(([a, b]) => b >= lo && a <= hi && b - a >= 45);
+  const statuses = classifyTripStops({ stopIds, scheduledT, passT, pings, offRoute, startedOtherTripAfterIndex, feedDown });
+  if (process.env.DEBUG_TRIPS?.split(',').includes(`${trip.trip_id}@${svcDate}`)) {
+    const tally: Record<string, number> = {};
+    statuses.forEach(st => { tally[st] = (tally[st] ?? 0) + 1; });
+    console.log('debug', trip.trip_id, svcDate, JSON.stringify(tally), 'first status', statuses[0], 'turn-back', startedOtherTripAfterIndex);
+    console.log('  pings', firstPing, pings.length, 'sched', start, end, 'passT', JSON.stringify([...passT]));
+  }
+  if (process.env.DEBUG_FIRST && statuses[0] === 'joined_late') firstStopJoinedLate++;
+  if (statuses.every(st => st === 'not_seen')) tripsNotSeen++;
+  if (firstPing == null && statuses.every(st => st === 'feed_gap')) tripsFeedGap++;
+  if (startedOtherTripAfterIndex != null) {
+    tripsShortTurned++;
+    const k = `${stopIds[startedOtherTripAfterIndex]}|${trip.direction_id}`;
+    const m = shortTurnsAt.get(k) ?? new Map();
+    for (const b of [bandForHour(hourOf(scheduledT[startedOtherTripAfterIndex])), 'all'] as const) {
+      const c = m.get(b) ?? { n: 0, days: new Set<string>() };
+      c.n++; c.days.add(svcDate); m.set(b, c);
+    }
+    shortTurnsAt.set(k, m);
+  }
+  statuses.forEach((st, i) => {
+    const k = `${stopIds[i]}|${trip.direction_id}`;
+    const m = statusByStop.get(k) ?? new Map();
+    for (const b of [bandForHour(hourOf(scheduledT[i])), 'all'] as const) {
+      const c = m.get(b) ?? newCounts();
+      c[st]++; c.days.add(svcDate); m.set(b, c);
+    }
+    statusByStop.set(k, m);
+  });
 }
 // Ends of minor scheduled patterns (e.g. "to Roncesvalles and Queen"): waits there are
 // planned layovers, not holds, so they're flagged separately from the main terminals.
@@ -432,6 +513,7 @@ const shortTurns = [...shortTurnsAt].map(([k, m]) => {
   return { stopId, directionId: Number(dir), ...stopMeta(stopId), bands: Object.fromEntries([...m].map(([b, c]) => [b, { trips: c.n, days: c.days.size }])) };
 });
 const holdsAt = new Map<string, Map<TimeBand | 'all', { durations: number[]; days: Set<string> }>>();
+// Stood-still events (labelled that way, not "holds"): excess over the timetable's dwell.
 for (const h of holds) {
   const date = serviceDateOf(h.start);
   if (!scheduleKeyForDate(date)) continue;
@@ -455,7 +537,8 @@ const holdStats = [...holdsAt].map(([k, m]) => {
     }])),
   };
 });
-console.log(`v2: trip instances ${tripInstances}, not seen ${tripsNotSeen}, turned back ${tripsShortTurned}, touched by feed gaps ${tripsFeedGap}, hold events ${holds.length}`);
+if (process.env.DEBUG_FIRST) console.log('joined_late at first stop:', firstStopJoinedLate);
+console.log(`v2: trip instances ${tripInstances}, not seen ${tripsNotSeen}, feed-gap trips ${tripsFeedGap}, turned back ${tripsShortTurned}, stood-still events ${holds.length}, degraded snapshots empty/stale/thin ${degradedEmpty}/${degradedStale}/${degradedThin}`);
 
 const usedDates = dates;
 const result = {
@@ -477,7 +560,13 @@ const result = {
     toName: stopsById.get(s.toStopId)?.stop_name ?? s.toStopId,
     coordinates: segGeom.get(segmentKey(s.fromStopId, s.toStopId)) ?? [],
   })),
-  v2: { tripInstances, tripsNotSeen, tripsShortTurned, missed, shortTurns, holds: holdStats },
+  v2: {
+    tripInstances, tripsNotSeen, tripsFeedGap, tripsShortTurned,
+    degradedSnapshots: { empty: degradedEmpty, stale: degradedStale, thin: degradedThin },
+    statusLabels: TRIP_STOP_STATUS_LABELS,
+    standingStillLabel: 'Stood still 2+ min near this stop (includes layovers, operator changes and waiting for time)',
+    missed, shortTurns, standingStill: holdStats,
+  },
   headways: headways.map(h => {
     const to = nextStop.get(`${h.stopId}|${h.directionId}`);
     return { ...h, terminal: terminalStops.has(h.stopId), coordinates: to ? segGeom.get(segmentKey(h.stopId, to)) ?? [] : [] };
