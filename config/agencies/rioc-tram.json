@@ -18,16 +18,42 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-3364/latest.zip",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 22-Jul-2026 20:17",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-14",
   "cities": [
     "Astoria, New York",
     "Manhattan, New York"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261014",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/rooseveltisland-ny-us/rooseveltisland-ny-us.zip"
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/rooseveltisland-ny-us/rooseveltisland-ny-us.zip",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeLongName": "Roosevelt Island Aerial Tramway",
+      "mode": 6,
+      "reason": "The Roosevelt Island Tramway is an aerial tramway, published as route_type 0 (tram/light rail) since the 2026-07 feed"
+    }
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 10
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20270201",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

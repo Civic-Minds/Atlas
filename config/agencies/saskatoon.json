@@ -16,7 +16,7 @@
   ],
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-14",
   "cities": [
     "Saskatoon, Saskatchewan",
     "Confederation, Saskatchewan",
@@ -26,10 +26,28 @@
   ],
   "timezone": "America/Regina",
   "lastRawArchiveKey": "20250830-3e8e316896a70dd6",
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261014",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://apps5.saskatoon.ca/data/gtfs/google_transit.zip"
+  "lastFeedSourceUrl": "https://apps5.saskatoon.ca/data/gtfs/google_transit.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 246
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20270102",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }
