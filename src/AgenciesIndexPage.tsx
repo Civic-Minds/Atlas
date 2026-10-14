@@ -7,8 +7,9 @@ import {
 } from '../shared/agencyIndex';
 import { agencyPagePath } from '../shared/agencyPages';
 import { areaPagePath } from '../shared/areas';
-import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../shared/config';
-import { agencyQualifiesForHistory, type HistoryAgencyLike } from '../shared/historyEligibility';
+import { ATLAS_MODE, FEATURES } from '../shared/config';
+import historyAgencies from '../shared/data/history-agencies.json';
+import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { isLiveEligibleSlug } from '../shared/livePollingConfig';
 import { applySeoToDocument } from './lib/seoDom';
 import { CHIP, LINK } from './pageStyles';
@@ -31,25 +32,8 @@ function readEmbeddedData(): AgencyIndexData | null {
  * without scripts. The dev server (no prerendered
  * HTML) loads from the summary file instead (dead code in production builds).
  */
-/**
- * Beta only: agencies with 10+ years of schedule history, from the same History config the
- * History app reads. Empty until it loads (or if it fails), so the list never waits on it.
- */
-function useHistoryAgencySlugs(): ReadonlySet<string> {
-  const [slugs, setSlugs] = useState<ReadonlySet<string>>(() => new Set());
-  useEffect(() => {
-    if (!FEATURES.beta) return;
-    let cancelled = false;
-    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
-      .then(r => (r.ok ? r.json() : []))
-      .then((rows: Array<HistoryAgencyLike & { slug: string }>) => {
-        if (!cancelled) setSlugs(new Set(rows.filter(agencyQualifiesForHistory).map(a => a.slug)));
-      })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, []);
-  return slugs;
-}
+/** Beta only: agencies with 10+ years of schedule history, from the small list build-history writes. */
+const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAgencyList).slugs);
 
 /** Beta-only "Live" / "History" tags beside an agency name, in the page's existing pill style. */
 function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
@@ -63,7 +47,6 @@ function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
 
 export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyIndexData }) {
   const [data, setData] = useState<AgencyIndexData | null>(() => dataProp ?? readEmbeddedData());
-  const historySlugs = useHistoryAgencySlugs();
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
     void import('./agenciesIndexDevData').then(m => setData(m.devAgencyIndexData()));
@@ -111,7 +94,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                     {r.agencies.map(a => {
                       const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{a.routes === 1 ? 'route' : 'routes'}</span>;
                       const live = FEATURES.beta && isLiveEligibleSlug(a.slug);
-                      const history = FEATURES.beta && historySlugs.has(a.slug);
+                      const history = FEATURES.beta && HISTORY_SLUGS.has(a.slug);
                       if (live || history) {
                         // Tagged rows stay on one line: a long name shortens with "…" instead of wrapping.
                         return (
