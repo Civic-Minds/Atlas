@@ -35,5 +35,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip"
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
+  "lastPeekedExpiry": "20261219"
 }

@@ -38,5 +38,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip"
+  "lastFeedSourceUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip",
+  "lastPeekedExpiry": "20261231"
 }

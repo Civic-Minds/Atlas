@@ -14,7 +14,7 @@
     -118.5489
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
-  "lastFeedExpiry": "20301231",
+  "lastFeedExpiry": "20250601",
   "lastFeedVersion": "UTC: 02-Nov-2022 23:01",
   "lastRefreshedAt": "2026-08-10",
   "cities": [
@@ -28,5 +28,6 @@
   "expiredFeedCheckExpiry": "20301231",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
+  "lastPeekedExpiry": "20301231"
 }

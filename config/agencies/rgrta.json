@@ -35,5 +35,6 @@
     "checkedAt": "2026-09-07"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://scheduledata.rgrta.com/google_transit.zip"
+  "lastFeedSourceUrl": "http://scheduledata.rgrta.com/google_transit.zip",
+  "lastPeekedExpiry": "20270103"
 }

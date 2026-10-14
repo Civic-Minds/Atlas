@@ -44,5 +44,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-253/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-253/latest.zip",
+  "lastPeekedExpiry": "20270201"
 }

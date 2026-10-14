@@ -46,5 +46,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://transit.torranceca.gov/home/showpublisheddocument/16673/639196160075870000"
+  "lastFeedSourceUrl": "https://transit.torranceca.gov/home/showpublisheddocument/16673/639196160075870000",
+  "lastPeekedExpiry": "20270109"
 }

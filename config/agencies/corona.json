@@ -26,5 +26,6 @@
   "expiredFeedCheckExpiry": "20270331",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip"
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip",
+  "lastPeekedExpiry": "20270331"
 }

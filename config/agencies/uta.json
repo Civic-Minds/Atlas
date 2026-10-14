@@ -66,5 +66,6 @@
       "mode": 100,
       "reason": "TRAX is light rail, published as route_type 0 (tram); the S-Line stays a streetcar"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20261205"
 }

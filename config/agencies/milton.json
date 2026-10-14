@@ -45,5 +45,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip"
+  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip",
+  "lastPeekedExpiry": "20270102"
 }

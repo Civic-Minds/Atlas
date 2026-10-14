@@ -45,5 +45,6 @@
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.btd.org/2025btdgtfs/"
+  "lastFeedSourceUrl": "https://www.btd.org/2025btdgtfs/",
+  "lastPeekedExpiry": "20261231"
 }

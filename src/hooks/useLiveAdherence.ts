@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FEATURES } from '../../shared/config';
 
 export interface StopAdherence {
   agency: string;
@@ -38,7 +39,8 @@ export function useLiveAdherence(
   const [status, setStatus] = useState<LiveStatus>('pending');
 
   useEffect(() => {
-    if (!agencySlug || !routeShortName) {
+    // Live is off: no /api/live-adherence request, which has no function behind it (#848).
+    if (!FEATURES.live || !agencySlug || !routeShortName) {
       setData(null);
       setStatus('pending');
       return;

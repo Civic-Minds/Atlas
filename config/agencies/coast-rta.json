@@ -35,7 +35,7 @@
     },
     "checkedAt": "2026-08-21"
   },
-  "lastFeedExpiry": "20501231",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-21",
   "lastFeedCheckAt": "20261012",
@@ -44,5 +44,6 @@
   "expiredFeedCheckExpiry": "20501231",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://coastrta.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx"
+  "lastFeedSourceUrl": "https://coastrta.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+  "lastPeekedExpiry": "20501231"
 }

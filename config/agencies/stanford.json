@@ -47,5 +47,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip"
+  "lastFeedSourceUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
+  "lastPeekedExpiry": "20270926"
 }

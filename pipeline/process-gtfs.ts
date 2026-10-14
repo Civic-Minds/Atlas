@@ -37,7 +37,7 @@ import {
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
 import { readConfigAgencyName, resolveAgencyName } from './agencyName.js';
-import { candidateIsOlderThanActive, recordedFeedExpiry } from './refreshMeta.js';
+import { candidateIsOlderThanActive, recordedFeedExpiry, routeLineCount } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   assertCountryMayWriteToR2,
@@ -217,8 +217,8 @@ async function main() {
   if (!dryRun && !force && candidateIsOlderThanActive({ candidateExpiry: feedExpiry, existingExpiry: previousFeedExpiry })) {
     throw new Error(`Refusing to replace ${slug}: downloaded feed ends ${feedExpiry ?? 'unknown'}, older than active snapshot ${previousFeedExpiry}`);
   }
-  if (!dryRun && featureCount === 0) {
-    throw new Error(`Refusing to replace ${slug}: processed feed produced 0 route features; active snapshot unchanged`);
+  if (!dryRun && (featureCount === 0 || routeLineCount(geojson) === 0)) {
+    throw new Error(`Refusing to replace ${slug}: processed feed produced 0 route lines; active snapshot unchanged`);
   }
   if (!dryRun && (!feedExpiry || feedExpiry < todayYmd)) {
     console.log(`  [warn] publishing ${slug} as the latest available schedule; feed service ends ${feedExpiry ?? 'unknown'}`);

@@ -36,5 +36,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-stthomas.zip"
+  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-stthomas.zip",
+  "lastPeekedExpiry": "20270526"
 }

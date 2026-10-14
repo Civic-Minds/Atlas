@@ -40,5 +40,6 @@
   "expiredFeedCheckExpiry": "20270430",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://mjcaction.com/MJC_GTFS_Public/sandusky_google_transit.zip"
+  "lastFeedSourceUrl": "https://mjcaction.com/MJC_GTFS_Public/sandusky_google_transit.zip",
+  "lastPeekedExpiry": "20270430"
 }

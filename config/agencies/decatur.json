@@ -40,5 +40,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.remix.com/dpts_decatur_il_us.zip"
+  "lastFeedSourceUrl": "https://gtfs.remix.com/dpts_decatur_il_us.zip",
+  "lastPeekedExpiry": "20261231"
 }

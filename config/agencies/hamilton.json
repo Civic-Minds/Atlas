@@ -52,5 +52,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip"
+  "lastFeedSourceUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
+  "lastPeekedExpiry": "20261226"
 }

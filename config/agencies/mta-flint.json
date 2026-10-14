@@ -23,5 +23,6 @@
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip"
+  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip",
+  "lastPeekedExpiry": "20271231"
 }

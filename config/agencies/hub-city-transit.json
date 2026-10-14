@@ -39,5 +39,6 @@
   "expiredFeedCheckExpiry": "20270923",
   "timezone": "US/Central",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://api.transloc.com/gtfs/hct.zip"
+  "lastFeedSourceUrl": "https://api.transloc.com/gtfs/hct.zip",
+  "lastPeekedExpiry": "20270923"
 }

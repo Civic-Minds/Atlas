@@ -41,5 +41,6 @@
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.pvta.com/g_trans/google_transit.zip"
+  "lastFeedSourceUrl": "https://www.pvta.com/g_trans/google_transit.zip",
+  "lastPeekedExpiry": "20261219"
 }

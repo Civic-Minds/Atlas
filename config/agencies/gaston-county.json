@@ -43,5 +43,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip"
+  "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip",
+  "lastPeekedExpiry": "20301031"
 }

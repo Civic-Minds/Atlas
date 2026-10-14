@@ -14,7 +14,7 @@
     "51D"
   ],
   "region": "Tennessee",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "August 2026 Shake-Up",
   "lastRefreshedAt": "2026-10-12",
   "cities": [
@@ -43,5 +43,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastPeekedExpiry": "20991231"
 }

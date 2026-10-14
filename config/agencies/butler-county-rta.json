@@ -24,7 +24,7 @@
     },
     "checkedAt": "2026-10-12"
   },
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "Fall 2026 Version 10122026",
   "lastRefreshedAt": "2026-10-12",
   "lastFeedCheckAt": "20261012",
@@ -37,5 +37,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.buztrakr.com/gtfs"
+  "lastFeedSourceUrl": "https://www.buztrakr.com/gtfs",
+  "lastPeekedExpiry": "20991231"
 }

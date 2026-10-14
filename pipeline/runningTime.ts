@@ -212,7 +212,10 @@ export function computeRunningTimes(
     if (!pair) continue;
     const onPair = candidates.filter(run => `${run.from}>${run.to}` === pair);
     const pattern = dominant(onPair, run => run.pattern);
-    const full = onPair.filter(run => run.pattern === pattern);
+    // Every trip of the direction on that terminal pair and stop pattern counts, whatever its
+    // shape_id: TTC gives the same full Finch to Vaughan run a shape per time band (#852), so
+    // the busiest shape alone covered one band and the other hours read blank.
+    const full = list.filter(run => `${run.from}>${run.to}` === pair && run.pattern === pattern);
     if (full.length === 0) continue;
     const loop = full[0].from === full[0].to;
 

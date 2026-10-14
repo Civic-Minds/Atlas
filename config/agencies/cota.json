@@ -38,5 +38,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.cota.com/data/cota.gtfs.zip"
+  "lastFeedSourceUrl": "https://www.cota.com/data/cota.gtfs.zip",
+  "lastPeekedExpiry": "20270103"
 }

@@ -47,5 +47,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://pride.kitsaptransit.com/gtfs/google_transit.zip"
+  "lastFeedSourceUrl": "http://pride.kitsaptransit.com/gtfs/google_transit.zip",
+  "lastPeekedExpiry": "20261205"
 }

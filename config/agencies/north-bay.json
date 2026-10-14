@@ -35,5 +35,6 @@
   "expiredFeedCheckExpiry": "20270428",
   "timezone": "America/Toronto",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://northbay.tmix.se/gtfs/gtfs.zip"
+  "lastFeedSourceUrl": "https://northbay.tmix.se/gtfs/gtfs.zip",
+  "lastPeekedExpiry": "20270428"
 }

@@ -33,5 +33,6 @@
   "feedRefreshRetryCount": 3,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
-  "feedApiKeyEnvVar": "MUNI_511_API_KEY"
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
+  "lastPeekedExpiry": "20270630"
 }

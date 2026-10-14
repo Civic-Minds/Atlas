@@ -9,7 +9,7 @@
   "feedUrl": "https://ridewsta.com/gtfs",
   "region": "North Carolina",
   "mdbFeedUrl": "https://ridewsta.com/gtfs",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "Aug 30 start - Rev 1",
   "lastRefreshedAt": "2026-10-12",
   "cities": [
@@ -38,5 +38,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://ridewsta.com/gtfs"
+  "lastFeedSourceUrl": "https://ridewsta.com/gtfs",
+  "lastPeekedExpiry": "20991231"
 }

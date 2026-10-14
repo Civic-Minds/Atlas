@@ -19,7 +19,7 @@
     "Maui County, Hawaii"
   ],
   "timezone": "Pacific/Honolulu",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "FixedRoute_NewCommuterRouteNames",
   "lastRefreshedAt": "2026-10-12",
   "feedQuality": {
@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://mauibus.org/gtfs"
+  "lastFeedSourceUrl": "https://mauibus.org/gtfs",
+  "lastPeekedExpiry": "20991231"
 }

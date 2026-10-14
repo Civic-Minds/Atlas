@@ -37,5 +37,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orangeville.zip"
+  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orangeville.zip",
+  "lastPeekedExpiry": "20261231"
 }

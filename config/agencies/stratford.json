@@ -48,5 +48,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip"
+  "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip",
+  "lastPeekedExpiry": "20270924"
 }

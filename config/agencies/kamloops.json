@@ -36,5 +36,6 @@
   },
   "timezone": "America/Vancouver",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46"
+  "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46",
+  "lastPeekedExpiry": "20270424"
 }

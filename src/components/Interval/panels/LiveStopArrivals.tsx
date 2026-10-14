@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { isLiveEligibleSlug } from '../../../../shared/livePollingConfig';
+import { FEATURES } from '../../../../shared/config';
 import { SidebarCardSection } from '../cardUi';
 import { cleanRouteShortName } from '../../../utils/format';
 import { headwayAbout } from '../../../utils/headwayText';
@@ -16,7 +17,7 @@ interface LiveStopData {
 /** Live next-arrivals section for the stop card ("504 in 3 min · every ~7 min right now"). */
 export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: string; stopId: string; lat: number; lon: number }) {
   const [data, setData] = useState<LiveStopData | null>(null);
-  const eligible = isLiveEligibleSlug(slug);
+  const eligible = FEATURES.live && isLiveEligibleSlug(slug);
 
   useEffect(() => {
     if (!eligible) return;

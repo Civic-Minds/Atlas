@@ -40,5 +40,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270327",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://medicinehat.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/"
+  "lastFeedSourceUrl": "https://medicinehat.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/",
+  "lastPeekedExpiry": "20270327"
 }

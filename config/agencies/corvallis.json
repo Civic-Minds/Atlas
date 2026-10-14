@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip"
+  "lastFeedSourceUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip",
+  "lastPeekedExpiry": "20271231"
 }

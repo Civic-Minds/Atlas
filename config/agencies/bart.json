@@ -37,5 +37,6 @@
   "expiredFeedCheckExpiry": "20270110",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://www.bart.gov/dev/schedules/google_transit.zip"
+  "lastFeedSourceUrl": "http://www.bart.gov/dev/schedules/google_transit.zip",
+  "lastPeekedExpiry": "20270110"
 }

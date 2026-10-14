@@ -47,5 +47,6 @@
     "checkedAt": "2026-09-07"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip"
+  "lastFeedSourceUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
+  "lastPeekedExpiry": "20270109"
 }

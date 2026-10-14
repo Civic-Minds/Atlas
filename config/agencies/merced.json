@@ -7,7 +7,7 @@
     -120.48
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip",
-  "lastFeedExpiry": "20991231",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "PASAT 8 Route Update",
   "region": "California",
   "lastRefreshedAt": "2026-08-10",
@@ -21,5 +21,6 @@
   "expiredFeedCheckExpiry": "20991231",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip",
+  "lastPeekedExpiry": "20991231"
 }

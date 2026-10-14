@@ -38,5 +38,6 @@
   "expiredFeedCheckExpiry": "20270131",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip",
+  "lastPeekedExpiry": "20270131"
 }

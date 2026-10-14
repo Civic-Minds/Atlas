@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, recordedFeedExpiry, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -32,6 +32,20 @@ describe('feed expiry checks', () => {
       candidateExpiry: '20261101',
       todayYmd: '20260919',
     })).toBe(false);
+  });
+});
+
+describe('routeLineCount (#634)', () => {
+  const stop = { type: 'Feature', geometry: { type: 'Point', coordinates: [0, 0] }, properties: { stopId: 's1' } };
+  const line = (routeId: string) => ({ type: 'Feature', geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] }, properties: { routeId } });
+
+  it('is 0 for a stops-only artifact, which still has a nonzero feature count', () => {
+    expect(routeLineCount(JSON.stringify({ type: 'FeatureCollection', features: [stop, stop] }))).toBe(0);
+  });
+
+  it('counts distinct routes drawn as lines', () => {
+    const fc = { type: 'FeatureCollection', features: [stop, line('10'), line('10'), line('20'), { ...line('30'), geometry: null }] };
+    expect(routeLineCount(JSON.stringify(fc))).toBe(2);
   });
 });
 

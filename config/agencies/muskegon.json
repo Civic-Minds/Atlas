@@ -45,5 +45,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip"
+  "lastFeedSourceUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip",
+  "lastPeekedExpiry": "20271231"
 }
