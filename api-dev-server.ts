@@ -18,6 +18,8 @@ async function loadHandlers() {
   const { default: liveAdherence } = await import('./api/live-adherence.js');
   const { default: liveStop } = await import('./api/live-stop.js');
   const { privacyRegionResponse } = await import('./shared/privacyRegion.js');
+  const { default: liveSegments } = await import('./api/live-segments.js');
+  handlers['/api/live-segments'] = liveSegments.fetch;
   handlers['/api/live-vehicles'] = liveVehicles.fetch;
   handlers['/api/history-adherence'] = historyAdherence.fetch;
   handlers['/api/carto-tiles'] = cartoTiles.fetch;
@@ -61,5 +63,5 @@ createServer(async (req, res) => {
   }
 }).listen(API_PORT, () => {
   console.log(`API dev server listening on http://localhost:${API_PORT}`);
-  console.log('Routes: /api/live-vehicles, /api/history-adherence, /api/live-adherence, /api/live-stop, /api/carto-tiles, /api/privacy-region');
+  console.log('Routes: /api/live-vehicles, /api/live-segments, /api/history-adherence, /api/live-adherence, /api/live-stop, /api/carto-tiles, /api/privacy-region');
 });

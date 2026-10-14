@@ -17,6 +17,8 @@ import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMa
 import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
+import { useSegmentBand, useSegmentDelay, useSegmentView } from '../../hooks/useSegmentDelay';
+import { headwayFeatures, segmentFeatures } from '../../utils/segmentDelayView';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { syncUrlParams } from '../../utils/syncUrlParams';
@@ -1042,6 +1044,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
   }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, colorMode]);
 
+  // Live POC: stop pairs where vehicles lose time, drawn over the selected route.
+  const segmentRoute = selectedRoute ? splitRouteKey(selectedRoute) : null;
+  const segmentDelayData = useSegmentDelay(segmentRoute?.agencySlug, segmentRoute?.routeId);
+  const segmentBand = useSegmentBand();
+  const segmentView = useSegmentView();
+  const segmentDelayFeatures = useMemo(
+    () => (segmentView === 'spacing' ? headwayFeatures : segmentFeatures)(segmentDelayData, segmentBand, colorMode),
+    [segmentDelayData, segmentBand, segmentView, colorMode],
+  );
+
   const sharedHoverSegments = useMemo(
     () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day, colorMode),
     [layers, selectedRoute, hoveredBranch, day, colorMode],
@@ -1125,6 +1137,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!source) return;
     source.setData({ type: 'FeatureCollection', features: sharedHoverSegments });
   }, [sharedHoverSegments, mapLoaded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('segment-delay') as maplibregl.GeoJSONSource | undefined;
+    if (!source) return;
+    source.setData({ type: 'FeatureCollection', features: segmentDelayFeatures });
+  }, [segmentDelayFeatures, mapLoaded]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1518,6 +1538,24 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         paint: {
           'line-color': ['get', 'color'],
           'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2.8, 11, 3.5, 14, 4.2, 17, 5.5],
+          'line-opacity': 1,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+      });
+
+      // Live POC: per stop-pair time lost, offset to each direction's side of the street.
+      map.addSource('segment-delay', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'segment-delay-layer',
+        type: 'line',
+        source: 'segment-delay',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 14, 5, 17, 7],
+          'line-offset': ['interpolate', ['linear'], ['zoom'], 10, 2, 14, 4, 17, 6],
           'line-opacity': 1,
         },
         layout: { 'line-cap': 'round', 'line-join': 'round' },

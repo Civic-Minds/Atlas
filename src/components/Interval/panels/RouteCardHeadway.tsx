@@ -1,4 +1,5 @@
 import React from 'react';
+import SegmentDelaySection from './SegmentDelaySection';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
@@ -771,6 +772,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         )}
       </SidebarCardList>
+      <SegmentDelaySection slug={routeSlug ?? null} routeShortName={currentRoute.routeShortName ?? null} />
     </SidebarCardShell>
   );
 };
