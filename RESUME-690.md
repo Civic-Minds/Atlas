@@ -172,6 +172,18 @@ The literal decision turns every 2-hourly or peak-only rail line and every 6-tri
 "limited" (no headline); the scan before it already had 596 such lines. Confirm that scope with
 Ryan before rescanning.
 
+DECISION, narrowed (manager, 2026-10-14 02:40): the midday rule applies only to variants
+(short-turns, peak branches) of lines that have midday service elsewhere, i.e. a pattern whose
+own terminal has no midday reading while another pattern of the same route and direction does.
+Such a variant is limited (no headline). A line with no midday variant anywhere keeps today's
+reading: a route every two hours all day is real all-day service, not "limited", and so are
+peak-only lines with no all-day sibling. Rail included on the same terms. This settles
+njt-rail 3 (Montclair-Boonton M to Hoboken: the all-day Montclair-Boonton line is its sibling),
+pace 807, mta-maryland 11663, mbta 134, cincinnati 37/24, septa 1, fairfax 334, sct 6892, go
+18J, njt-bus 74 and 29 as limited, and leaves metra's 2-hourly weekend lines, Saint John 12,
+Basin 1 and the like as they read today. Apply tmp/midday-limited.patch only in that narrowed
+form (the "has a midday sibling" test is new), settle the pins, rescan, report.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
