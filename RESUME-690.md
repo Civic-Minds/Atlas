@@ -267,6 +267,34 @@ out/stops-pre851 (cb014076, before the #851 grace)). Headline changed on 4,324 l
   typecheck clean; runningTime, stop-tiers, stop-pools, midday-reading and pooled-headline
   real-feed tests pass. Nothing pushed.
 
+RESCAN 2 (2026-10-14, option 3: grader floor f9b5b509 + drawn-sibling midday fix 6266ad13; scan
+outputs out/mainG = origin/main 04dfbf95 + f9b5b509 cherry-picked, out/fix690i = branch 6266ad13;
+report690l-main.txt and report690l-branch.txt, drift-*.json in the 1419e250 scratchpad).
+- Main + grader floor vs the baseline: 1,591 tiers up (infrequent -> 60 1,484; 60 -> 30 86; 30 ->
+  20 11; span -> 60 5), none down, 6 headlines move (gcrta 71 weekday 60 -> 47). rtd 78, sdmts 49,
+  njt-bus 44, metro-transit 42, thebus 39, via 39: hourly lines over 12-16 gaps with one near miss.
+- Branch vs main + grader: tier up 775 (as before), tier down 6,331 (was 7,088): 60 -> infrequent
+  2,573 (was 3,352), 30 -> 60 2,409 (unchanged), 20 -> 30 581, 15 -> 20 352. The floor only helps
+  the one-near-miss case. Named lines: J14 Saturday southbound 10/15 -> 10/20 (real downstream
+  gaps), Madison & Jefferson 25/infrequent -> 10/infrequent, Jefferson & Washington 10/15 kept;
+  wmata P72 Saturday 60/60 kept on main and branch; ttc 79 weekday both patterns 30/30 -> 30/60
+  (two near misses of 38 gaps, and one 36-minute gap past the 5-minute grace); mbta 28 Saturday
+  Ruggles 12/15 -> 12/20 (about ten 16-17 minute gaps over 75, 7 allowed), Nubian 40/60 -> 12/20.
+- Why the drops stay (per-stop trace of all tier-down lines on ttc, wmata, mbta, septa; 564
+  lines): at the worst stop 223 (40%) have a gap past the grace (a 36 on an every-30, a 70 on an
+  hourly), which no allowance count can pass; 341 (60%) fail only on near misses, and of those a
+  10% allowance would pass 192, 15% 253, 20% 304 (uncapped by the 3-violation ceiling). Absorbing
+  downstream drift with one method means a grace of about 20% and an allowance of about 20% for
+  the route grader too, which loosens origin grading on main well past the 1,591 lifts above.
+- Headline losses 2,149 (was 2,197): 1,601 midday variants with a drawn sibling that keeps a
+  headline, 363 one-to-three-trip lines, 95 peak expresses, 42 lines with no period value on
+  main, 38 evening/late-only patterns, 10 still dark with a midday value on main: dayton 06
+  weekend (two 2-hourly variants, each 3 midday trips), njt-bus 113 Sunday (two 100-minute
+  variants), oakville 71 weekday 38, pvta 804 weekday 11, smat 13X 60, vta 912 Sunday 20. Not
+  traced; pvta 804 and vta 912 look wrong and are the ones to check first.
+- Tests: full pipeline/api/shared suite passes (1,236 tests); three pins moved for the floor
+  (transit-phase2 near-miss tests, RCT 117 weekday tier 60).
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
