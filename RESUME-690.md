@@ -184,6 +184,18 @@ pace 807, mta-maryland 11663, mbta 134, cincinnati 37/24, septa 1, fairfax 334, 
 Basin 1 and the like as they read today. Apply tmp/midday-limited.patch only in that narrowed
 form (the "has a midday sibling" test is new), settle the pins, rescan, report.
 
+APPLIED (2026-10-14, this branch): the narrowed rule is in process-core.ts as middayVariant
+(hasMiddayReading: four unique departures 9-15h spread past a burst; the own terminal is read
+on the own list and the destination's headsign pool, so a thin shape that won dedupe for an
+all-day destination, ttc 96B, is not a variant; siblings come from stopDepsBySharedMember per
+route, direction and day; night patterns under half their own departures 6-22h are left alone,
+so TriMet 35 SW 5th & Alder keeps 30). The five pins from the literal attempt stay as they
+read (none of them has a midday sibling). New pins: septa 114 weekday 95 Industrial Park and
+Penn State limited, ttc 129 weekday Steeles (dir 0) limited. Also: origin/main 88e43103 merged
+in (CIV-97 tile whitelist keeps segments out of tiles; they are read from agency JSON). Styling
+decision (Ryan, 2026-10-14): no dashed or thinner limited style; colour each stretch by its own
+frequency tier instead. tmp/midday-limited.patch is superseded.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
@@ -192,6 +204,6 @@ form (the "has a midday sibling" test is new), settle the pins, rescan, report.
    cell diff vs main across the catalog. Hand-check tooling: the scratchpad of session
    ca2ba197 has hc.py (pool per drawn stop from raw GTFS), show.py, celldiff.py.
 3. Open decisions for the manager/Ryan: #813 evenness guard (Fable proposed a share-of-window
-   rule); dashed style for limited segments (getTierColor('span') equals infrequent) — UI call.
+   rule). Limited-segment styling is decided: colour by frequency tier, no special style.
 4. Preview: preview/ui-2026-10-13 carried #690 segment commits (6525c692, 2923bdac) that were
    reverted for the UI ship; the beta segment drawing comes back with this branch.

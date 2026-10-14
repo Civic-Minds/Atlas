@@ -425,7 +425,8 @@ describe('tiles', () => {
     expect(features.some((f: any) => f.properties.sharedStretches)).toBe(true);
     const tiles = prepareAgencyRouteFeaturesForTiles(features, 'synthetic');
     for (const f of tiles) for (const key of SHARED_STRETCH_KEYS) expect(f.properties).not.toHaveProperty(key);
-    // The line segments ride along (#690).
-    expect(tiles.some((f: any) => f.properties.segments)).toBe(true);
+    // The line segments (#690) are read from the agency JSON like the stretches; tiles keep
+    // only the whitelisted scalars (CIV-97).
+    expect(tiles.some((f: any) => f.properties.segments)).toBe(false);
   });
 });

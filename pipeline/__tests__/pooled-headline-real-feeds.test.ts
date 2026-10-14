@@ -61,3 +61,27 @@ describe('pooled headline on real feeds (#690, #771, #813)', () => {
     expect(l['0 Wawa Station']).toMatchObject({ headway: 120, tier: 'infrequent' });
   });
 });
+
+// CIV-150: a variant of a line with midday service elsewhere is limited. Its own terminal has
+// no midday reading (four unique departures 9-15h spread past a burst) while another pattern
+// of the same route, direction and day has one. A line with no such sibling keeps its reading:
+// a route every two hours all day (septa 114 to Wawa) or a peak-only line on its own.
+describe('midday variants of a line with midday service (CIV-150)', () => {
+  it('septa 114 weekday: the peak-only 95 Industrial Park and six-trip Penn State variants are limited beside Wawa', async () => {
+    // 95 Industrial Park: 05:21 06:31 07:37 08:33 16:35 17:33 at its terminal (read 60 before).
+    // Penn State: 06:37 08:37 11:30 14:32 16:43 20:12, two midday departures (read 173 before).
+    // Wawa Station runs every two hours all day and is the sibling with the midday reading.
+    const l = await lines('septa-114-weekday', 'septa', 'Weekday');
+    expect(l['0 95 Industrial Park'].headway).toBeNull();
+    expect(l['0 Penn State'].headway).toBeNull();
+    expect(l['0 Wawa Station'].headway).toBe(120);
+    expect(l['0 Chester Transit Center'].headway).toBe(33);
+  });
+
+  it('ttc 129 weekday: the five-trip Steeles short turn is limited beside the all-day Steeles via STC', async () => {
+    // Shape with 10:08 10:38 19:25 19:52 23:11 at its terminal read 28 from its pooled stops.
+    const l = await lines('ttc-129-weekday-pool-hole', 'ttc', 'Weekday');
+    expect(l['0 Steeles'].headway).toBeNull();
+    expect(l['1 Steeles via Scarborough Centre Stn'].headway).toBe(20);
+  });
+});

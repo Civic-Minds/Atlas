@@ -647,6 +647,16 @@ export { MIN_THIN_REPLACING_DEPARTURES } from './featureDedupe.js';
 /** #728: the destination pool at a line's terminal must have this many unique departures (and more than the drawn shape) before its every-gap grade can lift the line's tier. */
 export const MIN_POOLED_TIER_DEPARTURES = 8;
 
+/**
+ * A midday reading: at least MIN_ALL_DAY_TERMINAL_DEPARTURES unique departures 9-15h, spread
+ * past phase 2's burst span. The test behind "limited" for a variant of a line with midday
+ * service elsewhere (CIV-150, decision of 2026-10-14).
+ */
+export function hasMiddayReading(times: readonly number[] | undefined): boolean {
+  const midday = [...new Set(times ?? [])].filter(t => t >= 540 && t <= 900).sort((a, b) => a - b);
+  return midday.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES && midday[midday.length - 1] - midday[0] > BURST_MAX_SPAN_MINUTES;
+}
+
 export async function processGtfsBuffer(
   buf: Buffer,
   onStatus?: (msg: string) => void,
@@ -909,6 +919,26 @@ export async function processGtfsBuffer(
   // by headsign for rail, the same scope as each feature's own stop metrics. Read only by
   // annotateSharedStretches; no existing value uses it.
   const stopDepsBySharedMember = new Map<string, Map<string, number[]>>();
+  // The patterns of each route direction and day with a midday reading at some stop, built
+  // once from stopDepsBySharedMember after the stop_times pass. A pattern whose own terminal
+  // has no midday reading while a sibling here has one is a variant (short turn, peak branch)
+  // of a line with midday service, and is limited (CIV-150).
+  let middayMembersByPool: Map<string, Set<string>> | null = null;
+  const middayMembers = (poolKey: string): ReadonlySet<string> => {
+    if (!middayMembersByPool) {
+      middayMembersByPool = new Map();
+      for (const [key, stopMap] of stopDepsBySharedMember) {
+        const at = key.indexOf('::', key.indexOf('::', key.indexOf('::') + 2) + 2);
+        if (at < 0) continue;
+        if (![...stopMap.values()].some(times => hasMiddayReading(times))) continue;
+        const pool = key.slice(0, at);
+        let members = middayMembersByPool.get(pool);
+        if (!members) { members = new Set(); middayMembersByPool.set(pool, members); }
+        members.add(key.slice(at + 2));
+      }
+    }
+    return middayMembersByPool.get(poolKey) ?? new Set();
+  };
   const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailLikeRoute({
     routeType: route.route_type,
     routeLongName: route.route_long_name,
@@ -1954,6 +1984,26 @@ export async function processGtfsBuffer(
     const drawnPatternStops = (): Array<{ stopId: string; t: number }> => drawnPatternStopsMemo ??= isMapless
       ? maplessStopProjection
       : projectStopsOntoShape([...stopMetricMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
+    // A variant of a line with midday service elsewhere (a short turn, a peak branch, a
+    // peak-only rail pattern) is limited and has no headline: its own terminal has no midday
+    // reading while another pattern of the same route, direction and day has one (manager's
+    // narrowed decision, 2026-10-14: njt-rail Montclair-Boonton M to Hoboken beside the all-day
+    // line, pace 807, mbta 134, septa 1, go 18J). A line with no midday sibling keeps today's
+    // reading: a route every two hours all day, or a peak-only line on its own (actransit W),
+    // is real service, not "limited". Night patterns (under half their own departures 6-22h)
+    // keep their overnight headline.
+    const middayVariant = (terminalId: string | undefined): boolean => {
+      if (!terminalId || isMapless || feature.properties.serviceClass === 'irregular' || feature.properties.tier === 'span') return false;
+      // The own list, or the destination's: a thin shape that won dedupe for an all-day
+      // destination (ttc 96B, 9 early trips of a headsign served all day) is that line, not a
+      // variant of it.
+      if (hasMiddayReading(metricStopMap.get(terminalId)) || hasMiddayReading(headsignMap?.get(terminalId))) return false;
+      let deps = 0; let daytime = 0;
+      for (const times of metricStopMap.values()) { deps += times.length; daytime += times.filter(t => t >= 360 && t <= 1320).length; }
+      if (deps === 0 || daytime * 2 < deps) return false;
+      const siblings = middayMembers(poolKey);
+      return [...siblings].some(member => member !== ownMember);
+    };
     // A drawn stop has a real all-day reading when its list has at least
     // MIN_ALL_DAY_TERMINAL_DEPARTURES unique departures over 6-22h: the thin-shape rescue's
     // count, without its burst, window or sustained-median requirements, so a peak-only commuter
@@ -2051,7 +2101,8 @@ export async function processGtfsBuffer(
       // 4's thin-terminal rule here: same guard, same scoped headline, tier only degrades.
       const terminalId = coverageStops.at(-1)?.stopId;
       let rescued = false;
-      if (feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span'
+      const limitedVariant = middayVariant(terminalId);
+      if (!limitedVariant && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span'
         && feature.properties.headway != null && terminalId != null
         && isThinAllDayTerminalSample(metricStopMap.get(terminalId) ?? [], featureBranchTripCount.get(feature) ?? 0)) {
         const scoped = terminalId
@@ -2079,7 +2130,9 @@ export async function processGtfsBuffer(
       // headline (cta J14 Saturday: a 32-stop shape run by two trips past a trunk every 10 read
       // 455). On a daytime line the headline is the worst pooled reading among the drawn stops
       // that have one, and a line with none is limited (CIV-150).
-      if (!rescued && !railFeature && !isMapless && lineRunsByDay()
+      if (limitedVariant) {
+        feature.properties.headway = null;
+      } else if (!rescued && !railFeature && !isMapless && lineRunsByDay()
         && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
         const reading = drawnPatternStops().filter(p => stopHasReading(p.stopId));
         const vals = reading.map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
@@ -2211,7 +2264,7 @@ export async function processGtfsBuffer(
         && branchHw != null
         && terminalMiddayHw != null
         && isUnevenTwoGapMiddayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount, branchHw);
-      const headway = !lineHasReading ? null
+      const headway = !lineHasReading || middayVariant(terminalId) ? null
         : ((!terminalHasReading || !ownTerminalHasReading) && !poolUsed && scoped == null && lineRunsByDay() && worstReadingStop() != null) ? worstReadingStop()!
         : decideHeadline({
         unevenMiddayTerminal,
