@@ -5,6 +5,7 @@ import { clipBetweenStopIndices, clipLinestring } from './lineClip';
 import { headwayToTierColor, type ColorVisionMode } from './colors';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { PERIOD_KEYS } from '../../shared/config';
+import { splitRouteKey } from './routeKey';
 import {
   buildSharedStopIndex,
   getPooledPeriod,
@@ -29,6 +30,13 @@ export interface FrequencySegmentOverlay {
   /** Routes that pass the active frequency filter only because part of their stops qualify --
    *  these get their base line dimmed so the bright overlay reads as "the real qualifying part." */
   partialMatches: FrequencySegmentRouteKey[];
+  /** Route features that fail the filter but draw a passing shared stretch (CIV-82). Not partial
+   *  matches: they stay out of the base layer, except for the selected route (#850). */
+  sharedStretchRoutes: SharedStretchRouteKey[];
+}
+
+export interface SharedStretchRouteKey extends FrequencySegmentRouteKey {
+  routeBranch: string | null;
 }
 
 interface FrequencySegmentProperties {
@@ -463,7 +471,8 @@ export function computeFrequencySegmentOverlay(
 ): FrequencySegmentOverlay {
   const segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[] = [];
   const partialMatches: FrequencySegmentRouteKey[] = [];
-  if (maxHeadway === Infinity) return { segments, partialMatches };
+  const sharedStretchRoutes: SharedStretchRouteKey[] = [];
+  if (maxHeadway === Infinity) return { segments, partialMatches, sharedStretchRoutes };
 
   const partialKeys = new Map<string, FrequencySegmentRouteKey>();
   const markPartial = (p: ShapeProperties, slug: string) => {
@@ -590,13 +599,45 @@ export function computeFrequencySegmentOverlay(
 
   // CIV-82: failing routes may draw only their passing shared stretches. They are deliberately
   // not partial matches: the route's own line stays filtered out and it still counts as failing.
+  const sharedStretchStart = segments.length;
   for (const [slug, fc] of Object.entries(layers)) {
     if (slug.endsWith('-corridors')) continue;
     addFailingRouteSharedStretches(slug, fc.features, (allLayers[slug] ?? fc).features, period, maxHeadway, colorMode, segments);
   }
+  const sharedStretchKeys = new Map<string, SharedStretchRouteKey>();
+  for (const { properties: sp } of segments.slice(sharedStretchStart)) {
+    const key: SharedStretchRouteKey = {
+      agencySlug: sp.agencySlug,
+      routeId: sp.routeId,
+      routeBranch: sp.routeBranch,
+      directionId: sp.directionId,
+      headsign: sp.headsign,
+      day: sp.day,
+    };
+    sharedStretchKeys.set(`${featureKey(key)}|${key.routeBranch ?? ''}`, key);
+  }
+  sharedStretchRoutes.push(...sharedStretchKeys.values());
 
   partialMatches.push(...partialKeys.values());
-  return { segments, partialMatches };
+  return { segments, partialMatches, sharedStretchRoutes };
+}
+
+/**
+ * The selected route's shared-stretch-only features (#850). Selecting a route draws its full
+ * geometry from the base route layer, whose filter drops routes that fail the frequency filter,
+ * so a route visible only through its CIV-82 shared stretch drew nothing when selected and its
+ * branch rows had nothing to highlight. Only the selected route is added back; unselected
+ * failing routes still show just their passing stretches.
+ */
+export function selectedSharedStretchRoutes(
+  keys: readonly SharedStretchRouteKey[],
+  selectedRoute: string | null | undefined,
+): FrequencySegmentRouteKey[] {
+  if (!selectedRoute || keys.length === 0) return [];
+  const { agencySlug, routeId, routeBranch } = splitRouteKey(selectedRoute);
+  return keys.filter(k => k.agencySlug === agencySlug
+    && k.routeId === routeId
+    && (routeBranch === undefined || (k.routeBranch ?? '') === routeBranch));
 }
 
 /** MapLibre filter expression matching exactly the partial-match route features (direction + headsign + day scoped). */
