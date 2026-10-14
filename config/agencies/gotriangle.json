@@ -6,7 +6,7 @@
     35.99,
     -78.9
   ],
-  "feedUrl": "http://gotriangle.org/gtfs",
+  "feedUrl": "https://gotriangle.org/wp-content/uploads/google_transit.zip",
   "lastFeedExpiry": "20270213",
   "lastFeedVersion": "2026-08 service V1",
   "region": "North Carolina",
