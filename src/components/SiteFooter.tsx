@@ -34,7 +34,7 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
 
 export default function SiteFooter() {
   return (
-    <footer className="mt-8 pt-5 text-sm text-[var(--text-dim)]" aria-label="Site footer">
+    <footer className="mt-8 pt-5 sm:[html[data-consent-prompt]_&]:pb-16 text-sm text-[var(--text-dim)]" aria-label="Site footer">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <a href="/" aria-label="Atlas by Civic Minds">
