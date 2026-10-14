@@ -60,6 +60,20 @@ a 15/15/30 alternation read at 19). Own windows keep #772's typicalOfGaps unguar
 (limited), so peak-only tails stop grading on 1-3 departures. Tests re-pinned: TTC 94 Castle
 Frank back to 19/19, Brandon 23 stays 30, MTA Silver headline 31 -> 29, Freedom M 62/98 ->
 60/66 (165-min midday hole: the sustained all-day reading).
+Opus review of 6d6b7ff6 (fixed in the next commit): the identical-window rule could make a
+stop read worse when one pooled trip landed inside the window, so pooled values are now
+capped at the own pattern's reading of the same window instead (stopPools); the headline
+pool pre-check passed no own times (ttc 41 could be refused before the fix ran); #745 only
+when the own terminal is the headline's source; segments use the headline's all-day rule
+(scopedTerminalHeadline on the stop's list) instead of a 4-midday-departure count; the #728
+lift ran twice after the merge (inline copy deleted); per-stop period max-gap/coverage/
+sustained follow the list the shown value came from; floorAtMean parameter removed. The
+pool's PM window needs four departures (a two-gap mean is not a wait) and past it the pool
+reads the sustained 6-22h wait capped at the own reading (freedom M 66 -> 69). Five real-feed
+fixtures pin the hand counts: ttc-41-saturday-pooled, ttc-129-weekday-pool-hole,
+ttc-38-weekday-short-turn, septa-93-sunday, septa-114-weekday
+(pooled-headline-real-feeds.test.ts). Fixture extractor: scratchpad mkfixture.py (one
+route, one day type, shapes thinned to every 10th point).
 Still by design, worth knowing: pooled stop values and merged-window headlines floor at the
 mean gap (septa 24 weekday reads 38 where the plain median is 32); period values keep #772's
 typicalOfGaps (septa 114 midday period still 81); ttc 63 St Clair (peak-only short turn)

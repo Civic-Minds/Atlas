@@ -1832,7 +1832,7 @@ export async function processGtfsBuffer(
       const windowHw = (start: number, end: number, allDay = false): number | null => {
         usedOwnFallback = false;
         if (isPooled) {
-          const v = pooledHeadwayInWindow(times, start, end, 3, allDay, true, own);
+          const v = pooledHeadwayInWindow(times, start, end, 3, allDay, own);
           if (v != null) return v;
         }
         const v = allDay
@@ -1860,7 +1860,7 @@ export async function processGtfsBuffer(
       if (hw != null && usedOwnFallback) ownFallbackHw.add(stopId);
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-        const pooledPh = isPooled ? pooledHeadwayInWindow(times, start, end, 3, false, true, own) : null;
+        const pooledPh = isPooled ? pooledHeadwayInWindow(times, start, end, 3, false, own) : null;
         const ph = isPooled
           ? (pooledPh ?? medianHeadwayInWindow(forCrossMidnightWindow(own, end), start, end, 3, true))
           : medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
@@ -1871,11 +1871,20 @@ export async function processGtfsBuffer(
         }
         if (ph != null) byPeriod[pk] = ph;
       }
-      allStopPeriodMaxGaps[stopId] = computePeriodMaxGaps(times);
-      allStopPeriodCoverageHw[stopId] = computePeriodCoverageHeadways(times);
+      // The max gap, coverage and sustained flag describe the list the shown value came from:
+      // the merged list where the pool published, the own pattern where it fell back.
+      const fellBack = ownFallbackPeriodHw.get(stopId);
+      const pickByPeriod = <T extends Partial<Record<PeriodKey, unknown>>>(merged: T, ownOnly: T): T => {
+        if (!fellBack?.size) return merged;
+        const out = { ...merged };
+        for (const pk of fellBack) (out as Record<string, unknown>)[pk] = (ownOnly as Record<string, unknown>)[pk];
+        return out;
+      };
+      allStopPeriodMaxGaps[stopId] = isPooled ? pickByPeriod(computePeriodMaxGaps(times), computePeriodMaxGaps(own)) : computePeriodMaxGaps(times);
+      allStopPeriodCoverageHw[stopId] = isPooled ? pickByPeriod(computePeriodCoverageHeadways(times), computePeriodCoverageHeadways(own)) : computePeriodCoverageHeadways(times);
       if (Object.keys(byPeriod).length > 0) {
         allStopPeriodHw[stopId] = byPeriod;
-        allStopPeriodSustained[stopId] = computePeriodSustained(times);
+        allStopPeriodSustained[stopId] = isPooled ? pickByPeriod(computePeriodSustained(times), computePeriodSustained(own)) : computePeriodSustained(times);
       }
       // Hourly: widen past a strict hour only when it doesn't already have >=3 departures on its
       // own, up to a 90-min window [h*60, h*60+90] so 30-min routes still show up (issue #282).
@@ -1933,7 +1942,7 @@ export async function processGtfsBuffer(
       if (!scopedTerminalHeadline(sorted, day as DayType, featureRoute?.route_type ?? '', railFeature)) return null;
       // And even enough to read as one service (pooledHeadwayInWindow's guard): two branches
       // bunched 3 minutes apart keep the own pattern's headline.
-      return pooledStepOneHeadway(sorted) != null ? sorted : null;
+      return pooledStepOneHeadway(sorted, [...(metricStopMap.get(terminalId) ?? [])]) != null ? sorted : null;
     };
     // #771: the drawn non-terminal stops served by fewer distinct departures than the destination
     // pool: stops some variants skip (MTA Silver's Morgan State stops, a branch's own tail). A
@@ -2003,13 +2012,14 @@ export async function processGtfsBuffer(
         const segments = segmentsByTier(drawnPatternStops(), stopId => {
           const times = stopMetricMap.get(stopId);
           if (!times || times.length === 0) return null;
-          // Fewer than MIN_ALL_DAY_TERMINAL_DEPARTURES midday departures is not an all-day
-          // reading: the stop is limited, consistent with the headline (ttc 63 and 17 weekday,
-          // peak-only lines whose segments graded 10 and 30 on one to three departures).
-          const middayDeps = new Set(times.filter(t => t >= 540 && t <= 900)).size;
-          const headway = middayDeps < MIN_ALL_DAY_TERMINAL_DEPARTURES ? null : allStopHw[stopId] ?? null;
-          if (headway == null && !lineRunsByDay) return null;
+          // The same all-day rule as the headline's rescue sample (scopedTerminalHeadline: a
+          // daytime window of at least three departures and at least four over 6-22h, spread past
+          // a burst), on the same list the stop's value was read from: a stop that fails it has
+          // no all-day reading and is limited (ttc 17 weekday Steeles via Wintermute: a tail its
+          // own trips reach once at midday graded 30 on that one departure).
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
+          const headway = graded ? allStopHw[stopId] ?? null : null;
+          if (headway == null && !lineRunsByDay) return null;
           return { tier: graded?.tier ?? null, headway };
         });
         if (segments.length > 0) feature.properties.segments = segments;
@@ -2129,7 +2139,8 @@ export async function processGtfsBuffer(
       // Step 4.2 and 4.3 (routeGrading.ts): the headline, then the tier it supports.
       // A midday value read off three uneven departures is a two-gap mean (wsf 131 Anacortes,
       // 205 and 100 read 153): keep the phase 2 branch value, as for a thin all-day sample (#745).
-      const unevenMiddayTerminal = branchHw != null
+      const unevenMiddayTerminal = !poolUsed
+        && branchHw != null
         && terminalMiddayHw != null
         && isUnevenTwoGapMiddayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount);
       const headway = decideHeadline({
@@ -2183,62 +2194,6 @@ export async function processGtfsBuffer(
           });
         }
       }
-      // #728: the tier is phase 2's every-gap grade of the one shape that won dedupe, while the
-      // period values below read the whole destination at the terminal. A shape that covers part
-      // of the day or has one hole is graded 60 or infrequent beside periods of 8-20 (Brampton 7
-      // Kennedy South: the 7 shape has one 38-minute evening gap, the destination runs every 8). When the
-      // destination's branch-scoped pool (the headsign's trips serving at least two thirds of
-      // the drawn stops and every stop of the last third) has more unique departures at the
-      // terminal than the shape and at least MIN_POOLED_TIER_DEPARTURES, grade that pool with
-      // the same every-gap rule over the same window at every drawn stop (the same trips can
-      // leave a longer gap at an earlier stop: guelph 19 Sunday, 31 minutes at one outer stop
-      // against 25 at the terminal) and take the worst grade, never past what the headline
-      // supports. A drawn stop at which the pool has no all-day grade (too few daytime departures,
-      // or a daytime hole among the trips that serve it: the first stop of septa 2 Johnston, where
-      // 50 of the 61 pool trips start and leave a 96-minute evening hole the other 11 fill further
-      // in; rtcsnv 110 Eastern Northbound, a 121-minute hole at the first stop) refuses the lift:
-      // the lifted tier would overstate that stop. Unique times only: phase 1 drops duplicate departures, and a
-      // zero-minute gap would loosen the allowance (wsf 73: 161 trips, 23 distinct times). Rail
-      // and irregular lines are left alone; nothing here changes a headway.
-      if (!railFeature && featureHeadsign && coverageStops.length > 1 && terminalId
-        && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span' && headway != null) {
-        const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
-        const drawnIds = coverageStops.map(p => p.stopId);
-        const shapeTerminalDepartures = new Set(shapeMap?.get(terminalId) ?? []).size;
-        const poolDepartures = new Set(branchPoolTimesAt(hsKey, drawnIds, terminalId, true)).size;
-        if (poolDepartures >= MIN_POOLED_TIER_DEPARTURES && poolDepartures > shapeTerminalDepartures) {
-          const worse = (a: string | null, b: string) => a == null || (TIER_RANK[b] ?? 99) > (TIER_RANK[a] ?? 99) ? b : a;
-          // The pool's worst every-gap grade over the drawn stops; null when a stop has no grade.
-          const gradePool = (weekday?: { name: DayName; tripIds: Set<string> }): string | null => {
-            let worst: string | null = null;
-            for (const stopId of drawnIds) {
-              const graded = scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature);
-              if (!graded?.tier) return null;
-              worst = worse(worst, graded.tier);
-            }
-            return worst;
-          };
-          let pooledTier = gradePool();
-          // A Weekday pool is graded on every weekday whose trips differ, and the worst day
-          // counts: the lift must hold on each weekday the line runs.
-          if (pooledTier && day === 'Weekday') {
-            for (const weekday of otherWeekdayPools(hsKey)) {
-              const graded = gradePool(weekday);
-              if (!graded) { pooledTier = null; break; }
-              pooledTier = worse(pooledTier, graded);
-            }
-          }
-          const headlineTier = headwayToTier(headway);
-          if (pooledTier) {
-            const liftedTier = (TIER_RANK[pooledTier] ?? 99) >= (TIER_RANK[headlineTier] ?? 99) ? pooledTier : headlineTier;
-            const current = feature.properties.tier as string;
-            if ((TIER_RANK[liftedTier] ?? 99) < (TIER_RANK[current] ?? 99)) {
-              feature.properties.tier = liftedTier;
-            }
-          }
-        }
-      }
-
       // Minimum stop headway — the best frequency available anywhere on this route.
       // Used by passesRouteFilter so routes with high-frequency sections aren't excluded
       // even when the terminal headway doesn't meet the active threshold (pairs with AI-97 clipping).

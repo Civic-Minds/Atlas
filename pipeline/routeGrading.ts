@@ -38,12 +38,24 @@ export function ownStepOneHeadway(times: readonly number[]): number | undefined 
     ?? undefined;
 }
 
-/** The same window order on a destination pool, with the pooled reading's evenness guards. */
+/**
+ * The same window order on a destination pool, with the pooled reading's evenness guards. The
+ * PM window needs four departures: three give a two-gap mean, not a wait (freedom M to
+ * Pittsburgh: 15:49, 16:45, 18:00 read 66). Past both windows the pool is read like a thin
+ * shape's rescue sample, the sustained 6-22h typical wait (69 there), capped at the own
+ * pattern's reading; the merged-list evenness guards are for a window's alternation, not for a
+ * day with a hole in it.
+ */
 export function pooledStepOneHeadway(times: readonly number[], own?: readonly number[]): number | undefined {
-  return pooledHeadwayInWindow(times, 540, 900, 3, false, true, own)
-    ?? pooledHeadwayInWindow(times, 900, 1140, 3, false, true, own)
-    ?? pooledHeadwayInWindow(times, 360, 1320, 3, true, true, own)
-    ?? undefined;
+  const midday = pooledHeadwayInWindow(times, 540, 900, 3, false, own)
+    ?? pooledHeadwayInWindow(times, 900, 1140, 4, false, own);
+  if (midday != null) return midday;
+  const sorted = [...new Set(times)].sort((a, b) => a - b);
+  const allDay = sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true);
+  if (allDay == null) return undefined;
+  const ownSorted = own ? [...new Set(own)].sort((a, b) => a - b) : [];
+  const ownAllDay = ownSorted.length ? sustainedMedianHeadwayInWindow(ownSorted, 360, 1320, 3, undefined, true) : null;
+  return ownAllDay != null ? Math.min(allDay, ownAllDay) : allDay;
 }
 
 export interface TerminalReading {
@@ -81,7 +93,7 @@ export function terminalReading(args: {
   // midday reading to the pool's PM or all-day value (ttc 129 weekday: own midday 20, pool
   // all-day 28); a pool with no midday reading still speaks for a terminal the own pattern
   // cannot read at midday (freedom M: a 3-trip shape of a 10-trip branch).
-  const pooledMiddayHw = terminalId && pool ? (pooledHeadwayInWindow(pool, 540, 900, 3, false, true, ownSorted) ?? undefined) : undefined;
+  const pooledMiddayHw = terminalId && pool ? (pooledHeadwayInWindow(pool, 540, 900, 3, false, ownSorted) ?? undefined) : undefined;
   const pooledStepOne = terminalId && pool ? pooledStepOneHeadway(pool, ownSorted) : undefined;
   const ownStepOne = terminalId ? ownStepOneHeadway(ownTerminalTimes) : undefined;
   const poolUsed = pooledMiddayHw != null || (ownTerminalMiddayHw == null && pooledStepOne != null);
@@ -95,7 +107,7 @@ export function terminalReading(args: {
 }
 
 export interface HeadlineInputs {
-  /** The own terminal's midday value is a two-gap mean of three uneven departures (#745). */
+  /** The own terminal's midday value is a two-gap mean of three uneven departures (#745); only when the own terminal is the headline's source, never a pool. */
   unevenMiddayTerminal: boolean;
   /** Phase 2's own headway of the drawn pattern. */
   branchHw: number | null;

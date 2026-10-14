@@ -48,30 +48,23 @@ export const POOLED_MAX_GAP_TYPICAL_RATIO = 1.6;
 
 /**
  * The headway of a merged departure list inside [start, end]: the typical wait (typicalOfGaps,
- * #772, through medianHeadwayInWindow's `typical`), never better than the mean gap, and only
- * when the gaps are even enough. A merged list of two patterns alternates by nature, and a
- * mild alternation (DRT 900: 10/14, branches 14/18) falls under typicalOfGaps's 1.5x long-gap
- * threshold, so its median lands on the short gap over an odd number of gaps; the mean is the
- * wait riders see. Two 30-minute branches 3 minutes apart are not a 15-minute service, and
- * typicalOfGaps reads an odd list of 3, 27, 3, 27, 3 as 3 (the 27s fall under its outlier rule):
- * the 27-minute gap is over 1.75 times the mean, so no pooled value is published and the stop
- * keeps its own pattern's value (POOLED_MAX_GAP_RATIO). The headline reads the typical wait
- * alone (`floorAtMean` false), as Step 4 always has. Null = publish nothing.
+ * #772, through medianHeadwayInWindow's `typical`), never better than the mean gap, never worse
+ * than the own pattern's reading of the same window, and only when the gaps are even enough.
+ * A merged list of two patterns alternates by nature, and a mild alternation (DRT 900: 10/14,
+ * branches 14/18) falls under typicalOfGaps's 1.5x long-gap threshold, so its median lands on
+ * the short gap over an odd number of gaps; the mean is the wait riders see. Pooling can only
+ * add departures, so a pooled stop never reads worse than its own pattern there (ttc 41
+ * Saturday: every 8 with a few 16-minute gaps read 10 from the mean once five trips outside the
+ * window were pooled in); the own reading caps it. Two 30-minute branches 3 minutes apart are
+ * not a 15-minute service, and typicalOfGaps reads an odd list of 3, 27, 3, 27, 3 as 3 (the 27s
+ * fall under its outlier rule): the 27-minute gap is over 1.75 times the mean, so no pooled
+ * value is published and the stop keeps its own pattern's value (POOLED_MAX_GAP_RATIO); #813
+ * adds the same for a gap over POOLED_MAX_GAP_TYPICAL_RATIO times the value. Null = publish
+ * nothing.
  */
-export function pooledHeadwayInWindow(times: readonly number[], start: number, end: number, minDeps = 3, allDay = false, floorAtMean = true, own?: readonly number[]): number | null {
+export function pooledHeadwayInWindow(times: readonly number[], start: number, end: number, minDeps = 3, allDay = false, own?: readonly number[]): number | null {
   const inWindow = [...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b);
   if (inWindow.length < minDeps) return null;
-  // A pool that adds nothing inside the window is the own pattern there: read it as the own
-  // pattern, without the merged-list floor (ttc 41 Saturday: the pool adds five trips at the
-  // ends of the day and none 9-15h; every 8 read 10 from the mean of its own 37 departures).
-  if (own) {
-    const ownInWindow = new Set(forCrossMidnightWindow([...own], end).filter(t => t >= start && t <= end));
-    if (ownInWindow.size === inWindow.length && inWindow.every(t => ownInWindow.has(t))) {
-      return allDay
-        ? sustainedMedianHeadwayInWindow(inWindow, start, end, minDeps, undefined, true)
-        : medianHeadwayInWindow(inWindow, start, end, minDeps, true);
-    }
-  }
   const typical = allDay
     ? sustainedMedianHeadwayInWindow(inWindow, start, end, minDeps, undefined, true)
     : medianHeadwayInWindow(inWindow, start, end, minDeps, true);
@@ -79,13 +72,17 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
   const mean = (inWindow[inWindow.length - 1] - inWindow[0]) / (inWindow.length - 1);
   let longest = 0;
   for (let i = 1; i < inWindow.length; i++) longest = Math.max(longest, inWindow[i] - inWindow[i - 1]);
-  // Even enough: no gap over POOLED_MAX_GAP_RATIO times the mean (two 30s three minutes apart
-  // are not a 15) and, #813, none over POOLED_MAX_GAP_TYPICAL_RATIO times the value itself
-  // (ttc 41 Saturday: every 8 merged with a 16-minute hole is not a 10; the stop keeps its own
-  // pattern's reading). Null = publish nothing.
+  // Never worse than the own pattern's reading of the same window.
+  const ownSorted = own ? [...new Set(forCrossMidnightWindow([...own], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b) : [];
+  const ownValue = ownSorted.length >= minDeps
+    ? (allDay ? sustainedMedianHeadwayInWindow(ownSorted, start, end, minDeps, undefined, true) : medianHeadwayInWindow(ownSorted, start, end, minDeps, true))
+    : null;
   const floored = Math.max(typical, Math.round(mean));
-  if (longest > POOLED_MAX_GAP_RATIO * mean || longest > POOLED_MAX_GAP_TYPICAL_RATIO * floored) return null;
-  return floorAtMean ? floored : typical;
+  const value = ownValue != null ? Math.min(floored, ownValue) : floored;
+  // Even enough: no gap over POOLED_MAX_GAP_RATIO times the mean (two 30s three minutes apart
+  // are not a 15) and, #813, none over POOLED_MAX_GAP_TYPICAL_RATIO times the value itself.
+  if (longest > POOLED_MAX_GAP_RATIO * mean || longest > POOLED_MAX_GAP_TYPICAL_RATIO * value) return null;
+  return value;
 }
 
 /**

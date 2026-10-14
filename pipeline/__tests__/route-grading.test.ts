@@ -21,15 +21,17 @@ describe('terminalReading', () => {
     expect(p.poolUsed).toBe(true);
   });
 
-  it('a pool that adds nothing in the window reads as the own pattern, without the mean floor (ttc 41 Saturday)', () => {
+  it('a pooled stop never reads worse than its own pattern in the window (ttc 41 Saturday)', () => {
     // Every 8 with one 16-minute gap, 37 departures 9-15h: the pool's five extra trips are all
-    // outside the window, so the merged list is the own list there and reads its typical 8,
-    // not the mean-floored 10 a merged list would carry.
+    // outside the window, so the merged list is the own list there. Its mean is 9.7, but the
+    // pooled value is capped at the own reading, 8, and the headline reads 8 either way.
     const own = every(540, 900, 8).filter(t => t !== 700);
     const pool = [...own, 300, 320, 340, 1500, 1520].sort((a, b) => a - b);
     const r = terminalReading({ terminalId: 't', ownTerminalTimes: own, pool, ownStopHwsSorted: [8] });
-    expect(r.poolUsed).toBe(true);
     expect(r.terminalComputedHw).toBe(8);
+    // One pooled trip inside a hole can only improve the reading, never worsen it.
+    const filled = [...pool, 692].sort((a, b) => a - b);
+    expect(terminalReading({ terminalId: 't', ownTerminalTimes: own, pool: filled, ownStopHwsSorted: [8] }).terminalComputedHw).toBe(8);
   });
 
   it('#813: a pool whose merged midday list is uneven leaves the own reading in place', () => {
