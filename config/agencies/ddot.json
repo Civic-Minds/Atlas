@@ -46,5 +46,6 @@
   "feedRefreshErrorAt": "20261007",
   "feedRefreshRetryCount": 1,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.detroitmi.gov/Portals/0/docs/deptoftransportation/pdfs/ddot_gtfs.zip"
+  "lastFeedSourceUrl": "https://www.detroitmi.gov/Portals/0/docs/deptoftransportation/pdfs/ddot_gtfs.zip",
+  "lastPeekedExpiry": "20270207"
 }

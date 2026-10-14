@@ -42,5 +42,6 @@
     "checkedAt": "2026-09-07"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://www.metrobustransit.ca/google/google_transit.zip"
+  "lastFeedSourceUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
+  "lastPeekedExpiry": "20261111"
 }

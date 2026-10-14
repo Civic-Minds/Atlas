@@ -54,5 +54,6 @@
       "mode": 1,
       "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20271231"
 }

@@ -117,5 +117,6 @@
       "mode": 100,
       "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20270220"
 }

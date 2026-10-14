@@ -45,5 +45,6 @@
   "expiredFeedCheckExpiry": "20270227",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11684/BMTA_GTFS.zip"
+  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11684/BMTA_GTFS.zip",
+  "lastPeekedExpiry": "20270227"
 }

@@ -41,5 +41,6 @@
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2351/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2351/latest.zip",
+  "lastPeekedExpiry": "20270821"
 }

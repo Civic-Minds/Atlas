@@ -40,5 +40,6 @@
     "checkedAt": "2026-09-07"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-403/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-403/latest.zip",
+  "lastPeekedExpiry": "20270102"
 }

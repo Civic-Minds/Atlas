@@ -8,7 +8,7 @@
   ],
   "feedUrl": "https://kenoshatransit.com/gtfs",
   "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "Route 1",
   "lastRefreshedAt": "2026-10-12",
   "region": "Wisconsin",
@@ -55,5 +55,6 @@
       "mode": 0,
       "reason": "Kenosha Streetcar is a streetcar, published as route_type 3 (bus)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20991231"
 }

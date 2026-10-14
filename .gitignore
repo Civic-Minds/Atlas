@@ -59,9 +59,7 @@ public/data/*.json
 reports/benchmarks/
 gtfs-test-log.md
 
-# Session handoff and local planning notes
-HANDOFF.md
-handoff.txt
+# Local planning notes
 INTEGRATION.md
 release-notes.txt
 ATLASLOG.md

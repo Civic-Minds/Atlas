@@ -33,5 +33,6 @@
   "expiredFeedCheckExpiry": "20270131",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://fact.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "https://fact.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "lastPeekedExpiry": "20270131"
 }

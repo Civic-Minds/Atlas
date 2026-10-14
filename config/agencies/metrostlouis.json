@@ -56,5 +56,6 @@
       "mode": 100,
       "reason": "MetroLink is light rail, published as route_type 2 (commuter rail)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20261129"
 }

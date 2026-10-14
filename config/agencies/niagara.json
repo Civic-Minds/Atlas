@@ -62,5 +62,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://68.71.24.110/gtfs/GTFSExport.zip"
+  "lastFeedSourceUrl": "http://68.71.24.110/gtfs/GTFSExport.zip",
+  "lastPeekedExpiry": "20261128"
 }

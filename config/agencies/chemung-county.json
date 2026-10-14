@@ -43,5 +43,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Chemung_C_TRAN.zip"
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Chemung_C_TRAN.zip",
+  "lastPeekedExpiry": "20271231"
 }

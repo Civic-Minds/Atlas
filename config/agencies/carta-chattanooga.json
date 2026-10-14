@@ -45,5 +45,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip"
+  "lastFeedSourceUrl": "https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip",
+  "lastPeekedExpiry": "20270509"
 }

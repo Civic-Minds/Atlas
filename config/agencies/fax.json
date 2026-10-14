@@ -22,5 +22,6 @@
   "expiredFeedCheckExpiry": "20261101",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gis4u.fresno.gov/downloads/fax_gtfs.zip"
+  "lastFeedSourceUrl": "https://gis4u.fresno.gov/downloads/fax_gtfs.zip",
+  "lastPeekedExpiry": "20261101"
 }

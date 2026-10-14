@@ -46,5 +46,6 @@
     "checkedAt": "2026-10-08"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip"
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip",
+  "lastPeekedExpiry": "20270628"
 }

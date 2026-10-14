@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Trip time by hour now covers the whole day for TTC subway lines: Line 1 and Line 2 give the same end-to-end run a different shape per time band, and only one band's trips were being counted ([#852](https://github.com/Civic-Minds/Atlas/issues/852)).
 - The shared-stretch frequency no longer disappears along a busy stretch because of one held bus: TTC 52 westbound at midday, four branches merged to every 5, lost its combined value at 14 stops on Lawrence Ave W over a single 10-minute gap near 2:30 pm ([#851](https://github.com/Civic-Minds/Atlas/issues/851)).
 - **A route's frequency tier is now graded along its whole line, not only at its first stop**: the tier is the worst grade among its stops, counting every trip that serves each stop, so a line whose evening gaps widen downstream (CTA J14 Saturday: 15 at the garage, 20 at 29 of 34 stops) rates 20, and a shape whose stops all pool with a frequent trunk is lifted to what the trunk supports; a stop with no all-day service never drags the tier, and the headline frequency is unchanged (CIV-152).
 - A short-turn or peak-only variant of a route that runs through the day elsewhere, like SEPTA 114's 95 Industrial Park trips beside the all-day Wawa service or NJ Transit's peak Montclair-Boonton trains to Hoboken, no longer shows a frequency read from a handful of trips; it is limited service, while routes that run every two hours all day keep their reading ([#690](https://github.com/Civic-Minds/Atlas/issues/690)).
@@ -112,6 +113,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Changed
 
 - **Basemap images now stay in the browser for 7 days**: returning visitors no longer re-download the base map, and far fewer tile requests reach Atlas's server, cutting Vercel transfer use. Error and "API key required" tiles are never cached. (#856)
+- **Route card branch colours no longer repeat**: the hourly chart now gives up to eight branches their own colour, so a fifth branch (e.g. TTC 52's "Terminal 3 Only") no longer looks like the first one. (#853)
+- **Route card branch key is left-aligned**: the branch names under the hourly chart now line up in one column at the chart's left edge instead of being centred.
 - **The map's routes start loading sooner**: the data lookup and the route-tile headers now start while the page code is still loading (about 2 to 8 seconds earlier on a slow phone connection) and browsers keep the tiles they have fetched. (CIV-151)
 - **Routes appear sooner on first load**: the map now draws from the tiles alone, and each agency's full data downloads afterwards (selected routes and stops first), so slow connections no longer wait on about 5 MB of data before seeing routes.
 - **Selected routes and stops open from a link without waiting on the map**: a route or stop link now loads its own agency first and shows a brief loading note, or says it couldn't load, instead of staying blank.
@@ -161,11 +164,17 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **An agency whose refresh produces no route lines is no longer marked up to date**: a feed with stops but no drawable routes (El Monte) was stamped "current", so nothing flagged it as broken; it now keeps its last good data and is marked as needing another try. (#634)
+- **Map tiles stay cached in the browser**: each release's tile archives are now uploaded with a long cache header, so zooming back or revisiting no longer re-downloads tiles now that they load straight from storage. (#840)
 - **The map loads its route tiles directly from storage**: tiles no longer pass through a Vercel function, which had used up the hosting plan's free transfer allowance and put the site at risk of being paused. (#854)
+- **Selecting a route that only shows its shared stretch now draws the route**: with a frequency filter on, TTC 52 and similar routes drew nothing when selected, and hovering their branch rows highlighted nothing. (#850)
 - **Routes with a long midday gap no longer show their rush-hour frequency as the headline**: a rule meant for ferries with three midday sailings also fired on bus routes whose only midday trips were split by a 3 to 5 hour gap, so lines like RTL 25 and TTC 39 read every 18 to 30 min (#833).
 - **Routes with a long break between runs no longer show a wait nobody sees**: a route running 70, then 350, then 70 minutes apart read as every 163 minutes; it now reads 70, the wait riders actually get. (#834)
 - **A stray blank line in a feed file no longer fails the whole feed**: Caltrain's refresh was rejected for a row with no route, service or trip id; lines holding only spaces, tabs or commas are now ignored. (#835)
 - **A data rebuild now keeps each agency's feed end date current**: rebuilding from a newer feed left the old end date behind, so agencies showed a false "service ended" notice and the release check blocked them (#837).
+- **A mangled share link no longer leaves a blank map**: a URL with a latitude outside -90 to 90 (for example ?lat=91) killed the map and Reset could not bring it back; the bad value is now ignored and the map opens at the default view. (#846)
+- **Search results come back after you pick one with Enter**: typing a new query in the same box showed nothing until you clicked away and back. (#847)
+- **No more failed live requests when Live is off**: selecting a route or stop asked for live data that does not exist on the public site, logging an error each time. (#848)
 - **Frequency chart hover no longer covers labels**: hovering an hour bar drew an outline that spilled over the number above and below the chart; it now just shades that hour's column. (#830)
 - **The expired-timetable notice on route cards is smaller and reads properly**: it was bold and oversized after the type-scale change and said "Atlas's latest the Grand River Transit schedule for Waterloo Region ended"; it now says "Grand River Transit's timetable ended on Apr 26, 2026." in regular weight, with no divider line above it, and the expanded version puts the check history in its own paragraph instead of running it on.
 - **The hidden-routes list now looks like the other route lists**: agency names are a lighter group header, routes use the standard row, and the divider lines are gone, so agencies and routes are easy to tell apart.

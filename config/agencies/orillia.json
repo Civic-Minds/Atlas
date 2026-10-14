@@ -37,5 +37,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orillia.zip"
+  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orillia.zip",
+  "lastPeekedExpiry": "20280101"
 }

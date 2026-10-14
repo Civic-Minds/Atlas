@@ -41,5 +41,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip",
+  "lastPeekedExpiry": "20270125"
 }

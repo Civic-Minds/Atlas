@@ -8,7 +8,7 @@
     -82.8532
   ],
   "feedUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedExpiry": "20501230",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-03",
   "region": "South Carolina",
@@ -48,5 +48,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx"
+  "lastFeedSourceUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+  "lastPeekedExpiry": "20501230"
 }

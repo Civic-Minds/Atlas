@@ -45,5 +45,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip"
+  "lastFeedSourceUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
+  "lastPeekedExpiry": "20261219"
 }

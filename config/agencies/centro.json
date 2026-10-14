@@ -38,5 +38,6 @@
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip"
+  "lastFeedSourceUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
+  "lastPeekedExpiry": "20270228"
 }

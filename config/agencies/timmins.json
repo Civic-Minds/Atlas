@@ -43,5 +43,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip"
+  "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip",
+  "lastPeekedExpiry": "20261231"
 }

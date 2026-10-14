@@ -52,5 +52,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip"
+  "lastFeedSourceUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip",
+  "lastPeekedExpiry": "20261218"
 }

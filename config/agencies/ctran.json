@@ -46,5 +46,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip"
+  "lastFeedSourceUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
+  "lastPeekedExpiry": "20270109"
 }

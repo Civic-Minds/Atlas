@@ -82,5 +82,6 @@
       "mode": 100,
       "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20270227"
 }

@@ -46,5 +46,6 @@
       "mode": 100,
       "reason": "LYNX Blue Line is light rail, published as route_type 0 (tram)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20270131"
 }

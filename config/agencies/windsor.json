@@ -48,5 +48,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip"
+  "lastFeedSourceUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
+  "lastPeekedExpiry": "20270108"
 }

@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://developer.scmetro.org/gtfs.zip"
+  "lastFeedSourceUrl": "https://developer.scmetro.org/gtfs.zip",
+  "lastPeekedExpiry": "20261216"
 }

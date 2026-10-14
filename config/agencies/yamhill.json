@@ -43,5 +43,6 @@
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip"
+  "lastFeedSourceUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip",
+  "lastPeekedExpiry": "20271231"
 }

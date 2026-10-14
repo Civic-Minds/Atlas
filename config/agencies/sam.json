@@ -43,5 +43,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip"
+  "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip",
+  "lastPeekedExpiry": "20270331"
 }

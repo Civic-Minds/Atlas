@@ -40,5 +40,6 @@
     "checkedAt": "2026-09-07"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://webapps.fo.umich.edu/transit_uploads/google_transit.zip"
+  "lastFeedSourceUrl": "https://webapps.fo.umich.edu/transit_uploads/google_transit.zip",
+  "lastPeekedExpiry": "20270102"
 }

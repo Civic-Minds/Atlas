@@ -55,5 +55,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip"
+  "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
+  "lastPeekedExpiry": "20261108"
 }

@@ -20,7 +20,7 @@
     "Whitman County, Washington"
   ],
   "timezone": "America/Los_Angeles",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "removed football routes",
   "lastRefreshedAt": "2026-10-12",
   "feedQuality": {
@@ -45,5 +45,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://pullmanbusbeacon.com/gtfs"
+  "lastFeedSourceUrl": "https://pullmanbusbeacon.com/gtfs",
+  "lastPeekedExpiry": "20991231"
 }

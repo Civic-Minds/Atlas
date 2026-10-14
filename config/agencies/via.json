@@ -33,5 +33,6 @@
   },
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-217/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-217/latest.zip",
+  "lastPeekedExpiry": "20270110"
 }

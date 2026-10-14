@@ -15,7 +15,7 @@
   "feedUrl": "https://ridematbus.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/latest.zip",
   "region": "North Dakota",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "9/7/2026 Schedule",
   "lastRefreshedAt": "2026-10-12",
   "cities": [
@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://ridematbus.com/gtfs"
+  "lastFeedSourceUrl": "https://ridematbus.com/gtfs",
+  "lastPeekedExpiry": "20991231"
 }

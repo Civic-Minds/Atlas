@@ -34,5 +34,6 @@
   "expiredFeedCheckExpiry": "20270504",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/rctpublic.etaspot.net/gtfs.zip"
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/rctpublic.etaspot.net/gtfs.zip",
+  "lastPeekedExpiry": "20270504"
 }

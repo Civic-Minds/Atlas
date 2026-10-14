@@ -50,5 +50,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip"
+  "lastFeedSourceUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
+  "lastPeekedExpiry": "20270130"
 }

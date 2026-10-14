@@ -47,5 +47,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip"
+  "lastFeedSourceUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
+  "lastPeekedExpiry": "20261231"
 }

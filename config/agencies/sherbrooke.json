@@ -27,5 +27,6 @@
   "expiredFeedCheckExpiry": "20261220",
   "timezone": "America/Toronto",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip"
+  "lastFeedSourceUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip",
+  "lastPeekedExpiry": "20261220"
 }

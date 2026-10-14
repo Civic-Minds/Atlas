@@ -32,7 +32,7 @@ import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { getRegionalView } from '../utils/regionView';
+import { getRegionalView, parseUrlView } from '../utils/regionView';
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 
@@ -146,11 +146,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [mapContextRouteCount, setMapContextRouteCount] = useState<number | null>(null);
 
   const initialMapCenter = useMemo(() => {
-    const lat = parseFloat(searchParams.get('lat') ?? '');
-    const lon = parseFloat(searchParams.get('lon') ?? '');
-    const zoom = parseFloat(searchParams.get('z') ?? '');
-    if (isFinite(lat) && isFinite(lon) && isFinite(zoom)) return { lat, lon, zoom };
-    return undefined;
+    return parseUrlView(searchParams);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ?area=<slug>: fit the map to that area. Explicit lat/lon/z win.

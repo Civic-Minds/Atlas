@@ -41,5 +41,6 @@
   },
   "timezone": "America/Edmonton",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://data.calgary.ca/download/npk7-z3bj/application%2Fzip"
+  "lastFeedSourceUrl": "https://data.calgary.ca/download/npk7-z3bj/application%2Fzip",
+  "lastPeekedExpiry": "20261220"
 }

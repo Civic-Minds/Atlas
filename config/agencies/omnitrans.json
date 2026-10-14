@@ -30,5 +30,6 @@
   "expiredFeedCheckExpiry": "20270103",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://www.omnitrans.org/google/google_transit.zip"
+  "lastFeedSourceUrl": "http://www.omnitrans.org/google/google_transit.zip",
+  "lastPeekedExpiry": "20270103"
 }

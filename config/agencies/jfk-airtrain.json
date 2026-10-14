@@ -42,5 +42,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip"
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
+  "lastPeekedExpiry": "20270228"
 }

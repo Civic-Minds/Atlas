@@ -30,5 +30,6 @@
   "expiredFeedCheckExpiry": "20261107",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.octa.net/current/google_transit.zip"
+  "lastFeedSourceUrl": "https://www.octa.net/current/google_transit.zip",
+  "lastPeekedExpiry": "20261107"
 }
