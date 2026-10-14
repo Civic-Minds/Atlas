@@ -17736,7 +17736,7 @@
         32.6,
         -93.5
       ],
-      "feedUrl": "http://sportranbus.com/gtfs",
+      "feedUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
       "region": "Louisiana",
       "lastFeedExpiry": "20991231",
       "lastFeedVersion": "Service 10/13/2024",
