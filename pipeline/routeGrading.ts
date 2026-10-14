@@ -23,7 +23,8 @@
  *                        destination pool, never better than the worst drawn stop, whose own
  *                        reading and companions it then takes (#771)
  */
-import { headwayToTier, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { SURFACE_TIER_MAXES } from '../shared/config.js';
+import { headwayToTier, headwayToTierOn, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { pooledHeadwayInWindow } from './stopPools.js';
 import type { DayName, DayType } from '../types/gtfs.js';
 
@@ -155,10 +156,11 @@ export function decideHeadline(i: HeadlineInputs): number | null {
  * Halifax 330), except that a thin shape phase 2 put in no finite tier (capmetro 2: gaps 32,
  * 80, 32) takes its rescue sample's finite tier.
  */
-export function settleTier(currentTier: string, headway: number | null, scoped: { tier: string | null } | null): string {
+export function settleTier(currentTier: string, headway: number | null, scoped: { tier: string | null } | null, tiers: readonly number[] = SURFACE_TIER_MAXES): string {
   let tier = currentTier;
-  // No headline (a drawn stop without an all-day value, #771): nothing to degrade to.
-  const newTier = headway == null ? tier : headwayToTier(headway);
+  // No headline (a drawn stop without an all-day value, #771): nothing to degrade to. The
+  // headline's tier is read on the route's own scale (rail 5 and 8).
+  const newTier = headway == null ? tier : headwayToTierOn(headway, tiers);
   if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[tier] ?? -1)) tier = newTier;
   if (scoped?.tier && scoped.tier !== 'infrequent' && tier === 'infrequent') tier = scoped.tier;
   return tier;

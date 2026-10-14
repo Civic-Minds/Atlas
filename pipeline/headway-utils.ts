@@ -18,6 +18,12 @@ export const TIER_RANK: Record<string, number> = Object.fromEntries([
   ['span', NUMERIC_TIERS.length + 1],
 ]);
 
+/** headwayToTier on a given tier scale (the surface tiers, or rail's 5-8-10-15-30-60). */
+export function headwayToTierOn(h: number, tiers: readonly number[]): string {
+  for (const max of tiers) if (h <= max) return String(max);
+  return 'infrequent';
+}
+
 export function headwayToTier(h: number): string {
   for (const { max } of HEADWAY_TIERS) {
     if (h <= max) return max === Infinity ? 'infrequent' : String(max);

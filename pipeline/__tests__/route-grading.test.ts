@@ -90,6 +90,17 @@ describe('settleTier', () => {
   });
 });
 
+describe('settleTier on the rail scale', () => {
+  it('keeps a 4-minute people mover at tier 5 and a streetcar every 6 at 8 (rail tiers 5 and 8)', () => {
+    const rail = [5, 8, 10, 15, 30, 60];
+    expect(settleTier('5', 4, null, rail)).toBe('5');
+    expect(settleTier('8', 6, null, rail)).toBe('8');
+    expect(settleTier('8', 12, null, rail)).toBe('15');
+    // The surface scale still degrades a bus every 4 no further than 10.
+    expect(settleTier('10', 4, null)).toBe('10');
+  });
+});
+
 describe('liftTierOnDestinationPool', () => {
   it('ranks a streetcar\'s 8 and 5 as better than 10, not as unknown (TTC 504, CIV-152)', () => {
     const stops = ['a', 'b'];

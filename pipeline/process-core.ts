@@ -21,7 +21,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -367,12 +367,6 @@ function pooledTerminalHeadway(times: readonly number[] | undefined): number | n
   return medianHeadwayInWindow(sorted, 540, 900, 3, true)
     ?? medianHeadwayInWindow(sorted, 900, 1140, 3, true)
     ?? sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true);
-}
-
-/** headwayToTier on a given tier scale (the surface tiers, or rail's 5-8-10-15-30-60). */
-export function headwayToTierOn(h: number, tiers: readonly number[]): string {
-  for (const max of tiers) if (h <= max) return String(max);
-  return 'infrequent';
 }
 
 export function scopedTerminalHeadline(
@@ -2048,6 +2042,11 @@ export async function processGtfsBuffer(
     // hole (ttc 100 via Linkwood) still read. Without one the stop is drawn limited and
     // left out of the headline and the period floors (CIV-150: cta J14 Saturday read 455 from a
     // two-trip tail under segments every 10; nine lines lost their headline to one such stop).
+    // The tier scale this route grades on (rail and streetcars: 5, 8, 10, 15, 30, 60; buses: the
+    // surface tiers). Every headway-to-tier step on the route reads it, so a 4-minute people mover
+    // graded 5 is never degraded to the surface scale's 10 (settleTier, the rescue, the worst
+    // reading stop and the stop grades' headway cap).
+    const routeTierScale = (): readonly number[] => getTiersForCriteria(featureRoute?.route_type ?? '', DEFAULT_CRITERIA.dayTypes[day as DayType]?.tiers ?? SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides);
     const stopHasReading = (stopId: string): boolean => {
       const sorted = [...new Set(stopMetricMap.get(stopId) ?? [])].sort((a, b) => a - b);
       const daytime = sorted.filter(t => t >= 360 && t <= 1320);
@@ -2164,7 +2163,7 @@ export async function processGtfsBuffer(
           // The headway cap reads the route's own tier scale (rail and streetcars grade on 5 and
           // 8): a 4-minute people mover graded 5 at every stop was capped to the surface scale's
           // 10 and the worst-stop rule took the line from 5 to 10.
-          const byHeadway = headwayToTierOn(headway, getTiersForCriteria(featureRoute?.route_type ?? '', DEFAULT_CRITERIA.dayTypes[day as DayType]?.tiers ?? SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides));
+          const byHeadway = headwayToTierOn(headway, routeTierScale());
           stopTiers[stopId] = (TIER_RANK[best] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? best : byHeadway;
         }
         if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
@@ -2196,7 +2195,7 @@ export async function processGtfsBuffer(
           : null;
         if (scoped) {
           feature.properties.headway = scoped.headway;
-          const newTier = headwayToTier(scoped.headway);
+          const newTier = headwayToTierOn(scoped.headway, routeTierScale());
           if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[feature.properties.tier as string] ?? -1)) {
             feature.properties.tier = newTier;
           }
@@ -2218,7 +2217,7 @@ export async function processGtfsBuffer(
         if (vals.length) {
           const headway = Math.max(...vals);
           feature.properties.headway = headway;
-          const newTier = headwayToTier(headway);
+          const newTier = headwayToTierOn(headway, routeTierScale());
           if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[feature.properties.tier as string] ?? -1)) feature.properties.tier = newTier;
         } else if (!reading.length) {
           feature.properties.headway = null;
@@ -2360,7 +2359,7 @@ export async function processGtfsBuffer(
         pooledPlainTerminalHw: pooledTerminalHeadway(terminalId ? headsignMap?.get(terminalId) : undefined),
       });
       feature.properties.headway = headway;
-      feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped);
+      feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped, routeTierScale());
       // #728: the tier is phase 2's every-gap grade of the one shape that won dedupe, while the
       // period values below read the whole destination at the terminal. A shape that covers part
       // of the day or has one hole is graded 60 or infrequent beside periods of 8-20 (Brampton 7
