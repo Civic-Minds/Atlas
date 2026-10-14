@@ -189,8 +189,10 @@ export function liftTierOnDestinationPool(args: {
   /** The pool's every-gap tier at a drawn stop (on another weekday's trips when given), null when ungraded. */
   gradeAt: (stopId: string, weekday?: WeekdayPool) => string | null;
   otherWeekdays: () => readonly WeekdayPool[];
+  /** The route's tier scale (rail 5-8-10-15-30-60, or the surface tiers), as settleTier reads it. */
+  tiers?: readonly number[];
 }): string {
-  const { currentTier, headway, day, drawnStopIds, gradeAt, otherWeekdays } = args;
+  const { currentTier, headway, day, drawnStopIds, gradeAt, otherWeekdays, tiers = SURFACE_TIER_MAXES } = args;
   const worse = (a: string | null, b: string) => a == null || rank(b) > rank(a) ? b : a;
   const gradePool = (weekday?: WeekdayPool): string | null => {
     let worst: string | null = null;
@@ -210,7 +212,7 @@ export function liftTierOnDestinationPool(args: {
     }
   }
   if (!pooledTier) return currentTier;
-  const headlineTier = headwayToTier(headway);
+  const headlineTier = headwayToTierOn(headway, tiers);
   const liftedTier = rank(pooledTier) >= rank(headlineTier) ? pooledTier : headlineTier;
   return rank(liftedTier) < rank(currentTier) ? liftedTier : currentTier;
 }
