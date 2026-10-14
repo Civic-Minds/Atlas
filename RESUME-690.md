@@ -108,7 +108,22 @@ Hwy 407 30). Manager's call 2026-10-14: peak expresses go limited, no burst allo
 (consistent with the midday-headline standard and #720), so those 40 and njt-bus 58 Blvd East
 local's hourly origin tail (20 -> 60 under #771) stay as the rule reads them.
 
-OPEN (next session): the 15 biggest moves are untouched by the #771 change: omahametro 5529
+RESOLVED in 898b5135: the J14 family. Cause: a variant's own terminal holds four sparse
+departures; the headsign pool declines (a variant's own trips), the thin rescue declines (the
+merged list at the terminal is not thin), and Step 4 falls to #772's branch rule on the own
+plain values (all 455). Rule: an own terminal sample is sparse when it has fewer than 4 daytime
+departures, or fewer than 8 while the pooled list there holds at least twice as many; a sparse
+own terminal with no qualifying pool or rescue reads the worst pooled reading among the drawn
+stops (cta J14 Saturday 455 -> 10, omahametro 5529 weekday 353 -> 15, nyct-brooklyn B7 Sunday
+475 -> 30 on fixtures: scratchpad ca2ba197 fx-j14, fx-omahametro-5529, fx-nyct-bus-brooklyn-B7).
+Tier stays phase 2's (only degrades), so J14 shows "every 10" with tier infrequent; the #728
+lift needs the headsign pool, which a variant does not have. Worth a look. Peak-only variants
+with 4+ own departures are not sparse and read their own all-day fallback or the trunk: mta-
+maryland 11663 Federal Hill 5 -> 41 (AM peak 5, 8 stops), mbta 134 Middlesex Ave 13 -> 56
+(midday period 13 under a 56 headline: look at this one), septa 1 Decatur-Drummond 31 -> 103,
+cincinnatimetro 37 via Jonathan 13 -> 40. njt-bus 29 could not be cut into a fixture
+(calendar_dates-only feed; mkfixture.py needs calendar.txt).
+Earlier note, kept for the record: the 15 biggest moves were untouched by the #771 change: omahametro 5529
 weekday 15 -> 353, cta J14 Saturday 25 -> 455, nyct-brooklyn B7 Sunday 35 -> 475, njt-rail 3
 (BNTNM) to Hoboken 43 -> 366, njt-bus 29 weekday 56 -> 423, translink 6727 31 -> 227, pace 807
 48 -> 321, mtd BRONZE 35 -> 179, dart 8156 77 -> 242, plus mta-maryland 11663 5 -> 41, mbta 134
