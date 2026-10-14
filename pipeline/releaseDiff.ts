@@ -38,7 +38,7 @@
 import { createHash } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { getGtfsModeName } from '../shared/modes.js';
+import { findModeOverride, getGtfsModeName, VIRTUAL_LRT_MODE } from '../shared/modes.js';
 import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archiveSelection.js';
 import { TIER_RANK } from './headway-utils.js';
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
@@ -159,8 +159,25 @@ function lineEndpoints(geometry: LineFeature['geometry']): [number[], number[]] 
 
 const roundCoord = (point: number[]) => `${Number(point[0]).toFixed(3)},${Number(point[1]).toFixed(3)}`;
 
-/** Summarize a route artifact (and its stops index) for the gate. */
-export function summarizeArtifact(geojson: string, stopsJson: string | null): ArtifactSummary {
+/**
+ * The mode label the gate compares: the published route_type, or the agency's listed correction
+ * for it (config modeOverrides), so a feed that relabels a route the override already covers does
+ * not read as a lost mode (#861). Light rail (virtual mode 100) keeps the tram/light rail label.
+ */
+function gateModeName(p: Record<string, unknown>, slug: string | undefined): string {
+  const routeType = p.routeType == null || p.routeType === '' ? 3 : p.routeType as number;
+  const override = slug ? findModeOverride({
+    agencySlug: slug,
+    routeType,
+    routeShortName: p.routeShortName as string | null | undefined,
+    routeLongName: p.routeLongName as string | null | undefined,
+  }) : undefined;
+  if (!override) return getGtfsModeName(routeType);
+  return getGtfsModeName(override.mode === VIRTUAL_LRT_MODE ? 0 : override.mode);
+}
+
+/** Summarize a route artifact (and its stops index) for the gate. Pass the slug to apply its mode overrides. */
+export function summarizeArtifact(geojson: string, stopsJson: string | null, slug?: string): ArtifactSummary {
   const counts = countArtifacts(geojson, stopsJson);
   const parsed = JSON.parse(geojson) as { features?: LineFeature[]; atlasSchemaVersion?: unknown };
   const features = (parsed.features ?? [])
@@ -179,7 +196,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null): Ar
     if (p.routeId == null) continue;
     const routeId = String(p.routeId);
     if (typeof p.day === 'string' && p.day in dayFeatures) dayFeatures[p.day]++;
-    modes.add(getGtfsModeName(p.routeType == null || p.routeType === '' ? 3 : p.routeType as number));
+    modes.add(gateModeName(p, slug));
     const ends = lineEndpoints(feature.geometry);
     if (ends) {
       signatures.add(`${routeId}|${roundCoord(ends[0])}|${roundCoord(ends[1])}`);
@@ -578,7 +595,7 @@ export async function readLiveSummary(
 ): Promise<ArtifactSummary | null> {
   for (const prefix of prefixes) {
     const geojson = await get(`${prefix}/${slug}.json`);
-    if (geojson) return summarizeArtifact(geojson, await get(`${prefix}/${slug}-stops.json`));
+    if (geojson) return summarizeArtifact(geojson, await get(`${prefix}/${slug}-stops.json`), slug);
   }
   return null;
 }

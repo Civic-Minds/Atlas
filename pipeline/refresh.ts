@@ -531,7 +531,7 @@ async function refreshAgency(
   // Release diff gate (shared with reprocess and publish): checked before
   // anything is written, so a refused agency keeps its live artifacts, archive
   // and metadata unchanged.
-  const next = summarizeArtifact(geojson, stopsJson);
+  const next = summarizeArtifact(geojson, stopsJson, agency.slug);
   const { feedStart } = await peekFeedDates(buf);
   const agencyFlags = await evaluateRun({
     candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? peekedExpiry, calendarEnd: peekedExpiry } }],
