@@ -2184,11 +2184,21 @@ export async function processGtfsBuffer(
       // terminal's sparse all-day fallback while every segment was limited).
       const readingStops = railFeature || isMapless ? [] : drawnPatternStops().filter(p => stopHasReading(p.stopId));
       const terminalHasReading = !terminalId || stopHasReading(terminalId);
+      // The own pattern's terminal sample is sparse when it has fewer than
+      // MIN_ALL_DAY_TERMINAL_DEPARTURES daytime departures, or fewer than
+      // MIN_POOLED_TIER_DEPARTURES while the pooled list at that stop holds at least twice as
+      // many (cta J14 Saturday to Madison & Jefferson: four trips on a 32-stop shape, terminal
+      // pooled every 10, own departures read 455). A real branch (ttc 38 from Rouge Hill, 81
+      // own departures against a terminal pooled every 7) is not sparse and keeps #772's rule.
+      const ownTerminalDaytime = terminalId ? new Set([...(metricStopMap.get(terminalId) ?? [])].filter(t => t >= 360 && t <= 1320)).size : 0;
+      const mergedTerminalDaytime = terminalId ? new Set([...(stopMetricMap.get(terminalId) ?? [])].filter(t => t >= 360 && t <= 1320)).size : 0;
+      const ownTerminalHasReading = !terminalId || (ownTerminalDaytime >= MIN_ALL_DAY_TERMINAL_DEPARTURES
+        && !(ownTerminalDaytime < MIN_POOLED_TIER_DEPARTURES && mergedTerminalDaytime >= 2 * ownTerminalDaytime));
       const lineHasReading = railFeature || isMapless || !terminalId || !lineRunsByDay() || poolUsed || scoped != null
         || terminalHasReading || readingStops.length > 0;
-      // A terminal with no all-day reading on a line whose other drawn stops have one (cta J14
-      // Saturday: a 32-stop shape run by two trips past a trunk every 10): the headline is the
-      // worst reading among those stops, not the thin shape's own value (455).
+      // A sparse own terminal on a line whose drawn stops have pooled readings: the headline is
+      // the worst reading among those stops, never the sparse own value (455), unless the pool or
+      // the thin-shape rescue already speaks for the terminal.
       const worstReadingStop = (): number | undefined => {
         const vals = readingStops.map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
         return vals.length ? Math.max(...vals) : undefined;
@@ -2201,7 +2211,7 @@ export async function processGtfsBuffer(
         && terminalMiddayHw != null
         && isUnevenTwoGapMiddayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount);
       const headway = !lineHasReading ? null
-        : (!terminalHasReading && !poolUsed && scoped == null && lineRunsByDay() && worstReadingStop() != null) ? worstReadingStop()!
+        : ((!terminalHasReading || !ownTerminalHasReading) && !poolUsed && scoped == null && lineRunsByDay() && worstReadingStop() != null) ? worstReadingStop()!
         : decideHeadline({
         unevenMiddayTerminal,
         branchHw,
