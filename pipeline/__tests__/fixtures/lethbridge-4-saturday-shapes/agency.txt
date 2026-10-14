@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email
+ff775478-a30e-4870-a1d5-ffa8341d84b9,Lethbridge Transit,https://LethbridgeTransit.ca,America/Denver,en,403-320-3111,https://LTFare.ca,transit@lethbridge.ca

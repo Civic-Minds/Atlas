@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideDedupe, isThinNoDaytime, MIN_THIN_REPLACING_DEPARTURES, type DedupePattern } from '../featureDedupe';
+import { decideDedupe, isSameLine, isThinNoDaytime, MIN_THIN_REPLACING_DEPARTURES, type DedupePattern } from '../featureDedupe';
 import { MIN_ALL_DAY_TERMINAL_DEPARTURES } from '../headway-utils';
 
 // The dedupe rules in order (#596, #716, #740, #772), each on the case that introduced it.
@@ -47,5 +47,35 @@ describe('decideDedupe', () => {
     expect(decideDedupe(pattern({ dedupeHeadway: 20 }), pattern({ dedupeHeadway: 20 }), undefined)).toBe('keep');
     expect(decideDedupe(pattern({ dedupeHeadway: 20 }), pattern({ dedupeHeadway: null }), undefined)).toBe('keep');
     expect(decideDedupe(pattern({ dedupeHeadway: null }), pattern({ dedupeHeadway: 60 }), undefined)).toBe('replace');
+  });
+});
+
+describe('decideDedupe step 3b: the midday drawing of the same line (#844, #842)', () => {
+  // A 10 km east-west line; about 0.0009 degrees of latitude is 100 m.
+  const line = (endLatShift = 0, lonEnd = -79.876): number[][] => [[-80, 43.6], [-79.94, 43.6], [lonEnd, 43.6 + endLatShift]];
+  const noMidday = (over: Partial<DedupePattern> = {}) => pattern({ dedupeHeadway: 33, headway: 33, departures: 15, runsMidday: false, line: line(), ...over });
+  const midday = (over: Partial<DedupePattern> = {}) => pattern({ dedupeHeadway: 35, headway: 35, departures: 12, line: line(), ...over });
+
+  it('the midday pattern takes and keeps the slot from a no-midday drawing of the same line (Lethbridge 4)', () => {
+    expect(decideDedupe(noMidday(), midday(), undefined)).toBe('replace');
+    expect(decideDedupe(midday(), noMidday(), undefined)).toBe('keep');
+  });
+
+  it('two platforms of one terminal are the same line; another terminal is not (REM A3, Brantford 3073)', () => {
+    expect(isSameLine(line(), line(0.0001))).toBe(true);
+    expect(isSameLine(line(), line(0.0018))).toBe(false);
+    expect(decideDedupe(noMidday(), midday({ line: line(0.0018) }), undefined)).toBe('keep');
+  });
+
+  it('a longer peak-only line keeps its own geometry (#728)', () => {
+    expect(decideDedupe(noMidday({ line: line(0, -79.7) }), midday(), undefined)).toBe('keep');
+  });
+
+  it('a midday block reading more than 20% off the other pattern is not the same service (CapMetro 337)', () => {
+    expect(decideDedupe(noMidday({ dedupeHeadway: 30, headway: 30 }), midday({ dedupeHeadway: 38, headway: 38, departures: 9 }), undefined)).toBe('keep');
+  });
+
+  it('the midday side must be a real sample', () => {
+    expect(decideDedupe(noMidday(), midday({ departures: MIN_THIN_REPLACING_DEPARTURES - 1 }), undefined)).toBe('keep');
   });
 });

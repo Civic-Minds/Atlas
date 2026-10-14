@@ -65,6 +65,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Routes whose midday trips run on their own shape no longer show a fake midday gap**: when one line was drawn from separate morning-evening and midday patterns (Lethbridge 4 on Saturdays) or ended at a different platform in the morning (REM A3), the pattern without midday trips could speak for the route, leaving midday empty or reading a gap of several hours. (#844, #842)
 - **The Roosevelt Island Tramway stays an aerial tram**: its feed now labels the tram as light rail, which would have shown it as a streetcar; it keeps its gondola/aerial tram mode. (#861)
 - **An agency whose refresh produces no route lines is no longer marked up to date**: a feed with stops but no drawable routes (El Monte) was stamped "current", so nothing flagged it as broken; it now keeps its last good data and is marked as needing another try. (#634)
 - **Map tiles stay cached in the browser**: each release's tile archives are now uploaded with a long cache header, so zooming back or revisiting no longer re-downloads tiles now that they load straight from storage. (#840)

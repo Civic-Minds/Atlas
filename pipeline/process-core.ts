@@ -1127,6 +1127,7 @@ export async function processGtfsBuffer(
       runsMidday: initialPeriodHeadways.midday != null,
       runsOnRepDay: newRunsOnRepDay,
       carriesRepDay: newCarriesRepDay,
+      line: hasRouteShape ? points!.map(([lat, lon]) => [lon, lat]) : undefined,
     };
     if (decideDedupe(incumbent, candidate, repWeekday) === 'keep') continue;
 
