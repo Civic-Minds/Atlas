@@ -109,6 +109,27 @@ export function stampFeedMeta(
 }
 
 /**
+ * After reprocess-derived-artifacts publishes an agency, record the expiry of the feed it was
+ * built from, with the same placeholder cap as a refresh. Without this, index.json kept the
+ * expiry of an older feed: publish-data-release then blocked mcts and sfmta as "service ended"
+ * and the site showed false expired notices (#837). Only the expiry fields change; the refresh
+ * bookkeeping (version, archive key, refresh date) stays with refresh. Returns whether anything
+ * changed, so unchanged agencies leave their files alone.
+ */
+export function stampReprocessedFeedExpiry(
+  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry'>,
+  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string },
+): boolean {
+  const lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry, opts.todayYmd);
+  if (lastFeedExpiry == null) return false;
+  const lastPeekedExpiry = opts.calendarExpiry ?? agency.lastPeekedExpiry ?? null;
+  if (agency.lastFeedExpiry === lastFeedExpiry && (agency.lastPeekedExpiry ?? null) === lastPeekedExpiry) return false;
+  agency.lastFeedExpiry = lastFeedExpiry;
+  agency.lastPeekedExpiry = lastPeekedExpiry;
+  return true;
+}
+
+/**
  * Record each supplemental feed's expiry, version and raw archive key next to
  * the main feed's lastFeed* fields, in supplementalFeedUrls order. Freshness
  * checks read these through effectiveFeedExpiry so an expired supplemental

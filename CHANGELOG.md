@@ -52,6 +52,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **A data rebuild now keeps each agency's feed end date current**: rebuilding from a newer feed left the old end date behind, so agencies showed a false "service ended" notice and the release check blocked them (#837).
 - **Frequency chart hover no longer covers labels**: hovering an hour bar drew an outline that spilled over the number above and below the chart; it now just shades that hour's column. (#830)
 - **The expired-timetable notice on route cards is smaller and reads properly**: it was bold and oversized after the type-scale change and said "Atlas's latest the Grand River Transit schedule for Waterloo Region ended"; it now says "Grand River Transit's timetable ended on Apr 26, 2026." in regular weight, with no divider line above it, and the expanded version puts the check history in its own paragraph instead of running it on.
 - **The hidden-routes list now looks like the other route lists**: agency names are a lighter group header, routes use the standard row, and the divider lines are gone, so agencies and routes are easy to tell apart.
