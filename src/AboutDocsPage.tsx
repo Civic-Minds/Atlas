@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import { FEATURES } from '../shared/config';
 import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
-import SiteFooter from './components/SiteFooter';
 import PageShell from './components/ui/PageShell';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 
@@ -368,8 +367,6 @@ export default function AboutDocsPage() {
           <SiteContact title="Technical questions and feedback" subject="Atlas Feedback" linkLabel="Contact us with a question or correction">
             Questions about the methodology, a suspected data problem, or a transit agency’s coverage are welcome. Feedback is most useful when it identifies the agency, route, schedule period, and specific result that needs review.
           </SiteContact>
-
-          <SiteFooter />
           </article>
         </div>
     </PageShell>
