@@ -112,6 +112,27 @@ export function getTimelineHeadwayColor(hw: number | null, mode: ColorVisionMode
 
 /** Flat line color for Night Service view — every visible route already passed the
  * nightService filter, so (unlike headway) there's no tier to express, just one color. */
+/**
+ * Branch colours for the route card's stacked hourly chart. The chart stacks every branch
+ * of a direction (no cap); 8 covers the most branches any one direction has in the data,
+ * so no two legend entries share a colour. Hues avoid the headway-tier greens, oranges,
+ * brown and grey.
+ */
+export const BRANCH_STACK_COLORS = [
+  '#2563eb', // blue
+  '#db2777', // pink
+  '#059669', // emerald
+  '#d97706', // amber
+  '#7c3aed', // violet
+  '#dc2626', // red
+  '#0891b2', // cyan
+  '#65a30d', // lime
+] as const;
+
+export function branchStackColor(index: number): string {
+  return BRANCH_STACK_COLORS[index % BRANCH_STACK_COLORS.length];
+}
+
 export const NIGHT_SERVICE_COLOR = '#818cf8';
 export const COLOR_VISION_NIGHT_SERVICE_COLOR = '#0072b2';
 
