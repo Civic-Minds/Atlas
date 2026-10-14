@@ -29,6 +29,8 @@ function buildInitialBounds(): ViewportBounds {
 }
 const INITIAL_BOUNDS = buildInitialBounds();
 const MAX_CONCURRENT_AGENCY_FETCHES = 6;
+/** Viewport agencies that wait for the tiles are fetched this many at a time, and only while nothing else downloads. */
+const LOW_PRIORITY_CONCURRENCY = 1;
 export const DETAIL_GEOJSON_MIN_ZOOM = 8;
 
 export function shouldLoadAgencyDetails(zoom: number | undefined, searchQuery: string): boolean {
@@ -162,7 +164,7 @@ export function useAgencyData(
   const pumpFetchQueue = useCallback((session: AgencyLoadSession) => {
     while (!session.cancelled) {
       // Low-priority agencies go one at a time, and only while nothing else is downloading.
-      const takeLow = session.fetchQueue.length === 0 && session.lowEnabled && session.activeFetches === 0 && session.lowQueue.length > 0;
+      const takeLow = session.fetchQueue.length === 0 && session.lowEnabled && session.activeFetches < LOW_PRIORITY_CONCURRENCY && session.lowQueue.length > 0;
       if (!takeLow && !(session.activeFetches < MAX_CONCURRENT_AGENCY_FETCHES && session.fetchQueue.length > 0)) break;
       const agency = (takeLow ? session.lowQueue : session.fetchQueue).shift()!;
       session.queuedSlugs.delete(agency.slug);
