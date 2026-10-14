@@ -17738,21 +17738,41 @@
       ],
       "feedUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
       "region": "Louisiana",
-      "lastFeedExpiry": "20991231",
-      "lastFeedVersion": "Service 10/13/2024",
-      "lastRefreshedAt": "2026-08-10",
+      "lastFeedExpiry": "20270109",
+      "lastFeedVersion": "20260929",
+      "lastRefreshedAt": "2026-10-14",
       "cities": [
         "Bossier City, Louisiana",
         "Shreveport, Louisiana"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1060/latest.zip",
-      "lastFeedCheckAt": "20261012",
+      "lastFeedCheckAt": "20261014",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20991231",
+      "expiredFeedCheckExpiry": "20270109",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1060/latest.zip"
+      "lastFeedSourceUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
+      "feedQuality": {
+        "status": "review",
+        "score": 80,
+        "reasons": [
+          "2 route shapes needed adjustment before display."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 2,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 58
+        },
+        "checkedAt": "2026-10-14"
+      },
+      "lastPeekedExpiry": "20270109",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0
     },
     {
       "slug": "billings",
