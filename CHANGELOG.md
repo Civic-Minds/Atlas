@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Route card branches that only run limited service (e.g. TTC 504 "to Distillery") now use the same row layout as other limited branches instead of a separate pill style ([#870](https://github.com/Civic-Minds/Atlas/issues/870)).
 - Trip time by hour now covers the whole day for TTC subway lines: Line 1 and Line 2 give the same end-to-end run a different shape per time band, and only one band's trips were being counted ([#852](https://github.com/Civic-Minds/Atlas/issues/852)).
 
 ### Changed
