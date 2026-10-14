@@ -136,6 +136,15 @@ dir> <out dir> J14 saturday`; cta zip in the 1419e250 scratchpad zips/cta), trac
 the same rule there (a sparse own value never sets the headline over a pool reading; nothing
 qualifying = limited), rescan, re-check the list above.
 
+DECISION (manager, 2026-10-14 02:10): "limited" means no real midday reading. A drawn stop has
+a reading only when its list has at least 4 unique departures spread through 9-15h; a variant
+whose own terminal has none goes limited, rail included (drop the railFeature exclusion, after
+checking njt-rail 3 goes limited and an all-day rail line on another agency does not change).
+Settles njt-rail 3, pace 807, mta-maryland 11663, mbta 134 (also check why its midday period
+reads 13 under a 56 headline), cincinnati 37/24, septa 1, fairfax 334, sct 6892, go 18J,
+njt-bus 74 and 29. Then rescan (chain690j.sh in the 1419e250 scratchpad, tree trees/fix690g
+checked out at the commit; report690g.py) and report the same tables.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
