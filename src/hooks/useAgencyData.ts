@@ -71,6 +71,13 @@ export function getAgencyBbox(agency: Agency): [number, number, number, number] 
   ];
 }
 
+/** Slugs of the agencies the map is currently showing in detail (what the data hook would load). */
+export function viewportAgencySlugs(agencies: Agency[], bounds: ViewportBounds | null, zoom: number | undefined): string[] {
+  if (!shouldLoadAgencyDetails(zoom, '')) return [];
+  const vp = bounds ?? INITIAL_BOUNDS;
+  return agencies.filter(a => bboxIntersects(getAgencyBbox(a), vp)).map(a => a.slug);
+}
+
 function bboxIntersects(
   bbox: [number, number, number, number],
   vp: ViewportBounds

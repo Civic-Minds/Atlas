@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
 import SelectionLoadPanel from '../components/Interval/SelectionLoadPanel';
-import { useAgencyData } from '../hooks/useAgencyData';
+import { useAgencyData, viewportAgencySlugs } from '../hooks/useAgencyData';
 import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
@@ -71,6 +71,8 @@ interface Props {
   day: DayType;
   setDay: (d: DayType) => void;
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
+  /** Agencies in view, known before their data loads (drives the Live/History controls). */
+  onViewportAgencySlugsChange?: (slugs: string[]) => void;
   onSelectedMapAgencyChange?: (slug: string | null) => void;
   onSelectionActiveChange?: (active: boolean) => void;
   /** Tells the top bar when compare is on, so the other mode tabs can shrink to icons. */
@@ -136,7 +138,7 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onSelectedMapAgencyChange, onSelectionActiveChange, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -492,6 +494,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     onLayersChange?.(layers);
   }, [layers, onLayersChange]);
+
+  const viewportSlugKey = useMemo(() => viewportAgencySlugs(agencies, bounds, mapZoom).sort().join('|'), [agencies, bounds, mapZoom]);
+  useEffect(() => {
+    onViewportAgencySlugsChange?.(viewportSlugKey ? viewportSlugKey.split('|') : []);
+  }, [viewportSlugKey, onViewportAgencySlugsChange]);
 
   useEffect(() => {
     if (!userLocation) return;
@@ -991,7 +998,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               </span>
             </div>
           )}
-          {!compareActive && stats && (stats.total > 0 || !isLoading) && (
+          {/* Counts come from the loaded agency data, so they wait for it (the in-view counts come from the tiles). */}
+          {!compareActive && stats && (showMapContext || !isLoading) && (
               <div className="hidden sm:flex gap-2">
                 <div className={`${MAP_BADGE} h-8`}>
                   {showMapContext ? (
@@ -1026,7 +1034,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                     <span className={MAP_BADGE_LABEL}>agencies</span>
                   </button>
                 )}
-                {showMatchPercentage && (
+                {showMatchPercentage && !isLoading && (
                   <div className={`${MAP_BADGE} h-8`}>
                     <span className={MAP_BADGE_COUNT}>
                       {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
@@ -1158,7 +1166,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               hideLimitedService={hideLimitedService}
               setHideSpan={setHideSpan}
                 setHideLimitedService={setHideLimitedService}
-                limitedServiceRouteCount={stats?.limitedService ?? null}
+                limitedServiceRouteCount={isLoading ? null : stats?.limitedService ?? null}
               livePollingOnly={livePollingOnly}
               setLivePollingOnly={setLivePollingOnly}
               onInfoOpen={onInfoOpen}
@@ -1194,8 +1202,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               hideLimitedService={hideLimitedService}
               setHideSpan={setHideSpan}
                 setHideLimitedService={setHideLimitedService}
-                limitedServiceRouteCount={stats?.limitedService ?? null}
-                limitedServiceRoutes={stats?.limitedServiceRoutes}
+                limitedServiceRouteCount={isLoading ? null : stats?.limitedService ?? null}
+                limitedServiceRoutes={isLoading ? undefined : stats?.limitedServiceRoutes}
               livePollingOnly={livePollingOnly}
               setLivePollingOnly={setLivePollingOnly}
               onInfoOpen={onInfoOpen}

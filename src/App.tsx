@@ -357,6 +357,7 @@ export default function App() {
   });
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
+  const [viewportAgencySlugs, setViewportAgencySlugs] = useState<string[]>([]);
   const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
     const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
     return days.length ? days : ['Weekday' as const];
@@ -384,8 +385,12 @@ export default function App() {
   const inLive = activeApp === 'live';
   const inNight = activeApp === 'night';
   const loadedAgencySlugs = useMemo(
-    () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
-    [layers],
+    () => new Set([
+      ...Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug),
+      // In-view agencies count before their data arrives, so the Live and History controls do not wait for it.
+      ...viewportAgencySlugs,
+    ]),
+    [layers, viewportAgencySlugs],
   );
   // Desktop mode tabs: while one mode is on, the others shrink to icons (beta).
   const activeModeTab = inLive ? 'live' : activeApp === 'history' ? 'history' : compareActive ? 'compare' : null;
@@ -748,6 +753,7 @@ export default function App() {
               day={day}
               setDay={setDay}
               onLayersChange={setLayers}
+              onViewportAgencySlugsChange={setViewportAgencySlugs}
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               onCompareActiveChange={setCompareActive}
