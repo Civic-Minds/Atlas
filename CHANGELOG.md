@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
+- **Route card branch colours no longer repeat**: the hourly chart now gives up to eight branches their own colour, so a fifth branch (e.g. TTC 52's "Terminal 3 Only") no longer looks like the first one. (#853)
 - **Route card branch key is left-aligned**: the branch names under the hourly chart now line up in one column at the chart's left edge instead of being centred.
 - **The map's routes start loading sooner**: the data lookup and the route-tile headers now start while the page code is still loading (about 2 to 8 seconds earlier on a slow phone connection) and browsers keep the tiles they have fetched. (CIV-151)
 - **Routes appear sooner on first load**: the map now draws from the tiles alone, and each agency's full data downloads afterwards (selected routes and stops first), so slow connections no longer wait on about 5 MB of data before seeing routes.
