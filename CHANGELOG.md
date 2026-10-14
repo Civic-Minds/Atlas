@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
+- **Beta: the agencies list marks Live and History agencies**: small "Live" and "History" tags next to agency names show which agencies have live vehicle data and which have 10+ years of schedule history. Public is unchanged.
 - **Atlas's server can no longer be made to re-fetch tiles or live data on demand**: the unused tile-archive proxy is gone, basemap and history requests with junk or out-of-range values are refused, live vehicles are shared between viewers for about 15 seconds, and the site now blocks being framed by other sites. This protects Vercel transfer limits and the agencies' API keys. ([#867](https://github.com/Civic-Minds/Atlas/issues/867))
 - **Basemap images now stay in the browser for 7 days**: returning visitors no longer re-download the base map, and far fewer tile requests reach Atlas's server, cutting Vercel transfer use. Error and "API key required" tiles are never cached. (#856)
 - **Route card branch colours no longer repeat**: the hourly chart now gives up to eight branches their own colour, so a fifth branch (e.g. TTC 52's "Terminal 3 Only") no longer looks like the first one. (#853)
