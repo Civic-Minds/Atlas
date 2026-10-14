@@ -448,7 +448,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [currentRoute, nonCorridorLayers, currentDay, period]);
 
   const liveAgencySlug = useMemo(() => {
-    if (!currentRoute) return null;
+    if (!FEATURES.live || !currentRoute) return null;
     const slug = (currentRoute as any).agencySlug as string | null ?? null;
     if (!slug || !isLivePollingRoute(slug, currentRoute.routeShortName)) return null;
     return slug;
@@ -1089,7 +1089,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             filteredStopRoutes={filteredStopRoutes as StopRoute[]}
             period={period}
             nearbyConnections={nearbyConnections as NearbyConnection[]}
-            liveStop={currentStop.agencySlug && currentStop.stopId
+            liveStop={FEATURES.live && currentStop.agencySlug && currentStop.stopId
               ? { slug: currentStop.agencySlug as string, stopId: currentStop.stopId as string, lat: currentStop.lat as number, lon: currentStop.lon as number }
               : null}
           />
