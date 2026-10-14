@@ -44,7 +44,9 @@ describe('headline when a destination is split over several shapes', () => {
     // about every 40 in the evening (Morgan 18:47 19:21 20:01 20:41 21:21). Before: evening 20.
     const p = await weekdayProps('mta-maryland-silver-split', 'mta-maryland', 'CURTIS BAY');
     expect(p.headwayByPeriod.evening).toBeGreaterThanOrEqual(40);
-    expect(p.headway).toBe(31);
+    // 29 since #813: at the terminal the pool adds nothing at midday, so it is read as the own
+    // pattern's typical wait, not floored at the merged list's mean (31).
+    expect(p.headway).toBe(29);
     // The floored evening is the worst Morgan State stop's own reading, companions included:
     // its coverage, max gap and sustained flag describe the 43 shown, not the terminal pool's.
     const worst = '3656';
@@ -71,12 +73,15 @@ describe('terminal headline when a branch is split over many shape IDs', () => {
     // 10th point. Toward Pittsburgh, 10 trips run on 6 shape IDs that all reach stop 835235;
     // the drawn 22-stop shape (595_shp) has 3 of them (08:30, 15:30, 16:45). Hand count at the
     // first stop: 04:55 05:45 06:45 08:30 09:30 12:15 13:20 14:20 15:30 16:45. Midday is 9:30,
-    // 12:15, 13:20, 14:20 (gaps 165, 65, 60): the pooled reading is never better than the mean
-    // gap, 98. Every drawn stop is served by all 10 trips, so no stop lowers it; the drawn
-    // terminal's own 3 trips (248) are not counted, the terminal reads the pool.
+    // 12:15, 13:20, 14:20 (gaps 165, 65, 60): a 165-minute hole against 98 is not a midday
+    // service (#813), so the pool is read over the day: the sustained 6-22h reading of the 10
+    // trips, 66. Every drawn stop is served by all 10 trips, so no stop lowers it; the drawn
+    // terminal's own 3 trips (248) are not counted, the terminal reads the pool. Toward
+    // Washington the pool adds nothing at midday and reads as the own pattern, 60 (62 floored
+    // at the mean before #813).
     expect(await weekday('freedom-m-split-shapes', 'freedom-transit')).toEqual([
-      [0, 'Washington', 62],
-      [1, 'Pittsburgh', 98],
+      [0, 'Washington', 60],
+      [1, 'Pittsburgh', 66],
     ]);
   });
 

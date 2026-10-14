@@ -60,6 +60,14 @@ describe('typical wait for alternating gaps', () => {
     expect(pooledHeadwayInWindow(at('9:00', '9:30', '10:00', '11:00', '12:00', '13:00', '13:30', '14:00'), 540, 900)).toBe(60);
   });
 
+  it('#813: a pooled window with one gap over 1.5x the typical wait publishes nothing', () => {
+    // Every 20 with one hour-long hole: the typical wait is 20 and the hole is 3x it, so the
+    // merged list is not a 20-minute service at midday and the stop keeps its own value.
+    expect(pooledHeadwayInWindow(at('9:00', '9:20', '9:40', '10:40', '11:00', '11:20', '11:40', '12:00', '12:20', '12:40', '13:00'), 540, 900)).toBeNull();
+    // The same list with the hole filled reads 20.
+    expect(pooledHeadwayInWindow(at('9:00', '9:20', '9:40', '10:00', '10:20', '10:40', '11:00', '11:20', '11:40', '12:00', '12:20', '12:40', '13:00'), 540, 900)).toBe(20);
+  });
+
   it('Saint John 12: the all-day phase 2 value is no longer the short 60', () => {
     expect(computeHeadwayStats(at('7:30', '8:30', '9:30', '13:15', '17:30', '18:30')).median).toBe(240);
   });

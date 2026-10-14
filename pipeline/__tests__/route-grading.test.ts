@@ -18,7 +18,35 @@ describe('terminalReading', () => {
     const p = terminalReading({ terminalId: 't', ownTerminalTimes: every(360, 1320, 30), pool: pooled, ownStopHwsSorted: [30] });
     expect(p.ownTerminalMiddayHw).toBe(30);
     expect(p.terminalComputedHw).toBe(20);
+    expect(p.poolUsed).toBe(true);
   });
+
+  it('a pool that adds nothing in the window reads as the own pattern, without the mean floor (ttc 41 Saturday)', () => {
+    // Every 8 with one 16-minute gap, 37 departures 9-15h: the pool's five extra trips are all
+    // outside the window, so the merged list is the own list there and reads its typical 8,
+    // not the mean-floored 10 a merged list would carry.
+    const own = every(540, 900, 8).filter(t => t !== 700);
+    const pool = [...own, 300, 320, 340, 1500, 1520].sort((a, b) => a - b);
+    const r = terminalReading({ terminalId: 't', ownTerminalTimes: own, pool, ownStopHwsSorted: [8] });
+    expect(r.poolUsed).toBe(true);
+    expect(r.terminalComputedHw).toBe(8);
+  });
+
+  it('#813: a pool whose merged midday list is uneven leaves the own reading in place', () => {
+    // ttc 129 weekday at Steeles: the own shape every 20 at midday; merged with a second
+    // shape the list has a 30-minute hole against a 20 typical, so the pool is not read and the
+    // own midday 20 stands rather than the pool's later-window 28.
+    const own = every(540, 900, 20);
+    // The second shape adds a burst at 10:00 and nothing else, so the merged list keeps the
+    // 20-minute gaps but its mean drops: the mean guard lets it through and the 20s exceed
+    // 1.5x the floored value only when the floor falls below 14. Use a hole instead: the
+    // merged list is every 20 until 11:00, then nothing until 12:00.
+    const pool = own.filter(t => t <= 660 || t >= 720);
+    const r = terminalReading({ terminalId: 't', ownTerminalTimes: own, pool, ownStopHwsSorted: [20] });
+    expect(r.poolUsed).toBe(false);
+    expect(r.terminalComputedHw).toBe(20);
+  });
+
 });
 
 const inputs = (over: Partial<HeadlineInputs> = {}): HeadlineInputs => ({

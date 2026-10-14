@@ -1832,7 +1832,7 @@ export async function processGtfsBuffer(
       const windowHw = (start: number, end: number, allDay = false): number | null => {
         usedOwnFallback = false;
         if (isPooled) {
-          const v = pooledHeadwayInWindow(times, start, end, 3, allDay);
+          const v = pooledHeadwayInWindow(times, start, end, 3, allDay, true, own);
           if (v != null) return v;
         }
         const v = allDay
@@ -1847,16 +1847,20 @@ export async function processGtfsBuffer(
               ?? windowHw(900, 1140)            // PM peak 15–19h
               ?? windowHw(360, 1320, true);     // last resort: raw all-day 6–22h
       if (hw != null) allStopHw[stopId] = hw;
-      const hwPlain = medianHeadwayInWindow(times, 540, 900, 3)
-              ?? medianHeadwayInWindow(times, 900, 1140, 3)
-              ?? sustainedMedianHeadwayInWindow(times, 360, 1320, 3);
+
+      // The plain values feed the #772 branch decision, which compares the own pattern's stops
+      // with a shared terminal: they read the own list at a pooled stop too (ttc 38 weekday: the
+      // pooled terminal's plain 7 would have beaten the branch's 15).
+      const hwPlain = medianHeadwayInWindow(own, 540, 900, 3)
+              ?? medianHeadwayInWindow(own, 900, 1140, 3)
+              ?? sustainedMedianHeadwayInWindow(own, 360, 1320, 3);
       if (hwPlain != null) allStopHwPlain[stopId] = hwPlain;
-      const middayPlain = medianHeadwayInWindow(forCrossMidnightWindow(times, PERIODS.midday.end), PERIODS.midday.start, PERIODS.midday.end, 3);
+      const middayPlain = medianHeadwayInWindow(forCrossMidnightWindow(own, PERIODS.midday.end), PERIODS.midday.start, PERIODS.midday.end, 3);
       if (middayPlain != null) allStopMiddayHwPlain[stopId] = middayPlain;
       if (hw != null && usedOwnFallback) ownFallbackHw.add(stopId);
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-        const pooledPh = isPooled ? pooledHeadwayInWindow(times, start, end) : null;
+        const pooledPh = isPooled ? pooledHeadwayInWindow(times, start, end, 3, false, true, own) : null;
         const ph = isPooled
           ? (pooledPh ?? medianHeadwayInWindow(forCrossMidnightWindow(own, end), start, end, 3, true))
           : medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
@@ -1999,7 +2003,11 @@ export async function processGtfsBuffer(
         const segments = segmentsByTier(drawnPatternStops(), stopId => {
           const times = stopMetricMap.get(stopId);
           if (!times || times.length === 0) return null;
-          const headway = allStopHw[stopId] ?? null;
+          // Fewer than MIN_ALL_DAY_TERMINAL_DEPARTURES midday departures is not an all-day
+          // reading: the stop is limited, consistent with the headline (ttc 63 and 17 weekday,
+          // peak-only lines whose segments graded 10 and 30 on one to three departures).
+          const middayDeps = new Set(times.filter(t => t >= 540 && t <= 900)).size;
+          const headway = middayDeps < MIN_ALL_DAY_TERMINAL_DEPARTURES ? null : allStopHw[stopId] ?? null;
           if (headway == null && !lineRunsByDay) return null;
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
           return { tier: graded?.tier ?? null, headway };
@@ -2062,7 +2070,7 @@ export async function processGtfsBuffer(
       const headlinePool = pooledHeadlineTimes(terminalId);
       const hwVals = onShape.map(({ stopId }) => ownStopHw[stopId]).filter((v): v is number => v != null).sort((a, b) => a - b);
       // Step 4.1 (routeGrading.ts): the terminal's value, from the pool or the own pattern.
-      const { ownTerminalMiddayHw, terminalHw, terminalMiddayHw, allStopMedian, terminalComputedHw } = terminalReading({ terminalId, ownTerminalTimes, pool: headlinePool, ownStopHwsSorted: hwVals });
+      const { ownTerminalMiddayHw, terminalHw, terminalMiddayHw, allStopMedian, poolUsed, terminalComputedHw } = terminalReading({ terminalId, ownTerminalTimes, pool: headlinePool, ownStopHwsSorted: hwVals });
 
       // If the terminal stop is shared, the combined terminal headway might be lower (better)
       // than the branch-specific headway. Do not override with the combined headway in that case.
@@ -2129,10 +2137,10 @@ export async function processGtfsBuffer(
         branchHw,
         branchTripCount,
         terminalComputedHw,
-        hasPool: headlinePool != null,
+        hasPool: poolUsed,
         thinTerminalSample,
         scoped,
-        worstDrawnStopHw: headlinePool ? worstDrawnStopHw() : undefined,
+        worstDrawnStopHw: poolUsed ? worstDrawnStopHw() : undefined,
         plainTerminalComputedHw,
         plainNonTerminalStopHws,
         pooledPlainTerminalHw: pooledTerminalHeadway(terminalId ? headsignMap?.get(terminalId) : undefined),
