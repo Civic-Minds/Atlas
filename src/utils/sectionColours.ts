@@ -1,9 +1,8 @@
 import type { ShapeProperties } from '../hooks/useIntervalStats';
 import type { AgencyLayers } from '../hooks/useAgencyData';
-import { HEADWAY_TIERS } from '../../shared/config';
 import { pairOppositeStop } from '../../shared/sharedStops';
 import { clipLinestring } from './lineClip';
-import { getTierColor, type ColorVisionMode } from './colors';
+import { getTierColor, headwayToTierColor, type ColorVisionMode } from './colors';
 
 /**
  * Route lines coloured section by section (CIV-152, beta only: FEATURES.segmentColours).
@@ -42,11 +41,20 @@ export interface SectionRun {
   headway: number | null;
 }
 
-const TIER_NAMES = HEADWAY_TIERS.map(({ max }) => (max === Infinity ? 'infrequent' : String(max)));
-const rank = (tier: string | null | undefined): number => {
+/**
+ * Tier order, best first: numeric tiers by value (rail's 5 and 8 included, which HEADWAY_TIERS
+ * does not list, so a streetcar's 8 ranked as the worst tier), then infrequent, then span.
+ */
+export const rank = (tier: string | null | undefined): number => {
   if (tier == null) return -1;
-  const i = TIER_NAMES.indexOf(tier);
-  return i < 0 ? TIER_NAMES.length - 1 : i;
+  if (tier === 'span') return Number.MAX_SAFE_INTEGER;
+  const n = Number(tier);
+  return Number.isFinite(n) ? n : Number.MAX_SAFE_INTEGER - 1;
+};
+/** A section's colour: numeric tiers by value (8 and 5 take the frequent colour), the rest by name. */
+const tierColour = (tier: string, mode: ColorVisionMode): string => {
+  const n = Number(tier);
+  return Number.isFinite(n) ? headwayToTierColor(n, mode) : getTierColor(tier, mode);
 };
 const worse = (a: string, b: string): string => (rank(a) >= rank(b) ? a : b);
 
@@ -169,7 +177,9 @@ export function buildSectionColourFeatures(
       }
       if (feature.geometry.type !== 'LineString' || p.stopId != null) continue;
       if (day != null && p.day != null && p.day !== day) continue;
-      if (!p.stopOrder?.length || !p.stopPositions || p.stopPositions.length !== p.stopOrder.length || p.tier == null || !p.stopTiers) continue;
+      // A span route (no all-day service, drawn limited) has no sections: its stops carry no grade
+      // worth colouring against a tier it does not have.
+      if (!p.stopOrder?.length || !p.stopPositions || p.stopPositions.length !== p.stopOrder.length || p.tier == null || p.tier === 'span' || !p.stopTiers) continue;
       if (accept && !accept({ agencySlug: p.agencySlug ?? slug, routeId: String(p.routeId), day: p.day ?? null })) continue;
       const key = `${p.routeId}|${p.day ?? ''}`;
       const group = groups.get(key) ?? { byDir: new Map(), candidates: new Map(), byStop: new Map() };
@@ -195,7 +205,7 @@ export function buildSectionColourFeatures(
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: clipped },
           properties: {
-            color: getTierColor(run.tier, colorMode),
+            color: tierColour(run.tier, colorMode),
             tier: run.tier,
             headway: run.headway,
             agencySlug: p.agencySlug ?? slug,
