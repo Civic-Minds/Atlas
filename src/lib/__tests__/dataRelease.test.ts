@@ -47,14 +47,13 @@ describe('data releases', () => {
   };
   const stamped = { ...complete, tileRulesVersion: TILE_RULES_VERSION };
 
-  it('treats a release without a tile-rules stamp as the baseline rules', () => {
-    expect(isCompatibleDataRelease(complete)).toBe(true);
+  it('rejects a release without a tile-rules stamp (counts as v1)', () => {
+    expect(isCompatibleDataRelease(complete)).toBe(false);
   });
 
   it('rejects a release whose tiles were built under rules this app does not accept', () => {
     expect(isCompatibleDataRelease({ ...complete, tileRulesVersion: TILE_RULES_VERSION })).toBe(true);
-    for (const version of [1, 2, 3]) expect(isCompatibleDataRelease({ ...complete, tileRulesVersion: version })).toBe(true);
-    for (const version of [0, 4]) expect(isCompatibleDataRelease({ ...complete, tileRulesVersion: version })).toBe(false);
+    for (const version of [0, 1, 2, 4]) expect(isCompatibleDataRelease({ ...complete, tileRulesVersion: version })).toBe(false);
     expect(isCompatibleDataRelease({ ...complete, tileRulesVersion: 'x' as unknown as number })).toBe(false);
   });
 

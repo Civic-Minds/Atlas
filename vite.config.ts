@@ -45,6 +45,15 @@ export default defineConfig(({ mode, command, isPreview }) => {
     || env.VITE_BETA_R2_PUBLIC_URL
     || DEFAULT_BETA_R2_PUBLIC_URL
   ).replace(/\/$/, '');
+  // The inline script in index.html starts the release lookup before the app code loads. It must use
+  // the same data URL the app resolves (VITE_R2_PUBLIC_URL, else the default); dev builds leave the
+  // placeholder alone and the script does nothing.
+  const clientR2Url = (process.env.VITE_R2_PUBLIC_URL || env.VITE_R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
+  const earlyDataUrl: Plugin = {
+    name: 'early-data-url',
+    apply: 'build',
+    transformIndexHtml: html => html.replace('__ATLAS_R2_PUBLIC_URL__', clientR2Url),
+  };
   // Local dry-run artifacts are opt-in so ignored, potentially stale files cannot silently
   // replace the live R2 data during ordinary localhost testing.
   const useLocalPreviews = (
@@ -166,6 +175,7 @@ export default defineConfig(({ mode, command, isPreview }) => {
     plugins: [
       react(),
       tailwindcss(),
+      earlyDataUrl,
       ...(useLocalPreviews ? [localPmtilesPreview, localAgencyDataPreview] : []),
     ],
     // MapLibre spawns its worker as `type: 'module'` (see src/lib/mapStyle.ts).

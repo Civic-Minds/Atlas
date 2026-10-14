@@ -58,6 +58,14 @@ describe('findVariantFamily', () => {
     expect(findVariantFamily(features, '1', 'midday', 'thebus')).toBeNull();
   });
 
+  // #724: agencies with blank route_short_name (coast-rta, MBTA Commuter Rail) must not become one family.
+  it('does not group routes that have no short name (#724)', () => {
+    const features = [feature('a', '', 10), feature('b', '', 20), feature('c', '', 30)];
+    expect(findVariantFamily(features, '', 'midday', 'coast-rta')).toBeNull();
+    expect(findVariantFamily(features, null, 'midday', 'coast-rta')).toBeNull();
+    expect(findVariantFamily([...features, feature('d', '1', 15), feature('e', '1A', 15)], '1', 'midday', 'coast-rta')?.members.map(m => m.routeId).sort()).toEqual(['d', 'e']);
+  });
+
   // #303 sweep: GoRaleigh route_id "11" is "Avent Ferry", "11L" is "Buck Jones Connector".
   it('does not group GoRaleigh 11/11L (#303)', () => {
     const features = [
