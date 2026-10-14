@@ -19,6 +19,15 @@ function shortDate(d: string): string {
   return new Date(`${d}T12:00:00Z`).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
+/** "Peter St to Spadina Ave"; when both ends share a cross street, name the streets instead. */
+function pairLabel(fromName: string, toName: string): string {
+  const from = shortStop(fromName);
+  const to = shortStop(toName);
+  if (from !== to) return `${from} to ${to}`;
+  const street = (n: string) => tidyStopName(n).split(' at ')[0].trim();
+  return `${street(fromName)} to ${street(toName)} at ${to}`;
+}
+
 const Dot = ({ color }: { color: string }) => <span className="mt-1 w-2.5 h-2.5 rounded-full shrink-0" style={{ background: color }} />;
 
 function Chips<T extends string>({ options, value, onChange }: { options: { id: T; label: string }[]; value: T; onChange: (v: T) => void }) {
@@ -49,12 +58,11 @@ function SegmentRow({ data, item, colorMode }: { data: SegmentDelayData; item: R
     <div className="flex items-start gap-2">
       <Dot color={segmentColor(item, colorMode) ?? 'var(--text-dim)'} />
       <div className="min-w-0">
-        <div className="text-sm font-bold text-[var(--text-primary)] leading-snug">
-          {shortStop(segment.fromName)} to {shortStop(segment.toName)}
-          <span className="font-normal text-[var(--text-muted)]"> · {directionLabel(data, segment.directionId)}</span>
+        <div className="text-sm font-bold text-[var(--text-primary)] leading-snug truncate">
+          {pairLabel(segment.fromName, segment.toName)}
         </div>
         <div className="text-xs text-[var(--text-muted)] leading-snug">
-          {lostMin > 0
+          {directionLabel(data, segment.directionId)} ·           {lostMin > 0
             ? <>Takes {formatMinutes(lostMin)} longer than scheduled{p90 > lostMin ? <>; 1 in 10 take {formatMinutes(p90).replace(' min', '+ min')} longer</> : null}.</>
             : <>The schedule allows {formatMinutes(-lostMin)} more than vehicles need.</>}
           {' '}({plural(stat.trips, 'trip')}, {plural(stat.days, 'day')})
@@ -70,13 +78,12 @@ function HeadwayRow({ data, item, colorMode, showSchedule }: { data: SegmentDela
     <div className="flex items-start gap-2">
       <Dot color={ewtColor(stat.excessWaitSec, colorMode) ?? 'var(--text-dim)'} />
       <div className="min-w-0">
-        <div className="text-sm font-bold text-[var(--text-primary)] leading-snug">
+        <div className="text-sm font-bold text-[var(--text-primary)] leading-snug truncate">
           {shortStop(stop.stopName)}
-          <span className="font-normal text-[var(--text-muted)]"> · {directionLabel(data, stop.directionId)}</span>
         </div>
         <div className="text-xs text-[var(--text-muted)] leading-snug">
-          {showSchedule && <>Scheduled every {formatMinutes(halfMinutes(stat.scheduledMedianGapSec))}. </>}
-          Riders wait {formatMinutes(ewtMin)} longer than the timetable implies; {Math.round(stat.withinShare * 100)}% of gaps are close to scheduled ({plural(stat.gaps, 'gap')}, {plural(stat.days, 'day')})
+          {directionLabel(data, stop.directionId)} · {showSchedule && <>Scheduled every {formatMinutes(halfMinutes(stat.scheduledMedianGapSec))}. </>}
+          Where every scheduled trip ran, riders waited {formatMinutes(ewtMin)} longer than the timetable implies; {Math.round(stat.withinShare * 100)}% of gaps were close to scheduled ({plural(stat.gaps, 'gap')}, {plural(stat.days, 'day')})
         </div>
       </div>
     </div>
@@ -128,7 +135,7 @@ export default function SegmentDelaySection({ slug, routeShortName }: { slug: st
       <div className="text-xs text-[var(--text-dim)] leading-snug pt-1">
         {view === 'time'
           ? 'Time between stops for every vehicle that passed, compared with the timetable for that time of day.'
-          : 'Gaps between successive vehicles at each stop, compared with the timetable. Extra wait is the standard measure for frequent routes.'}
+          : 'Gaps between successive vehicles at each stop, compared with the timetable. Extra wait is the standard measure for frequent routes. Cancelled or unseen trips aren\'t counted here, so real waits can be longer.'}
         {' '}Vehicle positions recorded about once a minute, {range}. Rounded to the nearest ½ min; stops with fewer than 30 samples are left out.
       </div>
     </SidebarCardSection>

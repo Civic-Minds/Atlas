@@ -1,5 +1,6 @@
 import React from 'react';
 import SegmentDelaySection from './SegmentDelaySection';
+import { useSegmentDelay } from '../../../hooks/useSegmentDelay';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
@@ -223,6 +224,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   onInfoOpen,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
+  // Live mode: "where it falls behind" leads the card and the timetable folds to one line.
+  const segmentData = useSegmentDelay(routeSlug, currentRoute.routeShortName);
+  const liveLayout = segmentData != null;
+  const [scheduleOpen, setScheduleOpen] = React.useState(false);
+  React.useEffect(() => { setScheduleOpen(false); }, [routeSlug, currentRoute.routeShortName]);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
   const routeOverrideNote = routeAgency?.overrideNote
@@ -339,6 +345,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       : [];
     return [...section, ...sharedLines, ...branchLines, ...limitedLines];
   });
+  const scheduleHeadline = (() => {
+    const group = displayGroups[0];
+    if (!group) return null;
+    const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
+    const branch = group.realTier
+      .map(direction => routeCardDisplayHeadway(direction, period))
+      .filter((v): v is number => v != null);
+    const headway = shared?.headway ?? (branch.length ? Math.min(...branch) : null);
+    return headway != null ? headwayAbout(headway) : null;
+  })();
   const reportRawMetrics = currentRoute.directions.map((direction, index) => {
     const selectedPeriodHourlyHeadways = selectedPeriod
       ? Object.fromEntries(
@@ -417,6 +433,20 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           />
         </div>
       </SidebarCardHeaderBlock>
+      {liveLayout && (
+        <>
+          <SegmentDelaySection slug={routeSlug ?? null} routeShortName={currentRoute.routeShortName ?? null} />
+          <button
+            type="button"
+            onClick={() => setScheduleOpen(open => !open)}
+            aria-expanded={scheduleOpen}
+            className="mt-3 pt-3 w-full border-t border-[var(--border-primary)] text-left text-xs font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
+          >
+            Scheduled: {scheduleHeadline ?? 'see timetable'} {scheduleOpen ? '▾' : '▸'}
+          </button>
+        </>
+      )}
+      {(!liveLayout || scheduleOpen) && (<>
       {compareRows && (() => {
         const { headline, lines } = compareCardSummary(compareRows);
         return (
@@ -772,7 +802,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         )}
       </SidebarCardList>
-      <SegmentDelaySection slug={routeSlug ?? null} routeShortName={currentRoute.routeShortName ?? null} />
+      </>)}
     </SidebarCardShell>
   );
 };

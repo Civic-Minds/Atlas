@@ -9,9 +9,9 @@ export type SegmentBand = 'all' | 'am' | 'midday' | 'pm' | 'evening';
 
 export const SEGMENT_BAND_OPTIONS: { id: SegmentBand; label: string }[] = [
   { id: 'all', label: 'All day' },
-  { id: 'am', label: 'Morning rush' },
+  { id: 'am', label: 'AM rush' },
   { id: 'midday', label: 'Midday' },
-  { id: 'pm', label: 'Afternoon rush' },
+  { id: 'pm', label: 'PM rush' },
   { id: 'evening', label: 'Evening' },
 ];
 
