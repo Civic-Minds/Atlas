@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildShape } from '../shapeProjection.js';
 import {
-  aggregateSegments, averageWaitSec, bandForHour, headwayBandStat, headwayWindows, percentile, projectRun,
+  aggregateSegments, averageWaitSec, bandForHour, classifyTripStops, detectHolds, headwayBandStat, headwayWindows, percentile, projectRun,
   segmentObservations, stopPassages, type Pattern, type ScheduledRunTimes,
 } from '../segmentDelay.js';
 
@@ -125,5 +125,36 @@ describe('helpers', () => {
   });
   it('percentile uses nearest rank', () => {
     expect(percentile([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 0.9)).toBe(9);
+  });
+});
+
+describe('detectHolds', () => {
+  it('finds a 2+ minute stop at a stop, and ignores a short dwell', () => {
+    const at = (m: number, t: number) => ({ t, lat: LAT, lon: lonAt(m) });
+    const held = [at(900, 0), at(995, 60), at(1000, 120), at(1005, 180), at(1300, 240)];
+    expect(detectHolds(projectRun(held, pattern), pattern)).toEqual([{ stopId: 'B', start: 60, end: 180 }]);
+    const dwell = [at(900, 0), at(1000, 60), at(1400, 120)];
+    expect(detectHolds(projectRun(dwell, pattern), pattern)).toEqual([]);
+  });
+
+  it('only reports a stop when the vehicle sat near one', () => {
+    const at = (m: number, t: number) => ({ t, lat: LAT, lon: lonAt(m) });
+    const midBlock = [at(1500, 0), at(1500, 60), at(1505, 120), at(1510, 180)];
+    expect(detectHolds(projectRun(midBlock, pattern), pattern)).toEqual([]);
+  });
+});
+
+describe('classifyTripStops', () => {
+  const base = { stopIds: ['A', 'B', 'C', 'D', 'E'], scheduledT: [0, 100, 200, 300, 400], feedDown: () => false };
+  it('separates a feed outage from a trip that never appeared', () => {
+    expect(classifyTripStops({ ...base, passedStopIds: new Set(), seen: false })).toEqual(Array(5).fill('not_seen'));
+    expect(classifyTripStops({ ...base, passedStopIds: new Set(), seen: false, feedDown: t => t >= 200 }))
+      .toEqual(['not_seen', 'not_seen', 'feed_gap', 'feed_gap', 'feed_gap']);
+  });
+  it('marks stops after a confirmed turn-back, and gaps inside a seen trip as timing gaps', () => {
+    expect(classifyTripStops({ ...base, passedStopIds: new Set(['A', 'C']), seen: true, endedEarlyAfterIndex: 2 }))
+      .toEqual(['ran', 'timing_gap', 'ran', 'ended_early', 'ended_early']);
+    expect(classifyTripStops({ ...base, passedStopIds: new Set(['C', 'D']), seen: true }))
+      .toEqual(['joined_late', 'joined_late', 'ran', 'ran', 'timing_gap']);
   });
 });

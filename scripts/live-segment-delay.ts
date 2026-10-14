@@ -12,9 +12,9 @@ import { readFileSync, readdirSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { buildShape, projectOntoShape, type Shape } from '../shared/shapeProjection.js';
 import {
-  aggregateSegments, bandForHour, headwayBandStat, headwayWindows, median, projectRun, segmentKey,
+  aggregateSegments, bandForHour, classifyTripStops, detectHolds, headwayBandStat, headwayWindows, median, projectRun, segmentKey,
   segmentObservations, stopPassages,
-  type Pattern, type PositionSample, type ScheduledRunTimes, type SegmentObservation, type TimeBand,
+  type HoldEvent, type Pattern, type TripStopStatus, type PositionSample, type ScheduledRunTimes, type SegmentObservation, type TimeBand,
 } from '../shared/segmentDelay.js';
 
 const args: Record<string, string> = {};
@@ -199,6 +199,10 @@ let runsTotal = 0, runsMatched = 0, runsUnmatched = 0;
 const observations: SegmentObservation[] = [];
 // Passages by stop+direction, for headways.
 const passagesAt = new Map<string, { tripId: string; t: number }[]>();
+const holds: (HoldEvent & { directionId: number })[] = [];
+// Per vehicle: its runs in time order (for turn-backs); per trip: when it was seen.
+const vehicleRuns = new Map<string, { tripId: string; first: PositionSample; last: PositionSample }[]>();
+const tripSeenTimes = new Map<string, number[]>();
 for (const [key, samples] of runs) {
   const tripId = key.split('|')[1];
   samples.sort((a, b) => a.t - b.t);
@@ -214,7 +218,16 @@ for (const [key, samples] of runs) {
     const pattern = patternFor(trip.shape_id);
     if (!pattern || run.length < 2) continue;
     runsMatched++;
-    const legs = stopPassages(projectRun(run, pattern), pattern);
+    const vehicleId = key.split('|')[0];
+    const vr = vehicleRuns.get(vehicleId) ?? [];
+    vr.push({ tripId, first: run[0], last: run[run.length - 1] });
+    vehicleRuns.set(vehicleId, vr);
+    const seenTimes = tripSeenTimes.get(tripId) ?? [];
+    for (const smp of run) seenTimes.push(smp.t);
+    tripSeenTimes.set(tripId, seenTimes);
+    const projected = projectRun(run, pattern);
+    for (const h of detectHolds(projected, pattern)) holds.push({ ...h, directionId: pattern.directionId });
+    const legs = stopPassages(projected, pattern);
     for (const o of segmentObservations(legs, pattern, '')) observations.push({ ...o, date: serviceDateOf(o.departT) });
     for (const leg of legs) for (const p of leg) {
       const k = `${p.stopId}|${pattern.directionId}`;
@@ -312,6 +325,138 @@ for (const p of busiest) {
   }
 }
 
+// --- v2: missed trips, short turns, holds (not on the card yet) ---
+for (const l of vehicleRuns.values()) l.sort((a, b) => a.first.t - b.first.t);
+const feedDown = (t: number) => outages.some(([x, y]) => x < t + 120 && y > t - 120);
+const passByTrip = new Map<string, number[]>(); // `${tripId}|${stopId}` -> pass times
+for (const [k, list] of passagesAt) {
+  const stopId = k.split('|')[0];
+  for (const p of list) {
+    const kk = `${p.tripId}|${stopId}`;
+    const l = passByTrip.get(kk) ?? [];
+    l.push(p.t);
+    passByTrip.set(kk, l);
+  }
+}
+type Counts = Record<TripStopStatus, number> & { days: Set<string> };
+const newCounts = (): Counts => ({ ran: 0, timing_gap: 0, not_seen: 0, ended_early: 0, joined_late: 0, feed_gap: 0, days: new Set() });
+const statusByStop = new Map<string, Map<TimeBand | 'all', Counts>>();
+const shortTurnsAt = new Map<string, Map<TimeBand | 'all', { n: number; days: Set<string> }>>();
+let tripInstances = 0, tripsNotSeen = 0, tripsShortTurned = 0, tripsFeedGap = 0;
+for (const svcDate of dates) {
+  const services = activeServices(svcDate)!;
+  const base = serviceDayStart(svcDate);
+  for (const trip of trips) {
+    if (!services.includes(trip.service_id)) continue;
+    const times = timesByTrip.get(trip.trip_id) ?? [];
+    if (times.length < 2) continue;
+    const stopIds = times.map(x => x.stopId);
+    const scheduledT = times.map(x => base + x.dep);
+    const start = scheduledT[0], end = scheduledT[scheduledT.length - 1];
+    if (end > snapshotTimes[snapshotTimes.length - 1]) continue; // not finished yet
+    tripInstances++;
+    const lo = start - 1800, hi = end + 3600;
+    const seen = (tripSeenTimes.get(trip.trip_id) ?? []).some(t => t >= lo && t <= hi);
+    const passed = new Set(stopIds.filter(st => (passByTrip.get(`${trip.trip_id}|${st}`) ?? []).some(t => t >= lo && t <= hi)));
+    // Turn-back: the trip's last position is well short of its end, and the same
+    // vehicle starts another trip within 20 min, within 500 m of where it stopped.
+    let endedEarlyAfterIndex: number | null = null;
+    const lastIdx = Math.max(-1, ...stopIds.map((st, i) => (passed.has(st) ? i : -1)));
+    if (seen && lastIdx >= 0 && lastIdx < stopIds.length - 3) {
+      for (const runs of vehicleRuns.values()) {
+        const i = runs.findIndex(r => r.tripId === trip.trip_id && r.last.t >= lo && r.last.t <= hi);
+        if (i < 0) continue;
+        const r = runs[i], next = runs[i + 1];
+        if (next && next.tripId !== trip.trip_id && next.first.t - r.last.t <= 1200 && r.last.t < end - 180
+          && haversine(r.last, next.first) <= 500 && !feedDown(r.last.t)) endedEarlyAfterIndex = lastIdx;
+        break;
+      }
+    }
+    const statuses = classifyTripStops({ stopIds, scheduledT, passedStopIds: passed, seen, endedEarlyAfterIndex, feedDown });
+    if (!seen && statuses.some(st => st === 'not_seen')) tripsNotSeen++;
+    if (statuses.every(st => st === 'feed_gap' || st === 'ran')) { if (statuses.includes('feed_gap')) tripsFeedGap++; }
+    if (endedEarlyAfterIndex != null) {
+      tripsShortTurned++;
+      const k = `${stopIds[endedEarlyAfterIndex]}|${trip.direction_id}`;
+      const m = shortTurnsAt.get(k) ?? new Map();
+      for (const b of [bandForHour(hourOf(scheduledT[endedEarlyAfterIndex])), 'all'] as const) {
+        const c = m.get(b) ?? { n: 0, days: new Set<string>() };
+        c.n++; c.days.add(svcDate); m.set(b, c);
+      }
+      shortTurnsAt.set(k, m);
+    }
+    statuses.forEach((st, i) => {
+      const k = `${stopIds[i]}|${trip.direction_id}`;
+      const m = statusByStop.get(k) ?? new Map();
+      for (const b of [bandForHour(hourOf(scheduledT[i])), 'all'] as const) {
+        const c = m.get(b) ?? newCounts();
+        c[st]++; c.days.add(svcDate); m.set(b, c);
+      }
+      statusByStop.set(k, m);
+    });
+  }
+}
+function haversine(a: PositionSample, b: PositionSample): number {
+  const R = 6_371_000, toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat), dLon = toRad(b.lon - a.lon);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+// Ends of minor scheduled patterns (e.g. "to Roncesvalles and Queen"): waits there are
+// planned layovers, not holds, so they're flagged separately from the main terminals.
+const turnbackStops = new Set<string>();
+for (const p of patterns.values()) {
+  if ((tripsPerShape.get(p.id) ?? 0) < 5 || p.stops.length < 2) continue;
+  for (const st of [p.stops[0], p.stops[p.stops.length - 1]]) if (!terminalStops.has(st.stopId)) turnbackStops.add(st.stopId);
+}
+const stopMeta = (stopId: string) => ({
+  stopName: stopsById.get(stopId)?.stop_name ?? stopId,
+  terminal: terminalStops.has(stopId),
+  scheduledTurnback: turnbackStops.has(stopId),
+});
+const missed = [...statusByStop].map(([k, m]) => {
+  const [stopId, dir] = k.split('|');
+  return {
+    stopId, directionId: Number(dir), ...stopMeta(stopId),
+    bands: Object.fromEntries([...m].map(([b, c]) => {
+      const { days, ...counts } = c;
+      const scheduledPasses = Object.values(counts).reduce((a, x) => a + x, 0);
+      // Share not seen, out of passes where the feed was up (feed gaps are unknown, not missed).
+      const known = scheduledPasses - counts.feed_gap;
+      return [b, { scheduledPasses, ...counts, days: days.size, notSeenShare: known ? Math.round((counts.not_seen / known) * 1000) / 1000 : null }];
+    })),
+  };
+});
+const shortTurns = [...shortTurnsAt].map(([k, m]) => {
+  const [stopId, dir] = k.split('|');
+  return { stopId, directionId: Number(dir), ...stopMeta(stopId), bands: Object.fromEntries([...m].map(([b, c]) => [b, { trips: c.n, days: c.days.size }])) };
+});
+const holdsAt = new Map<string, Map<TimeBand | 'all', { durations: number[]; days: Set<string> }>>();
+for (const h of holds) {
+  const date = serviceDateOf(h.start);
+  if (!scheduleKeyForDate(date)) continue;
+  const k = `${h.stopId}|${h.directionId}`;
+  const m = holdsAt.get(k) ?? new Map();
+  for (const b of [bandForHour(hourOf(h.start)), 'all'] as const) {
+    const c = m.get(b) ?? { durations: [], days: new Set<string>() };
+    c.durations.push(h.end - h.start); c.days.add(date); m.set(b, c);
+  }
+  holdsAt.set(k, m);
+}
+const holdStats = [...holdsAt].map(([k, m]) => {
+  const [stopId, dir] = k.split('|');
+  return {
+    stopId, directionId: Number(dir), ...stopMeta(stopId),
+    bands: Object.fromEntries([...m].map(([b, c]) => [b, {
+      events: c.durations.length,
+      days: c.days.size,
+      medianSec: Math.round(median(c.durations)!),
+      totalMin: Math.round(c.durations.reduce((a, x) => a + x, 0) / 60),
+    }])),
+  };
+});
+console.log(`v2: trip instances ${tripInstances}, not seen ${tripsNotSeen}, turned back ${tripsShortTurned}, touched by feed gaps ${tripsFeedGap}, hold events ${holds.length}`);
+
 const usedDates = dates;
 const result = {
   agency: 'ttc',
@@ -332,6 +477,7 @@ const result = {
     toName: stopsById.get(s.toStopId)?.stop_name ?? s.toStopId,
     coordinates: segGeom.get(segmentKey(s.fromStopId, s.toStopId)) ?? [],
   })),
+  v2: { tripInstances, tripsNotSeen, tripsShortTurned, missed, shortTurns, holds: holdStats },
   headways: headways.map(h => {
     const to = nextStop.get(`${h.stopId}|${h.directionId}`);
     return { ...h, terminal: terminalStops.has(h.stopId), coordinates: to ? segGeom.get(segmentKey(h.stopId, to)) ?? [] : [] };

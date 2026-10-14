@@ -345,3 +345,81 @@ export function headwayBandStat(
     excessWaitSec: weight ? Math.round(ewtSum / weight) : null,
   };
 }
+
+export interface HoldEvent {
+  stopId: string;
+  start: number;
+  end: number;
+}
+
+/**
+ * Times a vehicle sat still (moved under `stillM` along the shape) for at
+ * least `minSec`, within `nearM` of a stop. Reported per stop, not folded into
+ * running time. With ~1-minute positions, 2+ minutes means 3+ samples in place.
+ * This can't tell a deliberate hold from a breakdown or blocked track ahead.
+ */
+export function detectHolds(
+  projected: Projected[],
+  pattern: Pattern,
+  opts = { minSec: 120, stillM: 25, nearM: 60, maxPerpM: SEGMENT_DEFAULTS.maxPerpM, maxGapSec: SEGMENT_DEFAULTS.maxBracketGapSec },
+): HoldEvent[] {
+  const pts = projected.filter(p => p.perpM <= opts.maxPerpM);
+  const out: HoldEvent[] = [];
+  let i = 0;
+  while (i < pts.length) {
+    let j = i;
+    while (
+      j + 1 < pts.length
+      && Math.abs(pts[j + 1].along - pts[i].along) <= opts.stillM
+      && pts[j + 1].t - pts[j].t <= opts.maxGapSec
+    ) j++;
+    if (pts[j].t - pts[i].t >= opts.minSec) {
+      const at = (pts[i].along + pts[j].along) / 2;
+      let best: PatternStop | null = null;
+      for (const s of pattern.stops) {
+        if (Math.abs(s.along - at) <= opts.nearM && (!best || Math.abs(s.along - at) < Math.abs(best.along - at))) best = s;
+      }
+      if (best) out.push({ stopId: best.stopId, start: pts[i].t, end: pts[j].t });
+      i = j + 1;
+    } else {
+      i++;
+    }
+  }
+  return out;
+}
+
+export type TripStopStatus =
+  | 'ran' // a pass was timed at this stop
+  | 'timing_gap' // the trip was seen before and after this stop, but not timed here
+  | 'not_seen' // the trip never appeared in the live feed while the feed was healthy
+  | 'ended_early' // the trip was seen, then turned back before this stop
+  | 'joined_late' // the trip first appeared after this stop
+  | 'feed_gap'; // the whole feed was down around this time: unknown, excluded
+
+/**
+ * Status of each scheduled stop of one trip on one service day, from what the
+ * live feed showed. "not_seen" is the only status that suggests the trip
+ * didn't run, and even then it can be a vehicle that wasn't reporting.
+ */
+export function classifyTripStops(input: {
+  stopIds: string[]; // the trip's stops, in order
+  scheduledT: number[]; // timetable time at each stop
+  passedStopIds: Set<string>; // stops with a timed pass for this trip
+  seen: boolean; // any position for this trip in its time window
+  endedEarlyAfterIndex?: number | null; // last stop index before a confirmed turn-back
+  feedDown: (t: number) => boolean;
+}): TripStopStatus[] {
+  const { stopIds, scheduledT, passedStopIds, seen, feedDown } = input;
+  const idx = stopIds.map((s, i) => (passedStopIds.has(s) ? i : -1)).filter(i => i >= 0);
+  const first = idx.length ? idx[0] : null;
+  const last = idx.length ? idx[idx.length - 1] : null;
+  return stopIds.map((s, i) => {
+    if (passedStopIds.has(s)) return 'ran';
+    if (feedDown(scheduledT[i])) return 'feed_gap';
+    if (!seen) return 'not_seen';
+    if (input.endedEarlyAfterIndex != null && i > input.endedEarlyAfterIndex) return 'ended_early';
+    if (first != null && i < first) return 'joined_late';
+    if (last != null && i > last) return 'timing_gap'; // stopped reporting, but no confirmed turn-back
+    return 'timing_gap';
+  });
+}
