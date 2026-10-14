@@ -1,4 +1,5 @@
 import { idbGet, idbSet } from './idbCache.js';
+import { withVersionParam } from './versionedUrl.js';
 
 self.addEventListener('message', async (e: MessageEvent) => {
   const { type, slug, url, name, weekVer } = e.data;
@@ -12,7 +13,7 @@ self.addEventListener('message', async (e: MessageEvent) => {
       return;
     }
 
-    const r = await fetch(`${url}?v=${weekVer}`, { cache: 'default' });
+    const r = await fetch(withVersionParam(url, weekVer), { cache: 'default' });
     if (!r.ok) {
       throw new Error(`HTTP ${r.status}`);
     }

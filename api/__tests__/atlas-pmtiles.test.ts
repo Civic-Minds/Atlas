@@ -24,4 +24,12 @@ describe('atlas-pmtiles proxy', () => {
     expect(response.status).toBe(206);
     expect(String(upstream.mock.calls[0][0])).toMatch(/atlas\/releases\/release-abc\/atlas-overview\.pmtiles$/);
   });
+
+  it('lets browsers keep a release\'s ranges, and never caches an error', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce(new Response('tiles', { status: 206 })).mockResolvedValueOnce(new Response('nope', { status: 500 })));
+    const ok = await handler.fetch(new Request('https://atlas.test/api/atlas-pmtiles?release_id=release-abc'));
+    expect(ok.headers.get('Cache-Control')).toMatch(/max-age=31536000, immutable/);
+    const bad = await handler.fetch(new Request('https://atlas.test/api/atlas-pmtiles?release_id=release-abc'));
+    expect(bad.headers.get('Cache-Control')).toBe('no-store');
+  });
 });

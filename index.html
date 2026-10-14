@@ -46,6 +46,32 @@
       ]
     }
   </script>
+  <script>
+    // Start the data-release lookup and the PMTiles headers before the app code has loaded.
+    // src/lib/earlyData.ts picks these up; the placeholder is filled in at build time.
+    (function () {
+      try {
+        var base = '__ATLAS_R2_PUBLIC_URL__';
+        // Only the map page uses the release; prerendered agency and docs pages skip this.
+        if (location.pathname !== '/' || !base || base.charAt(0) === '_') return;
+        var early = { base: base.replace(/\/$/, ''), header: {} };
+        early.release = fetch(early.base + '/atlas/release.json', { cache: 'no-store' })
+          .then(function (r) { return r.ok ? r.json().then(function (value) { return { status: r.status, value: value }; }) : { status: r.status }; })
+          .catch(function () { return null; });
+        early.release.then(function (res) {
+          var id = res && res.value && res.value.releaseId;
+          if (!id || !/^release-[a-z0-9]+$/.test(id)) return;
+          ['', '&variant=overview'].forEach(function (variant) {
+            var url = location.origin + '/api/atlas-pmtiles?release_id=' + encodeURIComponent(id) + variant;
+            early.header[url] = fetch(url, { headers: { Range: 'bytes=0-16383' } })
+              .then(function (r) { return r.status === 206 ? r.arrayBuffer().then(function (data) { return { data: data, etag: r.headers.get('ETag') }; }) : null; })
+              .catch(function () { return null; });
+          });
+        });
+        window.__atlasEarly = early;
+      } catch (e) { /* the app falls back to its own requests */ }
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"

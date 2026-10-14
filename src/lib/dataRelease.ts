@@ -1,5 +1,6 @@
 import { BETA_R2_PUBLIC_URL, R2_PUBLIC_URL } from '../../shared/config';
 import { RELEASE_HISTORY_KEY, parseReleaseHistory, type ReleaseHistoryEntry } from '../../shared/releaseHistory';
+import { takeEarlyRelease } from './earlyData';
 import { isAcceptedTileRulesVersion, ROUTE_ARTIFACT_SCHEMA_VERSION } from '../../shared/artifactSchema';
 
 export interface DataRelease {
@@ -59,16 +60,21 @@ export function resolveDataRelease(baseUrl = R2_PUBLIC_URL): Promise<DataRelease
   const existing = releases.get(key);
   if (existing) return existing;
 
+  const parse = (status: number, read: () => Promise<unknown>): Promise<DataRelease | null> => {
+    if (status === 404) return Promise.resolve(null);
+    // Server errors are retried like network errors below.
+    if (status < 200 || status >= 300) return Promise.reject(new Error(`release.json HTTP ${status}`));
+    return read().then(value => (isCompatibleDataRelease(value as Partial<DataRelease>) ? value as DataRelease : null));
+  };
   const load = () => fetch(releaseUrl(key), { cache: 'no-store' })
-    .then(async response => {
-      if (response.status === 404) return null;
-      // Server errors are retried like network errors below.
-      if (!response.ok) throw new Error(`release.json HTTP ${response.status}`);
-      const value = await response.json() as Partial<DataRelease>;
-      return isCompatibleDataRelease(value) ? value : null;
-    });
+    .then(response => parse(response.status, () => response.json()));
+  // index.html starts the first request before the app code loads; a failure there falls back to a normal one.
+  const early = takeEarlyRelease(key);
+  const first = early
+    ? () => early.then(res => (res ? parse(res.status, () => Promise.resolve(res.value)) : Promise.reject(new Error('early release.json failed'))))
+    : load;
   // One retry so a single network blip does not leave the session without data.
-  const request = load()
+  const request = first()
     .catch(() => load())
     .catch(() => null);
   releases.set(key, request);
