@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
-import { useAgencyData } from '../hooks/useAgencyData';
+import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
+import SelectionLoadPanel from '../components/Interval/SelectionLoadPanel';
+import { useAgencyData, viewportAgencySlugs } from '../hooks/useAgencyData';
 import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
@@ -69,6 +71,8 @@ interface Props {
   day: DayType;
   setDay: (d: DayType) => void;
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
+  /** Agencies in view, known before their data loads (drives the Live/History controls). */
+  onViewportAgencySlugsChange?: (slugs: string[]) => void;
   onSelectedMapAgencyChange?: (slug: string | null) => void;
   onSelectionActiveChange?: (active: boolean) => void;
   /** Tells the top bar when compare is on, so the other mode tabs can shrink to icons. */
@@ -132,7 +136,9 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
   );
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+const PENDING_ROUTE_TIMEOUT_MS = 20000;
+
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onSelectedMapAgencyChange, onSelectionActiveChange, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -464,18 +470,35 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [isTilesLoading, setIsTilesLoading] = useState(false);
   const [isBasemapLoading, setIsBasemapLoading] = useState(false);
 
+  // The map draws its routes from the tiles. Agency JSON is fetched first for what is selected or
+  // pending, and for the rest of the viewport only after the tiles settle (or at once for modes that
+  // draw from it, and when the search box is open for its suggestions).
+  const viewportLoadOpen = useViewportLoadGate(isTilesLoading);
+  const priorityAgencySlugs = useMemo(() => {
+    const slugOf = (key: string | null | undefined) => (key ? key.split('::')[0] : null);
+    return [slugOf(selectedRoute), slugOf(selectedStop), pendingLiveRoute?.slug, pendingNightRoute?.slug]
+      .filter((slug): slug is string => !!slug);
+  }, [selectedRoute, selectedStop, pendingLiveRoute?.slug, pendingNightRoute?.slug]);
   const { layers, loadedCount, requestedCount, isLoading, failedSlugs } = useAgencyData(agencies, bounds, {
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
     zoom: mapZoom,
     dataSaver,
     selectedAgencySlug,
+    priorityAgencySlugs,
+    urgentViewport: searchFocused || nightServiceView || frequentServiceView || userLocation !== null || compareActive,
+    viewportLoadOpen,
   });
 
 
   useEffect(() => {
     onLayersChange?.(layers);
   }, [layers, onLayersChange]);
+
+  const viewportSlugKey = useMemo(() => viewportAgencySlugs(agencies, bounds, mapZoom).sort().join('|'), [agencies, bounds, mapZoom]);
+  useEffect(() => {
+    onViewportAgencySlugsChange?.(viewportSlugKey ? viewportSlugKey.split('|') : []);
+  }, [viewportSlugKey, onViewportAgencySlugsChange]);
 
   useEffect(() => {
     if (!userLocation) return;
@@ -674,6 +697,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     onPendingLiveRouteHandled?.();
   }, [pendingLiveRoute, layers, day]);
 
+  // If the agency never loads, give up on the handoff instead of waiting forever.
+  useEffect(() => {
+    if (!pendingLiveRoute) return;
+    const timer = setTimeout(() => onPendingLiveRouteHandled?.(), PENDING_ROUTE_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [pendingLiveRoute, onPendingLiveRouteHandled]);
+
   const prevPendingNightRoute = useRef<typeof pendingNightRoute>(null);
   useEffect(() => {
     if (!pendingNightRoute) return;
@@ -691,6 +721,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
     onPendingNightRouteHandled?.();
   }, [pendingNightRoute, layers, onPendingNightRouteHandled]);
+
+  useEffect(() => {
+    if (!pendingNightRoute) return;
+    const timer = setTimeout(() => onPendingNightRouteHandled?.(), PENDING_ROUTE_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [pendingNightRoute, onPendingNightRouteHandled]);
 
   // Clear map selection states when switching away from the Frequency app
   useEffect(() => {
@@ -962,7 +998,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               </span>
             </div>
           )}
-          {!compareActive && stats && (stats.total > 0 || !isLoading) && (
+          {/* Counts come from the loaded agency data, so they wait for it (the in-view counts come from the tiles). */}
+          {!compareActive && stats && (showMapContext || !isLoading) && (
               <div className="hidden sm:flex gap-2">
                 <div className={`${MAP_BADGE} h-8`}>
                   {showMapContext ? (
@@ -997,7 +1034,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                     <span className={MAP_BADGE_LABEL}>agencies</span>
                   </button>
                 )}
-                {showMatchPercentage && (
+                {showMatchPercentage && !isLoading && (
                   <div className={`${MAP_BADGE} h-8`}>
                     <span className={MAP_BADGE_COUNT}>
                       {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
@@ -1052,6 +1089,24 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onInfoOpen={onInfoOpen}
           />
         ) : null;
+      })()}
+
+      {(showUi || showSelectionUi) && (() => {
+        const key = selectedRoute ?? selectedStop;
+        const slug = key ? key.split('::')[0] : null;
+        if (!key || !slug || layers[slug]) return null;
+        // An agency this view does not list (filtered out, or on-demand only) has no card to wait for.
+        if (!agencies.some(a => a.slug === slug && !a.onDemandOnly)) return null;
+        return (
+          <SelectionLoadPanel
+            key={key}
+            kind={selectedRoute ? 'route' : 'stop'}
+            failed={failedSlugs.has(slug)}
+            onClose={clearMapSelection}
+            sidebarLeft={sidebarLeft}
+            searchBarWidth={searchBarWidth}
+          />
+        );
       })()}
 
       {showUi && userLocation && (
@@ -1111,7 +1166,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               hideLimitedService={hideLimitedService}
               setHideSpan={setHideSpan}
                 setHideLimitedService={setHideLimitedService}
-                limitedServiceRouteCount={stats?.limitedService ?? null}
+                limitedServiceRouteCount={isLoading ? null : stats?.limitedService ?? null}
               livePollingOnly={livePollingOnly}
               setLivePollingOnly={setLivePollingOnly}
               onInfoOpen={onInfoOpen}
@@ -1147,8 +1202,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               hideLimitedService={hideLimitedService}
               setHideSpan={setHideSpan}
                 setHideLimitedService={setHideLimitedService}
-                limitedServiceRouteCount={stats?.limitedService ?? null}
-                limitedServiceRoutes={stats?.limitedServiceRoutes}
+                limitedServiceRouteCount={isLoading ? null : stats?.limitedService ?? null}
+                limitedServiceRoutes={isLoading ? undefined : stats?.limitedServiceRoutes}
               livePollingOnly={livePollingOnly}
               setLivePollingOnly={setLivePollingOnly}
               onInfoOpen={onInfoOpen}

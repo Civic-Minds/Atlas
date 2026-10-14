@@ -74,6 +74,14 @@ describe('fetchAgencyGeo', () => {
     expect(fetchMock.mock.calls.filter((c: unknown[]) => String(c[0]).includes('ttc.json')).length).toBe(1);
   });
 
+  it('gives the download a timeout signal so a hung request cannot stall the queue', async () => {
+    const fetchMock = mockFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    await fetchAgencyGeo(agency);
+    const geoCall = fetchMock.mock.calls.find((c: unknown[]) => String(c[0]).includes('ttc.json'));
+    expect((geoCall?.[1] as RequestInit | undefined)?.signal).toBeInstanceOf(AbortSignal);
+  });
+
   it('re-stamps worstDirection so rare short-turns cannot gate the route (TTC 63)', async () => {
     vi.stubGlobal('fetch', mockFetch());
     const data = await fetchAgencyGeo(agency);
