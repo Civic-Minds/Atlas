@@ -368,6 +368,16 @@ worst-stop rule, the tail is the port's doing; octranspo 88 d0 weekday 17/30 -> 
 every-15 trunk, the #771 floor, honest; njt-bus 167 d1 Saturday 27 -> 60: first 4 stops own-only
 hourly, trunk 28, the same floor, honest.
 
+TIER SCALE (2026-10-14, Opus's CIV-152 review): TIER_RANK is now ordered by value with rail's 5 and
+8 (9237fbe2), and every headway-to-tier step reads the route's own scale (15c937b4, 4cda8de3:
+settleTier, the two rescue degrades, the stop grades' headway cap; the release gate stays on the
+surface scale). Subset rescan of the five agencies with a 5 or 8 anywhere (out/fix690t8 vs
+out/fix690k): subways that run every 3-7 lift from 10 to their real tier (TTC Lines 1 and 2 to
+5, Line 4 and MBTA Blue and Orange to 8, 25 lines), two go down by the worst-stop rule (Green-E
+weekday 8 -> 10 at both ends; TTC 504 Dufferin Gate 8 -> 15 with 16 stops graded 15), TTC 510
+Sunday 15 -> 10; detroit-people-mover, Metromover and SKYT keep 5. Main today shows every subway
+at tier 10 because settleTier degraded 5 to the surface scale's 10.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
