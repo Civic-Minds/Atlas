@@ -8,6 +8,7 @@ import { mapWithConcurrency } from './concurrency.js';
 
 export const config = { maxDuration: 60 };
 const HISTORY_SNAPSHOT_CONCURRENCY = 15;
+const HISTORY_PARAMS = new Set(['agency', 'route', 'days']);
 
 function requireEnv(key: string): string {
   const v = process.env[key];
@@ -92,7 +93,18 @@ async function handler(req: Request) {
   const params = queryParams(req);
   const agency = params.get('agency');
   const route = params.get('route');
-  const days = Math.min(parseInt(params.get('days') ?? '7', 10), 30);
+  const daysParam = params.get('days') ?? '7';
+  const days = Number(daysParam);
+  // Only agency, route and days (each at most once): extra params would bust the edge cache.
+  const paramNames = [...params.keys()];
+  const paramsOk = new Set(paramNames).size === paramNames.length
+    && paramNames.every(name => HISTORY_PARAMS.has(name))
+    && /^\d{1,2}$/.test(daysParam) && days >= 1 && days <= 30;
+  if (!paramsOk) {
+    return new Response(JSON.stringify({ error: 'Invalid query parameters.' }), {
+      status: 400, headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
   if (!agency || !route || !isLiveEligibleSlug(agency) || !getLiveRouteConfig(agency, route)) {
     return new Response(JSON.stringify({ error: 'Invalid agency/route pair.' }), {
