@@ -98,6 +98,29 @@ mean gap (septa 24 weekday reads 38 where the plain median is 32); period values
 typicalOfGaps (septa 114 midday period still 81); ttc 63 St Clair (peak-only short turn)
 headline 10/infrequent while its segments read the 63's every-7 trunk, which is the design.
 
+Rescan of 28a7bbd1 (scan tree 9eddee6a, same pipeline code) vs main: headway changed on 3,013
+of 60,622 lines, tier 212, segments 56,623; report690j.txt in the 1419e250 scratchpad
+(out/main690 is main 0c4eb1e8, out/fix690g the branch; report690g.py prints totals, per-agency
+counts, None list, 15 biggest moves and the hand-checked lines). 597 lines lost their headline:
+402 were one-to-three-trip lines (main headline over 120), 40 were peak expresses main read
+from a burst (nfta 60 Buffalo Express 30, pvta 804 11, lanta 410 4, octranspo 663 6, go 52
+Hwy 407 30). Manager's call 2026-10-14: peak expresses go limited, no burst allowance
+(consistent with the midday-headline standard and #720), so those 40 and njt-bus 58 Blvd East
+local's hourly origin tail (20 -> 60 under #771) stay as the rule reads them.
+
+OPEN (next session): the 15 biggest moves are untouched by the #771 change: omahametro 5529
+weekday 15 -> 353, cta J14 Saturday 25 -> 455, nyct-brooklyn B7 Sunday 35 -> 475, njt-rail 3
+(BNTNM) to Hoboken 43 -> 366, njt-bus 29 weekday 56 -> 423, translink 6727 31 -> 227, pace 807
+48 -> 321, mtd BRONZE 35 -> 179, dart 8156 77 -> 242, plus mta-maryland 11663 5 -> 41, mbta 134
+13 -> 56, septa 1 31 -> 103, cincinnatimetro 37 13 -> 40. Shape: the midday period reads the
+pool (10-30) while the headline is a sparse own value (J14 and 5529 confirmed by hand as
+two- or three-trip long shapes past an every-10/15 trunk). They are on neither path changed
+so far (Step 4 decideHeadline; the no-own-stop-value early path), so a third path sets the
+headline. Plan: fixture with mkfixture.py (scratchpad ca2ba197: `python3 mkfixture.py <feed
+dir> <out dir> J14 saturday`; cta zip in the 1419e250 scratchpad zips/cta), trace it, apply
+the same rule there (a sparse own value never sets the headline over a pool reading; nothing
+qualifying = limited), rescan, re-check the list above.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
