@@ -1,0 +1,271 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+129,1,50795686,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233396,1122025,1,1
+129,1,50795732,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233405,1122026,1,1
+129,1,50795685,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233395,1122025,1,1
+129,1,50795695,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233400,1122026,1,1
+129,1,50795681,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233391,1122025,1,1
+129,1,50795750,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233404,1122026,1,1
+129,1,50795731,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233392,1122025,1,1
+129,1,50795747,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233398,1122026,1,1
+129,1,50795749,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795748,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233399,1122025,1,1
+129,1,50795711,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233408,1122026,1,1
+129,1,50795684,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233395,1122025,1,1
+129,1,50795777,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233396,1122026,1,1
+129,1,50795712,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233397,1122025,1,1
+129,1,50795704,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233406,1122026,1,1
+129,1,50795710,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233392,1122025,1,1
+129,1,50795702,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233405,1122026,1,1
+129,1,50795713,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233391,1122026,1,1
+129,1,50795703,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795790,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233402,1122026,1,1
+129,1,50795789,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233400,1122026,1,1
+129,1,50795791,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233395,1122025,1,1
+129,1,50795709,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233404,1122026,1,1
+129,1,50795691,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233399,1122026,1,1
+129,1,50795788,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233392,1122025,1,1
+129,1,50795689,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233398,1122026,1,1
+129,1,50795688,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233397,1122026,1,1
+129,1,50795690,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795729,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233408,1122026,1,1
+129,1,50795692,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233396,1122026,1,1
+129,1,50795746,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233395,1122025,1,1
+129,1,50795716,South - 129S McCowan North Short Turn towards Steeles,S,0,2233406,1122024,1,1
+129,1,50795745,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233405,1122026,1,1
+129,1,50795683,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233393,1122025,1,1
+129,1,50795682,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233392,1122025,1,1
+129,1,50795715,South - 129S McCowan North Short Turn towards Steeles,S,0,2233391,1122024,1,1
+129,1,50795707,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233402,1122026,1,1
+129,1,50795744,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233394,1122025,1,1
+129,1,50795743,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795742,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233404,1122026,1,1
+129,1,50795730,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233395,1122025,1,1
+129,1,50795782,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233401,1122025,1,1
+129,1,50795693,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233398,1122026,1,1
+129,1,50795776,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233393,1122025,1,1
+129,1,50795694,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233392,1122025,1,1
+129,1,50795752,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233396,1122026,1,1
+129,1,50795719,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233394,1122025,1,1
+129,1,50795718,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795780,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233405,1122026,1,1
+129,1,50795787,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233395,1122025,1,1
+129,1,50795781,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233401,1122025,1,1
+129,1,50795696,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233402,1122026,1,1
+129,1,50795779,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233393,1122025,1,1
+129,1,50795778,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233392,1122025,1,1
+129,1,50795699,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233404,1122026,1,1
+129,1,50795701,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233394,1122025,1,1
+129,1,50795700,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795792,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233398,1122026,1,1
+129,1,50795698,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233403,1122025,1,1
+129,1,50795697,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233401,1122025,1,1
+129,1,50795761,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233396,1122026,1,1
+129,1,50795763,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233415,1122025,1,1
+129,1,50795760,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233414,1122026,1,1
+129,1,50795762,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233393,1122025,1,1
+129,1,50795758,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233405,1122026,1,1
+129,1,50795757,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233413,1122026,1,1
+129,1,50795759,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233394,1122025,1,1
+129,1,50795766,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233407,1122026,1,1
+129,1,50795765,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233402,1122026,1,1
+129,1,50795680,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795751,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233412,1122026,1,1
+129,1,50795773,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233411,1122026,1,1
+129,1,50795764,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233401,1122025,1,1
+129,1,50795771,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233404,1122026,1,1
+129,1,50795770,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233403,1122026,1,1
+129,1,50795772,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233393,1122025,1,1
+129,1,50795768,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233398,1122026,1,1
+129,1,50795767,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233415,1122026,1,1
+129,1,50795769,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233394,1122025,1,1
+129,1,50795740,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233396,1122026,1,1
+129,1,50795739,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233414,1122026,1,1
+129,1,50795705,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795737,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233405,1122026,1,1
+129,1,50795736,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233413,1122026,1,1
+129,1,50795738,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233401,1122025,1,1
+129,1,50795734,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233407,1122026,1,1
+129,1,50795733,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233402,1122026,1,1
+129,1,50795735,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233393,1122025,1,1
+129,1,50795727,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233412,1122026,1,1
+129,1,50795726,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233411,1122026,1,1
+129,1,50795728,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233394,1122025,1,1
+129,1,50795741,South - 129S McCowan North Short Turn towards Steeles,S,0,2233404,1122024,1,1
+129,1,50795724,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233403,1122026,1,1
+129,1,50795687,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795725,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233401,1122025,1,1
+129,1,50795708,South - 129S McCowan North Short Turn towards Steeles,S,0,2233398,1122024,1,1
+129,1,50795721,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233396,1122026,1,1
+129,1,50795723,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233413,1122025,1,1
+129,1,50795722,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233393,1122025,1,1
+129,1,50795756,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233405,1122026,1,1
+129,1,50795720,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233394,1122025,1,1
+129,1,50795775,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233412,1122025,1,1
+129,1,50795753,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233407,1122026,1,1
+129,1,50795755,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795754,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233401,1122025,1,1
+129,1,50795785,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233411,1122026,1,1
+129,1,50795774,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233413,1122025,1,1
+129,1,50795786,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233393,1122025,1,1
+129,1,50795706,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233403,1122026,1,1
+129,1,50795784,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233394,1122025,1,1
+129,1,50795783,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233412,1122025,1,1
+129,1,50795797,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233396,1122026,1,1
+129,1,50795714,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795798,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233401,1122025,1,1
+129,1,50795813,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233405,1122026,1,1
+129,1,50795808,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233413,1122025,1,1
+129,1,50795796,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233393,1122025,1,1
+129,1,50795799,South - 129S McCowan North Short Turn towards Steeles,S,0,2233407,1122024,1,1
+129,1,50795802,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233409,1122026,1,1
+129,1,50795804,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233394,1122025,1,1
+129,1,50795803,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233412,1122025,1,1
+129,1,50795812,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233410,1122026,1,1
+129,1,50795801,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233390,1122025,1,1
+129,1,50795800,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233401,1122025,1,1
+129,1,50795795,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233396,1122026,1,1
+129,1,50795793,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233393,1122025,1,1
+129,1,50795811,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233405,1122025,1,1
+129,1,50795794,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233394,1122025,1,1
+129,1,50795810,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233412,1122025,1,1
+129,1,50795809,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233409,1122025,1,1
+129,1,50795807,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233401,1122025,1,1
+129,1,50795806,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233410,1122025,1,1
+129,1,50795805,South - 129 McCowan North towards Kennedy Stn via Scarborough Centre Stn,,0,2233396,1122027,1,1
+129,1,50795893,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233405,1122029,1,1
+129,1,50795892,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233400,1122029,1,1
+129,1,50795891,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233404,1122029,1,1
+129,1,50795889,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233398,1122029,1,1
+129,1,50795925,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233396,1122031,1,1
+129,1,50795864,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233406,1122031,1,1
+129,1,50795866,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233408,1122029,1,1
+129,1,50795913,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233395,1122030,1,1
+129,1,50795914,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233405,1122031,1,1
+129,1,50795912,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233391,1122031,1,1
+129,1,50795924,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233392,1122030,1,1
+129,1,50795911,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233400,1122031,1,1
+129,1,50795949,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233404,1122031,1,1
+129,1,50795922,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795923,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233399,1122031,1,1
+129,1,50795890,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233402,1122029,1,1
+129,1,50795932,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233398,1122031,1,1
+129,1,50795934,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233395,1122030,1,1
+129,1,50795867,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233397,1122031,1,1
+129,1,50795887,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233408,1122031,1,1
+129,1,50795885,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233392,1122030,1,1
+129,1,50795886,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233396,1122031,1,1
+129,1,50795884,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233406,1122031,1,1
+129,1,50795909,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795910,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233405,1122031,1,1
+129,1,50795908,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233391,1122031,1,1
+129,1,50795907,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233395,1122030,1,1
+129,1,50795815,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233402,1122031,1,1
+129,1,50795931,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233400,1122030,1,1
+129,1,50795846,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233392,1122030,1,1
+129,1,50795897,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233404,1122031,1,1
+129,1,50795933,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233399,1122030,1,1
+129,1,50795845,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795894,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233398,1122031,1,1
+129,1,50795942,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233395,1122030,1,1
+129,1,50795935,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233408,1122030,1,1
+129,1,50795865,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233396,1122031,1,1
+129,1,50795836,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233393,1122030,1,1
+129,1,50795835,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233392,1122030,1,1
+129,1,50795814,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233405,1122031,1,1
+129,1,50795834,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233394,1122030,1,1
+129,1,50795876,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795875,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233402,1122031,1,1
+129,1,50795874,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233395,1122030,1,1
+129,1,50795873,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233401,1122030,1,1
+129,1,50795872,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233404,1122031,1,1
+129,1,50795871,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233393,1122030,1,1
+129,1,50795870,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233392,1122030,1,1
+129,1,50795947,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233398,1122031,1,1
+129,1,50795946,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233394,1122030,1,1
+129,1,50795945,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795944,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233396,1122031,1,1
+129,1,50795943,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233395,1122030,1,1
+129,1,50795844,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233401,1122030,1,1
+129,1,50795843,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233405,1122031,1,1
+129,1,50795882,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233393,1122030,1,1
+129,1,50795904,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233392,1122030,1,1
+129,1,50795888,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233414,1122029,1,1
+129,1,50795833,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233402,1122031,1,1
+129,1,50795898,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233394,1122030,1,1
+129,1,50795849,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233413,1122029,1,1
+129,1,50795832,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233411,1122031,1,1
+129,1,50795830,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795848,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233407,1122029,1,1
+129,1,50795831,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233404,1122031,1,1
+129,1,50795829,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233403,1122031,1,1
+129,1,50795847,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233412,1122029,1,1
+129,1,50795820,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233401,1122030,1,1
+129,1,50795821,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233398,1122031,1,1
+129,1,50795905,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233415,1122031,1,1
+129,1,50795880,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233393,1122030,1,1
+129,1,50795881,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233396,1122031,1,1
+129,1,50795879,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233414,1122031,1,1
+129,1,50795950,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233394,1122030,1,1
+129,1,50795878,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233405,1122031,1,1
+129,1,50795856,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233413,1122031,1,1
+129,1,50795854,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795855,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233407,1122031,1,1
+129,1,50795853,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233402,1122031,1,1
+129,1,50795851,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233401,1122030,1,1
+129,1,50795852,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233412,1122031,1,1
+129,1,50795850,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233411,1122031,1,1
+129,1,50795818,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233393,1122030,1,1
+129,1,50795819,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233404,1122031,1,1
+129,1,50795817,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233403,1122031,1,1
+129,1,50795841,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233394,1122030,1,1
+129,1,50795816,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233398,1122031,1,1
+129,1,50795840,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233415,1122030,1,1
+129,1,50795839,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795899,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233396,1122031,1,1
+129,1,50795838,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233414,1122030,1,1
+129,1,50795837,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233401,1122030,1,1
+129,1,50795901,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233405,1122031,1,1
+129,1,50795900,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233413,1122030,1,1
+129,1,50795896,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233393,1122030,1,1
+129,1,50795941,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233407,1122031,1,1
+129,1,50795948,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233394,1122030,1,1
+129,1,50795895,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233412,1122030,1,1
+129,1,50795828,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233411,1122031,1,1
+129,1,50795827,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795826,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233401,1122030,1,1
+129,1,50795825,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233403,1122031,1,1
+129,1,50795824,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233413,1122030,1,1
+129,1,50795823,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233393,1122030,1,1
+129,1,50795822,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233396,1122031,1,1
+129,1,50795877,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233394,1122030,1,1
+129,1,50795869,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233412,1122030,1,1
+129,1,50795883,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233405,1122031,1,1
+129,1,50795868,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795930,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233401,1122030,1,1
+129,1,50795929,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233407,1122031,1,1
+129,1,50795928,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233413,1122030,1,1
+129,1,50795927,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233393,1122030,1,1
+129,1,50795842,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233409,1122031,1,1
+129,1,50795940,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233394,1122030,1,1
+129,1,50795939,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233412,1122030,1,1
+129,1,50795938,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233410,1122031,1,1
+129,1,50795937,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795902,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233401,1122030,1,1
+129,1,50795903,North - 129A McCowan North towards Major Mackenzie via Scarborough Centre Stn,A,1,2233396,1122031,1,1
+129,1,50795936,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233413,1122030,1,1
+129,1,50795906,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233393,1122030,1,1
+129,1,50795921,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233405,1122030,1,1
+129,1,50795920,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233394,1122030,1,1
+129,1,50795919,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233412,1122030,1,1
+129,1,50795918,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233409,1122030,1,1
+129,1,50795917,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233390,1122030,1,1
+129,1,50795916,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233401,1122030,1,1
+129,1,50795915,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233410,1122030,1,1
+129,1,50795863,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233393,1122030,1,1
+129,1,50795862,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233405,1122030,1,1
+129,1,50795861,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233396,1122030,1,1
+129,1,50795926,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233412,1122030,1,1
+129,1,50795860,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233409,1122030,1,1
+129,1,50795859,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233401,1122034,1,1
+129,1,50795858,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233410,1122034,1,1
+129,1,50795857,North - 129B McCowan North towards Steeles via Scarborough Centre Stn,B,1,2233396,1122034,1,1

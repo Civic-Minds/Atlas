@@ -1,0 +1,110 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+9993,9993,McCowan Rd at Elson St,,43.834965,-79.27602,,,,,,1
+9807,9807,McCowan Rd at Steeles Ave East North Side,,43.83177,-79.2752,,,,,,1
+10577,10577,McCowan Rd at Steeles Ave East South Side,,43.830294,-79.275161,,,,,,1
+1301,1301,McCowan Rd at Kenhatch Blvd,,43.801324,-79.263574,,,,,,1
+9808,9808,McCowan Rd Loop at Steeles Ave East,,43.832437,-79.275113,,,,,,2
+2873,2873,McCowan Rd at Sandhurst Cir (North),,43.811497,-79.268991,,,,,,1
+10013,10013,McCowan Rd at Denison St,,43.841646,-79.278162,,,,,,1
+1318,1318,McCowan Rd at Sheppard Ave East,,43.789787,-79.259086,,,,,,1
+1307,1307,McCowan Rd at Middlefield Rd,,43.798532,-79.262287,,,,,,1
+13526,13526,The Bridle Walk at Major Mackenzie Dr East,,43.899444,-79.309415,,,,,,1
+9818,9818,4325 McCowan Rd - Milliken Park Rec Centre,,43.828928,-79.275068,,,,,,1
+10014,10014,McCowan Rd at Gillingham Ave,,43.835334,-79.276532,,,,,,1
+9800,9800,McCowan Rd at Walkway to Alanbull Sq,,43.819978,-79.272989,,,,,,1
+10009,10009,McCowan Rd at Heritage Rd,,43.870059,-79.285397,,,,,,2
+10653,10653,McCowan Rd at Opposite Milliken Wells Shopping Centre,,43.825007,-79.274966,,,,,,1
+13524,13524,Castlemore Ave at The Bridle Walk,,43.896173,-79.308065,,,,,,1
+12078,12078,McCowan Rd at Highway 401,,43.782557,-79.255208,,,,,,1
+9858,9858,McCowan Rd at Nugget Ave,,43.792208,-79.260059,,,,,,1
+9368,9368,McCowan Rd at Finch Ave East,,43.80821,-79.266727,,,,,,1
+1311,1311,2050 McCowan Rd,,43.795063,-79.261173,,,,,,1
+9359,9359,McCowan Rd at McNicoll Ave,,43.817821,-79.271764,,,,,,1
+13520,13520,McCowan Rd at West Bay Drive,,43.88733,-79.289261,,,,,,1
+1299,1299,McCowan Rd at Huntingwood Dr,,43.798816,-79.262774,,,,,,1
+7697,7697,Ellesmere Rd at Midland Ave,,43.768149,-79.270795,,,,,,1
+14158,14158,McCowan Rd at James Parrott Ave,,43.890421,-79.289968,,,,,,1
+1613,1613,Triton Rd at Borough Dr,,43.773482,-79.261427,,,,,,1
+9366,9366,McCowan Rd at Bridley Dr,,43.814517,-79.270578,,,,,,1
+13530,13530,McCowan Rd at Trail Ridge Lane,,43.88768,-79.289637,,,,,,1
+1310,1310,McCowan Rd at Nugget Ave,,43.791895,-79.259599,,,,,,1
+13529,13529,McCowan Rd at Bur Oak Ave,,43.895058,-79.291414,,,,,,1
+10002,10002,McCowan Rd at 16th Ave,,43.885025,-79.288702,,,,,,1
+13521,13521,McCowan Rd at Bur Oak Ave,,43.89452,-79.29095,,,,,,1
+14159,14159,McCowan Rd at Wilfred Murison Ave,,43.89081,-79.290506,,,,,,1
+10435,10435,McCowan Rd at Raymerville Dr (South),,43.876809,-79.286683,,,,,,1
+14238,14238,McCowan Rd at Southdale Dr,,43.865443,-79.283954,,,,,,1
+10008,10008,McCowan Rd at Bullock Dr,,43.872917,-79.286108,,,,,,1
+1302,1302,McCowan Rd at Kenhatch Blvd,,43.801585,-79.263996,,,,,,1
+9996,9996,McCowan Rd at South Unionville Ave,,43.860711,-79.282728,,,,,,1
+9364,9364,McCowan Rd at Alton Towers Cir (South),,43.822598,-79.274169,,,,,,1
+1312,1312,McCowan Rd at Pitfield Rd,,43.787486,-79.257514,,,,,,1
+11804,11804,McCowan Rd at Devonshire Ave,,43.838563,-79.277355,,,,,,1
+13877,13877,McCowan Rd at Castlemore Ave,,43.898403,-79.29187,,,,,,1
+1290,1290,McCowan Rd at Commander Blvd,,43.796262,-79.261695,,,,,,1
+1316,1316,McCowan Rd at Sandhurst Cir (South),,43.805288,-79.265506,,,,,,1
+13878,13878,McCowan Rd at Castlemore Ave,,43.898895,-79.292372,,,,,,1
+13627,13627,The Bridle Walk at Drawbridge Dr,,43.897354,-79.308697,,,,,,1
+13523,13523,Castlemore Ave at Ridgecrest Rd West Side,,43.897223,-79.303475,,,,,,1
+10011,10011,McCowan Rd at South Unionville Ave,,43.861033,-79.28314,,,,,,1
+11801,11801,McCowan Rd at Highglen Ave,,43.845666,-79.278819,,,,,,1
+11803,11803,McCowan Rd at Highglen Ave South Side,,43.846056,-79.279319,,,,,,1
+9999,9999,McCowan Rd at Bullock Dr - Centennial GO Station,,43.872507,-79.285637,,,,,,1
+10576,10576,McCowan Rd at Steeles Ave East,,43.830834,-79.274962,,,,,,1
+9995,9995,McCowan Rd at 14th Ave,,43.849009,-79.279491,,,,,,1
+13532,13532,McCowan Rd at Manhattan Dr,,43.881911,-79.288247,,,,,,1
+2872,2872,McCowan Rd at Finch Ave East North Side,,43.808611,-79.266562,,,,,,1
+9623,9623,McCowan Rd at Triton Rd,,43.775532,-79.252861,,,,,,1
+9367,9367,McCowan Rd at Sandhurst Cir (North),,43.811768,-79.269357,,,,,,1
+1300,1300,McCowan Rd at Invergordon Ave,,43.787318,-79.257047,,,,,,1
+9806,9806,McCowan Rd at Alton Towers Cir (North),,43.826687,-79.275711,,,,,,1
+1315,1315,McCowan Rd at Sandhurst Cir (South),,43.804979,-79.265073,,,,,,1
+1296,1296,McCowan Rd at Finch Ave East,,43.807878,-79.266239,,,,,,1
+9836,9836,McCowan Rd at Milliken Wells Shopping Centre,,43.825587,-79.275465,,,,,,1
+11907,11907,McCowan Rd at Highway 7,,43.867349,-79.284786,,,,,,1
+9365,9365,McCowan Rd at McNicoll Ave,,43.818132,-79.272206,,,,,,1
+13527,13527,Major Mackenzie Dr East at Ridgecrest Rd,,43.900657,-79.304807,,,,,,1
+9810,9810,McCowan Rd at Alton Towers Cir (North),,43.82702,-79.276064,,,,,,1
+1612,1612,Triton Rd at Borough Dr,,43.773658,-79.261533,,,,,,1
+10001,10001,McCowan Rd at Raymerville Dr (North),,43.881381,-79.28777,,,,,,1
+10012,10012,McCowan Rd at 14th Ave,,43.849399,-79.279883,,,,,,1
+1289,1289,McCowan Rd at Commander Blvd North Side,,43.796506,-79.261528,,,,,,1
+13480,13480,McCowan Rd at 14th Ave North Side,,43.850231,-79.279674,,,,,,1
+13528,13528,Major Mackenzie Dr East at McCowan Rd,,43.903281,-79.293772,,,,,,1
+9805,9805,McCowan Rd at Alton Towers Cir (South),,43.822377,-79.273762,,,,,,1
+11800,11800,McCowan Rd at Coleraine Ave,,43.838225,-79.276865,,,,,,1
+13626,13626,Ridgecrest Rd at Wiltshire Dr,,43.89876,-79.303632,,,,,,1
+9998,9998,McCowan Rd at Heritage Rd,,43.869608,-79.284966,,,,,,1
+9994,9994,McCowan Rd at Denison St,,43.841358,-79.277698,,,,,,1
+9811,9811,McCowan Rd at Steeles Ave East,,43.831169,-79.275424,,,,,,1
+14310,14310,McCowan Rd at Southdale Dr South Side,,43.86503,-79.284087,,,,,,1
+13717,13717,Ridgecrest Rd at Major Mackenzie Dr East South Side,,43.900348,-79.304527,,,,,,1
+9799,9799,McCowan Rd at Walkway to Historic Ter,,43.820193,-79.272839,,,,,,1
+1317,1317,McCowan Rd at Sheppard Ave East,,43.789465,-79.258561,,,,,,1
+1308,1308,McCowan Rd at Milner Ave North Side,,43.785961,-79.256495,,,,,,1
+10007,10007,McCowan Rd at Carlton Rd,,43.877216,-79.287113,,,,,,1
+1309,1309,McCowan Rd at Milner Ave,,43.78552,-79.256738,,,,,,1
+9997,9997,McCowan Rd at Highway 7,,43.866966,-79.284291,,,,,,2
+14764,14764,Scarborough Centre Station,,43.774583,-79.257626,,,,,,1
+14766,14766,Scarborough Centre Station,,43.774499,-79.257246,,,,,,1
+15187,15187,Major Mackenzie Dr East at Stonebridge Dr,,43.902225,-79.299231,,,,,,2
+15188,15188,Major Mackenzie Dr East at Stonebridge Dr,,43.901723,-79.299976,,,,,,1
+15448,15448,8600 McCowan Rd,,43.874177,-79.286079,,,,,,1
+15593,15593,9600 McCowan Rd,,43.89386,-79.291127,,,,,,1
+15591,15591,McCowan Rd at Percy Reesor St,,43.901152,-79.292549,,,,,,1
+15592,15592,McCowan Rd at Percy Reesor St,,43.900703,-79.292744,,,,,,1
+15596,15596,Major Mackenzie Dr East at McCowan Rd West Side,,43.903427,-79.294134,,,,,,1
+15597,15597,McCowan Rd at Walkway To Snowden Cir - Centennial GO Station,,43.875011,-79.286562,,,,,,1
+16374,16374,Ellesmere Rd at Midland Ave East Side,,43.767989,-79.270397,,,,,,1
+16393,16393,Kennedy Station - Platform B,,43.731995,-79.262851,,,,,,1
+16453,16453,Kennedy Station Drop-off Platform,,43.732229,-79.263511,,,,,,2
+16529,16529,McCowan Rd at 300 Consilium Pl,,43.778273,-79.253618,,,,,,1
+16722,16722,4325 McCowan Rd,,43.82936,-79.275182,,,,,,1
+13531,13531,McCowan Rd at 16th Ave North Side,,43.88541,-79.289114,,,,,,1
+13097,13097,McCowan Rd at Big Red Ave,,43.813955,-79.270101,,,,,,1
+16912,16912,Tara Avenue,,43.742683,-79.267034,,,,,,1
+16913,16913,Tara Avenue,,43.742028,-79.266923,,,,,,1
+16914,16914,Lawrence East,,43.74964,-79.269965,,,,,,1
+16915,16915,Lawrence East,,43.749381,-79.270003,,,,,,1
+16916,16916,Ellesmere,,43.766819,-79.27646,,,,,,1
+16917,16917,Ellesmere,,43.76647,-79.276535,,,,,,1

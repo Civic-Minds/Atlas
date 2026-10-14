@@ -1,0 +1,68 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_station,wheelchair_boarding
+73,73,Michigan & Van Buren/Ida B. Wells,"Michigan & Van Buren/Ida B. Wells, Southbound, Westside of the Street",41.87627885,-87.62440175,0,,1
+76,76,Michigan & Jackson,"Michigan & Jackson, Northbound, Southeast Corner",41.87814285,-87.62419875,0,,1
+442,442,Washington & Jefferson,"Washington & Jefferson, Eastbound, Southwest Corner",41.88311785,-87.64285375,0,,1
+443,443,Washington & Canal,"Washington & Canal, Eastbound, Southwest Corner",41.88309185,-87.63998175,0,,1
+445,445,Washington & Franklin,"Washington & Franklin, Eastbound, Southwest Corner",41.88313585,-87.63552175,0,,1
+446,446,Washington & Lasalle,"Washington & Lasalle, Eastbound, Southwest Corner",41.88314485,-87.63263075,0,,1
+448,448,Washington & State,"Washington & State, Eastbound, Southeast Corner",41.88317743,-87.6275027,0,,1
+449,449,Washington & Wabash,"Washington & Wabash, Eastbound, Southeast Corner",41.88316685,-87.62597175,0,,1
+450,450,Madison & Wabash,"Madison & Wabash, Westbound, Northeast Corner",41.88214785,-87.62597875,0,,1
+455,455,Madison & Clinton,"Madison & Clinton, Westbound, Northeast Corner",41.8819552,-87.64104917,0,,1
+456,456,Madison & Jefferson,"Madison & Jefferson, Westbound, Northwest Corner",41.88192248,-87.64284114,0,,1
+1110,1110,Michigan & Jackson,"Michigan & Jackson, Southbound, Northwest Corner",41.87843685,-87.62445175,0,,1
+1586,1586,Michigan & Harrison,"Michigan & Harrison, Southbound, Northwest Corner",41.87456745,-87.62437947,0,,1
+4870,4870,Balbo & Michigan,"Balbo & Michigan, Eastbound, Southeast Corner",41.8731092,-87.62358528,0,,1
+4871,4871,Balbo & Columbus,"Balbo & Columbus, Eastbound, Southwest Corner",41.87315785,-87.62085775,0,,1
+4872,4872,1100 S Columbus (Pedestrian Underpass),"1100 S Columbus (Pedestrian Underpass), Southbound, Westside of the Street",41.86936947,-87.62066164,0,,1
+4883,4883,Balbo & Columbus,"Balbo & Columbus, Westbound, Northwest Corner",41.87327185,-87.62100775,0,,1
+4884,4884,Balbo & Michigan,"Balbo & Michigan, Westbound, Northeast Corner",41.87322885,-87.62394375,0,,1
+5209,5209,Jeffery & 67th Street,"Jeffery & 67th Street, Southbound, Southwest Corner",41.77316207,-87.57658395,0,,1
+5217,5217,Jeffery & 75th Street,"Jeffery & 75th Street, Southbound, Southwest Corner",41.75863491,-87.57622727,0,,1
+5219,5219,Jeffery & 77th Street,"Jeffery & 77th Street, Southbound, Southwest Corner",41.75503784,-87.57612272,0,,1
+5221,5221,Jeffery & 79th Street,"Jeffery & 79th Street, Southbound, Southwest Corner",41.75147782,-87.57607588,0,,1
+5223,5223,Jeffery & 81st Street,"Jeffery & 81st Street, Southbound, Southwest Corner",41.7478438,-87.57595692,0,,1
+5229,5229,Jeffery & 87th Street,"Jeffery & 87th Street, Southbound, Southwest Corner",41.73688118,-87.57581049,0,,1
+5231,5231,Jeffery & 89th Street,"Jeffery & 89th Street, Southbound, Southwest Corner",41.73332613,-87.57572631,0,,1
+5233,5233,Jeffery & 91st Street,"Jeffery & 91st Street, Southbound, Southwest Corner",41.72968062,-87.57560125,0,,1
+5235,5235,Jeffery & 93rd Street,"Jeffery & 93rd Street, Southbound, Southwest Corner",41.72599144,-87.57552042,0,,1
+5236,5236,Jeffery & 95th Street,"Jeffery & 95th Street, Southbound, Southwest Corner",41.72227119,-87.57542687,0,,1
+5238,5238,Jeffery & 97th Street,"Jeffery & 97th Street, Southbound, Southwest Corner",41.71872055,-87.57536923,0,,1
+5240,5240,Van Vlissingen & 99th Street,"Van Vlissingen & 99th Street, Southeastbound, Westside of the Street",41.71522812,-87.57411481,0,,1
+5246,5246,100th Street & Yates,"100th Street & Yates, Eastbound, Southwest Corner",41.71347442,-87.56471125,0,,1
+5249,5249,100th Street & Hoxie,"100th Street & Hoxie, Eastbound, Southeast Corner",41.71352607,-87.56074317,0,,1
+5255,5255,103rd Street & Bensley,"103rd Street & Bensley, Westbound, Northeast Corner",41.70818783,-87.56311571,0,,1
+5258,5258,103rd Street & Luella,"103rd Street & Luella, Westbound, Northside of the Street",41.70810155,-87.56804473,0,,1
+5261,5261,103rd Street & Luella,"103rd Street & Luella, Eastbound, Southwest Corner",41.7079775,-87.56822099,0,,1
+5264,5264,103rd Street & Bensley,"103rd Street & Bensley, Eastbound, Southwest Corner",41.70807052,-87.5634301,0,,1
+5266,5266,Torrence & 103rd Street,"Torrence & 103rd Street, Northbound, Northeast Corner",41.70831678,-87.55957282,0,,1
+5269,5269,100th Street & Torrence,"100th Street & Torrence, Westbound, Northwest Corner",41.71365097,-87.56009382,0,,1
+5273,5273,100th Street & Yates,"100th Street & Yates, Westbound, Northwest Corner",41.7135851,-87.56498534,0,,1
+5277,5277,100th Street & Paxton,"100th Street & Paxton, Westbound, Northwest Corner",41.71352026,-87.56950023,0,,1
+5280,5280,Van Vlissingen & 99th Street,"Van Vlissingen & 99th Street, Northwestbound, Northeast Corner",41.71538895,-87.57407145,0,,1
+5282,5282,Jeffery & 97th Street,"Jeffery & 97th Street, Northbound, Eastside of the Street",41.71888583,-87.57522072,0,,1
+5284,5284,Jeffery & 95th Street,"Jeffery & 95th Street, Northbound, Southeast Corner",41.72235688,-87.57528059,0,,1
+5285,5285,Jeffery & 93rd Street,"Jeffery & 93rd Street, Northbound, Northeast Corner",41.72629474,-87.5753846,0,,1
+5287,5287,Jeffery & 91st Street,"Jeffery & 91st Street, Northbound, Northeast Corner",41.72986058,-87.57545574,0,,1
+5289,5289,Jeffery & 89th Street,"Jeffery & 89th Street, Northbound, Northeast Corner",41.73351229,-87.57544795,0,,1
+5295,5295,Jeffery & 83rd Street/South Chicago,"Jeffery & 83rd Street/South Chicago, Northbound, Northeast Corner",41.74451346,-87.57566439,0,,1
+5297,5297,Jeffery & 81st Street,"Jeffery & 81st Street, Northbound, Northeast Corner",41.74806028,-87.57580234,0,,1
+5299,5299,Jeffery & 79th Street,"Jeffery & 79th Street, Northbound, Northeast Corner",41.75180779,-87.57590776,0,,1
+5303,5303,Jeffery & 75th Street,"Jeffery & 75th Street, Northbound, Northeast Corner",41.75908084,-87.57608072,0,,1
+5307,5307,Jeffery & 71st Street,"Jeffery & 71st Street, Northbound, Northeast Corner",41.76635602,-87.57622564,0,,1
+5327,5327,Jeffery & 67th Street,"Jeffery & 67th Street, Northbound, Southeast Corner",41.77333389,-87.57638893,0,,1
+5516,5516,Jefferson & Washington,"Jefferson & Washington, Northbound, Southeast Corner",41.88307296,-87.64261549,0,,1
+14155,14155,103rd Street & Stony Island Garage Terminal,"103rd Street & Stony Island Garage Terminal, Southeastbound, Bus Terminal",41.70854102,-87.58117504,0,,1
+14483,14483,1100 S Columbus (Pedestrian Underpass),"1100 S Columbus (Pedestrian Underpass), Northbound, Eastside of the Street",41.86936738,-87.62036045,0,,1
+14485,14485,Michigan & Ida B Wells Drive,"Michigan & Ida B Wells Drive, Northbound, Southeast Corner",41.87554805,-87.62413205,0,,1
+15241,15241,Michigan & Monroe,"Michigan & Monroe, Northbound, Southeast Corner",41.88067237,-87.62419229,0,,1
+15495,15495,Jeffery & 87th Street,"Jeffery & 87th Street, Northbound, Southeast Corner",41.73696839,-87.57563137,0,,1
+17039,17039,Jeffery & 77th Street,"Jeffery & 77th Street, Northbound, Southeast Corner",41.75515703,-87.57598505,0,,1
+17564,17564,Jeffery & 71st Street,"Jeffery & 71st Street, Southbound, Northwest Corner",41.76634433,-87.57638842,0,,1
+17706,17706,100th Street & Paxton,"100th Street & Paxton, Eastbound, Southwest Corner",41.7134032,-87.56963877,0,,1
+17899,17899,Jeffery & 83rd Street/South Chicago,"Jeffery & 83rd Street/South Chicago, Southbound, Northwest Corner",41.74517493,-87.57607366,0,,1
+18122,18122,Washington & Clark/Dearborn,"Washington & Clark/Dearborn, Eastbound, Southside of the Street",41.88315492,-87.63020179,0,,1
+18123,18123,Madison & LaSalle,"Madison & LaSalle, Westbound, Northwest Corner",41.88201942,-87.63265794,0,,1
+18124,18124,Madison & Franklin,"Madison & Franklin, Westbound, Northwest Corner",41.88200766,-87.63564298,0,,1
+18126,18126,Madison & Dearborn/State,"Madison & Dearborn/State, Westbound, Northside of the Street",41.8820588,-87.62856462,0,,1
+18396,18396,Michigan & Monroe,"Michigan & Monroe, Southbound, Southwest Corner",41.88063279,-87.62452219,0,,1

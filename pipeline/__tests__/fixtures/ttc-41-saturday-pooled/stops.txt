@@ -1,0 +1,114 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+4003,4003,Keele St at Keelegate Dr,,43.73283,-79.483379,,,,,,1
+7899,7899,Keele St at St Clair Ave West,,43.672009,-79.467228,,,,,,1
+10755,10755,Keele St at Toro Rd,,43.75995,-79.490202,,,,,,1
+9154,9154,Keele St at Wilson Ave North Side,,43.72718,-79.481969,,,,,,1
+4498,4498,Sentinel Rd at The Pond Rd,,43.769916,-79.502298,,,,,,1
+4509,4509,Old Weston Rd at St Clair Ave West North Side,,43.673945,-79.463061,,,,,,1
+9149,9149,Keele St at Finch Ave West North Side,,43.764093,-79.490996,,,,,,1
+11321,11321,Keele St at Finch Ave West - Finch West Station,,43.763952,-79.491402,,,,,,1
+3959,3959,Keele St at Broadoaks Dr,,43.757271,-79.489263,,,,,,1
+3995,3995,Keele St at Four Winds Dr,,43.765884,-79.491793,,,,,,1
+9880,9880,Keele St at Victory Dr,,43.728712,-79.482637,,,,,,1
+7883,7883,Keele St at Annette St,,43.663862,-79.464024,,,,,,1
+7889,7889,Keele St at Glenlake Ave,,43.658499,-79.461695,,,,,,1
+7766,7766,230 Ian MacDonald Blvd,,43.775944,-79.507154,,,,,,2
+3983,3983,Keele St at Sir William Hearst Ave,,43.724529,-79.48185,,,,,,1
+3993,3993,Keele St at Flamborough Dr,,43.703006,-79.476876,,,,,,1
+4002,4002,Keele St at Ingram Dr,,43.699279,-79.475771,,,,,,1
+4007,4007,Keele St at Lawrence Ave West North Side,,43.709426,-79.478013,,,,,,1
+11940,11940,Ian MacDonald Blvd at The Chimneystack Rd,,43.776417,-79.500781,,,,,,1
+7886,7886,Keele St at Dundas St West,,43.665275,-79.464376,,,,,,1
+3953,3953,Keele St at Arrowsmith Ave,,43.704338,-79.477212,,,,,,1
+4036,4036,Keele St at St Regis Cres,,43.754632,-79.488881,,,,,,1
+4024,4024,Keele St at Rogers Rd North Side,,43.682632,-79.471717,,,,,,1
+3999,3999,Keele St at Gulliver Rd,,43.699667,-79.476145,,,,,,1
+8749,8749,Weston Rd at McCormack St,,43.677281,-79.472119,,,,,,1
+4058,4058,Keele St at Ypres Rd,,43.687533,-79.47402,,,,,,1
+7882,7882,Keele St at Annette St,,43.663412,-79.463587,,,,,,2
+4051,4051,Keele St at Wycombe Rd,,43.742976,-79.485841,,,,,,2
+14284,14284,Sentinel Rd at Cook Rd,,43.766939,-79.500977,,,,,,1
+9801,9801,Keele St at Tilbury Dr,,43.730459,-79.483066,,,,,,1
+8765,8765,Weston Rd at Seneca Ave,,43.680368,-79.475653,,,,,,1
+4011,4011,Keele St at Maple Leaf Dr,,43.714888,-79.479565,,,,,,1
+4010,4010,Keele St at Maple Leaf Dr,,43.714682,-79.479246,,,,,,1
+7894,7894,Keele St at Junction Rd,,43.667947,-79.46573,,,,,,1
+13924,13924,Keele St at St Regis Cres North Side,,43.754893,-79.488713,,,,,,2
+7902,7902,Keele St at West Toronto St,,43.670163,-79.466669,,,,,,1
+3966,3966,Keele St at Canon Jackson Dr,,43.69692,-79.475238,,,,,,1
+3981,3981,Keele St at Dovehouse Ave North Side,,43.749865,-79.487488,,,,,,2
+4016,4016,Keele St at North Park Dr,,43.711163,-79.478741,,,,,,1
+4057,4057,Keele St at Ypres Rd,,43.68743,-79.473783,,,,,,1
+11069,11069,Weston Rd at Gunns Rd South Side,,43.675541,-79.470205,,,,,,1
+7897,7897,Keele St at Sheppard Ave West North Side,,43.745187,-79.486295,,,,,,1
+3982,3982,Keele St at George Appleton Way,,43.724812,-79.481456,,,,,,1
+4043,4043,Keele St at Toro Rd,,43.759536,-79.489856,,,,,,1
+3955,3955,Keele St at Beechborough Ave,,43.694256,-79.474659,,,,,,1
+7892,7892,Keele St at Humberside Ave,,43.661716,-79.463068,,,,,,2
+3987,3987,Keele St at Falstaff Ave South Side,,43.720257,-79.480793,,,,,,2
+4502,4502,Old Weston Rd at Rockwell Ave,,43.676463,-79.463762,,,,,,1
+3972,3972,Keele St at Colville Rd,,43.706337,-79.477644,,,,,,1
+3978,3978,Keele St at Donald Ave,,43.684824,-79.472665,,,,,,1
+4030,4030,Keele St at Sheppard Ave West South Side,,43.744425,-79.486485,,,,,,1
+4567,4567,Rogers Rd at Scott Rd,,43.682377,-79.468987,,,,,,1
+4025,4025,Keele St at Rustic Rd,,43.717813,-79.479942,,,,,,1
+7893,7893,Keele St at Junction Rd,,43.667688,-79.465429,,,,,,1
+7901,7901,Keele St at West Toronto St,,43.669883,-79.466359,,,,,,2
+13439,13439,The Pond Rd at Ian MacDonald Blvd,,43.770797,-79.498522,,,,,,1
+4045,4045,Keele St at Wandle Ave,,43.731083,-79.482944,,,,,,1
+7885,7885,Keele St at Dovehouse Ave South Side,,43.749356,-79.487633,,,,,,2
+4047,4047,Keele St at Downsview Park Blvd,,43.736856,-79.48436,,,,,,1
+11939,11939,Ian MacDonald Blvd at The Chimneystack Rd,,43.776239,-79.500549,,,,,,2
+3975,3975,Keele St at Densley Ave,,43.702868,-79.476582,,,,,,1
+3998,3998,Keele St at Greenbrook Dr South Side,,43.696813,-79.475456,,,,,,1
+7895,7895,Opposite 3400 Keele St,,43.747916,-79.48704,,,,,,1
+4510,4510,Old Weston Rd at Turnberry Ave,,43.67825,-79.46463,,,,,,1
+9151,9151,Keele St at Grandravine Dr,,43.751925,-79.487981,,,,,,1
+7992,7992,Sentinel Rd at The Pond Rd South Side,,43.76938,-79.5024,,,,,,1
+9152,9152,Keele St at Lawrence Ave West,,43.708825,-79.478254,,,,,,1
+4026,4026,Keele St at Rustic Rd,,43.717967,-79.480244,,,,,,1
+3977,3977,Keele St at Diana Dr,,43.740992,-79.485359,,,,,,1
+3997,3997,Keele St at Grandravine Dr,,43.752257,-79.488314,,,,,,1
+12193,12193,The Pond Rd at Ian MacDonald Blvd West Side,,43.77063,-79.499806,,,,,,1
+3979,3979,Keele St at Donald Ave,,43.684989,-79.47293,,,,,,1
+7888,7888,Keele St at Glenlake Ave,,43.658146,-79.461353,,,,,,2
+4052,4052,Keele St at Wycombe Rd,,43.742981,-79.48611,,,,,,1
+7887,7887,Keele St at Dundas St West South Side,,43.665088,-79.464501,,,,,,1
+3976,3976,Keele St at Diana Dr South Side,,43.740824,-79.48559,,,,,,2
+9153,9153,3400 Keele St,,43.747616,-79.487209,,,,,,1
+3964,3964,Keele St at Calvington Dr South Side,,43.733145,-79.483707,,,,,,1
+7890,7890,Keele St at Hillsview Ave,,43.660394,-79.46249,,,,,,2
+8750,8750,Weston Rd at Northland Ave,,43.678973,-79.474256,,,,,,1
+4049,4049,Keele St at Wilson Ave South Side,,43.726047,-79.48212,,,,,,1
+4505,4505,Old Weston Rd at Rogers Rd,,43.681721,-79.467457,,,,,,1
+3970,3970,Keele St at Clearview Heights South Side,,43.693687,-79.474736,,,,,,1
+3986,3986,Keele St at Falstaff Ave North Side,,43.720613,-79.480557,,,,,,1
+11588,11588,Rogers Rd at Bicknell Ave,,43.682014,-79.473592,,,,,,1
+9148,9148,Keele St at Broadoaks Dr,,43.757567,-79.48964,,,,,,1
+7891,7891,Keele St at Humberside Ave,,43.661536,-79.462808,,,,,,2
+4506,4506,Old Weston Rd at Kane Ave,,43.68052,-79.466245,,,,,,1
+7764,7764,Ian MacDonald Blvd at Founders Rd East Side,,43.777657,-79.50285,,,,,,1
+14434,14434,Weston Rd at Birdstone Cres (North),,43.674271,-79.469585,,,,,,1
+14705,14705,Keele Station,,43.655427,-79.459586,,,,,,1
+13671,13671,Murray Ross Pkwy at Sentinel Rd,,43.765014,-79.500877,,,,,,1
+14845,14845,Murray Ross Pkwy at Sentinel Rd East Side,,43.764927,-79.500283,,,,,,1
+14832,14832,Murray Ross Pkwy at Evelyn Wiggins Dr,,43.766725,-79.493876,,,,,,1
+14867,14867,Keele St at Rogers Rd,,43.682269,-79.471749,,,,,,1
+14866,14866,Weston Rd at Avon Cres,,43.68111,-79.476373,,,,,,1
+14860,14860,Murray Ross Pkwy at Haynes Ave,,43.765622,-79.497611,,,,,,1
+14861,14861,Murray Ross Pkwy at Haynes Ave East Side,,43.765533,-79.497545,,,,,,2
+15130,15130,Sentinel Rd at Cook Rd,,43.767142,-79.501342,,,,,,1
+15431,15431,66 Keele St,,43.656422,-79.460834,,,,,,1
+15434,15434,Keele St at Bloor St West - Keele Station,,43.655485,-79.460098,,,,,,1
+15584,15584,Keele St at North Park Dr,,43.711071,-79.478465,,,,,,1
+15580,15580,Pioneer Village Station,,43.776839,-79.508835,,,,,,1
+15653,15653,Keele St at Four Winds Dr - Finch West Station,,43.765411,-79.491477,,,,,,1
+15750,15750,Weston Rd at St Clair Ave West,,43.672671,-79.467774,,,,,,1
+15786,15786,Keele St at Colville Rd North Side,,43.706533,-79.477429,,,,,,1
+15787,15787,Keele St at Milford Ave North Side,,43.704955,-79.477086,,,,,,1
+15994,15994,Trethewey Dr at Eglinton Ave West,,43.690333,-79.475237,,,,,,1
+15998,15998,Keele St at Eglinton Ave West,,43.689975,-79.474862,,,,,,1
+16238,16238,Murray Ross Pkwy at Columbia Gate,,43.766223,-79.494362,,,,,,1
+16132,16132,Keele St at Whitburn Cres South Side,,43.736581,-79.484577,,,,,,1
+16444,16444,Keele St at Paxtonia Blvd North Side,,43.729457,-79.482646,,,,,,1
+16581,16581,Keelesdale Station,,43.691096,-79.474734,,,,,,1

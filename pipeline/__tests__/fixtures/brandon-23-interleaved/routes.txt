@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_color,route_text_color
+23,0cb4cafb-1a4b-4b8e-bb5f-115dddf79537,23,1st Street South_23,1ST,3,1CE65B,000000

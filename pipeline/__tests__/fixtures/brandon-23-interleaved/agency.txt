@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email
+0cb4cafb-1a4b-4b8e-bb5f-115dddf79537,Brandon Transit,http://www.brandontransit.ca/,America/Chicago,en,204-729-2300,https://www.brandontransit.ca/transit-fares,transit@brandon.ca 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
 import { TIME_PERIODS } from '../../shared/config';
 
 describe('computePeriodCoverageHeadways', () => {
@@ -557,5 +557,15 @@ describe('computeHourMaxGaps', () => {
 
   it('ignores gaps that start outside the requested hour', () => {
     expect(computeHourMaxGaps([18 * 60 + 59, 20 * 60], [19, 20])).toEqual({ 19: null, 20: null });
+  });
+});
+
+describe('TIER_RANK', () => {
+  it('orders every tier by value, rail 5 and 8 included, then infrequent and span (CIV-152)', () => {
+    const order = ['5', '8', '10', '15', '20', '30', '60', 'infrequent', 'span'];
+    for (let i = 1; i < order.length; i++) expect(TIER_RANK[order[i]]).toBeGreaterThan(TIER_RANK[order[i - 1]]);
+    // Surface tiers keep their relative steps (releaseDiff counts route shifts in steps).
+    expect(TIER_RANK['20'] - TIER_RANK['10']).toBe(2);
+    expect(TIER_RANK['8']).toBeDefined();
   });
 });

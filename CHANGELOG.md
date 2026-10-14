@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **An hourly or half-hourly route no longer drops a frequency tier for one bus a minute or two late in the timetable**: a whole-day sample (eight gaps or more) may carry one gap inside the grace, so WMATA P72 on Saturday stays "every 60" with a 61-minute gap instead of infrequent, and RCT 117 and TTC 79 keep their tiers; short samples still fail on one long gap.
+- The shared-stretch frequency no longer disappears along a busy stretch because of one held bus: TTC 52 westbound at midday, four branches merged to every 5, lost its combined value at 14 stops on Lawrence Ave W over a single 10-minute gap near 2:30 pm ([#851](https://github.com/Civic-Minds/Atlas/issues/851)).
+- **A route's frequency tier is now graded along its whole line, not only at its first stop**: the tier is the worst grade among its stops, counting every trip that serves each stop, so a line whose evening gaps widen downstream (CTA J14 Saturday: 15 at the garage, 20 at 29 of 34 stops) rates 20, and a shape whose stops all pool with a frequent trunk is lifted to what the trunk supports; a stop with no all-day service never drags the tier, and the headline frequency is unchanged (CIV-152).
+- A short-turn or peak-only variant of a route that runs through the day elsewhere, like SEPTA 114's 95 Industrial Park trips beside the all-day Wawa service or NJ Transit's peak Montclair-Boonton trains to Hoboken, no longer shows a frequency read from a handful of trips; it is limited service, while routes that run every two hours all day keep their reading, and a direction whose midday trips run on a pattern that is not drawn (Community Transit 130 to Edmonds) keeps its headline ([#690](https://github.com/Civic-Minds/Atlas/issues/690)).
 - Trip time by hour now covers the whole day for TTC subway lines: Line 1 and Line 2 give the same end-to-end run a different shape per time band, and only one band's trips were being counted ([#852](https://github.com/Civic-Minds/Atlas/issues/852)).
 
 ### Changed
@@ -62,6 +66,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Routes whose midday trips run on their own shape no longer show a fake midday gap**: when one line was drawn from separate morning-evening and midday patterns (Lethbridge 4 on Saturdays) or ended at a different platform in the morning (REM A3), the pattern without midday trips could speak for the route, leaving midday empty or reading a gap of several hours. (#844, #842)
 - **The Roosevelt Island Tramway stays an aerial tram**: its feed now labels the tram as light rail, which would have shown it as a streetcar; it keeps its gondola/aerial tram mode. (#861)
 - **An agency whose refresh produces no route lines is no longer marked up to date**: a feed with stops but no drawable routes (El Monte) was stamped "current", so nothing flagged it as broken; it now keeps its last good data and is marked as needing another try. (#634)
 - **Map tiles stay cached in the browser**: each release's tile archives are now uploaded with a long cache header, so zooming back or revisiting no longer re-downloads tiles now that they load straight from storage. (#840)

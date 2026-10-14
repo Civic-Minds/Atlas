@@ -3,9 +3,9 @@ import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import { medianHeadwayInWindow, resolveTerminalHeadline, sustainedMedianHeadwayInWindow, typicalOfGaps } from '../headway-utils';
-import { pooledStopMetrics } from '../sharedStretch';
 import { computeHeadwayStats } from '../transit-phase2';
 import { processGtfsBuffer } from '../process-core';
+import { pooledHeadwayInWindow } from '../stopPools';
 
 const at = (...hhmm: string[]) => hhmm.map(t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; });
 
@@ -79,13 +79,19 @@ describe('typical wait for alternating gaps', () => {
     expect(typicalOfGaps([20, 101, 20, 20, 101, 20])).toBe(20);
   });
 
-  it('pooled shared-stretch values keep the plain median', () => {
-    // Midday 30, 30, 60, 60, 60, 30, 30: the typical reading is 60; pooling keeps max(median 30,
-    // mean gap 43), as before #772.
-    const pooled = pooledStopMetrics(at('9:00', '9:30', '10:00', '11:00', '12:00', '13:00', '13:30', '14:00'));
+  it('pooled stop values read the typical wait, never better than the mean gap (#690)', () => {
+    // Midday 30, 30, 60, 60, 60, 30, 30: the typical reading is 60 (the long gaps take most of
+    // the time) and the mean gap is 43, so the pooled value is 60.
     expect(typicalOfGaps([30, 30, 60, 60, 60, 30, 30])).toBe(60);
-    expect(pooled.headway).toBe(43);
-    expect(pooled.byPeriod.midday).toBe(43);
+    expect(pooledHeadwayInWindow(at('9:00', '9:30', '10:00', '11:00', '12:00', '13:00', '13:30', '14:00'), 540, 900)).toBe(60);
+  });
+
+  it('#813: a pooled window with one gap over 1.5x the typical wait publishes nothing', () => {
+    // Every 20 with one hour-long hole: the typical wait is 20 and the hole is 3x it, so the
+    // merged list is not a 20-minute service at midday and the stop keeps its own value.
+    expect(pooledHeadwayInWindow(at('9:00', '9:20', '9:40', '10:40', '11:00', '11:20', '11:40', '12:00', '12:20', '12:40', '13:00'), 540, 900)).toBeNull();
+    // The same list with the hole filled reads 20.
+    expect(pooledHeadwayInWindow(at('9:00', '9:20', '9:40', '10:00', '10:20', '10:40', '11:00', '11:20', '11:40', '12:00', '12:20', '12:40', '13:00'), 540, 900)).toBe(20);
   });
 
   it('Saint John 12: the all-day phase 2 value is no longer the short 60', () => {
