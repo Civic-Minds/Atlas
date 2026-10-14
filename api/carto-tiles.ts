@@ -1,8 +1,9 @@
 const CARTO_HOSTS = ['a', 'b', 'c', 'd'] as const;
 const CARTO_STYLES = new Set(['light_all', 'dark_all']);
-// Browsers keep a good tile for 30 days (CARTO's own max-age); Vercel's edge keeps it a year
+// Browsers keep a good tile for 7 days (short enough to recover if CARTO relabels its watermark tile);
+// Vercel's edge keeps it a year
 // and serves stale for another 30 days while revalidating, so few requests reach this function.
-const TILE_CACHE_OK = 'public, max-age=2592000, s-maxage=31536000, stale-while-revalidate=2592000';
+const TILE_CACHE_OK = 'public, max-age=604800, s-maxage=31536000, stale-while-revalidate=2592000';
 const TILE_CACHE_NONE = 'no-store, max-age=0';
 
 // CARTO answers a missing or invalid key with HTTP 200 and an "API KEY REQUIRED" watermark tile,

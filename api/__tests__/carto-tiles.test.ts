@@ -10,7 +10,7 @@ afterEach(() => {
 });
 
 describe('carto-tiles proxy', () => {
-  it('lets browsers keep a good tile for 30 days and the edge keep it longer', async () => {
+  it('lets browsers keep a good tile for 7 days and the edge keep it longer', async () => {
     vi.stubEnv('CARTO_BASEMAP_API_KEY', 'test-key');
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('png', {
       status: 200,
@@ -19,7 +19,7 @@ describe('carto-tiles proxy', () => {
     const response = await handler.fetch(new Request(tileUrl));
     expect(response.status).toBe(200);
     const cache = response.headers.get('Cache-Control') ?? '';
-    expect(cache).toContain('max-age=2592000');
+    expect(cache).toMatch(/(^|[ ,])max-age=604800(,|$)/);
     expect(cache).toMatch(/s-maxage=\d+/);
     expect(cache).toContain('stale-while-revalidate=');
   });
