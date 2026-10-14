@@ -42,7 +42,7 @@ export default function SiteFooter() {
           </a>
           <p className="mt-2">See how often transit routes actually run.</p>
         </div>
-        <nav className="grid grid-cols-3 gap-x-4 gap-y-5 sm:grid-cols-[repeat(3,10rem)] sm:gap-x-0" aria-label="Footer links">
+        <nav className="grid grid-cols-3 gap-x-4 gap-y-5 sm:flex sm:gap-x-20" aria-label="Footer links">
           {footerGroups().map(group => (
             <div key={group.title}>
               <div className="mb-2 text-xs font-black text-[var(--text-muted)]">{group.title}</div>
