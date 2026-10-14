@@ -444,6 +444,12 @@ export function getLiveRouteConfig(
   );
 }
 
+/** Any polled route, including vehicles-only ones (archive-based views don't need anchor stops). */
+export function getPolledRoute(slug: string, routeShortName: string | null | undefined): LiveRouteConfig | undefined {
+  if (!routeShortName) return undefined;
+  return LIVE_POLLING_ROUTES.find(c => c.slug === slug && c.displayRouteShortName === routeShortName);
+}
+
 export function isLivePollingRoute(agencySlug?: string, routeShortName?: string | null): boolean {
   if (!agencySlug || !routeShortName) return false;
   return !!getLiveRouteConfig(agencySlug, routeShortName);

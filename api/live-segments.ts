@@ -5,7 +5,7 @@
  */
 import { readFile } from 'fs/promises';
 import { resolve } from 'path';
-import { getLiveRouteConfig } from '../shared/livePollingConfig.js';
+import { getPolledRoute } from '../shared/livePollingConfig.js';
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -20,7 +20,7 @@ async function handler(req: Request): Promise<Response> {
   const route = params.get('route')?.trim();
   if (!agency || !route) return json({ error: 'agency and route are required' }, 400);
   // Whitelist: only configured live routes map to a file name (no path input reaches the filesystem).
-  const cfg = getLiveRouteConfig(agency, route);
+  const cfg = getPolledRoute(agency, route);
   if (!cfg) return json({ noData: true });
   const dir = process.env.LIVE_SEGMENTS_DIR ?? resolve('../_live-data/out');
   try {

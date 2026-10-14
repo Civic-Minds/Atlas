@@ -1,6 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { FEATURES } from '../../shared/config';
-import { isLivePollingRoute } from '../../shared/livePollingConfig';
+import { getPolledRoute } from '../../shared/livePollingConfig';
 import type { SegmentBand, SegmentDelayData, SegmentView } from '../utils/segmentDelayView';
 
 // One fetch per route, shared by the map overlay and the route card.
@@ -23,7 +23,7 @@ function load(slug: string, route: string): Promise<SegmentDelayData | null> {
 /** Archived "where vehicles lose time" stats for a live route (Live mode only). */
 export function useSegmentDelay(slug: string | null | undefined, routeShortName: string | null | undefined) {
   const [data, setData] = useState<SegmentDelayData | null>(null);
-  const enabled = FEATURES.live && !!slug && !!routeShortName && isLivePollingRoute(slug, routeShortName);
+  const enabled = FEATURES.live && !!slug && !!routeShortName && !!getPolledRoute(slug, routeShortName);
   useEffect(() => {
     setData(null);
     if (!enabled) return;
