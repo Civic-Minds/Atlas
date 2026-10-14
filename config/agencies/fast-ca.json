@@ -14,7 +14,7 @@
   ],
   "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=FS",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-76/latest.zip",
-  "lastFeedExpiry": "20260630",
+  "lastFeedExpiry": "20270630",
   "lastFeedVersion": "UTC: 14-Nov-2025 10:07",
   "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.fasttransit.org/",

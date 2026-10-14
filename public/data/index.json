@@ -6565,7 +6565,7 @@
       ],
       "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SF",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2886/latest.zip",
-      "lastFeedExpiry": "20260828",
+      "lastFeedExpiry": "20270115",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -7663,7 +7663,7 @@
       ],
       "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=FS",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-76/latest.zip",
-      "lastFeedExpiry": "20260630",
+      "lastFeedExpiry": "20270630",
       "lastFeedVersion": "UTC: 14-Nov-2025 10:07",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.fasttransit.org/",
@@ -10765,7 +10765,7 @@
         -87.9598
       ],
       "feedUrl": "https://kamino.mcts.org/gtfs/google_transit.zip",
-      "lastFeedExpiry": "20250823",
+      "lastFeedExpiry": "20261205",
       "lastFeedVersion": null,
       "region": "Wisconsin",
       "lastRefreshedAt": "20260811",
@@ -11177,7 +11177,7 @@
         -118.2399
       ],
       "feedUrl": "https://www.glendaleca.gov/home/showdocument?id=29549",
-      "lastFeedExpiry": "20220831",
+      "lastFeedExpiry": "20271001",
       "lastFeedVersion": null,
       "region": "California",
       "lastRefreshedAt": "20260811",
@@ -11327,7 +11327,7 @@
       ],
       "feedUrl": "https://ridegtrans.com/gtfs.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2270/latest.zip",
-      "lastFeedExpiry": "20261010",
+      "lastFeedExpiry": "20270102",
       "lastFeedVersion": "S1000133",
       "region": "California",
       "lastRefreshedAt": "2026-08-10",
@@ -13002,7 +13002,7 @@
         -73.9883
       ],
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/14843/PATHGTFS.zip",
-      "lastFeedExpiry": "20260601",
+      "lastFeedExpiry": "20261114",
       "lastFeedVersion": "UTC: 22-May-2025 18:06",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.panynj.gov/path/",
@@ -13043,7 +13043,7 @@
       ],
       "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
       "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
-      "lastFeedExpiry": "20261019",
+      "lastFeedExpiry": "20270104",
       "lastFeedVersion": "20260728_180759",
       "lastRefreshedAt": "2026-07-29",
       "cities": [
@@ -16940,7 +16940,7 @@
       ],
       "feedUrl": "https://gtfs.ccrta.cadavl.com/CCRTA/GTFS/GTFS_CCRTA.zip",
       "region": "Texas",
-      "lastFeedExpiry": "20250531",
+      "lastFeedExpiry": "20270117",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
       "cities": [
@@ -18135,7 +18135,7 @@
       "feedUrl": "https://gismap.augustaga.gov/AugGAgis/GISWebLinks/Transit/GTFS/google_transit.zip",
       "region": "Georgia",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
-      "lastFeedExpiry": "20240224",
+      "lastFeedExpiry": "20261201",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
       "timezone": "America/New_York",
@@ -21390,7 +21390,7 @@
         -108.5512
       ],
       "feedUrl": "https://emap.mesacounty.us/datadownload/Google_Transit_Feed/google_transit.zip",
-      "lastFeedExpiry": "20251105",
+      "lastFeedExpiry": "20270708",
       "lastFeedVersion": "Nov_05_2024",
       "lastRefreshedAt": "20260811",
       "region": "Colorado",
@@ -21647,13 +21647,13 @@
       "name": "Streamline (Bozeman)",
       "websiteUrl": "http://www.streamlinebus.com/",
       "center": [
-        45.68,
-        -111.04
+        45.6881,
+        -111.0598
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip",
       "lastFeedExpiry": "20281231",
       "lastFeedVersion": "UTC: 23-Jan-2025 11:14",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-10-14",
       "region": "Montana",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-295/latest.zip",
       "bbox": [
@@ -21669,7 +21669,24 @@
       "timezone": "America/Denver",
       "skipClusteredJumpRepair": true,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip",
+      "lastPeekedExpiry": "20281231",
+      "feedQuality": {
+        "status": "review",
+        "score": 60,
+        "reasons": [
+          "1 minor schedule issue found while reading the feed.",
+          "4 route shapes needed adjustment before display."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 4,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 22
+        },
+        "checkedAt": "2026-10-14"
+      }
     },
     {
       "slug": "athens-oh",
