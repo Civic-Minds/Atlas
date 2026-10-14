@@ -19,7 +19,6 @@ interface Props {
   live?: boolean;
   // Limited service
   limited?: boolean;
-  limitedHint?: boolean;  // inline hint row (dot + label + "limited" badge)
   edgeGapAllowance?: 'opening' | 'closing' | 'both';
   onEdgeGapAllowanceClick?: () => void;
   // Filtering
@@ -37,7 +36,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedHint, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
+export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const interactive = !!(onHoverStart && onHoverEnd);
@@ -48,16 +47,6 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
   const rangeText = showRange && headway != null && trunkHeadway != null
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;
-
-  if (limitedHint) {
-    return (
-      <div className="flex items-start gap-1.5 text-xs">
-        <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: getTierColor(null, colorMode) }} />
-        <span className="font-bold text-[var(--text-primary)] leading-snug">{label}</span>
-        <span className="ml-1.5 text-xs font-bold text-[var(--text-legend)] border border-[var(--border-primary)] rounded-full px-1.5 py-px whitespace-nowrap">limited</span>
-      </div>
-    );
-  }
 
   return (
     <div
