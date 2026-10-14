@@ -14,10 +14,10 @@
   ],
   "feedUrl": "https://drive.usercontent.google.com/download?id=1SsCgQ0agO_EONavJoOuBPMlbcu2VcUs4&export=download",
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "",
+  "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3140/latest.zip",
-  "lastRefreshedAt": "20260811",
-  "lastFeedCheckAt": "20261012",
+  "lastRefreshedAt": "2026-10-14",
+  "lastFeedCheckAt": "20261014",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -28,5 +28,23 @@
   "timezone": "America/Toronto",
   "lastRawArchiveKey": "20250830-f57cc654275f6804",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://drive.usercontent.google.com/download?id=1SsCgQ0agO_EONavJoOuBPMlbcu2VcUs4&export=download"
+  "lastFeedSourceUrl": "https://drive.usercontent.google.com/download?id=1SsCgQ0agO_EONavJoOuBPMlbcu2VcUs4&export=download",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 162
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20270102",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

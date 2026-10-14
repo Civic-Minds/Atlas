@@ -10,16 +10,36 @@
   "feedUrl": "https://www.theride.org/sites/default/files/google/google_transit.zip",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "S1000302",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-14",
   "cities": [
     "Ann Arbor, Michigan",
     "Canton, Michigan"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261014",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.theride.org/sites/default/files/google/google_transit.zip"
+  "lastFeedSourceUrl": "https://www.theride.org/sites/default/files/google/google_transit.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route shape needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 155
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20270130",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

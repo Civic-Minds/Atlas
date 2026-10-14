@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270213",
   "lastFeedVersion": "2026-08 service V1",
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-14",
   "cities": [
     "Durham, North Carolina",
     "Cary, North Carolina",
@@ -20,11 +20,29 @@
     "Burlington, North Carolina"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3183/latest.zip",
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261014",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://gotriangle.org/gtfs"
+  "lastFeedSourceUrl": "https://gotriangle.org/wp-content/uploads/google_transit.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 68
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20270213",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }
