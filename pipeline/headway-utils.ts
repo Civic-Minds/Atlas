@@ -47,14 +47,21 @@ export const ALTERNATING_HOLE_RATIO = 3;
  * when larger (#772:
  * basin transit 1 Saturday midday 60, 120, 60 read 60; saint john 12 read 60 for a 60, 60,
  * 225, 255, 60 day). One odd gap in regular service (10, 10, 10, 10, 30) stays on its median,
- * and so does any list of one or two gaps.
+ * and so does any list of one or two gaps. In a whole-day list (`wholeDay`), three gaps with one at
+ * least 3x the median (70, 350, 70) also stay on the median: that is a break between runs of a
+ * few-trip route, not an alternation (#834). A period window keeps the rule above: there the long
+ * gap is a hole inside the period, and the median would hide it (rtd E line Sunday, paired trips
+ * 6, 24, 6; dayton 43 midday 55, 200, 55).
  */
-export function typicalOfGaps(gapsInTimeOrder: readonly number[]): number {
+export function typicalOfGaps(gapsInTimeOrder: readonly number[], wholeDay = false): number {
   const sorted = [...gapsInTimeOrder].sort((a, b) => a - b);
   const median = medianOfSortedGaps(sorted);
   if (sorted.length < 3 || median <= 0) return median;
   const inRange = gapsInTimeOrder.filter(g => g <= median * ALTERNATING_MAX_GAP_RATIO);
   if (inRange.length < 3) return median;
+  // Over a whole day, three gaps (four departures) cannot show an alternation, so a gap at least 3x
+  // the median is a break between runs of service (centro 21950 70, 350, 70), not a wait riders see (#834).
+  if (wholeDay && inRange.length === 3 && Math.max(...inRange) >= median * ALTERNATING_HOLE_RATIO) return median;
   const isLong = inRange.map(g => g >= median * ALTERNATING_LONG_GAP_RATIO);
   let lead = 0;
   while (lead < isLong.length && isLong[lead]) lead++;
@@ -179,7 +186,8 @@ export function sustainedMedianHeadwayInWindow(
   const median = medianOfSortedGaps(sorted);
   const maxGap = sorted[sorted.length - 1];
   if (median > 0 && maxGap / median > dominantGapRatio) return null;
-  return Math.round(typical ? typicalOfGaps(gaps) : median);
+  // Only ever read over the all-day window (6-22h), so it is a whole-day list (#834).
+  return Math.round(typical ? typicalOfGaps(gaps, true) : median);
 }
 
 // Step 4's terminal override can fall back to the raw all-day (6-22h) window when the terminal
@@ -213,14 +221,20 @@ export function isThinAllDayTerminalSample(departureTimes: readonly number[], br
  * own median is 100). A median of two gaps is their mean, and for uneven gaps it is neither
  * gap and not the wait either. Step 4 then keeps the branch headway, as it does for a thin
  * all-day sample (isThinAllDayTerminalSample). Two even gaps (60, 60) keep their value.
+ *
+ * Only when the branch value fits the sample: the longer gap must be under
+ * ALTERNATING_HOLE_RATIO times the branch value (wsf 131: 205 against 120). A longer gap is a
+ * midday hole the branch value would hide: rtl 25 to Terminus Longueuil kept a peak 30 beside
+ * 09:04, 09:30 and 14:35, a 305-minute hole (#833).
  */
 export const UNEVEN_TWO_GAP_RATIO = 1.5;
-export function isUnevenTwoGapMiddayTerminalSample(departureTimes: readonly number[], branchTripCount = Infinity): boolean {
+export function isUnevenTwoGapMiddayTerminalSample(departureTimes: readonly number[], branchTripCount = Infinity, branchHw = Infinity): boolean {
   const times = [...new Set(departureTimes)].filter(t => t >= 540 && t <= 900).sort((a, b) => a - b);
   if (times.length !== 3 || branchTripCount <= 3) return false;
   const g1 = times[1] - times[0];
   const g2 = times[2] - times[1];
-  return Math.max(g1, g2) >= Math.min(g1, g2) * UNEVEN_TWO_GAP_RATIO;
+  return Math.max(g1, g2) >= Math.min(g1, g2) * UNEVEN_TWO_GAP_RATIO
+    && Math.max(g1, g2) < branchHw * ALTERNATING_HOLE_RATIO;
 }
 
 // A branch's own dispatch-frequency median (computeHeadwayStats over the whole route+dir+day)

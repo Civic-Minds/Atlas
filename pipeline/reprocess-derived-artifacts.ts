@@ -40,6 +40,11 @@
  * --allow <slug>:<flag> to accept one reviewed flag for one agency. The gate
  * report is written to tmp/release-diff/. Agencies with no archived zip and no
  * local recovery input are skipped.
+ *
+ * With --write, each published agency's lastFeedExpiry/lastPeekedExpiry in
+ * public/data/index.json and config/agencies/<slug>.json are set from the feed
+ * it was rebuilt from (refresh's placeholder cap applies), so publish and the
+ * expired notice read the right date (#837). Commit those files after the run.
  */
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -47,6 +52,7 @@ import './loadEnv.js';
 import { type GtfsPreprocess } from './process-core.js';
 import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem } from './agencyFeeds.js';
 import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js';
+import { stampReprocessedFeedExpiry } from './refreshMeta.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
 import {
@@ -100,6 +106,7 @@ interface Agency {
   referenceDateFromRunDate?: boolean;
   fare?: number;
   lastFeedExpiry?: string | null;
+  lastPeekedExpiry?: string | null;
   lastRawArchiveKey?: string | null;
   lastRefreshedAt?: string | null;
   hiddenInProduction?: boolean;
@@ -125,6 +132,9 @@ class Refusal extends Error {}
 
 /** Gate inputs per processed agency, kept out of the JSON report. */
 const gateInputs = new Map<string, { candidate: GateCandidate; live: ArtifactSummary | null }>();
+/** The processed feed's raw expiry dates per agency, recorded in index.json once its artifacts are published (#837). */
+const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null }>();
+const expiryUpdates: string[] = [];
 const AGENCY_ARTIFACTS = ['', '-stops', '-corridors', '-trips', '-stops-meta'] as const;
 
 const indexPath = resolve('public/data/index.json');
@@ -201,6 +211,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
     gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry } }, live });
+    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry });
 
     const agencyDir = resolve(outputDir, agency.slug);
     mkdirSync(agencyDir, { recursive: true });
@@ -266,6 +277,17 @@ async function publishRow(row: ReportRow, agency: Agency, registry: Agency[]): P
     return r2Put(`atlas/${name}`, readFileSync(resolve(agencyDir, name), 'utf8'));
   }));
   console.log(`  Published ${row.slug} derived artifacts.`);
+  // The live data now comes from this feed: record its expiry like a refresh does (#837).
+  const dates = processedExpiries.get(row.slug);
+  if (dates && stampReprocessedFeedExpiry(agency, { ...dates, todayYmd })) {
+    const configPath = resolve('config/agencies', `${agency.slug}.json`);
+    if (existsSync(configPath)) {
+      const source = JSON.parse(readFileSync(configPath, 'utf8')) as Agency;
+      stampReprocessedFeedExpiry(source, { ...dates, todayYmd });
+      writeFileSync(configPath, `${JSON.stringify(source, null, 2)}\n`);
+    }
+    expiryUpdates.push(`${agency.slug} ${row.liveFeedExpiry ?? 'none'} -> ${agency.lastFeedExpiry}`);
+  }
 }
 
 async function main(): Promise<void> {
@@ -309,7 +331,16 @@ async function main(): Promise<void> {
   await gateProcessedRows(rows, index.agencies);
   if (writeToR2) {
     const bySlug = new Map(index.agencies.map(agency => [agency.slug, agency]));
-    await runWithConcurrency(rows.filter(row => row.status === 'processed').map(row => () => publishRow(row, bySlug.get(row.slug)!, index.agencies)), concurrency);
+    try {
+      await runWithConcurrency(rows.filter(row => row.status === 'processed').map(row => () => publishRow(row, bySlug.get(row.slug)!, index.agencies)), concurrency);
+    } finally {
+      // Also after a failed upload: the agencies published before it already serve the new feed.
+      if (expiryUpdates.length) {
+        writeFileSync(indexPath, `${JSON.stringify(index, null, 2)}\n`);
+        console.log(`\nUpdated feed expiry in index.json for ${expiryUpdates.length} agencies (commit public/data/index.json and config/agencies):`);
+        for (const line of expiryUpdates.sort()) console.log(`  ${line}`);
+      }
+    }
   }
 
   const report = {

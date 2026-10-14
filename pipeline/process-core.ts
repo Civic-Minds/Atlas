@@ -1996,10 +1996,11 @@ export async function processGtfsBuffer(
         .map(({ stopId }) => allStopHwPlain[stopId])
         .filter((v): v is number => v != null);
       // A midday value read off three uneven departures is a two-gap mean (wsf 131 Anacortes,
-      // 205 and 100 read 153): keep the phase 2 branch value, as for a thin all-day sample (#745).
+      // 205 and 100 read 153): keep the phase 2 branch value, as for a thin all-day sample (#745),
+      // unless a gap is a midday hole that value would hide (#833).
       const unevenMiddayTerminal = branchHw != null
         && terminalMiddayHw != null
-        && isUnevenTwoGapMiddayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount);
+        && isUnevenTwoGapMiddayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount, branchHw);
       const headway = unevenMiddayTerminal
         ? branchHw
         : thinTerminalSample

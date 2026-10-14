@@ -102,11 +102,16 @@ describe('tile rules fingerprint', () => {
   // unchanged, so the version stays and only the hash is recomputed. The CIV-82 phase 2 rule
   // text in worstDirection.ts / routeHeadwayFilter.ts is comment-only, and routeFilterHeadway
   // caching its per-period expression changes no value: hash only.
+  // CIV-97 keeps only scalar and flat period keys in route tiles and drops the corridors layer.
+  // No version bump: every value the client reads from a tile is unchanged, the dropped nested
+  // tables were only ever read from agency JSON (never from tile features), and no code reads a
+  // corridors tile layer. Older tiles still draw with this app, and tiles built under this change
+  // draw with the previous app, so the switch needs no dual-version window.
   // #749 changes the all-day worst-direction headline (a tile property): version 3.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 3,
-      fingerprint: 'ac59c718a27feec9cc72dcf5aa754edf19959e8072ae71c81b1adad86a40acfd',
+      fingerprint: 'cd105ca0908568f8fd2b7dcbeb4acc9f088727732b5973e26dd7d8b3c5b35cfb',
     });
   });
 });

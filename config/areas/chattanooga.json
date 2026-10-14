@@ -1,0 +1,25 @@
+{
+  "slug": "chattanooga",
+  "name": "Chattanooga",
+  "type": "MSA",
+  "officialName": "Chattanooga, TN-GA",
+  "country": "United States",
+  "cities": [
+    "Chattanooga"
+  ],
+  "bbox": [
+    34.58179900013451,
+    -85.87303199986987,
+    35.56742200000284,
+    -84.94233000005205
+  ],
+  "center": [
+    35.07461050006867,
+    -85.40768099996096
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "carta-chattanooga"
+  ],
+  "page": false
+}
