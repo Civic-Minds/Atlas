@@ -45,6 +45,16 @@ export const POOLED_MAX_GAP_RATIO = 1.75;
  * clips the list (RTC 219), while a 165-minute hole against 98 (freedom M) is out.
  */
 export const POOLED_MAX_GAP_TYPICAL_RATIO = 1.6;
+/**
+ * On a dense pooled service the ratios bite on a single held bus: ttc 52 westbound at midday,
+ * four branches every 20 merged to every 5 over 73 departures, has one 9-10 minute gap at
+ * 14:31 from stop 26 on (running-time drift), and 1.6 times 5 is 8, so the stop published
+ * nothing and read its own 20, a 14-stop hole in the Lawrence stretch. Each ratio allows at
+ * least this many minutes over its base (the mean, the value), the tier grader's grace, so the
+ * ratios only decide on services around 8 minutes and slower, where a 1.6x gap is a real
+ * alternation.
+ */
+export const POOLED_MAX_GAP_GRACE_MINUTES = 5;
 
 /**
  * The headway of a merged departure list inside [start, end]: the typical wait (typicalOfGaps,
@@ -81,7 +91,10 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
   const value = ownValue != null ? Math.min(floored, ownValue) : floored;
   // Even enough: no gap over POOLED_MAX_GAP_RATIO times the mean (two 30s three minutes apart
   // are not a 15) and, #813, none over POOLED_MAX_GAP_TYPICAL_RATIO times the value itself.
-  if (longest > POOLED_MAX_GAP_RATIO * mean || longest > POOLED_MAX_GAP_TYPICAL_RATIO * value) return null;
+  // Each ratio allows at least the grace over its base: one held bus on a dense service is
+  // not an alternation, while two 30s three minutes apart (27 against a mean of 15) stay out.
+  if (longest > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES)
+    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES)) return null;
   return value;
 }
 

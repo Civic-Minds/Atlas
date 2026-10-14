@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildPooledStopMap, computeStopSharers } from '../stopPools';
+import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow } from '../stopPools';
 import type { SharedStretchPattern } from '../sharedStretch';
 
 // #690: who pools with whom at each stop, and how a line is cut into segments.
@@ -95,3 +95,18 @@ describe('buildPooledStopMap', () => {
   });
 });
 
+
+describe('pooledHeadwayInWindow evenness guard', () => {
+  const every = (from: number, to: number, step: number) => { const out: number[] = []; for (let t = from; t <= to; t += step) out.push(t); return out; };
+  it('one held bus on a dense merged service is within the grace, not an alternation (ttc 52 westbound midday)', () => {
+    // Every 5 from 09:00 to 15:00, one 10-minute gap at 14:31: 73 departures, mean 5.
+    const times = every(540, 900, 5).filter(t => t !== 875);
+    expect(pooledHeadwayInWindow(times, 540, 900)).toBe(5);
+    // Two 30-minute patterns three minutes apart (gaps 3 and 27 against a mean of 15) stay out.
+    const bunched = [...every(540, 900, 30), ...every(543, 873, 30)].sort((a, b) => a - b);
+    expect(pooledHeadwayInWindow(bunched, 540, 900)).toBeNull();
+    // A 30-minute hole against an every-20 list (#813) stays out: 30 is past 20 plus the grace.
+    const hole = every(540, 900, 20).filter(t => t !== 700);
+    expect(pooledHeadwayInWindow(hole, 540, 900)).toBeNull();
+  });
+});
