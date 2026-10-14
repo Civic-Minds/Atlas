@@ -10,7 +10,7 @@
  * is the same contract for the tile path.
  */
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter.js';
-import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
+import { flattenPeriodHeadwayProps, pickTileRouteProperties } from '../shared/pmtilesProps.js';
 import { SHARED_STRETCH_KEYS } from './sharedStretch.js';
 
 export type RouteFeatureForTiles = {
@@ -40,6 +40,8 @@ export function prepareAgencyRouteFeaturesForTiles(
     // stop popups). Tiles would only stringify them, so they stay out and tiles are unchanged.
     for (const key of SHARED_STRETCH_KEYS) delete f.properties[key];
     flattenPeriodHeadwayProps(f.properties);
+    // Keep only what the map reads from a tile; the nested tables stay in the agency JSON.
+    f.properties = pickTileRouteProperties(f.properties);
     out.push(f);
   }
   return out;

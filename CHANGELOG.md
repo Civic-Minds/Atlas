@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
+- **Map tiles are about 90% smaller**: route tiles no longer carry the stop-by-stop tables only the route cards use, and the unused corridors layer is gone. A Toronto city-zoom tile goes from 564 KB to 55 KB, so routes appear far sooner on slow connections. Nothing drawn changes.
 - **Page footer now groups links into Atlas and Learn, with Terms and Privacy beside the copyright**: Map, Agencies, Changelog, Docs, Research and About are one click away from any content page.
 - **Docs, changelog, terms and privacy pages scroll smoothly and keep the top bar and "On this page" list in view**: long pages were hard to navigate once you scrolled past the top.
 - **The page title shows above "On this page" once you scroll past it**: on long docs pages the sidebar now says which page you are on.
