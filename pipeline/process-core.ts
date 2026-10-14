@@ -16,7 +16,7 @@ import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { PERIOD_KEYS, TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
+import { PERIOD_KEYS, TIME_PERIODS, SPARKLINE_HOURS, SURFACE_TIER_MAXES, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
@@ -367,6 +367,12 @@ function pooledTerminalHeadway(times: readonly number[] | undefined): number | n
   return medianHeadwayInWindow(sorted, 540, 900, 3, true)
     ?? medianHeadwayInWindow(sorted, 900, 1140, 3, true)
     ?? sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true);
+}
+
+/** headwayToTier on a given tier scale (the surface tiers, or rail's 5-8-10-15-30-60). */
+export function headwayToTierOn(h: number, tiers: readonly number[]): string {
+  for (const max of tiers) if (h <= max) return String(max);
+  return 'infrequent';
 }
 
 export function scopedTerminalHeadline(
@@ -2155,7 +2161,10 @@ export async function processGtfsBuffer(
           // headway's own tier never stands in for it, so a stop with a 100-minute hole is not
           // graded 20 on its usual wait.
           if (best == null) continue;
-          const byHeadway = headwayToTier(headway);
+          // The headway cap reads the route's own tier scale (rail and streetcars grade on 5 and
+          // 8): a 4-minute people mover graded 5 at every stop was capped to the surface scale's
+          // 10 and the worst-stop rule took the line from 5 to 10.
+          const byHeadway = headwayToTierOn(headway, getTiersForCriteria(featureRoute?.route_type ?? '', DEFAULT_CRITERIA.dayTypes[day as DayType]?.tiers ?? SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides));
           stopTiers[stopId] = (TIER_RANK[best] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? best : byHeadway;
         }
         if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
