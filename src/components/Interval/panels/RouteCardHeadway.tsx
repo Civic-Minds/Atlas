@@ -345,15 +345,23 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       : [];
     return [...section, ...sharedLines, ...branchLines, ...limitedLines];
   });
+  // The folded timetable line states what the expanded rows show for this period:
+  // each direction's shared-stretch (or combined) cadence, as in the direction
+  // rows below; the slower direction decides, as everywhere else on the card.
   const scheduleHeadline = (() => {
-    const group = displayGroups[0];
-    if (!group) return null;
-    const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
-    const branch = group.realTier
-      .map(direction => routeCardDisplayHeadway(direction, period))
-      .filter((v): v is number => v != null);
-    const headway = shared?.headway ?? (branch.length ? Math.min(...branch) : null);
-    return headway != null ? headwayAbout(headway) : null;
+    const cores = displayGroups.map(group => {
+      const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
+      const hasCore = shared != null || shouldShowTrunkSummary(group.realTier, period);
+      const core = shared?.headway ?? (hasCore ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period) : null);
+      if (core != null) return { headway: core, label: shared ? 'Shared stretch' : 'Combined' };
+      const branch = group.realTier
+        .map(direction => routeCardDisplayHeadway(direction, period))
+        .filter((v): v is number => v != null);
+      return branch.length ? { headway: Math.min(...branch), label: 'Scheduled' } : null;
+    }).filter((c): c is { headway: number; label: string } => c != null);
+    if (cores.length === 0) return null;
+    const slower = cores.reduce((a, c) => (c.headway > a.headway ? c : a));
+    return `${slower.label}: ${headwayAbout(slower.headway)}`;
   })();
   const reportRawMetrics = currentRoute.directions.map((direction, index) => {
     const selectedPeriodHourlyHeadways = selectedPeriod
@@ -442,7 +450,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             aria-expanded={scheduleOpen}
             className="mt-3 pt-3 w-full border-t border-[var(--border-primary)] text-left text-xs font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
           >
-            Scheduled: {scheduleHeadline ?? 'see timetable'} {scheduleOpen ? '▾' : '▸'}
+            {scheduleHeadline ?? 'Scheduled: see timetable'} {scheduleOpen ? '▾' : '▸'}
           </button>
         </>
       )}
