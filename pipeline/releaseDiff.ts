@@ -41,6 +41,10 @@ import { resolve } from 'node:path';
 import { findModeOverride, getGtfsModeName, VIRTUAL_LRT_MODE } from '../shared/modes.js';
 import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archiveSelection.js';
 import { TIER_RANK } from './headway-utils.js';
+import { SURFACE_TIER_MAXES } from '../shared/config.js';
+
+/** The gate compares weekday tiers on the surface scale only; rail's 5 and 8 are not route shifts (valleymetro SKYT 5 -> 10). */
+const GATE_TIERS = new Set([...SURFACE_TIER_MAXES.map(String), 'infrequent']);
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 
 export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'route-shift', 'headway-lost', 'day-lost', 'day-shrunk', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;
@@ -212,7 +216,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null, slu
       directionHeadway[key] = (directionHeadway[key] ?? false) || hasHeadway;
     }
     const tier = p.tier == null ? '' : String(p.tier);
-    if (p.day === 'Weekday' && tier in TIER_RANK && tier !== 'span' && (tiers[routeId] == null || TIER_RANK[tier] < TIER_RANK[tiers[routeId]])) {
+    if (p.day === 'Weekday' && GATE_TIERS.has(tier) && (tiers[routeId] == null || TIER_RANK[tier] < TIER_RANK[tiers[routeId]])) {
       tiers[routeId] = tier;
     }
   }

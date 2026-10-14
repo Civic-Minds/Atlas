@@ -4,9 +4,18 @@ const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
 ) as Record<string, { start: number; end: number }>;
 
+/**
+ * Tier order for comparisons, best first: every numeric tier any mode grades on (the surface
+ * tiers of HEADWAY_TIERS plus rail's 5 and 8, pipeline/defaults.ts modeTierOverrides) by value,
+ * then infrequent, then span. Built from the numbers, not HEADWAY_TIERS' positions: a streetcar
+ * graded 8 ranked as unknown (worst), so TTC 504 read tier 8 beside 16 stops graded 15 (CIV-152).
+ */
+export const RAIL_TIER_MAXES = [5, 8, 10, 15, 30, 60];
+const NUMERIC_TIERS = [...new Set([...HEADWAY_TIERS.map(t => t.max).filter(m => m !== Infinity), ...RAIL_TIER_MAXES])].sort((a, b) => a - b);
 export const TIER_RANK: Record<string, number> = Object.fromEntries([
-  ...HEADWAY_TIERS.map(({ max }, i) => [max === Infinity ? 'infrequent' : String(max), i]),
-  ['span', HEADWAY_TIERS.length],
+  ...NUMERIC_TIERS.map((max, i) => [String(max), i]),
+  ['infrequent', NUMERIC_TIERS.length],
+  ['span', NUMERIC_TIERS.length + 1],
 ]);
 
 export function headwayToTier(h: number): string {
