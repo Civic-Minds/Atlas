@@ -351,6 +351,23 @@ other 43 pool at every 8. Same rule as the worst-stop tier: the rating is what r
 the whole drawn line; the CIV-152 section colours show the faster stretch. Main read these
 periods from the headsign pool (30 and 8) under a 61 / 16 headline.
 
+FINAL RESCAN (2026-10-14, fix/690-plus-844 b7c71f13 = 13410092 + Opus's #844/#842 dedupe port +
+typecheck fix; out/fix690k vs out/mainG, report690n.txt; port isolated as fix690j vs fix690k,
+report690n-port.txt): tier up 719, down 5,702 (60 -> infrequent 2,307; 30 -> 60 2,201; 20 -> 30
+530; 15 -> 20 342); headline losses 2,050 (1,514 midday variants, 361 one-to-three-trip lines, 94
+peak expresses, 41 no period on main, 36 evening-only, 4 traced as correct). The port alone moves
+23 tiers (16 up: septa 5, nyct-subway 4, lethbridge 2; 7 down: mtd-champaign 2, septa 2,
+nashvillemta, octranspo, via), 13 headlines by a minute or two, and renames 14 mtd-champaign
+Saturday-evening lines. Named lines: J14 Saturday 10/20 and 10/infrequent, P72 60/60, ttc 79
+30/60, mbta 28 12/20. Hand checks of Opus's main-side regressions, all persisting on the combined
+branch: ttc 124 Sunday 15/30 both directions, every stop graded 30 (evening every 30 inside the
+Sunday 9-21 window), honest; septa 6 d0 weekday 15/60: the port draws a 32-stop shape whose
+4-stop tail grades 60 (the #690 branch alone drew 28 stops and read 30), honest under the
+worst-stop rule, the tail is the port's doing; octranspo 88 d0 weekday 17/30 -> 30/30 (final
+30/60): the first 19 stops are served every 30 by the own pattern before a branch joins for the
+every-15 trunk, the #771 floor, honest; njt-bus 167 d1 Saturday 27 -> 60: first 4 stops own-only
+hourly, trunk 28, the same floor, honest.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
