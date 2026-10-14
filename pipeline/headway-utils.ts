@@ -47,18 +47,21 @@ export const ALTERNATING_HOLE_RATIO = 3;
  * when larger (#772:
  * basin transit 1 Saturday midday 60, 120, 60 read 60; saint john 12 read 60 for a 60, 60,
  * 225, 255, 60 day). One odd gap in regular service (10, 10, 10, 10, 30) stays on its median,
- * and so does any list of one or two gaps. Three gaps with one at least 3x the median (70, 350, 70)
- * also stay on the median: that is a break between runs, not an alternation (#834).
+ * and so does any list of one or two gaps. In a whole-day list (`wholeDay`), three gaps with one at
+ * least 3x the median (70, 350, 70) also stay on the median: that is a break between runs of a
+ * few-trip route, not an alternation (#834). A period window keeps the rule above: there the long
+ * gap is a hole inside the period, and the median would hide it (rtd E line Sunday, paired trips
+ * 6, 24, 6; dayton 43 midday 55, 200, 55).
  */
-export function typicalOfGaps(gapsInTimeOrder: readonly number[]): number {
+export function typicalOfGaps(gapsInTimeOrder: readonly number[], wholeDay = false): number {
   const sorted = [...gapsInTimeOrder].sort((a, b) => a - b);
   const median = medianOfSortedGaps(sorted);
   if (sorted.length < 3 || median <= 0) return median;
   const inRange = gapsInTimeOrder.filter(g => g <= median * ALTERNATING_MAX_GAP_RATIO);
   if (inRange.length < 3) return median;
-  // Three gaps (four departures) cannot show an alternation, so a gap at least 3x the median is a
-  // break between runs of service (centro 21950 70, 350, 70), not a wait riders see (#834).
-  if (inRange.length === 3 && Math.max(...inRange) >= median * ALTERNATING_HOLE_RATIO) return median;
+  // Over a whole day, three gaps (four departures) cannot show an alternation, so a gap at least 3x
+  // the median is a break between runs of service (centro 21950 70, 350, 70), not a wait riders see (#834).
+  if (wholeDay && inRange.length === 3 && Math.max(...inRange) >= median * ALTERNATING_HOLE_RATIO) return median;
   const isLong = inRange.map(g => g >= median * ALTERNATING_LONG_GAP_RATIO);
   let lead = 0;
   while (lead < isLong.length && isLong[lead]) lead++;
@@ -183,7 +186,8 @@ export function sustainedMedianHeadwayInWindow(
   const median = medianOfSortedGaps(sorted);
   const maxGap = sorted[sorted.length - 1];
   if (median > 0 && maxGap / median > dominantGapRatio) return null;
-  return Math.round(typical ? typicalOfGaps(gaps) : median);
+  // Only ever read over the all-day window (6-22h), so it is a whole-day list (#834).
+  return Math.round(typical ? typicalOfGaps(gaps, true) : median);
 }
 
 // Step 4's terminal override can fall back to the raw all-day (6-22h) window when the terminal
