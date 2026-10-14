@@ -123,4 +123,49 @@ describe('useAgencyData failure handling', () => {
     await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(2));
     expect(fetchAgencyGeo).toHaveBeenLastCalledWith(expect.objectContaining({ slug: 'selected-away' }));
   });
+
+  it('holds viewport agencies back until the load gate opens, then fetches them one at a time', async () => {
+    const resolvers: Array<() => void> = [];
+    fetchAgencyGeo.mockImplementation(() => new Promise<GeoJSON.FeatureCollection>(resolve => { resolvers.push(() => resolve(emptyFc)); }));
+    const agencies = [agency('a', 43.65, -79.38), agency('b', 43.66, -79.37), agency('c', 43.67, -79.36)];
+
+    const { result, rerender } = renderHook(
+      ({ open }: { open: boolean }) => useAgencyData(agencies, viewport, { viewportLoadOpen: open }),
+      { initialProps: { open: false } },
+    );
+
+    await waitFor(() => expect(result.current.requestedCount).toBe(3));
+    expect(fetchAgencyGeo).not.toHaveBeenCalled();
+    expect(result.current.isLoading).toBe(true);
+
+    rerender({ open: true });
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(1));
+    resolvers.shift()!();
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(2));
+    expect(result.current.loadedCount).toBe(1);
+  });
+
+  it('fetches a priority agency at once, even from outside the viewport, and promotes a waiting one', async () => {
+    fetchAgencyGeo.mockResolvedValue(emptyFc);
+    const agencies = [agency('near', 43.65, -79.38), agency('far', 45.32, -75.69)];
+
+    const { rerender } = renderHook(
+      ({ priority }: { priority: string[] }) => useAgencyData(agencies, viewport, { viewportLoadOpen: false, priorityAgencySlugs: priority }),
+      { initialProps: { priority: [] as string[] } },
+    );
+    expect(fetchAgencyGeo).not.toHaveBeenCalled();
+
+    rerender({ priority: ['far'] });
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledWith(expect.objectContaining({ slug: 'far' })));
+
+    rerender({ priority: ['far', 'near'] });
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledWith(expect.objectContaining({ slug: 'near' })));
+  });
+
+  it('loads the viewport right away when it is marked urgent', async () => {
+    fetchAgencyGeo.mockResolvedValue(emptyFc);
+    const agencies = [agency('near', 43.65, -79.38)];
+    renderHook(() => useAgencyData(agencies, viewport, { viewportLoadOpen: false, urgentViewport: true }));
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(1));
+  });
 });

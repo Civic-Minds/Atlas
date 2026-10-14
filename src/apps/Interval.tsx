@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
+import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
 import { useAgencyData } from '../hooks/useAgencyData';
 import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
@@ -464,12 +465,24 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [isTilesLoading, setIsTilesLoading] = useState(false);
   const [isBasemapLoading, setIsBasemapLoading] = useState(false);
 
+  // The map draws its routes from the tiles. Agency JSON is fetched first for what is selected or
+  // pending, and for the rest of the viewport only after the tiles settle (or at once for modes that
+  // draw from it, and when the search box is open for its suggestions).
+  const viewportLoadOpen = useViewportLoadGate(isTilesLoading);
+  const priorityAgencySlugs = useMemo(() => {
+    const slugOf = (key: string | null | undefined) => (key ? key.split('::')[0] : null);
+    return [slugOf(selectedRoute), slugOf(selectedStop), pendingLiveRoute?.slug, pendingNightRoute?.slug]
+      .filter((slug): slug is string => !!slug);
+  }, [selectedRoute, selectedStop, pendingLiveRoute?.slug, pendingNightRoute?.slug]);
   const { layers, loadedCount, requestedCount, isLoading, failedSlugs } = useAgencyData(agencies, bounds, {
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
     zoom: mapZoom,
     dataSaver,
     selectedAgencySlug,
+    priorityAgencySlugs,
+    urgentViewport: searchFocused || nightServiceView || frequentServiceView || userLocation !== null,
+    viewportLoadOpen,
   });
 
 

@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
+- **Routes appear sooner on first load**: the map now draws from the tiles alone, and each agency's full data downloads afterwards (selected routes and stops first), so slow connections no longer wait on about 5 MB of data before seeing routes.
 - **Page footer now groups links into Atlas and Learn, with Terms and Privacy beside the copyright**: Map, Agencies, Changelog, Docs, Research and About are one click away from any content page.
 - **Docs, changelog, terms and privacy pages scroll smoothly and keep the top bar and "On this page" list in view**: long pages were hard to navigate once you scrolled past the top.
 - **The page title shows above "On this page" once you scroll past it**: on long docs pages the sidebar now says which page you are on.
