@@ -14,12 +14,18 @@ type FeedResult =
   | { ok: false; reason: 'timeout' | 'http-error' | 'decode-error'; detail: string };
 type FeedFailure = 'timeout' | 'http-error' | 'decode-error';
 
-function json(body: unknown, status = 200): Response {
+// Vehicles are shared across viewers for ~15 s at the edge, so repeat calls
+// don't each hit the agency's API (and spend its key).
+const LIVE_CACHE_OK = 'public, max-age=0, s-maxage=15, stale-while-revalidate=15';
+// A brief edge cache on upstream failures stops retries from hammering a struggling feed.
+const LIVE_CACHE_UPSTREAM_ERROR = 'public, max-age=0, s-maxage=5';
+
+function json(body: unknown, status = 200, cacheControl = 'no-store'): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       'Content-Type': 'application/json',
-      'Cache-Control': 'no-store',
+      'Cache-Control': cacheControl,
     },
   });
 }
@@ -72,8 +78,13 @@ async function fetchFeed(
   }
 }
 
+// Only a single slug-shaped `agency` param is accepted: extra params would vary the edge cache key.
 function requestAgency(request: Request): string | null {
-  return new URL(request.url).searchParams.get('agency')?.trim() || null;
+  const params = new URL(request.url).searchParams;
+  const names = [...params.keys()];
+  if (names.length !== 1 || names[0] !== 'agency') return null;
+  const agency = params.get('agency') ?? '';
+  return /^[a-z0-9][a-z0-9-]{0,63}$/.test(agency) ? agency : null;
 }
 
 function failureMessage(reason: FeedFailure): string {
@@ -93,7 +104,7 @@ function statusForDelay(delayMin: number | null): 'no_data' | 'early' | 'late' |
 
 async function fetchHandler(request: Request): Promise<Response> {
   const agency = requestAgency(request);
-  if (!agency) return json({ error: 'Agency slug is required' }, 400);
+  if (!agency) return json({ error: 'A single valid agency slug is required' }, 400);
 
   if (!isLiveApiServable(agency)) {
     return json({ error: 'Unknown, inactive, or unconfigured agency' }, 404);
@@ -113,7 +124,7 @@ async function fetchHandler(request: Request): Promise<Response> {
   ]);
 
   if (!positions.ok) {
-    return json({ error: failureMessage(positions.reason), reason: positions.reason }, 502);
+    return json({ error: failureMessage(positions.reason), reason: positions.reason }, 502, LIVE_CACHE_UPSTREAM_ERROR);
   }
 
   const routeById = new Map<string, { shortName: string; displayName: string }>();
@@ -207,7 +218,7 @@ async function fetchHandler(request: Request): Promise<Response> {
     headways,
     degraded: !updates.ok,
     degradedReason: updates.ok ? null : 'Arrival time and delay information is unavailable right now.',
-  });
+  }, 200, LIVE_CACHE_OK);
 }
 
 export default { fetch: fetchHandler };
