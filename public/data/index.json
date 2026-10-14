@@ -48,7 +48,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20261226"
     },
     {
       "slug": "belleville",
@@ -96,7 +97,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip"
+      "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "brantford",
@@ -132,7 +134,8 @@
           "featureCount": 66
         },
         "checkedAt": "2026-10-06"
-      }
+      },
+      "lastPeekedExpiry": "20261230"
     },
     {
       "slug": "brampton",
@@ -202,7 +205,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data"
+      "lastFeedSourceUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
+      "lastPeekedExpiry": "20261101"
     },
     {
       "slug": "burlington",
@@ -251,7 +255,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip"
+      "lastFeedSourceUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
+      "lastPeekedExpiry": "20261219"
     },
     {
       "slug": "chatham-kent",
@@ -294,7 +299,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-5552/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-5552/latest.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "cobourg",
@@ -332,7 +338,8 @@
           "featureCount": 1
         },
         "checkedAt": "2026-10-10"
-      }
+      },
+      "lastPeekedExpiry": "20261230"
     },
     {
       "slug": "cornwall",
@@ -378,7 +385,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip"
+      "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "drt",
@@ -435,7 +443,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20261129"
     },
     {
       "slug": "go",
@@ -501,7 +510,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip"
+      "lastFeedSourceUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
+      "lastPeekedExpiry": "20261127"
     },
     {
       "slug": "grt",
@@ -631,7 +641,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip"
+      "lastFeedSourceUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
+      "lastPeekedExpiry": "20261226"
     },
     {
       "slug": "kingston",
@@ -679,7 +690,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip"
+      "lastFeedSourceUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
+      "lastPeekedExpiry": "20271008"
     },
     {
       "slug": "london",
@@ -730,7 +742,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
+      "lastPeekedExpiry": "20261128"
     },
     {
       "slug": "miway",
@@ -784,7 +797,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20261220"
     },
     {
       "slug": "milton",
@@ -833,7 +847,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip"
+      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "niagara",
@@ -899,7 +914,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://68.71.24.110/gtfs/GTFSExport.zip"
+      "lastFeedSourceUrl": "http://68.71.24.110/gtfs/GTFSExport.zip",
+      "lastPeekedExpiry": "20261128"
     },
     {
       "slug": "octranspo",
@@ -961,7 +977,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip"
+      "lastFeedSourceUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
+      "lastPeekedExpiry": "20261109"
     },
     {
       "slug": "oakville",
@@ -1007,7 +1024,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data"
+      "lastFeedSourceUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data",
+      "lastPeekedExpiry": "20261031"
     },
     {
       "slug": "orangeville",
@@ -1048,7 +1066,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orangeville.zip"
+      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orangeville.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "orillia",
@@ -1089,7 +1108,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orillia.zip"
+      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orillia.zip",
+      "lastPeekedExpiry": "20280101"
     },
     {
       "slug": "owen-sound",
@@ -1132,7 +1152,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-owensound.zip"
+      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-owensound.zip",
+      "lastPeekedExpiry": "20280115"
     },
     {
       "slug": "north-bay",
@@ -1171,7 +1192,8 @@
       "expiredFeedCheckExpiry": "20270428",
       "timezone": "America/Toronto",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://northbay.tmix.se/gtfs/gtfs.zip"
+      "lastFeedSourceUrl": "https://northbay.tmix.se/gtfs/gtfs.zip",
+      "lastPeekedExpiry": "20270428"
     },
     {
       "slug": "sarnia",
@@ -1212,7 +1234,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-sarnia.zip"
+      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-sarnia.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "simcoe",
@@ -1261,7 +1284,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip"
+      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip",
+      "lastPeekedExpiry": "20270706"
     },
     {
       "slug": "st-thomas",
@@ -1301,7 +1325,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-stthomas.zip"
+      "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-stthomas.zip",
+      "lastPeekedExpiry": "20270526"
     },
     {
       "slug": "stratford",
@@ -1353,7 +1378,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip"
+      "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip",
+      "lastPeekedExpiry": "20270924"
     },
     {
       "slug": "ttc",
@@ -1412,7 +1438,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261031",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/7795b45e-e65a-4465-81fc-c36b9dfff169/resource/cfb6b2b8-6191-41e3-bda1-b175c51148cb/download/TTC%20Routes%20and%20Schedules%20Data.zip"
+      "lastFeedSourceUrl": "https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/7795b45e-e65a-4465-81fc-c36b9dfff169/resource/cfb6b2b8-6191-41e3-bda1-b175c51148cb/download/TTC%20Routes%20and%20Schedules%20Data.zip",
+      "lastPeekedExpiry": "20261031"
     },
     {
       "slug": "windsor",
@@ -1464,7 +1491,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip"
+      "lastFeedSourceUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
+      "lastPeekedExpiry": "20270108"
     },
     {
       "slug": "upexpress",
@@ -1514,7 +1542,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip"
+      "lastFeedSourceUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip",
+      "lastPeekedExpiry": "20270405"
     },
     {
       "slug": "yrt",
@@ -1571,7 +1600,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.yrt.ca/google/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.yrt.ca/google/google_transit.zip",
+      "lastPeekedExpiry": "20261031"
     },
     {
       "slug": "linter",
@@ -1601,7 +1631,8 @@
       "expiredFeedCheckExpiry": "20270807",
       "timezone": "America/Toronto",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter"
+      "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter",
+      "lastPeekedExpiry": "20270807"
     },
     {
       "slug": "mont-tremblant",
@@ -1645,7 +1676,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm"
+      "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
+      "lastPeekedExpiry": "20261220"
     },
     {
       "slug": "rem",
@@ -1687,7 +1719,8 @@
       "expiredFeedCheckExpiry": "20261231",
       "timezone": "America/Montreal",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip"
+      "lastFeedSourceUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "rtc",
@@ -1743,7 +1776,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip"
+      "lastFeedSourceUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip",
+      "lastPeekedExpiry": "20261218"
     },
     {
       "slug": "rtl",
@@ -1800,7 +1834,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip"
+      "lastFeedSourceUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
+      "lastPeekedExpiry": "20261101"
     },
     {
       "slug": "stl",
@@ -1859,7 +1894,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip"
+      "lastFeedSourceUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
+      "lastPeekedExpiry": "20261030"
     },
     {
       "slug": "stlevis",
@@ -1908,7 +1944,8 @@
       },
       "timezone": "America/Montreal",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip"
+      "lastFeedSourceUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
+      "lastPeekedExpiry": "20261220"
     },
     {
       "slug": "stm",
@@ -1970,7 +2007,8 @@
       },
       "timezone": "America/Montreal",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip"
+      "lastFeedSourceUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
+      "lastPeekedExpiry": "20261025"
     },
     {
       "slug": "sto",
@@ -2024,7 +2062,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://contenu.sto.ca/GTFS/GTFS.zip"
+      "lastFeedSourceUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
+      "lastPeekedExpiry": "20261204"
     },
     {
       "slug": "sjsr",
@@ -2074,7 +2113,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu"
+      "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu",
+      "lastPeekedExpiry": "20270531"
     },
     {
       "slug": "saint-hyacinthe",
@@ -2168,7 +2208,8 @@
           "featureCount": 20
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "exo-presquile",
@@ -2218,7 +2259,8 @@
           "featureCount": 49
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "exo-sudouest",
@@ -2273,7 +2315,8 @@
           "featureCount": 96
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "exo-lrrs",
@@ -2327,7 +2370,8 @@
           "featureCount": 81
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "exo-laurentides",
@@ -2385,7 +2429,8 @@
           "featureCount": 180
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "exo-terrebonne",
@@ -2442,7 +2487,8 @@
           "featureCount": 110
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "exo-vallee-richelieu",
@@ -2497,7 +2543,8 @@
       "feedRefreshErrorAt": "20261007",
       "feedRefreshRetryCount": 1,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citvr/google_transit.zip"
+      "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citvr/google_transit.zip",
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "bc-fraser-valley",
@@ -2546,7 +2593,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=13"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=13",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "kelowna",
@@ -2588,7 +2636,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=47"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=47",
+      "lastPeekedExpiry": "20261219"
     },
     {
       "slug": "victoria",
@@ -2633,7 +2682,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=48"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=48",
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "translink",
@@ -2695,7 +2745,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "calgary",
@@ -2740,7 +2791,8 @@
       },
       "timezone": "America/Edmonton",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.calgary.ca/download/npk7-z3bj/application%2Fzip"
+      "lastFeedSourceUrl": "https://data.calgary.ca/download/npk7-z3bj/application%2Fzip",
+      "lastPeekedExpiry": "20261220"
     },
     {
       "slug": "edmonton",
@@ -2793,7 +2845,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip"
+      "lastFeedSourceUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
+      "lastPeekedExpiry": "20261128"
     },
     {
       "slug": "winnipeg",
@@ -2838,7 +2891,8 @@
       },
       "timezone": "America/Winnipeg",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.winnipegtransit.com/google_transit.zip"
+      "lastFeedSourceUrl": "https://gtfs.winnipegtransit.com/google_transit.zip",
+      "lastPeekedExpiry": "20261212"
     },
     {
       "slug": "regina",
@@ -2888,7 +2942,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://opengis.regina.ca/reginagtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://opengis.regina.ca/reginagtfs/google_transit.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "saskatoon",
@@ -2970,7 +3025,8 @@
         "checkedAt": "2026-09-17"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-734/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-734/latest.zip",
+      "lastPeekedExpiry": "20261129"
     },
     {
       "slug": "codiac",
@@ -3020,7 +3076,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20261128"
     },
     {
       "slug": "fredericton",
@@ -3069,7 +3126,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip"
+      "lastFeedSourceUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
+      "lastPeekedExpiry": "20261219"
     },
     {
       "slug": "saint-john",
@@ -3099,7 +3157,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/Halifax",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2131/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2131/latest.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "t3-transit",
@@ -3143,7 +3202,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "metrobus",
@@ -3189,7 +3249,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://www.metrobustransit.ca/google/google_transit.zip"
+      "lastFeedSourceUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
+      "lastPeekedExpiry": "20261111"
     },
     {
       "slug": "nfta",
@@ -3260,7 +3321,8 @@
           "mode": 100,
           "reason": "Buffalo Metro Rail is light rail, published as route_type 0 (tram); replaces the former agency-name rule (#811)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "port-huron",
@@ -3286,7 +3348,8 @@
       "expiredFeedCheckExpiry": "20261231",
       "timezone": "America/Detroit",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.remix.com/bwat_porthuron_mi_us.zip"
+      "lastFeedSourceUrl": "https://gtfs.remix.com/bwat_porthuron_mi_us.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "ddot",
@@ -3336,7 +3399,8 @@
       "feedRefreshErrorAt": "20261007",
       "feedRefreshRetryCount": 1,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.detroitmi.gov/Portals/0/docs/deptoftransportation/pdfs/ddot_gtfs.zip"
+      "lastFeedSourceUrl": "https://www.detroitmi.gov/Portals/0/docs/deptoftransportation/pdfs/ddot_gtfs.zip",
+      "lastPeekedExpiry": "20270207"
     },
     {
       "slug": "detroit-people-mover",
@@ -3360,7 +3424,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/Detroit",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2281/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2281/latest.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "qline",
@@ -3410,7 +3475,8 @@
           "mode": 0,
           "reason": "QLine is a streetcar, published as route_type 2 (commuter rail)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270523"
     },
     {
       "slug": "smart",
@@ -3460,7 +3526,8 @@
       },
       "timezone": "America/Detroit",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://apps1.smartbus.org/gtfs/smart_gtfs.zip"
+      "lastFeedSourceUrl": "https://apps1.smartbus.org/gtfs/smart_gtfs.zip",
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "theride",
@@ -3530,7 +3597,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.riderta.com/sites/default/files/gtfs/latest/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.riderta.com/sites/default/files/gtfs/latest/google_transit.zip",
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "butler-county-rta",
@@ -3558,7 +3626,7 @@
         },
         "checkedAt": "2026-10-12"
       },
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "Fall 2026 Version 10122026",
       "lastRefreshedAt": "2026-10-12",
       "lastFeedCheckAt": "20261012",
@@ -3571,7 +3639,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.buztrakr.com/gtfs"
+      "lastFeedSourceUrl": "https://www.buztrakr.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "seat",
@@ -3609,7 +3678,8 @@
       "expiredFeedCheckExpiry": "20261231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.seatbus.org/media/SEAT-GTFS-Feed.zip"
+      "lastFeedSourceUrl": "https://www.seatbus.org/media/SEAT-GTFS-Feed.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "richland-county-oh",
@@ -3647,7 +3717,8 @@
       "expiredFeedCheckExpiry": "20270504",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/rctpublic.etaspot.net/gtfs.zip"
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/rctpublic.etaspot.net/gtfs.zip",
+      "lastPeekedExpiry": "20270504"
     },
     {
       "slug": "tarta",
@@ -3691,7 +3762,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip"
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip",
+      "lastPeekedExpiry": "20271012"
     },
     {
       "slug": "rgrta",
@@ -3730,7 +3802,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://scheduledata.rgrta.com/google_transit.zip"
+      "lastFeedSourceUrl": "http://scheduledata.rgrta.com/google_transit.zip",
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "cdta",
@@ -3771,7 +3844,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.cdta.org/schedules/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.cdta.org/schedules/google_transit.zip",
+      "lastPeekedExpiry": "20261128"
     },
     {
       "slug": "centro",
@@ -3813,7 +3887,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip"
+      "lastFeedSourceUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
+      "lastPeekedExpiry": "20270228"
     },
     {
       "slug": "tcat",
@@ -3852,7 +3927,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip"
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
+      "lastPeekedExpiry": "20261219"
     },
     {
       "slug": "broome",
@@ -3889,7 +3965,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip"
+      "lastFeedSourceUrl": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "emta",
@@ -3957,7 +4034,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip"
+      "lastFeedSourceUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip",
+      "lastPeekedExpiry": "20270116"
     },
     {
       "slug": "sarta",
@@ -3983,7 +4061,8 @@
       "expiredFeedCheckExpiry": "20261107",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip"
+      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
+      "lastPeekedExpiry": "20261107"
     },
     {
       "slug": "laketran",
@@ -4028,7 +4107,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip",
+      "lastPeekedExpiry": "20270125"
     },
     {
       "slug": "mta-flint",
@@ -4055,7 +4135,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip"
+      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "cata-lansing",
@@ -4098,7 +4179,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://developers.cata.org/gtfsdownload.ashx?data=base"
+      "lastFeedSourceUrl": "http://developers.cata.org/gtfsdownload.ashx?data=base",
+      "lastPeekedExpiry": "20261220"
     },
     {
       "slug": "the-rapid",
@@ -4144,7 +4226,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "mbta",
@@ -4233,7 +4316,8 @@
           "mode": 100,
           "reason": "Mattapan Line is light rail (the MBTA groups it with the Green Line), published as route_type 0 (tram)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20261212"
     },
     {
       "slug": "pvta",
@@ -4278,7 +4362,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.pvta.com/g_trans/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.pvta.com/g_trans/google_transit.zip",
+      "lastPeekedExpiry": "20261219"
     },
     {
       "slug": "wrta",
@@ -4322,7 +4407,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip"
+      "lastFeedSourceUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "cttransit",
@@ -4351,7 +4437,8 @@
       "expiredFeedCheckExpiry": "20270109",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip"
+      "lastFeedSourceUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "red-deer",
@@ -4388,7 +4475,8 @@
       },
       "timezone": "America/Edmonton",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.reddeer.ca/datasets/gtfsdatafeed/download/zip"
+      "lastFeedSourceUrl": "https://data.reddeer.ca/datasets/gtfsdatafeed/download/zip",
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "lethbridge",
@@ -4430,7 +4518,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip"
+      "lastFeedSourceUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "moose-jaw",
@@ -4468,7 +4557,7 @@
         -105.753
       ],
       "feedUrl": "https://www.citypa.ca/media/gnsfaref/2025-01-20-google-transit-gtfs.zip",
-      "lastFeedExpiry": "20281229",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "lastFeedCheckAt": "20261012",
@@ -4477,7 +4566,8 @@
       "expiredFeedCheckExpiry": "20281229",
       "timezone": "America/Regina",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.citypa.ca/media/gnsfaref/2025-01-20-google-transit-gtfs.zip"
+      "lastFeedSourceUrl": "https://www.citypa.ca/media/gnsfaref/2025-01-20-google-transit-gtfs.zip",
+      "lastPeekedExpiry": "20281229"
     },
     {
       "slug": "kamloops",
@@ -4517,7 +4607,8 @@
       },
       "timezone": "America/Vancouver",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46",
+      "lastPeekedExpiry": "20270424"
     },
     {
       "slug": "south-okanagan",
@@ -4561,7 +4652,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=15"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=15",
+      "lastPeekedExpiry": "20270906"
     },
     {
       "slug": "nanaimo",
@@ -4604,7 +4696,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=41"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=41",
+      "lastPeekedExpiry": "20261219"
     },
     {
       "slug": "cowichan",
@@ -4649,7 +4742,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=10"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=10",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "comox-valley",
@@ -4689,7 +4783,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=45"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=45",
+      "lastPeekedExpiry": "20270331"
     },
     {
       "slug": "campbell-river",
@@ -4727,7 +4822,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
+      "lastPeekedExpiry": "20270905"
     },
     {
       "slug": "squamish",
@@ -4770,7 +4866,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43",
+      "lastPeekedExpiry": "20270614"
     },
     {
       "slug": "pemberton",
@@ -4811,7 +4908,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=50"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=50",
+      "lastPeekedExpiry": "20261124"
     },
     {
       "slug": "whistler",
@@ -4851,7 +4949,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44"
+      "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44",
+      "lastPeekedExpiry": "20261122"
     },
     {
       "slug": "kingcountymetro",
@@ -4910,7 +5009,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "soundtransit",
@@ -4989,7 +5089,8 @@
           "mode": 100,
           "reason": "Link (1 Line, 2 Line, T Line) is light rail, published as route_type 0 (tram)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270328"
     },
     {
       "slug": "piercetransit",
@@ -5046,7 +5147,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/3_gtfs.zip"
+      "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/3_gtfs.zip",
+      "lastPeekedExpiry": "20261212"
     },
     {
       "slug": "communitytransit",
@@ -5103,7 +5205,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip"
+      "lastFeedSourceUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
+      "lastPeekedExpiry": "20261211"
     },
     {
       "slug": "everetttransit",
@@ -5152,7 +5255,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/97_gtfs.zip"
+      "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/97_gtfs.zip",
+      "lastPeekedExpiry": "20261213"
     },
     {
       "slug": "kitsaptransit",
@@ -5203,7 +5307,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://pride.kitsaptransit.com/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "http://pride.kitsaptransit.com/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "intercitytransit",
@@ -5254,7 +5359,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/19_gtfs.zip"
+      "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/19_gtfs.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "skagittransit",
@@ -5337,7 +5443,8 @@
         "checkedAt": "2026-10-08"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip"
+      "lastFeedSourceUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip",
+      "lastPeekedExpiry": "20270206"
     },
     {
       "slug": "islandtransit",
@@ -5389,7 +5496,8 @@
           "featureCount": 66
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20270401"
     },
     {
       "slug": "jeffersontransit",
@@ -5440,7 +5548,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270926"
     },
     {
       "slug": "clallamtransit",
@@ -5492,7 +5601,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "portlandme",
@@ -5540,7 +5650,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip"
+      "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
+      "lastPeekedExpiry": "20261111"
     },
     {
       "slug": "southportlandme",
@@ -5686,7 +5797,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://passio3.com/watertown/passioTransit/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://passio3.com/watertown/passioTransit/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "hudsonlink",
@@ -5736,7 +5848,8 @@
         "checkedAt": "2026-10-08"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip"
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip",
+      "lastPeekedExpiry": "20270628"
     },
     {
       "slug": "wsf",
@@ -5783,7 +5896,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip"
+      "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
+      "lastPeekedExpiry": "20261122"
     },
     {
       "slug": "bc-ferries",
@@ -5822,7 +5936,7 @@
         },
         "checkedAt": "2026-10-12"
       },
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "UTC: 09-Oct-2026 16:33",
       "lastRefreshedAt": "2026-10-12",
       "feedRefreshStatus": "current",
@@ -5830,7 +5944,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-690/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-690/latest.zip",
+      "lastPeekedExpiry": "20500101"
     },
     {
       "slug": "pierce-county-ferries",
@@ -5876,7 +5991,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "sherbrooke",
@@ -5907,7 +6023,8 @@
       "expiredFeedCheckExpiry": "20261220",
       "timezone": "America/Toronto",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip"
+      "lastFeedSourceUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip",
+      "lastPeekedExpiry": "20261220"
     },
     {
       "slug": "trimet",
@@ -5993,7 +6110,8 @@
           "mode": 100,
           "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270227"
     },
     {
       "slug": "ctran",
@@ -6043,7 +6161,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip"
+      "lastFeedSourceUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "spokane",
@@ -6092,7 +6211,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.spokanetransit.com/gtfs"
+      "lastFeedSourceUrl": "https://www.spokanetransit.com/gtfs",
+      "lastPeekedExpiry": "20270116"
     },
     {
       "slug": "eugene-ltd",
@@ -6146,7 +6266,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip"
+      "lastFeedSourceUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
+      "lastPeekedExpiry": "20270130"
     },
     {
       "slug": "cherriots",
@@ -6194,7 +6315,8 @@
         "checkedAt": "2026-08-24"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20270117"
     },
     {
       "slug": "corvallis",
@@ -6242,7 +6364,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip"
+      "lastFeedSourceUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "grovelink",
@@ -6290,7 +6413,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270201",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-253/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-253/latest.zip",
+      "lastPeekedExpiry": "20270201"
     },
     {
       "slug": "rivercities",
@@ -6342,7 +6466,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20261130"
     },
     {
       "slug": "tillamook",
@@ -6395,7 +6520,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-246/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-246/latest.zip",
+      "lastPeekedExpiry": "20270531"
     },
     {
       "slug": "columbia-area-transit",
@@ -6445,7 +6571,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270101"
     },
     {
       "slug": "mats",
@@ -6494,7 +6621,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270101",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-580/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-580/latest.zip",
+      "lastPeekedExpiry": "20270101"
     },
     {
       "slug": "setd",
@@ -6545,7 +6673,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip"
+      "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip",
+      "lastPeekedExpiry": "20270531"
     },
     {
       "slug": "sfmta",
@@ -6622,7 +6751,8 @@
           "mode": 100,
           "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270115"
     },
     {
       "slug": "bart",
@@ -6663,7 +6793,8 @@
       "expiredFeedCheckExpiry": "20270110",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://www.bart.gov/dev/schedules/google_transit.zip"
+      "lastFeedSourceUrl": "http://www.bart.gov/dev/schedules/google_transit.zip",
+      "lastPeekedExpiry": "20270110"
     },
     {
       "slug": "caltrain",
@@ -6705,7 +6836,8 @@
       "expiredFeedCheckExpiry": "20270131",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip",
+      "lastPeekedExpiry": "20270131"
     },
     {
       "slug": "actransit",
@@ -6746,7 +6878,8 @@
       "expiredFeedCheckExpiry": "20270403",
       "timezone": "US/Pacific",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2455/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2455/latest.zip",
+      "lastPeekedExpiry": "20270403"
     },
     {
       "slug": "vta",
@@ -6818,7 +6951,8 @@
           "mode": 100,
           "reason": "VTA light rail is published as route_type 0 (tram)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20261025"
     },
     {
       "slug": "samtrans",
@@ -6873,7 +7007,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip"
+      "lastFeedSourceUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
+      "lastPeekedExpiry": "20261114"
     },
     {
       "slug": "goldengate",
@@ -6931,7 +7066,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip"
+      "lastFeedSourceUrl": "https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip",
+      "lastPeekedExpiry": "20261212"
     },
     {
       "slug": "weta",
@@ -6983,7 +7119,8 @@
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip"
+      "lastFeedSourceUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
+      "lastPeekedExpiry": "20261101"
     },
     {
       "slug": "countyconnection",
@@ -7021,7 +7158,8 @@
       "expiredFeedCheckExpiry": "20270109",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://countyconnection.com/GTFS/google_transit.zip"
+      "lastFeedSourceUrl": "https://countyconnection.com/GTFS/google_transit.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "westcat",
@@ -7072,7 +7210,8 @@
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip",
+      "lastPeekedExpiry": "20270611"
     },
     {
       "slug": "soltrans",
@@ -7129,7 +7268,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip"
+      "lastFeedSourceUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "marintransit",
@@ -7198,7 +7338,8 @@
       "expiredFeedCheckExpiry": "20270110",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip",
+      "lastPeekedExpiry": "20270110"
     },
     {
       "slug": "sonoma-county",
@@ -7283,7 +7424,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/vinetransit-ca-us/vinetransit-ca-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/vinetransit-ca-us/vinetransit-ca-us.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "emerygoround",
@@ -7328,7 +7470,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271127"
     },
     {
       "slug": "stanford",
@@ -7379,7 +7522,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip"
+      "lastFeedSourceUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
+      "lastPeekedExpiry": "20270926"
     },
     {
       "slug": "tridelta",
@@ -7430,7 +7574,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "lavta",
@@ -7482,7 +7627,8 @@
           "featureCount": 51
         },
         "checkedAt": "2026-10-08"
-      }
+      },
+      "lastPeekedExpiry": "20270129"
     },
     {
       "slug": "unioncity",
@@ -7531,7 +7677,8 @@
           "featureCount": 34
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20270816"
     },
     {
       "slug": "westberkeley",
@@ -7614,7 +7761,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "santarosa",
@@ -7645,7 +7793,8 @@
       "expiredFeedCheckExpiry": "20270213",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2948/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2948/latest.zip",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "fast-ca",
@@ -7682,7 +7831,8 @@
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
-      "feedApiKeyEnvVar": "MUNI_511_API_KEY"
+      "feedApiKeyEnvVar": "MUNI_511_API_KEY",
+      "lastPeekedExpiry": "20270630"
     },
     {
       "slug": "vacaville",
@@ -7731,7 +7881,8 @@
           "featureCount": 17
         },
         "checkedAt": "2026-10-08"
-      }
+      },
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "riovista",
@@ -7821,7 +7972,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "rvtd",
@@ -7869,7 +8021,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip"
+      "lastFeedSourceUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
+      "lastPeekedExpiry": "20261122"
     },
     {
       "slug": "bts-or",
@@ -7912,7 +8065,8 @@
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip"
+      "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip",
+      "lastPeekedExpiry": "20270201"
     },
     {
       "slug": "rct",
@@ -7962,7 +8116,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.remix.com/redwoodcoast.zip"
+      "lastFeedSourceUrl": "https://gtfs.remix.com/redwoodcoast.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "humboldt",
@@ -8007,7 +8162,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs"
+      "lastFeedSourceUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs",
+      "lastPeekedExpiry": "20270630"
     },
     {
       "slug": "mendocino",
@@ -8054,7 +8210,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
+      "lastPeekedExpiry": "20270228"
     },
     {
       "slug": "raba",
@@ -8105,7 +8262,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip"
+      "lastFeedSourceUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "siskiyou",
@@ -8201,7 +8359,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "lassen",
@@ -8248,7 +8407,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip",
+      "lastPeekedExpiry": "20270501"
     },
     {
       "slug": "sacrt",
@@ -8344,7 +8504,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://avl.yctd.org/RealTime/google_transit.zip"
+      "lastFeedSourceUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
+      "lastPeekedExpiry": "20270630"
     },
     {
       "slug": "unitrans",
@@ -8395,7 +8556,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip"
+      "lastFeedSourceUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
+      "lastPeekedExpiry": "20261213"
     },
     {
       "slug": "roseville",
@@ -8428,7 +8590,8 @@
       "expiredFeedCheckExpiry": "20261231",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1067/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1067/latest.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "smart-or",
@@ -8448,7 +8611,7 @@
       ],
       "feedUrl": "https://mysmartbus.com/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2706/latest.zip",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "FY27 Q1",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -8483,7 +8646,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://mysmartbus.com/gtfs"
+      "lastFeedSourceUrl": "https://mysmartbus.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "sam",
@@ -8530,7 +8694,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip"
+      "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip",
+      "lastPeekedExpiry": "20270331"
     },
     {
       "slug": "cat-or",
@@ -8575,7 +8740,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbytransit-or-us/canbytransit-or-us.zip"
+      "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbytransit-or-us/canbytransit-or-us.zip",
+      "lastPeekedExpiry": "20270401"
     },
     {
       "slug": "yamhill",
@@ -8622,7 +8788,8 @@
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip"
+      "lastFeedSourceUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "lacmta",
@@ -8685,7 +8852,8 @@
           "feedVersion": null,
           "rawArchiveKey": "20261021-4789f07742432c73"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270401"
     },
     {
       "slug": "metrolink",
@@ -8720,7 +8888,8 @@
       "expiredFeedCheckExpiry": "20360501",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-96/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-96/latest.zip",
+      "lastPeekedExpiry": "20360501"
     },
     {
       "slug": "torrance-transit",
@@ -8770,7 +8939,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://transit.torranceca.gov/home/showpublisheddocument/16673/639196160075870000"
+      "lastFeedSourceUrl": "https://transit.torranceca.gov/home/showpublisheddocument/16673/639196160075870000",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "beach-cities-transit",
@@ -8781,7 +8951,7 @@
         -118.3884
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1999/latest.zip",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "New Schedule",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -8813,7 +8983,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "carson-circuit",
@@ -8824,7 +8995,7 @@
         -118.2573
       ],
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "20231127",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -8859,7 +9030,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip"
+      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
+      "lastPeekedExpiry": "20320103"
     },
     {
       "slug": "gold-coast",
@@ -8909,7 +9081,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip"
+      "lastFeedSourceUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "bigbluebus",
@@ -8951,7 +9124,8 @@
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://gtfs.bigbluebus.com/current.zip"
+      "lastFeedSourceUrl": "http://gtfs.bigbluebus.com/current.zip",
+      "lastPeekedExpiry": "20261212"
     },
     {
       "slug": "longbeach",
@@ -8997,7 +9171,8 @@
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1198/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1198/latest.zip",
+      "lastPeekedExpiry": "20270206"
     },
     {
       "slug": "octa",
@@ -9031,7 +9206,8 @@
       "expiredFeedCheckExpiry": "20261107",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.octa.net/current/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.octa.net/current/google_transit.zip",
+      "lastPeekedExpiry": "20261107"
     },
     {
       "slug": "foothill",
@@ -9085,7 +9261,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20261031"
     },
     {
       "slug": "avta",
@@ -9196,7 +9373,8 @@
           "mode": 100,
           "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270130"
     },
     {
       "slug": "nctd",
@@ -9288,7 +9466,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-98/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-98/latest.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "omnitrans",
@@ -9322,7 +9501,8 @@
       "expiredFeedCheckExpiry": "20270103",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://www.omnitrans.org/google/google_transit.zip"
+      "lastFeedSourceUrl": "http://www.omnitrans.org/google/google_transit.zip",
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "fax",
@@ -9348,7 +9528,8 @@
       "expiredFeedCheckExpiry": "20261101",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gis4u.fresno.gov/downloads/fax_gtfs.zip"
+      "lastFeedSourceUrl": "https://gis4u.fresno.gov/downloads/fax_gtfs.zip",
+      "lastPeekedExpiry": "20261101"
     },
     {
       "slug": "get",
@@ -9389,7 +9570,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "sjrtd",
@@ -9418,7 +9600,8 @@
       "expiredFeedCheckExpiry": "20270123",
       "timezone": "America/Juneau",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://sjrtd.com/RTD-GTFS/RTD-GTFS.zip"
+      "lastFeedSourceUrl": "http://sjrtd.com/RTD-GTFS/RTD-GTFS.zip",
+      "lastPeekedExpiry": "20270123"
     },
     {
       "slug": "merced",
@@ -9429,7 +9612,7 @@
         -120.48
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip",
-      "lastFeedExpiry": "20991231",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "PASAT 8 Route Update",
       "region": "California",
       "lastRefreshedAt": "2026-08-10",
@@ -9443,7 +9626,8 @@
       "expiredFeedCheckExpiry": "20991231",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "start",
@@ -9515,7 +9699,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-56/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-56/latest.zip",
+      "lastPeekedExpiry": "20261106"
     },
     {
       "slug": "sbmtd",
@@ -9552,7 +9737,8 @@
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1246/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1246/latest.zip",
+      "lastPeekedExpiry": "20261129"
     },
     {
       "slug": "slotransit",
@@ -9577,7 +9763,8 @@
       "expiredFeedCheckExpiry": "20270101",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-44/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-44/latest.zip",
+      "lastPeekedExpiry": "20270101"
     },
     {
       "slug": "slorta",
@@ -9619,7 +9806,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "sunline",
@@ -9636,7 +9824,7 @@
         -116.1
       ],
       "feedUrl": "https://sunlinebus.com/gtfs",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "Add training route",
       "region": "California",
       "lastRefreshedAt": "2026-10-12",
@@ -9671,7 +9859,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "rtcsnv",
@@ -9716,7 +9905,8 @@
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2351/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2351/latest.zip",
+      "lastPeekedExpiry": "20270821"
     },
     {
       "slug": "rtcwashoe",
@@ -9761,7 +9951,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-120/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-120/latest.zip",
+      "lastPeekedExpiry": "20270101"
     },
     {
       "slug": "smat",
@@ -9805,7 +9996,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270811"
     },
     {
       "slug": "valleymetro",
@@ -9860,7 +10052,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270124"
     },
     {
       "slug": "mountainline",
@@ -9871,7 +10064,7 @@
         -111.65
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "10/9/2026",
       "region": "Arizona",
       "lastRefreshedAt": "2026-10-12",
@@ -9901,7 +10094,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "mountainmetro",
@@ -10018,7 +10212,8 @@
           "mode": 100,
           "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "bustang",
@@ -10075,7 +10270,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "abqride",
@@ -10117,7 +10313,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-166/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-166/latest.zip",
+      "lastPeekedExpiry": "20261211"
     },
     {
       "slug": "santafetrails",
@@ -10127,7 +10324,7 @@
         -105.9769
       ],
       "feedUrl": "https://passio3.com/santafenm/passioTransit/gtfs/google_transit.zip",
-      "lastFeedExpiry": "20261105",
+      "lastFeedExpiry": "20271231",
       "lastFeedVersion": "20250228",
       "region": "New Mexico",
       "lastRefreshedAt": "2026-10-07",
@@ -10157,7 +10354,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "capmetro",
@@ -10207,7 +10405,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "dart",
@@ -10299,7 +10498,8 @@
           "mode": 0,
           "reason": "Heritage streetcars published as route_type 5 (cable tram)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20261018"
     },
     {
       "slug": "trinitymetro",
@@ -10354,7 +10554,8 @@
           "mode": 2,
           "reason": "TEXRail is commuter rail, published as route_type 0 (tram)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270130"
     },
     {
       "slug": "metrohouston",
@@ -10427,7 +10628,8 @@
           "mode": 100,
           "reason": "METRORail is light rail, published as route_type 0 (tram)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270213"
     },
     {
       "slug": "via",
@@ -10464,7 +10666,8 @@
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-217/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-217/latest.zip",
+      "lastPeekedExpiry": "20270110"
     },
     {
       "slug": "embark",
@@ -10475,7 +10678,7 @@
         -97.52
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2062/latest.zip",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "10/10/2026-22:30",
       "region": "Oklahoma",
       "lastRefreshedAt": "2026-10-12",
@@ -10511,7 +10714,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20301231"
     },
     {
       "slug": "rockregion",
@@ -10554,7 +10758,8 @@
           "featureCount": 92
         },
         "checkedAt": "2026-10-08"
-      }
+      },
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "nashvillemta",
@@ -10582,7 +10787,8 @@
       "expiredFeedCheckExpiry": "20270102",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-360/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-360/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "mata",
@@ -10630,7 +10836,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip"
+      "lastFeedSourceUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip",
+      "lastPeekedExpiry": "20261110"
     },
     {
       "slug": "norta",
@@ -10687,7 +10894,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270926"
     },
     {
       "slug": "cincinnatimetro",
@@ -10729,7 +10937,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-307/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-307/latest.zip",
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "tarc",
@@ -10784,7 +10993,8 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2127/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2127/latest.zip",
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "metrostlouis",
@@ -10844,7 +11054,8 @@
           "mode": 100,
           "reason": "MetroLink is light rail, published as route_type 2 (commuter rail)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20261129"
     },
     {
       "slug": "kcata",
@@ -10893,7 +11104,8 @@
           "featureCount": 199
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "omahametro",
@@ -10935,7 +11147,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.ometro.com/wp-content/uploads/GTFSRT/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.ometro.com/wp-content/uploads/GTFSRT/google_transit.zip",
+      "lastPeekedExpiry": "20261121"
     },
     {
       "slug": "ladot",
@@ -10985,7 +11198,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "culvercitybus",
@@ -11030,7 +11244,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://web.culvercity.org/gtfs/gtfsexport.zip"
+      "lastFeedSourceUrl": "https://web.culvercity.org/gtfs/gtfsexport.zip",
+      "lastPeekedExpiry": "20261213"
     },
     {
       "slug": "santaclarita",
@@ -11083,7 +11298,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "montebello",
@@ -11123,7 +11339,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2201/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2201/latest.zip",
+      "lastPeekedExpiry": "20270227"
     },
     {
       "slug": "burbankbus",
@@ -11134,7 +11351,7 @@
         -118.31
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2149/latest.zip",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "7/8/2026",
       "region": "California",
       "lastRefreshedAt": "2026-10-12",
@@ -11166,7 +11383,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "glendalebeeline",
@@ -11197,7 +11415,8 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1280/mdb-1280-202402120036/mdb-1280-202402120036.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1280/mdb-1280-202402120036/mdb-1280-202402120036.zip",
+      "lastPeekedExpiry": "20271001"
     },
     {
       "slug": "pasadenatransit",
@@ -11241,7 +11460,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "norwalktransit",
@@ -11315,7 +11535,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip",
+      "lastPeekedExpiry": "20270122"
     },
     {
       "slug": "gtrans",
@@ -11352,7 +11573,8 @@
       "feedRefreshStatus": "stale",
       "feedRefreshError": "all available feeds expired (latest 20261010)",
       "feedRefreshErrorAt": "20261012",
-      "feedRefreshRetryCount": 1
+      "feedRefreshRetryCount": 1,
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "vvta",
@@ -11403,7 +11625,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://api.transloc.com/gtfs/vvta.zip"
+      "lastFeedSourceUrl": "https://api.transloc.com/gtfs/vvta.zip",
+      "lastPeekedExpiry": "20261128"
     },
     {
       "slug": "vctc",
@@ -11536,7 +11759,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip",
+      "lastPeekedExpiry": "20261130"
     },
     {
       "slug": "metra",
@@ -11623,7 +11847,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2347/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2347/latest.zip",
+      "lastPeekedExpiry": "20261226"
     },
     {
       "slug": "marta",
@@ -11674,7 +11899,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.itsmarta.com/google_transit_feed/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.itsmarta.com/google_transit_feed/google_transit.zip",
+      "lastPeekedExpiry": "20261211"
     },
     {
       "slug": "cobblinc",
@@ -11717,7 +11943,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "gwinnett-transit",
@@ -11802,7 +12029,8 @@
           "mode": 1,
           "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "broward-transit",
@@ -11852,7 +12080,8 @@
           "featureCount": 9
         },
         "checkedAt": "2026-10-08"
-      }
+      },
+      "lastPeekedExpiry": "20280930"
     },
     {
       "slug": "transfort",
@@ -11894,7 +12123,8 @@
         "checkedAt": "2026-08-24"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://ridetransfort.com/wp-content/uploads/transfort_gtfs.zip"
+      "lastFeedSourceUrl": "https://ridetransfort.com/wp-content/uploads/transfort_gtfs.zip",
+      "lastPeekedExpiry": "20270116"
     },
     {
       "slug": "septa",
@@ -12015,7 +12245,8 @@
           "mode": 100,
           "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270220"
     },
     {
       "slug": "wmata",
@@ -12083,7 +12314,8 @@
           "feedVersion": null,
           "rawArchiveKey": "20270102-4338d22d24cd6cb7"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270327"
     },
     {
       "slug": "vre",
@@ -12136,7 +12368,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip"
+      "lastFeedSourceUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "marc",
@@ -12227,7 +12460,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip"
+      "lastFeedSourceUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "fairfax",
@@ -12316,7 +12550,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "dash",
@@ -12348,7 +12583,8 @@
       "expiredFeedCheckExpiry": "20270731",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20270731"
     },
     {
       "slug": "nyct-subway",
@@ -12404,7 +12640,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip"
+      "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
+      "lastPeekedExpiry": "20261031"
     },
     {
       "slug": "nyct-bus-manhattan",
@@ -12457,7 +12694,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-513/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-513/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "nyct-bus-brooklyn",
@@ -12512,7 +12750,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-512/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-512/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "nyct-bus-queens",
@@ -12564,7 +12803,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-520/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-520/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "nyct-bus-bronx",
@@ -12617,7 +12857,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "nyct-bus-si",
@@ -12669,7 +12910,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "mta-bus-company",
@@ -12724,7 +12966,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "lirr",
@@ -12783,7 +13026,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip"
+      "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
+      "lastPeekedExpiry": "20261108"
     },
     {
       "slug": "mnr",
@@ -12842,7 +13086,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270523"
     },
     {
       "slug": "njt-rail",
@@ -12923,7 +13168,8 @@
           "mode": 100,
           "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270313"
     },
     {
       "slug": "njt-bus",
@@ -12984,7 +13230,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270313"
     },
     {
       "slug": "path",
@@ -13025,7 +13272,8 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/path-nj-us/path-nj-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/path-nj-us/path-nj-us.zip",
+      "lastPeekedExpiry": "20261114"
     },
     {
       "slug": "beeline",
@@ -13068,7 +13316,8 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip"
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
+      "lastPeekedExpiry": "20270104"
     },
     {
       "slug": "nice",
@@ -13127,7 +13376,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-521/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-521/latest.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "tor",
@@ -13159,7 +13409,8 @@
       "expiredFeedCheckExpiry": "20261031",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/TOR_Transport_of_Rockland.zip"
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/TOR_Transport_of_Rockland.zip",
+      "lastPeekedExpiry": "20261031"
     },
     {
       "slug": "sct",
@@ -13178,7 +13429,7 @@
       ],
       "feedUrl": "https://tracksctbus.org/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3115/latest.zip",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "272-10/1/2026,262-7/17/2026,265-7/30/2026",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -13210,7 +13461,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://tracksctbus.org/gtfs"
+      "lastFeedSourceUrl": "https://tracksctbus.org/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "part",
@@ -13324,7 +13576,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
+      "lastPeekedExpiry": "20261204"
     },
     {
       "slug": "port-authority-pa",
@@ -13387,7 +13640,8 @@
           "mode": 100,
           "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20261024"
     },
     {
       "slug": "ata",
@@ -13440,7 +13694,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rideata.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://rideata.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20270228"
     },
     {
       "slug": "albemarle-county",
@@ -13485,7 +13740,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270113",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://apps.charlottesville.gov/publicfiles/GTFS.zip"
+      "lastFeedSourceUrl": "https://apps.charlottesville.gov/publicfiles/GTFS.zip",
+      "lastPeekedExpiry": "20270113"
     },
     {
       "slug": "chemung-county",
@@ -13532,7 +13788,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20271231",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Chemung_C_TRAN.zip"
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Chemung_C_TRAN.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "decatur",
@@ -13576,7 +13833,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261231",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.remix.com/dpts_decatur_il_us.zip"
+      "lastFeedSourceUrl": "https://gtfs.remix.com/dpts_decatur_il_us.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "essex-county",
@@ -13624,7 +13882,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270301",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/capeann-ma-us/capeann-ma-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/capeann-ma-us/capeann-ma-us.zip",
+      "lastPeekedExpiry": "20270301"
     },
     {
       "slug": "fort-mcmurray",
@@ -13672,7 +13931,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rmwb-gtfsrt.civilia.ca/gtfs"
+      "lastFeedSourceUrl": "https://rmwb-gtfsrt.civilia.ca/gtfs",
+      "lastPeekedExpiry": "20261210"
     },
     {
       "slug": "fort-smith",
@@ -13718,7 +13978,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270110",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11783/FST_GTFS.zip"
+      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11783/FST_GTFS.zip",
+      "lastPeekedExpiry": "20270110"
     },
     {
       "slug": "janesville",
@@ -13762,7 +14023,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261210",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/jts-wi-us/jts-wi-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/jts-wi-us/jts-wi-us.zip",
+      "lastPeekedExpiry": "20261210"
     },
     {
       "slug": "kaua-i-county",
@@ -13785,7 +14047,7 @@
         "Kauaʻi County, Hawaii"
       ],
       "timezone": "Pacific/Honolulu",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "CORRECTED RUN NUMBERS Routes with 900/950 Express and Kilauea Food Mart.",
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -13810,7 +14072,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://thekauaibus.com/gtfs"
+      "lastFeedSourceUrl": "https://thekauaibus.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "los-alamos-county",
@@ -13854,7 +14117,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261231",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.remix.com/act_los_alamos_nm_us.zip"
+      "lastFeedSourceUrl": "https://gtfs.remix.com/act_los_alamos_nm_us.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "marathon-county",
@@ -13901,7 +14165,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270101",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/wausau-wi-us/wausau-wi-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/wausau-wi-us/wausau-wi-us.zip",
+      "lastPeekedExpiry": "20270101"
     },
     {
       "slug": "mason-city",
@@ -13947,7 +14212,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270101",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/masoncity-ia-us/masoncity-ia-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/masoncity-ia-us/masoncity-ia-us.zip",
+      "lastPeekedExpiry": "20270101"
     },
     {
       "slug": "maui-county",
@@ -13970,7 +14236,7 @@
         "Maui County, Hawaii"
       ],
       "timezone": "Pacific/Honolulu",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "FixedRoute_NewCommuterRouteNames",
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -13995,7 +14261,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://mauibus.org/gtfs"
+      "lastFeedSourceUrl": "https://mauibus.org/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "medicine-hat",
@@ -14039,7 +14306,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270327",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://medicinehat.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/"
+      "lastFeedSourceUrl": "https://medicinehat.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/",
+      "lastPeekedExpiry": "20270327"
     },
     {
       "slug": "muscogee-county",
@@ -14064,7 +14332,7 @@
         "Muscogee County, Georgia"
       ],
       "timezone": "America/New_York",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "6/17/2026 Saturday Reduced",
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -14089,7 +14357,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://metracolumbus.com/gtfs"
+      "lastFeedSourceUrl": "https://metracolumbus.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "nash-county",
@@ -14134,7 +14403,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270201",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/tarriver-nc-us/tarriver-nc-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/tarriver-nc-us/tarriver-nc-us.zip",
+      "lastPeekedExpiry": "20270201"
     },
     {
       "slug": "rock-county",
@@ -14185,7 +14455,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://passio3.com/beloit/passioTransit/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://passio3.com/beloit/passioTransit/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "sheboygan-county",
@@ -14232,7 +14503,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20271231",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/sheboygan-wi-us/sheboygan-wi-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/sheboygan-wi-us/sheboygan-wi-us.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "washington-county",
@@ -14281,7 +14553,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.johnsoncitytransit.org/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.johnsoncitytransit.org/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "whitman-county",
@@ -14305,7 +14578,7 @@
         "Whitman County, Washington"
       ],
       "timezone": "America/Los_Angeles",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "removed football routes",
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -14330,7 +14603,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://pullmanbusbeacon.com/gtfs"
+      "lastFeedSourceUrl": "https://pullmanbusbeacon.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "beaver-county",
@@ -14367,7 +14641,8 @@
       "expiredFeedCheckExpiry": "20261231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bcta.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://bcta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "butler-pa",
@@ -14404,7 +14679,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://butlerivl.availtec.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://butlerivl.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "camtran",
@@ -14444,7 +14720,8 @@
       "expiredFeedCheckExpiry": "20290131",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://live.camtranbus.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://live.camtranbus.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20290131"
     },
     {
       "slug": "fact",
@@ -14481,7 +14758,8 @@
       "expiredFeedCheckExpiry": "20270131",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://fact.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://fact.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20270131"
     },
     {
       "slug": "freedom-transit",
@@ -14518,7 +14796,8 @@
       "expiredFeedCheckExpiry": "20261231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://freedom.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://freedom.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "indigo",
@@ -14555,7 +14834,8 @@
       "expiredFeedCheckExpiry": "20270630",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://indigobus.availtec.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://indigobus.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20270630"
     },
     {
       "slug": "mmvta",
@@ -14599,7 +14879,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://mmvta.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://mmvta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20270731"
     },
     {
       "slug": "new-castle",
@@ -14637,7 +14918,8 @@
       "expiredFeedCheckExpiry": "20261231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://ncata.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://ncata.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "westmoreland",
@@ -14675,7 +14957,8 @@
       "expiredFeedCheckExpiry": "20261231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://wcta.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://wcta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "uta",
@@ -14745,7 +15028,8 @@
           "mode": 100,
           "reason": "TRAX is light rail, published as route_type 0 (tram); the S-Line stays a streetcar"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "jta",
@@ -14819,7 +15103,8 @@
           "mode": 100,
           "reason": "LYNX Blue Line is light rail, published as route_type 0 (tram)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270131"
     },
     {
       "slug": "goraleigh",
@@ -14864,7 +15149,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2074/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2074/latest.zip",
+      "lastPeekedExpiry": "20270131"
     },
     {
       "slug": "gotriangle",
@@ -14941,7 +15227,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://realtime.indygo.net/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://realtime.indygo.net/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20270213"
     },
     {
       "slug": "mta-maryland",
@@ -15014,7 +15301,8 @@
           "mode": 100,
           "reason": "Baltimore Light RailLink is light rail, published as route_type 0 (tram)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20270206"
     },
     {
       "slug": "hart",
@@ -15059,7 +15347,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "tampa-international-airport",
@@ -15101,7 +15390,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "lynx",
@@ -15171,7 +15461,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2350/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2350/latest.zip",
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "ripta",
@@ -15218,7 +15509,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-624/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-624/latest.zip",
+      "lastPeekedExpiry": "20270115"
     },
     {
       "slug": "valley-regional-transit",
@@ -15293,7 +15585,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1036A0"
+      "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1036A0",
+      "lastPeekedExpiry": "20270206"
     },
     {
       "slug": "palm-tran",
@@ -15345,7 +15638,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-332/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-332/latest.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "sunrail",
@@ -15418,7 +15712,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.votran.org/file/6120/google_transit_June-2026.zip"
+      "lastFeedSourceUrl": "https://www.votran.org/file/6120/google_transit_June-2026.zip",
+      "lastPeekedExpiry": "20270605"
     },
     {
       "slug": "chapel-hill-transit",
@@ -15429,7 +15724,7 @@
         -79.05
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-89/latest.zip",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "Fall 2026 Update (No Special Services)",
       "region": "North Carolina",
       "lastRefreshedAt": "2026-10-12",
@@ -15459,7 +15754,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "mvta",
@@ -15510,7 +15806,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx"
+      "lastFeedSourceUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
+      "lastPeekedExpiry": "20261101"
     },
     {
       "slug": "xpress-ga",
@@ -15619,7 +15916,8 @@
         "checkedAt": "2026-10-08"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs"
+      "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs",
+      "lastPeekedExpiry": "20270327"
     },
     {
       "slug": "cue-bus",
@@ -15692,7 +15990,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-477/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-477/latest.zip",
+      "lastPeekedExpiry": "20270301"
     },
     {
       "slug": "dc-streetcar",
@@ -15766,7 +16065,8 @@
           "featureCount": 31
         },
         "checkedAt": "2026-10-13"
-      }
+      },
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "hrt",
@@ -15856,7 +16156,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270501"
     },
     {
       "slug": "wata",
@@ -15905,7 +16206,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip"
+      "lastFeedSourceUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
+      "lastPeekedExpiry": "20261112"
     },
     {
       "slug": "dart-first-state",
@@ -16059,7 +16361,8 @@
       "expiredFeedCheckExpiry": "20270527",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip",
+      "lastPeekedExpiry": "20270529"
     },
     {
       "slug": "cat-savannah",
@@ -16115,7 +16418,8 @@
           "mode": 4,
           "reason": "Savannah Belles Ferry is a ferry, published as route_type 3 (bus)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20261122"
     },
     {
       "slug": "tulsa-transit",
@@ -16272,7 +16576,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2209/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2209/latest.zip",
+      "lastPeekedExpiry": "20270109"
     },
     {
       "slug": "greenlink",
@@ -16319,7 +16624,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-490/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-490/latest.zip",
+      "lastPeekedExpiry": "20271006"
     },
     {
       "slug": "carta-chattanooga",
@@ -16368,7 +16674,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip"
+      "lastFeedSourceUrl": "https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip",
+      "lastPeekedExpiry": "20270509"
     },
     {
       "slug": "citilink-fw",
@@ -16411,7 +16718,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2266/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2266/latest.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "gptc",
@@ -16453,7 +16761,8 @@
       "expiredFeedCheckExpiry": "20300129",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip"
+      "lastFeedSourceUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip",
+      "lastPeekedExpiry": "20300129"
     },
     {
       "slug": "bata",
@@ -16465,7 +16774,7 @@
         -85.6206
       ],
       "feedUrl": "https://batabustracker.com/gtfs",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "9/7/2026",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -16494,7 +16803,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://batabustracker.com/gtfs"
+      "lastFeedSourceUrl": "https://batabustracker.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "citylink-peoria",
@@ -16525,7 +16835,8 @@
       "expiredFeedCheckExpiry": "20261205",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2208/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2208/latest.zip",
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "cedar-rapids",
@@ -16570,7 +16881,8 @@
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-198/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-198/latest.zip",
+      "lastPeekedExpiry": "20270301"
     },
     {
       "slug": "matbus",
@@ -16589,7 +16901,7 @@
       "feedUrl": "https://ridematbus.com/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/latest.zip",
       "region": "North Dakota",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "9/7/2026 Schedule",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -16618,7 +16930,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://ridematbus.com/gtfs"
+      "lastFeedSourceUrl": "https://ridematbus.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "duluth-transit",
@@ -16648,7 +16961,8 @@
       "expiredFeedCheckExpiry": "20261205",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-301/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-301/latest.zip",
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "grtc",
@@ -16695,7 +17009,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270123"
     },
     {
       "slug": "valley-metro-roanoke",
@@ -16713,7 +17028,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
       "region": "Virginia",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "09/27/26",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -16746,7 +17061,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "gltc",
@@ -16773,7 +17089,8 @@
       "expiredFeedCheckExpiry": "20270101",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-381/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-381/latest.zip",
+      "lastPeekedExpiry": "20270101"
     },
     {
       "slug": "dayton",
@@ -16817,7 +17134,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-403/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-403/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "youngstown-wrta",
@@ -16868,7 +17186,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20261128"
     },
     {
       "slug": "sun-metro",
@@ -16922,7 +17241,8 @@
           "mode": 0,
           "reason": "El Paso Streetcar is a streetcar, published as route_type 3 (bus)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20261212"
     },
     {
       "slug": "b-line",
@@ -16957,7 +17277,8 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-315/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-315/latest.zip",
+      "lastPeekedExpiry": "20270117"
     },
     {
       "slug": "citibus",
@@ -17008,7 +17329,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip",
+      "lastPeekedExpiry": "20270305"
     },
     {
       "slug": "amarillo",
@@ -17059,7 +17381,8 @@
           "featureCount": 36
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20261230"
     },
     {
       "slug": "missoula",
@@ -17151,7 +17474,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/Denver",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "ecat",
@@ -17332,7 +17656,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-6773/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-6773/latest.zip",
+      "lastPeekedExpiry": "20281231"
     },
     {
       "slug": "huntsville",
@@ -17405,7 +17730,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
+      "lastPeekedExpiry": "20270201"
     },
     {
       "slug": "rfta",
@@ -17443,7 +17769,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2278/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2278/latest.zip",
+      "lastPeekedExpiry": "20261122"
     },
     {
       "slug": "durango-transit",
@@ -17482,7 +17809,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20300131"
     },
     {
       "slug": "pueblo-transit",
@@ -17563,7 +17891,8 @@
       },
       "timezone": "America/Denver",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-212/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-212/latest.zip",
+      "lastPeekedExpiry": "20270201"
     },
     {
       "slug": "kart",
@@ -17602,7 +17931,8 @@
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2204/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2204/latest.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "tulare-county-transit",
@@ -17650,7 +17980,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-646/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-646/latest.zip",
+      "lastPeekedExpiry": "20270501"
     },
     {
       "slug": "madison-metro",
@@ -17690,7 +18021,8 @@
       },
       "timezone": "US/Central",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip"
+      "lastFeedSourceUrl": "http://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip",
+      "lastPeekedExpiry": "20261205"
     },
     {
       "slug": "waukesha-metro",
@@ -17739,7 +18071,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20301231",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-407/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-407/latest.zip",
+      "lastPeekedExpiry": "20301231"
     },
     {
       "slug": "wvu-prt",
@@ -17778,7 +18111,8 @@
       "expiredFeedCheckExpiry": "20261218",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip",
+      "lastPeekedExpiry": "20261218"
     },
     {
       "slug": "visalia",
@@ -17803,7 +18137,8 @@
       "expiredFeedCheckExpiry": "20270106",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-90091/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-90091/latest.zip",
+      "lastPeekedExpiry": "20270106"
     },
     {
       "slug": "green-bay",
@@ -17846,7 +18181,8 @@
           "featureCount": 45
         },
         "checkedAt": "2026-10-08"
-      }
+      },
+      "lastPeekedExpiry": "20270404"
     },
     {
       "slug": "cota",
@@ -17888,7 +18224,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.cota.com/data/cota.gtfs.zip"
+      "lastFeedSourceUrl": "https://www.cota.com/data/cota.gtfs.zip",
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "des-moines",
@@ -17928,7 +18265,8 @@
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
+      "lastPeekedExpiry": "20261121"
     },
     {
       "slug": "wichita",
@@ -17972,7 +18310,8 @@
           "featureCount": 90
         },
         "checkedAt": "2026-10-12"
-      }
+      },
+      "lastPeekedExpiry": "20261218"
     },
     {
       "slug": "appleton",
@@ -18067,7 +18406,7 @@
         "51D"
       ],
       "region": "Tennessee",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "August 2026 Shake-Up",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -18096,7 +18435,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "mcallen",
@@ -18149,7 +18489,8 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
+      "lastPeekedExpiry": "20261201"
     },
     {
       "slug": "lincoln",
@@ -18193,7 +18534,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "south-bend",
@@ -18219,7 +18561,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/Indiana/Indianapolis",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://passio3.com/transpo/passioTransit/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://passio3.com/transpo/passioTransit/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "rockford",
@@ -18288,7 +18631,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://racine.connexionz.net/rtt/public/utility/gtfs.aspx"
+      "lastFeedSourceUrl": "https://racine.connexionz.net/rtt/public/utility/gtfs.aspx",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "sudbury",
@@ -18330,7 +18674,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.greatersudbury.ca/image/opendata/gtfs.zip"
+      "lastFeedSourceUrl": "https://www.greatersudbury.ca/image/opendata/gtfs.zip",
+      "lastPeekedExpiry": "20261127"
     },
     {
       "slug": "anchorage",
@@ -18400,7 +18745,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://mystop.lextran.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://mystop.lextran.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20261219"
     },
     {
       "slug": "mtd-champaign",
@@ -18445,7 +18791,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://developer.mtd.org/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://developer.mtd.org/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20261219"
     },
     {
       "slug": "kalamazoo",
@@ -18489,7 +18836,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://trackmybus.kmetro.org/InfoPoint/GTFS-Zip.ashx"
+      "lastFeedSourceUrl": "https://trackmybus.kmetro.org/InfoPoint/GTFS-Zip.ashx",
+      "lastPeekedExpiry": "20261130"
     },
     {
       "slug": "laredo",
@@ -18537,7 +18885,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.remix.com/el_metro_laredo_transit_us.zip"
+      "lastFeedSourceUrl": "https://gtfs.remix.com/el_metro_laredo_transit_us.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "thunder-bay",
@@ -18574,7 +18923,8 @@
       },
       "timezone": "America/Thunder_Bay",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://api.nextlift.ca/gtfs.zip"
+      "lastFeedSourceUrl": "http://api.nextlift.ca/gtfs.zip",
+      "lastPeekedExpiry": "20261114"
     },
     {
       "slug": "greensboro",
@@ -18586,7 +18936,7 @@
       "feedUrl": "https://trackmygta.com/gtfs",
       "region": "North Carolina",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "7/4/2024",
       "lastRefreshedAt": "2026-10-12",
       "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
@@ -18618,7 +18968,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://trackmygta.com/gtfs"
+      "lastFeedSourceUrl": "https://trackmygta.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "lanta",
@@ -18659,7 +19010,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://realtimelanta.availtec.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://realtimelanta.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20270124"
     },
     {
       "slug": "winston-salem",
@@ -18672,7 +19024,7 @@
       "feedUrl": "https://ridewsta.com/gtfs",
       "region": "North Carolina",
       "mdbFeedUrl": "https://ridewsta.com/gtfs",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "Aug 30 start - Rev 1",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -18701,7 +19053,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://ridewsta.com/gtfs"
+      "lastFeedSourceUrl": "https://ridewsta.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "cat-harrisburg",
@@ -18746,7 +19099,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://cat.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://cat.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "jackson-ms",
@@ -18771,7 +19125,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://passio3.com/jtran/passioTransit/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://passio3.com/jtran/passioTransit/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "lancaster",
@@ -18812,7 +19167,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://busfinder.redrosetransit.com/Infopoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://busfinder.redrosetransit.com/Infopoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "colts",
@@ -18856,7 +19212,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://coltsivl.availtec.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://coltsivl.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "lcta",
@@ -18897,7 +19254,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://realtimelctabus.availtec.com/InfoPoint/gtfs-zip.ashx"
+      "lastFeedSourceUrl": "https://realtimelctabus.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "lastPeekedExpiry": "20301214"
     },
     {
       "slug": "patco",
@@ -18942,7 +19300,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip"
+      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "cascades-east",
@@ -19267,7 +19626,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/ntd-60093/latest.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60093/latest.zip",
-      "lastFeedExpiry": "20281231",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "02-2025",
       "lastRefreshedAt": "2026-08-10",
       "lastFeedCheckAt": "20261012",
@@ -19276,7 +19635,8 @@
       "expiredFeedCheckExpiry": "20281231",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60093/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60093/latest.zip",
+      "lastPeekedExpiry": "20281231"
     },
     {
       "slug": "fort-bend",
@@ -19371,7 +19731,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60023/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60023/latest.zip",
+      "lastPeekedExpiry": "20270106"
     },
     {
       "slug": "terrebonne-parish",
@@ -19416,7 +19777,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip",
+      "lastPeekedExpiry": "20270106"
     },
     {
       "slug": "tangipahoa-parish",
@@ -19549,7 +19911,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4506/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4506/latest.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "indian-river",
@@ -19632,7 +19995,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
+      "lastPeekedExpiry": "20261026"
     },
     {
       "slug": "springfield-mo",
@@ -19679,7 +20043,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://webapp.cityutilities.net/GTPM/google_transit.zip"
+      "lastFeedSourceUrl": "https://webapp.cityutilities.net/GTPM/google_transit.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "evansville",
@@ -19727,7 +20092,7 @@
       ],
       "feedUrl": "https://kenoshatransit.com/gtfs",
       "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "Route 1",
       "lastRefreshedAt": "2026-10-12",
       "region": "Wisconsin",
@@ -19774,7 +20139,8 @@
           "mode": 0,
           "reason": "Kenosha Streetcar is a streetcar, published as route_type 3 (bus)"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "ben-franklin",
@@ -19821,7 +20187,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
+      "lastPeekedExpiry": "20270313"
     },
     {
       "slug": "asheville",
@@ -19865,7 +20232,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-903/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-903/latest.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "bloomington",
@@ -19913,7 +20281,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2066/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2066/latest.zip",
+      "lastPeekedExpiry": "20270923"
     },
     {
       "slug": "athens-acc",
@@ -19957,7 +20326,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4777/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4777/latest.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "uga",
@@ -19988,7 +20358,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "blacksburg",
@@ -20038,7 +20409,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20261230"
     },
     {
       "slug": "cata-state-college",
@@ -20079,7 +20451,8 @@
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
+      "lastPeekedExpiry": "20261213"
     },
     {
       "slug": "cyride",
@@ -20125,7 +20498,8 @@
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-923/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-923/latest.zip",
+      "lastPeekedExpiry": "20270514"
     },
     {
       "slug": "iowa-city",
@@ -20173,7 +20547,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-559/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-559/latest.zip",
+      "lastPeekedExpiry": "20270401"
     },
     {
       "slug": "coralville",
@@ -20225,7 +20600,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-196/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-196/latest.zip",
+      "lastPeekedExpiry": "20270601"
     },
     {
       "slug": "cambus",
@@ -20269,7 +20645,8 @@
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-197/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-197/latest.zip",
+      "lastPeekedExpiry": "20270301"
     },
     {
       "slug": "lawrence-ku",
@@ -20300,7 +20677,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "springfield-il",
@@ -20344,7 +20722,8 @@
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3187/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3187/latest.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "topeka",
@@ -20392,7 +20771,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-1660_1/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-1660_1/latest.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "barta",
@@ -20455,7 +20835,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4668/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4668/latest.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "advance-transit",
@@ -20502,7 +20883,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-631/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-631/latest.zip",
+      "lastPeekedExpiry": "20270101"
     },
     {
       "slug": "ccta",
@@ -20549,7 +20931,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
+      "lastPeekedExpiry": "20270101"
     },
     {
       "slug": "marble-valley",
@@ -20596,7 +20979,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip",
+      "lastPeekedExpiry": "20270327"
     },
     {
       "slug": "bis-man",
@@ -20627,7 +21011,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-6095/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-6095/latest.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "bangor",
@@ -20655,7 +21040,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-7824/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-7824/latest.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "brandon",
@@ -20700,7 +21086,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20261227"
     },
     {
       "slug": "juneau",
@@ -20747,7 +21134,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip",
+      "lastPeekedExpiry": "20270430"
     },
     {
       "slug": "annapolis",
@@ -20886,7 +21274,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://developer.scmetro.org/gtfs.zip"
+      "lastFeedSourceUrl": "https://developer.scmetro.org/gtfs.zip",
+      "lastPeekedExpiry": "20261216"
     },
     {
       "slug": "sioux-falls",
@@ -20935,7 +21324,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip"
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
+      "lastPeekedExpiry": "20271007"
     },
     {
       "slug": "yakima",
@@ -21041,7 +21431,8 @@
       },
       "timezone": "America/Denver",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/greeleyevans-co-us/greeleyevans-co-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/greeleyevans-co-us/greeleyevans-co-us.zip",
+      "lastPeekedExpiry": "20270228"
     },
     {
       "slug": "bridgeport-gbt",
@@ -21095,7 +21486,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/gbt-ct-us/gbt-ct-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/gbt-ct-us/gbt-ct-us.zip",
+      "lastPeekedExpiry": "20261227"
     },
     {
       "slug": "davenport",
@@ -21144,7 +21536,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/citibuspublic.etaspot.net/gtfs.zip"
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/citibuspublic.etaspot.net/gtfs.zip",
+      "lastPeekedExpiry": "20271005"
     },
     {
       "slug": "bettendorf",
@@ -21189,7 +21582,8 @@
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/bettendorf-ia-us/bettendorf-ia-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/bettendorf-ia-us/bettendorf-ia-us.zip",
+      "lastPeekedExpiry": "20270301"
     },
     {
       "slug": "dubuque",
@@ -21237,7 +21631,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://myride.cityofdubuque.org/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://myride.cityofdubuque.org/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20280330"
     },
     {
       "slug": "pocatello",
@@ -21317,7 +21712,8 @@
           "featureCount": 4
         },
         "checkedAt": "2026-10-08"
-      }
+      },
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "wilmington-nc",
@@ -21427,7 +21823,8 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
+      "lastPeekedExpiry": "20270708"
     },
     {
       "slug": "um-transit",
@@ -21471,7 +21868,8 @@
         "checkedAt": "2026-09-07"
       },
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://webapps.fo.umich.edu/transit_uploads/google_transit.zip"
+      "lastFeedSourceUrl": "https://webapps.fo.umich.edu/transit_uploads/google_transit.zip",
+      "lastPeekedExpiry": "20270102"
     },
     {
       "slug": "ncsu-wolfline",
@@ -21508,7 +21906,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "clemson-cat",
@@ -21520,7 +21919,7 @@
         -82.8532
       ],
       "feedUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-      "lastFeedExpiry": "20501230",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-03",
       "region": "South Carolina",
@@ -21560,7 +21959,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx"
+      "lastFeedSourceUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "lastPeekedExpiry": "20501230"
     },
     {
       "slug": "citybus-lafayette",
@@ -21608,7 +22008,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://bus.gocitybus.com/GTFSRT/citybus-lafayette-in-us.zip"
+      "lastFeedSourceUrl": "https://bus.gocitybus.com/GTFSRT/citybus-lafayette-in-us.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "duke",
@@ -21732,7 +22133,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://passio3.com/athenstransit/passioTransit/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://passio3.com/athenstransit/passioTransit/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "connect-transit",
@@ -21743,7 +22145,7 @@
         -88.99
       ],
       "feedUrl": "https://rideconnecttransit.com/gtfs",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "Sapphire Change 9/14/2026",
       "lastRefreshedAt": "2026-10-12",
       "region": "Illinois",
@@ -21781,7 +22183,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rideconnecttransit.com/gtfs"
+      "lastFeedSourceUrl": "https://rideconnecttransit.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "dekalb",
@@ -21814,7 +22217,8 @@
       "expiredFeedCheckExpiry": "20261231",
       "timezone": "US/Central",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/cityofdekalb-il-us/cityofdekalb-il-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/cityofdekalb-il-us/cityofdekalb-il-us.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "radford",
@@ -21888,7 +22292,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip"
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
+      "lastPeekedExpiry": "20270228"
     },
     {
       "slug": "staten-island-ferry",
@@ -21921,7 +22326,8 @@
       "expiredFeedCheckExpiry": "20280130",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-518/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-518/latest.zip",
+      "lastPeekedExpiry": "20280130"
     },
     {
       "slug": "nyc-ferry",
@@ -21979,7 +22385,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-515/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-515/latest.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "rioc-tram",
@@ -22202,7 +22609,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://schedule.ivtransit.com/gtfs/data.zip"
+      "lastFeedSourceUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "kern-transit",
@@ -22255,7 +22663,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270130"
     },
     {
       "slug": "banning",
@@ -22305,7 +22714,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270502"
     },
     {
       "slug": "beaumont-ca",
@@ -22367,7 +22777,8 @@
       "expiredFeedCheckExpiry": "20270331",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip",
+      "lastPeekedExpiry": "20270331"
     },
     {
       "slug": "thousand-oaks",
@@ -22414,7 +22825,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip",
+      "lastPeekedExpiry": "20270613"
     },
     {
       "slug": "simi-valley",
@@ -22432,7 +22844,7 @@
         -118.5489
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
-      "lastFeedExpiry": "20301231",
+      "lastFeedExpiry": "20250601",
       "lastFeedVersion": "UTC: 02-Nov-2022 23:01",
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -22446,7 +22858,8 @@
       "expiredFeedCheckExpiry": "20301231",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip"
+      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
+      "lastPeekedExpiry": "20301231"
     },
     {
       "slug": "camarillo",
@@ -22610,7 +23023,8 @@
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/moorparkcitytransit-ca-us/moorparkcitytransit-ca-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/moorparkcitytransit-ca-us/moorparkcitytransit-ca-us.zip",
+      "lastPeekedExpiry": "20270301"
     },
     {
       "slug": "valley-express",
@@ -22787,7 +23201,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip",
+      "lastPeekedExpiry": "20270319"
     },
     {
       "slug": "seattle-streetcar",
@@ -22806,7 +23221,7 @@
       ],
       "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
       "agencyId": "23",
-      "lastFeedExpiry": "20271231",
+      "lastFeedExpiry": "20270326",
       "lastFeedVersion": "FAL26-161.2",
       "lastRefreshedAt": "2026-10-12",
       "lastFeedCheckAt": "20261012",
@@ -22834,7 +23249,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip"
+      "lastFeedSourceUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
+      "lastPeekedExpiry": "20270326"
     },
     {
       "slug": "metz",
@@ -25446,7 +25862,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://godurham.rideralerts.com/InfoPoint/GTFS-Zip.ashx"
+      "lastFeedSourceUrl": "https://godurham.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "jacksonville-nc",
@@ -25495,7 +25912,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://passio3.com/jacksonville/passioTransit/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://passio3.com/jacksonville/passioTransit/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "fast-nc",
@@ -25531,7 +25949,7 @@
         },
         "checkedAt": "2026-08-21"
       },
-      "lastFeedExpiry": "20501230",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "lastFeedCheckAt": "20261012",
@@ -25540,7 +25958,8 @@
       "expiredFeedCheckExpiry": "20501230",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://fast.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx"
+      "lastFeedSourceUrl": "https://fast.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+      "lastPeekedExpiry": "20501230"
     },
     {
       "slug": "greenway",
@@ -25585,7 +26004,8 @@
       "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Western%20Piedmont%20Regional%20Transportation%20Association_3/WPRTA.zip"
+      "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Western%20Piedmont%20Regional%20Transportation%20Association_3/WPRTA.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "concord-kannapolis",
@@ -25620,7 +26040,7 @@
         },
         "checkedAt": "2026-10-12"
       },
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "Yellow Route Fixed",
       "lastRefreshedAt": "2026-10-12",
       "lastFeedCheckAt": "20261012",
@@ -25633,7 +26053,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Concord%20Kannapolis_209/CKRider.zip"
+      "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Concord%20Kannapolis_209/CKRider.zip",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "gaston-county",
@@ -25680,7 +26101,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip"
+      "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip",
+      "lastPeekedExpiry": "20301031"
     },
     {
       "slug": "coast-rta",
@@ -25719,7 +26141,7 @@
         },
         "checkedAt": "2026-08-21"
       },
-      "lastFeedExpiry": "20501231",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "lastFeedCheckAt": "20261012",
@@ -25728,7 +26150,8 @@
       "expiredFeedCheckExpiry": "20501231",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://coastrta.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx"
+      "lastFeedSourceUrl": "https://coastrta.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+      "lastPeekedExpiry": "20501231"
     },
     {
       "slug": "sunshine-bus",
@@ -25776,7 +26199,8 @@
       "expiredFeedCheckExpiry": "20301031",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1011A0"
+      "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1011A0",
+      "lastPeekedExpiry": "20301031"
     },
     {
       "slug": "key-west-transit",
@@ -25825,7 +26249,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=962A0"
+      "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=962A0",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "citylink-north",
@@ -25875,7 +26300,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "dcta",
@@ -25922,7 +26348,8 @@
       "expiredFeedCheckExpiry": "20270110",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://gtfs.remix.com/dcta_denton_tx_us.zip"
+      "lastFeedSourceUrl": "https://gtfs.remix.com/dcta_denton_tx_us.zip",
+      "lastPeekedExpiry": "20270110"
     },
     {
       "slug": "waco",
@@ -25959,7 +26386,7 @@
         },
         "checkedAt": "2026-08-21"
       },
-      "lastFeedExpiry": "20501231",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "lastFeedCheckAt": "20261012",
@@ -25968,7 +26395,8 @@
       "expiredFeedCheckExpiry": "20501231",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://wacotransit.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx"
+      "lastFeedSourceUrl": "https://wacotransit.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "lastPeekedExpiry": "20501231"
     },
     {
       "slug": "brazos",
@@ -26017,7 +26445,8 @@
       "expiredFeedCheckExpiry": "20261231",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.btd.org/2025btdgtfs/"
+      "lastFeedSourceUrl": "https://www.btd.org/2025btdgtfs/",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "lafayette-la",
@@ -26051,7 +26480,7 @@
         },
         "checkedAt": "2026-10-12"
       },
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": "10/6/2026",
       "lastRefreshedAt": "2026-10-12",
       "lastFeedCheckAt": "20261012",
@@ -26064,7 +26493,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://lts.syncromatics.com/gtfs"
+      "lastFeedSourceUrl": "https://lts.syncromatics.com/gtfs",
+      "lastPeekedExpiry": "20991231"
     },
     {
       "slug": "coast-transit-ms",
@@ -26116,7 +26546,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://coasttransit.com/wp-content/uploads/2026/03/CTA_MS_GTFS-1.zip"
+      "lastFeedSourceUrl": "https://coasttransit.com/wp-content/uploads/2026/03/CTA_MS_GTFS-1.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "hub-city-transit",
@@ -26159,7 +26590,8 @@
       "expiredFeedCheckExpiry": "20270923",
       "timezone": "US/Central",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://api.transloc.com/gtfs/hct.zip"
+      "lastFeedSourceUrl": "https://api.transloc.com/gtfs/hct.zip",
+      "lastPeekedExpiry": "20270923"
     },
     {
       "slug": "tank",
@@ -26204,7 +26636,8 @@
       "expiredFeedCheckExpiry": "20261106",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx"
+      "lastFeedSourceUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
+      "lastPeekedExpiry": "20261106"
     },
     {
       "slug": "sandusky",
@@ -26248,7 +26681,8 @@
       "expiredFeedCheckExpiry": "20270430",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://mjcaction.com/MJC_GTFS_Public/sandusky_google_transit.zip"
+      "lastFeedSourceUrl": "https://mjcaction.com/MJC_GTFS_Public/sandusky_google_transit.zip",
+      "lastPeekedExpiry": "20270430"
     },
     {
       "slug": "bay-metro",
@@ -26297,7 +26731,8 @@
       "expiredFeedCheckExpiry": "20270227",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11684/BMTA_GTFS.zip"
+      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11684/BMTA_GTFS.zip",
+      "lastPeekedExpiry": "20270227"
     },
     {
       "slug": "burlington-ia",
@@ -26348,7 +26783,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip",
+      "lastPeekedExpiry": "20270401"
     },
     {
       "slug": "jefftran",
@@ -26391,7 +26827,8 @@
       "expiredFeedCheckExpiry": "20351004",
       "timezone": "US/Central",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://jctgtfsdownload.itcurves.us/DownloadGtfs"
+      "lastFeedSourceUrl": "https://jctgtfsdownload.itcurves.us/DownloadGtfs",
+      "lastPeekedExpiry": "20351004"
     },
     {
       "slug": "muskegon",
@@ -26440,7 +26877,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip"
+      "lastFeedSourceUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "telluride",
@@ -26460,7 +26898,7 @@
       "websiteUrl": "https://www.telluride.gov/254/Transit-Division",
       "region": "Colorado",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
-      "lastFeedExpiry": "20261122",
+      "lastFeedExpiry": "20261019",
       "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -26491,7 +26929,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
+      "lastPeekedExpiry": "20261019"
     },
     {
       "slug": "mountain-village",
@@ -26544,7 +26983,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
+      "lastPeekedExpiry": "20261122"
     },
     {
       "slug": "smart-telluride",
@@ -26564,7 +27004,7 @@
       "websiteUrl": "https://smarttelluride.colorado.gov/",
       "region": "Colorado",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
-      "lastFeedExpiry": "20261122",
+      "lastFeedExpiry": "20261019",
       "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -26601,7 +27041,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
+      "lastPeekedExpiry": "20261019"
     },
     {
       "slug": "snowmass-village",
@@ -26665,7 +27106,7 @@
         -105.7631
       ],
       "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-      "lastFeedExpiry": "20501230",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "cities": [
@@ -26694,7 +27135,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20501230",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx"
+      "lastFeedSourceUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "lastPeekedExpiry": "20501230"
     },
     {
       "slug": "roundabout",
@@ -26736,7 +27178,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261130",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/clearcreek-co-us/clearcreek-co-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/clearcreek-co-us/clearcreek-co-us.zip",
+      "lastPeekedExpiry": "20261130"
     },
     {
       "slug": "breck-free-ride",
@@ -26749,7 +27192,7 @@
         -106.0384
       ],
       "feedUrl": "https://mybreckfreeride.com/gtfs",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20261113",
       "lastFeedVersion": "111-Resort.Winter25/26.1,103-Summer 2026.8,124-UWM Summer 26",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -26778,7 +27221,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://mybreckfreeride.com/gtfs"
+      "lastFeedSourceUrl": "https://mybreckfreeride.com/gtfs",
+      "lastPeekedExpiry": "20261113"
     },
     {
       "slug": "summit-stage",
@@ -26825,7 +27269,8 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261114",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/summitstage-co-us/summitstage-co-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/summitstage-co-us/summitstage-co-us.zip",
+      "lastPeekedExpiry": "20261114"
     },
     {
       "slug": "vail-transit",
@@ -26866,7 +27311,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://ride.vail.gov/gtfs"
+      "lastFeedSourceUrl": "https://ride.vail.gov/gtfs",
+      "lastPeekedExpiry": "20261206"
     },
     {
       "slug": "avon-transit",
@@ -26908,7 +27354,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.avon.org/DocumentCenter/View/25051/TownOfAvon_gtfs"
+      "lastFeedSourceUrl": "https://www.avon.org/DocumentCenter/View/25051/TownOfAvon_gtfs",
+      "lastPeekedExpiry": "20261125"
     },
     {
       "slug": "timmins",
@@ -26955,7 +27402,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip"
+      "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip",
+      "lastPeekedExpiry": "20261231"
     },
     {
       "slug": "casper",
@@ -26997,7 +27445,8 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://passio3.com/casper/passioTransit/gtfs/google_transit.zip"
+      "lastFeedSourceUrl": "https://passio3.com/casper/passioTransit/gtfs/google_transit.zip",
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "ottumwa",
@@ -27038,7 +27487,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270301"
     },
     {
       "slug": "mckinley-county",
@@ -27079,7 +27529,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20280131"
     },
     {
       "slug": "bowling-green",
@@ -27092,7 +27543,7 @@
       "feedUrl": "https://gobg.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40184/latest.zip",
       "region": "Kentucky",
-      "lastFeedExpiry": "20281012",
+      "lastFeedExpiry": "20281014",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -27119,7 +27570,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20501230"
     },
     {
       "slug": "knox-county",
@@ -27159,7 +27611,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270131"
     },
     {
       "slug": "sevier-county",
@@ -27198,7 +27651,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20271231"
     },
     {
       "slug": "howard-county",
@@ -27237,7 +27691,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20280504"
     },
     {
       "slug": "sierra-vista",
@@ -27278,7 +27733,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270622"
     },
     {
       "slug": "kittitas-county",
@@ -27319,7 +27775,8 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastPeekedExpiry": "20270301"
     }
   ]
 }

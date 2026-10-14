@@ -46,5 +46,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip"
+  "lastFeedSourceUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip",
+  "lastPeekedExpiry": "20271231"
 }

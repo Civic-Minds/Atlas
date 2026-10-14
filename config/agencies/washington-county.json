@@ -45,5 +45,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.johnsoncitytransit.org/google_transit.zip"
+  "lastFeedSourceUrl": "https://www.johnsoncitytransit.org/google_transit.zip",
+  "lastPeekedExpiry": "20271231"
 }

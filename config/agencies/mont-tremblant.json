@@ -40,5 +40,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm"
+  "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
+  "lastPeekedExpiry": "20261220"
 }

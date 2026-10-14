@@ -51,5 +51,6 @@
   "feedRefreshErrorAt": "20261007",
   "feedRefreshRetryCount": 1,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citvr/google_transit.zip"
+  "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citvr/google_transit.zip",
+  "lastPeekedExpiry": "20270103"
 }

@@ -59,5 +59,6 @@
       "mode": 100,
       "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20261024"
 }

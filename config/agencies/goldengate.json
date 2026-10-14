@@ -54,5 +54,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip"
+  "lastFeedSourceUrl": "https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip",
+  "lastPeekedExpiry": "20261212"
 }

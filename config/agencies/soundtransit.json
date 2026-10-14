@@ -75,5 +75,6 @@
       "mode": 100,
       "reason": "Link (1 Line, 2 Line, T Line) is light rail, published as route_type 0 (tram)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20270328"
 }

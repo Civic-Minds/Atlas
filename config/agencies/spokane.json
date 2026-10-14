@@ -45,5 +45,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.spokanetransit.com/gtfs"
+  "lastFeedSourceUrl": "https://www.spokanetransit.com/gtfs",
+  "lastPeekedExpiry": "20270116"
 }

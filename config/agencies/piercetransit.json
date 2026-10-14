@@ -53,5 +53,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/3_gtfs.zip"
+  "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/3_gtfs.zip",
+  "lastPeekedExpiry": "20261212"
 }

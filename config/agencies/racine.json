@@ -36,5 +36,6 @@
     "checkedAt": "2026-09-07"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://racine.connexionz.net/rtt/public/utility/gtfs.aspx"
+  "lastFeedSourceUrl": "https://racine.connexionz.net/rtt/public/utility/gtfs.aspx",
+  "lastPeekedExpiry": "20271231"
 }

@@ -38,5 +38,6 @@
     "checkedAt": "2026-08-24"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://ridetransfort.com/wp-content/uploads/transfort_gtfs.zip"
+  "lastFeedSourceUrl": "https://ridetransfort.com/wp-content/uploads/transfort_gtfs.zip",
+  "lastPeekedExpiry": "20270116"
 }

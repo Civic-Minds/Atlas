@@ -47,5 +47,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip"
+  "lastFeedSourceUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
+  "lastPeekedExpiry": "20261213"
 }

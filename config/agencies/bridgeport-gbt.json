@@ -50,5 +50,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/gbt-ct-us/gbt-ct-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/gbt-ct-us/gbt-ct-us.zip",
+  "lastPeekedExpiry": "20261227"
 }

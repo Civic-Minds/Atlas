@@ -46,5 +46,6 @@
   },
   "timezone": "America/Detroit",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://apps1.smartbus.org/gtfs/smart_gtfs.zip"
+  "lastFeedSourceUrl": "https://apps1.smartbus.org/gtfs/smart_gtfs.zip",
+  "lastPeekedExpiry": "20270103"
 }

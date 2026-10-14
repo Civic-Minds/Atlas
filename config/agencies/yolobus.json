@@ -50,5 +50,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://avl.yctd.org/RealTime/google_transit.zip"
+  "lastFeedSourceUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
+  "lastPeekedExpiry": "20270630"
 }

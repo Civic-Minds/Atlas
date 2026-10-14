@@ -55,5 +55,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip"
+  "lastFeedSourceUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
+  "lastPeekedExpiry": "20261030"
 }

@@ -55,5 +55,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip"
+  "lastFeedSourceUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip",
+  "lastPeekedExpiry": "20271231"
 }

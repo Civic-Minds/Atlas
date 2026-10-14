@@ -48,5 +48,6 @@
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip"
+  "lastFeedSourceUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
+  "lastPeekedExpiry": "20261101"
 }

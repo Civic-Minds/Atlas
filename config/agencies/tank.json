@@ -41,5 +41,6 @@
   "expiredFeedCheckExpiry": "20261106",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx"
+  "lastFeedSourceUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
+  "lastPeekedExpiry": "20261106"
 }

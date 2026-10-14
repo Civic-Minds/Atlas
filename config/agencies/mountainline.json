@@ -7,7 +7,7 @@
     -111.65
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "10/9/2026",
   "region": "Arizona",
   "lastRefreshedAt": "2026-10-12",
@@ -37,5 +37,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastPeekedExpiry": "20991231"
 }

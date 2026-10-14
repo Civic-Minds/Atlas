@@ -47,5 +47,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip"
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip",
+  "lastPeekedExpiry": "20270401"
 }

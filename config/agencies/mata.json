@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip"
+  "lastFeedSourceUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip",
+  "lastPeekedExpiry": "20261110"
 }

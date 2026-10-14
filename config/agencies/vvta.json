@@ -47,5 +47,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://api.transloc.com/gtfs/vvta.zip"
+  "lastFeedSourceUrl": "https://api.transloc.com/gtfs/vvta.zip",
+  "lastPeekedExpiry": "20261128"
 }

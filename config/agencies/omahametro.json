@@ -38,5 +38,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.ometro.com/wp-content/uploads/GTFSRT/google_transit.zip"
+  "lastFeedSourceUrl": "https://www.ometro.com/wp-content/uploads/GTFSRT/google_transit.zip",
+  "lastPeekedExpiry": "20261121"
 }

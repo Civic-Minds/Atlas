@@ -46,5 +46,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip"
+  "lastFeedSourceUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip",
+  "lastPeekedExpiry": "20270102"
 }

@@ -42,5 +42,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
+  "lastPeekedExpiry": "20261231"
 }

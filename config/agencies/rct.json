@@ -46,5 +46,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.remix.com/redwoodcoast.zip"
+  "lastFeedSourceUrl": "https://gtfs.remix.com/redwoodcoast.zip",
+  "lastPeekedExpiry": "20261231"
 }

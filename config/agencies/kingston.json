@@ -44,5 +44,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip"
+  "lastFeedSourceUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
+  "lastPeekedExpiry": "20271008"
 }

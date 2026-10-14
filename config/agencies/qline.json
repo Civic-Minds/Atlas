@@ -46,5 +46,6 @@
       "mode": 0,
       "reason": "QLine is a streetcar, published as route_type 2 (commuter rail)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20270523"
 }

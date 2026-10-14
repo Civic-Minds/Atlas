@@ -73,5 +73,6 @@
       "mode": 100,
       "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20270115"
 }

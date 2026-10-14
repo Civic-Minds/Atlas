@@ -41,5 +41,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/tarriver-nc-us/tarriver-nc-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/tarriver-nc-us/tarriver-nc-us.zip",
+  "lastPeekedExpiry": "20270201"
 }

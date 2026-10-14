@@ -42,5 +42,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11783/FST_GTFS.zip"
+  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11783/FST_GTFS.zip",
+  "lastPeekedExpiry": "20270110"
 }

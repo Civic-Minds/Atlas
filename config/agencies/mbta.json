@@ -85,5 +85,6 @@
       "mode": 100,
       "reason": "Mattapan Line is light rail (the MBTA groups it with the Green Line), published as route_type 0 (tram)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20261212"
 }

@@ -58,5 +58,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip"
+  "lastFeedSourceUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip",
+  "lastPeekedExpiry": "20270103"
 }
