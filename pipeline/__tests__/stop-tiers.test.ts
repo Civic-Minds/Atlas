@@ -2,7 +2,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
-import { headwayToTierOn, processGtfsBuffer } from '../process-core';
+import { processGtfsBuffer } from '../process-core';
+import { headwayToTierOn } from '../headway-utils';
 
 async function fixtureZip(name: string): Promise<Buffer> {
   const dir = resolve(__dirname, 'fixtures', name);
