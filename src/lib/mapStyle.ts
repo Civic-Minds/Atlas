@@ -3,6 +3,7 @@ import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
+import { TileFetchGate } from './tileFetchGate';
 import { dataReleaseApiUrl, dataReleaseAssetUrl, resolveDataRelease, verifiedReleaseRequired, type DataRelease } from './dataRelease';
 import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
@@ -13,6 +14,9 @@ import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&ur
 maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
 let activeRelease: DataRelease | null = null;
+
+/** Holds the detailed route tiles back while the user is mid-zoom (see TileFetchGate). */
+export const detailTileGate = new TileFetchGate();
 
 /** The verified data release the map is drawing, or null when none loaded (e.g. local dev). */
 export function getActiveDataRelease(): DataRelease | null {
@@ -61,7 +65,7 @@ export async function registerProtocol() {
   // Register our retry-wrapped PMTiles instance under this exact URL so
   // MapLibre's `pmtiles://${url}/{z}/{x}/{y}` requests resolve to it instead
   // of a fresh stock instance (Protocol.get() matches by exact source key).
-  protocol.add(new PMTiles(new RetryingFetchSource(getAtlasPmtilesUrl())));
+  protocol.add(new PMTiles(new RetryingFetchSource(getAtlasPmtilesUrl(), 4, detailTileGate)));
   protocol.add(new PMTiles(new RetryingFetchSource(getAtlasOverviewPmtilesUrl())));
 }
 

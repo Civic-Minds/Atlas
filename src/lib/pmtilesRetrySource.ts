@@ -1,4 +1,9 @@
 import { FetchSource, type Source, type RangeResponse } from 'pmtiles';
+import { takeEarlyHeader } from './earlyData';
+import type { TileFetchGate } from './tileFetchGate';
+
+/** The PMTiles library reads the header and root directory as the first 16 KB of the archive. */
+const HEADER_BYTES = 16384;
 
 /**
  * Wraps pmtiles' stock FetchSource with retry + backoff on transient failures
@@ -10,10 +15,15 @@ import { FetchSource, type Source, type RangeResponse } from 'pmtiles';
 export class RetryingFetchSource implements Source {
   private inner: FetchSource;
   private maxRetries: number;
+  private gate?: TileFetchGate;
+  private url: string;
 
-  constructor(url: string, maxRetries = 4) {
+  /** `gate` holds back everything except the header while the user is zooming. */
+  constructor(url: string, maxRetries = 4, gate?: TileFetchGate) {
     this.inner = new FetchSource(url);
     this.maxRetries = maxRetries;
+    this.gate = gate;
+    this.url = url;
   }
 
   getKey(): string {
@@ -21,6 +31,14 @@ export class RetryingFetchSource implements Source {
   }
 
   async getBytes(offset: number, length: number, signal?: AbortSignal, etag?: string): Promise<RangeResponse> {
+    const isHeader = offset === 0 && length === HEADER_BYTES;
+    if (isHeader) {
+      // index.html already asked for these bytes while the app code was still loading.
+      const early = await takeEarlyHeader(this.url);
+      if (early) return { data: early.data, etag: early.etag && !early.etag.startsWith('W/') ? early.etag : undefined };
+    } else if (this.gate) {
+      await this.gate.wait(signal);
+    }
     for (let attempt = 0; ; attempt++) {
       try {
         return await this.inner.getBytes(offset, length, signal, etag);

@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
+- **The map's routes start loading sooner**: the data lookup and the route-tile headers now start while the page code is still loading (about 2 to 8 seconds earlier on a slow phone connection), browsers keep the tiles they have fetched, and a scroll or pinch zoom no longer downloads tiles for the levels it passes through.
 - **Page footer now groups links into Atlas and Learn, with Terms and Privacy beside the copyright**: Map, Agencies, Changelog, Docs, Research and About are one click away from any content page.
 - **Docs, changelog, terms and privacy pages scroll smoothly and keep the top bar and "On this page" list in view**: long pages were hard to navigate once you scrolled past the top.
 - **The page title shows above "On this page" once you scroll past it**: on long docs pages the sidebar now says which page you are on.
