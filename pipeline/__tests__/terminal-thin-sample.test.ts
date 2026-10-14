@@ -57,6 +57,20 @@ describe('Step 4 terminal override on three uneven midday departures (#745)', ()
     expect(isUnevenTwoGapMiddayTerminalSample([m(9, 40), m(13, 5), m(14, 45)], 3)).toBe(false);      // branch no deeper than the sample
   });
 
+  it('keeps the branch value only when it fits the sample, not beside a midday hole (#833)', () => {
+    // Kept: the longer gap is under 3x the branch value (source GTFS, 2026-10-13 release).
+    const wsf131 = [m(9, 40), m(13, 5), m(14, 45)];                                                // gaps 205, 100
+    expect(isUnevenTwoGapMiddayTerminalSample(wsf131, 8, 120)).toBe(true);                         // Weekday
+    expect(isUnevenTwoGapMiddayTerminalSample(wsf131, 8, 80)).toBe(true);                          // Saturday
+    expect(isUnevenTwoGapMiddayTerminalSample(wsf131, 8, 75)).toBe(true);                          // Sunday
+    expect(isUnevenTwoGapMiddayTerminalSample([m(10, 20), m(13, 25), m(14, 0)], 8, 93)).toBe(true);  // wsf 1813
+    expect(isUnevenTwoGapMiddayTerminalSample([m(10, 26), m(12, 30), m(13, 31)], 8, 90)).toBe(true); // nfta 46
+    // Dropped: a peak branch value beside a hole of 3x or more would read as frequent midday service.
+    expect(isUnevenTwoGapMiddayTerminalSample([m(9, 4), m(9, 30), m(14, 35)], 8, 30)).toBe(false);   // rtl 25, 305-min hole
+    expect(isUnevenTwoGapMiddayTerminalSample([m(9, 17), m(9, 35), m(14, 48)], 8, 18)).toBe(false);  // ttc 39, 313-min hole
+    expect(isUnevenTwoGapMiddayTerminalSample([m(13, 27), m(14, 19), m(14, 21)], 8, 2)).toBe(false); // mta-bus Q28, 52 against 2
+  });
+
   it('wsf 131 style two-stop route keeps the branch headline instead of the 153 two-gap mean', async () => {
     const hhmm = (min: number) => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}:00`;
     // Direction 1 (to Anacortes): seven sailings, three of them arriving at Anacortes inside 09:00-15:00.
