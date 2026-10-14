@@ -2019,7 +2019,13 @@ export async function processGtfsBuffer(
       // variant of it.
       if (hasMiddayReading(metricStopMap.get(terminalId)) || hasMiddayReading(headsignMap?.get(terminalId))) return false;
       let deps = 0; let daytime = 0;
-      for (const times of metricStopMap.values()) { deps += times.length; daytime += times.filter(t => t >= 360 && t <= 1320).length; }
+      for (const times of metricStopMap.values()) {
+        // Judged like the siblings (middayMembers: a reading at any stop): a pattern with a
+        // midday reading at its origin but three arrivals at its last stop is not a variant
+        // (dayton 06 Saturday via Pentagon, every two hours, both directions went dark).
+        if (hasMiddayReading(times)) return false;
+        deps += times.length; daytime += times.filter(t => t >= 360 && t <= 1320).length;
+      }
       if (deps === 0 || daytime * 2 < deps) return false;
       const siblings = middayMembers(poolKey);
       const drawn = drawnMembers(poolKey);
