@@ -44,6 +44,32 @@ describe('typical wait for alternating gaps', () => {
     expect(Math.round(typicalOfGaps([120, 285, 115]))).toBe(173);
   });
 
+  it('keeps the median for a whole day of three gaps with a break at least 3x the median (#834)', () => {
+    expect(typicalOfGaps([70, 350, 70], true)).toBe(70);
+    expect(typicalOfGaps([30, 90, 30], true)).toBe(30);
+    expect(typicalOfGaps([150, 450, 150], true)).toBe(150);
+    expect(typicalOfGaps([80, 460, 100], true)).toBe(100);
+    // Under 3x it is still an alternation and reads the mean.
+    expect(typicalOfGaps([60, 120, 60], true)).toBe(80);
+    expect(Math.round(typicalOfGaps([120, 285, 115], true))).toBe(173);
+    // Four or more gaps keep the existing rule.
+    expect(typicalOfGaps([30, 90, 30, 30, 90, 30], true)).toBe(90);
+  });
+
+  it('applies the #834 break rule to whole-day lists only, never to a period window', () => {
+    // centro 21950 to Main St & Route 11: four weekday trips, 08:15, 09:25, 15:15, 16:25.
+    expect(computeHeadwayStats(at('08:15', '09:25', '15:15', '16:25')).median).toBe(70);
+    expect(sustainedMedianHeadwayInWindow(at('06:00', '06:20', '07:20', '07:40'), 360, 1320, 3, undefined, true)).toBe(20);
+    // A period window keeps #772's mean, so the hole inside the period is not hidden.
+    // dayton 43 midday at the terminal: 55, 200, 55.
+    expect(medianHeadwayInWindow(at('09:35', '10:30', '13:50', '14:45'), 540, 900, 3, true)).toBe(103);
+    // rtd E line Sunday to RidgeGate: paired trips 08:27, 08:33, 08:57, 09:03 read 12, not 6.
+    expect(medianHeadwayInWindow(at('08:27', '08:33', '08:57', '09:03'), 480, 600, 3, true)).toBe(12);
+    // cta 95 short turn, Saturday PM peak: 27, 132, 18.
+    expect(medianHeadwayInWindow(at('15:12', '15:39', '17:51', '18:09'), 900, 1140, 3, true)).toBe(59);
+    expect(typicalOfGaps([70, 350, 70])).toBe(Math.max(70, 490 / 3));
+  });
+
   it('counts a gap as long from 1.5x the median, and as an outlier above 5x', () => {
     // 30 is exactly 1.5x the median 20: long, so the gaps alternate and read their mean.
     expect(typicalOfGaps([20, 30, 20, 30, 20, 30, 20])).toBe(170 / 7);
