@@ -120,11 +120,11 @@ export interface HeadlineInputs {
   /** The thin-shape rescue reading (scopedTerminalHeadline), when thinTerminalSample. */
   scoped: { headway: number; tier: string | null } | null;
   /**
-   * #771: the worst all-day value among the drawn stops some pooled variants skip, when hasPool;
-   * null when one of them has no all-day value at all (a peak-only outer tail), undefined when
-   * there is no such stop.
+   * #771: the worst all-day value among the drawn stops some pooled variants skip that have a
+   * real all-day reading, when hasPool; undefined when there is no such stop. A stop without a
+   * reading is drawn limited and left out.
    */
-  worstDrawnStopHw: number | null | undefined;
+  worstDrawnStopHw: number | undefined;
   /** Plain-median inputs of the #772 branch decision. */
   plainTerminalComputedHw: number;
   plainNonTerminalStopHws: readonly number[];
@@ -142,9 +142,8 @@ export function decideHeadline(i: HeadlineInputs): number | null {
   // shared terminal's combined value; the headline is never better than the worst drawn stop
   // some variants skip (#771: MTA Silver's Morgan State stops), the policy that a route headline
   // never overstates a stop on its drawn line while the pooled values live on the segments. A
-  // drawn stop with no all-day value is the worst there is: the line has no all-day headline,
-  // as #728 refuses its lift at a stop the pool cannot grade.
-  if (i.hasPool) return i.worstDrawnStopHw === null ? null : Math.max(i.terminalComputedHw, i.worstDrawnStopHw ?? i.terminalComputedHw);
+  // drawn stop with no all-day reading is drawn limited and left out.
+  if (i.hasPool) return Math.max(i.terminalComputedHw, i.worstDrawnStopHw ?? i.terminalComputedHw);
   // Otherwise the #772 branch decision on plain medians (#263: a shared terminal's combined
   // value never overrides a genuine branch frequency).
   return resolveTerminalHeadline(i.plainTerminalComputedHw, i.plainNonTerminalStopHws, i.terminalComputedHw, i.branchHw, i.branchTripCount, i.pooledPlainTerminalHw);
@@ -262,9 +261,9 @@ export function decidePeriod(i: PeriodInputs): PeriodValue {
   // #771: a period read from the destination pool is never better than the worst drawn stop's
   // value in that period (the same floor as the headline). The floored period is that stop's
   // reading, companions included, so the coverage, max gap and sustained flag describe the
-  // value shown; a stop with no value this period makes the period no service.
+  // value shown. A stop with no value this period is left out (never passed here).
   const worst = i.worstDrawnStop;
-  if (worst && (worst.headway == null || (resolvedH != null && worst.headway > resolvedH))) return { ...worst };
+  if (worst && worst.headway != null && resolvedH != null && worst.headway > resolvedH) return { ...worst };
   const headway = resolvedH;
   const coverage = selectPeriodCoverageHeadway(i.terminalCoverage, i.branchCoverage, i.termH, headway, i.hasScopedTimes);
   const maxGap = headway === i.termH ? i.termMaxGap : (headway === i.branchH ? i.branchMaxGap : i.termMaxGap);

@@ -74,6 +74,25 @@ fixtures pin the hand counts: ttc-41-saturday-pooled, ttc-129-weekday-pool-hole,
 ttc-38-weekday-short-turn, septa-93-sunday, septa-114-weekday
 (pooled-headline-real-feeds.test.ts). Fixture extractor: scratchpad mkfixture.py (one
 route, one day type, shapes thinned to every 10th point).
+Catalog scan of 8e6b68a3 vs main (318 agencies; outputs out/main690, out/fix690g; report690g.py)
+found #771's worst-drawn-stop rule producing headlines like 455 (cta J14 Saturday) from a
+two-trip tail under segments every 10, and nine lines with no headline for one unvalued drawn
+stop. Approved rule (manager, 2026-10-14): a drawn stop without a real all-day reading
+(stopHasReading: at least four unique 6-22h departures on the list that serves the stop, no
+burst, window or sustained test, so peak bursts like actransit W keep reading) is drawn limited
+and left out of the headline and the period floors; the headline reads the terminal plus the
+worst stop with a reading; when the terminal has no reading the headline is the worst reading
+among the other drawn stops (cta J14 Saturday: the trunk's 10-15, not the two-trip shape's
+455); a daytime line with no reading anywhere is limited (headline null; winter-park TL-42,
+three trips a day, re-pinned to null). Night routes (under half the departures 6-22h) are
+never limited this way. The same applies on the early path for shapes with no own stop value
+(two- or three-trip shapes): worst pooled reading, else phase 2's own value if stops have
+readings but no published value (saint-john 12), else limited. TriMet 35's two-trip SW 5th &
+Alder pattern re-pinned 1140 -> 30 (the trunk's reading) under this rule: a two-trip variant
+now shows the service at the stops it shares, which is worth a look in the UI. Checked:
+cambus 41 weekday (midday 20 restored), njt-bus 58 Blvd East local weekday (origin tail
+hourly, left out: 20), njt-rail Montclair-Boonton M to Hoboken weekday (five peak trips on
+five shapes: limited). beeline 5, wrta 24, edmonton A5 keep the midday reading.
 Still by design, worth knowing: pooled stop values and merged-window headlines floor at the
 mean gap (septa 24 weekday reads 38 where the plain median is 32); period values keep #772's
 typicalOfGaps (septa 114 midday period still 81); ttc 63 St Clair (peak-only short turn)

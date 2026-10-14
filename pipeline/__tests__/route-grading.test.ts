@@ -65,8 +65,6 @@ describe('decideHeadline', () => {
     expect(decideHeadline(inputs({ hasPool: true, terminalComputedHw: 20, worstDrawnStopHw: 40 }))).toBe(40);
     expect(decideHeadline(inputs({ hasPool: true, terminalComputedHw: 20, worstDrawnStopHw: 12 }))).toBe(20);
     expect(decideHeadline(inputs({ hasPool: true, terminalComputedHw: 20, worstDrawnStopHw: undefined }))).toBe(20);
-    // A drawn stop with no all-day value (a peak-only outer tail) is the worst there is: no headline.
-    expect(decideHeadline(inputs({ hasPool: true, terminalComputedHw: 20, worstDrawnStopHw: null }))).toBeNull();
   });
   it('otherwise the #772 branch decision stands (a shared terminal never overrides a genuine branch)', () => {
     // Trunk stops every 10, terminal every 10 only because another branch shares it: the branch's own 20 stands.
@@ -128,9 +126,9 @@ describe('decidePeriod', () => {
     expect(decidePeriod(periodInputs({ worstDrawnStop: worst }))).toEqual(worst);
     // A better stop changes nothing: the terminal's value and companions stand.
     expect(decidePeriod(periodInputs({ worstDrawnStop: { ...worst, headway: 12 } }))).toEqual({ headway: 20, coverage: 25, maxGap: 24, sustained: true });
-    // A stop with no value this period (a peak-only tail at midday) makes the period no service.
+    // A stop with no value this period is left out by the caller; passed anyway, it changes nothing.
     const none = { headway: null, coverage: 130, maxGap: 150, sustained: undefined };
-    expect(decidePeriod(periodInputs({ worstDrawnStop: none }))).toEqual(none);
+    expect(decidePeriod(periodInputs({ worstDrawnStop: none }))).toEqual({ headway: 20, coverage: 25, maxGap: 24, sustained: true });
     // No terminal or branch value: the stop's floor has nothing to raise.
     expect(decidePeriod(periodInputs({ termH: null, branchH: null, worstDrawnStop: worst })).headway).toBeNull();
   });

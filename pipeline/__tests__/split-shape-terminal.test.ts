@@ -92,10 +92,12 @@ describe('terminal headline when a branch is split over many shape IDs', () => {
     // every 30. Each carries about half the trips, like HSR 01 King's two branches (93 of 151,
     // see shared-stretch.test.ts) and TTC 35A/B, so each keeps its own branch headline; the
     // shared stretch shows the combined service. The about 11 stops each shape serves alone get
-    // every 60, so the pooled headline (30) never stands.
+    // every 60, so the pooled headline (30) never stands. The two-trip SW 5th & Alder pattern has
+    // no stop value of its own: since CIV-150 it reads the worst pooled reading among its drawn
+    // stops (the trunk's 30) instead of its own two-trip phase 2 value (1140).
     expect(await weekday('trimet-35-alternating-shapes', 'trimet')).toEqual([
       [0, 'Oregon City Transit Center', 60],
-      [0, 'SW 5th & Alder', 1140],
+      [0, 'SW 5th & Alder', 30],
       [1, 'N Portsmouth & Willamette', 60],
     ]);
   });

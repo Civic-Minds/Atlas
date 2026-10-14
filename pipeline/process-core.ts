@@ -1954,6 +1954,25 @@ export async function processGtfsBuffer(
     const drawnPatternStops = (): Array<{ stopId: string; t: number }> => drawnPatternStopsMemo ??= isMapless
       ? maplessStopProjection
       : projectStopsOntoShape([...stopMetricMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
+    // A drawn stop has a real all-day reading when its list has at least
+    // MIN_ALL_DAY_TERMINAL_DEPARTURES unique departures over 6-22h: the thin-shape rescue's
+    // count, without its burst, window or sustained-median requirements, so a peak-only commuter
+    // line (actransit W weekday, six AM trips in 90 minutes) and a peak-heavy line with a midday
+    // hole (ttc 100 via Linkwood) still read. Without one the stop is drawn limited and
+    // left out of the headline and the period floors (CIV-150: cta J14 Saturday read 455 from a
+    // two-trip tail under segments every 10; nine lines lost their headline to one such stop).
+    const stopHasReading = (stopId: string): boolean => {
+      const sorted = [...new Set(stopMetricMap.get(stopId) ?? [])].sort((a, b) => a - b);
+      const daytime = sorted.filter(t => t >= 360 && t <= 1320);
+      return daytime.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES;
+    };
+    // The line runs by day when at least half of its stop departures fall in 6-22h; a night
+    // route (actransit 800 Sunday) keeps its overnight headline and is never "limited" here.
+    const lineRunsByDay = (): boolean => {
+      let deps = 0, daytime = 0;
+      for (const times of stopMetricMap.values()) { deps += times.length; daytime += times.filter(t => t >= 360 && t <= 1320).length; }
+      return daytime * 2 >= deps;
+    };
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
       const poolCount = new Set(pool).size;
@@ -2006,20 +2025,17 @@ export async function processGtfsBuffer(
       // 24 to Steeles is drawn on a 4-trip pre-dawn shape but its stops read the daytime pool,
       // so the 3 origin stops only those 4 trips serve are limited.
       if (!isMapless && drawnPatternStops().length > 1) {
-        let lineDeps = 0, lineDaytime = 0;
-        for (const times of stopMetricMap.values()) { lineDeps += times.length; lineDaytime += times.filter(t => t >= 360 && t <= 1320).length; }
-        const lineRunsByDay = lineDaytime * 2 >= lineDeps;
+        const runsByDay = lineRunsByDay();
         const segments = segmentsByTier(drawnPatternStops(), stopId => {
           const times = stopMetricMap.get(stopId);
           if (!times || times.length === 0) return null;
-          // The same all-day rule as the headline's rescue sample (scopedTerminalHeadline: a
-          // daytime window of at least three departures and at least four over 6-22h, spread past
-          // a burst), on the same list the stop's value was read from: a stop that fails it has
-          // no all-day reading and is limited (ttc 17 weekday Steeles via Wintermute: a tail its
-          // own trips reach once at midday graded 30 on that one departure).
+          // The same all-day rule as the headline (stopHasReading), on the same list the stop's
+          // value was read from: a stop that fails it has no all-day reading and is limited (ttc
+          // 17 weekday Steeles via Wintermute: a tail its own trips reach once at midday graded
+          // 30 on that one departure).
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
-          const headway = graded ? allStopHw[stopId] ?? null : null;
-          if (headway == null && !lineRunsByDay) return null;
+          const headway = stopHasReading(stopId) ? allStopHw[stopId] ?? null : null;
+          if (headway == null && !runsByDay) return null;
           return { tier: graded?.tier ?? null, headway };
         });
         if (segments.length > 0) feature.properties.segments = segments;
@@ -2034,6 +2050,7 @@ export async function processGtfsBuffer(
       // branch that runs about every 15 (79 trips at Mount Dennis, 6-22h median 15). Apply Step
       // 4's thin-terminal rule here: same guard, same scoped headline, tier only degrades.
       const terminalId = coverageStops.at(-1)?.stopId;
+      let rescued = false;
       if (feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span'
         && feature.properties.headway != null && terminalId != null
         && isThinAllDayTerminalSample(metricStopMap.get(terminalId) ?? [], featureBranchTripCount.get(feature) ?? 0)) {
@@ -2053,10 +2070,30 @@ export async function processGtfsBuffer(
           if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[feature.properties.tier as string] ?? -1)) {
             feature.properties.tier = newTier;
           }
+          rescued = true;
         }
       }
       // Pooled stop values can still describe the stops the thin shape serves (#690).
       publishStopData();
+      // Without a rescue the phase 2 value of a two- or three-trip shape would stand as the
+      // headline (cta J14 Saturday: a 32-stop shape run by two trips past a trunk every 10 read
+      // 455). On a daytime line the headline is the worst pooled reading among the drawn stops
+      // that have one, and a line with none is limited (CIV-150).
+      if (!rescued && !railFeature && !isMapless && lineRunsByDay()
+        && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
+        const reading = drawnPatternStops().filter(p => stopHasReading(p.stopId));
+        const vals = reading.map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
+        if (vals.length) {
+          const headway = Math.max(...vals);
+          feature.properties.headway = headway;
+          const newTier = headwayToTier(headway);
+          if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[feature.properties.tier as string] ?? -1)) feature.properties.tier = newTier;
+        } else if (!reading.length) {
+          feature.properties.headway = null;
+        }
+        // Stops with a reading but no published value (saint-john 12: six trips whose all-day
+        // sample rejects its 4-hour holes) keep phase 2's own headline.
+      }
       continue;
     }
 
@@ -2130,11 +2167,31 @@ export async function processGtfsBuffer(
       // State stops before the Hopkins short trips join run every 40 in the evening against 20
       // combined), read where #690 pools them; the terminal itself is read from the pool already
       // (freedom M to Pittsburgh: the drawn variant's own terminal is a stop 3 of 10 trips end at).
-      const worstDrawnStopHw = (): number | null | undefined => {
-        const vals = servedByFewerTrips(headlinePool).filter(stopId => !ownFallbackHw.has(stopId))
-          .map(stopId => allStopHw[stopId] ?? null);
-        if (vals.some(v => v == null)) return null;
-        return vals.length ? Math.max(...(vals as number[])) : undefined;
+      // A drawn stop has a real all-day reading when its list passes the same rule as the
+      // segments and the thin-shape rescue (scopedTerminalHeadline: a daytime window of three
+      // departures, four over 6-22h, spread past a burst). A stop without one is drawn limited
+      // and left out of the headline (CIV-150: cta J14 Saturday read 455 from a two-trip tail
+      // under segments every 10; nine lines read no headline at all for one such stop).
+      const worstDrawnStopHw = (): number | undefined => {
+        const vals = servedByFewerTrips(headlinePool)
+          .filter(stopId => !ownFallbackHw.has(stopId) && stopHasReading(stopId))
+          .map(stopId => allStopHw[stopId])
+          .filter((v): v is number => v != null);
+        return vals.length ? Math.max(...vals) : undefined;
+      };
+      // No drawn stop with a real all-day reading, the terminal included: the line is limited and
+      // has no all-day headline (translink 6727 weekday, pace 807 weekday read 227 and 321 from a
+      // terminal's sparse all-day fallback while every segment was limited).
+      const readingStops = railFeature || isMapless ? [] : drawnPatternStops().filter(p => stopHasReading(p.stopId));
+      const terminalHasReading = !terminalId || stopHasReading(terminalId);
+      const lineHasReading = railFeature || isMapless || !terminalId || !lineRunsByDay() || poolUsed || scoped != null
+        || terminalHasReading || readingStops.length > 0;
+      // A terminal with no all-day reading on a line whose other drawn stops have one (cta J14
+      // Saturday: a 32-stop shape run by two trips past a trunk every 10): the headline is the
+      // worst reading among those stops, not the thin shape's own value (455).
+      const worstReadingStop = (): number | undefined => {
+        const vals = readingStops.map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
+        return vals.length ? Math.max(...vals) : undefined;
       };
       // Step 4.2 and 4.3 (routeGrading.ts): the headline, then the tier it supports.
       // A midday value read off three uneven departures is a two-gap mean (wsf 131 Anacortes,
@@ -2143,7 +2200,9 @@ export async function processGtfsBuffer(
         && branchHw != null
         && terminalMiddayHw != null
         && isUnevenTwoGapMiddayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount);
-      const headway = decideHeadline({
+      const headway = !lineHasReading ? null
+        : (!terminalHasReading && !poolUsed && scoped == null && lineRunsByDay() && worstReadingStop() != null) ? worstReadingStop()!
+        : decideHeadline({
         unevenMiddayTerminal,
         branchHw,
         branchTripCount,
@@ -2270,15 +2329,17 @@ export async function processGtfsBuffer(
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
       const termH = headsignTerminalPeriodHw?.[pk] ?? terminalPeriodHw?.[pk] ?? null;
       // #771: the drawn stops some pooled variants skip, read where #690 pools them (see
-      // worstDrawnStopHw in Step 4): the one with the worst value this period, or one with no
-      // value this period, with its own companions. Null when the periods do not come from the pool.
+      // worstDrawnStopHw in Step 4): the one with the worst value this period, with its own
+      // companions. A stop with no value this period is left out, as the headline leaves out a
+      // stop with no all-day reading (cambus 41 weekday Loop: midday every 20 at 18 departures
+      // read no midday at all for one such stop). Null when the periods do not come from the pool.
       let worstDrawnStop: PeriodValue | null = null;
       if (periodsFromPool) {
         let worstStopId: string | null = null;
         for (const stopId of servedByFewerTrips(periodPoolTimes)) {
-          if (ownFallbackPeriodHw.get(stopId)?.has(pk)) continue;
+          if (ownFallbackPeriodHw.get(stopId)?.has(pk) || !stopHasReading(stopId)) continue;
           const h = allStopPeriodHw[stopId]?.[pk] ?? null;
-          if (h == null) { worstStopId = stopId; break; }
+          if (h == null) continue;
           if (worstStopId == null || h > (allStopPeriodHw[worstStopId]?.[pk] ?? -Infinity)) worstStopId = stopId;
         }
         if (worstStopId != null) {
