@@ -1,10 +1,20 @@
 const CARTO_HOSTS = ['a', 'b', 'c', 'd'] as const;
 const CARTO_STYLES = new Set(['light_all', 'dark_all']);
+// Browsers keep a good tile for 30 days (CARTO's own max-age); Vercel's edge keeps it a year
+// and serves stale for another 30 days while revalidating, so few requests reach this function.
+const TILE_CACHE_OK = 'public, max-age=2592000, s-maxage=31536000, stale-while-revalidate=2592000';
+const TILE_CACHE_NONE = 'no-store, max-age=0';
+
+// CARTO answers a missing or invalid key with HTTP 200 and an "API KEY REQUIRED" watermark tile,
+// marked by an ETag starting with "wm-". Never let that be cached as if it were a real tile.
+function isWatermarkTile(upstream: Response): boolean {
+  return /^(W\/)?"?wm-/.test(upstream.headers.get('etag') ?? '');
+}
 
 function errorResponse(message: string, status: number): Response {
   return new Response(message, {
     status,
-    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': TILE_CACHE_NONE },
   });
 }
 
@@ -33,11 +43,8 @@ export async function handleCartoTiles(request: Request): Promise<Response> {
   const contentType = upstream.headers.get('content-type');
   if (contentType) headers.set('Content-Type', contentType);
 
-  if (upstream.ok) {
-    headers.set('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
-  } else {
-    headers.set('Cache-Control', 'no-store, max-age=0');
-  }
+  const cacheable = upstream.ok && !isWatermarkTile(upstream);
+  headers.set('Cache-Control', cacheable ? TILE_CACHE_OK : TILE_CACHE_NONE);
 
   return new Response(request.method === 'HEAD' ? null : upstream.body, {
     status: upstream.status,
