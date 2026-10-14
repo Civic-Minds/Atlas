@@ -208,7 +208,7 @@ export default defineConfig(({ mode, command, isPreview }) => {
       strictPort: true,
       proxy: {
         '/api': {
-          target: 'http://localhost:5001',
+          target: `http://localhost:${process.env.ATLAS_API_PORT ?? 5001}`,
           changeOrigin: true,
         },
         // R2 blocks browser CORS from localhost — proxy artifact fetches in dev.

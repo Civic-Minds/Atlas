@@ -7,7 +7,7 @@ import { config } from 'dotenv';
 import { resolve } from 'path';
 config({ path: resolve('.env.local') });
 
-const API_PORT = 5001;
+const API_PORT = Number(process.env.ATLAS_API_PORT ?? 5001);
 
 const handlers: Record<string, (req: Request) => Promise<Response>> = {};
 
@@ -15,10 +15,14 @@ async function loadHandlers() {
   const { default: liveVehicles } = await import('./api/live-vehicles.js');
   const { default: historyAdherence } = await import('./api/history-adherence.js');
   const { default: cartoTiles } = await import('./api/carto-tiles.js');
+  const { default: liveAdherence } = await import('./api/live-adherence.js');
+  const { default: liveStop } = await import('./api/live-stop.js');
   const { privacyRegionResponse } = await import('./shared/privacyRegion.js');
   handlers['/api/live-vehicles'] = liveVehicles.fetch;
   handlers['/api/history-adherence'] = historyAdherence.fetch;
   handlers['/api/carto-tiles'] = cartoTiles.fetch;
+  handlers['/api/live-adherence'] = liveAdherence.fetch;
+  handlers['/api/live-stop'] = liveStop.fetch;
   handlers['/api/privacy-region'] = privacyRegionResponse;
 }
 
@@ -57,5 +61,5 @@ createServer(async (req, res) => {
   }
 }).listen(API_PORT, () => {
   console.log(`API dev server listening on http://localhost:${API_PORT}`);
-  console.log('Routes: /api/live-vehicles, /api/history-adherence, /api/carto-tiles, /api/privacy-region');
+  console.log('Routes: /api/live-vehicles, /api/history-adherence, /api/live-adherence, /api/live-stop, /api/carto-tiles, /api/privacy-region');
 });
