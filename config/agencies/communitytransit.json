@@ -53,5 +53,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip"
+  "lastFeedSourceUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
+  "lastPeekedExpiry": "20261211"
 }

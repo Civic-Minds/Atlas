@@ -42,5 +42,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip"
+  "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
+  "lastPeekedExpiry": "20261231"
 }

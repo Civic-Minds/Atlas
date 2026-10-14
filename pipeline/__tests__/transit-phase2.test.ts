@@ -167,7 +167,8 @@ describe('applyAnalysisCriteria', () => {
 
   it('uses the production tier map instead of the legacy fallback percentage', () => {
     const results = applyAnalysisCriteria([
-      raw({ route: 'tier-map', departureTimes: [420, 445, ...Array.from({ length: 9 }, (_, i) => 465 + i * 20)] }),
+      // A 28-minute gap mid-sample is past 20's grace (no near miss or edge allowance absorbs it), inside 30's.
+      raw({ route: 'tier-map', departureTimes: [420, 440, 460, 480, 508, ...Array.from({ length: 6 }, (_, i) => 528 + i * 20)] }),
     ]);
     expect(results.find(item => item.route === 'tier-map')?.tier).toBe('30');
   });
@@ -241,11 +242,23 @@ describe('tier-specific internal near-miss allowances', () => {
     }, 1)).toBe('span');
   });
 
-  it('does not give a 20-minute period a free near miss when five percent rounds below one', () => {
+  it('allows one near miss on a whole-day sample where five percent rounds below one, none on a short one', () => {
+    // GRACE_FLOOR_MIN_GAPS: an hourly line over a 12-hour window (12 gaps) allowed no gap inside
+    // the grace, so one 61-minute gap failed it (wmata P72 Saturday). Ten gaps carry one near
+    // miss; seven do not.
     const gaps = [25, ...Array(9).fill(20)];
     expect(determineTier(gaps, gaps.length + 1, gaps.reduce((a, b) => a + b, 0), [20], 5, 0, 0.15, 0.05, {
       20: 0.05,
+    })).toBe('20');
+    const short = [25, ...Array(6).fill(20)];
+    expect(determineTier(short, short.length + 1, short.reduce((a, b) => a + b, 0), [20], 5, 0, 0.15, 0.05, {
+      20: 0.05,
     })).toBe('span');
+    const hourly = [61, ...Array(11).fill(60)];
+    expect(determineTier(hourly, hourly.length + 1, hourly.reduce((a, b) => a + b, 0), [60], 5, 0, 0.15, 0.05, {
+      60: 0.05,
+    })).toBe('60');
+    expect(determineTier([61, 62, ...Array(10).fill(60)], 13, 722, [60], 5, 0, 0.15, 0.05, { 60: 0.05 })).toBe('span');
   });
 
   it('caps a large period at three internal near misses', () => {

@@ -37,5 +37,6 @@
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://realtimelanta.availtec.com/InfoPoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "https://realtimelanta.availtec.com/InfoPoint/gtfs-zip.ashx",
+  "lastPeekedExpiry": "20270124"
 }

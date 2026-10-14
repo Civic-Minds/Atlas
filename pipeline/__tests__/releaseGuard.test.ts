@@ -108,10 +108,11 @@ describe('tile rules fingerprint', () => {
   // corridors tile layer. Older tiles still draw with this app, and tiles built under this change
   // draw with the previous app, so the switch needs no dual-version window.
   // #749 changes the all-day worst-direction headline (a tile property): version 3.
+  // #840 only adds a Cache-Control header to the release archive uploads; no tile value changes: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 3,
-      fingerprint: 'cd105ca0908568f8fd2b7dcbeb4acc9f088727732b5973e26dd7d8b3c5b35cfb',
+      fingerprint: 'b9d31effb11335b6bdacf90a5fe4bedd0eb6a7acffdaaf5b247731cd7af40e1c',
     });
   });
 });

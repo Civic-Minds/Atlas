@@ -30,5 +30,6 @@
   "expiredFeedCheckExpiry": "20270110",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip",
+  "lastPeekedExpiry": "20270110"
 }

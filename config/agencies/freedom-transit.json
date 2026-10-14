@@ -33,5 +33,6 @@
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://freedom.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "https://freedom.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "lastPeekedExpiry": "20261231"
 }

@@ -15,8 +15,8 @@
   "feedUrl": "https://apps.sacrt.com/gtfs/srtd/google_transit.zip",
   "mdbFeedUrl": "https://apps.sacrt.com/gtfs/srtd/google_transit.zip",
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "SEP26 GTFS1",
-  "lastRefreshedAt": "20260811",
+  "lastFeedVersion": "SEP26 GTFS",
+  "lastRefreshedAt": "2026-10-14",
   "websiteUrl": "http://www.sacrt.com",
   "cities": [
     "Sacramento, California",
@@ -31,12 +31,28 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260613-5e822cf6a9ea298f",
-  "lastFeedCheckAt": "20261012",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20250405",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "fetch failed",
-  "feedRefreshErrorAt": "20261012",
-  "feedRefreshRetryCount": 3
+  "lastFeedCheckAt": "20261014",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270102",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://apps.sacrt.com/gtfs/srtd/google_transit.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 220
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20270102"
 }

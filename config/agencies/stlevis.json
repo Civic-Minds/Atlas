@@ -45,5 +45,6 @@
   },
   "timezone": "America/Montreal",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip"
+  "lastFeedSourceUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
+  "lastPeekedExpiry": "20261220"
 }

@@ -7,7 +7,7 @@
     -118.31
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2149/latest.zip",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "7/8/2026",
   "region": "California",
   "lastRefreshedAt": "2026-10-12",
@@ -39,5 +39,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastPeekedExpiry": "20991231"
 }

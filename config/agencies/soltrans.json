@@ -53,5 +53,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip"
+  "lastFeedSourceUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
+  "lastPeekedExpiry": "20271231"
 }

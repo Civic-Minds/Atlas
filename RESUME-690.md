@@ -208,6 +208,115 @@ dir 0 tier 60 (terminal evening gap), J14 Saturday southbound 20, J14 Madison & 
 stays infrequent (own terminal stop 456 has six trips, no grade, refuses the lift). The
 rescan must report tier moves up and down per agency with five hand-checkable examples each.
 
+RESCAN (2026-10-14, branch d626293d = 4f64327e + origin/main d4fbe095, vs that main; 318
+agencies, 60,628 lines; scan outputs out/main690b and out/fix690h in the 1419e250 scratchpad,
+report690k.py / report690k.txt; per-stop dumps for 12 dense feeds in out/stops-g5 (branch) and
+out/stops-pre851 (cb014076, before the #851 grace)). Headline changed on 4,324 lines, tier on
+7,854 (766 up, 7,088 down), stopTiers published on 51,000 lines.
+- Headlines: 2,197 lines lose theirs (597 at the last rescan). 1,614 of them have a sibling
+  line of the same route, direction and day that keeps a headline (the midday-variant rule);
+  1,776 of the 2,197 had no midday period on main either. Hand-checked: ttc 86C Sheppard
+  Saturday (58 trips, none 9-15h; main read 10 from the Zoo pool), cta 77 Belmont & Octavia
+  weekday (27 trips, nine midday arrivals inside 69 minutes, a burst) and Belmont & Central (8
+  trips): all three limited, correctly. The 583 without a sibling are the peak expresses and
+  one-to-three-trip lines of the earlier rescan (actransit W, arvin, bc-ferries Saturday). No
+  line gained a headline. Biggest moves are the known list (pace 807, fairfax 334, go 18J,
+  septa 1, beeline 5, wrta 24, njt-bus 58, edmonton A5, cambus Loop) plus lines whose
+  1,300-minute own value now reads the pool (lacmta 217 Saturday 1380 -> 15, rtcsnv 4745
+  1381 -> 20, njt-bus 150/151 1383 -> 48-75, trimet 12 weekend 1202 -> 15).
+- TIER DOWN, 7,088 lines (12% of the catalog), OUTSIDE THE TARGET: 6,779 are one step
+  (60 -> infrequent 3,352; 30 -> 60 2,391; 20 -> 30 577; 15 -> 20 352), and in 4,281 of
+  them more than half the graded stops carry the worst grade, so it is not one odd stop. Cause:
+  the every-gap grader (determineTierWithEdgeGapAllowance, violationPercent 5%, no grace on
+  the count of gaps over the tier) was written for origin departures; downstream, running-time
+  drift stretches a few gaps one to six minutes past the tier and the stop fails. Hand-checked
+  with a per-stop trace: wmata P72 Saturday to Largo, hourly, 13 trips, one 61-minute gap from
+  stop 9 on -> 69 of 78 stops "infrequent", tier 60 -> infrequent; ttc 79 weekday westbound,
+  branch stops every 30 with gaps 31 and 35 (two over 30 out of 38) -> 60, and one 36-minute gap
+  at Runnymede & Foxwell -> 60, tier 30 -> 60; mbta 28 Saturday to Nubian, every 12 at the origin
+  (gaps to 15, graded 15), 16-17 minute gaps mid-route -> 20, tier 15 -> 20; septa 38 weekday to
+  Market, headline 20, 74 of 75 stops graded 60 (tier 30 -> 60); mbta D Sunday to Union Square,
+  every 10, all 50 stops graded 15 (10 -> 15). Per agency: translink 236, wmata 213, njt-bus
+  203, metrohouston 198, marta 190, ttc 170, kcm 160, rtd 146, actransit 145, octranspo 141.
+  Options for the manager: (a) grade stops with a drift allowance (count a gap as a violation
+  only past tier + grace, as the headway's own tier already tolerates), (b) take the tier down
+  only when the worst stop is two steps worse than phase 2's grade, or (c) keep the worst-stop
+  rule for the section colours only and leave the route tier at phase 2's grade. Not changed on
+  the branch; the manager decides.
+- TIER UP, 766 lines (infrequent -> 60 343, 60 -> 30 127, infrequent -> 30 104, 30 -> 20 37,
+  10 -> 5 30): cta 51, valleymetro 51, njt-bus 41, ttc 39, septa 38, capmetro 32, nyct-bronx 31,
+  trimet 31. Hand-checkable: ttc 165 weekday Albion and Weston 15/15 -> 9/10 (pooled trunk
+  along the whole line, every stop graded); ttc 54 Sunday Don Valley 15 -> 8/10; septa 52
+  Sunday Woodland 24/30 -> 12/20; njt-bus 70 Sunday Paterson local 30/60 -> 30/30 (59 of 59
+  stops graded 30); valleymetro 70 weekday Glendale PNR 60/infrequent -> 60/60 (108 stops all
+  graded 60); cta 80 Saturday Irving Park & Harlem 702/infrequent -> 13/20 (a thin shape now
+  reading its trunk). All lifts needed every own-pattern stop graded and the other weekdays
+  agreeing.
+- #851 grace, isolated on 12 dense feeds (branch vs cb014076): 1,668 stop values change on
+  130 lines, 1,596 gain a pooled value (new or lower), 72 read one or two minutes worse (ttc
+  165 weekday 7 -> 8, translink 99 westbound 3 -> 5: the merged mean now passes where the own
+  reading stood). New dense pooled values: ttc 52 Sunday both directions 20-25 -> 7-8 at all
+  23 Lawrence stops; ttc 29 Sunday 10-16 -> 6 at 39 stops; ttc 85 Sunday 12-16 -> 7 at 43
+  stops; ttc 102 Saturday 10 -> 6-7 (headline 10 -> 8); cta 79 Saturday every 7 trunk gains
+  6 at 18 stops that had no pooled value; nyct B6 weekday limited 7 -> 5 at 39 stops, B41
+  Flatbush limiteds 17 -> 5 at 16 stops; sfmta 30 weekday 12-15 -> 7 at 17 stops; translink
+  R-lines/99 B-Line 6-12 -> 3 at 20 stops; njt-bus 1 Jersey City 160 -> 7 along the trunk.
+  Six headline and three tier changes from the grace (ttc 165 Finch 17/20 -> 8/10, nyct B6
+  weekday 20 -> 15). mbta, septa, wmata, octranspo, stm, metro-transit: no change.
+- Scan and merge: #858 merged in (CHANGELOG conflict resolved, main's #852 line kept first);
+  typecheck clean; runningTime, stop-tiers, stop-pools, midday-reading and pooled-headline
+  real-feed tests pass. Nothing pushed.
+
+RESCAN 2 (2026-10-14, option 3: grader floor f9b5b509 + drawn-sibling midday fix 6266ad13; scan
+outputs out/mainG = origin/main 04dfbf95 + f9b5b509 cherry-picked, out/fix690i = branch 6266ad13;
+report690l-main.txt and report690l-branch.txt, drift-*.json in the 1419e250 scratchpad).
+- Main + grader floor vs the baseline: 1,591 tiers up (infrequent -> 60 1,484; 60 -> 30 86; 30 ->
+  20 11; span -> 60 5), none down, 6 headlines move (gcrta 71 weekday 60 -> 47). rtd 78, sdmts 49,
+  njt-bus 44, metro-transit 42, thebus 39, via 39: hourly lines over 12-16 gaps with one near miss.
+- Branch vs main + grader: tier up 775 (as before), tier down 6,331 (was 7,088): 60 -> infrequent
+  2,573 (was 3,352), 30 -> 60 2,409 (unchanged), 20 -> 30 581, 15 -> 20 352. The floor only helps
+  the one-near-miss case. Named lines: J14 Saturday southbound 10/15 -> 10/20 (real downstream
+  gaps), Madison & Jefferson 25/infrequent -> 10/infrequent, Jefferson & Washington 10/15 kept;
+  wmata P72 Saturday 60/60 kept on main and branch; ttc 79 weekday both patterns 30/30 -> 30/60
+  (two near misses of 38 gaps, and one 36-minute gap past the 5-minute grace); mbta 28 Saturday
+  Ruggles 12/15 -> 12/20 (about ten 16-17 minute gaps over 75, 7 allowed), Nubian 40/60 -> 12/20.
+- Why the drops stay (per-stop trace of all tier-down lines on ttc, wmata, mbta, septa; 564
+  lines): at the worst stop 223 (40%) have a gap past the grace (a 36 on an every-30, a 70 on an
+  hourly), which no allowance count can pass; 341 (60%) fail only on near misses, and of those a
+  10% allowance would pass 192, 15% 253, 20% 304 (uncapped by the 3-violation ceiling). Absorbing
+  downstream drift with one method means a grace of about 20% and an allowance of about 20% for
+  the route grader too, which loosens origin grading on main well past the 1,591 lifts above.
+- Headline losses 2,149 (was 2,197): 1,601 midday variants with a drawn sibling that keeps a
+  headline, 363 one-to-three-trip lines, 95 peak expresses, 42 lines with no period value on
+  main, 38 evening/late-only patterns, 10 still dark with a midday value on main: dayton 06
+  weekend (two 2-hourly variants, each 3 midday trips), njt-bus 113 Sunday (two 100-minute
+  variants), oakville 71 weekday 38, pvta 804 weekday 11, smat 13X 60, vta 912 Sunday 20. Not
+  traced; pvta 804 and vta 912 look wrong and are the ones to check first.
+- Tests: full pipeline/api/shared suite passes (1,236 tests); three pins moved for the floor
+  (transit-phase2 near-miss tests, RCT 117 weekday tier 60).
+
+## Summary for Ryan (plain language, 2026-10-14)
+
+What changes when this branch goes live (318 agencies, about 60,600 route lines):
+
+1. A route's frequency tier is now the worst stop along its line, not just its first stop. About
+   6,300 lines (10%) go down one tier, because buses run a few minutes late on the timetable by
+   the time they reach mid-route stops and a 30-minute route shows 31-36 minute gaps there.
+   Example: TTC 79 Runnymede westbound shows "every 30" but drops from tier 30 to tier 60,
+   because riders at Runnymede and Foxwell wait up to 36 minutes. About 775 lines go up a tier
+   because every stop on them pools with a frequent trunk (TTC 165 Albion and Weston: 15 to 10).
+2. About 1,500 hourly lines move up from "infrequent" to tier 60 on every agency, because one
+   61-minute gap in a 12-hour day no longer fails them. Example: WMATA P72 on Saturday.
+3. About 2,150 lines stop showing a number and show as limited service. Three typical cases:
+   TTC 86C to Sheppard on Saturday runs only in the rush hours, so it no longer shows "every 10"
+   borrowed from the Zoo trips that run all day. CTA 77 buses that short-turn at Octavia run nine
+   times in about an hour at midday, so they no longer show "every 10" on their own. NJ Transit
+   58's hourly Boulevard East local no longer shows "every 20" taken from the main pattern. The
+   rest are one-to-three-trip lines and rush-hour expresses that had a number from a handful of
+   trips.
+4. Each stop now carries its own tier, so the map can colour a route stretch by stretch
+   (behind the segmentColours flag on beta, CIV-152).
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,

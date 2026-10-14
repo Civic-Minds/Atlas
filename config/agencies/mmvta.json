@@ -40,5 +40,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://mmvta.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "https://mmvta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "lastPeekedExpiry": "20270731"
 }

@@ -206,7 +206,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     if (result.featureCount === 0) throw new Error('processed feed produced 0 route features');
 
     // The release diff gate runs over the whole batch once every agency is processed.
-    const next = summarizeArtifact(result.geojson, result.stopsJson);
+    const next = summarizeArtifact(result.geojson, result.stopsJson, agency.slug);
     const live = await readLiveSummary(agency.slug, r2Get);
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;

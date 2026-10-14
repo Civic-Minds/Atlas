@@ -1,0 +1,729 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+1,1,50932871,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240264,1125042,1,2
+1,1,50932881,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240262,1125042,1,2
+1,1,50932892,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240187,1125042,1,2
+1,1,50932891,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240186,1125042,1,2
+1,1,50932862,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240221,1124792,1,2
+1,1,50932890,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240260,1125042,1,2
+1,1,50932889,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240259,1125042,1,2
+1,1,50932877,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240216,1124792,1,2
+1,1,50932888,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240195,1125042,1,2
+1,1,50932876,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240215,1124792,1,2
+1,1,50932887,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240258,1125042,1,2
+1,1,50932636,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240199,1124792,1,2
+1,1,50932875,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240212,1124792,1,2
+1,1,50932886,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240249,1125042,1,2
+1,1,50932885,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240248,1125042,1,2
+1,1,50932874,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240210,1124792,1,2
+1,1,50932873,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240208,1124792,1,2
+1,1,50932884,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240256,1125042,1,2
+1,1,50932634,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240198,1124792,1,2
+1,1,50932872,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240266,1124792,1,2
+1,1,50932883,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240243,1125042,1,2
+1,1,50932882,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240241,1125042,1,2
+1,1,50932870,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240205,1124792,1,2
+1,1,50932893,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240240,1124960,1,2
+1,1,50932690,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240238,1125062,1,2
+1,1,50932763,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240253,1125062,1,2
+1,1,50932762,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240237,1125062,1,2
+1,1,50932761,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240235,1125062,1,2
+1,1,50932760,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240252,1125062,1,2
+1,1,50932759,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240233,1125062,1,2
+1,1,50932758,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240232,1125062,1,2
+1,1,50932757,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240251,1125062,1,2
+1,1,50932756,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240230,1125062,1,2
+1,1,50932755,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240229,1125062,1,2
+1,1,50932754,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240250,1125062,1,2
+1,1,50932753,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240227,1125062,1,2
+1,1,50932752,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240204,1125062,1,2
+1,1,50932751,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240226,1125062,1,2
+1,1,50932750,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240224,1125062,1,2
+1,1,50932749,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240203,1125062,1,2
+1,1,50932748,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240223,1125062,1,2
+1,1,50932747,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240202,1125062,1,2
+1,1,50932746,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240221,1125062,1,2
+1,1,50932745,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240219,1125062,1,2
+1,1,50932744,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240201,1125062,1,2
+1,1,50932743,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240218,1125062,1,2
+1,1,50932742,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240216,1125062,1,2
+1,1,50932741,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240200,1125062,1,2
+1,1,50932740,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240215,1125062,1,2
+1,1,50932739,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240213,1125062,1,2
+1,1,50932738,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240199,1125062,1,2
+1,1,50932737,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240212,1125062,1,2
+1,1,50932736,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240268,1125062,1,2
+1,1,50932735,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240210,1125062,1,2
+1,1,50932734,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240208,1125062,1,2
+1,1,50932733,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240267,1125062,1,2
+1,1,50932732,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240198,1125062,1,2
+1,1,50932731,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240266,1125062,1,2
+1,1,50932730,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240206,1125062,1,2
+1,1,50932729,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240205,1125062,1,2
+1,1,50932728,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240265,1125062,1,2
+1,1,50932727,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240264,1125062,1,2
+1,1,50932726,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240263,1125062,1,2
+1,1,50932725,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240262,1125062,1,2
+1,1,50932724,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240188,1125062,1,2
+1,1,50932723,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240187,1125062,1,2
+1,1,50932722,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240261,1125062,1,2
+1,1,50932721,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240186,1125062,1,2
+1,1,50932720,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240192,1125062,1,2
+1,1,50932719,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240260,1125062,1,2
+1,1,50932718,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240196,1125062,1,2
+1,1,50932717,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240259,1125062,1,2
+1,1,50932716,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240195,1125062,1,2
+1,1,50932715,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240194,1125062,1,2
+1,1,50932714,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240258,1125062,1,2
+1,1,50932713,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240189,1125062,1,2
+1,1,50932712,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240249,1125062,1,2
+1,1,50932711,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240257,1125062,1,2
+1,1,50932710,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240248,1125062,1,2
+1,1,50932709,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240246,1125062,1,2
+1,1,50932708,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240256,1125062,1,2
+1,1,50932707,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240245,1125062,1,2
+1,1,50932706,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240243,1125062,1,2
+1,1,50932705,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240255,1125062,1,2
+1,1,50932704,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240241,1125062,1,2
+1,1,50932703,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240240,1125062,1,2
+1,1,50932702,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240254,1125062,1,2
+1,1,50932701,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240238,1125062,1,2
+1,1,50932700,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240253,1125062,1,2
+1,1,50932699,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240237,1125062,1,2
+1,1,50932698,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240235,1125062,1,2
+1,1,50932697,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240252,1125062,1,2
+1,1,50932696,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240233,1125062,1,2
+1,1,50932695,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240232,1125062,1,2
+1,1,50932694,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240251,1125062,1,2
+1,1,50932693,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240230,1125062,1,2
+1,1,50932692,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240229,1125062,1,2
+1,1,50932691,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240250,1125062,1,2
+1,1,50932861,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240227,1125063,1,2
+1,1,50932860,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240226,1125063,1,2
+1,1,50932859,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240224,1125063,1,2
+1,1,50932858,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240223,1125063,1,2
+1,1,50932857,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240221,1125063,1,2
+1,1,50932856,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240219,1125063,1,2
+1,1,50932855,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240218,1125063,1,2
+1,1,50932854,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240216,1125063,1,2
+1,1,50932853,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240215,1125063,1,2
+1,1,50932852,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240213,1125063,1,2
+1,1,50932851,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240212,1125063,1,2
+1,1,50932850,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240210,1125063,1,2
+1,1,50932849,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240208,1125063,1,2
+1,1,50932848,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240198,1125063,1,2
+1,1,50932847,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240206,1125063,1,2
+1,1,50932846,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240205,1125063,1,2
+1,1,50932845,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240264,1125063,1,2
+1,1,50932844,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240263,1125063,1,2
+1,1,50932843,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240188,1125063,1,2
+1,1,50932842,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240187,1125063,1,2
+1,1,50932841,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240186,1125063,1,2
+1,1,50932840,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240192,1125063,1,2
+1,1,50932839,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240196,1125063,1,2
+1,1,50932838,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240195,1125063,1,2
+1,1,50932837,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240194,1125063,1,2
+1,1,50932836,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240189,1125063,1,2
+1,1,50932835,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240249,1125063,1,2
+1,1,50932834,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240248,1125063,1,2
+1,1,50932833,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240246,1125063,1,2
+1,1,50932832,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240245,1125063,1,2
+1,1,50932831,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240243,1125063,1,2
+1,1,50932830,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240241,1125063,1,2
+1,1,50932829,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240240,1125063,1,2
+1,1,50932828,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240238,1125063,1,2
+1,1,50932827,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240237,1125063,1,2
+1,1,50932826,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240235,1125063,1,2
+1,1,50932825,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240233,1125063,1,2
+1,1,50932824,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240232,1125063,1,2
+1,1,50932823,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240230,1125063,1,2
+1,1,50932822,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240229,1125063,1,2
+1,1,50932821,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240227,1125063,1,2
+1,1,50932820,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240226,1125063,1,2
+1,1,50932819,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240224,1125063,1,2
+1,1,50932818,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240223,1125063,1,2
+1,1,50932817,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240221,1125063,1,2
+1,1,50932816,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240219,1125063,1,2
+1,1,50932815,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240218,1125063,1,2
+1,1,50932814,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240216,1125063,1,2
+1,1,50932813,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240215,1125063,1,2
+1,1,50932812,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240213,1125063,1,2
+1,1,50932811,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240212,1125063,1,2
+1,1,50932810,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240210,1125063,1,2
+1,1,50932809,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240208,1125063,1,2
+1,1,50932808,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240198,1125063,1,2
+1,1,50932807,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240206,1125063,1,2
+1,1,50932806,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240205,1125063,1,2
+1,1,50932805,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240264,1125063,1,2
+1,1,50932804,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240263,1125063,1,2
+1,1,50932803,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240188,1125063,1,2
+1,1,50932802,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240187,1125063,1,2
+1,1,50932801,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240186,1125063,1,2
+1,1,50932800,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240192,1125063,1,2
+1,1,50932799,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240196,1125063,1,2
+1,1,50932798,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240195,1125063,1,2
+1,1,50932797,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240194,1125063,1,2
+1,1,50932796,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240189,1125063,1,2
+1,1,50932795,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240249,1125063,1,2
+1,1,50932794,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240248,1125063,1,2
+1,1,50932793,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240246,1125063,1,2
+1,1,50932792,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240245,1125063,1,2
+1,1,50932791,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240243,1125063,1,2
+1,1,50932790,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240241,1125063,1,2
+1,1,50932789,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240240,1125063,1,2
+1,1,50932788,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240238,1125063,1,2
+1,1,50932787,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240237,1125063,1,2
+1,1,50932786,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240235,1125063,1,2
+1,1,50932785,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240233,1125063,1,2
+1,1,50932784,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240232,1125063,1,2
+1,1,50932783,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240230,1125063,1,2
+1,1,50932782,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240229,1125063,1,2
+1,1,50932781,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240227,1125063,1,2
+1,1,50932780,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240226,1125063,1,2
+1,1,50932779,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240224,1125063,1,2
+1,1,50932778,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240223,1125063,1,2
+1,1,50932777,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240221,1125063,1,2
+1,1,50932776,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240219,1125063,1,2
+1,1,50932775,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240218,1125063,1,2
+1,1,50932774,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240216,1125063,1,2
+1,1,50932773,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240215,1125063,1,2
+1,1,50932772,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240213,1125063,1,2
+1,1,50932771,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240212,1125063,1,2
+1,1,50932770,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240210,1125063,1,2
+1,1,50932769,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240208,1125063,1,2
+1,1,50932768,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240198,1125063,1,2
+1,1,50932767,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240206,1125063,1,2
+1,1,50932766,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240205,1125063,1,2
+1,1,50932765,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240264,1125063,1,2
+1,1,50932764,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240263,1125063,1,2
+1,1,50932624,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240188,1125063,1,2
+1,1,50932623,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240187,1125063,1,2
+1,1,50932622,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240186,1125063,1,2
+1,1,50932628,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240192,1125065,1,2
+1,1,50932632,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240196,1125065,1,2
+1,1,50932631,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240195,1125065,1,2
+1,1,50932633,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240197,1125018,1,2
+1,1,50932630,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240194,1125065,1,2
+1,1,50932625,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240189,1125065,1,2
+1,1,50932627,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240191,1125018,1,2
+1,1,50932689,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240249,1125065,1,2
+1,1,50932688,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240248,1125065,1,2
+1,1,50932626,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240190,1125018,1,2
+1,1,50932686,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240246,1125065,1,2
+1,1,50932685,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240245,1125065,1,2
+1,1,50932629,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240193,1125018,1,2
+1,1,50932683,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240243,1125065,1,2
+1,1,50932682,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240242,1125065,1,2
+1,1,50932687,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240247,1125018,1,2
+1,1,50932681,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240241,1125065,1,2
+1,1,50932680,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240240,1125065,1,2
+1,1,50932679,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240239,1125065,1,2
+1,1,50932684,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240244,1125018,1,2
+1,1,50932678,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240238,1125065,1,2
+1,1,50932677,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240237,1125065,1,2
+1,1,50932676,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240236,1125065,1,2
+1,1,50932675,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240235,1125065,1,2
+1,1,50932674,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240234,1125065,1,2
+1,1,50932673,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240233,1125065,1,2
+1,1,50932672,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240232,1125065,1,2
+1,1,50932671,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240231,1125065,1,2
+1,1,50932670,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240230,1125065,1,2
+1,1,50932669,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240229,1125065,1,2
+1,1,50932668,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240228,1125065,1,2
+1,1,50932667,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240227,1125065,1,2
+1,1,50932666,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240226,1125065,1,2
+1,1,50932665,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240225,1125065,1,2
+1,1,50932664,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240224,1125065,1,2
+1,1,50932663,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240223,1125065,1,2
+1,1,50932662,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240222,1125065,1,2
+1,1,50932661,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240221,1125065,1,2
+1,1,50932660,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240220,1125065,1,2
+1,1,50932659,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240219,1125065,1,2
+1,1,50932658,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240218,1125065,1,2
+1,1,50932657,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240217,1125065,1,2
+1,1,50932656,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240216,1125065,1,2
+1,1,50932655,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240215,1125065,1,2
+1,1,50932654,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240214,1125065,1,2
+1,1,50932653,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240213,1125065,1,2
+1,1,50932652,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240212,1125065,1,2
+1,1,50932651,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240211,1125065,1,2
+1,1,50932650,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240210,1125065,1,2
+1,1,50932649,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240209,1125065,1,2
+1,1,50932648,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240208,1125065,1,2
+1,1,50932647,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240198,1125065,1,2
+1,1,50932646,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240207,1125065,1,2
+1,1,50932645,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240206,1125065,1,2
+1,1,50932644,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240205,1125065,1,2
+1,1,50932929,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240271,1125065,1,2
+1,1,50932928,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240264,1125065,1,2
+1,1,50932927,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240270,1125065,1,2
+1,1,50932926,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240263,1125065,1,2
+1,1,50932925,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240188,1125065,1,2
+1,1,50932924,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240187,1125065,1,2
+1,1,50932923,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240269,1125065,1,2
+1,1,50932922,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240186,1125065,1,2
+1,1,50932921,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240197,1125065,1,2
+1,1,50932920,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240192,1125065,1,2
+1,1,50932919,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240196,1125065,1,2
+1,1,50932918,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240191,1125065,1,2
+1,1,50932917,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240195,1125065,1,2
+1,1,50932916,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240190,1125065,1,2
+1,1,50932915,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240194,1125065,1,2
+1,1,50932914,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240189,1125065,1,2
+1,1,50932913,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240193,1125065,1,2
+1,1,50932912,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240249,1125065,1,2
+1,1,50932911,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240248,1125065,1,2
+1,1,50932905,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240247,1125065,1,2
+1,1,50932904,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240246,1125065,1,2
+1,1,50932903,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240245,1125065,1,2
+1,1,50932902,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240244,1125065,1,2
+1,1,50932901,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240243,1125065,1,2
+1,1,50932900,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240242,1125065,1,2
+1,1,50932899,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240241,1125065,1,2
+1,1,50932898,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240240,1125065,1,2
+1,1,50932897,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240239,1125065,1,2
+1,1,50932896,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240238,1125065,1,2
+1,1,50932895,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240237,1125065,1,2
+1,1,50933006,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240235,1125064,1,2
+1,1,50933005,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240234,1125064,1,2
+1,1,50933004,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240233,1125064,1,2
+1,1,50933003,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240231,1125064,1,2
+1,1,50933002,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240230,1125064,1,2
+1,1,50933001,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240229,1125064,1,2
+1,1,50933000,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240227,1125064,1,2
+1,1,50932999,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240225,1125064,1,2
+1,1,50932998,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240224,1125064,1,2
+1,1,50932997,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240223,1125064,1,2
+1,1,50932996,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240221,1125064,1,2
+1,1,50932995,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240220,1125064,1,2
+1,1,50932994,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240218,1125064,1,2
+1,1,50932993,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240217,1125064,1,2
+1,1,50932992,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240216,1125064,1,2
+1,1,50932991,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240214,1125064,1,2
+1,1,50932990,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240213,1125064,1,2
+1,1,50932989,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240212,1125064,1,2
+1,1,50932988,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240210,1125064,1,2
+1,1,50932987,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240209,1125064,1,2
+1,1,50932986,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240198,1125064,1,2
+1,1,50932985,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240207,1125064,1,2
+1,1,50932984,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240206,1125064,1,2
+1,1,50932983,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240271,1125064,1,2
+1,1,50932982,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240264,1125064,1,2
+1,1,50932981,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240270,1125064,1,2
+1,1,50932980,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240188,1125064,1,2
+1,1,50932979,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240187,1125064,1,2
+1,1,50932978,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240186,1125064,1,2
+1,1,50932977,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240197,1125064,1,2
+1,1,50932976,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240192,1125064,1,2
+1,1,50932975,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240191,1125064,1,2
+1,1,50932974,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240195,1125064,1,2
+1,1,50932973,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240194,1125064,1,2
+1,1,50932972,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240189,1125064,1,2
+1,1,50932971,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240193,1125064,1,2
+1,1,50932970,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240248,1125064,1,2
+1,1,50932969,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240246,1125043,1,2
+1,1,50932968,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240244,1125043,1,2
+1,1,50932967,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240242,1125043,1,2
+1,1,50932966,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240240,1125043,1,2
+1,1,50932965,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240238,1125043,1,2
+1,1,50932964,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240237,1125043,1,2
+1,1,50932963,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240234,1125043,1,2
+1,1,50932962,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240233,1125043,1,2
+1,1,50932961,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240230,1125043,1,2
+1,1,50932960,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240229,1125043,1,2
+1,1,50932959,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240225,1125043,1,2
+1,1,50932958,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240224,1125043,1,2
+1,1,50932957,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240223,1125043,1,2
+1,1,50932956,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240220,1125043,1,2
+1,1,50932955,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240218,1125043,1,2
+1,1,50932954,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240216,1125043,1,2
+1,1,50932953,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240214,1125043,1,2
+1,1,50932952,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240212,1125043,1,2
+1,1,50932951,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240210,1125043,1,2
+1,1,50932950,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240198,1125043,1,2
+1,1,50932949,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240207,1125043,1,2
+1,1,50932948,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240271,1125043,1,2
+1,1,50932947,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240264,1125043,1,2
+1,1,50932946,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240270,1125043,1,2
+1,1,50932945,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240187,1125043,1,2
+1,1,50932944,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240186,1125043,1,2
+1,1,50932943,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240192,1125043,1,2
+1,1,50932942,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240191,1125043,1,2
+1,1,50932941,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240194,1125043,1,2
+1,1,50932940,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240189,1125043,1,2
+1,1,50932939,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240193,1125043,1,2
+1,1,50932938,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240246,1125043,1,2
+1,1,50932937,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240244,1125043,1,2
+1,1,50932936,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240242,1125043,1,2
+1,1,50932935,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240240,1125043,1,2
+1,1,50932934,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240238,1125043,1,2
+1,1,50932933,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240237,1125043,1,2
+1,1,50932932,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240234,1125043,1,2
+1,1,50932931,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240233,1125043,1,2
+1,1,50932930,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240230,1125043,1,2
+1,1,50933010,Line 1 (Yonge-University) towards Vaughan Metropolitan Centre Station,,0,2240229,1124856,1,2
+1,1,50933166,Line 1 (Yonge-University) towards Finch Station,,1,2240195,1125185,1,2
+1,1,50933157,Line 1 (Yonge-University) towards Finch Station,,1,2240259,1125079,1,2
+1,1,50933158,Line 1 (Yonge-University) towards Finch Station,,1,2240258,1125185,1,2
+1,1,50933159,Line 1 (Yonge-University) towards Finch Station,,1,2240249,1125185,1,2
+1,1,50933152,Line 1 (Yonge-University) towards Finch Station,,1,2240230,1125090,1,2
+1,1,50933160,Line 1 (Yonge-University) towards Finch Station,,1,2240248,1125185,1,2
+1,1,50933032,Line 1 (Yonge-University) towards Finch Station,,1,2240226,1125326,1,2
+1,1,50933012,Line 1 (Yonge-University) towards Finch Station,,1,2240229,1125090,1,2
+1,1,50933108,Line 1 (Yonge-University) towards Finch Station,,1,2240224,1125326,1,2
+1,1,50933161,Line 1 (Yonge-University) towards Finch Station,,1,2240256,1125185,1,2
+1,1,50933175,Line 1 (Yonge-University) towards Finch Station,,1,2240250,1125090,1,2
+1,1,50933107,Line 1 (Yonge-University) towards Finch Station,,1,2240203,1125326,1,2
+1,1,50933106,Line 1 (Yonge-University) towards Finch Station,,1,2240223,1125326,1,2
+1,1,50933174,Line 1 (Yonge-University) towards Finch Station,,1,2240227,1125090,1,2
+1,1,50933013,Line 1 (Yonge-University) towards Finch Station,,1,2240252,1125118,1,2
+1,1,50933164,Line 1 (Yonge-University) towards Finch Station,,1,2240233,1125118,1,2
+1,1,50933176,Line 1 (Yonge-University) towards Finch Station,,1,2240243,1125185,1,2
+1,1,50933167,Line 1 (Yonge-University) towards Finch Station,,1,2240251,1125115,1,2
+1,1,50933156,Line 1 (Yonge-University) towards Finch Station,,1,2240204,1125090,1,2
+1,1,50933178,Line 1 (Yonge-University) towards Finch Station,,1,2240237,1125112,1,2
+1,1,50933165,Line 1 (Yonge-University) towards Finch Station,,1,2240232,1125118,1,2
+1,1,50933104,Line 1 (Yonge-University) towards Finch Station,,1,2240221,1125326,1,2
+1,1,50933163,Line 1 (Yonge-University) towards Finch Station,,1,2240235,1125112,1,2
+1,1,50933155,Line 1 (Yonge-University) towards Finch Station,,1,2240241,1125185,1,2
+1,1,50933162,Line 1 (Yonge-University) towards Finch Station,,1,2240238,1125203,1,2
+1,1,50933102,Line 1 (Yonge-University) towards Finch Station,,1,2240201,1125326,1,2
+1,1,50933154,Line 1 (Yonge-University) towards Finch Station,,1,2240240,1125185,1,2
+1,1,50933100,Line 1 (Yonge-University) towards Finch Station,,1,2240216,1125326,1,2
+1,1,50933105,Line 1 (Yonge-University) towards Finch Station,,1,2240202,1125090,1,2
+1,1,50933153,Line 1 (Yonge-University) towards Finch Station,,1,2240253,1125185,1,2
+1,1,50933098,Line 1 (Yonge-University) towards Finch Station,,1,2240215,1125326,1,2
+1,1,50933103,Line 1 (Yonge-University) towards Finch Station,,1,2240219,1125090,1,2
+1,1,50933096,Line 1 (Yonge-University) towards Finch Station,,1,2240199,1125326,1,2
+1,1,50933101,Line 1 (Yonge-University) towards Finch Station,,1,2240218,1125090,1,2
+1,1,50933095,Line 1 (Yonge-University) towards Finch Station,,1,2240212,1125326,1,2
+1,1,50933099,Line 1 (Yonge-University) towards Finch Station,,1,2240200,1125090,1,2
+1,1,50933093,Line 1 (Yonge-University) towards Finch Station,,1,2240210,1125326,1,2
+1,1,50933092,Line 1 (Yonge-University) towards Finch Station,,1,2240208,1125326,1,2
+1,1,50933097,Line 1 (Yonge-University) towards Finch Station,,1,2240213,1125090,1,2
+1,1,50933090,Line 1 (Yonge-University) towards Finch Station,,1,2240198,1125326,1,2
+1,1,50933089,Line 1 (Yonge-University) towards Finch Station,,1,2240266,1125326,1,2
+1,1,50933094,Line 1 (Yonge-University) towards Finch Station,,1,2240268,1125090,1,2
+1,1,50933087,Line 1 (Yonge-University) towards Finch Station,,1,2240205,1125326,1,2
+1,1,50933091,Line 1 (Yonge-University) towards Finch Station,,1,2240267,1125090,1,2
+1,1,50933085,Line 1 (Yonge-University) towards Finch Station,,1,2240264,1125326,1,2
+1,1,50933083,Line 1 (Yonge-University) towards Finch Station,,1,2240262,1125326,1,2
+1,1,50933088,Line 1 (Yonge-University) towards Finch Station,,1,2240206,1125090,1,2
+1,1,50933081,Line 1 (Yonge-University) towards Finch Station,,1,2240187,1125326,1,2
+1,1,50933086,Line 1 (Yonge-University) towards Finch Station,,1,2240265,1125090,1,2
+1,1,50933079,Line 1 (Yonge-University) towards Finch Station,,1,2240186,1125326,1,2
+1,1,50933084,Line 1 (Yonge-University) towards Finch Station,,1,2240263,1125090,1,2
+1,1,50933077,Line 1 (Yonge-University) towards Finch Station,,1,2240260,1125326,1,2
+1,1,50933082,Line 1 (Yonge-University) towards Finch Station,,1,2240188,1125090,1,2
+1,1,50933075,Line 1 (Yonge-University) towards Finch Station,,1,2240259,1125326,1,2
+1,1,50933080,Line 1 (Yonge-University) towards Finch Station,,1,2240261,1125090,1,2
+1,1,50933074,Line 1 (Yonge-University) towards Finch Station,,1,2240195,1125326,1,2
+1,1,50933078,Line 1 (Yonge-University) towards Finch Station,,1,2240192,1125090,1,2
+1,1,50933072,Line 1 (Yonge-University) towards Finch Station,,1,2240258,1125326,1,2
+1,1,50933076,Line 1 (Yonge-University) towards Finch Station,,1,2240196,1125090,1,2
+1,1,50933070,Line 1 (Yonge-University) towards Finch Station,,1,2240249,1125326,1,2
+1,1,50933068,Line 1 (Yonge-University) towards Finch Station,,1,2240248,1125326,1,2
+1,1,50933073,Line 1 (Yonge-University) towards Finch Station,,1,2240194,1125090,1,2
+1,1,50933066,Line 1 (Yonge-University) towards Finch Station,,1,2240256,1125326,1,2
+1,1,50933071,Line 1 (Yonge-University) towards Finch Station,,1,2240189,1125090,1,2
+1,1,50933064,Line 1 (Yonge-University) towards Finch Station,,1,2240243,1125326,1,2
+1,1,50933069,Line 1 (Yonge-University) towards Finch Station,,1,2240257,1125090,1,2
+1,1,50933062,Line 1 (Yonge-University) towards Finch Station,,1,2240241,1125326,1,2
+1,1,50933067,Line 1 (Yonge-University) towards Finch Station,,1,2240246,1125090,1,2
+1,1,50933061,Line 1 (Yonge-University) towards Finch Station,,1,2240240,1125326,1,2
+1,1,50933065,Line 1 (Yonge-University) towards Finch Station,,1,2240245,1125090,1,2
+1,1,50933059,Line 1 (Yonge-University) towards Finch Station,,1,2240238,1125326,1,2
+1,1,50933058,Line 1 (Yonge-University) towards Finch Station,,1,2240253,1125326,1,2
+1,1,50933063,Line 1 (Yonge-University) towards Finch Station,,1,2240255,1125090,1,2
+1,1,50933057,Line 1 (Yonge-University) towards Finch Station,,1,2240237,1125326,1,2
+1,1,50933056,Line 1 (Yonge-University) towards Finch Station,,1,2240235,1125326,1,2
+1,1,50933055,Line 1 (Yonge-University) towards Finch Station,,1,2240252,1125326,1,2
+1,1,50933060,Line 1 (Yonge-University) towards Finch Station,,1,2240254,1125090,1,2
+1,1,50933054,Line 1 (Yonge-University) towards Finch Station,,1,2240233,1125326,1,2
+1,1,50933053,Line 1 (Yonge-University) towards Finch Station,,1,2240232,1125326,1,2
+1,1,50933052,Line 1 (Yonge-University) towards Finch Station,,1,2240251,1125326,1,2
+1,1,50933051,Line 1 (Yonge-University) towards Finch Station,,1,2240230,1125326,1,2
+1,1,50933050,Line 1 (Yonge-University) towards Finch Station,,1,2240229,1125326,1,2
+1,1,50933049,Line 1 (Yonge-University) towards Finch Station,,1,2240250,1125326,1,2
+1,1,50933048,Line 1 (Yonge-University) towards Finch Station,,1,2240227,1125326,1,2
+1,1,50933047,Line 1 (Yonge-University) towards Finch Station,,1,2240204,1125326,1,2
+1,1,50933046,Line 1 (Yonge-University) towards Finch Station,,1,2240226,1125326,1,2
+1,1,50933045,Line 1 (Yonge-University) towards Finch Station,,1,2240224,1125326,1,2
+1,1,50933044,Line 1 (Yonge-University) towards Finch Station,,1,2240203,1125326,1,2
+1,1,50933043,Line 1 (Yonge-University) towards Finch Station,,1,2240223,1125326,1,2
+1,1,50933042,Line 1 (Yonge-University) towards Finch Station,,1,2240202,1125326,1,2
+1,1,50933041,Line 1 (Yonge-University) towards Finch Station,,1,2240221,1125326,1,2
+1,1,50933040,Line 1 (Yonge-University) towards Finch Station,,1,2240219,1125326,1,2
+1,1,50933039,Line 1 (Yonge-University) towards Finch Station,,1,2240201,1125326,1,2
+1,1,50933038,Line 1 (Yonge-University) towards Finch Station,,1,2240218,1125326,1,2
+1,1,50933037,Line 1 (Yonge-University) towards Finch Station,,1,2240216,1125326,1,2
+1,1,50933036,Line 1 (Yonge-University) towards Finch Station,,1,2240200,1125326,1,2
+1,1,50933035,Line 1 (Yonge-University) towards Finch Station,,1,2240215,1125326,1,2
+1,1,50933034,Line 1 (Yonge-University) towards Finch Station,,1,2240213,1125326,1,2
+1,1,50933033,Line 1 (Yonge-University) towards Finch Station,,1,2240199,1125326,1,2
+1,1,50933151,Line 1 (Yonge-University) towards Finch Station,,1,2240212,1125327,1,2
+1,1,50933150,Line 1 (Yonge-University) towards Finch Station,,1,2240210,1125327,1,2
+1,1,50933149,Line 1 (Yonge-University) towards Finch Station,,1,2240208,1125327,1,2
+1,1,50933148,Line 1 (Yonge-University) towards Finch Station,,1,2240198,1125327,1,2
+1,1,50933147,Line 1 (Yonge-University) towards Finch Station,,1,2240206,1125327,1,2
+1,1,50933146,Line 1 (Yonge-University) towards Finch Station,,1,2240205,1125327,1,2
+1,1,50933145,Line 1 (Yonge-University) towards Finch Station,,1,2240264,1125327,1,2
+1,1,50933144,Line 1 (Yonge-University) towards Finch Station,,1,2240263,1125327,1,2
+1,1,50933143,Line 1 (Yonge-University) towards Finch Station,,1,2240188,1125327,1,2
+1,1,50933142,Line 1 (Yonge-University) towards Finch Station,,1,2240187,1125327,1,2
+1,1,50933141,Line 1 (Yonge-University) towards Finch Station,,1,2240186,1125327,1,2
+1,1,50933140,Line 1 (Yonge-University) towards Finch Station,,1,2240192,1125327,1,2
+1,1,50933139,Line 1 (Yonge-University) towards Finch Station,,1,2240196,1125327,1,2
+1,1,50933138,Line 1 (Yonge-University) towards Finch Station,,1,2240195,1125327,1,2
+1,1,50933137,Line 1 (Yonge-University) towards Finch Station,,1,2240194,1125327,1,2
+1,1,50933136,Line 1 (Yonge-University) towards Finch Station,,1,2240189,1125327,1,2
+1,1,50933135,Line 1 (Yonge-University) towards Finch Station,,1,2240249,1125327,1,2
+1,1,50933134,Line 1 (Yonge-University) towards Finch Station,,1,2240248,1125327,1,2
+1,1,50933133,Line 1 (Yonge-University) towards Finch Station,,1,2240246,1125327,1,2
+1,1,50933132,Line 1 (Yonge-University) towards Finch Station,,1,2240245,1125327,1,2
+1,1,50933131,Line 1 (Yonge-University) towards Finch Station,,1,2240243,1125327,1,2
+1,1,50933130,Line 1 (Yonge-University) towards Finch Station,,1,2240241,1125327,1,2
+1,1,50933129,Line 1 (Yonge-University) towards Finch Station,,1,2240240,1125327,1,2
+1,1,50933128,Line 1 (Yonge-University) towards Finch Station,,1,2240238,1125327,1,2
+1,1,50933127,Line 1 (Yonge-University) towards Finch Station,,1,2240237,1125327,1,2
+1,1,50933126,Line 1 (Yonge-University) towards Finch Station,,1,2240235,1125327,1,2
+1,1,50933125,Line 1 (Yonge-University) towards Finch Station,,1,2240233,1125327,1,2
+1,1,50933124,Line 1 (Yonge-University) towards Finch Station,,1,2240232,1125327,1,2
+1,1,50933123,Line 1 (Yonge-University) towards Finch Station,,1,2240230,1125327,1,2
+1,1,50933122,Line 1 (Yonge-University) towards Finch Station,,1,2240229,1125327,1,2
+1,1,50933121,Line 1 (Yonge-University) towards Finch Station,,1,2240227,1125327,1,2
+1,1,50933120,Line 1 (Yonge-University) towards Finch Station,,1,2240226,1125327,1,2
+1,1,50933119,Line 1 (Yonge-University) towards Finch Station,,1,2240224,1125327,1,2
+1,1,50933118,Line 1 (Yonge-University) towards Finch Station,,1,2240223,1125327,1,2
+1,1,50933117,Line 1 (Yonge-University) towards Finch Station,,1,2240221,1125327,1,2
+1,1,50933116,Line 1 (Yonge-University) towards Finch Station,,1,2240219,1125327,1,2
+1,1,50933115,Line 1 (Yonge-University) towards Finch Station,,1,2240218,1125327,1,2
+1,1,50933114,Line 1 (Yonge-University) towards Finch Station,,1,2240216,1125327,1,2
+1,1,50933113,Line 1 (Yonge-University) towards Finch Station,,1,2240215,1125327,1,2
+1,1,50933112,Line 1 (Yonge-University) towards Finch Station,,1,2240213,1125327,1,2
+1,1,50933111,Line 1 (Yonge-University) towards Finch Station,,1,2240212,1125327,1,2
+1,1,50933110,Line 1 (Yonge-University) towards Finch Station,,1,2240210,1125327,1,2
+1,1,50933109,Line 1 (Yonge-University) towards Finch Station,,1,2240208,1125327,1,2
+1,1,50933430,Line 1 (Yonge-University) towards Finch Station,,1,2240198,1125327,1,2
+1,1,50933429,Line 1 (Yonge-University) towards Finch Station,,1,2240206,1125327,1,2
+1,1,50933428,Line 1 (Yonge-University) towards Finch Station,,1,2240205,1125327,1,2
+1,1,50933427,Line 1 (Yonge-University) towards Finch Station,,1,2240264,1125327,1,2
+1,1,50933426,Line 1 (Yonge-University) towards Finch Station,,1,2240263,1125327,1,2
+1,1,50933425,Line 1 (Yonge-University) towards Finch Station,,1,2240188,1125327,1,2
+1,1,50933424,Line 1 (Yonge-University) towards Finch Station,,1,2240187,1125327,1,2
+1,1,50933423,Line 1 (Yonge-University) towards Finch Station,,1,2240186,1125327,1,2
+1,1,50933422,Line 1 (Yonge-University) towards Finch Station,,1,2240192,1125327,1,2
+1,1,50933421,Line 1 (Yonge-University) towards Finch Station,,1,2240196,1125327,1,2
+1,1,50933420,Line 1 (Yonge-University) towards Finch Station,,1,2240195,1125327,1,2
+1,1,50933419,Line 1 (Yonge-University) towards Finch Station,,1,2240194,1125327,1,2
+1,1,50933418,Line 1 (Yonge-University) towards Finch Station,,1,2240189,1125327,1,2
+1,1,50933417,Line 1 (Yonge-University) towards Finch Station,,1,2240249,1125327,1,2
+1,1,50933416,Line 1 (Yonge-University) towards Finch Station,,1,2240248,1125327,1,2
+1,1,50933415,Line 1 (Yonge-University) towards Finch Station,,1,2240246,1125327,1,2
+1,1,50933414,Line 1 (Yonge-University) towards Finch Station,,1,2240245,1125327,1,2
+1,1,50933413,Line 1 (Yonge-University) towards Finch Station,,1,2240243,1125327,1,2
+1,1,50933412,Line 1 (Yonge-University) towards Finch Station,,1,2240241,1125327,1,2
+1,1,50933411,Line 1 (Yonge-University) towards Finch Station,,1,2240240,1125327,1,2
+1,1,50933410,Line 1 (Yonge-University) towards Finch Station,,1,2240238,1125327,1,2
+1,1,50933409,Line 1 (Yonge-University) towards Finch Station,,1,2240237,1125327,1,2
+1,1,50933408,Line 1 (Yonge-University) towards Finch Station,,1,2240235,1125327,1,2
+1,1,50933407,Line 1 (Yonge-University) towards Finch Station,,1,2240233,1125327,1,2
+1,1,50933406,Line 1 (Yonge-University) towards Finch Station,,1,2240232,1125327,1,2
+1,1,50933405,Line 1 (Yonge-University) towards Finch Station,,1,2240230,1125327,1,2
+1,1,50933404,Line 1 (Yonge-University) towards Finch Station,,1,2240229,1125327,1,2
+1,1,50933403,Line 1 (Yonge-University) towards Finch Station,,1,2240227,1125327,1,2
+1,1,50933402,Line 1 (Yonge-University) towards Finch Station,,1,2240226,1125327,1,2
+1,1,50933401,Line 1 (Yonge-University) towards Finch Station,,1,2240224,1125327,1,2
+1,1,50933400,Line 1 (Yonge-University) towards Finch Station,,1,2240223,1125327,1,2
+1,1,50933399,Line 1 (Yonge-University) towards Finch Station,,1,2240221,1125327,1,2
+1,1,50933398,Line 1 (Yonge-University) towards Finch Station,,1,2240219,1125327,1,2
+1,1,50933397,Line 1 (Yonge-University) towards Finch Station,,1,2240218,1125327,1,2
+1,1,50933396,Line 1 (Yonge-University) towards Finch Station,,1,2240216,1125327,1,2
+1,1,50933395,Line 1 (Yonge-University) towards Finch Station,,1,2240215,1125327,1,2
+1,1,50933394,Line 1 (Yonge-University) towards Finch Station,,1,2240213,1125327,1,2
+1,1,50933393,Line 1 (Yonge-University) towards Finch Station,,1,2240212,1125327,1,2
+1,1,50933392,Line 1 (Yonge-University) towards Finch Station,,1,2240210,1125327,1,2
+1,1,50933391,Line 1 (Yonge-University) towards Finch Station,,1,2240208,1125327,1,2
+1,1,50933390,Line 1 (Yonge-University) towards Finch Station,,1,2240198,1125327,1,2
+1,1,50933389,Line 1 (Yonge-University) towards Finch Station,,1,2240206,1125327,1,2
+1,1,50933388,Line 1 (Yonge-University) towards Finch Station,,1,2240205,1125327,1,2
+1,1,50933387,Line 1 (Yonge-University) towards Finch Station,,1,2240264,1125327,1,2
+1,1,50933386,Line 1 (Yonge-University) towards Finch Station,,1,2240263,1125327,1,2
+1,1,50933385,Line 1 (Yonge-University) towards Finch Station,,1,2240188,1125327,1,2
+1,1,50933384,Line 1 (Yonge-University) towards Finch Station,,1,2240187,1125327,1,2
+1,1,50933383,Line 1 (Yonge-University) towards Finch Station,,1,2240186,1125327,1,2
+1,1,50933382,Line 1 (Yonge-University) towards Finch Station,,1,2240192,1125327,1,2
+1,1,50933381,Line 1 (Yonge-University) towards Finch Station,,1,2240196,1125327,1,2
+1,1,50933380,Line 1 (Yonge-University) towards Finch Station,,1,2240195,1125327,1,2
+1,1,50933379,Line 1 (Yonge-University) towards Finch Station,,1,2240194,1125327,1,2
+1,1,50933378,Line 1 (Yonge-University) towards Finch Station,,1,2240189,1125327,1,2
+1,1,50933377,Line 1 (Yonge-University) towards Finch Station,,1,2240249,1125327,1,2
+1,1,50933376,Line 1 (Yonge-University) towards Finch Station,,1,2240248,1125327,1,2
+1,1,50933375,Line 1 (Yonge-University) towards Finch Station,,1,2240246,1125327,1,2
+1,1,50933374,Line 1 (Yonge-University) towards Finch Station,,1,2240245,1125327,1,2
+1,1,50933279,Line 1 (Yonge-University) towards Finch Station,,1,2240243,1125329,1,2
+1,1,50933277,Line 1 (Yonge-University) towards Finch Station,,1,2240241,1125329,1,2
+1,1,50933276,Line 1 (Yonge-University) towards Finch Station,,1,2240240,1125329,1,2
+1,1,50933274,Line 1 (Yonge-University) towards Finch Station,,1,2240238,1125329,1,2
+1,1,50933273,Line 1 (Yonge-University) towards Finch Station,,1,2240237,1125329,1,2
+1,1,50933278,Line 1 (Yonge-University) towards Finch Station,,1,2240242,1125085,1,2
+1,1,50933271,Line 1 (Yonge-University) towards Finch Station,,1,2240235,1125329,1,2
+1,1,50933275,Line 1 (Yonge-University) towards Finch Station,,1,2240239,1125085,1,2
+1,1,50933269,Line 1 (Yonge-University) towards Finch Station,,1,2240233,1125329,1,2
+1,1,50933268,Line 1 (Yonge-University) towards Finch Station,,1,2240232,1125329,1,2
+1,1,50933272,Line 1 (Yonge-University) towards Finch Station,,1,2240236,1125085,1,2
+1,1,50933266,Line 1 (Yonge-University) towards Finch Station,,1,2240230,1125329,1,2
+1,1,50933265,Line 1 (Yonge-University) towards Finch Station,,1,2240229,1125329,1,2
+1,1,50933270,Line 1 (Yonge-University) towards Finch Station,,1,2240234,1125085,1,2
+1,1,50933263,Line 1 (Yonge-University) towards Finch Station,,1,2240227,1125329,1,2
+1,1,50933262,Line 1 (Yonge-University) towards Finch Station,,1,2240226,1125329,1,2
+1,1,50933267,Line 1 (Yonge-University) towards Finch Station,,1,2240231,1125085,1,2
+1,1,50933260,Line 1 (Yonge-University) towards Finch Station,,1,2240224,1125329,1,2
+1,1,50933259,Line 1 (Yonge-University) towards Finch Station,,1,2240223,1125329,1,2
+1,1,50933264,Line 1 (Yonge-University) towards Finch Station,,1,2240228,1125085,1,2
+1,1,50933257,Line 1 (Yonge-University) towards Finch Station,,1,2240221,1125329,1,2
+1,1,50933261,Line 1 (Yonge-University) towards Finch Station,,1,2240225,1125085,1,2
+1,1,50933255,Line 1 (Yonge-University) towards Finch Station,,1,2240219,1125329,1,2
+1,1,50933254,Line 1 (Yonge-University) towards Finch Station,,1,2240218,1125329,1,2
+1,1,50933258,Line 1 (Yonge-University) towards Finch Station,,1,2240222,1125085,1,2
+1,1,50933252,Line 1 (Yonge-University) towards Finch Station,,1,2240216,1125329,1,2
+1,1,50933251,Line 1 (Yonge-University) towards Finch Station,,1,2240215,1125329,1,2
+1,1,50933256,Line 1 (Yonge-University) towards Finch Station,,1,2240220,1125085,1,2
+1,1,50933249,Line 1 (Yonge-University) towards Finch Station,,1,2240213,1125329,1,2
+1,1,50933248,Line 1 (Yonge-University) towards Finch Station,,1,2240212,1125329,1,2
+1,1,50933253,Line 1 (Yonge-University) towards Finch Station,,1,2240217,1125085,1,2
+1,1,50933246,Line 1 (Yonge-University) towards Finch Station,,1,2240210,1125329,1,2
+1,1,50933250,Line 1 (Yonge-University) towards Finch Station,,1,2240214,1125085,1,2
+1,1,50933244,Line 1 (Yonge-University) towards Finch Station,,1,2240208,1125329,1,2
+1,1,50933243,Line 1 (Yonge-University) towards Finch Station,,1,2240198,1125329,1,2
+1,1,50933247,Line 1 (Yonge-University) towards Finch Station,,1,2240211,1125085,1,2
+1,1,50933241,Line 1 (Yonge-University) towards Finch Station,,1,2240206,1125329,1,2
+1,1,50933240,Line 1 (Yonge-University) towards Finch Station,,1,2240205,1125329,1,2
+1,1,50933245,Line 1 (Yonge-University) towards Finch Station,,1,2240209,1125085,1,2
+1,1,50933238,Line 1 (Yonge-University) towards Finch Station,,1,2240264,1125329,1,2
+1,1,50933242,Line 1 (Yonge-University) towards Finch Station,,1,2240207,1125085,1,2
+1,1,50933236,Line 1 (Yonge-University) towards Finch Station,,1,2240263,1125329,1,2
+1,1,50933235,Line 1 (Yonge-University) towards Finch Station,,1,2240188,1125329,1,2
+1,1,50933234,Line 1 (Yonge-University) towards Finch Station,,1,2240187,1125329,1,2
+1,1,50933239,Line 1 (Yonge-University) towards Finch Station,,1,2240271,1125085,1,2
+1,1,50933232,Line 1 (Yonge-University) towards Finch Station,,1,2240186,1125329,1,2
+1,1,50933237,Line 1 (Yonge-University) towards Finch Station,,1,2240270,1125085,1,2
+1,1,50933231,Line 1 (Yonge-University) towards Finch Station,,1,2240197,1125329,1,2
+1,1,50933230,Line 1 (Yonge-University) towards Finch Station,,1,2240192,1125329,1,2
+1,1,50933229,Line 1 (Yonge-University) towards Finch Station,,1,2240196,1125329,1,2
+1,1,50933228,Line 1 (Yonge-University) towards Finch Station,,1,2240191,1125329,1,2
+1,1,50933233,Line 1 (Yonge-University) towards Finch Station,,1,2240269,1125085,1,2
+1,1,50933227,Line 1 (Yonge-University) towards Finch Station,,1,2240195,1125329,1,2
+1,1,50933226,Line 1 (Yonge-University) towards Finch Station,,1,2240190,1125329,1,2
+1,1,50933225,Line 1 (Yonge-University) towards Finch Station,,1,2240194,1125329,1,2
+1,1,50933224,Line 1 (Yonge-University) towards Finch Station,,1,2240189,1125329,1,2
+1,1,50933223,Line 1 (Yonge-University) towards Finch Station,,1,2240193,1125329,1,2
+1,1,50933222,Line 1 (Yonge-University) towards Finch Station,,1,2240249,1125329,1,2
+1,1,50933221,Line 1 (Yonge-University) towards Finch Station,,1,2240248,1125329,1,2
+1,1,50933220,Line 1 (Yonge-University) towards Finch Station,,1,2240247,1125329,1,2
+1,1,50933219,Line 1 (Yonge-University) towards Finch Station,,1,2240246,1125329,1,2
+1,1,50933218,Line 1 (Yonge-University) towards Finch Station,,1,2240245,1125329,1,2
+1,1,50933217,Line 1 (Yonge-University) towards Finch Station,,1,2240244,1125329,1,2
+1,1,50933216,Line 1 (Yonge-University) towards Finch Station,,1,2240243,1125329,1,2
+1,1,50933215,Line 1 (Yonge-University) towards Finch Station,,1,2240242,1125329,1,2
+1,1,50933214,Line 1 (Yonge-University) towards Finch Station,,1,2240241,1125329,1,2
+1,1,50933213,Line 1 (Yonge-University) towards Finch Station,,1,2240240,1125329,1,2
+1,1,50933212,Line 1 (Yonge-University) towards Finch Station,,1,2240239,1125329,1,2
+1,1,50933211,Line 1 (Yonge-University) towards Finch Station,,1,2240238,1125329,1,2
+1,1,50933210,Line 1 (Yonge-University) towards Finch Station,,1,2240237,1125329,1,2
+1,1,50933209,Line 1 (Yonge-University) towards Finch Station,,1,2240236,1125329,1,2
+1,1,50933208,Line 1 (Yonge-University) towards Finch Station,,1,2240235,1125329,1,2
+1,1,50933207,Line 1 (Yonge-University) towards Finch Station,,1,2240234,1125329,1,2
+1,1,50933206,Line 1 (Yonge-University) towards Finch Station,,1,2240233,1125329,1,2
+1,1,50933205,Line 1 (Yonge-University) towards Finch Station,,1,2240232,1125329,1,2
+1,1,50933204,Line 1 (Yonge-University) towards Finch Station,,1,2240231,1125329,1,2
+1,1,50933203,Line 1 (Yonge-University) towards Finch Station,,1,2240230,1125329,1,2
+1,1,50933202,Line 1 (Yonge-University) towards Finch Station,,1,2240229,1125329,1,2
+1,1,50933201,Line 1 (Yonge-University) towards Finch Station,,1,2240228,1125329,1,2
+1,1,50933373,Line 1 (Yonge-University) towards Finch Station,,1,2240227,1125328,1,2
+1,1,50933372,Line 1 (Yonge-University) towards Finch Station,,1,2240225,1125328,1,2
+1,1,50933371,Line 1 (Yonge-University) towards Finch Station,,1,2240224,1125328,1,2
+1,1,50933370,Line 1 (Yonge-University) towards Finch Station,,1,2240223,1125328,1,2
+1,1,50933369,Line 1 (Yonge-University) towards Finch Station,,1,2240221,1125328,1,2
+1,1,50933368,Line 1 (Yonge-University) towards Finch Station,,1,2240220,1125328,1,2
+1,1,50933367,Line 1 (Yonge-University) towards Finch Station,,1,2240218,1125328,1,2
+1,1,50933366,Line 1 (Yonge-University) towards Finch Station,,1,2240217,1125328,1,2
+1,1,50933365,Line 1 (Yonge-University) towards Finch Station,,1,2240216,1125328,1,2
+1,1,50933364,Line 1 (Yonge-University) towards Finch Station,,1,2240214,1125328,1,2
+1,1,50933363,Line 1 (Yonge-University) towards Finch Station,,1,2240213,1125328,1,2
+1,1,50933362,Line 1 (Yonge-University) towards Finch Station,,1,2240212,1125328,1,2
+1,1,50933361,Line 1 (Yonge-University) towards Finch Station,,1,2240210,1125328,1,2
+1,1,50933360,Line 1 (Yonge-University) towards Finch Station,,1,2240209,1125328,1,2
+1,1,50933359,Line 1 (Yonge-University) towards Finch Station,,1,2240198,1125328,1,2
+1,1,50933358,Line 1 (Yonge-University) towards Finch Station,,1,2240207,1125328,1,2
+1,1,50933357,Line 1 (Yonge-University) towards Finch Station,,1,2240206,1125328,1,2
+1,1,50933356,Line 1 (Yonge-University) towards Finch Station,,1,2240271,1125328,1,2
+1,1,50933355,Line 1 (Yonge-University) towards Finch Station,,1,2240264,1125328,1,2
+1,1,50933354,Line 1 (Yonge-University) towards Finch Station,,1,2240270,1125328,1,2
+1,1,50933353,Line 1 (Yonge-University) towards Finch Station,,1,2240188,1125328,1,2
+1,1,50933352,Line 1 (Yonge-University) towards Finch Station,,1,2240187,1125328,1,2
+1,1,50933351,Line 1 (Yonge-University) towards Finch Station,,1,2240186,1125328,1,2
+1,1,50933350,Line 1 (Yonge-University) towards Finch Station,,1,2240197,1125328,1,2
+1,1,50933349,Line 1 (Yonge-University) towards Finch Station,,1,2240192,1125328,1,2
+1,1,50933348,Line 1 (Yonge-University) towards Finch Station,,1,2240191,1125328,1,2
+1,1,50933347,Line 1 (Yonge-University) towards Finch Station,,1,2240195,1125328,1,2
+1,1,50933346,Line 1 (Yonge-University) towards Finch Station,,1,2240194,1125328,1,2
+1,1,50933345,Line 1 (Yonge-University) towards Finch Station,,1,2240189,1125328,1,2
+1,1,50933344,Line 1 (Yonge-University) towards Finch Station,,1,2240193,1125328,1,2
+1,1,50933343,Line 1 (Yonge-University) towards Finch Station,,1,2240248,1125328,1,2
+1,1,50933342,Line 1 (Yonge-University) towards Finch Station,,1,2240246,1125309,1,2
+1,1,50933341,Line 1 (Yonge-University) towards Finch Station,,1,2240244,1125309,1,2
+1,1,50933340,Line 1 (Yonge-University) towards Finch Station,,1,2240242,1125309,1,2
+1,1,50933339,Line 1 (Yonge-University) towards Finch Station,,1,2240240,1125309,1,2
+1,1,50933338,Line 1 (Yonge-University) towards Finch Station,,1,2240238,1125309,1,2
+1,1,50933337,Line 1 (Yonge-University) towards Finch Station,,1,2240237,1125309,1,2
+1,1,50933336,Line 1 (Yonge-University) towards Finch Station,,1,2240234,1125309,1,2
+1,1,50933335,Line 1 (Yonge-University) towards Finch Station,,1,2240233,1125309,1,2
+1,1,50933334,Line 1 (Yonge-University) towards Finch Station,,1,2240230,1125309,1,2
+1,1,50933333,Line 1 (Yonge-University) towards Finch Station,,1,2240229,1125309,1,2
+1,1,50933332,Line 1 (Yonge-University) towards Finch Station,,1,2240225,1125309,1,2
+1,1,50933331,Line 1 (Yonge-University) towards Finch Station,,1,2240224,1125309,1,2
+1,1,50933330,Line 1 (Yonge-University) towards Finch Station,,1,2240223,1125309,1,2
+1,1,50933329,Line 1 (Yonge-University) towards Finch Station,,1,2240220,1125309,1,2
+1,1,50933328,Line 1 (Yonge-University) towards Finch Station,,1,2240218,1125309,1,2
+1,1,50933327,Line 1 (Yonge-University) towards Finch Station,,1,2240216,1125309,1,2
+1,1,50933326,Line 1 (Yonge-University) towards Finch Station,,1,2240214,1125309,1,2
+1,1,50933325,Line 1 (Yonge-University) towards Finch Station,,1,2240212,1125309,1,2
+1,1,50933324,Line 1 (Yonge-University) towards Finch Station,,1,2240210,1125309,1,2
+1,1,50933323,Line 1 (Yonge-University) towards Finch Station,,1,2240198,1125309,1,2
+1,1,50933322,Line 1 (Yonge-University) towards Finch Station,,1,2240207,1125309,1,2
+1,1,50933321,Line 1 (Yonge-University) towards Finch Station,,1,2240271,1125309,1,2
+1,1,50933320,Line 1 (Yonge-University) towards Finch Station,,1,2240264,1125309,1,2
+1,1,50933319,Line 1 (Yonge-University) towards Finch Station,,1,2240270,1125309,1,2
+1,1,50933318,Line 1 (Yonge-University) towards Finch Station,,1,2240187,1125309,1,2
+1,1,50933317,Line 1 (Yonge-University) towards Finch Station,,1,2240186,1125309,1,2
+1,1,50933316,Line 1 (Yonge-University) towards Finch Station,,1,2240192,1125309,1,2
+1,1,50933315,Line 1 (Yonge-University) towards Finch Station,,1,2240191,1125309,1,2
+1,1,50933314,Line 1 (Yonge-University) towards Finch Station,,1,2240194,1125309,1,2
+1,1,50933313,Line 1 (Yonge-University) towards Finch Station,,1,2240189,1125309,1,2
+1,1,50933312,Line 1 (Yonge-University) towards Finch Station,,1,2240193,1125309,1,2
+1,1,50933311,Line 1 (Yonge-University) towards Finch Station,,1,2240246,1125309,1,2
+1,1,50933310,Line 1 (Yonge-University) towards Finch Station,,1,2240244,1125309,1,2
+1,1,50933309,Line 1 (Yonge-University) towards Finch Station,,1,2240242,1125309,1,2
+1,1,50933308,Line 1 (Yonge-University) towards Finch Station,,1,2240240,1125309,1,2
+1,1,50933307,Line 1 (Yonge-University) towards Finch Station,,1,2240238,1125309,1,2
+1,1,50933306,Line 1 (Yonge-University) towards Finch Station,,1,2240237,1125309,1,2
+1,1,50933305,Line 1 (Yonge-University) towards Finch Station,,1,2240234,1125309,1,2
+1,1,50933304,Line 1 (Yonge-University) towards Finch Station,,1,2240233,1125309,1,2
+1,1,50933303,Line 1 (Yonge-University) towards Finch Station,,1,2240230,1125309,1,2
+1,1,50933302,Line 1 (Yonge-University) towards Finch Station,,1,2240229,1125309,1,2
+1,1,50933301,Line 1 (Yonge-University) towards Finch Station,,1,2240225,1125309,1,2
+1,1,50933300,Line 1 (Yonge-University) towards Finch Station,,1,2240224,1125309,1,2
+1,1,50933299,Line 1 (Yonge-University) towards Finch Station,,1,2240223,1125309,1,2
+1,1,50933298,Line 1 (Yonge-University) towards Finch Station,,1,2240220,1125309,1,2
+1,1,50933297,Line 1 (Yonge-University) towards Finch Station,,1,2240218,1125309,1,2
+1,1,50933296,Line 1 (Yonge-University) towards Finch Station,,1,2240216,1125309,1,2
+1,1,50933295,Line 1 (Yonge-University) towards Finch Station,,1,2240214,1125309,1,2
+1,1,50933294,Line 1 (Yonge-University) towards Finch Station,,1,2240212,1125309,1,2
+1,1,50933293,Line 1 (Yonge-University) towards Finch Station,,1,2240210,1125309,1,2
+1,1,50933292,Line 1 (Yonge-University) towards Finch Station,,1,2240198,1125309,1,2
+1,1,50933291,Line 1 (Yonge-University) towards Finch Station,,1,2240207,1125309,1,2
+1,1,50933434,Line 1 (Yonge-University) towards Finch Station,,1,2240271,1125146,1,2
+1,1,50933186,Line 1 (Yonge-University) towards Finch Station,,1,2240264,1125111,1,2
+1,1,50933435,Line 1 (Yonge-University) towards Finch Station,,1,2240270,1125111,1,2
+1,1,50933436,Line 1 (Yonge-University) towards Finch Station,,1,2240187,1125111,1,2
+1,1,50933437,Line 1 (Yonge-University) towards Finch Station,,1,2240186,1125111,1,2

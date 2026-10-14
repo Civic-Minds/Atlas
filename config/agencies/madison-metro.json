@@ -36,5 +36,6 @@
   },
   "timezone": "US/Central",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip"
+  "lastFeedSourceUrl": "http://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip",
+  "lastPeekedExpiry": "20261205"
 }

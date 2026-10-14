@@ -56,6 +56,23 @@ export function shouldStampFeedMeta(featureCount: number): boolean {
   return featureCount > 0;
 }
 
+/**
+ * Number of distinct routes drawn as lines in a route artifact. The processed featureCount also
+ * counts stop points, so a feed whose trips have no shapes (El Monte, #634) passed the
+ * zero-feature guards with stops only and was stamped "current" with 0 routes.
+ */
+export function routeLineCount(geojson: string): number {
+  const features = (JSON.parse(geojson) as { features?: Array<{ geometry?: { type?: string } | null; properties?: Record<string, unknown> | null }> }).features ?? [];
+  const routes = new Set<string>();
+  for (const feature of features) {
+    const type = feature.geometry?.type;
+    if ((type === 'LineString' || type === 'MultiLineString') && feature.properties?.routeId != null) {
+      routes.add(String(feature.properties.routeId));
+    }
+  }
+  return routes.size;
+}
+
 const YMD = /^\d{8}$/;
 const validYmd = (d: string | null | undefined): d is string => !!d && YMD.test(d);
 

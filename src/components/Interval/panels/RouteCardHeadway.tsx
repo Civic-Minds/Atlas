@@ -24,6 +24,7 @@ import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
+import { branchStackColor } from '../../../utils/colors';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import {
   dirIdNum,
@@ -476,7 +477,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               .map((branch, i) => ({
                 label: branch.headsign ?? `Branch ${i + 1}`,
                 headway: branchDisplayHourHeadway(branch, h),
-                color: ['#2563eb', '#db2777', '#059669', '#d97706'][i % 4],
+                color: branchStackColor(i),
               }))
               .filter((segment): segment is { label: string; headway: number; color: string } => segment.headway != null)
             : []]))

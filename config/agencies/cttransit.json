@@ -25,5 +25,6 @@
   "expiredFeedCheckExpiry": "20270109",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip"
+  "lastFeedSourceUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip",
+  "lastPeekedExpiry": "20270109"
 }

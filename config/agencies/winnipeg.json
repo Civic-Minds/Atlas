@@ -41,5 +41,6 @@
   },
   "timezone": "America/Winnipeg",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.winnipegtransit.com/google_transit.zip"
+  "lastFeedSourceUrl": "https://gtfs.winnipegtransit.com/google_transit.zip",
+  "lastPeekedExpiry": "20261212"
 }

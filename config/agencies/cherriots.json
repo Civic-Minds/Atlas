@@ -44,5 +44,6 @@
     "checkedAt": "2026-08-24"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "lastPeekedExpiry": "20270117"
 }

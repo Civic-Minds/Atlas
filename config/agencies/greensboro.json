@@ -8,7 +8,7 @@
   "feedUrl": "https://trackmygta.com/gtfs",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "7/4/2024",
   "lastRefreshedAt": "2026-10-12",
   "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
@@ -40,5 +40,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://trackmygta.com/gtfs"
+  "lastFeedSourceUrl": "https://trackmygta.com/gtfs",
+  "lastPeekedExpiry": "20991231"
 }

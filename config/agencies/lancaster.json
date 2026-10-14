@@ -37,5 +37,6 @@
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://busfinder.redrosetransit.com/Infopoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "https://busfinder.redrosetransit.com/Infopoint/gtfs-zip.ashx",
+  "lastPeekedExpiry": "20271231"
 }

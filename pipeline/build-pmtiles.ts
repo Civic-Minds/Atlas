@@ -3,7 +3,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE } from './loadEnv.js';
-import { r2Put, r2PutFile } from './r2';
+import { IMMUTABLE_CACHE_CONTROL, r2Put, r2PutFile } from './r2';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
@@ -350,8 +350,10 @@ async function main() {
   };
 
   console.log(`Uploading immutable data release ${releaseId}...`);
-  await r2PutFile(releaseManifest.pmtilesKey, pmtilesPath, 'application/octet-stream');
-  await r2PutFile(releaseManifest.overviewPmtilesKey, overviewRoutesPm, 'application/octet-stream');
+  // The release id is in the key, so these archives never change: let browsers and the edge keep
+  // tile ranges loaded straight from the data domain (#840).
+  await r2PutFile(releaseManifest.pmtilesKey, pmtilesPath, 'application/octet-stream', { cacheControl: IMMUTABLE_CACHE_CONTROL });
+  await r2PutFile(releaseManifest.overviewPmtilesKey, overviewRoutesPm, 'application/octet-stream', { cacheControl: IMMUTABLE_CACHE_CONTROL });
   const releaseFiles = fs.readdirSync(releaseAgencyDir).map(filename => ({
     filename,
     path: path.join(releaseAgencyDir, filename),

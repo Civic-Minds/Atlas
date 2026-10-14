@@ -8,7 +8,7 @@
     -85.6206
   ],
   "feedUrl": "https://batabustracker.com/gtfs",
-  "lastFeedExpiry": "20281012",
+  "lastFeedExpiry": "20281014",
   "lastFeedVersion": "9/7/2026",
   "lastRefreshedAt": "2026-10-12",
   "cities": [
@@ -37,5 +37,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://batabustracker.com/gtfs"
+  "lastFeedSourceUrl": "https://batabustracker.com/gtfs",
+  "lastPeekedExpiry": "20991231"
 }

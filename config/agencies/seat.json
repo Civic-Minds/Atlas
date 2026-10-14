@@ -34,5 +34,6 @@
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.seatbus.org/media/SEAT-GTFS-Feed.zip"
+  "lastFeedSourceUrl": "https://www.seatbus.org/media/SEAT-GTFS-Feed.zip",
+  "lastPeekedExpiry": "20261231"
 }

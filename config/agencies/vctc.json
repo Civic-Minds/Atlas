@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20301231",
   "lastFeedVersion": "UTC: 13-Feb-2026 16:48",
   "region": "California",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-14",
   "websiteUrl": "http://www.goventura.org/",
   "cities": [
     "Ventura, California",
@@ -20,11 +20,31 @@
     "Oxnard, California",
     "Thousand Oaks, California"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261014",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301231",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.goventura.org/wp-content/uploads/2026/02/20260213-GMV_Schedule.zip"
+  "lastFeedSourceUrl": "https://www.goventura.org/wp-content/uploads/2026/02/20260213-GMV_Schedule.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 49
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20301231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

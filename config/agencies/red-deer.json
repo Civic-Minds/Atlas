@@ -33,5 +33,6 @@
   },
   "timezone": "America/Edmonton",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://data.reddeer.ca/datasets/gtfsdatafeed/download/zip"
+  "lastFeedSourceUrl": "https://data.reddeer.ca/datasets/gtfsdatafeed/download/zip",
+  "lastPeekedExpiry": "20261205"
 }

@@ -43,5 +43,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://webapp.cityutilities.net/GTPM/google_transit.zip"
+  "lastFeedSourceUrl": "https://webapp.cityutilities.net/GTPM/google_transit.zip",
+  "lastPeekedExpiry": "20270102"
 }

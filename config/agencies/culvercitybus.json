@@ -41,5 +41,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://web.culvercity.org/gtfs/gtfsexport.zip"
+  "lastFeedSourceUrl": "https://web.culvercity.org/gtfs/gtfsexport.zip",
+  "lastPeekedExpiry": "20261213"
 }

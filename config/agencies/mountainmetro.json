@@ -9,17 +9,35 @@
   "lastFeedExpiry": "20261024",
   "lastFeedVersion": "2026 (1) Spring_20260422",
   "region": "Colorado",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-14",
   "websiteUrl": "http://www.mmtransit.com",
   "cities": [
     "Colorado Springs, Colorado"
   ],
   "timezone": "America/Denver",
   "lastRawArchiveKey": "20250927-1abb7aaac18b1cfe",
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261014",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261024",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://coloradosprings.gov/document/googletransit.zip"
+  "lastFeedSourceUrl": "https://coloradosprings.gov/document/googletransit.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 193
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20261024",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

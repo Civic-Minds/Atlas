@@ -39,5 +39,6 @@
   "expiredFeedCheckExpiry": "20351004",
   "timezone": "US/Central",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://jctgtfsdownload.itcurves.us/DownloadGtfs"
+  "lastFeedSourceUrl": "https://jctgtfsdownload.itcurves.us/DownloadGtfs",
+  "lastPeekedExpiry": "20351004"
 }

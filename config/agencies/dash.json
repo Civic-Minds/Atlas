@@ -28,5 +28,6 @@
   "expiredFeedCheckExpiry": "20270731",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip"
+  "lastFeedSourceUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip",
+  "lastPeekedExpiry": "20270731"
 }

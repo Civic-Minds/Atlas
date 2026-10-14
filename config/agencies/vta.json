@@ -68,5 +68,6 @@
       "mode": 100,
       "reason": "VTA light rail is published as route_type 0 (tram)"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20261025"
 }

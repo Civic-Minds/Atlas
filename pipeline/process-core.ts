@@ -939,6 +939,26 @@ export async function processGtfsBuffer(
     }
     return middayMembersByPool.get(poolKey) ?? new Set();
   };
+  // The patterns of each route direction and day that draw a feature. A midday sibling counts
+  // only when it draws: communitytransit 130 Saturday to Edmonds runs hourly all day on two
+  // shapes with different last stops, the drawn shape has no midday trips and the midday shape
+  // lost dedupe to it, so the whole direction went dark as a "variant" of a line nobody drew.
+  let drawnMembersByPool: Map<string, Set<string>> | null = null;
+  const drawnMembers = (poolKey: string): ReadonlySet<string> => {
+    if (!drawnMembersByPool) {
+      drawnMembersByPool = new Map();
+      for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
+        if (feature.geometry.type !== 'LineString' || partialWeekdayFeatures.has(feature)) continue;
+        const member = sharedPatternKey(feature.properties.routeId as string, feature.properties.headsign as string | null, featureShapeId.get(feature));
+        if (!member) continue;
+        const pool = `${shortName}::${dirId}::${day}`;
+        let members = drawnMembersByPool.get(pool);
+        if (!members) { members = new Set(); drawnMembersByPool.set(pool, members); }
+        members.add(member);
+      }
+    }
+    return drawnMembersByPool.get(poolKey) ?? new Set();
+  };
   const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailLikeRoute({
     routeType: route.route_type,
     routeLongName: route.route_long_name,
@@ -1999,10 +2019,17 @@ export async function processGtfsBuffer(
       // variant of it.
       if (hasMiddayReading(metricStopMap.get(terminalId)) || hasMiddayReading(headsignMap?.get(terminalId))) return false;
       let deps = 0; let daytime = 0;
-      for (const times of metricStopMap.values()) { deps += times.length; daytime += times.filter(t => t >= 360 && t <= 1320).length; }
+      for (const times of metricStopMap.values()) {
+        // Judged like the siblings (middayMembers: a reading at any stop): a pattern with a
+        // midday reading at its origin but three arrivals at its last stop is not a variant
+        // (dayton 06 Saturday via Pentagon, every two hours, both directions went dark).
+        if (hasMiddayReading(times)) return false;
+        deps += times.length; daytime += times.filter(t => t >= 360 && t <= 1320).length;
+      }
       if (deps === 0 || daytime * 2 < deps) return false;
       const siblings = middayMembers(poolKey);
-      return [...siblings].some(member => member !== ownMember);
+      const drawn = drawnMembers(poolKey);
+      return [...siblings].some(member => member !== ownMember && drawn.has(member));
     };
     // A drawn stop has a real all-day reading when its list has at least
     // MIN_ALL_DAY_TERMINAL_DEPARTURES unique departures over 6-22h: the thin-shape rescue's

@@ -37,5 +37,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://ride.vail.gov/gtfs"
+  "lastFeedSourceUrl": "https://ride.vail.gov/gtfs",
+  "lastPeekedExpiry": "20261206"
 }

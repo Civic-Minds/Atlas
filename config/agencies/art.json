@@ -47,5 +47,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip"
+  "lastFeedSourceUrl": "https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip",
+  "lastPeekedExpiry": "20271231"
 }

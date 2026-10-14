@@ -33,5 +33,6 @@
   },
   "timezone": "America/Thunder_Bay",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://api.nextlift.ca/gtfs.zip"
+  "lastFeedSourceUrl": "http://api.nextlift.ca/gtfs.zip",
+  "lastPeekedExpiry": "20261114"
 }

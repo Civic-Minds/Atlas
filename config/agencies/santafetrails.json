@@ -6,7 +6,7 @@
     -105.9769
   ],
   "feedUrl": "https://passio3.com/santafenm/passioTransit/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20261105",
+  "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20250228",
   "region": "New Mexico",
   "lastRefreshedAt": "2026-10-07",
@@ -36,5 +36,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastPeekedExpiry": "20271231"
 }

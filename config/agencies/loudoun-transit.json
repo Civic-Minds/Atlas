@@ -41,5 +41,6 @@
     "checkedAt": "2026-10-08"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs"
+  "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs",
+  "lastPeekedExpiry": "20270327"
 }

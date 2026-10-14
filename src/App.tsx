@@ -558,7 +558,12 @@ export default function App() {
             type="text"
             value={query}
             aria-label={searchPlaceholder}
-            onChange={e => setQuery(e.target.value)}
+            onChange={e => {
+              setQuery(e.target.value);
+              // Enter closes the results while the box keeps focus; typing again reopens them (#847).
+              clearTimeout(searchBlurTimer.current);
+              setSearchFocused(true);
+            }}
             onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); searchEnterRef.current?.(); } }}
             onFocus={() => {
               clearTimeout(searchBlurTimer.current);

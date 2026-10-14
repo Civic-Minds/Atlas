@@ -38,5 +38,6 @@
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Montreal",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip"
+  "lastFeedSourceUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip",
+  "lastPeekedExpiry": "20261231"
 }

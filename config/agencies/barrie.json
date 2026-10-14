@@ -46,5 +46,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip"
+  "lastFeedSourceUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip",
+  "lastPeekedExpiry": "20261226"
 }

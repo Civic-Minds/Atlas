@@ -315,10 +315,10 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 
       </div>
       {(stackedLegend.length > 0 || reserveStackedLegendSpace) && (
-        <div className={`flex min-h-[10px] flex-wrap items-center justify-center gap-x-2 gap-y-0.5 mt-1 px-1 text-xs font-bold text-[var(--text-dim)] leading-tight`}>
+        <div className={`flex min-h-[10px] flex-col items-start gap-y-0.5 mt-1 text-xs font-bold text-[var(--text-dim)] leading-tight`}>
           {stackedLegend.map(segment => (
-            <span key={segment.label} className="inline-flex items-center gap-0.5">
-              <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: segment.color }} />
+            <span key={segment.label} className="inline-flex items-center gap-1">
+              <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: segment.color }} />
               {segment.label}
             </span>
           ))}

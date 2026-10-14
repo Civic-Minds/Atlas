@@ -48,7 +48,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -516,10 +516,13 @@ async function refreshAgency(
   agency.feedQuality = primary.feedQuality;
   agency.timezone = timezone ?? agency.timezone;
 
-  if (featureCount === 0) {
+  // Stop points count as features, so check route lines too: a stops-only result was
+  // stamped "current" with 0 routes (#634).
+  const noRoutes = featureCount === 0 || routeLineCount(geojson) === 0;
+  if (noRoutes) {
     // Do not stamp lastFeedExpiry / lastFeedVersion / lastRefreshedAt — that made
     // skip-if-unchanged treat a permanently-empty extract as "healthy" and never retry.
-    const reason = 'pipeline produced 0 features';
+    const reason = featureCount === 0 ? 'pipeline produced 0 features' : 'pipeline produced 0 route lines';
     writeLog(`  [warn] ${reason} — retaining the last good artifact (flex/microtransit feed?)\n`);
     markFeedStale(agency, { reason, todayYmd: today });
     return { summary: `stale (${reason})`, stale: true };
@@ -528,7 +531,7 @@ async function refreshAgency(
   // Release diff gate (shared with reprocess and publish): checked before
   // anything is written, so a refused agency keeps its live artifacts, archive
   // and metadata unchanged.
-  const next = summarizeArtifact(geojson, stopsJson);
+  const next = summarizeArtifact(geojson, stopsJson, agency.slug);
   const { feedStart } = await peekFeedDates(buf);
   const agencyFlags = await evaluateRun({
     candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? peekedExpiry, calendarEnd: peekedExpiry } }],
