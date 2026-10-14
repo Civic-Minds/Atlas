@@ -3,8 +3,8 @@ import { SidebarCardSection } from '../cardUi';
 import { useColorVision } from '../../../context/ColorVisionContext';
 import { setSegmentBand, setSegmentView, useSegmentBand, useSegmentDelay, useSegmentView } from '../../../hooks/useSegmentDelay';
 import {
-  SEGMENT_BAND_OPTIONS, directionLabel, ewtColor, formatMinutes, halfMinutes, rankSegments, segmentColor,
-  tidyStopName, usableHeadways,
+  EWT_AMBER_SEC, SEGMENT_BAND_OPTIONS, directionLabel, ewtColor, formatMinutes, halfMinutes, halfMinutesDown, plural,
+  rankSegments, segmentColor, tidyStopName, usableHeadways,
   type RankedHeadway, type RankedSegment, type SegmentDelayData,
 } from '../../../utils/segmentDelayView';
 
@@ -44,10 +44,10 @@ function Chips<T extends string>({ options, value, onChange }: { options: { id: 
 
 function SegmentRow({ data, item, colorMode }: { data: SegmentDelayData; item: RankedSegment; colorMode: 'default' | 'friendly' }) {
   const { segment, stat, lostMin } = item;
-  const p90 = halfMinutes(stat.gainedP90Sec);
+  const p90 = halfMinutesDown(stat.gainedP90Sec);
   return (
     <div className="flex items-start gap-2">
-      <Dot color={segmentColor(lostMin, colorMode) ?? 'var(--text-dim)'} />
+      <Dot color={segmentColor(item, colorMode) ?? 'var(--text-dim)'} />
       <div className="min-w-0">
         <div className="text-sm font-bold text-[var(--text-primary)] leading-snug">
           {shortStop(segment.fromName)} to {shortStop(segment.toName)}
@@ -57,26 +57,26 @@ function SegmentRow({ data, item, colorMode }: { data: SegmentDelayData; item: R
           {lostMin > 0
             ? <>Takes {formatMinutes(lostMin)} longer than scheduled{p90 > lostMin ? <>; 1 in 10 take {formatMinutes(p90).replace(' min', '+ min')} longer</> : null}.</>
             : <>The schedule allows {formatMinutes(-lostMin)} more than vehicles need.</>}
-          {' '}({stat.trips.toLocaleString()} trips, {stat.days} days)
+          {' '}({plural(stat.trips, 'trip')}, {plural(stat.days, 'day')})
         </div>
       </div>
     </div>
   );
 }
 
-function HeadwayRow({ data, item, colorMode }: { data: SegmentDelayData; item: RankedHeadway; colorMode: 'default' | 'friendly' }) {
+function HeadwayRow({ data, item, colorMode, showSchedule }: { data: SegmentDelayData; item: RankedHeadway; colorMode: 'default' | 'friendly'; showSchedule: boolean }) {
   const { stop, stat, ewtMin } = item;
   return (
     <div className="flex items-start gap-2">
-      <Dot color={ewtColor(ewtMin, colorMode) ?? 'var(--text-dim)'} />
+      <Dot color={ewtColor(stat.excessWaitSec, colorMode) ?? 'var(--text-dim)'} />
       <div className="min-w-0">
         <div className="text-sm font-bold text-[var(--text-primary)] leading-snug">
           {shortStop(stop.stopName)}
           <span className="font-normal text-[var(--text-muted)]"> · {directionLabel(data, stop.directionId)}</span>
         </div>
         <div className="text-xs text-[var(--text-muted)] leading-snug">
-          Scheduled every {formatMinutes(halfMinutes(stat.scheduledMedianGapSec))}; riders wait {formatMinutes(ewtMin)} longer than that implies.
-          {' '}{Math.round(stat.withinShare * 100)}% of gaps are close to scheduled ({stat.gaps.toLocaleString()} gaps, {stat.days} days)
+          {showSchedule && <>Scheduled every {formatMinutes(halfMinutes(stat.scheduledMedianGapSec))}. </>}
+          Riders wait {formatMinutes(ewtMin)} longer than the timetable implies; {Math.round(stat.withinShare * 100)}% of gaps are close to scheduled ({plural(stat.gaps, 'gap')}, {plural(stat.days, 'day')})
         </div>
       </div>
     </div>
@@ -110,10 +110,10 @@ export default function SegmentDelaySection({ slug, routeShortName }: { slug: st
       </>
     );
   } else {
-    const worst = usableHeadways(data, band).filter(h => h.ewtMin >= 0.5).sort((a, b) => b.stat.excessWaitSec - a.stat.excessWaitSec).slice(0, 5);
+    const worst = usableHeadways(data, band).filter(h => h.stat.excessWaitSec! >= EWT_AMBER_SEC).sort((a, b) => b.stat.excessWaitSec! - a.stat.excessWaitSec!).slice(0, 5);
     body = worst.length === 0
       ? <div className="text-xs text-[var(--text-muted)]">Spacing stays close to schedule at every stop in this period.</div>
-      : worst.map(item => <HeadwayRow key={`${item.stop.stopId}|${item.stop.directionId}`} data={data} item={item} colorMode={colorMode} />);
+      : worst.map(item => <HeadwayRow key={`${item.stop.stopId}|${item.stop.directionId}`} data={data} item={item} colorMode={colorMode} showSchedule={band !== 'all'} />);
   }
 
   return (

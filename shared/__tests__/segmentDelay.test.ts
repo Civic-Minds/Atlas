@@ -16,13 +16,23 @@ const pattern: Pattern = {
 
 describe('stopPassages', () => {
   it('interpolates the time a vehicle passed each stop by distance along the shape', () => {
-    // 10 m/s, sampled every 60 s from 500 m behind A
-    const samples = Array.from({ length: 7 }, (_, i) => ({ t: 1000 + i * 60, lat: LAT, lon: lonAt(-100 + i * 600) }));
+    // 10 m/s, sampled every 60 s from the start of the line
+    const samples = Array.from({ length: 6 }, (_, i) => ({ t: 1000 + i * 60, lat: LAT, lon: lonAt(i * 600) }));
     const legs = stopPassages(projectRun(samples, pattern), pattern);
     expect(legs).toHaveLength(1);
     const byStop = Object.fromEntries(legs[0].map(p => [p.stopId, p.t]));
     expect(byStop.B - byStop.A).toBeCloseTo(100, 0);
     expect(byStop.C - byStop.B).toBeCloseTo(100, 0);
+  });
+
+  it('drops a fix that implies an impossible speed', () => {
+    const samples = [
+      { t: 0, lat: LAT, lon: lonAt(900) },
+      { t: 60, lat: LAT, lon: lonAt(2500) }, // 1.6 km in 60 s
+      { t: 120, lat: LAT, lon: lonAt(1500) },
+    ];
+    const ids = stopPassages(projectRun(samples, pattern), pattern).flat().map(p => p.stopId);
+    expect(ids).toEqual(['B']);
   });
 
   it('skips stops whose bracketing samples are too far apart in time', () => {
@@ -39,7 +49,7 @@ describe('stopPassages', () => {
     const samples = [
       { t: 0, lat: LAT, lon: lonAt(900) },
       { t: 60, lat: LAT, lon: lonAt(1100) },
-      { t: 120, lat: LAT + 0.003, lon: lonAt(1500) }, // ~330 m off the line
+      { t: 120, lat: LAT + 0.0007, lon: lonAt(1500) }, // ~78 m off the line
       { t: 180, lat: LAT, lon: lonAt(1900) },
       { t: 240, lat: LAT, lon: lonAt(2100) },
     ];
@@ -74,14 +84,35 @@ describe('headway adherence', () => {
     expect(averageWaitSec([60, 540])).toBeGreaterThan(150);
   });
 
-  it('only counts a window when nearly every scheduled pass was observed', () => {
-    const sched = [0, 300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700];
-    expect(headwayWindows(sched.slice(0, 6), sched)).toBeNull();
-    const ok = headwayWindows([0, 60, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700], sched)!;
-    const stat = headwayBandStat([{ date: '2026-10-01', ...ok }])!;
-    expect(stat.scheduledMedianGapSec).toBe(300);
+  const sched = Array.from({ length: 10 }, (_, i) => ({ tripId: `t${i}`, t: i * 300 }));
+
+  it('never turns an unobserved pass into a fake long gap', () => {
+    // Perfect service, but trip t5 wasn't seen: the stretch splits around it.
+    const seen = new Map(sched.filter(s => s.tripId !== 't5').map(s => [s.tripId, s.t]));
+    const wins = headwayWindows(sched, seen, [...seen.values()]);
+    expect(wins.map(w => w.actualGaps)).toEqual([[300, 300, 300, 300], [300, 300, 300]]);
+    const stat = headwayBandStat(wins.map(w => ({ date: 'd', ...w })))!;
+    expect(stat.excessWaitSec).toBe(0);
+    expect(stat.withinShare).toBe(1);
+  });
+
+  it('measures bunching as extra wait', () => {
+    const seen = new Map(sched.map(s => [s.tripId, s.tripId === 't1' ? 30 : s.t]));
+    const [w] = headwayWindows(sched, seen, [...seen.values()]);
+    const stat = headwayBandStat([{ date: 'd', ...w }])!;
     expect(stat.excessWaitSec).toBeGreaterThan(0);
     expect(stat.withinShare).toBeLessThan(1);
+  });
+
+  it('grades each window against its own schedule', () => {
+    const even = (gap: number) => ({ date: 'd', actualGaps: [gap, gap, gap], scheduledGaps: [gap, gap, gap] });
+    const stat = headwayBandStat([even(240), even(600)])!;
+    expect(stat.withinShare).toBe(1);
+    expect(stat.excessWaitSec).toBe(0);
+  });
+
+  it('returns null extra wait when there is nothing to measure', () => {
+    expect(headwayBandStat([])).toBeNull();
   });
 });
 

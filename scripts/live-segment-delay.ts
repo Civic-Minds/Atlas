@@ -192,10 +192,13 @@ function scheduleKeyForDate(date: string): string | null {
   return dateOk.get(date)!;
 }
 
+/** GTFS service date: trips after midnight (before 4 a.m.) belong to the previous day. */
+const serviceDateOf = (t: number) => { const l = local(t); return l.hour < 4 ? prevDate(l.date) : l.date; };
+
 let runsTotal = 0, runsMatched = 0, runsUnmatched = 0;
 const observations: SegmentObservation[] = [];
 // Passages by stop+direction, for headways.
-const passagesAt = new Map<string, number[]>();
+const passagesAt = new Map<string, { tripId: string; t: number }[]>();
 for (const [key, samples] of runs) {
   const tripId = key.split('|')[1];
   samples.sort((a, b) => a.t - b.t);
@@ -212,63 +215,55 @@ for (const [key, samples] of runs) {
     if (!pattern || run.length < 2) continue;
     runsMatched++;
     const legs = stopPassages(projectRun(run, pattern), pattern);
-    const date = local(run[0].t).date;
-    observations.push(...segmentObservations(legs, pattern, date));
+    for (const o of segmentObservations(legs, pattern, '')) observations.push({ ...o, date: serviceDateOf(o.departT) });
     for (const leg of legs) for (const p of leg) {
       const k = `${p.stopId}|${pattern.directionId}`;
       const l = passagesAt.get(k) ?? [];
-      l.push(p.t);
+      l.push({ tripId, t: p.t });
       passagesAt.set(k, l);
     }
   }
 }
 
-// Each observation is dated by local service date of its departure.
-for (const o of observations) o.date = local(o.departT).date;
 const stats = aggregateSegments(observations, scheduled, scheduleKeyForDate, hourOf);
 
-// --- headway adherence per stop, per (local date, band) window ---
-const scheduledAt = new Map<string, number[]>(); // `${date}|${stop}|${dir}` -> epoch times
-const dates = [...dateOk.keys()].filter(d => dateOk.get(d));
-for (const date of dates) {
-  for (const svcDate of [date, prevDate(date)]) {
-    const services = activeServices(svcDate);
-    if (!services) continue;
-    const base = serviceDayStart(svcDate);
-    for (const t of trips) {
-      if (!services.includes(t.service_id)) continue;
-      for (const st of timesByTrip.get(t.trip_id) ?? []) {
-        const epoch = base + st.dep;
-        if (local(epoch).date !== date) continue;
-        const k = `${date}|${st.stopId}|${t.direction_id}`;
-        const l = scheduledAt.get(k) ?? [];
-        l.push(epoch);
-        scheduledAt.set(k, l);
-      }
+// --- headway adherence per stop, per (service date, band) window ---
+const scheduledAt = new Map<string, { tripId: string; t: number }[]>(); // `${svcDate}|${stop}|${dir}`
+const dates = [...new Set(observations.map(o => o.date))].filter(d => scheduleKeyForDate(d)).sort();
+for (const svcDate of dates) {
+  const services = activeServices(svcDate)!;
+  const base = serviceDayStart(svcDate);
+  for (const t of trips) {
+    if (!services.includes(t.service_id)) continue;
+    for (const st of timesByTrip.get(t.trip_id) ?? []) {
+      const k = `${svcDate}|${st.stopId}|${t.direction_id}`;
+      const l = scheduledAt.get(k) ?? [];
+      l.push({ tripId: t.trip_id, t: base + st.dep });
+      scheduledAt.set(k, l);
     }
   }
 }
-const windowHasOutage = (a: number, b: number) => outages.some(([x, y]) => x < b && y > a);
 type Win = { date: string; actualGaps: number[]; scheduledGaps: number[] };
 const headwayByStop = new Map<string, Map<TimeBand | 'all', Win[]>>();
 let windowsTotal = 0, windowsKept = 0;
 for (const [k, sched] of scheduledAt) {
   const [date, stopId, dir] = k.split('|');
-  const obs = (passagesAt.get(`${stopId}|${dir}`) ?? []).filter(t => local(t).date === date);
-  const byBand = new Map<TimeBand, { s: number[]; o: number[] }>();
-  for (const t of sched) { const b = bandForHour(hourOf(t)); const w = byBand.get(b) ?? { s: [], o: [] }; w.s.push(t); byBand.set(b, w); }
-  for (const t of obs) { const w = byBand.get(bandForHour(hourOf(t))); if (w) w.o.push(t); }
-  for (const [band, w] of byBand) {
+  // Only passes by trips this stop's timetable has for that service day; other
+  // vehicles (yard moves, the next day's first trips) would fill real gaps.
+  const scheduledIds = new Set(sched.map(s => s.tripId));
+  const obs = (passagesAt.get(`${stopId}|${dir}`) ?? []).filter(p => scheduledIds.has(p.tripId) && serviceDateOf(p.t) === date);
+  const byTrip = new Map(obs.map(p => [p.tripId, p.t]));
+  const byBand = new Map<TimeBand, { tripId: string; t: number }[]>();
+  for (const s of sched) { const b = bandForHour(hourOf(s.t)); const l = byBand.get(b) ?? []; l.push(s); byBand.set(b, l); }
+  for (const [band, bandSched] of byBand) {
     windowsTotal++;
-    const lo = Math.min(...w.s), hi = Math.max(...w.s);
-    if (windowHasOutage(lo - 300, hi + 300)) continue;
-    const res = headwayWindows(w.o, w.s);
-    if (!res) continue;
+    const wins = headwayWindows(bandSched, byTrip, obs.map(p => p.t));
+    if (!wins.length) continue;
     windowsKept++;
     const m = headwayByStop.get(`${stopId}|${dir}`) ?? new Map();
     for (const b of [band, 'all'] as const) {
       const l = m.get(b) ?? [];
-      l.push({ date, ...res });
+      for (const w of wins) l.push({ date, ...w });
       m.set(b, l);
     }
     headwayByStop.set(`${stopId}|${dir}`, m);
@@ -317,7 +312,7 @@ for (const p of busiest) {
   }
 }
 
-const usedDates = dates.sort();
+const usedDates = dates;
 const result = {
   agency: 'ttc',
   route: ROUTE,

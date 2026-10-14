@@ -15,8 +15,14 @@ export const SEGMENT_BAND_OPTIONS: { id: SegmentBand; label: string }[] = [
   { id: 'evening', label: 'Evening' },
 ];
 
-/** A stop pair needs at least this many observed trips in the band to be shown. */
+/** A stop pair needs at least this many observed trips, over this many days, to be shown. */
 export const MIN_SEGMENT_TRIPS = 30;
+export const MIN_DAYS = 5;
+/** Flag thresholds test raw seconds, not the rounded display value. */
+export const LOSS_AMBER_SEC = 30;
+export const LOSS_RED_SEC = 60;
+export const EWT_AMBER_SEC = 30;
+export const EWT_RED_SEC = 90;
 
 export interface SegmentBandStat {
   trips: number;
@@ -35,7 +41,7 @@ export interface HeadwayBandStat {
   scheduledMedianGapSec: number;
   actualMedianGapSec: number;
   withinShare: number;
-  excessWaitSec: number;
+  excessWaitSec: number | null;
 }
 
 export interface HeadwayStop {
@@ -76,6 +82,15 @@ export function halfMinutes(sec: number): number {
   return Math.round(sec / 30) / 2;
 }
 
+/** Half minutes rounded toward zero, for "at least" statements. */
+export function halfMinutesDown(sec: number): number {
+  return Math.sign(sec) * Math.floor(Math.abs(sec) / 30) / 2;
+}
+
+export function plural(n: number, word: string): string {
+  return `${n.toLocaleString()} ${word}${n === 1 ? '' : 's'}`;
+}
+
 export function formatMinutes(min: number): string {
   const abs = Math.abs(min);
   const whole = Math.floor(abs);
@@ -97,7 +112,7 @@ export function usableSegments(data: SegmentDelayData | null, band: SegmentBand)
   for (const segment of data.segments) {
     if (segment.terminal) continue;
     const stat = segment.bands[band];
-    if (!stat || stat.trips < MIN_SEGMENT_TRIPS) continue;
+    if (!stat || stat.trips < MIN_SEGMENT_TRIPS || stat.days < MIN_DAYS) continue;
     out.push({ segment, stat, lostMin: halfMinutes(stat.gainedMedianSec) });
   }
   return out;
@@ -105,11 +120,16 @@ export function usableSegments(data: SegmentDelayData | null, band: SegmentBand)
 
 export function rankSegments(data: SegmentDelayData | null, band: SegmentBand, limit = 5) {
   const usable = usableSegments(data, band);
-  const losing = usable.filter(s => s.lostMin >= 0.5).sort((a, b) => b.stat.gainedMedianSec - a.stat.gainedMedianSec).slice(0, limit);
-  const gaining = usable.filter(s => s.lostMin <= -0.5).sort((a, b) => a.stat.gainedMedianSec - b.stat.gainedMedianSec).slice(0, 2);
+  const losing = usable.filter(s => s.stat.gainedMedianSec >= LOSS_AMBER_SEC).sort((a, b) => b.stat.gainedMedianSec - a.stat.gainedMedianSec).slice(0, limit);
+  // "Looser than needed" only when nearly every pass beats the timetable, not just the typical one.
+  const gaining = usable.filter(isPadded).sort((a, b) => a.stat.gainedMedianSec - b.stat.gainedMedianSec).slice(0, 2);
   const trips = usable.reduce((m, s) => Math.max(m, s.stat.trips), 0);
   const days = usable.reduce((m, s) => Math.max(m, s.stat.days), 0);
   return { losing, gaining, trips, days, segmentCount: usable.length };
+}
+
+export function isPadded(s: RankedSegment): boolean {
+  return s.stat.gainedMedianSec <= -LOSS_AMBER_SEC && s.stat.gainedP90Sec <= 0;
 }
 
 /**
@@ -117,11 +137,12 @@ export function rankSegments(data: SegmentDelayData | null, band: SegmentBand, l
  * the "early" blue where the schedule's padding lets vehicles make up time.
  * Stop pairs within ±½ min aren't overlaid (the route line shows through).
  */
-export function segmentColor(lostMin: number, mode: ColorVisionMode = 'default'): string | null {
+export function segmentColor(s: RankedSegment, mode: ColorVisionMode = 'default'): string | null {
   const palette = mode === 'friendly' ? COLOR_VISION_STATUS_COLORS : STATUS_COLORS;
-  if (lostMin >= 1) return palette.late.bg;
-  if (lostMin >= 0.5) return mode === 'friendly' ? '#b07a00' : '#f59e0b';
-  if (lostMin <= -0.5) return palette.early.bg;
+  const sec = s.stat.gainedMedianSec;
+  if (sec >= LOSS_RED_SEC) return palette.late.bg;
+  if (sec >= LOSS_AMBER_SEC) return mode === 'friendly' ? '#b07a00' : '#f59e0b';
+  if (isPadded(s)) return palette.early.bg;
   return null;
 }
 
@@ -149,24 +170,25 @@ export function usableHeadways(data: SegmentDelayData | null, band: SegmentBand)
   for (const stop of data?.headways ?? []) {
     if (stop.terminal) continue;
     const stat = stop.bands[band];
-    if (!stat || stat.gaps < MIN_HEADWAY_GAPS) continue;
+    if (!stat || stat.gaps < MIN_HEADWAY_GAPS || stat.days < MIN_DAYS || stat.excessWaitSec == null) continue;
     out.push({ stop, stat, ewtMin: halfMinutes(stat.excessWaitSec) });
   }
   return out;
 }
 
-/** Existing lateness colours for extra wait: amber from ½ min, red from 1½ min. */
-export function ewtColor(ewtMin: number, mode: ColorVisionMode = 'default'): string | null {
+/** Existing lateness colours for extra wait: amber from 30 s, red from 90 s. */
+export function ewtColor(ewtSec: number | null, mode: ColorVisionMode = 'default'): string | null {
   const palette = mode === 'friendly' ? COLOR_VISION_STATUS_COLORS : STATUS_COLORS;
-  if (ewtMin >= 1.5) return palette.late.bg;
-  if (ewtMin >= 0.5) return mode === 'friendly' ? '#b07a00' : '#f59e0b';
+  if (ewtSec == null) return null;
+  if (ewtSec >= EWT_RED_SEC) return palette.late.bg;
+  if (ewtSec >= EWT_AMBER_SEC) return mode === 'friendly' ? '#b07a00' : '#f59e0b';
   return null;
 }
 
 export function headwayFeatures(data: SegmentDelayData | null, band: SegmentBand, mode: ColorVisionMode = 'default'): GeoJSON.Feature[] {
   const features: GeoJSON.Feature[] = [];
-  for (const { stop, ewtMin } of usableHeadways(data, band)) {
-    const color = ewtColor(ewtMin, mode);
+  for (const { stop, stat, ewtMin } of usableHeadways(data, band)) {
+    const color = ewtColor(stat.excessWaitSec, mode);
     if (!color || stop.coordinates.length < 2) continue;
     features.push({
       type: 'Feature',
@@ -183,8 +205,9 @@ export function segmentFeatures(
   mode: ColorVisionMode = 'default',
 ): GeoJSON.Feature[] {
   const features: GeoJSON.Feature[] = [];
-  for (const { segment, lostMin } of usableSegments(data, band)) {
-    const color = segmentColor(lostMin, mode);
+  for (const item of usableSegments(data, band)) {
+    const { segment, lostMin } = item;
+    const color = segmentColor(item, mode);
     if (!color || segment.coordinates.length < 2) continue;
     features.push({
       type: 'Feature',

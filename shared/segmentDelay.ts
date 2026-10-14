@@ -35,10 +35,10 @@ export interface StopPassage {
 }
 
 export const SEGMENT_DEFAULTS = {
-  /** Max distance from the shape for a sample to be used for timing. */
+  /** A sample further than this from the shape ends the leg (diversion or bad fix). */
   maxPerpM: 50,
-  /** A sample further than this from the shape means the vehicle left the route (diversion). */
-  offRouteM: 100,
+  /** Faster than this between samples is a bad fix, not a streetcar (90 km/h). */
+  maxSpeedMps: 25,
   /** Max time between the two samples bracketing a stop. */
   maxBracketGapSec: 150,
 };
@@ -79,18 +79,22 @@ export function projectRun(samples: PositionSample[], pattern: Pattern): Project
 /**
  * Times a run passed each stop of its pattern, interpolated between the two
  * samples either side of the stop. A stop is skipped when those samples are
- * too far apart in time, off the shape, or the vehicle went backwards.
- * Passages are split into legs at any off-route sample, so a stop pair that
- * spans a diversion never becomes a segment observation.
+ * too far apart in time or the vehicle went backwards. Passages are split
+ * into legs at any off-shape sample, so a stop pair that spans a diversion
+ * never becomes a segment observation. Samples implying an impossible speed
+ * are dropped as bad GPS fixes.
  */
 export function stopPassages(projected: Projected[], pattern: Pattern, opts = SEGMENT_DEFAULTS): StopPassage[][] {
   const legs: Projected[][] = [[]];
   for (const p of projected) {
-    if (p.perpM > opts.offRouteM) {
-      if (legs[legs.length - 1].length) legs.push([]);
+    const leg = legs[legs.length - 1];
+    if (p.perpM > opts.maxPerpM) {
+      if (leg.length) legs.push([]);
       continue;
     }
-    if (p.perpM <= opts.maxPerpM) legs[legs.length - 1].push(p);
+    const prev = leg[leg.length - 1];
+    if (prev && p.t > prev.t && Math.abs(p.along - prev.along) / (p.t - prev.t) > opts.maxSpeedMps) continue;
+    leg.push(p);
   }
   return legs.filter(l => l.length >= 2).map(leg => {
     const out: StopPassage[] = [];
@@ -261,10 +265,10 @@ export interface HeadwayBandStat {
   days: number;
   scheduledMedianGapSec: number;
   actualMedianGapSec: number;
-  /** Share of gaps within ±50% of the scheduled gap. */
+  /** Share of gaps within ±50% of that window's scheduled gap. */
   withinShare: number;
-  /** Actual average wait minus scheduled average wait (TfL-style EWT). */
-  excessWaitSec: number;
+  /** Actual average wait minus scheduled average wait (TfL-style EWT); null if unmeasurable. */
+  excessWaitSec: number | null;
 }
 
 export interface HeadwayStopStat {
@@ -274,52 +278,70 @@ export interface HeadwayStopStat {
 }
 
 /**
- * Headway adherence at one stop, per (date, band) window: gaps between
- * successive vehicles (any trip) vs gaps between successive timetable trips.
- * A window only counts when we saw at least `minCoverage` of the scheduled
- * passes, because a missed pass would show up as a fake long gap.
+ * Headway adherence at one stop for one (service date, band) window.
+ *
+ * A pass we failed to observe would look like a long gap, so gaps are only
+ * measured across stretches where every scheduled trip in a row was seen at
+ * this stop (matched by trip ID): within such a stretch, actual gaps are
+ * between successive vehicles of any trip, scheduled gaps between those
+ * timetable trips. Stretches shorter than `minRun` trips are dropped.
  */
 export function headwayWindows(
-  observed: number[], // passage times at this stop in this window, any vehicle
-  scheduled: number[], // timetable times at this stop in this window
-  minCoverage = 0.9,
-): { actualGaps: number[]; scheduledGaps: number[] } | null {
-  if (scheduled.length < 3) return null;
-  const cov = observed.length / scheduled.length;
-  if (cov < minCoverage || cov > 1 / minCoverage) return null;
-  const gaps = (xs: number[]) => {
-    const s = [...xs].sort((a, b) => a - b);
-    const out: number[] = [];
-    for (let i = 1; i < s.length; i++) out.push(s[i] - s[i - 1]);
-    return out;
+  scheduled: { tripId: string; t: number }[],
+  observedByTrip: Map<string, number>,
+  observedAll: number[],
+  minRun = 4,
+): { actualGaps: number[]; scheduledGaps: number[] }[] {
+  const sched = [...scheduled].sort((a, b) => a.t - b.t);
+  const all = [...observedAll].sort((a, b) => a - b);
+  const out: { actualGaps: number[]; scheduledGaps: number[] }[] = [];
+  let run: { tripId: string; t: number; seen: number }[] = [];
+  const flush = () => {
+    // A stretch spanning a service break (over 30 min between scheduled trips) isn't a headway.
+    const broken = run.some((r, i) => i > 0 && r.t - run[i - 1].t > 1800);
+    if (run.length >= minRun && !broken) {
+      const lo = Math.min(...run.map(r => r.seen));
+      const hi = Math.max(...run.map(r => r.seen));
+      const inside = all.filter(t => t >= lo && t <= hi);
+      const gaps = (xs: number[]) => xs.slice(1).map((x, i) => x - xs[i]);
+      out.push({ actualGaps: gaps(inside), scheduledGaps: gaps(run.map(r => r.t)) });
+    }
+    run = [];
   };
-  return { actualGaps: gaps(observed), scheduledGaps: gaps(scheduled) };
+  for (const s of sched) {
+    const seen = observedByTrip.get(s.tripId);
+    if (seen == null) { flush(); continue; }
+    run.push({ ...s, seen });
+  }
+  flush();
+  return out;
 }
 
 export function headwayBandStat(
   windows: { date: string; actualGaps: number[]; scheduledGaps: number[] }[],
 ): HeadwayBandStat | null {
-  if (windows.length === 0) return null;
-  const actual = windows.flatMap(w => w.actualGaps);
-  const sched = windows.flatMap(w => w.scheduledGaps);
-  const schedMedian = median(sched)!;
-  // EWT per window (each window's own schedule), weighted by its scheduled span.
-  let ewtSum = 0, weight = 0;
-  for (const w of windows) {
+  const usable = windows.filter(w => w.actualGaps.length && w.scheduledGaps.length);
+  if (usable.length === 0) return null;
+  let ewtSum = 0, weight = 0, within = 0, gaps = 0;
+  for (const w of usable) {
+    // Grade each window against its own schedule, so mixing a 4-min morning
+    // with a 10-min evening doesn't make either look irregular.
+    const schedMedian = median(w.scheduledGaps)!;
+    within += w.actualGaps.filter(g => Math.abs(g - schedMedian) <= 0.5 * schedMedian).length;
+    gaps += w.actualGaps.length;
     const a = averageWaitSec(w.actualGaps);
-    const s = averageWaitSec(w.scheduledGaps);
-    if (a == null || s == null) continue;
+    const sw = averageWaitSec(w.scheduledGaps);
+    if (a == null || sw == null) continue;
     const span = w.scheduledGaps.reduce((x, y) => x + y, 0);
-    ewtSum += (a - s) * span;
+    ewtSum += (a - sw) * span;
     weight += span;
   }
-  const within = actual.filter(g => Math.abs(g - schedMedian) <= 0.5 * schedMedian).length;
   return {
-    gaps: actual.length,
-    days: new Set(windows.map(w => w.date)).size,
-    scheduledMedianGapSec: Math.round(schedMedian),
-    actualMedianGapSec: Math.round(median(actual)!),
-    withinShare: Math.round((within / actual.length) * 100) / 100,
-    excessWaitSec: weight ? Math.round(ewtSum / weight) : 0,
+    gaps,
+    days: new Set(usable.map(w => w.date)).size,
+    scheduledMedianGapSec: Math.round(median(usable.flatMap(w => w.scheduledGaps))!),
+    actualMedianGapSec: Math.round(median(usable.flatMap(w => w.actualGaps))!),
+    withinShare: Math.round((within / gaps) * 100) / 100,
+    excessWaitSec: weight ? Math.round(ewtSum / weight) : null,
   };
 }
