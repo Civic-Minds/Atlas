@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { clearDataReleaseCache, loadDataReleases, resolveReleaseHistory, dataReleaseApiUrl, dataReleaseAssetUrl, isCompatibleDataRelease, resolveDataRelease } from '../dataRelease';
+import { clearDataReleaseCache, loadDataReleases, resolveReleaseHistory, dataReleasePmtilesUrl, dataReleaseAssetUrl, isCompatibleDataRelease, resolveDataRelease } from '../dataRelease';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../../../shared/artifactSchema';
 
 afterEach(() => {
@@ -25,8 +25,6 @@ describe('data releases', () => {
     expect(release?.releaseId).toBe('release-test');
     expect(dataReleaseAssetUrl(release!, release!.pmtilesKey, 'https://data.example'))
       .toBe('https://data.example/atlas/releases/release-test/atlas.pmtiles?v=release-test');
-    expect(dataReleaseApiUrl(release!.releaseId)).toBe('/api/atlas-pmtiles?release_id=release-test');
-    expect(dataReleaseApiUrl(release!.releaseId, 'overview')).toBe('/api/atlas-pmtiles?release_id=release-test&variant=overview');
   });
 
   it('rejects an incomplete pointer', async () => {
@@ -99,5 +97,36 @@ describe('release history', () => {
     const old = { releaseId: 'release-a', generatedAt: '2026-10-01T00:00:00Z' };
     expect(await loadDataReleases(async () => [old], async () => latest)).toEqual([old, latest]);
     expect(await loadDataReleases(async () => { throw new Error('x'); }, async () => null)).toEqual([]);
+  });
+
+  describe('map tile URLs', () => {
+    const release = {
+      releaseId: 'release-test',
+      pmtilesKey: 'atlas/releases/release-test/atlas.pmtiles',
+      overviewPmtilesKey: 'atlas/releases/release-test/atlas-overview.pmtiles',
+      agencyPrefix: 'atlas/releases/release-test/agencies',
+      routeArtifactSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION,
+    };
+
+    it('deployed builds read the release archives straight from the public data domain, never a Vercel function', () => {
+      expect(dataReleasePmtilesUrl(release, 'detail', true, 'https://www.transitatlas.fyi'))
+        .toBe('https://data.transitatlas.fyi/atlas/releases/release-test/atlas.pmtiles?v=release-test');
+      expect(dataReleasePmtilesUrl(release, 'overview', true))
+        .toBe('https://data.transitatlas.fyi/atlas/releases/release-test/atlas-overview.pmtiles?v=release-test');
+    });
+
+    it('deployed builds without a verified release get a URL under no release, never the legacy root archive', () => {
+      const detail = dataReleasePmtilesUrl(null, 'detail', true)!;
+      const overview = dataReleasePmtilesUrl(null, 'overview', true)!;
+      expect(detail).toBe('https://data.transitatlas.fyi/atlas/releases/unavailable/atlas.pmtiles');
+      expect(overview).toBe('https://data.transitatlas.fyi/atlas/releases/unavailable/atlas-overview.pmtiles');
+      for (const url of [detail, overview]) expect(url).not.toMatch(/\/api\//);
+    });
+
+    it('local development keeps its same-origin proxy and its legacy fallback', () => {
+      expect(dataReleasePmtilesUrl(release, 'detail', false, 'http://localhost:5180/atlas-data'))
+        .toBe('http://localhost:5180/atlas-data/atlas/releases/release-test/atlas.pmtiles?v=release-test');
+      expect(dataReleasePmtilesUrl(null, 'detail', false)).toBeNull();
+    });
   });
 });

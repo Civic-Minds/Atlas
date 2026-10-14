@@ -3,7 +3,7 @@ import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
-import { dataReleaseApiUrl, dataReleaseAssetUrl, resolveDataRelease, verifiedReleaseRequired, type DataRelease } from './dataRelease';
+import { dataReleasePmtilesUrl, resolveDataRelease, verifiedReleaseRequired, type DataRelease } from './dataRelease';
 import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
 // MapLibre 6 locates its worker at runtime via `new URL('./maplibre-gl-worker.mjs',
@@ -20,32 +20,16 @@ export function getActiveDataRelease(): DataRelease | null {
 }
 
 export function getAtlasPmtilesUrl(): string {
-  if (activeRelease) {
-    if (typeof window !== 'undefined' && import.meta.env.PROD) {
-      return `${window.location.origin}${dataReleaseApiUrl(activeRelease.releaseId)}`;
-    }
-    return dataReleaseAssetUrl(activeRelease, activeRelease.pmtilesKey);
-  }
-  // No verified release: the proxy refuses to serve unpaired legacy tiles, so
-  // the map draws no routes rather than routes that disagree with the cards.
-  if (typeof window !== 'undefined' && verifiedReleaseRequired()) {
-    return `${window.location.origin}/api/atlas-pmtiles?release_id=unavailable`;
-  }
-  // Local development only: unpublished previews still use the root archive.
-  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
+  // No verified release on a deployed build: the URL serves nothing, so the map draws no routes
+  // rather than routes that disagree with the cards. Local development only falls back to the
+  // root archive for unpublished previews.
+  return dataReleasePmtilesUrl(activeRelease, 'detail', verifiedReleaseRequired())
+    ?? `${R2_PUBLIC_URL}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
 }
 
 export function getAtlasOverviewPmtilesUrl(): string {
-  if (activeRelease) {
-    if (typeof window !== 'undefined' && import.meta.env.PROD) {
-      return `${window.location.origin}${dataReleaseApiUrl(activeRelease.releaseId, 'overview')}`;
-    }
-    return dataReleaseAssetUrl(activeRelease, activeRelease.overviewPmtilesKey);
-  }
-  if (typeof window !== 'undefined' && verifiedReleaseRequired()) {
-    return `${window.location.origin}/api/atlas-pmtiles?release_id=unavailable&variant=overview`;
-  }
-  return `${R2_PUBLIC_URL}/atlas-overview.pmtiles?v=${currentAgencyDataVersion()}`;
+  return dataReleasePmtilesUrl(activeRelease, 'overview', verifiedReleaseRequired())
+    ?? `${R2_PUBLIC_URL}/atlas-overview.pmtiles?v=${currentAgencyDataVersion()}`;
 }
 
 const protocol = new Protocol();

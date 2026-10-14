@@ -52,7 +52,10 @@ export default defineConfig(({ mode, command, isPreview }) => {
   const earlyDataUrl: Plugin = {
     name: 'early-data-url',
     apply: 'build',
-    transformIndexHtml: html => html.replace('__ATLAS_R2_PUBLIC_URL__', clientR2Url),
+    transformIndexHtml: html => html
+      .replace('__ATLAS_R2_PUBLIC_URL__', clientR2Url)
+      // Map tiles always come from the public domain (see PMTILES_PUBLIC_URL in src/lib/dataRelease.ts).
+      .replace('__ATLAS_PMTILES_URL__', DEFAULT_R2_PUBLIC_URL.replace(/\/$/, '')),
   };
   // Local dry-run artifacts are opt-in so ignored, potentially stale files cannot silently
   // replace the live R2 data during ordinary localhost testing.
