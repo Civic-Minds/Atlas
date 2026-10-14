@@ -15,7 +15,7 @@ Verified data releases (what deployed builds read):
 - `atlas/releases/{releaseId}/agencies/` — agency route and stop snapshots built in the same run as the tiles
 - `atlas/releases/{releaseId}/manifest.json` — release manifest
 
-Deployed builds only use a release whose tiles and agency data were built together; they do not fall back to the unversioned per-agency files below (local development still can). Map tiles are served through `/api/atlas-pmtiles`, which refuses requests without a valid `release_id`.
+Deployed builds only use a release whose tiles and agency data were built together; they do not fall back to the unversioned per-agency files below (local development still can). Deployed builds read the release's map tiles (`pmtilesKey`, `overviewPmtilesKey`) straight from `https://data.transitatlas.fyi`; with no verified release they request a key that 404s, so no routes draw. Tiles must not go through a Vercel function: that used up the Fast Origin Transfer allowance.
 
 Per-agency working artifacts (inputs to each release build):
 
@@ -29,7 +29,7 @@ Per-agency working artifacts (inputs to each release build):
 Shared indexes: `atlas/agencies.json`, `atlas/hidden-routes.json`, `atlas/feed-refresh-meta.json`, `atlas/night-service.json`, `atlas/frequent-service.json`, `atlas/history-config.json`.
 
 Written by: `pipeline/refresh.ts`, `pipeline/process-gtfs.ts`, `pipeline/restore-active-feeds.ts`, `pipeline/reprocess-derived-artifacts.ts --write` (per-agency artifacts); `pipeline/build-pmtiles.ts` (immutable release); `pipeline/publish-data-release.ts` (`release.json` pointer, only after checks pass); `pipeline/build-history.ts` (`history-config.json`)
-Read by: browser directly via `VITE_R2_PUBLIC_URL` (default `https://data.transitatlas.fyi`), plus `/api/atlas-pmtiles` for tiles
+Read by: browser directly via `VITE_R2_PUBLIC_URL` (default `https://data.transitatlas.fyi`); map tiles always from `https://data.transitatlas.fyi`
 
 Standalone tile uploads (`upload-pmtiles`, non-dry-run `build-pmtiles-incremental`) write the legacy root `atlas.pmtiles` outside any release and refuse to run without `--allow-unpaired-pmtiles-upload`. Publish through the release flow instead (`npm run refresh-release`, or `build-pmtiles` → `verify-pmtiles-remote` → `build-history` → `publish-data-release`).
 
@@ -117,7 +117,7 @@ Local: `npm run dev:api` (custom tsx server on port 5001; only registers `live-v
 Production-like: `vercel dev` if preferred.
 
 Used by the deployed app:
-- `/api/atlas-pmtiles` — serves map tiles for a verified release (`release_id` required)
+- `/api/atlas-pmtiles` — unused since tiles load directly from the data domain; kept only so older cached bundles still draw
 - `/api/carto-tiles` — basemap tile proxy (keeps `CARTO_BASEMAP_API_KEY` server-side)
 - `/api/geo` — approximate location fallback from Vercel's edge headers
 - `/api/version` — current build ID for the app-update banner

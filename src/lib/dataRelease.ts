@@ -1,4 +1,4 @@
-import { BETA_R2_PUBLIC_URL, R2_PUBLIC_URL } from '../../shared/config';
+import { BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL, R2_PUBLIC_URL } from '../../shared/config';
 import { RELEASE_HISTORY_KEY, parseReleaseHistory, type ReleaseHistoryEntry } from '../../shared/releaseHistory';
 import { takeEarlyRelease } from './earlyData';
 import { isAcceptedTileRulesVersion, ROUTE_ARTIFACT_SCHEMA_VERSION } from '../../shared/artifactSchema';
@@ -106,10 +106,35 @@ export function dataReleaseAssetUrl(release: DataRelease, key: string, baseUrl =
   return `${baseUrl.replace(/\/$/, '')}/${key.replace(/^\//, '')}?v=${encodeURIComponent(release.releaseId)}`;
 }
 
-export function dataReleaseApiUrl(releaseId: string, variant?: 'overview'): string {
-  const params = new URLSearchParams({ release_id: releaseId });
-  if (variant) params.set('variant', variant);
-  return `/api/atlas-pmtiles?${params.toString()}`;
+/**
+ * Deployed builds read map tiles straight from the public bucket's custom domain, whose CORS
+ * rules allow the production site and previews. Routing them through a Vercel function used up
+ * the Fast Origin Transfer allowance (every tile byte passed through the function).
+ */
+export const PMTILES_PUBLIC_URL = DEFAULT_R2_PUBLIC_URL;
+
+/** A prefix no release uses: requests under it 404, so the map draws no routes. */
+const NO_RELEASE_PREFIX = 'atlas/releases/unavailable';
+
+/**
+ * The PMTiles archive the map reads. Deployed builds use the release's own keys on the public
+ * domain; local development keeps its same-origin proxy (`baseUrl`). With no verified release a
+ * deployed build gets a URL that serves nothing, never the unpaired legacy archive.
+ */
+export function dataReleasePmtilesUrl(
+  release: DataRelease | null,
+  variant: 'detail' | 'overview',
+  deployed: boolean,
+  baseUrl = R2_PUBLIC_URL,
+): string | null {
+  if (release) {
+    const key = variant === 'overview' ? release.overviewPmtilesKey : release.pmtilesKey;
+    return dataReleaseAssetUrl(release, key, deployed ? PMTILES_PUBLIC_URL : baseUrl);
+  }
+  if (deployed) {
+    return `${PMTILES_PUBLIC_URL}/${NO_RELEASE_PREFIX}/${variant === 'overview' ? 'atlas-overview.pmtiles' : 'atlas.pmtiles'}`;
+  }
+  return null;
 }
 
 export function dataReleaseAgencyUrl(

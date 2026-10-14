@@ -111,6 +111,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
+- **Basemap images now stay in the browser for 7 days**: returning visitors no longer re-download the base map, and far fewer tile requests reach Atlas's server, cutting Vercel transfer use. Error and "API key required" tiles are never cached. (#856)
 - **The map's routes start loading sooner**: the data lookup and the route-tile headers now start while the page code is still loading (about 2 to 8 seconds earlier on a slow phone connection) and browsers keep the tiles they have fetched. (CIV-151)
 - **Routes appear sooner on first load**: the map now draws from the tiles alone, and each agency's full data downloads afterwards (selected routes and stops first), so slow connections no longer wait on about 5 MB of data before seeing routes.
 - **Selected routes and stops open from a link without waiting on the map**: a route or stop link now loads its own agency first and shows a brief loading note, or says it couldn't load, instead of staying blank.
@@ -160,6 +161,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **The map loads its route tiles directly from storage**: tiles no longer pass through a Vercel function, which had used up the hosting plan's free transfer allowance and put the site at risk of being paused. (#854)
 - **Routes with a long midday gap no longer show their rush-hour frequency as the headline**: a rule meant for ferries with three midday sailings also fired on bus routes whose only midday trips were split by a 3 to 5 hour gap, so lines like RTL 25 and TTC 39 read every 18 to 30 min (#833).
 - **Routes with a long break between runs no longer show a wait nobody sees**: a route running 70, then 350, then 70 minutes apart read as every 163 minutes; it now reads 70, the wait riders actually get. (#834)
 - **A stray blank line in a feed file no longer fails the whole feed**: Caltrain's refresh was rejected for a row with no route, service or trip id; lines holding only spaces, tabs or commas are now ignored. (#835)
