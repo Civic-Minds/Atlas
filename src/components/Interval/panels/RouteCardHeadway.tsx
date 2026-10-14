@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
+import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
@@ -389,6 +390,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     `**Atlas URL:** ${currentAtlasUrl()}`,
   ].join('\n');
 
+  const patternLabel = routePatternLabel(currentRoute.directions);
+
   return (
     <SidebarCardShell>
       {liveRouteInfo && liveStatus !== 'noData' && (
@@ -425,6 +428,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         );
       })()}
+      {patternLabel && (
+        <p className="text-xs font-bold text-[var(--text-dim)] -mt-1 mb-3 truncate" data-testid="route-pattern-label">{patternLabel}</p>
+      )}
       {FEATURES.beta && variantFamily && (
         <p className="text-xs text-[var(--text-dim)] -mt-1 mb-3">
           Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
