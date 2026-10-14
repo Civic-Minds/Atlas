@@ -16,7 +16,7 @@
   ],
   "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SF",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2886/latest.zip",
-  "lastFeedExpiry": "20260828",
+  "lastFeedExpiry": "20270115",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",
   "cities": [
