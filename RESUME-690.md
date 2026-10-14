@@ -314,8 +314,59 @@ What changes when this branch goes live (318 agencies, about 60,600 route lines)
    58's hourly Boulevard East local no longer shows "every 20" taken from the main pattern. The
    rest are one-to-three-trip lines and rush-hour expresses that had a number from a handful of
    trips.
-4. Each stop now carries its own tier, so the map can colour a route stretch by stretch
-   (behind the segmentColours flag on beta, CIV-152).
+4. Each stop now carries its own tier in the route data. Nothing new is drawn by this branch;
+   the stretch-by-stretch colouring is the separate CIV-152 branch, shown on beta first.
+
+REVIEW FIXES (Opus review of 3d0e22f8, 2026-10-14): the branch's old beta segment drawing
+(routeSegments.ts, MapCanvas wiring) is removed; CIV-152 draws from stopTiers instead.
+CHANGELOG [Unreleased] reset to main's plus this branch's four entries. A stop's grade is the
+better of its merged list and its own list (more service never lowers a grade: a sibling's
+evening trips after the own span's end are not a hole in the own service). The #851 grace no
+longer reads two every-10s a minute apart as 9: merged departures one minute apart collapse to
+one (BUNCHED_DEPARTURE_MINUTES; two apart is kept for subway trunks). A Weekday lift without an
+other-weekday grader is refused. Midday-variant siblings must share the route id, not only
+the short name. Nits left as they are, for later: the midday burst test reuses
+BURST_MAX_SPAN_MINUTES for a 9-15h window; stopTiers carries the headway cap as well as the
+grade, so a section can read a tier its gaps alone would not; middayMembers is built once per
+feed from stopDepsBySharedMember and does not see headsign pools that never became members.
+
+RESCAN 3 (2026-10-14, review fixes 9edf9c8f vs out/mainG; out/fix690j, report690m.txt): tier up
+704, down 5,697 (60 -> infrequent 2,306, 30 -> 60 2,197, 20 -> 30 530, 15 -> 20 341); the own-list
+grade removes 646 of the previous 6,331 drops and adds 12; 71 lifts went with the Weekday
+refusal. Headline losses 2,050: 1,514 midday variants, 361 one-to-three-trip lines, 94 peak
+expresses, 41 with no period on main, 36 evening-only, 4 dark with a midday value on main (oakville 71, pvta 804, smat 13X,
+vta 912: traced earlier, all correctly limited). The 12 new drops (rtcsnv 4770, nyct B41
+Saturday, njt-bus 64, cota 022) come from the bunching collapse raising a pooled stop value a
+minute past a tier edge, which the stop's headway cap turns into the next tier: the
+"stopTiers carries the headway cap" nit above. Named lines unchanged: J14 Saturday
+southbound 10/20, Madison & Jefferson 10/infrequent, P72 60/60, ttc 79 30/60, mbta 28 12/20,
+dayton 06 Saturday both variants 120 again.
+
+DECIDED (manager, 2026-10-14): the #771 floor stays on the headline and the period values. A
+line whose two alternating shapes part ways for a few stops reads the worst drawn stop that
+some pooled trips skip: TriMet 35 to Oregon City, 34 pooled departures every 30, reads 60 at
+every period because 8 of its 84 stops (positions 47-54) are served by one shape only, hourly;
+TTC 29 Wilson reads 16 because its first 6 of 49 stops are own-shape only (every 16) while the
+other 43 pool at every 8. Same rule as the worst-stop tier: the rating is what riders get along
+the whole drawn line; the CIV-152 section colours show the faster stretch. Main read these
+periods from the headsign pool (30 and 8) under a 61 / 16 headline.
+
+FINAL RESCAN (2026-10-14, fix/690-plus-844 b7c71f13 = 13410092 + Opus's #844/#842 dedupe port +
+typecheck fix; out/fix690k vs out/mainG, report690n.txt; port isolated as fix690j vs fix690k,
+report690n-port.txt): tier up 719, down 5,702 (60 -> infrequent 2,307; 30 -> 60 2,201; 20 -> 30
+530; 15 -> 20 342); headline losses 2,050 (1,514 midday variants, 361 one-to-three-trip lines, 94
+peak expresses, 41 no period on main, 36 evening-only, 4 traced as correct). The port alone moves
+23 tiers (16 up: septa 5, nyct-subway 4, lethbridge 2; 7 down: mtd-champaign 2, septa 2,
+nashvillemta, octranspo, via), 13 headlines by a minute or two, and renames 14 mtd-champaign
+Saturday-evening lines. Named lines: J14 Saturday 10/20 and 10/infrequent, P72 60/60, ttc 79
+30/60, mbta 28 12/20. Hand checks of Opus's main-side regressions, all persisting on the combined
+branch: ttc 124 Sunday 15/30 both directions, every stop graded 30 (evening every 30 inside the
+Sunday 9-21 window), honest; septa 6 d0 weekday 15/60: the port draws a 32-stop shape whose
+4-stop tail grades 60 (the #690 branch alone drew 28 stops and read 30), honest under the
+worst-stop rule, the tail is the port's doing; octranspo 88 d0 weekday 17/30 -> 30/30 (final
+30/60): the first 19 stops are served every 30 by the own pattern before a branch joins for the
+every-15 trunk, the #771 floor, honest; njt-bus 167 d1 Saturday 27 -> 60: first 4 stops own-only
+hourly, trunk 28, the same floor, honest.
 
 ## What is left
 

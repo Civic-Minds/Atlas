@@ -91,6 +91,14 @@ describe('settleTier', () => {
 });
 
 describe('liftTierOnDestinationPool', () => {
+  it('ranks a streetcar\'s 8 and 5 as better than 10, not as unknown (TTC 504, CIV-152)', () => {
+    const stops = ['a', 'b'];
+    // A line at tier 8 is never lowered by a lift, and a line graded 8 at every stop lifts to its
+    // headline's tier, not to the stops' 8 (the headline reads surface tiers).
+    expect(liftTierOnDestinationPool({ currentTier: '8', headway: 8, day: 'Saturday', drawnStopIds: stops, gradeAt: () => '15', otherWeekdays: () => [] })).toBe('8');
+    expect(liftTierOnDestinationPool({ currentTier: 'infrequent', headway: 8, day: 'Saturday', drawnStopIds: stops, gradeAt: () => '8', otherWeekdays: () => [] })).toBe('10');
+    expect(liftTierOnDestinationPool({ currentTier: '15', headway: 4, day: 'Saturday', drawnStopIds: stops, gradeAt: () => '5', otherWeekdays: () => [] })).toBe('10');
+  });
   const stops = ['a', 'b', 'c'];
   it('lifts to the pool\'s worst drawn-stop grade, never past the headline', () => {
     expect(liftTierOnDestinationPool({ currentTier: '60', headway: 16, day: 'Weekday', drawnStopIds: stops, gradeAt: () => '15', otherWeekdays: () => [] })).toBe('20');

@@ -72,8 +72,26 @@ export const POOLED_MAX_GAP_GRACE_MINUTES = 5;
  * adds the same for a gap over POOLED_MAX_GAP_TYPICAL_RATIO times the value. Null = publish
  * nothing.
  */
+/**
+ * Merged departures this close together are one bus to a rider: two every-10 patterns one
+ * minute apart are a bus every 10, not every 9 or 5 (Ryan's IndyGo point). GTFS times are
+ * whole minutes, so one minute is the smallest offset two trips can have without being the
+ * same time; two minutes apart is kept, since subway trunks really run every 2.
+ */
+export const BUNCHED_DEPARTURE_MINUTES = 1;
+
+/** Collapse departures within BUNCHED_DEPARTURE_MINUTES of the previous kept one into it. */
+export function collapseBunched(sorted: readonly number[]): number[] {
+  const out: number[] = [];
+  for (const t of sorted) {
+    if (out.length > 0 && t - out[out.length - 1] <= BUNCHED_DEPARTURE_MINUTES) continue;
+    out.push(t);
+  }
+  return out;
+}
+
 export function pooledHeadwayInWindow(times: readonly number[], start: number, end: number, minDeps = 3, allDay = false, own?: readonly number[]): number | null {
-  const inWindow = [...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+  const inWindow = collapseBunched([...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b));
   if (inWindow.length < minDeps) return null;
   const typical = allDay
     ? sustainedMedianHeadwayInWindow(inWindow, start, end, minDeps, undefined, true)

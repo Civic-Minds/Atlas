@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url
+1,Brantford Transit,https://www.brantford.ca/en/transportation/brantford-transit.aspx,America/New_York,en,519-753-3847,https://www.brantford.ca/en/transportation/brantford-transit.aspx
