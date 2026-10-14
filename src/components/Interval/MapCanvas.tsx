@@ -23,7 +23,7 @@ import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusCase, buildFocusedRoutePaint, FOCUS_DIM_OPACITY } from '../../utils/routeFocus';
 import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
-import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
+import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches, selectedSharedStretchRoutes } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { dedupeMapContextByDisplay, getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
@@ -1037,7 +1037,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // nightServiceView colors routes by a boolean nightService flag, not by headway tier --
     // the #317 overlay is a frequency-filter concept and doesn't apply there.
     if (!showRouteLayers || nightServiceView || frequentServiceView || !filteredLayers) {
-      return { segments: [], partialMatches: [] };
+      return { segments: [], partialMatches: [], sharedStretchRoutes: [] };
     }
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
   }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, colorMode]);
@@ -2041,7 +2041,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     // See broadenFilterForPartialMatches' doc comment: pulls #317 partial-match routes back into
     // routes-layer's filter, which tileFilter's own headway clause otherwise excludes them from.
-    const effectiveTileFilter: any = broadenFilterForPartialMatches(tileFilter, frequencySegmentOverlay.partialMatches);
+    // A selected route that passes only on its shared stretch (CIV-82) also needs its features in
+    // the layer, or selecting it draws nothing (#850).
+    const effectiveTileFilter: any = broadenFilterForPartialMatches(tileFilter, [
+      ...frequencySegmentOverlay.partialMatches,
+      ...selectedSharedStretchRoutes(frequencySegmentOverlay.sharedStretchRoutes, selectedRoute),
+    ]);
 
     // Base filter from useIntervalStats — covers agency allowlist, day, direction, span, headway.
     // MapCanvas only adds map-state-specific clauses on top.

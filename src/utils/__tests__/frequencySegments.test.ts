@@ -4,6 +4,7 @@ import {
   computeFrequencySegmentOverlay,
   buildPartialMatchFilterExpression,
   broadenFilterForPartialMatches,
+  selectedSharedStretchRoutes,
 } from '../frequencySegments';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 
@@ -386,5 +387,58 @@ describe('broadenFilterForPartialMatches', () => {
     const keys = [{ agencySlug: 'octranspo', routeId: '6', directionId: 0, headsign: 'Greenboro', day: 'Saturday' }];
     const expr = broadenFilterForPartialMatches(base, keys);
     expect(expr).toEqual(['any', base, buildPartialMatchFilterExpression(keys)]);
+  });
+});
+
+// #850 (TTC 52, h=10 midday): every branch runs every 20, so the route fails, but the four
+// pooled branches pass on the shared stretch (CIV-82). Selecting the route must bring its
+// features back into the base layer; unselected, only the stretch overlay draws.
+describe('shared-stretch-only routes (#850)', () => {
+  const stops = ['A', 'B', 'C', 'D'];
+  const lon = [0, 0.002, 0.004, 0.006];
+  const pooled = Object.fromEntries(stops.map(s => [s, { periods: [null, 10], coverage: [null, 10] }]));
+  const branch = (headsign: string, directionId: number): GeoJSON.Feature => {
+    const order = directionId === 0 ? stops : [...stops].reverse().map(s => s.toLowerCase());
+    const coords = (directionId === 0 ? lon : [...lon].reverse()).map(x => [x, 0]);
+    const own = Object.fromEntries(order.map(s => [s, { midday: 20 }]));
+    return {
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: coords },
+      properties: {
+        agencySlug: 'ttc', routeId: '52', routeBranch: null, directionId, headsign, day: 'Weekday',
+        tier: '20', headway: 20, worstDirectionHeadway: 20,
+        headwayByPeriod: { midday: 20 }, worstDirectionHeadwayByPeriod: { midday: 20 },
+        minStopHeadwayByPeriod: { midday: 20 }, headwayByPeriodSustained: { midday: true },
+        stopOrder: order, stopPositions: [0, 1 / 3, 2 / 3, 1],
+        stopPeriodHeadways: own, stopPeriodCoverageHeadways: own,
+        sharedStretches: [{ from: 0, to: 3, with: [] }],
+        sharedStops: directionId === 0 ? pooled : Object.fromEntries(Object.entries(pooled).map(([k, v]) => [k.toLowerCase(), v])),
+      },
+    };
+  };
+  const stopPoints: GeoJSON.Feature[] = stops.flatMap((s, i) => [s, s.toLowerCase()].map(id => ({
+    type: 'Feature' as const,
+    geometry: { type: 'Point' as const, coordinates: [lon[i], 0] },
+    properties: { stopId: id },
+  })));
+  const layers = {
+    ttc: {
+      type: 'FeatureCollection',
+      features: [branch('Lawrence', 0), branch('Lawrence West Station', 0), branch('Pearson Airport', 1), branch('Royal York', 1), ...stopPoints],
+    },
+  } as unknown as AgencyLayers;
+
+  it('lists the failing route as a shared-stretch route, not a partial match', () => {
+    const overlay = computeFrequencySegmentOverlay(layers, 'midday', 10);
+    expect(overlay.segments.length).toBeGreaterThan(0);
+    expect(overlay.partialMatches).toEqual([]);
+    expect(overlay.sharedStretchRoutes.map(k => k.headsign).sort()).toEqual(['Lawrence', 'Lawrence West Station', 'Pearson Airport', 'Royal York']);
+  });
+
+  it('adds the shared-stretch features back only for the selected route', () => {
+    const { sharedStretchRoutes } = computeFrequencySegmentOverlay(layers, 'midday', 10);
+    expect(selectedSharedStretchRoutes(sharedStretchRoutes, 'ttc::52')).toHaveLength(4);
+    expect(selectedSharedStretchRoutes(sharedStretchRoutes, 'ttc::29')).toEqual([]);
+    expect(selectedSharedStretchRoutes(sharedStretchRoutes, null)).toEqual([]);
   });
 });
