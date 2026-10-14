@@ -145,6 +145,33 @@ reads 13 under a 56 headline), cincinnati 37/24, septa 1, fairfax 334, sct 6892,
 njt-bus 74 and 29. Then rescan (chain690j.sh in the 1419e250 scratchpad, tree trees/fix690g
 checked out at the commit; report690g.py) and report the same tables.
 
+ATTEMPT at the midday-reading decision (not committed; patch in pool-690/tmp/midday-limited.patch,
+apply with `git apply tmp/midday-limited.patch`): stopHasReading = at least 4 unique departures
+9-15h spread past a burst (90 min), on the merged list; own terminal likewise; rail included.
+Typecheck clean. What it does, so the next session can decide the scope before re-running:
+- Suite: 5 failures to re-pin or rethink. Saint John 12 weekday (6 trips, 4-hour midday holes)
+  reads no headline; capmetro 550 weekday (2 midday departures at its terminal) reads no
+  headline instead of the Downtown pool's 34, which suggests the pool pre-check must not need a
+  midday reading of the own list; Basin Transit 1 Saturday Yucca Valley direction loses its 90
+  (4 midday departures, so the burst test or the pooled list is the cause); clemson TL-24's
+  Saturday-night-tail filter check flips (previous-night-tail.test.ts:92).
+- njt-rail processed locally vs main: 20 lines change. Montclair-Boonton M to Hoboken reads 60,
+  not limited: its own terminal has no midday reading but the merged list at Newark Broad St
+  has one, and the J14 rule then reads the worst pooled stop reading (60). Under the decision as
+  worded it should be limited, which means the J14 rule must apply only when the own pattern is
+  not peak-only, or J14 (own terminal four trips, one or two at midday) goes limited too. Decide
+  which. Also: HBLR 4 Danforth 86 -> 20, 8th Street 23 -> 20 (pooled across headsigns), Port
+  Jervis 6 weekday 36 -> limited, RVL/NLR 13 7 -> 10, Raritan 16 to Newark 64 -> limited (tier
+  60), Saturday lines with 2-hourly service (120) go limited. NEC 10 to New York unchanged (20).
+- metra vs main: 17 lines change: weekend 2-hourly lines (120) go limited; MD-N Fox Lake and
+  Grayslake 120 -> 62, UP-N Winnetka 294 -> 60, UP-NW 150/300 -> 120 (pooled station readings);
+  HC and NCS to Chicago Union (peak-only) go limited. BNSF unchanged (60).
+- mbta 134 Middlesex Ave: midday period 13 under a 56 headline is the own terminal's PM/all-day
+  reading over pooled stop periods; with the decision it goes limited. Not root-caused further.
+The literal decision turns every 2-hourly or peak-only rail line and every 6-trip bus line into
+"limited" (no headline); the scan before it already had 596 such lines. Confirm that scope with
+Ryan before rescanning.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
