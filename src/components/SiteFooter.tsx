@@ -8,11 +8,10 @@ const LINK = 'text-[var(--accent)] hover:underline';
 function footerGroups(): { title: string; links: FooterLink[] }[] {
   return [
     {
-      title: 'Atlas',
+      title: 'Explore',
       links: [
         { href: '/', label: 'Map' },
         ...(FEATURES.agencyPages ? [{ href: '/agencies', label: 'Agencies' }] : []),
-        ...(FEATURES.whatsNew ? [{ href: '/changelog', label: 'Changelog' }] : []),
       ],
     },
     {
@@ -20,7 +19,13 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       links: [
         { href: '/about/docs', label: 'Docs' },
         ...(FEATURES.researchApps ? [{ href: '/research', label: 'Research' }] : []),
-        { href: '/about', label: 'About' },
+      ],
+    },
+    {
+      title: 'About',
+      links: [
+        { href: '/about', label: 'About Atlas' },
+        ...(FEATURES.whatsNew ? [{ href: '/changelog', label: 'Changelog' }] : []),
       ],
     },
   ];
@@ -29,7 +34,7 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
 export default function SiteFooter() {
   return (
     <footer className="mt-8 pt-5 text-sm text-[var(--text-dim)]" aria-label="Site footer">
-      <nav className="grid grid-cols-2 gap-x-8 gap-y-5 sm:flex sm:gap-x-16" aria-label="Footer links">
+      <nav className="grid grid-cols-3 gap-x-6 gap-y-5 sm:flex sm:gap-x-32" aria-label="Footer links">
         {footerGroups().map(group => (
           <div key={group.title}>
             <div className="mb-2 text-xs font-black text-[var(--text-muted)]">{group.title}</div>
