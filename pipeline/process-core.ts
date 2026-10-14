@@ -2029,7 +2029,10 @@ export async function processGtfsBuffer(
       if (deps === 0 || daytime * 2 < deps) return false;
       const siblings = middayMembers(poolKey);
       const drawn = drawnMembers(poolKey);
-      return [...siblings].some(member => member !== ownMember && drawn.has(member));
+      // Siblings are keyed by short name; only members of this route id count (two routes can
+      // share a short name).
+      const ownRouteId = feature.properties.routeId as string;
+      return [...siblings].some(member => member !== ownMember && drawn.has(member) && member.startsWith(`${ownRouteId}|`));
     };
     // A drawn stop has a real all-day reading when its list has at least
     // MIN_ALL_DAY_TERMINAL_DEPARTURES unique departures over 6-22h: the thin-shape rescue's
@@ -2078,6 +2081,9 @@ export async function processGtfsBuffer(
       if (worst == null) return;
       // Down: the worst graded stop decides (ungraded stops never drag).
       if ((TIER_RANK[worst] ?? 99) > (TIER_RANK[current] ?? 99)) { feature.properties.tier = worst; return; }
+      // A Weekday lift needs the other weekdays' grades (#728); without a grader for them (the
+      // thin-own-sample path, or no destination pool) there is no lift.
+      if (day === 'Weekday' && !lift) return;
       // Up: only when every stop of the own pattern is graded (a drawn stop the pool serves too
       // thinly to grade refuses the lift, as #728 did) and, on Weekday, the other weekdays
       // agree, never past the headline.
@@ -2136,12 +2142,20 @@ export async function processGtfsBuffer(
           const headway = allStopHw[stopId];
           if (headway == null) continue;
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
+          // More service never lowers a grade: the own pattern's list is graded too and the
+          // better grade stands. Own every 15 from 07:00 to 19:00 plus a sibling every 15 from
+          // 20:00 to 22:00 merged to a list with a 19:00-20:00 hole and graded 60; that hole is
+          // the edge of the own service, not a gap in it.
+          const ownTimes = metricStopMap.get(stopId);
+          const ownGraded = ownTimes && ownTimes !== times ? scopedTerminalHeadline(ownTimes, day as DayType, featureRoute?.route_type ?? '', railFeature) : null;
+          const best = [graded?.tier, ownGraded?.tier].filter((t): t is string => t != null)
+            .sort((a, b) => (TIER_RANK[a] ?? 99) - (TIER_RANK[b] ?? 99))[0];
           // No every-gap grade (a hole breaks the sustained sample, or rail): no stop grade. The
           // headway's own tier never stands in for it, so a stop with a 100-minute hole is not
           // graded 20 on its usual wait.
-          if (graded?.tier == null) continue;
+          if (best == null) continue;
           const byHeadway = headwayToTier(headway);
-          stopTiers[stopId] = (TIER_RANK[graded.tier] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? graded.tier : byHeadway;
+          stopTiers[stopId] = (TIER_RANK[best] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? best : byHeadway;
         }
         if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
       }

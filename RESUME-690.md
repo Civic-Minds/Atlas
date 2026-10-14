@@ -314,8 +314,21 @@ What changes when this branch goes live (318 agencies, about 60,600 route lines)
    58's hourly Boulevard East local no longer shows "every 20" taken from the main pattern. The
    rest are one-to-three-trip lines and rush-hour expresses that had a number from a handful of
    trips.
-4. Each stop now carries its own tier, so the map can colour a route stretch by stretch
-   (behind the segmentColours flag on beta, CIV-152).
+4. Each stop now carries its own tier in the route data. Nothing new is drawn by this branch;
+   the stretch-by-stretch colouring is the separate CIV-152 branch, shown on beta first.
+
+REVIEW FIXES (Opus review of 3d0e22f8, 2026-10-14): the branch's old beta segment drawing
+(routeSegments.ts, MapCanvas wiring) is removed; CIV-152 draws from stopTiers instead.
+CHANGELOG [Unreleased] reset to main's plus this branch's four entries. A stop's grade is the
+better of its merged list and its own list (more service never lowers a grade: a sibling's
+evening trips after the own span's end are not a hole in the own service). The #851 grace no
+longer reads two every-10s a minute apart as 9: merged departures one minute apart collapse to
+one (BUNCHED_DEPARTURE_MINUTES; two apart is kept for subway trunks). A Weekday lift without an
+other-weekday grader is refused. Midday-variant siblings must share the route id, not only
+the short name. Nits left as they are, for later: the midday burst test reuses
+BURST_MAX_SPAN_MINUTES for a 9-15h window; stopTiers carries the headway cap as well as the
+grade, so a section can read a tier its gaps alone would not; middayMembers is built once per
+feed from stopDepsBySharedMember and does not see headsign pools that never became members.
 
 ## What is left
 
