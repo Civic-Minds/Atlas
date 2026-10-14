@@ -44,6 +44,18 @@ describe('typical wait for alternating gaps', () => {
     expect(Math.round(typicalOfGaps([120, 285, 115]))).toBe(173);
   });
 
+  it('keeps the median for three gaps with a break at least 3x the median (#834)', () => {
+    expect(typicalOfGaps([70, 350, 70])).toBe(70);
+    expect(typicalOfGaps([30, 90, 30])).toBe(30);
+    expect(typicalOfGaps([150, 450, 150])).toBe(150);
+    expect(typicalOfGaps([80, 460, 100])).toBe(100);
+    // Under 3x it is still an alternation and reads the mean.
+    expect(typicalOfGaps([60, 120, 60])).toBe(80);
+    expect(Math.round(typicalOfGaps([120, 285, 115]))).toBe(173);
+    // Four or more gaps keep the existing rule.
+    expect(typicalOfGaps([30, 90, 30, 30, 90, 30])).toBe(90);
+  });
+
   it('counts a gap as long from 1.5x the median, and as an outlier above 5x', () => {
     // 30 is exactly 1.5x the median 20: long, so the gaps alternate and read their mean.
     expect(typicalOfGaps([20, 30, 20, 30, 20, 30, 20])).toBe(170 / 7);

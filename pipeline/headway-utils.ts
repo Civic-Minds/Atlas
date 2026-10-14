@@ -47,7 +47,8 @@ export const ALTERNATING_HOLE_RATIO = 3;
  * when larger (#772:
  * basin transit 1 Saturday midday 60, 120, 60 read 60; saint john 12 read 60 for a 60, 60,
  * 225, 255, 60 day). One odd gap in regular service (10, 10, 10, 10, 30) stays on its median,
- * and so does any list of one or two gaps.
+ * and so does any list of one or two gaps. Three gaps with one at least 3x the median (70, 350, 70)
+ * also stay on the median: that is a break between runs, not an alternation (#834).
  */
 export function typicalOfGaps(gapsInTimeOrder: readonly number[]): number {
   const sorted = [...gapsInTimeOrder].sort((a, b) => a - b);
@@ -55,6 +56,9 @@ export function typicalOfGaps(gapsInTimeOrder: readonly number[]): number {
   if (sorted.length < 3 || median <= 0) return median;
   const inRange = gapsInTimeOrder.filter(g => g <= median * ALTERNATING_MAX_GAP_RATIO);
   if (inRange.length < 3) return median;
+  // Three gaps (four departures) cannot show an alternation, so a gap at least 3x the median is a
+  // break between runs of service (centro 21950 70, 350, 70), not a wait riders see (#834).
+  if (inRange.length === 3 && Math.max(...inRange) >= median * ALTERNATING_HOLE_RATIO) return median;
   const isLong = inRange.map(g => g >= median * ALTERNATING_LONG_GAP_RATIO);
   let lead = 0;
   while (lead < isLong.length && isLong[lead]) lead++;
