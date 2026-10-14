@@ -295,6 +295,28 @@ report690l-main.txt and report690l-branch.txt, drift-*.json in the 1419e250 scra
 - Tests: full pipeline/api/shared suite passes (1,236 tests); three pins moved for the floor
   (transit-phase2 near-miss tests, RCT 117 weekday tier 60).
 
+## Summary for Ryan (plain language, 2026-10-14)
+
+What changes when this branch goes live (318 agencies, about 60,600 route lines):
+
+1. A route's frequency tier is now the worst stop along its line, not just its first stop. About
+   6,300 lines (10%) go down one tier, because buses run a few minutes late on the timetable by
+   the time they reach mid-route stops and a 30-minute route shows 31-36 minute gaps there.
+   Example: TTC 79 Runnymede westbound shows "every 30" but drops from tier 30 to tier 60,
+   because riders at Runnymede and Foxwell wait up to 36 minutes. About 775 lines go up a tier
+   because every stop on them pools with a frequent trunk (TTC 165 Albion and Weston: 15 to 10).
+2. About 1,500 hourly lines move up from "infrequent" to tier 60 on every agency, because one
+   61-minute gap in a 12-hour day no longer fails them. Example: WMATA P72 on Saturday.
+3. About 2,150 lines stop showing a number and show as limited service. Three typical cases:
+   TTC 86C to Sheppard on Saturday runs only in the rush hours, so it no longer shows "every 10"
+   borrowed from the Zoo trips that run all day. CTA 77 buses that short-turn at Octavia run nine
+   times in about an hour at midday, so they no longer show "every 10" on their own. NJ Transit
+   58's hourly Boulevard East local no longer shows "every 20" taken from the main pattern. The
+   rest are one-to-three-trip lines and rush-hour expresses that had a number from a handful of
+   trips.
+4. Each stop now carries its own tier, so the map can colour a route stretch by stretch
+   (behind the segmentColours flag on beta, CIV-152).
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
