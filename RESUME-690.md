@@ -342,6 +342,15 @@ minute past a tier edge, which the stop's headway cap turns into the next tier: 
 southbound 10/20, Madison & Jefferson 10/infrequent, P72 60/60, ttc 79 30/60, mbta 28 12/20,
 dayton 06 Saturday both variants 120 again.
 
+DECIDED (manager, 2026-10-14): the #771 floor stays on the headline and the period values. A
+line whose two alternating shapes part ways for a few stops reads the worst drawn stop that
+some pooled trips skip: TriMet 35 to Oregon City, 34 pooled departures every 30, reads 60 at
+every period because 8 of its 84 stops (positions 47-54) are served by one shape only, hourly;
+TTC 29 Wilson reads 16 because its first 6 of 49 stops are own-shape only (every 16) while the
+other 43 pool at every 8. Same rule as the worst-stop tier: the rating is what riders get along
+the whole drawn line; the CIV-152 section colours show the faster stretch. Main read these
+periods from the headsign pool (30 and 8) under a 61 / 16 headline.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
