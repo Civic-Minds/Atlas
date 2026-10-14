@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Added
 
+- **The route card says when only the shared section meets the filter**: a route whose branches fail the filter but share a frequent stretch now says so, instead of looking like a mix-up (CIV-82).
 - **Search finds metro areas, not just agencies and stops**: typing "Montreal" (accents and case ignored) lists the area at the top, and picking it zooms the map there, like opening a ?area= link
 
 - **Every agency gets its own frequency page, with real numbers and a link into the map**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, an intro sentence naming the agencies it connects with (stops within 150 m), and nearby agencies, so the agency can be found in search once these go public.
