@@ -81,11 +81,11 @@ describe('tier regraded on the destination pool along the drawn line (#728)', ()
     expect(south).toBeDefined();
     expect(south.headwayByPeriod.midday).toBe(8);
     // Since #690 the headline reads the same pool (every 8 at the terminal, not the shape's own
-    // 16), every stop the 7A serves too reads the pool, and the line is one segment at tier 20.
+    // 16), every stop the 7A serves too reads the pool, and every stop grades 20 (CIV-152).
     expect(south.headway).toBe(8);
     expect(south.tier).toBe('20');
     expect(new Set(Object.values(south.stopHeadways))).toEqual(new Set([8]));
-    expect(south.segments).toEqual([{ start: south.stopPositions[0], end: south.stopPositions.at(-1), tier: '20', headway: 8 }]);
+    expect(new Set(Object.values(south.stopTiers))).toEqual(new Set(['20']));
   });
 
   it('a lone shape with a real hole keeps its grade: there is no larger pool to read', async () => {

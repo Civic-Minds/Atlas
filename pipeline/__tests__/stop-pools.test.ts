@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildPooledStopMap, computeStopSharers, segmentsByTier } from '../stopPools';
+import { buildPooledStopMap, computeStopSharers } from '../stopPools';
 import type { SharedStretchPattern } from '../sharedStretch';
 
 // #690: who pools with whom at each stop, and how a line is cut into segments.
@@ -95,60 +95,3 @@ describe('buildPooledStopMap', () => {
   });
 });
 
-describe('segmentsByTier', () => {
-  const grades: Record<string, { tier: string | null; headway: number | null }> = {
-    s0: { tier: '10', headway: 8 }, s1: { tier: '10', headway: 8 }, s2: { tier: '10', headway: 8 },
-    s3: { tier: '20', headway: 16 }, s4: { tier: '20', headway: 16 },
-  };
-  const along = (ids: string[]) => ids.map((stopId, i) => ({ stopId, t: ids.length === 1 ? 0 : i / (ids.length - 1) }));
-  it('cuts the line where the tier changes, half way between stops, and reports the worst stop headway per segment', () => {
-    expect(segmentsByTier(along(seq(0, 4)), id => grades[id])).toEqual([
-      { start: 0, end: 0.625, tier: '10', headway: 8 },
-      { start: 0.625, end: 1, tier: '20', headway: 16 },
-    ]);
-  });
-  it('never grades a stop better than its headway implies', () => {
-    // Every-gap grade 10 but a stop headway of 16: the segment reads 20.
-    expect(segmentsByTier(along(['s0', 's1']), () => ({ tier: '10', headway: 16 }))).toEqual([{ start: 0, end: 1, tier: '20', headway: 16 }]);
-    // Rail has no every-gap grade: the headway alone decides.
-    expect(segmentsByTier(along(['s0', 's1']), () => ({ tier: null, headway: 12 }))).toEqual([{ start: 0, end: 1, tier: '15', headway: 12 }]);
-  });
-  it('an outer run of stops with no all-day value is its own limited-service piece, never the trunk\'s pooled colour (#810)', () => {
-    // A peak-only outer tail (s0, s1) before a pooled trunk: the tail reads span, the trunk 10.
-    const g: Record<string, { tier: string | null; headway: number | null }> = { ...grades, s0: { tier: null, headway: null }, s1: { tier: '10', headway: null } };
-    expect(segmentsByTier(along(seq(0, 4)), id => g[id])).toEqual([
-      { start: 0, end: 0.375, tier: 'span', headway: null },
-      { start: 0.375, end: 0.625, tier: '10', headway: 8 },
-      { start: 0.625, end: 1, tier: '20', headway: 16 },
-    ]);
-    // A valueless run at the far end reads limited service too (GO 21: the last two stops).
-    const tail: Record<string, { tier: string | null; headway: number | null }> = { ...grades, s3: { tier: null, headway: null }, s4: { tier: null, headway: null } };
-    expect(segmentsByTier(along(seq(0, 4)), id => tail[id])).toEqual([
-      { start: 0, end: 0.625, tier: '10', headway: 8 },
-      { start: 0.625, end: 1, tier: 'span', headway: null },
-    ]);
-    // The last stop alone is where the line ends: without a value it joins the run before it
-    // rather than reading limited service (a terminal's few departures are not the service to it).
-    const end: Record<string, { tier: string | null; headway: number | null }> = { ...grades, s4: { tier: null, headway: null } };
-    expect(segmentsByTier(along(seq(0, 4)), id => end[id])).toEqual([
-      { start: 0, end: 0.625, tier: '10', headway: 8 },
-      { start: 0.625, end: 1, tier: '20', headway: 16 },
-    ]);
-    // A valueless stop between valued stops is one the line's trips pass: it joins the worse
-    // neighbouring run (TTC 12's Variety Village stop, 12 of its trips).
-    const inner: Record<string, { tier: string | null; headway: number | null }> = { ...grades, s2: { tier: null, headway: null } };
-    expect(segmentsByTier(along(seq(0, 4)), id => inner[id])).toEqual([
-      { start: 0, end: 0.375, tier: '10', headway: 8 },
-      { start: 0.375, end: 1, tier: '20', headway: 16 },
-    ]);
-  });
-  it('a stop with no reading joins the worse neighbouring run; a one-stop tail is its own segment', () => {
-    const g: Record<string, { tier: string | null; headway: number | null } | null> = { ...grades, s2: null, s5: { tier: '60', headway: 60 } };
-    expect(segmentsByTier(along(seq(0, 5)), id => g[id] ?? null)).toEqual([
-      { start: 0, end: 0.3, tier: '10', headway: 8 },
-      { start: 0.3, end: 0.9, tier: '20', headway: 16 },
-      { start: 0.9, end: 1, tier: '60', headway: 60 },
-    ]);
-    expect(segmentsByTier(along(seq(0, 2)), () => null)).toEqual([]);
-  });
-});

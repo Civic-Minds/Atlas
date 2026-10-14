@@ -31,14 +31,27 @@ function tierRuns(p: any): string[] {
 // route tier uses, so the map can colour the line section by section without showing a stop
 // better than its own gaps allow.
 describe('stopTiers', () => {
+  it('cta J14 Saturday southbound: the route tier is the worst stop grade, 20, not the origin\'s 15', async () => {
+    // The evening gap is 14 at the garage origin (15 by grace) but widens to 18 from the sixth
+    // stop on, which grades 20: the line is every 20 by its own rule at 29 of 34 stops.
+    const p = await line('cta-j14-saturday', 'cta', 'Saturday', '103rd Street & Stony Island Garage Terminal');
+    expect(p.headway).toBe(10);
+    expect(tierRuns(p)).toEqual(['15', '20']);
+    expect(p.tier).toBe('20');
+  });
+
   it('cta J14 Saturday: the 4-trip Madison & Jefferson shape is graded by the pooled trunk at every stop', async () => {
     // Real CTA feed (2026-11-30), route J14 Saturday, shapes thinned 10x. The drawn shape has
     // four trips of its own (CIV-150: it read 455 before #690); every stop pools with the
-    // every-10 service, so the stops grade 15 and 10 while the route's own tier stays
-    // infrequent (the tier only degrades, and the #728 lift needs the headsign pool).
+    // every-10 service, so the stops grade 15 and 10. The tier stays infrequent: the shape's own
+    // terminal, Madison & Jefferson (stop 456), one stop past the main terminal, sees only these
+    // six trips (04:30-06:20 and 20:40), has no all-day reading and so no grade, and a stop of
+    // the own pattern without a grade refuses the lift (#728's rule). It never drags the tier
+    // either: the published grades alone would read 15.
     const p = await line('cta-j14-saturday', 'cta', 'Saturday', 'Madison & Jefferson');
     expect(p.headway).toBe(10);
     expect(p.tier).toBe('infrequent');
+    expect(p.stopTiers['456']).toBeUndefined();
     expect(Object.keys(p.stopTiers)).toHaveLength(p.stopOrder.length);
     expect(tierRuns(p)).toEqual(['15', '10', '15']);
   });
@@ -48,6 +61,7 @@ describe('stopTiers', () => {
     // together the pooled list grades every 10; the stretches only this branch serves keep 20.
     const p = await line('ttc-96-weekday-east', 'ttc', 'Weekday', 'York Mills via Martin Grove and Westhumber');
     expect(p.tier).toBe('20');
+    expect(p.headway).toBe(17);
     expect(tierRuns(p)).toEqual(['20', '10', '20', '10', '15']);
     // A stop's tier is never better than its headway's tier.
     for (const stopId of p.stopOrder as string[]) {

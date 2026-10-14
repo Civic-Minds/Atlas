@@ -148,7 +148,10 @@ describe('reference date clamp skips an expired newest period (RCT)', () => {
     const weekday = JSON.parse(result.geojson).features
       .map((feature: any) => feature.properties)
       .filter((p: any) => p.day === 'Weekday' && p.stopId == null);
-    for (const [route, tier] of [['117', '60'], ['118', 'infrequent']]) {
+    // 117's tier is infrequent since CIV-152: phase 2 graded the loop's origin, where each
+    // trip's arrival pads the list, every 60; at the stops along the loop the afternoon has a
+    // two-hour gap, and the worst stop grade is the line's tier. The headline stays 60.
+    for (const [route, tier] of [['117', 'infrequent'], ['118', 'infrequent']]) {
       const features = weekday.filter((p: any) => p.routeId === route);
       expect(features.length).toBeGreaterThan(0);
       for (const p of features) {

@@ -196,6 +196,18 @@ in (CIV-97 tile whitelist keeps segments out of tiles; they are read from agency
 decision (Ryan, 2026-10-14): no dashed or thinner limited style; colour each stretch by its own
 frequency tier instead. tmp/midday-limited.patch is superseded.
 
+TIER RULE (manager, 2026-10-14, CIV-152): the route tier is the worst stopTiers grade along
+the own pattern (settleTierOnStops in process-core.ts): down whenever a graded stop is worse
+than phase 2's origin grade; up only through liftTierOnDestinationPool with every own-pattern
+stop graded and the other weekdays agreeing, never past the headline. Stops without an
+every-gap grade (no all-day reading, or a hole that breaks the sustained sample) carry no
+stopTier and never drag the tier; they refuse a lift. The `segments` property and
+segmentsByTier are gone; stopTiers replaces them. Re-pins: RCT 117 loop tier infrequent (the
+origin list was padded by each trip's arrival; the stops have a two-hour PM gap), GCRTA 67
+dir 0 tier 60 (terminal evening gap), J14 Saturday southbound 20, J14 Madison & Jefferson
+stays infrequent (own terminal stop 456 has six trips, no grade, refuses the lift). The
+rescan must report tier moves up and down per agency with five hand-checkable examples each.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,

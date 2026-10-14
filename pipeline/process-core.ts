@@ -41,7 +41,7 @@ import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, segmentsByTier, type StopSharers } from './stopPools.js';
+import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -2030,6 +2030,39 @@ export async function processGtfsBuffer(
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
+    // CIV-152: the drawn stops' every-gap grades, filled by publishStopData.
+    let publishedStopTiers: Record<string, string> | null = null;
+    // The route tier is the worst stop grade along the drawn line, one method for the line and
+    // its sections: phase 2 graded the shape's own trips at their origin only, so a line whose
+    // evening gap widens downstream held 15 at the origin while 29 of its 34 stops graded 20
+    // (cta J14 Saturday), and a four-trip shape every stop of which pools with the trunk stayed
+    // infrequent. Stops without an all-day reading carry no grade, so a limited tail never
+    // drags the line. Bus only (rail has no every-gap stop grade) and only where the line has a
+    // headline: a limited line keeps its own tier.
+    const settleTierOnStops = (drawnStopIds: readonly string[], lift?: { gradeOnWeekday: (stopId: string, weekday: { name: DayName; tripIds: Set<string> }) => string | null; otherWeekdays: () => Array<{ name: DayName; tripIds: Set<string> }> }): void => {
+      if (railFeature || !publishedStopTiers || feature.properties.headway == null
+        || feature.properties.serviceClass === 'irregular' || feature.properties.tier === 'span') return;
+      const stopTiers = publishedStopTiers;
+      const current = feature.properties.tier as string;
+      let worst: string | null = null;
+      for (const tier of Object.values(stopTiers)) {
+        if (worst == null || (TIER_RANK[tier] ?? 99) > (TIER_RANK[worst] ?? 99)) worst = tier;
+      }
+      if (worst == null) return;
+      // Down: the worst graded stop decides (ungraded stops never drag).
+      if ((TIER_RANK[worst] ?? 99) > (TIER_RANK[current] ?? 99)) { feature.properties.tier = worst; return; }
+      // Up: only when every stop of the own pattern is graded (a drawn stop the pool serves too
+      // thinly to grade refuses the lift, as #728 did) and, on Weekday, the other weekdays
+      // agree, never past the headline.
+      feature.properties.tier = liftTierOnDestinationPool({
+        currentTier: current,
+        headway: feature.properties.headway as number,
+        day: day as DayType,
+        drawnStopIds,
+        gradeAt: (stopId, weekday) => (weekday ? (lift ? lift.gradeOnWeekday(stopId, weekday) : null) : stopTiers[stopId] ?? null),
+        otherWeekdays: () => (lift ? lift.otherWeekdays() : []),
+      });
+    };
     const publishStopData = (): { onShape: typeof coverageStops; stopHeadways: Record<string, number> } | null => {
       // Step 2: project all stops onto this feature's specific shape, then filter to stops
       // within MAX_STOP_DEV_DEG of the shape (excludes stops from other headsign branches).
@@ -2061,42 +2094,28 @@ export async function processGtfsBuffer(
       if (Object.keys(stopPeriodHeadways).length > 0) {
         feature.properties.stopPeriodHeadways = stopPeriodHeadways;
       }
-      // #690: cut the drawn line into segments graded by what serves each stop: the every-gap
-      // grade of the stop's (pooled) departures, never better than its stop headway implies. A
-      // trunk every 8 shared by two branches every 16 reads one segment at 10-15 and tails at 20.
-      // Every stop of the drawn pattern is cut in, not only the valued stops above: a stop with
-      // no all-day value shows the limited-service styling along its stretch, so a peak-only
-      // outer tail never carries the trunk's pooled colour (#810). Limited is relative to the
-      // line's own day: on a line that runs mostly outside the 6-22h window (TTC 320 Yonge reads
-      // every 7 overnight; 354 Starspray's last trips end after 06:00) no stop has a daytime
-      // reading to be limited, so a valueless stop has no reading here and joins its
-      // neighbours; on a daytime line a tail its few trips reach before dawn is limited. The
-      // line's day is read from the stop lists it publishes (pooled where #690 pools them): TTC
-      // 24 to Steeles is drawn on a 4-trip pre-dawn shape but its stops read the daytime pool,
-      // so the 3 origin stops only those 4 trips serve are limited.
       if (!isMapless && drawnPatternStops().length > 1) {
-        const runsByDay = lineRunsByDay();
         // CIV-152: each drawn stop's every-gap grade, the method the route tier uses, on the
-        // stop's own (pooled) list, never worse than its headway's tier. The client colours the
-        // line section by section from these; a stop with no all-day reading is left out.
+        // stop's own (pooled) list, never better than its headway's tier. The client colours the
+        // line section by section from these and the route tier is their worst (settleTier
+        // below); a stop with no all-day reading (stopHasReading) is left out, so a limited
+        // tail or a valueless stop never grades the line (ttc 17 weekday Steeles via
+        // Wintermute: a tail its own trips reach once at midday graded 30 on that departure).
         const stopTiers: Record<string, string> = {};
-        const segments = segmentsByTier(drawnPatternStops(), stopId => {
+        publishedStopTiers = stopTiers;
+        for (const { stopId } of drawnPatternStops()) {
           const times = stopMetricMap.get(stopId);
-          if (!times || times.length === 0) return null;
-          // The same all-day rule as the headline (stopHasReading), on the same list the stop's
-          // value was read from: a stop that fails it has no all-day reading and is limited (ttc
-          // 17 weekday Steeles via Wintermute: a tail its own trips reach once at midday graded
-          // 30 on that one departure).
+          if (!times || times.length === 0 || !stopHasReading(stopId)) continue;
+          const headway = allStopHw[stopId];
+          if (headway == null) continue;
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
-          const headway = stopHasReading(stopId) ? allStopHw[stopId] ?? null : null;
-          if (headway == null && !runsByDay) return null;
-          if (headway != null) {
-            const byHeadway = headwayToTier(headway);
-            stopTiers[stopId] = graded?.tier != null && (TIER_RANK[graded.tier] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? graded.tier : byHeadway;
-          }
-          return { tier: graded?.tier ?? null, headway };
-        });
-        if (segments.length > 0) feature.properties.segments = segments;
+          // No every-gap grade (a hole breaks the sustained sample, or rail): no stop grade. The
+          // headway's own tier never stands in for it, so a stop with a 100-minute hole is not
+          // graded 20 on its usual wait.
+          if (graded?.tier == null) continue;
+          const byHeadway = headwayToTier(headway);
+          stopTiers[stopId] = (TIER_RANK[graded.tier] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? graded.tier : byHeadway;
+        }
         if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
       }
       return { onShape, stopHeadways };
@@ -2156,6 +2175,7 @@ export async function processGtfsBuffer(
         // Stops with a reading but no published value (saint-john 12: six trips whose all-day
         // sample rejects its 4-hour holes) keep phase 2's own headline.
       }
+      settleTierOnStops(coverageStops.map(p => p.stopId));
       continue;
     }
 
@@ -2326,6 +2346,15 @@ export async function processGtfsBuffer(
           });
         }
       }
+      settleTierOnStops(coverageStops.map(p => p.stopId), featureHeadsign && coverageStops.length > 1 ? (() => {
+        const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
+        const drawnIds = coverageStops.map(p => p.stopId);
+        return {
+          gradeOnWeekday: (stopId: string, weekday: { name: DayName; tripIds: Set<string> }) =>
+            scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature)?.tier ?? null,
+          otherWeekdays: () => otherWeekdayPools(hsKey),
+        };
+      })() : undefined);
       // Minimum stop headway — the best frequency available anywhere on this route.
       // Used by passesRouteFilter so routes with high-frequency sections aren't excluded
       // even when the terminal headway doesn't meet the active threshold (pairs with AI-97 clipping).

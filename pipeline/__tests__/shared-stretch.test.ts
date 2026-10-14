@@ -163,11 +163,9 @@ describe('shared stretch pooling (synthetic)', () => {
       expect(stopHwAt(p)).toEqual([15, 15, 15, 15, 15, 15, 15, 15, 30]);
       expect(p.stopPeriodHeadways.s0.midday).toBe(15);
       expect(p.stopPeriodCoverageHeadways.s0.midday).toBeLessThan(30);
-      // Segments: the stretch at tier 15, the tail at 30.
-      expect(p.segments.map((g: any) => [g.tier, g.headway])).toEqual([['15', 15], ['30', 30]]);
-      expect(p.segments[0].start).toBe(0);
-      expect(p.segments[1].end).toBe(1);
-      expect(p.segments[0].end).toBe(p.segments[1].start);
+      // Stop grades (CIV-152): the stretch at 15, the tail at 30; the route tier is the worst.
+      expect(p.stopOrder.map((s: string) => p.stopTiers[s])).toEqual(['15', '15', '15', '15', '15', '15', '15', '15', '30']);
+      expect(p.tier).toBe('30');
       // The route-level minimums keep the own pattern, so the filter never passes on the stretch.
       expect(p.minStopHeadway).toBe(30);
       expect(p.minStopHeadwayByPeriod.midday).toBe(30);
@@ -326,11 +324,9 @@ describe('shared stretch pooling (real feeds)', () => {
     expect(tail.length).toBeGreaterThan(0);
     expect(shared.map((s: string) => c.stopHeadways[s])).toEqual(shared.map(() => 8));
     for (const s of tail) expect(c.stopHeadways[s]).toBe(16);
-    // The line is cut where the service changes.
-    expect(c.segments.length).toBeGreaterThanOrEqual(2);
-    expect(c.segments[0]).toMatchObject({ tier: '10', headway: 8 });
-    expect(c.segments[0].start).toBeLessThan(0.01);
-    expect(c.segments.at(-1).tier).toBe('20');
+    // The stop grades change where the service does (CIV-152): the shared stops grade 10, the tail 20.
+    expect(new Set(shared.map((s: string) => c.stopTiers[s]))).toEqual(new Set(['10']));
+    expect(new Set(tail.map((s: string) => c.stopTiers[s]))).toEqual(new Set(['20']));
     expectStretchesSound(routes);
     // Northbound has one "Wilson" feature whose trips run on both shapes. The stops both serve
     // read the whole destination (8, #690); the 29C-only stops get every 16, and the headline is
@@ -425,8 +421,8 @@ describe('tiles', () => {
     expect(features.some((f: any) => f.properties.sharedStretches)).toBe(true);
     const tiles = prepareAgencyRouteFeaturesForTiles(features, 'synthetic');
     for (const f of tiles) for (const key of SHARED_STRETCH_KEYS) expect(f.properties).not.toHaveProperty(key);
-    // The line segments (#690) are read from the agency JSON like the stretches; tiles keep
+    // The stop grades (CIV-152) are read from the agency JSON like the stretches; tiles keep
     // only the whitelisted scalars (CIV-97).
-    expect(tiles.some((f: any) => f.properties.segments)).toBe(false);
+    expect(tiles.some((f: any) => f.properties.stopTiers)).toBe(false);
   });
 });
