@@ -330,6 +330,18 @@ BURST_MAX_SPAN_MINUTES for a 9-15h window; stopTiers carries the headway cap as 
 grade, so a section can read a tier its gaps alone would not; middayMembers is built once per
 feed from stopDepsBySharedMember and does not see headsign pools that never became members.
 
+RESCAN 3 (2026-10-14, review fixes 9edf9c8f vs out/mainG; out/fix690j, report690m.txt): tier up
+704, down 5,697 (60 -> infrequent 2,306, 30 -> 60 2,197, 20 -> 30 530, 15 -> 20 341); the own-list
+grade removes 646 of the previous 6,331 drops and adds 12; 71 lifts went with the Weekday
+refusal. Headline losses 2,050: 1,514 midday variants, 361 one-to-three-trip lines, 94 peak
+expresses, 41 with no period on main, 36 evening-only, 4 dark with a midday value on main (oakville 71, pvta 804, smat 13X,
+vta 912: traced earlier, all correctly limited). The 12 new drops (rtcsnv 4770, nyct B41
+Saturday, njt-bus 64, cota 022) come from the bunching collapse raising a pooled stop value a
+minute past a tier edge, which the stop's headway cap turns into the next tier: the
+"stopTiers carries the headway cap" nit above. Named lines unchanged: J14 Saturday
+southbound 10/20, Madison & Jefferson 10/infrequent, P72 60/60, ttc 79 30/60, mbta 28 12/20,
+dayton 06 Saturday both variants 120 again.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
