@@ -13,8 +13,7 @@ import {
   shouldHideNumericRouteShortName,
 } from '../../utils/format';
 import RouteListRow from '../RouteListRow';
-import type { RouteListDisplay } from '../../utils/effectiveHeadway';
-import { headwayEvery } from '../../utils/headwayText';
+import { routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
 
 // Reusable/helper interfaces for route snippets
@@ -33,6 +32,8 @@ export interface SuggestedRoute {
   agencyName: string;
   headway?: number | null;
   limited?: boolean;
+  /** Lower end of a shared-stretch range (display only). */
+  sharedHeadway?: number;
 }
 
 interface SearchSuggestionsPanelProps {
@@ -45,9 +46,9 @@ interface SearchSuggestionsPanelProps {
   displayForRouteKey: (key: string) => RouteListDisplay;
 }
 
-export function routeRowLabels(shortName: string | null | undefined, longName: string | null) {
+export function routeRowLabels(shortName: string | null | undefined, longName: string | null, routeType?: number) {
   const blankShortName = !shortName || !shortName.trim();
-  const hiddenShortName = blankShortName || shouldHideNumericRouteShortName(shortName, longName);
+  const hiddenShortName = blankShortName || shouldHideNumericRouteShortName(shortName, longName, routeType);
   if (hiddenShortName && longName) {
     return { shortName: titleCase(longName), name: undefined };
   }
@@ -60,7 +61,7 @@ export function routeRowLabels(shortName: string | null | undefined, longName: s
   };
 }
 
-export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false) {
+export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null) {
   const agency = shortenAgencyName(agencyName);
   const layout = stacked
     ? 'block max-w-full truncate mt-1 ml-0 text-left'
@@ -70,7 +71,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
-        {headwayEvery(headway)}
+        {routeListHeadwayText(headway, sharedHeadway)}
       </span>
     );
   }
@@ -142,7 +143,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       name={labels.name}
                       right={(() => {
                         const display = displayForRouteKey(r.key);
-                        return routeRowRight(r.agencyName, display.headway, true, display.limited);
+                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway);
                       })()}
                       stacked
                       onClick={() => pickRoute(r.key)}
@@ -167,7 +168,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, r.headway, true, r.limited)}
+                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway)}
                       stacked
                       onClick={() => pickRoute(r.key)}
                       className="border-b-0"

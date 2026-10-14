@@ -29,9 +29,9 @@ describe('buildAreaPageData', () => {
     expect(d.agencies.map(a => a.slug)).toEqual(['ttc', 'hsr']);
     expect(d.totalRoutes).toBe(6);
     expect(d.bands).toEqual([2, 1, 1, 1, 0, 0, 1]); // 4 and 10, 12, 20, 30, none
-    expect(d.agencies[0]).toMatchObject({ slug: 'ttc', totalRoutes: 4, modes: { Subway: 2, Bus: 2 } });
-    expect(d.byMode).toEqual([{ label: 'Subway', routes: 2 }, { label: 'Bus', routes: 4 }]);
-    expect(d.modeColumns).toEqual(['Subway', 'Bus']);
+    expect(d.agencies[0]).toMatchObject({ slug: 'ttc', totalRoutes: 4, modes: { 'Subway/Metro': 2, Bus: 2 } });
+    expect(d.byMode).toEqual([{ label: 'Subway/Metro', routes: 2 }, { label: 'Bus', routes: 4 }]);
+    expect(d.modeColumns).toEqual(['Subway/Metro', 'Bus']);
     expect(d.span).toEqual({ first: 5, last: 28 });
     expect(d.newestRefresh).toBe('2026-09-01');
   });
@@ -84,7 +84,7 @@ describe('buildAreaPageData', () => {
   });
 
   it('names the dates', () => {
-    expect(areaDatesText(d)).toBe('Newest schedule refresh Sep 1, 2026. Atlas data release Oct 13, 2026.');
+    expect(areaDatesText(d)).toBe("Based on the agencies' published timetables, not live arrivals. Newest timetable published Sep 1, 2026. Atlas last updated this page Oct 13, 2026.");
   });
 });
 
@@ -94,8 +94,8 @@ describe('areaAboutParagraph', () => {
   });
 
   it('is one sentence with the agency and route counts', () => {
-    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway, 4 bus).');
-    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
+    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway/metro, 4 bus).');
+    const one = base({ agencies: [{ slug: 'a', name: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
     expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route.');
   });
 });

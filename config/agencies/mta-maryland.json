@@ -61,5 +61,13 @@
       "feedVersion": null,
       "rawArchiveKey": "20261231-7d536b02798b35bc"
     }
+  ],
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "LIGHT RAILLINK",
+      "mode": 100,
+      "reason": "Baltimore Light RailLink is light rail, published as route_type 0 (tram)"
+    }
   ]
 }

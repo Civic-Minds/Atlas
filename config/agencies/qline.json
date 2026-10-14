@@ -38,5 +38,13 @@
       "featureCount": 6
     },
     "checkedAt": "2026-10-12"
-  }
+  },
+  "modeOverrides": [
+    {
+      "routeType": 2,
+      "routeShortName": "ML",
+      "mode": 0,
+      "reason": "QLine is a streetcar, published as route_type 2 (commuter rail)"
+    }
+  ]
 }

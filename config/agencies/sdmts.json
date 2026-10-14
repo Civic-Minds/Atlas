@@ -48,5 +48,31 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-13/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-13/latest.zip",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "Blue",
+      "mode": 100,
+      "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "Copper",
+      "mode": 100,
+      "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "Green",
+      "mode": 100,
+      "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "Orange",
+      "mode": 100,
+      "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
+    }
+  ]
 }

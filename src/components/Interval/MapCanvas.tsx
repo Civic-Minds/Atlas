@@ -43,6 +43,8 @@ import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursCon
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
 import { fitTargetForPoints, routeFitTarget } from '../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../shared/routeGeometry';
+import Panel from '../ui/Panel';
+import ListRow from '../ui/ListRow';
 
 const ON_DEMAND_AREA_COLOR = '#64748b';
 // Selected on-demand features keep their normal paint; the rest fade like routes behind a selection.
@@ -317,6 +319,8 @@ interface MapCanvasProps {
   initialMapCenter?: { lat: number; lon: number; zoom: number };
   /** [south, west, north, east] to fit on first load (`?area=`); an explicit initialMapCenter wins. */
   initialMapBounds?: [number, number, number, number] | null;
+  /** A metro area chosen in search; the map fits to its bounds (as ?area=<slug> does on load). */
+  areaFocus?: { bbox: [number, number, number, number]; nonce: number } | null;
   /**
    * Second map in compare mode: follows the first map's camera, so it never writes the URL or
    * saved view, has no map controls or context menu, and does not expose itself for debugging.
@@ -398,6 +402,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedAgencies,
   initialMapCenter,
   initialMapBounds,
+  areaFocus,
   secondary = false,
   showMapControls = !secondary,
   onMapReady,
@@ -1897,6 +1902,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: 64, maxZoom: 13, duration: 0 });
   }, [initialOnDemandSlug, initialMapCenter, agencies, mapLoaded]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !areaFocus) return;
+    const [s, w, n, e] = areaFocus.bbox;
+    map.fitBounds([[w, s], [e, n]], { padding: 48, maxZoom: 12, duration: 900 });
+  }, [areaFocus, mapLoaded]);
+
   // Handle Reset View — guard with resetViewKey === 0 to skip initial mount trigger
   useEffect(() => {
     const map = mapRef.current;
@@ -2364,25 +2376,25 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {mapContextMenu && (
-        <div
-          className={`absolute ${Z_PANEL} rounded-xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-2xl backdrop-blur-md overflow-hidden pointer-events-auto`}
+        <Panel
+          className={`absolute ${Z_PANEL} pointer-events-auto`}
           style={{ left: mapContextMenu.x, top: mapContextMenu.y }}
         >
-          <button
+          <ListRow
             onClick={handleCopyLocationUrl}
-            className="flex items-center gap-2 w-full px-3.5 py-2.5 border-b border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] transition-colors text-left cursor-pointer"
+            className="justify-start gap-2"
           >
             <Link2 className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
             <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Copy URL for here</span>
-          </button>
-          <button
+          </ListRow>
+          <ListRow
             onClick={handleReportIssue}
-            className="flex items-center gap-2 w-full px-3.5 py-2.5 hover:bg-[var(--bg-btn-hover)] transition-colors text-left cursor-pointer"
+            className="justify-start gap-2"
           >
             <Flag className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
             <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Report an issue</span>
-          </button>
-        </div>
+          </ListRow>
+        </Panel>
       )}
 
       {showMapContext && mapContextOpen && (

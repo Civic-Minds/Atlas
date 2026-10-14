@@ -15,7 +15,7 @@ const TTC: AgencyPageSummary = {
   routeCount: 5, span: { first: 5, last: 28 }, lastRefreshedAt: '2026-08-27', sat: true, sun: true,
   routes: [r('1', 1, 4), r('2', 1, 20), r('5', 3, 12), r('6', 3, 30), r('301', 3, null, { am: null, pm: null, evening: null, overnight: 30 })],
 };
-const HSR: AgencyPageSummary = { ...TTC, slug: 'hsr', name: 'Hamilton Street Railway', displayName: 'HSR (Hamilton)', routes: [r('A', 3, 10), r('B', 3, 25)], routeCount: 2, sat: true, sun: false };
+const HSR: AgencyPageSummary = { ...TTC, slug: 'hsr', name: 'Hamilton Street Railway', displayName: 'HSR (Hamilton)', city: 'Hamilton', routes: [r('A', 3, 10), r('B', 3, 25)], routeCount: 2, sat: true, sun: false };
 const AREA: AreaConfig = {
   slug: 'toronto', name: 'Toronto', type: 'CMA', officialName: 'Toronto', country: 'Canada', cities: ['Toronto'], bbox: [43, -80, 44, -79], center: [43.5, -79.5],
   largeMetro: true, page: true, agencies: ['ttc', 'hsr'],
@@ -28,9 +28,9 @@ function view(ui: React.ReactElement) {
 describe('AgencyPage', () => {
   const data = agencyPageData(TTC, [TTC, HSR], '2026-10-13T00:00:00Z', { slug: 'toronto', name: 'Toronto' });
 
-  it('shows the short title, the area link, plain stats and the five period columns', () => {
+  it('shows the full agency name in the heading, the area link, plain stats and the five period columns', () => {
     view(<AgencyPage data={data} />);
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('TTC · Toronto');
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Toronto Transit Commission');
     expect(screen.getByRole('link', { name: 'Greater Toronto and Hamilton Area →' }).getAttribute('href')).toBe('/area/toronto');
     expect(screen.queryByText('every 16 min')).toBeNull(); // no average wait stat
     expect(screen.getAllByText('every 4 min').length).toBeGreaterThan(0);
@@ -71,20 +71,44 @@ describe('AgencyPage intro', () => {
 
   it('says it once under the title, linking connecting agencies that have a page and counting the rest', () => {
     const d = agencyPageData(withConns, [withConns, HSR], null);
-    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway, 3 bus) in Toronto with 7,566 stops and connects with HSR, Tiny Transit, C and 1 other.');
+    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway/metro, 3 bus) in Toronto with 7,566 stops and connects with Hamilton Street Railway, Tiny Transit, C and 1 other.');
     view(<AgencyPage data={d} />);
-    const p = screen.getByText(/operates 5 routes \(2 subway, 3 bus\) in Toronto with 7,566 stops/);
+    const p = screen.getByText(/operates 5 routes \(2 subway\/metro, 3 bus\) in Toronto with 7,566 stops/);
     expect(p.textContent).toBe(d.intro);
     expect(document.body.textContent!.split('operates 5 routes (').length - 1).toBe(1);
-    expect(screen.getByRole('link', { name: 'HSR' }).getAttribute('href')).toBe('/agency/hsr');
+    expect(screen.getAllByRole('link', { name: 'Hamilton Street Railway' })[0].getAttribute('href')).toBe('/agency/hsr');
     expect(screen.queryByRole('link', { name: 'Tiny Transit' })).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Connects with' })).toBeNull();
-    expect(screen.getByTitle(/within 150 m/)).toBeTruthy();
+    expect(screen.queryByTitle(/150 m/)).toBeNull();
   });
 
   it('has no connects-with clause without connections', () => {
     view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
     expect(screen.queryByText(/connects with/)).toBeNull();
+  });
+});
+
+describe('AgencyPage intro place, notes and headings', () => {
+  const um = { ...TTC, slug: 'um', name: 'University of Michigan Transit Services (Toronto)', city: 'Toronto', stops: 12, websiteUrl: 'https://example.org' };
+
+  it('links the place to its area page and drops the repeated city from the name', () => {
+    const d = agencyPageData(um, [um, HSR], '2026-10-13T00:00:00Z', { slug: 'toronto', name: 'Toronto' });
+    expect(d.intro.startsWith('University of Michigan Transit Services operates 5 routes')).toBe(true);
+    view(<AgencyPage data={d} />);
+    expect(screen.getByRole('link', { name: 'Toronto' }).getAttribute('href')).toBe('/area/toronto');
+    expect(screen.getByRole('link', { name: 'University of Michigan Transit Services' }).getAttribute('href')).toBe('https://example.org');
+    expect(screen.getByText(/Agency website:/)).toBeTruthy();
+    expect(screen.getByText(/Based on the agency's published timetable, not live arrivals\./)).toBeTruthy();
+  });
+
+  it('has the bar note and counts without brackets', () => {
+    view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
+    expect(screen.getByRole('link', { name: /See all agencies/ }).getAttribute('href')).toBe('/agencies');
+    expect(screen.getByText("The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.")).toBeTruthy();
+    expect(screen.queryByText(/sustained/)).toBeNull();
+    const caption = screen.getAllByText(/^Subway/)[0];
+    expect(caption.textContent).toBe('Subway/Metro 2');
+    expect(caption.querySelector('span')?.className).toContain('font-normal');
   });
 });
 
@@ -110,10 +134,10 @@ describe('AreaPage', () => {
   it('lists agencies in a table with only the mode columns the area has, and links each agency', () => {
     view(<AreaPage data={data} />);
     const headers = screen.getAllByRole('columnheader').map(h => h.textContent);
-    expect(headers).toEqual(['Agency', 'Subway', 'Bus']);
-    expect(screen.getByRole('link', { name: 'TTC (Toronto)' }).getAttribute('href')).toBe('/agency/ttc');
-    const ttcRow = screen.getByRole('link', { name: 'TTC (Toronto)' }).closest('tr')!;
-    const hsrRow = screen.getByRole('link', { name: 'HSR (Hamilton)' }).closest('tr')!;
+    expect(headers).toEqual(['Agency', 'Subway/Metro', 'Bus']);
+    expect(screen.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
+    const ttcRow = screen.getByRole('link', { name: 'Toronto Transit Commission' }).closest('tr')!;
+    const hsrRow = screen.getByRole('link', { name: 'Hamilton Street Railway' }).closest('tr')!;
     expect(hsrRow.textContent).toContain('–'); // no subway routes
   });
 
@@ -144,7 +168,7 @@ describe('not found is never shown while loading', () => {
 
   it('area page: blank first, not-found only for a missing slug', async () => {
     at('/area/no-such-area', <AreaPage />, '/area/:slug');
-    expect(screen.queryByText('No page for this area')).toBeNull();
-    await waitFor(() => expect(screen.getByText('No page for this area')).toBeTruthy(), { timeout: 25000 });
+    expect(screen.queryByText('No page for this region')).toBeNull();
+    await waitFor(() => expect(screen.getByText('No page for this region')).toBeTruthy(), { timeout: 25000 });
   }, 60000);
 });

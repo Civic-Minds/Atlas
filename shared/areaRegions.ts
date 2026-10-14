@@ -48,3 +48,8 @@ export function areaRegionTitle(area: { slug: string; name: string }): string {
 export function areaRegionSentenceStart(area: { slug: string; name: string }): string {
   return areaRegionName(area).replace(/^\w/, c => c.toUpperCase());
 }
+
+/** The name without the trailing "area", "metro area" or "region": "Chicago", "Ann Arbor", "Mid-Hudson". Proper names such as "Bay Area" or "Waterloo Region" are kept. */
+export function areaShortName(area: { slug: string; name: string }): string {
+  return areaRegionTitle(area).replace(/ (metropolitan area|metro area|area|region)$/, '');
+}

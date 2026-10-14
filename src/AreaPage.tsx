@@ -17,7 +17,8 @@ import { applySeoToDocument } from './lib/seoDom';
 import { LINK, PAGE_ACTION } from './pageStyles';
 import { FrequencyBar } from './pageParts';
 import SiteFooter from './components/SiteFooter';
-import SiteHeader from './components/SiteHeader';
+import PageShell from './components/ui/PageShell';
+import DataTable from './components/ui/DataTable';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AreaPageData | null {
@@ -54,22 +55,17 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
 
   if (!data) {
     return (
-      <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
-        <div className="mx-auto max-w-3xl">
-          <SiteHeader />
-          <h1 className="mt-24 text-3xl font-black tracking-tight">No page for this area</h1>
+      <PageShell variant="wide">
+          <h1 className="mt-24 text-3xl font-black tracking-tight">No page for this region</h1>
           <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Atlas has no frequency page at this address.</p>
           <a href="/" className={`mt-6 inline-flex items-center gap-2 text-sm font-black ${LINK}`}>Open the Atlas map <ArrowRight className="h-4 w-4" /></a>
-        </div>
-      </main>
+      </PageShell>
     );
   }
 
 
   return (
-    <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
-      <div className="mx-auto max-w-4xl">
-        <SiteHeader />
+    <PageShell variant="wide">
 
         <article className="pb-16 pt-10 sm:pt-14">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -78,7 +74,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
               <p className="mt-1 text-sm text-[var(--text-muted)]">{areaSubtitle(data)}</p>
             </div>
             <a href={areaMapHref(data)} className={PAGE_ACTION}>
-              Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              View on map <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{areaAboutParagraph(data)}</p>
@@ -88,38 +84,33 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
             <h2 id="agencies-heading" className="text-xl font-black tracking-tight">Agencies and weekday frequency</h2>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={data.bands} />
+            <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this area's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
             <div className="mt-6 overflow-x-auto">
-              <table className="w-full table-fixed border-collapse text-left text-sm" style={{ minWidth: `${20 + data.modeColumns.length * 5}rem` }}>
-                <colgroup>
-                  <col />
-                  {data.modeColumns.map(m => <col key={m} className="w-20" />)}
-                </colgroup>
-                <thead>
-                  <tr className="text-[var(--text-dim)]">
-                    <th scope="col" className="py-1.5 pr-4 font-bold">Agency</th>
-                    {data.modeColumns.map(m => <th key={m} scope="col" className="py-1.5 pr-4 font-bold">{m}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.agencies.map(a => (
-                    <tr key={a.slug}>
-                      <th scope="row" className="py-1.5 pr-4 font-normal"><a className={`font-black ${LINK}`} href={agencyPagePath(a.slug)}>{a.displayName}</a></th>
-                      {data.modeColumns.map(m => <td key={m} className="py-1.5 pr-4">{a.modes[m] ?? '–'}</td>)}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div style={{ minWidth: `${20 + data.modeColumns.length * 5}rem` }}>
+                <DataTable
+                  caption="Agencies and route counts by mode"
+                  rows={data.agencies}
+                  rowKey={a => a.slug}
+                  columns={[
+                    { key: 'agency', header: 'Agency', rowHeader: true, className: 'font-normal', cell: a => <a className={`font-black ${LINK}`} href={agencyPagePath(a.slug)}>{a.name}</a> },
+                    ...data.modeColumns.map(m => ({ key: m, header: m, cell: (a: (typeof data.agencies)[number]) => a.modes[m] ?? '–' })),
+                  ]}
+                />
+              </div>
             </div>
-            <p className="mt-2 text-sm text-[var(--text-muted)]">Mode columns count routes. Each route is judged by its slower direction.</p>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">Mode columns count routes. A dash means none.</p>
           </section>
 
+          <a href="/agencies" className={`${PAGE_ACTION} mt-6`}>
+            See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
-            Area: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). Scheduled service, not live arrivals. {areaDatesText(data)}
+            Area: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). {areaDatesText(data)}
           </p>
         </article>
 
         <SiteFooter />
-      </div>
-    </main>
+    </PageShell>
   );
 }

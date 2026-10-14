@@ -13,8 +13,8 @@ const gold = {
 };
 
 describe('historyRouteFilters', () => {
-  it('classifies SacRT route_type=0 light rail as LRT', () => {
-    expect(historyRouteModeLabel(gold)).toBe('LRT');
+  it('classifies SacRT route_type=0 light rail as light rail', () => {
+    expect(historyRouteModeLabel(gold)).toBe('Light rail');
   });
 
   it('builds mode and subtype filter counts', () => {
@@ -23,7 +23,7 @@ describe('historyRouteFilters', () => {
       { routeShortName: '1', routeLongName: 'Greenback', routeType: 3, busSubType: 'local', agencySlug: 'sacrt' },
       { routeShortName: '2', routeLongName: 'Express', routeType: 3, busSubType: 'express', agencySlug: 'sacrt' },
     ])).toEqual([
-      { key: 'mode:100', label: 'LRT', count: 1 },
+      { key: 'mode:100', label: 'Light rail', count: 1 },
       { key: 'subtype:express', label: 'Express', count: 1 },
     ]);
   });

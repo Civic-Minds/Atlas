@@ -137,6 +137,7 @@ export function passesRouteFilter(
     if (!routeModes.includes(effectiveMode({
       routeType: p.routeType,
       routeLongName: p.routeLongName,
+      routeShortName: p.routeShortName,
       agencySlug: modeSlug,
     }))) return false;
   }

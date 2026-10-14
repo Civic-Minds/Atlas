@@ -1,0 +1,501 @@
+{
+  "overrides": [
+    {
+      "agencySlug": "nfta",
+      "routeType": 0,
+      "routeLongName": "Metro Rail",
+      "mode": 100,
+      "reason": "Buffalo Metro Rail is light rail, published as route_type 0 (tram); replaces the former agency-name rule (#811)"
+    },
+    {
+      "agencySlug": "qline",
+      "routeType": 2,
+      "routeShortName": "ML",
+      "mode": 0,
+      "reason": "QLine is a streetcar, published as route_type 2 (commuter rail)"
+    },
+    {
+      "agencySlug": "mbta",
+      "routeType": 0,
+      "routeShortName": "B",
+      "mode": 100,
+      "reason": "Green Line branches are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "mbta",
+      "routeType": 0,
+      "routeShortName": "C",
+      "mode": 100,
+      "reason": "Green Line branches are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "mbta",
+      "routeType": 0,
+      "routeShortName": "D",
+      "mode": 100,
+      "reason": "Green Line branches are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "mbta",
+      "routeType": 0,
+      "routeShortName": "E",
+      "mode": 100,
+      "reason": "Green Line branches are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "mbta",
+      "routeType": 0,
+      "routeLongName": "Mattapan Line",
+      "mode": 100,
+      "reason": "Mattapan Line is light rail (the MBTA groups it with the Green Line), published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "soundtransit",
+      "routeType": 0,
+      "routeShortName": "1 Line",
+      "mode": 100,
+      "reason": "Link (1 Line, 2 Line, T Line) is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "soundtransit",
+      "routeType": 0,
+      "routeShortName": "2 Line",
+      "mode": 100,
+      "reason": "Link (1 Line, 2 Line, T Line) is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "soundtransit",
+      "routeType": 0,
+      "routeShortName": "T Line",
+      "mode": 100,
+      "reason": "Link (1 Line, 2 Line, T Line) is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "trimet",
+      "routeType": 0,
+      "routeLongName": "MAX Blue Line",
+      "mode": 100,
+      "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
+    },
+    {
+      "agencySlug": "trimet",
+      "routeType": 0,
+      "routeLongName": "MAX Green Line",
+      "mode": 100,
+      "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
+    },
+    {
+      "agencySlug": "trimet",
+      "routeType": 0,
+      "routeLongName": "MAX Orange Line",
+      "mode": 100,
+      "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
+    },
+    {
+      "agencySlug": "trimet",
+      "routeType": 0,
+      "routeLongName": "MAX Red Line",
+      "mode": 100,
+      "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
+    },
+    {
+      "agencySlug": "trimet",
+      "routeType": 0,
+      "routeLongName": "MAX Yellow Line",
+      "mode": 100,
+      "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
+    },
+    {
+      "agencySlug": "sfmta",
+      "routeType": 0,
+      "routeShortName": "J",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "agencySlug": "sfmta",
+      "routeType": 0,
+      "routeShortName": "K",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "agencySlug": "sfmta",
+      "routeType": 0,
+      "routeShortName": "L",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "agencySlug": "sfmta",
+      "routeType": 0,
+      "routeShortName": "M",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "agencySlug": "sfmta",
+      "routeType": 0,
+      "routeShortName": "N",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "agencySlug": "sfmta",
+      "routeType": 0,
+      "routeShortName": "T",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "agencySlug": "vta",
+      "routeType": 0,
+      "routeShortName": "Blue Line",
+      "mode": 100,
+      "reason": "VTA light rail is published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "vta",
+      "routeType": 0,
+      "routeShortName": "Green Line",
+      "mode": 100,
+      "reason": "VTA light rail is published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "vta",
+      "routeType": 0,
+      "routeShortName": "Orange Line",
+      "mode": 100,
+      "reason": "VTA light rail is published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "sdmts",
+      "routeType": 0,
+      "routeShortName": "Blue",
+      "mode": 100,
+      "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
+    },
+    {
+      "agencySlug": "sdmts",
+      "routeType": 0,
+      "routeShortName": "Copper",
+      "mode": 100,
+      "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
+    },
+    {
+      "agencySlug": "sdmts",
+      "routeType": 0,
+      "routeShortName": "Green",
+      "mode": 100,
+      "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
+    },
+    {
+      "agencySlug": "sdmts",
+      "routeType": 0,
+      "routeShortName": "Orange",
+      "mode": 100,
+      "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
+    },
+    {
+      "agencySlug": "nctd",
+      "routeType": 0,
+      "routeLongName": "SPRINTER",
+      "mode": 100,
+      "reason": "SPRINTER is diesel light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "rtd-denver",
+      "routeType": 0,
+      "routeShortName": "C",
+      "mode": 100,
+      "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
+    },
+    {
+      "agencySlug": "rtd-denver",
+      "routeType": 0,
+      "routeShortName": "D",
+      "mode": 100,
+      "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
+    },
+    {
+      "agencySlug": "rtd-denver",
+      "routeType": 0,
+      "routeShortName": "E",
+      "mode": 100,
+      "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
+    },
+    {
+      "agencySlug": "rtd-denver",
+      "routeType": 0,
+      "routeShortName": "R",
+      "mode": 100,
+      "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
+    },
+    {
+      "agencySlug": "rtd-denver",
+      "routeType": 0,
+      "routeShortName": "T",
+      "mode": 100,
+      "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
+    },
+    {
+      "agencySlug": "rtd-denver",
+      "routeType": 0,
+      "routeShortName": "W",
+      "mode": 100,
+      "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
+    },
+    {
+      "agencySlug": "dart",
+      "routeType": 0,
+      "routeShortName": "BLUE",
+      "mode": 100,
+      "reason": "DART light rail lines are published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "dart",
+      "routeType": 0,
+      "routeShortName": "GREEN",
+      "mode": 100,
+      "reason": "DART light rail lines are published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "dart",
+      "routeType": 0,
+      "routeShortName": "ORANGE",
+      "mode": 100,
+      "reason": "DART light rail lines are published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "dart",
+      "routeType": 0,
+      "routeShortName": "RED",
+      "mode": 100,
+      "reason": "DART light rail lines are published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "dart",
+      "routeType": 5,
+      "routeShortName": "425",
+      "mode": 0,
+      "reason": "Heritage streetcars published as route_type 5 (cable tram)"
+    },
+    {
+      "agencySlug": "dart",
+      "routeType": 5,
+      "routeShortName": "620",
+      "mode": 0,
+      "reason": "Heritage streetcars published as route_type 5 (cable tram)"
+    },
+    {
+      "agencySlug": "trinitymetro",
+      "routeType": 0,
+      "routeLongName": "TEXRail",
+      "mode": 2,
+      "reason": "TEXRail is commuter rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "metrohouston",
+      "routeType": 0,
+      "routeShortName": "700",
+      "mode": 100,
+      "reason": "METRORail is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "metrohouston",
+      "routeType": 0,
+      "routeShortName": "800",
+      "mode": 100,
+      "reason": "METRORail is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "metrohouston",
+      "routeType": 0,
+      "routeShortName": "900",
+      "mode": 100,
+      "reason": "METRORail is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "metrostlouis",
+      "routeType": 2,
+      "routeShortName": "MLB",
+      "mode": 100,
+      "reason": "MetroLink is light rail, published as route_type 2 (commuter rail)"
+    },
+    {
+      "agencySlug": "metrostlouis",
+      "routeType": 2,
+      "routeShortName": "MLR",
+      "mode": 100,
+      "reason": "MetroLink is light rail, published as route_type 2 (commuter rail)"
+    },
+    {
+      "agencySlug": "miami-dade-transit",
+      "routeType": 2,
+      "routeShortName": "2600",
+      "mode": 1,
+      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
+    },
+    {
+      "agencySlug": "septa",
+      "routeType": 0,
+      "routeShortName": "D1",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "septa",
+      "routeType": 0,
+      "routeShortName": "D2",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "septa",
+      "routeType": 0,
+      "routeShortName": "G1",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "septa",
+      "routeType": 0,
+      "routeShortName": "T1",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "septa",
+      "routeType": 0,
+      "routeShortName": "T2",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "septa",
+      "routeType": 0,
+      "routeShortName": "T3",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "septa",
+      "routeType": 0,
+      "routeShortName": "T4",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "septa",
+      "routeType": 0,
+      "routeShortName": "T5",
+      "mode": 100,
+      "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "njt-rail",
+      "routeType": 0,
+      "routeShortName": "HBLR",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "njt-rail",
+      "routeType": 0,
+      "routeShortName": "NLR",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "njt-rail",
+      "routeType": 0,
+      "routeShortName": "RVLN",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "port-authority-pa",
+      "routeType": 2,
+      "routeShortName": "BLUE",
+      "mode": 100,
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+    },
+    {
+      "agencySlug": "port-authority-pa",
+      "routeType": 2,
+      "routeShortName": "RED",
+      "mode": 100,
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+    },
+    {
+      "agencySlug": "port-authority-pa",
+      "routeType": 2,
+      "routeShortName": "SLVR",
+      "mode": 100,
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+    },
+    {
+      "agencySlug": "uta",
+      "routeType": 0,
+      "routeShortName": "701",
+      "mode": 100,
+      "reason": "TRAX is light rail, published as route_type 0 (tram); the S-Line stays a streetcar"
+    },
+    {
+      "agencySlug": "uta",
+      "routeType": 0,
+      "routeShortName": "703",
+      "mode": 100,
+      "reason": "TRAX is light rail, published as route_type 0 (tram); the S-Line stays a streetcar"
+    },
+    {
+      "agencySlug": "uta",
+      "routeType": 0,
+      "routeShortName": "704",
+      "mode": 100,
+      "reason": "TRAX is light rail, published as route_type 0 (tram); the S-Line stays a streetcar"
+    },
+    {
+      "agencySlug": "cats",
+      "routeType": 0,
+      "routeShortName": "501",
+      "mode": 100,
+      "reason": "LYNX Blue Line is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "mta-maryland",
+      "routeType": 0,
+      "routeShortName": "LIGHT RAILLINK",
+      "mode": 100,
+      "reason": "Baltimore Light RailLink is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "hrt",
+      "routeType": 0,
+      "routeShortName": "800",
+      "mode": 100,
+      "reason": "Tide is light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "cat-savannah",
+      "routeType": 3,
+      "routeShortName": "SBF",
+      "mode": 4,
+      "reason": "Savannah Belles Ferry is a ferry, published as route_type 3 (bus)"
+    },
+    {
+      "agencySlug": "sun-metro",
+      "routeType": 3,
+      "routeShortName": "500",
+      "mode": 0,
+      "reason": "El Paso Streetcar is a streetcar, published as route_type 3 (bus)"
+    },
+    {
+      "agencySlug": "kenosha",
+      "routeType": 3,
+      "routeShortName": "SC",
+      "mode": 0,
+      "reason": "Kenosha Streetcar is a streetcar, published as route_type 3 (bus)"
+    }
+  ]
+}

@@ -374,6 +374,13 @@ export default function App() {
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
+
+  // Interval reloads all its agency data whenever this list's identity changes, so it must stay the same
+  // array until its contents change (a fresh filter() every render looped History at phone width).
+  const intervalAgencies = useMemo(
+    () => inHistory && historyAgencySlugs ? visibleAgencies.filter(a => historyAgencySlugs.has(a.slug)) : visibleAgencies,
+    [inHistory, historyAgencySlugs, visibleAgencies],
+  );
   const inLive = activeApp === 'live';
   const inNight = activeApp === 'night';
   const loadedAgencySlugs = useMemo(
@@ -535,7 +542,7 @@ export default function App() {
           <MapIcon className="w-3.5 h-3.5 text-white" />
         </button>
 
-        {!phoneSearchExpanded && <AtlasBrand />}
+        {!phoneSearchExpanded && <AtlasBrand hideByline />}
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
@@ -700,11 +707,7 @@ export default function App() {
             <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`)} />
           ) : <>
             <Interval
-              agencies={
-                inHistory && historyAgencySlugs 
-                  ? visibleAgencies.filter(a => historyAgencySlugs.has(a.slug))
-                : visibleAgencies
-              }
+              agencies={intervalAgencies}
               allAgencies={agencies}
               lightMode={lightMode}
               setLightMode={setLightMode}
@@ -753,7 +756,7 @@ export default function App() {
               moreMenuPortalContainer={moreMenuPortalEl}
               onMoreMenuDone={() => setAppLinksOpen(false)}
               sidebarLeft={sidebarLeft}
-              searchBarWidth={searchBarWidth}
+              searchBarWidth={isPhone ? undefined : searchBarWidth}
               searchEnterRef={searchEnterRef}
               analyticsApp={activeApp}
               hideLowQuality={hideLowQuality}

@@ -1,6 +1,6 @@
 import React from 'react';
 import type { LiveStatus } from '../../../hooks/useLiveAdherence';
-import { FLOATING_CARD, PANEL_ENTER } from '../../../styles';
+import Panel from '../../ui/Panel';
 
 export interface LiveAdherenceStopRow {
   stopId: string;
@@ -28,7 +28,7 @@ export const LiveAdherenceCard: React.FC<LiveAdherenceCardProps> = ({
   setSelectedStop,
 }) => {
   return (
-    <div className={`p-4 ${FLOATING_CARD} ${PANEL_ENTER} space-y-2 shrink-0`}>
+    <Panel enter className="p-4 space-y-2 shrink-0">
       <div className="flex items-center gap-1.5">
         <span className={`w-1.5 h-1.5 rounded-full bg-[var(--status-positive)] shrink-0 ${liveStatus === 'live' ? 'animate-pulse' : 'opacity-40'}`} />
         <span className="text-xs font-black text-[var(--status-positive-text)]">Live</span>
@@ -78,6 +78,6 @@ export const LiveAdherenceCard: React.FC<LiveAdherenceCardProps> = ({
         </>
       )}
 
-    </div>
+    </Panel>
   );
 };

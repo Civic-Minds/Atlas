@@ -12,6 +12,7 @@ export interface RouteSearchResult {
   inView: boolean;
   distanceM: number;
   matchRank: number;
+  routeType?: number;
   /** Set when this row stands in for a collapsed lettered-variant family (1/1A/1B/1C). */
   variantCount?: number;
 }
@@ -289,6 +290,7 @@ export function searchRouteResults(
         routeShortName: facts.shortName,
         routeLongName: facts.longName,
         agencyName: facts.agencyName,
+        routeType: (p as { routeType?: number }).routeType,
         inView,
         distanceM,
         matchRank,

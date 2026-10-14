@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, X, Search, TrendingUp, History as HistoryIco
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
+import { FLOATING_CARD, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, AGENCY_LIST_PRIMARY, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName, titleCase } from '../utils/format';
 import { buildHistoryRouteFilters, historyRouteMatchesFilter, type HistoryRouteFilterKey } from '../utils/historyRouteFilters';
@@ -17,6 +17,7 @@ import {
 import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayText';
 import Panel, { PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
+import Pill from '../components/ui/Pill';
 
 export interface RouteSnapshot {
   label: string;
@@ -432,16 +433,14 @@ function HistoryAgencyPanel({
             {routeFilters.map(filter => {
               const active = activeFilter === filter.key;
               return (
-                <button
+                <Pill
                   key={filter.key}
-                  type="button"
                   onClick={() => setActiveFilter(active ? null : filter.key)}
-                  aria-pressed={active}
+                  selected={active}
                   title="Filters by current route metadata"
-                  className={`text-xs font-bold px-2 py-0.5 rounded-full border transition-colors ${active ? CONTROL_ACTIVE : 'bg-transparent border-[var(--border-primary)] text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]'}`}
                 >
                   {filter.label} {filter.count}
-                </button>
+                </Pill>
               );
             })}
           </div>

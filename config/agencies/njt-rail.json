@@ -57,5 +57,25 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "HBLR",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "NLR",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "RVLN",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    }
+  ]
 }

@@ -4,7 +4,7 @@
  */
 import { agencyPagePath, type AgencyPageSummary } from './agencyPages';
 import { areaAgencySummaries } from './areaPages';
-import { areaRegionTitle } from './areaRegions';
+import { areaRegionTitle, areaShortName } from './areaRegions';
 import { areaPagePath, type AreaConfig } from './areas';
 import { SITE_URL } from './seo';
 
@@ -19,7 +19,7 @@ export interface AgencyIndexAgency {
 }
 
 export interface AgencyIndexData {
-  areas: Array<{ slug: string; title: string }>;
+  areas: Array<{ slug: string; title: string; shortName: string }>;
   /** Country, then state or province, each sorted by name; agencies with no known place go last under "Other". */
   groups: Array<{ country: string; regions: Array<{ region: string; agencies: AgencyIndexAgency[] }> }>;
   agencyCount: number;
@@ -38,8 +38,8 @@ export function buildAgencyIndexData(
   const bySlug = new Map(agencies.map(a => [a.slug, a]));
   const areaList = areas
     .filter(a => a.page && areaAgencySummaries(a, bySlug).length > 0)
-    .map(a => ({ slug: a.slug, title: areaRegionTitle(a) }))
-    .sort((x, y) => byName(x.title, y.title));
+    .map(a => ({ slug: a.slug, title: areaRegionTitle(a), shortName: areaShortName(a) }))
+    .sort((x, y) => byName(x.shortName, y.shortName));
   const tree = new Map<string, Map<string, AgencyIndexAgency[]>>();
   for (const a of agencies) {
     const country = a.country ?? OTHER;
@@ -58,19 +58,12 @@ export function buildAgencyIndexData(
   return { areas: areaList, groups, agencyCount: agencies.length, releaseDate };
 }
 
-/** Does an index entry match what the visitor typed? Every word must appear in the text, any case. */
-export function matchesFilter(text: string, query: string): boolean {
-  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-  const hay = text.toLowerCase();
-  return words.every(w => hay.includes(w));
-}
-
 export function agencyIndexTitle(): string {
-  return 'All transit agencies and areas | Transit Atlas';
+  return 'All transit agencies and regions | Transit Atlas';
 }
 
 export function agencyIndexDescription(d: Pick<AgencyIndexData, 'agencyCount' | 'areas'>): string {
-  return `${d.agencyCount.toLocaleString('en-US')} transit ${d.agencyCount === 1 ? 'agency' : 'agencies'} and ${d.areas.length} metro ${d.areas.length === 1 ? 'area' : 'areas'}, each with a page of route-by-route frequency from the published schedule.`;
+  return `${d.agencyCount.toLocaleString('en-US')} transit ${d.agencyCount === 1 ? 'agency' : 'agencies'} and ${d.areas.length} ${d.areas.length === 1 ? 'region' : 'regions'}, each with a page of route-by-route frequency from the published schedule.`;
 }
 
 export function resolveAgencyIndexSeo(

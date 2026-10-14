@@ -10,6 +10,7 @@ export interface MapContextRoute {
   agencyName: string;
   shortName: string;
   longName: string | null;
+  routeType?: number;
 }
 
 export interface MapContextAgency {
@@ -52,6 +53,7 @@ function addMapContextFeature(
     routeBranch?: string | null;
     routeShortName?: string;
     routeLongName?: string | null;
+    routeType?: number;
   } | null;
   if (!properties?.routeId) return;
   const agencyName = agencies.find(agency => agency.slug === slug)?.name ?? slug;
@@ -64,6 +66,7 @@ function addMapContextFeature(
       agencyName,
       shortName: properties.routeShortName ?? properties.routeId,
       longName: properties.routeLongName ?? null,
+      routeType: properties.routeType,
     });
   }
   routesByAgency.set(slug, routes);

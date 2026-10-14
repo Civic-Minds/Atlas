@@ -3,12 +3,12 @@ import { delayAmount, headwayAbout } from '../utils/headwayText';
 
 /** Shared user-facing copy for every expired-feed notice. */
 export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
-  const { primary, secondary } = agencyDisplayParts(agencyName);
-  const label = secondary ? `the ${primary} schedule for ${secondary}` : `${primary}'s schedule`;
+  const { primary } = agencyDisplayParts(agencyName);
+  const ended = `${primary}'s timetable ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
   if (manualFeedSource) {
-    return `Atlas's latest ${label} ended${expDateStr ? ` on ${expDateStr}` : ''}. This schedule is maintained manually, so Atlas will keep showing it until a newer file is provided and verified.`;
+    return `${ended} It is maintained manually, so Atlas will keep showing it until a newer file is provided and verified.`;
   }
-  return `Atlas's latest ${label} ended${expDateStr ? ` on ${expDateStr}` : ''}. We haven't been able to locate and verify a newer feed yet.`;
+  return ended;
 }
 
 export function selectedRouteFilterNotice(options: {
@@ -60,7 +60,7 @@ export function expiredFeedCheckHistory(options: {
   lastRefreshed?: string;
 }): string {
   if (options.count != null && options.since && options.lastChecked && formatStoredDate(options.lastChecked)) {
-    return `Atlas began checking this feed on ${formatStoredDate(options.since)} and has checked it ${options.count} time${options.count === 1 ? '' : 's'} since then. The most recent check was ${formatStoredDate(options.lastChecked)}.`;
+    return `Atlas has checked for a new timetable ${options.count} time${options.count === 1 ? '' : 's'} since ${formatStoredDate(options.since)}, most recently on ${formatStoredDate(options.lastChecked)}.`;
   }
   if (options.lastRefreshed && formatStoredDate(options.lastRefreshed)) {
     return `Atlas last successfully refreshed the feed on ${formatStoredDate(options.lastRefreshed)}.`;

@@ -9,7 +9,7 @@ import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
-import { ACTION_PRIMARY, APP_TAB_INACTIVE, GLASS_PILL } from '../../styles';
+import Pill from '../ui/Pill';
 import { delayAmount, headwayEvery } from '../../utils/headwayText';
 import { TripTimeStrip } from './TripTimeStrip';
 import type { TripTimeSeries } from '../../utils/tripTime';
@@ -220,7 +220,12 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             style={{ left: `${band.left * 100}%`, width: `${band.width * 100}%` }}
           >
             <span className="absolute -top-5 left-0.5 sm:left-1 text-xs font-black text-[var(--text-muted)] whitespace-nowrap">
-              {band.label}
+              {band.label.endsWith(' Peak') ? (
+                <>
+                  <span className="sm:hidden" aria-hidden="true">{band.label.replace(' Peak', '')}</span>
+                  <span className="hidden sm:inline">{band.label}</span>
+                </>
+              ) : band.label}
             </span>
           </div>
         ))}
@@ -273,6 +278,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   : undefined}
               >
                 <div style={{ height: H }} className="relative flex items-end justify-center w-full">
+                  {isTooltipHover && hasValue && (
+                    <div data-testid="sparkline-hover-column" className="absolute inset-0 rounded-sm bg-[var(--bg-btn-hover)] pointer-events-none" />
+                  )}
                   {expanded && hasValue && (
                     <span
                       data-testid="sparkline-headway-label"
@@ -284,7 +292,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   )}
                   {hasValue && (
                     segments.length > 0 && segmentTotalFreq > 0 ? (
-                      <div className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} flex flex-col-reverse overflow-hidden rounded-sm transition-[opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}>
+                      <div className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} flex flex-col-reverse overflow-hidden rounded-sm transition-opacity duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}>
                         {segments.map(segment => (
                           <div
                             key={segment.label}
@@ -295,7 +303,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     ) : (
                       <div
                         style={{ height: barH, background: barColor }}
-                        className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} rounded-sm transition-[background,opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}
+                        className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} rounded-sm transition-[background,opacity] duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}
                       />
                     )
                   )}
@@ -378,15 +386,15 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             {directionOptions && directionOptions.length > 1 && (
               <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Schedule direction">
                 {directionOptions.map(option => (
-                  <button
+                  <Pill
                     key={option.key}
-                    type="button"
-                    aria-pressed={expandedDirection === option.key}
+                    tone="glass"
+                    size="segment"
+                    selected={expandedDirection === option.key}
                     onClick={() => setPickedDirection(option.key)}
-                    className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold border transition-colors ${expandedDirection === option.key ? `${GLASS_PILL} ${ACTION_PRIMARY}` : APP_TAB_INACTIVE}`}
                   >
                     {option.label}
-                  </button>
+                  </Pill>
                 ))}
               </div>
             )}

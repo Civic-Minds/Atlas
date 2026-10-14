@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  agencyIntroSentence, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
+  agencyIntroSentence, introName, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
   agencyPageData, agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, weekendLabel,
 } from './agencyPages';
@@ -18,8 +18,10 @@ const TTC: AgencyPageSummary = {
 describe('agency page text', () => {
   it('uses the agreed title and H1', () => {
     expect(agencyPageTitle(TTC)).toBe('TTC frequency: how often routes run | Transit Atlas');
-    expect(agencyPageH1(TTC)).toBe('TTC · Toronto');
-    expect(agencyPageH1({ displayName: 'Halifax Transit' })).toBe('Halifax Transit');
+    expect(agencyPageH1(TTC)).toBe('Toronto Transit Commission');
+    expect(agencyPageH1({ name: 'Hamilton Street Railway', city: 'Hamilton' })).toBe('Hamilton Street Railway');
+    expect(agencyPageH1({ name: 'University of Michigan Transit Services (Ann Arbor)', city: 'Ann Arbor' })).toBe('University of Michigan Transit Services');
+    expect(agencyPageH1({ name: 'GO Transit', city: 'Toronto' })).toBe('GO Transit');
   });
 
   it('writes a standalone lead sentence from the route numbers', () => {
@@ -31,7 +33,7 @@ describe('agency page text', () => {
   it('counts routes and groups them by mode', () => {
     const s = agencyStats(TTC);
     expect(s.totalRoutes).toBe(5);
-    expect(s.byMode.map(m => [m.label, m.routes.length])).toEqual([['Subway', 2], ['Bus', 3]]);
+    expect(s.byMode.map(m => [m.label, m.routes.length])).toEqual([['Subway/Metro', 2], ['Bus', 3]]);
   });
 
   it('picks the route with the shortest midday headway, ignoring missing values', () => {
@@ -42,7 +44,7 @@ describe('agency page text', () => {
   });
 
   it('writes the modes line and the weekend label', () => {
-    expect(modesText([{ label: 'Subway', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }])).toBe('3 subway · 2 light rail · 209 bus');
+    expect(modesText([{ label: 'Subway/Metro', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }])).toBe('3 subway/metro · 2 light rail · 209 bus');
     expect(modesText([])).toBe('');
     expect(weekendLabel(true, true)).toBe('Runs Sat & Sun');
     expect(weekendLabel(true, false)).toBe('Runs Saturdays');
@@ -132,9 +134,25 @@ describe('trimRedundantCity', () => {
 
 describe('dates', () => {
   it('names each date for what it is', () => {
+    const lead = "Based on the agency's published timetable, not live arrivals.";
     expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: '20261031' }, '2026-10-13T06:34:30.913Z'))
-      .toBe('Schedule refreshed Aug 27, 2026, valid through Oct 31, 2026. Atlas data release Oct 13, 2026.');
-    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: null }, null)).toBe('.');
+      .toBe(`${lead} This timetable was published Aug 27, 2026 and covers service until Oct 31, 2026. Atlas last updated this page Oct 13, 2026.`);
+    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: null }, null)).toBe(lead);
+    expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: null }, '2026-10-13')).toBe(`${lead} This timetable was published Aug 27, 2026. Atlas last updated this page Oct 13, 2026.`);
+    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: '20261031' }, null)).toBe(`${lead} This timetable covers service until Oct 31, 2026.`);
+  });
+
+  it('says plainly when the timetable has ended', () => {
+    expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901' }, '2026-10-13T00:00:00Z'))
+      .toBe("Based on the agency's published timetable, not live arrivals. This timetable ended on Sep 1, 2026; the agency hasn't published a newer one yet. Atlas last updated this page Oct 13, 2026.");
+  });
+
+  it('drops a trailing city from the agency name only when the sentence names that place', () => {
+    expect(introName('University of Michigan Transit Services (Ann Arbor)', 'Ann Arbor')).toBe('University of Michigan Transit Services');
+    expect(introName('University of Michigan Transit Services (Ann Arbor)', 'the Greater Toronto and Hamilton Area')).toBe('University of Michigan Transit Services (Ann Arbor)');
+    expect(introName('Alameda-Contra Costa Transit District (AC Transit)', 'Berkeley')).toBe('Alameda-Contra Costa Transit District (AC Transit)');
+    expect(introName('ABQ RIDE (Albuquerque)', 'Albuquerque')).toBe('ABQ RIDE');
+    expect(introName('Toronto Transit Commission', 'Toronto')).toBe('Toronto Transit Commission');
   });
 });
 
@@ -152,8 +170,8 @@ describe('agencyIntroSentence', () => {
   });
 
   it('adds the mode split only with more than one mode', () => {
-    const modes = [{ label: 'Subway', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }];
-    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], modes)).toBe('Hamilton Street Railway operates 1 route (3 subway, 2 light rail, 209 bus) in Toronto with 1,980 stops.');
+    const modes = [{ label: 'Subway/Metro', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }];
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], modes)).toBe('Hamilton Street Railway operates 1 route (3 subway/metro, 2 light rail, 209 bus) in Toronto with 1,980 stops.');
     expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], [{ label: 'Bus', routes: 1 }])).not.toContain('(');
   });
 

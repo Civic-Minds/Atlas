@@ -50,5 +50,37 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://developer.trimet.org/schedule/gtfs.zip"
+  "lastFeedSourceUrl": "http://developer.trimet.org/schedule/gtfs.zip",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeLongName": "MAX Blue Line",
+      "mode": 100,
+      "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
+    },
+    {
+      "routeType": 0,
+      "routeLongName": "MAX Green Line",
+      "mode": 100,
+      "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
+    },
+    {
+      "routeType": 0,
+      "routeLongName": "MAX Orange Line",
+      "mode": 100,
+      "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
+    },
+    {
+      "routeType": 0,
+      "routeLongName": "MAX Red Line",
+      "mode": 100,
+      "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
+    },
+    {
+      "routeType": 0,
+      "routeLongName": "MAX Yellow Line",
+      "mode": 100,
+      "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
+    }
+  ]
 }

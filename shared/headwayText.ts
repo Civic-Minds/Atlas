@@ -9,6 +9,8 @@
  *   headwayOrBetter(10)       "every 10 min or better"   what a filter or threshold means
  *   headwayAbout(16)          "about every 16 min"       a measured or typical (median) spacing
  *   headwayAboutRange(6, 12)  "about every 6–12 min"     a spread of typical spacings
+ *   headwayEveryRange(30, 60) "every 30–60 min"          a list cadence: shared stretch to each branch
+ *                             ("30–60 min" compact, for narrow table cells)
  *   headwayTierLabel(10)      "≤10 min"                  a frequency band in a legend or key
  *   headwayBandLabel(16, 30)  "16–30 min"                  the band between two tiers in a key
  *   headwayAmount(10)         "10 min"                   a bare spacing with no "every" (tables, chart cells)
@@ -68,6 +70,15 @@ export function headwayAbout(minutes: number | null | undefined): string {
   if (!isUsable(minutes)) return MISSING;
   if (minutes <= 60) return `about every ${num(minutes)} min`;
   return `about every ${num(Math.round(minutes / 30) / 2)} h`;
+}
+
+/** "every 30–60 min": a list cadence, combined on a shared stretch up to each branch's own. */
+export function headwayEveryRange(low: number | null | undefined, high: number | null | undefined, compact = false): string {
+  if (!isUsable(low) || !isUsable(high)) return MISSING;
+  const prefix = compact ? '' : 'every ';
+  if (low === high) return `${prefix}${amount(low)}`;
+  if (low <= 60 && high <= 60) return `${prefix}${num(low)}–${num(high)} min`;
+  return `${prefix}${amount(low)} – ${amount(high)}`;
 }
 
 /** "about every 6–12 min" when both ends fit in minutes; otherwise two "about" phrases. */
