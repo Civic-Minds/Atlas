@@ -4,12 +4,26 @@ const VIEW_KEY = 'atlas_view';
 
 export interface SavedView { lat: number; lon: number; zoom: number }
 
+/** A latitude outside -90..90 throws inside MapLibre and leaves a dead map (#846). */
+export function isValidLatitude(lat: number): boolean {
+  return Number.isFinite(lat) && lat >= -90 && lat <= 90;
+}
+
+/** The ?lat, ?lon and ?z share-link values, or undefined when any is missing or unusable. */
+export function parseUrlView(params: URLSearchParams): { lat: number; lon: number; zoom: number } | undefined {
+  const lat = parseFloat(params.get('lat') ?? '');
+  const lon = parseFloat(params.get('lon') ?? '');
+  const zoom = parseFloat(params.get('z') ?? '');
+  if (isValidLatitude(lat) && Number.isFinite(lon) && Number.isFinite(zoom)) return { lat, lon, zoom };
+  return undefined;
+}
+
 export function getSavedView(): SavedView | null {
   try {
     const raw = localStorage.getItem(VIEW_KEY);
     if (!raw) return null;
     const v = JSON.parse(raw);
-    if (typeof v.lat === 'number' && typeof v.lon === 'number' && typeof v.zoom === 'number') return v;
+    if (typeof v.lat === 'number' && typeof v.lon === 'number' && typeof v.zoom === 'number' && isValidLatitude(v.lat) && Number.isFinite(v.lon) && Number.isFinite(v.zoom)) return v;
     return null;
   } catch { return null; }
 }
