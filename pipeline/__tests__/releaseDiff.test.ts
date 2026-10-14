@@ -495,3 +495,30 @@ describe('release diff gate: route gains weekday service (#714)', () => {
     expect(evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY)).toEqual([]);
   });
 });
+
+describe('mode-lost reads the agency mode overrides (#861)', () => {
+  const tram = (routeType: number) => ({
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: [[-73.95, 40.76], [-73.96, 40.75]] },
+    properties: { routeId: '10092', directionId: 0, day: 'Weekday', tier: '15', headway: 10, routeType, routeLongName: 'Roosevelt Island Aerial Tramway' },
+  });
+  const bus = {
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: [[-73.94, 40.76], [-73.95, 40.77]] },
+    properties: { routeId: '10093', directionId: 0, day: 'Weekday', tier: '15', headway: 12, routeType: 3, routeLongName: 'RIOC Red Bus' },
+  };
+  const json = (routeType: number) => JSON.stringify({ type: 'FeatureCollection', features: [tram(routeType), bus] });
+
+  it('a tram the override maps back to gondola keeps its mode', () => {
+    const live = summarizeArtifact(json(6), null, 'rioc-tram');
+    const next = summarizeArtifact(json(0), null, 'rioc-tram');
+    expect(next.modes).toEqual(live.modes);
+    expect(names(evaluateAgency({ slug: 'rioc-tram', live, next, allowMissingLive: true }, [], TODAY))).not.toContain('rioc-tram:mode-lost:red');
+  });
+
+  it('still flags the change without the agency (no override applies)', () => {
+    const live = summarizeArtifact(json(6), null);
+    const next = summarizeArtifact(json(0), null);
+    expect(names(evaluateAgency({ slug: 'rioc-tram', live, next, allowMissingLive: true }, [], TODAY))).toContain('rioc-tram:mode-lost:red');
+  });
+});

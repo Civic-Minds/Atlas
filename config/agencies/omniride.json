@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "2026 July_20260724",
   "region": "Virginia",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-14",
   "cities": [
     "Dale City, Virginia",
     "Centreville, Virginia",
@@ -20,11 +20,29 @@
     "Alexandria, Virginia"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1156/latest.zip",
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261014",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://omniride.com/omniride/assets/File/google_transit.zip"
+  "lastFeedSourceUrl": "http://omniride.com/omniride/assets/File/google_transit.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 118
+    },
+    "checkedAt": "2026-10-14"
+  },
+  "lastPeekedExpiry": "20270130",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

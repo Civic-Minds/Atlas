@@ -165,6 +165,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **The Roosevelt Island Tramway stays an aerial tram**: its feed now labels the tram as light rail, which would have shown it as a streetcar; it keeps its gondola/aerial tram mode. (#861)
 - **An agency whose refresh produces no route lines is no longer marked up to date**: a feed with stops but no drawable routes (El Monte) was stamped "current", so nothing flagged it as broken; it now keeps its last good data and is marked as needing another try. (#634)
 - **Map tiles stay cached in the browser**: each release's tile archives are now uploaded with a long cache header, so zooming back or revisiting no longer re-downloads tiles now that they load straight from storage. (#840)
 - **The map loads its route tiles directly from storage**: tiles no longer pass through a Vercel function, which had used up the hosting plan's free transfer allowance and put the site at risk of being paused. (#854)

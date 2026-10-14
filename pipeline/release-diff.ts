@@ -84,6 +84,7 @@ async function main(): Promise<void> {
     const next = summarizeArtifact(
       readFileSync(resolve(newDir, slug, `${slug}.json`), 'utf8'),
       existsSync(stopsPath) ? readFileSync(stopsPath, 'utf8') : null,
+      slug,
     );
     const zipPath = archiveDir ? resolve(archiveDir, `${slug}.zip`) : null;
     const dates = zipPath && existsSync(zipPath) ? await peekFeedDates(readFileSync(zipPath)) : null;

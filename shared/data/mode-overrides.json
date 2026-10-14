@@ -496,6 +496,13 @@
       "routeShortName": "SC",
       "mode": 0,
       "reason": "Kenosha Streetcar is a streetcar, published as route_type 3 (bus)"
+    },
+    {
+      "agencySlug": "rioc-tram",
+      "routeType": 0,
+      "routeLongName": "Roosevelt Island Aerial Tramway",
+      "mode": 6,
+      "reason": "The Roosevelt Island Tramway is an aerial tramway, published as route_type 0 (tram/light rail) since the 2026-07 feed"
     }
   ]
 }
