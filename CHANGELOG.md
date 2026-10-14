@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Changed
 
 - **Footer links regrouped into Explore, Learn and About, with more space between the columns**: the columns no longer look crowded on desktop, and "About Atlas" and Changelog now sit together.
+- **Footer shows the Atlas name and a one-line description beside the links**: the link columns line up on an even grid at the right, so the footer reads as part of the site rather than a loose list.
 - **Atlas's server can no longer be made to re-fetch tiles or live data on demand**: the unused tile-archive proxy is gone, basemap and history requests with junk or out-of-range values are refused, live vehicles are shared between viewers for about 15 seconds, and the site now blocks being framed by other sites. This protects Vercel transfer limits and the agencies' API keys. ([#867](https://github.com/Civic-Minds/Atlas/issues/867))
 - **Basemap images now stay in the browser for 7 days**: returning visitors no longer re-download the base map, and far fewer tile requests reach Atlas's server, cutting Vercel transfer use. Error and "API key required" tiles are never cached. (#856)
 - **Route card branch colours no longer repeat**: the hourly chart now gives up to eight branches their own colour, so a fifth branch (e.g. TTC 52's "Terminal 3 Only") no longer looks like the first one. (#853)
