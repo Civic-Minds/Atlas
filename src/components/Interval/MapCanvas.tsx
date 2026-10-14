@@ -25,7 +25,7 @@ import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, t
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
-import { buildRouteSegmentFeatures, selectedRouteMatches } from '../../utils/routeSegments';
+import { buildSectionColourFeatures, selectedRouteMatches } from '../../utils/sectionColours';
 import { dedupeMapContextByDisplay, getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
@@ -1043,17 +1043,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
   }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, colorMode]);
 
-  // #690 (beta): every visible route line drawn in pieces coloured by its pooled per-stop
-  // tier, over the base line. The filter still reads the route-level values.
+  // CIV-152 (beta): the sections of every visible line whose every-gap grade differs from
+  // the route's own tier, in their own colour over the base line (#690 stopTiers, judged by
+  // the slower direction). All-day only; the filter still reads the route-level values.
   const routeSegmentFeatures = useMemo(() => {
-    if (!FEATURES.segmentColours || !showRouteLayers || nightServiceView || frequentServiceView) return [];
-    // The selected route is drawn whether or not it passes the filter, so its pieces come
+    if (!FEATURES.segmentColours || !showRouteLayers || nightServiceView || frequentServiceView || period !== 'all') return [];
+    // The selected route is drawn whether or not it passes the filter, so its sections come
     // from the unfiltered layers for the current day.
     const notSelected = selectedRoute ? (p: { agencySlug: string; routeId: string }) => !selectedRouteMatches(selectedRoute, p.agencySlug, p.routeId) : undefined;
-    const pieces = buildRouteSegmentFeatures(mapFilteredLayers ?? filteredLayers, period, colorMode, notSelected);
+    const pieces = buildSectionColourFeatures(mapFilteredLayers ?? filteredLayers, day, colorMode, notSelected);
     if (!selectedRoute || !layers) return pieces;
-    return pieces.concat(buildRouteSegmentFeatures(layers, period, colorMode,
-      p => selectedRouteMatches(selectedRoute, p.agencySlug, p.routeId) && (p.day == null || p.day === day)));
+    return pieces.concat(buildSectionColourFeatures(layers, day, colorMode,
+      p => selectedRouteMatches(selectedRoute, p.agencySlug, p.routeId)));
   }, [mapFilteredLayers, filteredLayers, layers, period, day, selectedRoute, colorMode, showRouteLayers, nightServiceView, frequentServiceView]);
 
   const sharedHoverSegments = useMemo(
@@ -1366,9 +1367,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'visible' },
       });
 
-      // #690 (beta): per-segment tier colours over the base route lines. Empty unless
-      // FEATURES.segmentColours is on; the selected route's pieces are drawn again above the
-      // selected-route layers so they stay visible there.
+      // CIV-152 (beta): sections whose grade differs from the route's tier, over the base
+      // route lines. Empty unless FEATURES.segmentColours is on; the selected route's sections
+      // are drawn again above the selected-route layers so they stay visible there.
       map.addSource('route-segments', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
