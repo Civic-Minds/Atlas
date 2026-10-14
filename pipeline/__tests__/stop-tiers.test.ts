@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
-import { processGtfsBuffer } from '../process-core';
+import { headwayToTierOn, processGtfsBuffer } from '../process-core';
 
 async function fixtureZip(name: string): Promise<Buffer> {
   const dir = resolve(__dirname, 'fixtures', name);
@@ -70,5 +70,14 @@ describe('stopTiers', () => {
       const byHeadway = hw <= 10 ? '10' : hw <= 15 ? '15' : hw <= 20 ? '20' : hw <= 30 ? '30' : hw <= 60 ? '60' : 'infrequent';
       expect(['10', '15', '20', '30', '60', 'infrequent'].indexOf(p.stopTiers[stopId])).toBeGreaterThanOrEqual(['10', '15', '20', '30', '60', 'infrequent'].indexOf(byHeadway));
     }
+  });
+});
+
+describe('headwayToTierOn', () => {
+  it('caps a stop grade on the route\'s own scale: a 4-minute people mover is 5, not the surface 10', () => {
+    expect(headwayToTierOn(4, [5, 8, 10, 15, 30, 60])).toBe('5');
+    expect(headwayToTierOn(6, [5, 8, 10, 15, 30, 60])).toBe('8');
+    expect(headwayToTierOn(4, [10, 15, 20, 30, 60])).toBe('10');
+    expect(headwayToTierOn(75, [10, 15, 20, 30, 60])).toBe('infrequent');
   });
 });
