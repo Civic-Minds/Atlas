@@ -10,7 +10,7 @@
  *   R2_ACCESS_KEY_ID
  *   R2_SECRET_ACCESS_KEY
  */
-import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { createHash } from 'node:crypto';
 import { promisify } from 'node:util';
@@ -325,6 +325,27 @@ async function r2ListAllObjects(bucket: string, prefix: string): Promise<R2Objec
 
 export async function r2List(prefix: string): Promise<string[]> {
   return r2ListAll(requireEnv('R2_BUCKET_NAME'), prefix);
+}
+
+/** List public-bucket objects with sizes (read-only). */
+export async function r2ListObjects(prefix: string): Promise<R2ObjectInfo[]> {
+  return r2ListAllObjects(requireEnv('R2_BUCKET_NAME'), prefix);
+}
+
+/** Delete keys from the public bucket in batches of 1000. Callers own the safety checks. */
+export async function r2DeleteKeys(keys: string[]): Promise<number> {
+  const client = getR2Client();
+  const bucket = requireEnv('R2_BUCKET_NAME');
+  let deleted = 0;
+  for (let i = 0; i < keys.length; i += 1000) {
+    const batch = keys.slice(i, i + 1000);
+    const res = await client.send(new DeleteObjectsCommand({ Bucket: bucket, Delete: { Objects: batch.map(Key => ({ Key })), Quiet: true } }));
+    if (res.Errors?.length) {
+      throw new Error(`R2 delete failed for ${res.Errors.length} keys, first: ${res.Errors[0].Key} ${res.Errors[0].Code}`);
+    }
+    deleted += batch.length;
+  }
+  return deleted;
 }
 
 export async function r2ListArchive(prefix: string): Promise<string[]> {
