@@ -239,6 +239,12 @@ export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>
 /** The "every N min or less" filter value each band stands for; the last two bands (over 60, no midday) have none. */
 const BAND_FILTER_MINUTES = [10, 15, 20, 30, 60] as const;
 
+/** What the map shows for a band's link: the map's filter is "every N min or better", so the slower bands include the faster ones. */
+export function bandMapLinkLabel(band: number): string | null {
+  const minutes = BAND_FILTER_MINUTES[band];
+  return minutes === undefined ? null : `Show routes every ${minutes} min or better on the map`;
+}
+
 /**
  * The map link for one frequency band: the page's own map link (agency or area framing) plus the filter
  * the band stands for, with Weekday and Midday selected (the same `h`, `p` and `day` parameters the map reads).

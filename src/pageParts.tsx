@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE, bandMapHref } from '../shared/agencyPages';
+import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE, bandMapHref, bandMapLinkLabel } from '../shared/agencyPages';
 import { LINK } from './pageStyles';
 import { HEADWAY_TIERS } from '../shared/config';
 
@@ -39,7 +39,7 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
             const style = { flexGrow: x.n, flexBasis: 0, background: BAND_FILLS[x.i] };
             const handlers = { onMouseEnter: () => setActive(x.i), onFocus: () => setActive(x.i), onBlur: () => setActive(null) };
             return href
-              ? <a key={x.i} href={href} aria-label={`${sentence(x)}. Show them on the map.`} className="h-full min-w-1 border-0 p-0 outline-offset-2" style={style} {...handlers} />
+              ? <a key={x.i} href={href} aria-label={`${sentence(x)}. ${bandMapLinkLabel(x.i)}.`} className="h-full min-w-1 border-0 p-0 outline-offset-2" style={style} {...handlers} />
               : <button key={x.i} type="button" aria-label={sentence(x)} className="h-full min-w-1 cursor-default border-0 p-0 outline-offset-2" style={style} {...handlers}
                   onClick={() => setActive(a => (a === x.i ? null : x.i))} />;
           })}
@@ -57,7 +57,7 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
           return (
             <li key={x.i}>
               {href
-                ? <a href={href} aria-label={`${sentence(x)}. Show them on the map.`} className={`flex items-center gap-1.5 whitespace-nowrap ${LINK}`}>{item}</a>
+                ? <a href={href} aria-label={`${sentence(x)}. ${bandMapLinkLabel(x.i)}.`} className={`flex items-center gap-1.5 whitespace-nowrap ${LINK}`}>{item}</a>
                 : <span className="flex items-center gap-1.5 whitespace-nowrap">{item}</span>}
             </li>
           );

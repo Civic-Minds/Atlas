@@ -19,3 +19,12 @@ describe('bandMapHref', () => {
     expect(bandMapHref(base, 6)).toBeNull();
   });
 });
+
+describe('bandMapLinkLabel', () => {
+  it('says "or better", since the map filter includes the faster routes', async () => {
+    const { bandMapLinkLabel } = await import('../agencyPages');
+    expect([0, 1, 2, 3, 4].map(bandMapLinkLabel)).toEqual([10, 15, 20, 30, 60].map(n => `Show routes every ${n} min or better on the map`));
+    expect(bandMapLinkLabel(5)).toBeNull();
+    expect(bandMapLinkLabel(6)).toBeNull();
+  });
+});

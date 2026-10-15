@@ -66,6 +66,9 @@ describe('AgencyPage', () => {
       expect(url.searchParams.get('day')).toBe('Weekday');
     }
     expect(new URL(screen.getAllByRole('link', { name: /route every 21–30 min/ })[0].getAttribute('href')!, 'http://x').searchParams.get('h')).toBe('30');
+    // The link says what the map shows: routes every N min or better, not only the band's own routes.
+    expect(screen.getAllByRole('link', { name: /every 11–15 min\. Show routes every 15 min or better on the map\./ }).length).toBe(2);
+    expect(screen.queryByRole('link', { name: /Show them on the map/ })).toBeNull();
     const all = new URL(screen.getByRole('link', { name: 'See these routes on the map' }).getAttribute('href')!, 'http://x');
     expect([all.searchParams.get('agencies'), all.searchParams.get('h'), all.searchParams.get('p'), all.searchParams.get('day')]).toEqual(['ttc', 'all', 'midday', 'Weekday']);
   });
