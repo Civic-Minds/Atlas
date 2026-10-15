@@ -55,6 +55,29 @@ export type TierDeterminer = (
  */
 export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
 
+const EVENING_START_MINUTES = TIME_PERIODS.find(period => period.key === 'evening')!.startHour * 60;
+
+/**
+ * Whether a stop's service continues after `last` on the same service day (#773), the one
+ * boundary both the route-tier closing edge here and the stop grade's closing edge wait
+ * (scopedTerminalHeadline) use. A later departure before 24:00 always continues it. A 24:00+
+ * departure is the same GTFS service day, so it continues it too (a rider after a 21:13 last
+ * bus waits whether the next runs at 23:59 or 24:01), but only when `last` reaches the evening:
+ * service that stops before the evening and comes back only after midnight is a separate
+ * block, not a gap, and closes at its last daytime departure. That is a platform whose line
+ * moves to another platform for the afternoon and returns after midnight (REM A3-A1 to
+ * Anse-a-l'Orme, #842: 05:30 to 14:29 at this platform, then 24:21). The cost, deliberate: a
+ * line that stops at 18:13 reads open with one more trip at 23:59 and closed with it at 24:01.
+ */
+export function serviceContinuesAfter(times: readonly number[], last: number): boolean {
+    return times.some(time => time > last && (time < 1440 || last >= EVENING_START_MINUTES));
+}
+
+/** Whether a stop's service runs before `first` on the same service day (#773). */
+export function serviceContinuesBefore(times: readonly number[], first: number): boolean {
+    return times.some(time => time < first);
+}
+
 /**
  * A sample with at least this many gaps may always carry one gap inside the grace. The
  * allowance is a share of the gaps (violationPercent, 5% on the 20-60 tiers), floor-rounded, so
@@ -178,8 +201,8 @@ const determineTierWithEdgeGapAllowanceBase = (
     violationPercent: number,
     violationPercentByTier?: Record<number, number>,
 ): EdgeGapAllowanceResult => {
-    const actualOpening = !rawTimes.some(time => time < analysisTimes[0]);
-    const actualClosing = !rawTimes.some(time => time > analysisTimes[analysisTimes.length - 1]);
+    const actualOpening = !serviceContinuesBefore(rawTimes, analysisTimes[0]);
+    const actualClosing = !serviceContinuesAfter(rawTimes, analysisTimes[analysisTimes.length - 1]);
     for (const tier of tiers) {
         const gaps = analysisTimes.slice(1).map((time, index) => time - analysisTimes[index]);
         const existingGrace = Math.max(graceMinutes, Math.round(tier * gracePercent));
