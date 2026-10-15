@@ -151,7 +151,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             {stats.byMode.map(group => (
               <div key={group.mode} className="mt-4 overflow-x-auto">
                 <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
-                <div className="min-w-[44rem]">
                   <DataTable
                     caption={`${group.label} ${group.routes.length}`}
                     fixed
@@ -166,7 +165,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                       { key: 'overnight', header: 'Overnight', cell: r => cell('overnight', r) },
                     ]}
                   />
-                </div>
               </div>
             ))}
           </section>
