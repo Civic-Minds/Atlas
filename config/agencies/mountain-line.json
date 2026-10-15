@@ -8,6 +8,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-407/latest.zip",
   "region": "West Virginia",
+  "preprocess": "mountain-line-frequency-fix",
   "lastFeedExpiry": "20301231",
   "lastFeedVersion": "1.0-2.7.19",
   "lastRefreshedAt": "2026-08-14",
