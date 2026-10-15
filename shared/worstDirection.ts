@@ -300,7 +300,7 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
       // frequencies" are unchanged. Mixed old/new artifacts give no cap.
       if (period === 'midday' && directions.size > 1) {
         const dirList = [...directions];
-        // The pipeline's direction-level midday wait (every trip at its first stop; process-core).
+        // The pipeline's direction-level midday wait (its best-served stop over every trip; process-core).
         // Older artifacts without it get no cap.
         const complete = group.every(f => f.properties.directionMiddayWait !== undefined);
         const wait = (direction: number): number | null => {

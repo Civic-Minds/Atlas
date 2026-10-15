@@ -14,7 +14,7 @@ async function weekdayRoute(fixture: string, slug: string): Promise<any[]> {
   return fc.features.map((f: any) => f.properties).filter((p: any) => p.stopId == null && p.day === 'Weekday');
 }
 
-describe('#899: the direction-level midday wait reads every trip at its first stop', () => {
+describe('#899: the direction-level midday wait reads every trip at the direction\'s best-served stop', () => {
   it('TTC 191 to York Mills changes shape at noon and still runs all day (every ~28)', async () => {
     // Real TTC feed (2026-09-30 to 10-31): shape 1122207 runs to 11:25, 1122206 from 11:53. Each
     // drawn pattern alone leaves a 173-215 minute midday wait.
@@ -31,6 +31,9 @@ describe('#899: the direction-level midday wait reads every trip at its first st
     const route = await weekdayRoute('septa-98', 'septa');
     const norristown = route.find(p => p.directionId === 1)!;
     expect(norristown.directionMiddayWait).toBe(35);
-    expect(route.every(p => (p.worstDirectionMiddayCap ?? 0) < 999999)).toBe(true);
+    // End to end: the route is capped at that wait (no midday headway on the drawn d1 line).
+    expect(route.every(p => p.worstDirectionMiddayCap === 35)).toBe(true);
+    expect(routePassesHeadwayFilter(route, 'all', 'Weekday', 30)).toBe(false);
+    expect(routePassesHeadwayFilter(route, 'all', 'Weekday', 60)).toBe(true);
   });
 });

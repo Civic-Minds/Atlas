@@ -109,13 +109,13 @@ describe('tile rules fingerprint', () => {
   // draw with the previous app, so the switch needs no dual-version window.
   // #749 changes the all-day worst-direction headline (a tile property): version 3.
   // #840 only adds a Cache-Control header to the release archive uploads; no tile value changes: hash only.
-  // #899 adds the routeHasNoMiddayDirection key and an all-day filter clause that reads it. No
+  // #899 adds the worstDirectionMiddayCap key and an all-day filter clause that reads it. No
   // version bump, as for #710's pws keys: older tiles lack the key and evaluate exactly as before,
   // and older apps ignore it; the overview tiles keep it too. Hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 3,
-      fingerprint: '99641f0b1f9091a42e4fd993ba0a2f90c03c67d261f3e285ef227ad845667625',
+      fingerprint: 'e633b752dfc9092602489869283ca2ce5c627d23eb3be7fb1b1a56e480dc9559',
     });
   });
 });
