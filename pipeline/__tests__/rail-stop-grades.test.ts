@@ -38,4 +38,17 @@ describe('rail stop grades (#756)', () => {
       expect(sectionRuns(gbTiers, gb.tier)[0]).toMatchObject({ from: 0, to: 25, tier: '8' });
     }
   });
+
+  it('WMATA Yellow southbound to Huntington on weekends: the tier reads the pooled sample its headline reads (#898)', async () => {
+    // Trains to Huntington start at Greenbelt and at Mt Vernon Square under one headsign, every
+    // 16 each and every 8 together at every stop of the drawn pattern. The headline reads the
+    // pooled terminal sample (8); the tier used to be phase 2's grade of one pattern (16: tier
+    // 30). It now grades the same sample in the rail midday window: 8 on Saturday, 10 on Sunday
+    // (a 9 to 11-minute gap), never past the worst drawn stop's 8.
+    const result = await processGtfsBuffer(await fixtureZip('wmata-yellow-weekend'), undefined, { slug: 'wmata' });
+    const rows = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null && p.directionId === 1 && p.headsign === 'Huntington');
+    const sat = rows.find((p: any) => p.day === 'Saturday'); const sun = rows.find((p: any) => p.day === 'Sunday');
+    expect([sat.headway, sat.tier]).toEqual([8, '8']);
+    expect([sun.headway, sun.tier]).toEqual([8, '10']);
+  });
 });

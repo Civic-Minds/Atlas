@@ -369,6 +369,25 @@ function pooledTerminalHeadway(times: readonly number[] | undefined): number | n
     ?? sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true);
 }
 
+/**
+ * Phase 2's rail tier rule on a departure list (#898): the every-gap grade of the midday window
+ * (09:30 to 14:30) on the route's own tier scale, or null when the window has under three
+ * departures or grades as span.
+ */
+export function railMiddayTier(times: readonly number[], day: DayType, routeType: string, tiers: readonly number[]): string | null {
+  const sorted = [...new Set(times)].sort((a, b) => a - b);
+  const windowed = sorted.filter(t => t >= 570 && t <= 870);
+  if (windowed.length < 3) return null;
+  const gaps = windowed.slice(1).map((t, i) => t - windowed[i]);
+  const tier = determineTierWithEdgeGapAllowance(
+    gaps, windowed.length, windowed[windowed.length - 1] - windowed[0], [...tiers],
+    DEFAULT_CRITERIA.graceMinutes, DEFAULT_CRITERIA.maxGraceViolations, DEFAULT_CRITERIA.gracePercent, DEFAULT_CRITERIA.violationPercent,
+    { rawDepartureTimes: sorted, analysisTimes: windowed, day: (day === 'Weekday' ? 'Wednesday' : day) as DayName, routeType, railLike: true },
+    DEFAULT_CRITERIA.violationPercentByTier,
+  );
+  return tier === 'span' ? null : tier;
+}
+
 export function scopedTerminalHeadline(
   times: readonly number[] | undefined,
   day: DayType,
@@ -2403,6 +2422,35 @@ export async function processGtfsBuffer(
       });
       feature.properties.headway = headway;
       feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped, routeTierScale());
+      // #898: a rail row's tier is phase 2's grade of the drawn pattern's own midday departures,
+      // while its headline reads the headsign's pooled terminal sample. Where that sample has
+      // more departures than the pattern's own (two origins to one destination: WMATA Yellow to
+      // Huntington on weekends, every 16 each, every 8 together), the tier is graded on the same
+      // pool with the rail rule at every drawn stop, never better than the headline's tier, so
+      // the card's "every 8" and its colour agree.
+      if (railFeature && headway != null && terminalId && headsignMap && featureHeadsign && coverageStops.length > 1) {
+        const own = new Set(shapeMap?.get(terminalId) ?? []).size;
+        const pooledSample = headsignMap.get(terminalId) ?? [];
+        if (new Set(pooledSample).size > own && new Set(pooledSample).size >= MIN_POOLED_TIER_DEPARTURES) {
+          // The pool is graded at every drawn stop and the worst grade counts (as the bus lift
+          // of #728 does): a branch the pool's other origin never serves keeps its own wait (TTC
+          // Line 1 to Finch on weekends: every 5 at Finch with the Wilson short turns, every 8 to
+          // 10 north of Wilson where only the Vaughan trains run), never past the headline's tier.
+          const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
+          const drawnIds = coverageStops.map(p => p.stopId);
+          let pooledTier: string | null = null;
+          for (const stopId of drawnIds) {
+            const graded = railMiddayTier(branchPoolTimesAt(hsKey, drawnIds, stopId, true), day as DayType, featureRoute?.route_type ?? '', routeTierScale());
+            if (graded == null) { pooledTier = null; break; }
+            if (pooledTier == null || (TIER_RANK[graded] ?? 99) > (TIER_RANK[pooledTier] ?? 99)) pooledTier = graded;
+          }
+          const ceiling = headwayToTierOn(headway, routeTierScale());
+          if (pooledTier != null) {
+            const lifted = (TIER_RANK[pooledTier] ?? 99) < (TIER_RANK[ceiling] ?? 99) ? ceiling : pooledTier;
+            if ((TIER_RANK[lifted] ?? 99) < (TIER_RANK[feature.properties.tier as string] ?? 99)) feature.properties.tier = lifted;
+          }
+        }
+      }
       // #728: the tier is phase 2's every-gap grade of the one shape that won dedupe, while the
       // period values below read the whole destination at the terminal. A shape that covers part
       // of the day or has one hole is graded 60 or infrequent beside periods of 8-20 (Brampton 7

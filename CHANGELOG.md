@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- A rail line's frequency tier no longer contradicts its headline when two origins feed one destination: WMATA Yellow southbound to Huntington on weekends said every 8 but was coloured as every 30; it is now graded on the same combined service as its headline ([#898](https://github.com/Civic-Minds/Atlas/issues/898)).
 - Rail lines now colour a shared trunk at the trunk's service: WMATA Yellow's weekend trains to Mount Vernon Square and to Greenbelt each run every 16, and the stretch they share, where a train comes every 8, no longer draws as every 16 to 30 ([#756](https://github.com/Civic-Minds/Atlas/issues/756)).
 - Switching between the map, Live, History and Compare no longer reloads the page: History's tab was a plain link, so opening or leaving History reloaded the whole app and refetched the map's data ([#888](https://github.com/Civic-Minds/Atlas/issues/888)).
 - Leaving Live (by its tab, the logo or the back button) now hides Live at once and shows "Loading map…" while the frequency map draws, instead of leaving Live on screen for several seconds with the address already back at the map (CIV-214).
