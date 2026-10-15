@@ -26,7 +26,7 @@
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270116",
-  "timezone": "America/Vancouver",
+  "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
