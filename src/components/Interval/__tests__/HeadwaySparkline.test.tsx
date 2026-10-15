@@ -196,3 +196,33 @@ describe('HeadwaySparkline', () => {
     expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
   });
 });
+
+describe('HeadwaySparkline full-day link', () => {
+  const directions = [
+    { key: 'southbound', label: 'Southbound', byHour: { 6: 30, 12: 20, 18: 25, 24: 45 } },
+    { key: 'northbound', label: 'Northbound', byHour: { 6: 15, 12: 10, 18: 12, 24: 20 } },
+  ];
+  const renderChart = () => render(
+    <HeadwaySparkline byHour={{ 6: 30, 12: 20, 18: 25, 24: 45 }} onPeriodChange={() => {}} allowExpand title="Route 14" directionOptions={directions} />,
+  );
+
+  it('opens on the linked direction and writes changes back', () => {
+    window.history.replaceState(null, '', '/?route=ttc%3A%3A14&fullday=1&fdir=northbound');
+    const { unmount } = renderChart();
+    const dialog = screen.getByRole('dialog', { name: 'Route 14 full-day schedule' });
+    expect(within(dialog).getByRole('button', { name: 'Northbound' })).toHaveAttribute('aria-pressed', 'true');
+
+    // Southbound is the slower direction, so picking it leaves the direction out of the URL.
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Southbound' }));
+    expect(window.location.search).toBe('?route=ttc%3A%3A14&fullday=1');
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Close schedule' }));
+    expect(window.location.search).toBe('?route=ttc%3A%3A14');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
+    expect(window.location.search).toBe('?route=ttc%3A%3A14&fullday=1');
+    unmount();
+    expect(window.location.search).toBe('?route=ttc%3A%3A14');
+    window.history.replaceState(null, '', '/');
+  });
+});

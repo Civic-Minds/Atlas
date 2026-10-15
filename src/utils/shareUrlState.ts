@@ -207,3 +207,91 @@ export function encodeCompareSideParams(side: CompareSideParams | null): Record<
   if (!side) return { cday: null, cp: null, ch: null };
   return { cday: side.day, cp: side.period, ch: encodeHeadwayValue(side.maxHeadway) };
 }
+
+/**
+ * History app (/apps/history). These have their own names because the frequency map stays
+ * mounted underneath History and owns `route` (an `agency::routeId` key) and `agencies`;
+ * sharing those names would let the map's own sync delete History's values.
+ * Defaults (nothing chosen, newest year, no filters) stay out of the URL.
+ * Region names can contain spaces and dots, so regions are joined with `,`.
+ */
+export const HISTORY_AGENCY_PARAM = 'agency';
+export const HISTORY_ROUTE_PARAM = 'hroute';
+export const HISTORY_YEAR_PARAM = 'year';
+export const HISTORY_REGION_PARAM = 'region';
+export const HISTORY_ROUTE_QUERY_PARAM = 'rq';
+export const HISTORY_ROUTE_MODE_PARAM = 'rmode';
+
+export interface HistoryUrlState {
+  agency: string | null;
+  route: string | null;
+  /** 0 = no year in the link (the newest year is used). */
+  year: number;
+  regions: string[];
+  routeQuery: string;
+  routeMode: string | null;
+}
+
+export type HistoryUrlParams = Record<'agency' | 'hroute' | 'year' | 'region' | 'rq' | 'rmode', string | null>;
+
+const HISTORY_ROUTE_MODE_RE = /^(mode:\d+|subtype:brt|subtype:express)$/;
+
+export function parseHistoryUrlState(search: string | URLSearchParams): HistoryUrlState {
+  const sp = toSearchParams(search);
+  const agency = sp.get(HISTORY_AGENCY_PARAM)?.trim() || null;
+  const yearRaw = Number(sp.get(HISTORY_YEAR_PARAM));
+  const mode = sp.get(HISTORY_ROUTE_MODE_PARAM);
+  return {
+    agency,
+    // A route only means something inside an agency.
+    route: agency ? sp.get(HISTORY_ROUTE_PARAM) || null : null,
+    year: agency && Number.isInteger(yearRaw) && yearRaw > 1900 ? yearRaw : 0,
+    regions: [...new Set((sp.get(HISTORY_REGION_PARAM) ?? '').split(',').map(r => r.trim()).filter(Boolean))],
+    routeQuery: agency ? sp.get(HISTORY_ROUTE_QUERY_PARAM) ?? '' : '',
+    routeMode: agency && mode && HISTORY_ROUTE_MODE_RE.test(mode) ? mode : null,
+  };
+}
+
+/** URL params for History. `latestYear` is the default year, which is left out. */
+export function encodeHistoryUrlState(state: HistoryUrlState, latestYear: number): HistoryUrlParams {
+  const inAgency = state.agency != null;
+  return {
+    agency: state.agency,
+    hroute: inAgency ? state.route : null,
+    year: inAgency && state.year > 0 && state.year !== latestYear ? String(state.year) : null,
+    region: state.regions.length ? [...state.regions].sort().join(',') : null,
+    rq: inAgency && state.routeQuery ? state.routeQuery : null,
+    rmode: inAgency ? state.routeMode : null,
+  };
+}
+
+/** Every History param cleared. */
+export const EMPTY_HISTORY_URL_PARAMS: HistoryUrlParams = { agency: null, hroute: null, year: null, region: null, rq: null, rmode: null };
+
+/**
+ * The route card's full-day chart (beta). `fullday=1` opens it; `fdir` is the direction pill,
+ * written only when it differs from the default (the slower direction).
+ */
+export const FULL_DAY_OPEN_PARAM = 'fullday';
+export const FULL_DAY_DIRECTION_PARAM = 'fdir';
+
+export interface FullDayUrlState {
+  open: boolean;
+  direction: string | null;
+}
+
+export function parseFullDayUrlState(search: string | URLSearchParams): FullDayUrlState {
+  const sp = toSearchParams(search);
+  return {
+    open: sp.get(FULL_DAY_OPEN_PARAM) === '1',
+    direction: sp.get(FULL_DAY_DIRECTION_PARAM) || null,
+  };
+}
+
+export function encodeFullDayUrlState(state: FullDayUrlState, defaultDirection: string | null): Record<'fullday' | 'fdir', string | null> {
+  if (!state.open) return { fullday: null, fdir: null };
+  return {
+    fullday: '1',
+    fdir: state.direction && state.direction !== defaultDirection ? state.direction : null,
+  };
+}

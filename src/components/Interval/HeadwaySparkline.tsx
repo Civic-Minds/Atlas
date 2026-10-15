@@ -13,6 +13,8 @@ import Pill from '../ui/Pill';
 import { delayAmount, headwayEvery } from '../../utils/headwayText';
 import { TripTimeStrip } from './TripTimeStrip';
 import type { TripTimeSeries } from '../../utils/tripTime';
+import { syncUrlParams } from '../../utils/syncUrlParams';
+import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
 
 const HOURS = SPARKLINE_HOURS;
 
@@ -120,8 +122,13 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [pickedDirection, setPickedDirection] = useState<string | null>(null);
+  // Only the route card's chart (not the copy inside the full-day view) is linkable.
+  const ownsUrl = allowExpand && !expanded;
+  const [linkedFullDay] = useState(() => (
+    ownsUrl && typeof window !== 'undefined' ? parseFullDayUrlState(window.location.search) : null
+  ));
+  const [isExpanded, setIsExpanded] = useState(() => linkedFullDay?.open ?? false);
+  const [pickedDirection, setPickedDirection] = useState<string | null>(() => linkedFullDay?.direction ?? null);
 
   useEffect(() => {
     if (!isExpanded) return;
@@ -137,13 +144,24 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     };
   }, [isExpanded]);
 
+  const defaultDirection = slowerDirectionKey(directionOptions);
+  useEffect(() => {
+    if (!ownsUrl) return;
+    syncUrlParams(encodeFullDayUrlState({ open: isExpanded, direction: pickedDirection }, defaultDirection));
+  }, [ownsUrl, isExpanded, pickedDirection, defaultDirection]);
+  // Closing the route card closes the full-day view, so its params go with it.
+  useEffect(() => {
+    if (!ownsUrl) return;
+    return () => syncUrlParams({ fullday: null, fdir: null });
+  }, [ownsUrl]);
+
   const H = expanded ? 150 : 28;
   const displayedByHour = byHour;
   // The full-day view shows the direction picked with the pills above it;
   // the inline chart always shows the route's merged schedule.
   const expandedDirection = (pickedDirection != null && directionOptions?.some(option => option.key === pickedDirection))
     ? pickedDirection
-    : slowerDirectionKey(directionOptions);
+    : defaultDirection;
   const modalByHour = directionOptions?.find(option => option.key === expandedDirection)?.byHour ?? byHour;
   const valids = HOURS.map(h => displayedByHour[h]).filter((v): v is number => v != null);
   if (valids.length === 0) return null;
