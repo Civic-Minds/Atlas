@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { X, ExternalLink, Search, Radio, ArrowLeft, ChevronRight, Mail } from 'lucide-react';
+import { X, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
+import LinkCard from './ui/LinkCard';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
@@ -367,40 +368,22 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {!FEATURES.live && FEATURES.history && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
                 </p>
                 <div className="space-y-2">
-                  <button
-                    onClick={() => setView('agencies')}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                  >
-                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Browse agencies</span>
-                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)]" />
-                  </button>
-                  <button
-                    onClick={() => setView('sources')}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                  >
-                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Schedule sources</span>
-                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)]" />
-                  </button>
+                  <LinkCard as="button"
+                    onClick={() => setView('agencies')} icon="chevron">Browse agencies</LinkCard>
+                  <LinkCard as="button"
+                    onClick={() => setView('sources')} icon="chevron">Schedule sources</LinkCard>
                 </div>
               </div>
 
               <div>
                 <p className="text-xs font-bold text-[var(--text-muted)] mb-2">Feedback</p>
-                <a
-                  href="mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback"
-                  onClick={() => { trackEvent('contact_opened'); trackEvent('feedback_opened', { source: 'info_panel' }); }}
-                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                >
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Contact us</span>
-                  <Mail className="w-3 h-3 text-[var(--text-dim)]" />
-                </a>
+                <LinkCard href="mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback"
+                  onClick={() => { trackEvent('contact_opened'); trackEvent('feedback_opened', { source: 'info_panel' }); }} icon="mail">Contact us</LinkCard>
               </div>
 
               <div>
                 <p className="text-xs font-bold text-[var(--text-muted)] mb-2">Privacy</p>
-                <button type="button" onClick={() => window.dispatchEvent(new Event('atlas:privacy-settings'))} className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group">
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Privacy &amp; analytics</span>
-                </button>
+                <LinkCard as="button" onClick={() => window.dispatchEvent(new Event('atlas:privacy-settings'))}>Privacy &amp; analytics</LinkCard>
               </div>
 
               <div className="text-xs text-[var(--text-dim)] space-y-1">
@@ -534,24 +517,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 When we can&apos;t rely on the official feed, we may use a public copy from:
               </p>
               <div className="space-y-2">
-                <a
-                  href="https://mobilitydatabase.org/"
+                <LinkCard href="https://mobilitydatabase.org/"
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                >
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Mobility Database</span>
-                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                </a>
-                <a
-                  href="https://www.transit.land/"
+                  rel="noopener noreferrer" icon="external">Mobility Database</LinkCard>
+                <LinkCard href="https://www.transit.land/"
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                >
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Transitland</span>
-                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                </a>
+                  rel="noopener noreferrer" icon="external">Transitland</LinkCard>
               </div>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {feedRefreshMeta?.lastCompletedAt && formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))
@@ -589,23 +560,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 {EXPIRED_FEED_CADENCE} {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : EXPIRED_FEED_CONTEXT}
               </p>
               {helpContext?.websiteUrl && (
-                <OutboundLink
+                <LinkCard as={OutboundLink}
                   href={helpContext.websiteUrl}
-                  kind="agency_website"
-                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                >
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Check current schedules</span>
-                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                </OutboundLink>
+                  kind="agency_website" icon="external">Check current schedules</LinkCard>
               )}
-              <a
-                href="mailto:hey@ryanisnota.pro?subject=Atlas%20schedule%20feedback"
-                onClick={() => trackEvent('feedback_opened', { source: 'info_panel_schedule' })}
-                className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-              >
-                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
-                <Mail className="w-3 h-3 text-[var(--text-dim)]" />
-              </a>
+              <LinkCard href="mailto:hey@ryanisnota.pro?subject=Atlas%20schedule%20feedback"
+                onClick={() => trackEvent('feedback_opened', { source: 'info_panel_schedule' })} icon="mail">Report a problem</LinkCard>
             </div>
             );
           })()}
@@ -649,10 +609,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 This notice is temporary. It will disappear after review, or become a correction notice if we find a known problem.
               </p>
               {helpContext?.websiteUrl && (
-                <OutboundLink href={helpContext.websiteUrl} kind="agency_website" className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group">
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Check current schedules</span>
-                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                </OutboundLink>
+                <LinkCard as={OutboundLink} href={helpContext.websiteUrl} kind="agency_website" icon="external">Check current schedules</LinkCard>
               )}
             </div>
           )}
@@ -674,30 +631,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     .map((url, index) => {
                       const issueNumber = url.match(/\/issues\/(\d+)/)?.[1];
                       return (
-                        <a
-                          key={url}
+                        <LinkCard key={url}
                           href={url}
                           target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                        >
-                          <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+                          rel="noreferrer" icon="external">
                             {issueNumber ? `Technical details (#${issueNumber})` : `Technical details ${index + 1}`}
-                          </span>
-                          <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                        </a>
+                          </LinkCard>
                       );
                     })}
                 </>
               ) : null}
-              <a
-                href="mailto:hey@ryanisnota.pro?subject=Atlas%20data%20feedback"
-                onClick={() => trackEvent('feedback_opened', { source: 'info_panel_data' })}
-                className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-              >
-                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
-                <Mail className="w-3 h-3 text-[var(--text-dim)]" />
-              </a>
+              <LinkCard href="mailto:hey@ryanisnota.pro?subject=Atlas%20data%20feedback"
+                onClick={() => trackEvent('feedback_opened', { source: 'info_panel_data' })} icon="mail">Report a problem</LinkCard>
             </div>
           )}
 
@@ -712,19 +657,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 This coverage is still being checked before it is added to the main Atlas map. Some routes or schedule details may change during testing.
               </p>
               {helpContext?.rolloutIssueUrl && (
-                <a
-                  href={helpContext.rolloutIssueUrl}
+                <LinkCard href={helpContext.rolloutIssueUrl}
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                >
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+                  rel="noopener noreferrer" icon="external">
                     {helpContext.rolloutIssueUrl.match(/\/issues\/(\d+)/)?.[1]
                       ? `Follow rollout (#${helpContext.rolloutIssueUrl.match(/\/issues\/(\d+)/)?.[1]})`
                       : 'Follow rollout'}
-                  </span>
-                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                </a>
+                  </LinkCard>
               )}
             </div>
           )}
@@ -760,13 +699,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {selectedAgency && (
                 <>
-                  <button
-                    onClick={() => { onAgencySelect?.(selectedAgency.slug); onClose(); }}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                  >
-                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">View on map</span>
-                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)]" />
-                  </button>
+                  <LinkCard as="button"
+                    onClick={() => { onAgencySelect?.(selectedAgency.slug); onClose(); }} icon="chevron">View on map</LinkCard>
 
                   {selectedLiveRoutes.length > 0 && (
                     <div>
