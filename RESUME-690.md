@@ -378,6 +378,35 @@ weekday 8 -> 10 at both ends; TTC 504 Dufferin Gate 8 -> 15 with 16 stops graded
 Sunday 15 -> 10; detroit-people-mover, Metromover and SKYT keep 5. Main today shows every subway
 at tier 10 because settleTier degraded 5 to the surface scale's 10.
 
+POST-MERGE SCANS (2026-10-14, after #690 went live as release-mv8tcqkp; baseline main 45de8f13,
+out/main877 in the 1419e250 scratchpad):
+- #877 (fix/877-ttc-86-early-path 08004c37, out/fix877, report877.txt): a pattern with no
+  departure 09:00-19:00 never holds a dedupe slot against a midday one. 20 headlines and 21 tiers
+  move (15 up, 6 down), no headline lost or gained. Of the 339 lines on main with TTC 86's
+  signature (headline from the pool, tier infrequent, midday null, half or more of the drawn
+  stops graded) it changes 6: ttc 86 Saturday Kennedy 10/infrequent -> 10/10 with midday 10,
+  mbta 92 and 93 Saturday Sullivan -> 31/60, septa 43 Sunday Parkside -> 46/60, sfmta 33 weekday
+  -> 20/60, valleymetro 90 Saturday 43rd Ave+Dunlap 30 -> 60/60. The other 333 are one-shape
+  directions with a midday hole, not this case. GTFS hand checks: mbta 92 Saturday outbound has
+  a 20-trip shape with 11 midday departures and a 13-trip shape with none 9-15h; mbta 93 20/11
+  against 20/0; septa 43 Sunday 15/8 against 12/0; on main the no-midday shape held each slot.
+  (The Saturday fixtures cut from calendar.txt reproduce the branch's result but not main's
+  state, so those checks rest on the full-feed scan plus the GTFS counts.) Downs for review:
+  valleymetro 3 Saturday 83rd Ave+Van Buren 30/30 -> 60/60, valleymetro 29 weekday Pima Park
+  20/30 -> 20/60, GO LW weekday to Union 30/30 -> 30/60, lacmta 28 weekday Century City 20/30 ->
+  20/60, njt-bus 50 weekday via Bergenline 38/60 -> 40/infrequent, rfta L Sunday Glenwood 30/30
+  -> 30/infrequent: the midday shape now draws and its stop grades are worse than the no-midday
+  shape's phase 2 grade was.
+- Midday nits (fix/690-midday-nits dd1a1cf2, out/nits877, report-nits877.txt): 138 lines lose
+  their headline (new limited: njt-bus 14, cta 9, dayton 7, hamilton 6, nyct-brooklyn 6,
+  whistler 6, mbta 5, nyct-manhattan 5, thebus 5, beeline 4), 5 gain one (ttc 119 Milvan and
+  Arrow Rd, ttc 134 Finch via Centennial, mbta 76 Lincoln Lab, rideon 9123), 35 tiers move (14 up,
+  21 down, cta 5 and thebus 4 down). Not hand-checked; the ones to look at first are the new
+  limited lines that read a real frequency on main: cta 65 weekday Grand & Chicago 19/20, beeline
+  20 weekday Bedford Park 20/30, cota 022 weekday Broad and Ohio 30/60, broome 8 weekday SUNY
+  Broome 40/60, cobblinc 11 weekday 30/60. The three-hour span rule or the drawn-headsign
+  sibling rule is making these variants; whether each is a true short-turn needs the GTFS.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
