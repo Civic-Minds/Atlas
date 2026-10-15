@@ -4,7 +4,7 @@ import { useSegmentDelay } from '../../hooks/useSegmentDelay';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { periodKeyForHour } from '../../../shared/config';
 import {
-  MIN_DAYS, MIN_SEGMENT_TRIPS, SEGMENT_BAND_OPTIONS, halfMinutes, halfMinutesDown, tidyStopName, usableStandingStill,
+  MIN_DAYS, MIN_SEGMENT_TRIPS, SEGMENT_BAND_OPTIONS, halfMinutes, halfMinutesDown, stopNameParts, usableStandingStill,
   type SegmentBand, type SegmentDelayData,
 } from '../../utils/segmentDelayView';
 import {
@@ -197,11 +197,7 @@ function StillRows({ rows, totalDays }: { rows: ReturnType<typeof usableStanding
   );
 }
 
-function stopLabel(name: string): string {
-  const [st, x] = tidyStopName(name).split(' at ');
-  const clean = (s: string) => s.replace(/\s+(East|West|North|South) Side$/i, '').replace(/ - .*$/, '').replace(/\s+(St|Ave|Rd|Blvd|Cres|Way)(\s+(East|West|North|South))?$/i, '').trim();
-  return x ? `${clean(st)} & ${clean(x)}` : clean(st);
-}
+const stopLabel = (name: string) => stopNameParts(name).short;
 
 interface Props {
   slug: string;

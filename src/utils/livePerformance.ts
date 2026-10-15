@@ -3,7 +3,7 @@
  * order, the gap strip, the shared-section summary, stretches, and the
  * "Right now" gaps between the vehicles currently on the line.
  */
-import { MIN_DAYS, MIN_SEGMENT_TRIPS, tidyStopName, type HeadwayBandStat, type HeadwayStop, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
+import { MIN_DAYS, MIN_SEGMENT_TRIPS, stopNameParts, type HeadwayBandStat, type HeadwayStop, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
 
 /** A stop needs this many gaps (over MIN_DAYS days) to appear in the strip. */
 export const MIN_STRIP_GAPS = 30;
@@ -14,7 +14,7 @@ const MAX_PLACE_M = 60;
 /** Positions older than this aren't used for "Right now". */
 export const LIVE_STALE_SEC = 180;
 
-export type GapStat = HeadwayBandStat & { gapP10Sec: number; gapP90Sec: number; scheduledP10Sec?: number; scheduledP90Sec?: number };
+export type GapStat = HeadwayBandStat & { gapP10Sec: number; gapP90Sec: number };
 
 export interface LineStop {
   stopId: string;
@@ -44,14 +44,7 @@ const lonLatDist = (a: [number, number], b: [number, number]) => {
   return Math.hypot(dx, dy);
 };
 
-function street(name: string): string {
-  return tidyStopName(name).split(' at ')[0].replace(/\s+(East|West|North|South)$/i, '').trim();
-}
 
-function cross(name: string): string {
-  const parts = tidyStopName(name).split(' at ');
-  return (parts[1] ?? parts[0]).replace(/\s+(East|West|North|South) Side$/i, '').replace(/ - .*$/, '').replace(/\s+(St|Ave|Rd|Blvd|Cres|Way)(\s+(East|West|North|South))?$/i, '').trim();
-}
 
 function tripsOf(s: SegmentDelaySegment): number {
   return s.bands.all?.trips ?? 0;
@@ -100,18 +93,18 @@ export function lineModel(data: SegmentDelayData, directionId: number): LineMode
     return Math.max(before, after) >= 0.75 * maxTrips;
   };
   const counts = new Map<string, number>();
-  ids.forEach((_, i) => { if (sharedAt(i)) counts.set(street(names[i]), (counts.get(street(names[i])) ?? 0) + 1); });
+  ids.forEach((_, i) => { if (sharedAt(i)) counts.set(stopNameParts(names[i]).street, (counts.get(stopNameParts(names[i]).street) ?? 0) + 1); });
   const sharedStreet = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 
   const stops: LineStop[] = ids.map((stopId, index) => {
     const headway = headwayBy.get(stopId) ?? null;
-    const st = street(names[index]);
+    const st = stopNameParts(names[index]).street;
     return {
       stopId,
       name: names[index],
       street: st,
       // The cross street alone: the strip runs in line order, so the street is clear from context.
-      label: cross(names[index]),
+      label: stopNameParts(names[index]).cross,
       index,
       stat: null,
       headway,

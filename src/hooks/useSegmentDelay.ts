@@ -1,7 +1,7 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useState } from 'react';
 import { FEATURES } from '../../shared/config';
 import { getPolledRoute } from '../../shared/livePollingConfig';
-import type { SegmentBand, SegmentDelayData, SegmentView } from '../utils/segmentDelayView';
+import type { SegmentDelayData } from '../utils/segmentDelayView';
 
 // One fetch per route, shared by the map overlay and the route card.
 const cache = new Map<string, Promise<SegmentDelayData | null>>();
@@ -32,31 +32,4 @@ export function useSegmentDelay(slug: string | null | undefined, routeShortName:
     return () => { cancelled = true; };
   }, [enabled, slug, routeShortName]);
   return enabled ? data : null;
-}
-
-// Selected time band, shared between the card's picker and the map overlay.
-let band: SegmentBand = 'all';
-const listeners = new Set<() => void>();
-export function setSegmentBand(next: SegmentBand) {
-  band = next;
-  listeners.forEach(l => l());
-}
-export function useSegmentBand(): SegmentBand {
-  return useSyncExternalStore(
-    cb => { listeners.add(cb); return () => listeners.delete(cb); },
-    () => band,
-  );
-}
-
-// Which view the card shows (running time or spacing); the map follows it.
-let view: SegmentView = 'time';
-export function setSegmentView(next: SegmentView) {
-  view = next;
-  listeners.forEach(l => l());
-}
-export function useSegmentView(): SegmentView {
-  return useSyncExternalStore(
-    cb => { listeners.add(cb); return () => listeners.delete(cb); },
-    () => view,
-  );
 }

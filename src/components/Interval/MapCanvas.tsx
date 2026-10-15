@@ -1525,24 +1525,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         layout: { 'line-cap': 'round', 'line-join': 'round' },
       });
 
-      // Live POC: per stop-pair time lost, offset to each direction's side of the street.
-      map.addSource('segment-delay', {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
-      });
-      map.addLayer({
-        id: 'segment-delay-layer',
-        type: 'line',
-        source: 'segment-delay',
-        paint: {
-          'line-color': ['get', 'color'],
-          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 14, 5, 17, 7],
-          'line-offset': ['interpolate', ['linear'], ['zoom'], 10, 2, 14, 4, 17, 6],
-          'line-opacity': 1,
-        },
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-      });
-
       // History route shape dynamic layer (for historical period shapes, AI-162/AI-161)
       map.addSource('history-route-shape', {
         type: 'geojson',
