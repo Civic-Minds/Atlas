@@ -2999,11 +2999,26 @@ export async function processGtfsBuffer(
     for (const [feature, { shortName }] of featureStopHeadwaySlots) {
       if (gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) synthesizedGroups.add(shortName);
     }
+    // Patterns phase 2 classes part-time or limited (#720 / CIV-220) are never branches.
+    const limitedPatterns = new Set<string>();
+    for (const result of results) {
+      if (result.serviceClass === 'regular' && !result.rushHourOnly) continue;
+      limitedPatterns.add(`${result.route}::${result.dir}::${result.day}::${result.headsign ?? ''}::${result.shapeId ?? ''}`);
+    }
+    const tripIsLimited = (tripKey: string, dayType: string): boolean => {
+      const trip = tripById.get(tripKey.split('@')[0]);
+      if (!trip) return false;
+      const lastStopId = lastStopByTrip.get(trip.trip_id);
+      const headsign = trip.trip_headsign?.trim() || (lastStopId ? stopNameById.get(lastStopId) : undefined) || '';
+      return limitedPatterns.has(`${trip.route_id}::${String(trip.direction_id ?? '0').trim() || '0'}::${dayType}::${headsign}::${trip.shape_id || ''}`);
+    };
     const stretchesByKey = new Map<string, DirectionStretches>();
     for (const [gKey, trips] of stretchVisitsByGroup) {
       if (synthesizedGroups.has(gKey.slice(0, gKey.indexOf('::')))) continue;
+      const dayType = gKey.slice(gKey.lastIndexOf('::') + 2);
       const directionTrips = [...trips].map(([tripId, visits]) => ({
         tripId,
+        limited: tripIsLimited(tripId, dayType) || undefined,
         visits: [...visits].sort((a, b) => a.seq - b.seq).map(({ stopId, minutes, overnightOnly, counted }) => ({ stopId, minutes, overnightOnly, counted })),
       }));
       stretchesByKey.set(gKey, directionStretches(gKey, directionTrips, stopId => {

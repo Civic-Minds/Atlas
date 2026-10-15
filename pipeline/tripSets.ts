@@ -44,6 +44,12 @@ export interface TripVisit {
 export interface DirectionTrip {
   tripId: string;
   visits: readonly TripVisit[];
+  /**
+   * Phase 2 classes the trip's pattern part-time or limited (#720 / CIV-220: time-limited,
+   * irregular or rush-hour-only). Such a pattern is never a branch: its trips count where they
+   * serve, as a variant's do.
+   */
+  limited?: boolean;
 }
 
 export interface Stretch {
@@ -134,7 +140,7 @@ export function directionStretches(
   // Regular: the pattern runs steadily through at least one period at its own middle stop (the
   // steady test plus the D8 midpoint test). Stray, part-day and garage trips fail it, whatever
   // their share of trips; a branch every 30 all day passes it (TTC 102D to Major Mackenzie, 18%).
-  let regular = all.filter(p => runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)]));
+  let regular = all.filter(p => !p.trips.every(t => t.limited) && runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)]));
   // No pattern runs steadily: the most common one alone is regular.
   const busiest = (list: typeof all) => list.reduce((x, y) => (y.trips.length > x.trips.length ? y : x));
   if (regular.length === 0) regular = [busiest(all)];

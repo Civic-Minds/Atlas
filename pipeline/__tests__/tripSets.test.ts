@@ -202,6 +202,26 @@ describe('route values from the selector (shadow fields)', () => {
     expect(row(r, '25', 'Weekday').stretchRoutePeriodHeadway.late).toBe(6);
   });
 
+  it('SEPTA 66 Weekday midday: the City Line branch past Primrose runs every 20 and sets the route', async () => {
+    // Oracle at the middle stop: main every 10 (max 10-11); tail Frankford Av & Primrose St
+    // (12 stops, 86 trips) every 20, max 21.
+    const r = await run('septa-66-weekday');
+    const tail = r.stretches.get('66::1::Weekday')!.tails.find(t => t.refStop === '21872')!;
+    expect(stretchPeriods(tail).midday.value).toBe(20);
+    expect(row(r, '66', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(20);
+    expect(row(r, '66', 'Weekday').stretchPeriodRange.midday).toEqual([10, 20]);
+  });
+
+  it('TransLink 044 Weekday AM: the 3-trip Dundarave Express is limited (#720), never a branch', async () => {
+    const r = await run('translink-044-weekday', 'translink');
+    for (const dir of [0, 1]) {
+      const d = r.stretches.get(`044::${dir}::Weekday`)!;
+      expect(d.regularPatternCount).toBe(1);
+      expect(d.tails).toEqual([]);
+      expect(d.variantTripCount).toBe(3);
+    }
+  });
+
   it('CTA 36 Saturday PM: every 12, not the #602 29', async () => {
     const r = await run('cta-36-saturday');
     expect(row(r, '36', 'Saturday').stretchRoutePeriodHeadway.pmPeak).toBe(12);
