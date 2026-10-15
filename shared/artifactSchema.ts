@@ -40,7 +40,7 @@ export function assertRouteArtifactSchema(
  * fingerprint test in pipeline/__tests__/releaseGuard.test.ts forces the
  * decision whenever the underlying files change.
  */
-export const TILE_RULES_VERSION = 4;
+export const TILE_RULES_VERSION = 5;
 
 /** Releases published before the stamp existed count as the baseline rules. */
 export function releaseTileRulesVersion(release: { tileRulesVersion?: unknown }): number | null {
@@ -57,10 +57,10 @@ export function releaseTileRulesVersion(release: { tileRulesVersion?: unknown })
  * silently drop the outgoing version the moment the constant is bumped.
  * Anything else fails closed.
  */
-// #720 rollout: 4 is accepted ahead of the TILE_RULES_VERSION bump, so the deployed app keeps
-// drawing the live version-3 release and then draws the first version-4 release. Drop 3 after
-// that release is live.
-export const ACCEPTED_TILE_RULES_VERSIONS: readonly number[] = [3, 4];
+// Frequency focus rollout: 5 is accepted beside the live 4, so the app keeps drawing the live
+// version-4 release and then the first version-5 release. The same [4, 5] ships to main in a small
+// push before that publish (3 dropped, CIV-252). Drop 4 once the version-5 release is live.
+export const ACCEPTED_TILE_RULES_VERSIONS: readonly number[] = [4, 5];
 
 export function isAcceptedTileRulesVersion(release: { tileRulesVersion?: unknown }): boolean {
   const version = releaseTileRulesVersion(release);
