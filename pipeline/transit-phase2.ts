@@ -457,9 +457,18 @@ export function applyAnalysisCriteria(
             // daytime window produced <2 trips, so this can never affect a route that already
             // works today -- purely additive.
             const allTimes = [...raw.departureTimes].sort((a, b) => a - b);
-            if (allTimes.length < 2) continue; // truly can't compute a headway from <2 total departures
-            windowedTimes = allTimes;
-            isOvernightFallback = true;
+            if (allTimes.length === 0) continue;
+            // #720: a pattern with one departure that day has no headway, but it is service: it
+            // is drawn as one-off (irregular, span), hidden by default by the one-off switch,
+            // instead of vanishing (TARC 99, a UPS shift shuttle whose four shapes each run once
+            // a day). Two or more keep the overnight fallback below.
+            if (allTimes.length === 1) {
+                windowedTimes = allTimes;
+                isOvernightFallback = allTimes[0] < start || allTimes[0] > end;
+            } else {
+                windowedTimes = allTimes;
+                isOvernightFallback = true;
+            }
         }
 
         // For all rail routes, use the midday window (09:30–14:30) for tier classification

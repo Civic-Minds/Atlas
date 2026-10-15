@@ -140,11 +140,19 @@ describe('applyAnalysisCriteria', () => {
     expect(r!.tier).toBe('10');
   });
 
-  it('still drops a group with fewer than 2 total departures (cannot compute any headway)', () => {
+  it('draws a pattern with one departure a day as one-off, not dropped (#720, TARC 99)', () => {
+    // TARC 99 (UPS West Louisville Shuttle): each of its shapes runs once a day, 04:29 or 22:10.
     const results = applyAnalysisCriteria([
       raw({ route: '888', departureTimes: [1500] }),
+      raw({ route: '99', departureTimes: [269] }),
+      raw({ route: '99', departureTimes: [1330], shapeId: 'evening' }),
+      raw({ route: '99', departureTimes: [600], shapeId: 'midday' }),
     ]);
-    expect(results.find(x => x.route === '888')).toBeUndefined();
+    for (const r of results.filter(x => x.route === '888' || x.route === '99')) {
+      expect(r).toMatchObject({ tier: 'span', serviceClass: 'irregular', tripCount: 1 });
+    }
+    expect(results.filter(x => x.route === '99')).toHaveLength(3);
+    expect(results.find(x => x.route === '888')).toBeDefined();
   });
 
   it('does not falsely promote two stray overnight trips into a real tier (span burst check still applies)', () => {

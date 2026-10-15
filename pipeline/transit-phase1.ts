@@ -206,7 +206,8 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
         for (const [, group] of grouped) {
             const { routeId, dirId, headsign, shapeId, routeVariant } = group;
             const departureTimes = deduplicateDepartures(group.times);
-            if (departureTimes.length < 2) continue;
+            // #720: one departure is kept; phase 2 draws it as one-off (TARC 99).
+            if (departureTimes.length === 0) continue;
 
             const gaps: number[] = [];
             for (let i = 1; i < departureTimes.length; i++) {
