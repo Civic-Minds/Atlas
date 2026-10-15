@@ -1,8 +1,9 @@
 import React from 'react';
-import { SIDEBAR_LEFT_FALLBACK, PANEL_EMPTY } from '../../styles';
+import { SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import Panel from '../ui/Panel';
 import { useDelayedFlag } from '../../hooks/useDelayedFlag';
-import Spinner from '../ui/Spinner';
+import PanelEmpty from '../ui/PanelEmpty';
+import { loadingText, loadErrorText } from '../../content/stateCopy';
 
 interface SelectionLoadPanelProps {
   /** What is being opened, for the message ("route" or "stop"). */
@@ -29,15 +30,11 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
       } as React.CSSProperties}
     >
       {failed ? (
-        <div className="flex items-center justify-between gap-3 px-4 py-3">
-          <span className={PANEL_EMPTY.replace('px-4 py-3 ', '')}>Couldn't load this {kind}.</span>
-          <button type="button" onClick={onClose} className="text-xs font-black text-[var(--accent)] hover:underline">Close</button>
-        </div>
+        <PanelEmpty kind="error" action={<button type="button" onClick={onClose} className="shrink-0 text-xs font-black text-[var(--accent)] hover:underline">Close</button>}>
+          {loadErrorText(`this ${kind}`)}
+        </PanelEmpty>
       ) : (
-        <div className="flex items-center gap-2 px-4 py-3" role="status">
-          <Spinner />
-          <span className="text-xs font-bold text-[var(--text-muted)]">Loading {kind}…</span>
-        </div>
+        <PanelEmpty kind="loading">{loadingText(kind)}</PanelEmpty>
       )}
     </Panel>
   );

@@ -43,6 +43,7 @@ import { selectFrequentServiceFeatures, selectNightServiceFeatures } from '../co
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
+import { loadingText } from '../content/stateCopy';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -1054,7 +1055,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             <div className={`${MAP_BADGE} h-8`}>
               <Spinner />
               <span className={MAP_BADGE_LABEL}>
-                {isLoading ? `${loadedCount}/${requestedCount} networks` : 'Loading map...'}
+                {isLoading ? `${loadedCount}/${requestedCount} networks` : loadingText('map')}
               </span>
             </div>
           )}

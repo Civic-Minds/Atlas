@@ -22,6 +22,8 @@ import ListRow from '../components/ui/ListRow';
 import Pill from '../components/ui/Pill';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
+import PanelEmpty from '../components/ui/PanelEmpty';
+import { loadingText, loadErrorText, RETRY_HINT } from '../content/stateCopy';
 
 export interface RouteSnapshot {
   label: string;
@@ -456,9 +458,7 @@ function HistoryAgencyPanel({
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {visibleRouteRows.length === 0 && (
-          <p className="text-xs text-[var(--text-dim)] px-4 py-3">
-            {routeQuery || activeFilter ? 'No routes match.' : 'No data for this period.'}
-          </p>
+          <PanelEmpty>{routeQuery || activeFilter ? 'No routes match.' : 'No data for this period.'}</PanelEmpty>
         )}
         {visibleRouteRows.map(({ route }) => (
           <RouteListRow
@@ -855,21 +855,18 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                 </div>
               )}
               {historyData === null && (
-                <p className="text-xs text-[var(--text-dim)] px-4 py-3">Loading…</p>
+                <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
               )}
               {historyData !== null && historyLoadFailed && (
-                <div className="px-4 py-3">
-                  <p className="text-xs text-[var(--text-dim)]">Couldn't load history data. Check your connection and try again.</p>
-                  <button
-                    onClick={loadHistoryConfig}
-                    className="mt-2 text-xs font-medium text-[var(--accent)] hover:underline"
-                  >
-                    Retry
-                  </button>
-                </div>
+                <PanelEmpty
+                  kind="error"
+                  action={<button onClick={loadHistoryConfig} className="shrink-0 text-xs font-black text-[var(--accent)] hover:underline">Retry</button>}
+                >
+                  {loadErrorText('history data')} {RETRY_HINT}
+                </PanelEmpty>
               )}
               {historyData !== null && !historyLoadFailed && agenciesByRegion.length === 0 && (
-                <p className="text-xs text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
+                <PanelEmpty>No agencies match.</PanelEmpty>
               )}
               {agenciesByRegion.map(([region, agencies]) => (
                 <div key={region}>

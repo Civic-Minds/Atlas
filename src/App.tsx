@@ -45,6 +45,7 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
+import { loadErrorText } from './content/stateCopy';
 
 export interface Agency {
   slug: string;
@@ -856,7 +857,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         )}
         {agenciesLoadState === 'error' && (
           <div className="absolute left-1/2 bottom-5 -translate-x-1/2 flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)] shadow-lg">
-            <span>Could not load agency data.</span>
+            <span>{loadErrorText('agency data')}</span>
             <button
               type="button"
               className="font-bold text-[var(--text-primary)] hover:text-[var(--accent)]"

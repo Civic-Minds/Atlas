@@ -33,6 +33,7 @@ import {
 } from '../../../shared/onDemandAvailability';
 import { headwayTierLabel } from '../../utils/headwayText';
 import ArrowLink from '../ui/ArrowLink';
+import PanelEmpty from '../ui/PanelEmpty';
 
 interface RouteRow {
   routeId: string;
@@ -638,9 +639,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {visibleRoutes.length === 0 ? (
-          <p className="px-4 py-4 text-xs text-[var(--text-dim)]">
-            {activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}
-          </p>
+          <PanelEmpty>{activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}</PanelEmpty>
         ) : hasFilterSplit ? (
           <>
             {matchingRoutes.length > 0 && (

@@ -15,6 +15,9 @@ import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
 import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
+import PanelEmpty from '../ui/PanelEmpty';
+import AgencyName from '../ui/AgencyName';
+import { loadingText } from '../../content/stateCopy';
 
 
 interface FilterPanelProps {
@@ -436,13 +439,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </div>
                   </div>
                   {hiddenRoutesLoading && !limitedView ? (
-                    <p className="px-5 py-4 text-xs text-[var(--text-muted)]">Loading hidden routes…</p>
+                    <PanelEmpty kind="loading">{loadingText('hidden routes')}</PanelEmpty>
                   ) : filteredHiddenRoutes.length === 0 ? (
-                    <p className="px-5 py-4 text-xs text-[var(--text-muted)]">
+                    <PanelEmpty>
                       {listRoutes.length === 0
                         ? (limitedView ? 'No limited-service routes in view.' : 'The hidden-route list is unavailable right now.')
                         : (limitedView ? 'No limited-service routes match your search.' : 'No hidden routes match your search.')}
-                    </p>
+                    </PanelEmpty>
                   ) : (
                     <div className="px-5 pb-4">
                       {hiddenRoutesByAgency.map(([agencySlug, group]) => {
@@ -450,8 +453,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         return (
                         <div key={agencySlug}>
                           <p className="pt-2 pb-1 text-xs font-bold text-[var(--text-primary)]">
-                            {primary}
-                            {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
+                            <AgencyName primary={primary} secondary={secondary} />
                           </p>
                           <div className="divide-y divide-[var(--border-primary)]">
                             {group.routes.map(route => (
@@ -527,8 +529,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">
                             <p className="text-xs font-bold text-[var(--text-primary)] min-w-0">
-                              {primary}
-                              {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
+                              <AgencyName primary={primary} secondary={secondary} />
                             </p>
                             {quality.reasons.length > 0 && (
                               <ul className="mt-1.5 space-y-0.5 text-xs text-[var(--text-muted)] leading-relaxed">

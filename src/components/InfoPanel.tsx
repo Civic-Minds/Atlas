@@ -4,6 +4,8 @@ import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, AG
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
 import Tag from './ui/Tag';
+import PanelEmpty from './ui/PanelEmpty';
+import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
@@ -454,7 +456,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
               <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
                 {byRegion.size === 0 ? (
-                  <p className="px-5 py-6 text-xs text-[var(--text-dim)] text-center">No agencies match.</p>
+                  <PanelEmpty>No agencies match.</PanelEmpty>
                 ) : (
                   <div className="py-2">
                     {[...byRegion.entries()].map(([region, list]) => (
@@ -476,10 +478,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
                             >
                               <span className={AGENCY_LIST_PRIMARY} title={listLabel}>
-                                {primary}
-                                {secondary && (
-                                  <span className="text-[var(--text-dim)]"> · {secondary}</span>
-                                )}
+                                <AgencyName primary={primary} secondary={secondary} />
                               </span>
                               {(showLiveBadge || showHistoryBadge) && (
                                 <div className="flex items-center gap-1.5 shrink-0 ml-2">

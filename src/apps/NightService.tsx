@@ -3,8 +3,6 @@ import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
 import {
   PANEL_TITLE,
-  PANEL_EMPTY,
-  PANEL_SECTION_HEAD,
   LIST_ROW_PRIMARY,
   LIST_ROW_DIM,
 } from '../styles';
@@ -16,6 +14,10 @@ import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
+import PanelEmpty from '../components/ui/PanelEmpty';
+import AgencyName from '../components/ui/AgencyName';
+import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
+import { loadingText, loadErrorText } from '../content/stateCopy';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -172,18 +174,18 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
         </PanelTitleBar>
 
         <PanelBody>
-          {loadState === 'loading' && <p className={PANEL_EMPTY}>Loading…</p>}
-          {loadState === 'error' && <p className={PANEL_EMPTY}>Couldn't load night service data.</p>}
+          {loadState === 'loading' && <PanelEmpty kind="loading">{loadingText('night service')}</PanelEmpty>}
+          {loadState === 'error' && <PanelEmpty kind="error">{loadErrorText('night service data')}</PanelEmpty>}
           {loadState === 'ready' && agencies.length === 0 && (
-            <p className={PANEL_EMPTY}>No agencies match that search.</p>
+            <PanelEmpty>No agencies match that search.</PanelEmpty>
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>
-              <div className={`${PANEL_SECTION_HEAD} ${agencyIndex > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
-                {agency.agencyName}
-                {agency.region && <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.region}</span>}
-                <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.routes.length} {plural(agency.routes.length, 'route')}</span>
-              </div>
+              <AgencyGroupHeader rule={agencyIndex > 0 ? 'above' : 'below'}>
+                <AgencyName primary={agency.agencyName} secondary={agency.region ?? undefined}>
+                  <span className="font-normal text-[var(--text-dim)]"> · {agency.routes.length} {plural(agency.routes.length, 'route')}</span>
+                </AgencyName>
+              </AgencyGroupHeader>
               {agency.routes.map(route => (
                 <ListRow
                   key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`}
