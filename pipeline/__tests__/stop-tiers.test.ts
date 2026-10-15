@@ -34,7 +34,9 @@ function tierRuns(p: any): string[] {
 describe('stopTiers', () => {
   it('cta J14 Saturday southbound: the route tier is the worst stop grade, 20, not the origin\'s 15', async () => {
     // The evening gap is 14 at the garage origin (15 by grace) but widens to 18 from the sixth
-    // stop on, which grades 20: the line is every 20 by its own rule at 29 of 34 stops.
+    // stop on, which grades 20: the line is every 20 by its own rule at 29 of 34 stops. The
+    // origin's wait at the window's edge (last bus 06:54, next 07:22, #773) stays within the
+    // 15-minute grade's grace at the first stops and only tips the later ones.
     const p = await line('cta-j14-saturday', 'cta', 'Saturday', '103rd Street & Stony Island Garage Terminal');
     expect(p.headway).toBe(10);
     expect(tierRuns(p)).toEqual(['15', '20']);

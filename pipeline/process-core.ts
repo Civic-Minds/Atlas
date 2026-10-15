@@ -395,6 +395,23 @@ export function scopedTerminalHeadline(
   const windowed = sorted.filter(t => t >= start && t <= end);
   if (windowed.length < 3) return { headway, tier: null };
   const gaps = windowed.slice(1).map((t, i) => t - windowed[i]);
+  // A gap that straddles a window edge counts for its part inside the window (#773): a bus
+  // at 06:55 and the next at 07:55 is a 55-minute wait from 07:00, not a line that opens at
+  // 07:55 (Halifax 2 Saturday: hourly until 08:00, every 15 after, read tier 30 at the six
+  // origin-end stops and 60 at the other 39). The wait counts when the line's service continues
+  // across the edge, that is when any departure of the service day sits outside the window on
+  // that side (before the window, or after it and before midnight): a line whose first bus is
+  // the first of the day still opens with it, a line whose last bus is the last of the day still
+  // closes with it, and a platform whose service moves to another platform for the afternoon
+  // and returns after midnight (REM A3-A1 to Anse-a-l'Orme, #842) still closes at its last
+  // afternoon departure. Whether the outside departure is near or far does not matter, so an
+  // extra departure outside the window never changes the grade; the closed line stays the one
+  // case graded on its window alone. Graded as gaps, not as departures, so the trip count, span
+  // and allowance stay the window's own.
+  const edgeGaps = [
+    ...(sorted.some(t => t < start) && windowed[0] > start ? [windowed[0] - start] : []),
+    ...(sorted.some(t => t > end && t < 1440) && windowed[windowed.length - 1] < end ? [end - windowed[windowed.length - 1]] : []),
+  ];
   const determined = determineTierWithEdgeGapAllowance(
     gaps,
     windowed.length,
@@ -407,6 +424,7 @@ export function scopedTerminalHeadline(
     {
       rawDepartureTimes: sorted,
       analysisTimes: windowed,
+      edgeGaps,
       day: (day === 'Weekday' ? 'Wednesday' : day) as DayName,
       routeType,
       railLike,

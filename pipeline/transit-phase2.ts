@@ -20,6 +20,13 @@ import { forCrossMidnightWindow } from './headway-utils';
 export type TierDeterminerContext = {
     rawDepartureTimes: readonly number[];
     analysisTimes: readonly number[];
+    /**
+     * #773: the waits from the window's start to its first departure and from its last to the
+     * window's end, where a departure outside the window makes them gaps in service rather than
+     * the line opening or closing. Graded as gaps, but not as departures: the trip count and
+     * span stay those of the window's own departures.
+     */
+    edgeGaps?: readonly number[];
     day: DayName;
     routeType: string;
     railLike: boolean;
@@ -142,9 +149,37 @@ const determineTierWithEdgeGapAllowanceDetail = (
 ): EdgeGapAllowanceResult => {
     const analysisTimes = [...context.analysisTimes];
     const rawTimes = context.rawDepartureTimes;
+    // Keep the unused baseline arguments explicit: this determiner has the
+    // same signature as production and replaces only tier selection.
+    void headways;
+    void tripCount;
+    void spanMinutes;
+    const baseline = determineTierWithEdgeGapAllowanceBase(analysisTimes, rawTimes, tiers, graceMinutes, maxGraceViolations, gracePercent, violationPercent, violationPercentByTier);
+    // #773: a wait at the window's edge that a departure outside it makes a gap in service can
+    // only lower the tier, and never spends the ordinary violation allowance: the first tier at
+    // or past the baseline that each edge wait fits with the edge allowance (the same ten
+    // minutes a true first or last gap gets), or span.
+    const edgeGaps = context.edgeGaps ?? [];
+    if (edgeGaps.length === 0 || baseline.tier === 'span') return baseline;
+    for (const tier of tiers) {
+        if (tier < Number(baseline.tier)) continue;
+        if (edgeGaps.every(gap => gap <= tier + EDGE_GAP_ALLOWANCE_MINUTES)) return tier === Number(baseline.tier) ? baseline : { tier: String(tier) };
+    }
+    return { tier: 'span' };
+};
+
+const determineTierWithEdgeGapAllowanceBase = (
+    analysisTimes: number[],
+    rawTimes: readonly number[],
+    tiers: number[],
+    graceMinutes: number,
+    maxGraceViolations: number,
+    gracePercent: number,
+    violationPercent: number,
+    violationPercentByTier?: Record<number, number>,
+): EdgeGapAllowanceResult => {
     const actualOpening = !rawTimes.some(time => time < analysisTimes[0]);
     const actualClosing = !rawTimes.some(time => time > analysisTimes[analysisTimes.length - 1]);
-
     for (const tier of tiers) {
         const gaps = analysisTimes.slice(1).map((time, index) => time - analysisTimes[index]);
         const existingGrace = Math.max(graceMinutes, Math.round(tier * gracePercent));
@@ -205,11 +240,6 @@ const determineTierWithEdgeGapAllowanceDetail = (
         }
     }
 
-    // Keep the unused baseline arguments explicit: this determiner has the
-    // same signature as production and replaces only tier selection.
-    void headways;
-    void tripCount;
-    void spanMinutes;
     return { tier: 'span' };
 };
 
