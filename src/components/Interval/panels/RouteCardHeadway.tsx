@@ -180,8 +180,6 @@ export interface RouteCardHeadwayProps {
   agencyFeatures?: readonly GeoJSON.Feature[];
   /** Lettered variants sharing this route's base number (GRTC 1/1A/1B/1C style). */
   variantFamily?: VariantFamily | null;
-  liveRouteInfo: object | null;
-  liveStatus: string;
   routeSlug: string | undefined;
   routeAgency: Agency | undefined;
   setSelectedAgencySlug: ((slug: string | null) => void) | undefined;
@@ -213,8 +211,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   currentRoute,
   agencyFeatures,
   variantFamily,
-  liveRouteInfo,
-  liveStatus,
   routeSlug,
   routeAgency,
   setSelectedAgencySlug,
@@ -425,12 +421,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
 
   return (
     <SidebarCardShell>
-      {liveRouteInfo && liveStatus !== 'noData' && (
-        <div className="flex items-center gap-1.5 -mt-1 mb-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-dim)] shrink-0" />
-          <span className="text-xs font-black text-[var(--text-dim)]">Scheduled</span>
-        </div>
-      )}
       <SidebarCardHeaderBlock>
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
@@ -445,7 +435,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             ref={reportRef}
             title={`${routeAgency?.name ?? agencyDisplayName} ${currentRoute.routeShortName ?? 'Unknown route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
             details={reportDetails}
-            showLiveReason={!!liveRouteInfo && liveStatus !== 'noData'}
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
         </div>

@@ -116,8 +116,6 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
     const renderCard = (directions: ShapeProperties[], period: 'all' | 'midday') => render(
       <RouteCardHeadway
         currentRoute={{ routeShortName: directions[0].routeShortName ?? null, routeLongName: directions[0].routeLongName ?? null, directions }}
-        liveRouteInfo={null}
-        liveStatus="idle"
         routeSlug={SLUG}
         routeAgency={undefined}
         setSelectedAgencySlug={undefined}

@@ -5,11 +5,9 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
-- Live and the frequency map no longer load the History and Night Service screens, or Night Service's data file, until you open them: one request and two code files fewer on first load (CIV-218, part).
-- Panning and zooming the map is smoother, most noticeably in Live: the check that decides which agencies' routes are drawn ran on every arriving map tile and now runs at most about three times a second while tiles load. In a pan-and-zoom test, frames slower than 50 ms went from 19 to 1 (CIV-218, part).
-- Opening any map view no longer downloads History's multi-megabyte data file up front (it was fetched up to four times on every load, even in Live); it loads the first time History is opened. The History tab now appears as soon as an eligible agency is in view, and the map shows one "Loading map…" message instead of two different ones (CIV-218, part).
-- Live's "Live in these places" list now tags each agency "Vehicles" (positions only) or "Vehicles + performance" (also has route lateness and gaps), so it's clear what to expect before opening one (CIV-219).
-- Live route lateness no longer reads "on time" for every TTC trip: a feed that gives no delay now counts as unknown, not zero, and the old live lateness card on route cards is gone, replaced by Live's route card ([#866](https://github.com/Civic-Minds/Atlas/issues/866)).
+- **Maps open and pan faster**: History's large data file and unused screens now load only when opened, and panning no longer stalls while tiles load (CIV-218).
+- **Live shows what each agency offers**: the "Live in these places" list tags each agency "Vehicles" or "Vehicles + performance" so you know what to expect (CIV-219).
+- **Live route lateness no longer reads "on time" for every TTC trip**: a feed with no delay now counts as unknown, not zero ([#866](https://github.com/Civic-Minds/Atlas/issues/866)).
 - Switching between the map, Live, History and Compare no longer reloads the page: History's tab was a plain link, so opening or leaving History reloaded the whole app and refetched the map's data ([#888](https://github.com/Civic-Minds/Atlas/issues/888)).
 - Leaving Live (by its tab, the logo or the back button) now hides Live at once and shows "Loading map…" while the frequency map draws, instead of leaving Live on screen for several seconds with the address already back at the map (CIV-214).
 - Opening a shared link no longer replaces your saved frequency, day, one-off and part-time route settings with the link's; the link's settings apply to that visit, and your own are saved again once you change them ([#891](https://github.com/Civic-Minds/Atlas/issues/891)).
