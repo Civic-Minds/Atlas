@@ -1,4 +1,5 @@
 import { PERIOD_KEYS, type HeadwayByPeriod, type HeadwayByPeriodSustained, type PeriodKey } from './config.js';
+import { PERIOD_COVERAGE_MAX_HEADWAY } from './periodEligibility.js';
 
 export type WorstDirectionFeature = {
   properties: {
@@ -259,6 +260,7 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
   // uses. A direction with no steady pattern in the period keeps every sibling's coverage, so a
   // direction that leaves most of the window without service still fails the route.
   const coverageStamps = new Map<string, HeadwayByPeriod>();
+  const noMiddayDirection = new Set<string>();
   for (const [key, group] of coverageGroups) {
     if (!group.some(f => f.properties.periodCoverageHeadway !== undefined)) continue;
     const stamp: HeadwayByPeriod = {};
@@ -278,25 +280,24 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
         return waits.length ? Math.max(...waits) : null;
       });
       stamp[period] = values.some(v => v == null) ? null : Math.max(...values as number[]);
+      // #899: a route passes an all-day "every N" only when every direction meets it, and a
+      // direction that does not run through the midday never does (rush-hour-only, a few trips,
+      // one-off, or an AM run that ends at 09:10). The all-day worst-direction value skips one-off
+      // patterns and reads a rush-hour direction by its peak headline, so the other direction
+      // alone decided. A direction runs through the midday when its midday wait, read from the
+      // same pool as the coverage stamp, is at most PERIOD_COVERAGE_MAX_HEADWAY: one stray midday
+      // departure leaves a longer wait. The route-day is flagged instead of changing the all-day
+      // value, which also colours the line: the shared filter fails a flagged route at every
+      // all-day threshold, and colour, cards and "All frequencies" are unchanged. Mixed old/new
+      // artifacts (a null value) give no flag.
+      if (period === 'midday' && directions.size > 1) {
+        const complete = [...directions].every(direction => !group.some(f =>
+          f.properties.directionId === direction && f.properties.periodCoverageHeadway === undefined));
+        const runsMidday = values.map(v => v != null && v <= PERIOD_COVERAGE_MAX_HEADWAY);
+        if (complete && runsMidday.some(Boolean) && !runsMidday.every(Boolean)) noMiddayDirection.add(key);
+      }
     }
     coverageStamps.set(key, stamp);
-  }
-
-  // #899: a route passes an all-day "every N" only when every direction meets it, and a direction
-  // with no midday departure at all (rush-hour-only, a few trips, one-off) never does. The all-day
-  // worst-direction value skips one-off patterns and reads a rush-hour direction by its peak
-  // headline, so the other direction alone decided. Flag the route-day instead of changing that
-  // value, which also colours the line: the shared filter fails a flagged route at every all-day
-  // threshold, and colour, cards and "All frequencies" are unchanged. Every sibling must carry its
-  // period coverage (span included), as for the coverage stamp; older artifacts get no flag.
-  const noMiddayDirection = new Set<string>();
-  for (const [key, group] of coverageGroups) {
-    if (group.some(f => f.properties.periodCoverageHeadway === undefined)) continue;
-    const directions = new Set(group.map(f => f.properties.directionId as number));
-    if (directions.size < 2) continue;
-    const runsMidday = [...directions].map(direction => group.some(f =>
-      f.properties.directionId === direction && f.properties.periodCoverageHeadway?.midday != null));
-    if (runsMidday.some(Boolean) && !runsMidday.every(Boolean)) noMiddayDirection.add(key);
   }
 
   for (const f of features) {

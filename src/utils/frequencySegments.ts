@@ -172,7 +172,13 @@ export function sharedStopFilterView(
   const headwayByPeriodSustained: Record<string, boolean> = {};
   const periods = onlyPeriod == null ? PERIOD_KEYS : onlyPeriod === 'all' ? [] : [onlyPeriod as PeriodKey];
   if (onlyPeriod === 'all') {
-    return { tier: p.tier, headway: (pooled('headway') as number | undefined) ?? p.stopHeadways?.[stopId] ?? null };
+    // #899: a route with a direction that has no midday service passes no all-day threshold, so
+    // none of its stretches do either.
+    return {
+      tier: p.tier,
+      headway: (pooled('headway') as number | undefined) ?? p.stopHeadways?.[stopId] ?? null,
+      ...(p.routeHasNoMiddayDirection === true ? { routeHasNoMiddayDirection: true } : {}),
+    };
   }
   if (onlyPeriod != null) {
     const pk = onlyPeriod as PeriodKey;
@@ -279,7 +285,7 @@ function stopFilterValue(ctx: SharedPassContext, p: ShapeProperties, stopId: str
   let viewKey: string;
   if (period === 'all') {
     const pooled = getPooledStop(ctx.index, p, stopId, 'headway') as number | undefined;
-    viewKey = `all|${p.tier}|${pooled ?? p.stopHeadways?.[stopId] ?? null}`;
+    viewKey = `all|${p.tier}|${pooled ?? p.stopHeadways?.[stopId] ?? null}|${p.routeHasNoMiddayDirection === true}`;
   } else {
     const pk = period as PeriodKey;
     const pooled = getPooledPeriod(ctx.index, p, stopId, pk);
@@ -289,7 +295,10 @@ function stopFilterValue(ctx: SharedPassContext, p: ShapeProperties, stopId: str
   }
   let value = ctx.viewValues.get(viewKey);
   if (value === undefined) {
-    value = routeFilterHeadway(sharedStopFilterView(ctx.index, p, stopId, period), period);
+    const view = sharedStopFilterView(ctx.index, p, stopId, period);
+    // #899: the filter clause fails a flagged route at every all-day threshold; the stop value
+    // follows it (routeFilterHeadway alone is the colour value and does not read the flag).
+    value = period === 'all' && view.routeHasNoMiddayDirection === true ? null : routeFilterHeadway(view, period);
     ctx.viewValues.set(viewKey, value);
   }
   byKey.set(key, value);

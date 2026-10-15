@@ -449,3 +449,41 @@ describe('#899: a direction with no midday service fails every all-day threshold
     expect(route({ tier: '10', headway: 10 }, null).some(f => f.properties.routeHasNoMiddayDirection)).toBe(false);
   });
 });
+
+describe('#899: a direction runs at midday only with a midday wait of 60 or less', () => {
+  const allDay = { amPeak: 20, midday: 20, pmPeak: 20, evening: 30, late: null, overnight: null };
+  const pair = (other: Record<string, number | null>, otherHw: Record<string, number | null> = other) => {
+    const features = [
+      feat({ routeShortName: '9', day: 'Weekday', directionId: 0, headway: 20, tier: '20', headwayByPeriod: allDay, periodCoverageHeadway: allDay }),
+      feat({ routeShortName: '9', day: 'Weekday', directionId: 1, headway: 10, tier: '10', headwayByPeriod: otherHw, periodCoverageHeadway: other }),
+    ];
+    stampWorstDirectionHeadways(features);
+    return features[0].properties.routeHasNoMiddayDirection === true;
+  };
+
+  it('an AM run that ends at 09:10 does not count as midday service', () => {
+    // One departure at 09:10 leaves a 350-minute midday wait.
+    expect(pair({ amPeak: 10, midday: 350, pmPeak: null, evening: null, late: null, overnight: null },
+      { amPeak: 10, midday: null, pmPeak: null, evening: null, late: null, overnight: null })).toBe(true);
+  });
+
+  it('one stray midday short turn does not count either', () => {
+    const features = [
+      feat({ routeShortName: '8', day: 'Weekday', directionId: 0, headway: 20, tier: '20', headwayByPeriod: allDay, periodCoverageHeadway: allDay }),
+      feat({ routeShortName: '8', day: 'Weekday', directionId: 1, headway: 10, tier: '10',
+        headwayByPeriod: { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null },
+        periodCoverageHeadway: { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null } }),
+      // A short turn with one 12:00 trip: no midday headway, a 180-minute midday wait.
+      feat({ routeShortName: '8', day: 'Weekday', directionId: 1, headway: null, tier: 'span',
+        headwayByPeriod: { amPeak: null, midday: null, pmPeak: null, evening: null, late: null, overnight: null },
+        periodCoverageHeadway: { amPeak: null, midday: 180, pmPeak: null, evening: null, late: null, overnight: null } }),
+    ];
+    stampWorstDirectionHeadways(features);
+    expect(features.every(f => f.properties.routeHasNoMiddayDirection === true)).toBe(true);
+  });
+
+  it('a direction every 60 at midday runs through it', () => {
+    expect(pair({ amPeak: 10, midday: 60, pmPeak: 10, evening: null, late: null, overnight: null })).toBe(false);
+  });
+});
+
