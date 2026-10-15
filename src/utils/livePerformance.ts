@@ -86,8 +86,12 @@ export function lineModel(data: SegmentDelayData, directionId: number): LineMode
   const headwayBy = new Map((data.headways ?? []).filter(h => h.directionId === directionId).map(h => [h.stopId, h]));
   const ids = [path[0].fromStopId, ...path.map(s => s.toStopId)];
   const names = [path[0].fromName, ...path.map(s => s.toName)];
-  // A stop is on the shared section when the stop pairs either side of it carry most of the line's trips.
+  // The shared section: the analysis's own list when it has one (so the header, strip and Right now
+  // use one rule); otherwise stops whose stop pairs either side carry most of the line's trips.
+  const sharedList = (data as { sharedSection?: Record<string, { stops: string[] }> }).sharedSection?.[String(directionId)]?.stops;
+  const sharedIds = sharedList ? new Set(sharedList) : null;
   const sharedAt = (i: number) => {
+    if (sharedIds) return sharedIds.has(ids[i]);
     const before = i > 0 ? tripsOf(path[i - 1]) : 0;
     const after = i < path.length ? tripsOf(path[i]) : 0;
     return Math.max(before, after) >= 0.75 * maxTrips;
@@ -149,8 +153,14 @@ const med = (xs: number[]) => {
 
 /** Header figures for the shared section: the analysis pools every gap at its stops (not a median of stop ranges). */
 export function sharedSummary(data: SegmentDelayData & { sharedSection?: Record<string, { bands: Record<string, GapStat | null> }> }, line: LineModel, band: SegmentBand): GapStat | null {
-  const st = data.sharedSection?.[String(line.directionId)]?.bands?.[band] ?? null;
-  if (!st || !line.sharedStreet || st.gaps < MIN_STRIP_GAPS || st.days < MIN_DAYS) return null;
+  const section = data.sharedSection?.[String(line.directionId)];
+  const st = section?.bands?.[band] ?? null;
+  if (!st || !line.sharedStreet || st.days < MIN_DAYS) return null;
+  // Pooled counts include each car once per stop, so the sample minimum is tested stop by stop:
+  // at least half the section's stops must have enough gaps of their own.
+  const ids = new Set((section as { stops?: string[] }).stops ?? []);
+  const own = line.stops.filter(s => ids.has(s.stopId));
+  if (own.length === 0 || own.filter(s => stopGapStat(s, band)).length < own.length / 2) return null;
   return st;
 }
 
@@ -228,6 +238,9 @@ export function placeOnLine(line: LineModel, lonLat: [number, number], maxM = MA
   return best && (best as { distM: number }).distM <= maxM ? best : null;
 }
 
+/** The passing time is interpolated only between reports at most this far apart (as in the analysis). */
+export const MAX_BRACKET_SEC = 150;
+
 /** One archived snapshot: [vehicleId, tripId, lat, lon, reportedAt] per car on the route. */
 export interface RecentSnapshot {
   capturedAt: number;
@@ -266,7 +279,8 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
   if (trips.size === 0 || snapshots.length === 0) return null;
   const sched = med(stops.filter(s => s.shared && s.stat).map(s => s.stat!.scheduledMedianGapSec));
   const latest = snapshots[snapshots.length - 1];
-  // The archive is written every minute: an old newest snapshot means the feed or the archive is behind.
+  // nowSec is the server's clock (the archive's), not the browser's. The archive is written every
+  // minute: an old newest snapshot means the feed or the archive is behind.
   if (nowSec - latest.capturedAt > LIVE_STALE_SEC) return { incomplete: true, cars: 0, gapsMin: [], scheduledSec: sched };
 
   const { start, len } = lineMetres(line);
@@ -298,10 +312,11 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     else if (moved <= -200) backward.add(key);
   }
   const movingOtherWay = (id: string, tripId: string) => backward.has(`${id}|${tripId}`);
-  const moving = (id: string, tripId: string) => {
+  // Parked: two or more reports in the last 10 min that stay within 200 m.
+  const parked = (id: string, tripId: string) => {
     const tr = added.get(`${id}|${tripId}`) ?? [];
     const recent = tr.filter(x => tr[tr.length - 1].t - x.t <= 600);
-    return recent.length >= 2 && Math.max(...recent.map(x => x.m)) - Math.min(...recent.map(x => x.m)) >= 200;
+    return recent.length >= 2 && Math.max(...recent.map(x => x.m)) - Math.min(...recent.map(x => x.m)) < 200;
   };
   const inDirection = (id: string, tripId: string) => trips.has(tripId) || forward.has(`${id}|${tripId}`);
 
@@ -321,14 +336,14 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
   const now: { key: string; t: number; m: number }[] = [];
   let unplaceable = 0;
   for (const [id, tripId, lat, lon, t] of latest.v) {
-    if (latest.capturedAt - t > LIVE_STALE_SEC) continue;
+    // Staleness is measured once: the car's own report time against the server clock.
+    if (nowSec - t > LIVE_STALE_SEC) continue;
     const a = along(lon, lat);
     if (!inDirection(id, tripId)) {
-      // A current car on this section whose direction we can't tell (unlisted trip, not moving
-      // forward along either line): the gaps either side of it would be wrong.
-      // An unlisted car that hasn't moved 200 m in 10 min either way is treated as parked (standby
-      // buses wait on the line), not as a missing car.
-      if (!known.has(tripId) && a && onShared(a.segIndex) && moving(id, tripId) && !movingOtherWay(id, tripId)) unplaceable++;
+      // A current car on this section whose direction we can't tell (an unlisted trip with too few
+      // reports, or moving back and forth): the gaps either side of it would be wrong. One that
+      // stayed within 200 m over 10 min is parked (standby buses wait on the line), not missing.
+      if (!known.has(tripId) && a && onShared(a.segIndex) && !parked(id, tripId) && !movingOtherWay(id, tripId)) unplaceable++;
       continue;
     }
     if (a && onShared(a.segIndex)) now.push({ key: `${id}|${tripId}`, t, m: a.m });
@@ -350,8 +365,11 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     for (let k = 1; k < track.length; k++) {
       const a = track[k - 1], b = track[k];
       if (a.m <= car.m && b.m >= car.m && b.m > a.m) {
+        // Reports too far apart (the car ahead dropped out a while): don't guess when it passed.
+        if (b.t - a.t > MAX_BRACKET_SEC) return null;
         const passed = a.t + ((car.m - a.m) / (b.m - a.m)) * (b.t - a.t);
-        return Math.max(0, Math.round((car.t - passed) / 60));
+        const gap = car.t - passed;
+        return gap < 0 ? null : Math.round(gap / 60); // negative only from clock skew between cars
       }
     }
     return null;

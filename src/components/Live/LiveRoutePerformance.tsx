@@ -219,11 +219,12 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
   const [now, setNow] = useState(() => Date.now());
   // The last 30 min of archived positions for this route, refreshed every 30 s (archive is written each minute).
   const [recent, setRecent] = useState<RecentSnapshot[] | null>(null);
+  const [serverNow, setServerNow] = useState<number | null>(null);
   useEffect(() => {
     let cancelled = false;
     const load = () => fetch(`/api/live-recent?agency=${encodeURIComponent(slug)}&route=${encodeURIComponent(routeShortName)}`)
       .then(r => (r.ok ? r.json() : null))
-      .then(j => { if (!cancelled) { setRecent(Array.isArray(j?.snapshots) ? j.snapshots : null); setNow(Date.now()); } })
+      .then(j => { if (!cancelled) { setRecent(Array.isArray(j?.snapshots) ? j.snapshots : null); setServerNow(typeof j?.now === 'number' ? j.now : null); setNow(Date.now()); } })
       .catch(() => { if (!cancelled) setRecent(null); });
     load();
     const t = setInterval(load, 30_000);
@@ -335,7 +336,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
   const tally = runningTimeTally(line.segments, band);
   const liveBand = livePeriod(data);
   const liveSched = sharedSummary(data, line, liveBand);
-  const live = feedDegraded || !recent ? null : liveGaps(data, line, liveBand === band ? stops : withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000));
+  const live = feedDegraded || !recent || serverNow == null ? null : liveGaps(data, line, liveBand === band ? stops : withStats(line, liveBand), liveBand, recent, serverNow);
 
   return (
     <div className="flex flex-col gap-3">

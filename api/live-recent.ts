@@ -26,8 +26,10 @@ async function handler(req: Request): Promise<Response> {
   const cfg = getPolledRoute(agency, route);
   if (!cfg) return json({ noData: true });
   const key = `${cfg.slug}::${route}`;
+  // The server's clock goes with every reply, so the card measures staleness against it, not the browser's.
+  const withNow = (body: string) => `{"now":${Math.floor(Date.now() / 1000)},${body.slice(1)}`;
   const hit = cache.get(key);
-  if (hit && Date.now() - hit.at < CACHE_MS) return json(hit.body);
+  if (hit && Date.now() - hit.at < CACHE_MS) return json(withNow(hit.body));
   try {
     const snaps = await fetchRecentPositions(cfg.slug, WINDOW_MIN);
     // Compact rows: [vehicleId, tripId, lat, lon, reportedAt]
@@ -41,7 +43,7 @@ async function handler(req: Request): Promise<Response> {
       }));
     const body = JSON.stringify({ agency: cfg.slug, route, windowMin: WINDOW_MIN, snapshots });
     cache.set(key, { at: Date.now(), body });
-    return json(body);
+    return json(withNow(body));
   } catch {
     return json({ error: 'archive unavailable' }, 503);
   }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lineModel, liveGaps, placeOnLine, runningTimeTally, stretchBetween, stripStops, withStats } from '../livePerformance';
+import { lineModel, liveGaps, sharedSummary, placeOnLine, runningTimeTally, stretchBetween, stripStops, withStats } from '../livePerformance';
 import type { SegmentDelayData, SegmentDelaySegment } from '../segmentDelayView';
 
 // Five stops along latitude 43.65, ~800 m apart, westbound (direction 0).
@@ -85,6 +85,52 @@ describe('livePerformance', () => {
     const t0 = 10_000;
     const snaps = [snap(t0, [['a', 't1', 3], ['b', 't2', 1.5]])];
     expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, t0)!.gapsMin).toEqual([null]);
+  });
+
+  it('uses the analysis\'s shared-section stops and tests sample minimums stop by stop', () => {
+    const pooled = gapStat(300, 240, 60, 600);
+    const withSection = { ...data, sharedSection: { 0: { stops: ['S1', 'S2', 'S3'], bands: { all: pooled } } } } as typeof data;
+    const line = lineModel(withSection, 0)!;
+    expect(line.stops.filter(s => s.shared).map(s => s.stopId)).toEqual(['S1', 'S2', 'S3']);
+    expect(sharedSummary(withSection, line, 'all')).toBe(pooled);
+    // Only 1 of 3 stops has enough gaps of its own: no header figures, however large the pooled count.
+    const thin = { ...withSection, headways: withSection.headways!.map((h, i) => (i === 0 ? h : { ...h, bands: { all: { ...h.bands.all!, gaps: 10 } } })) } as typeof data;
+    expect(sharedSummary(thin, lineModel(thin, 0)!, 'all')).toBeNull();
+  });
+
+  it('does not guess a passing time between reports more than 2½ min apart', () => {
+    const line = lineModel(data, 0)!;
+    const t0 = 10_000;
+    // Car a reported at stop position 1 and next at 4, 5 min later; car b is now at 2.5.
+    const snaps = [
+      snap(t0, [['a', 't1', 1]]),
+      snap(t0 + 300, [['a', 't1', 4], ['b', 't2', 2.5]]),
+    ];
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, t0 + 300)!.gapsMin).toEqual([null]);
+  });
+
+  it('shows no gap rather than 0 when clocks disagree (car ahead passed "after" now)', () => {
+    const line = lineModel(data, 0)!;
+    const t0 = 10_000;
+    const snaps = [
+      { capturedAt: t0, v: [['a', 't1', LAT, lon(2), t0 + 30]] as [string, string, number, number, number][] },
+      { capturedAt: t0 + 60, v: [['a', 't1', LAT, lon(3), t0 + 90], ['b', 't2', LAT, lon(2.5), t0 + 40]] as [string, string, number, number, number][] },
+    ];
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, t0 + 60)!.gapsMin).toEqual([null]);
+  });
+
+  it('marks the feed incomplete when an unlisted car on the section has too few reports to place', () => {
+    const line = lineModel(data, 0)!;
+    const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5], ['x', '-99', 2.5]])];
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, 1_000)!.incomplete).toBe(true);
+  });
+
+  it('measures staleness from each car\'s own report time', () => {
+    const line = lineModel(data, 0)!;
+    const t0 = 10_000;
+    const snaps = [{ capturedAt: t0, v: [['a', 't1', LAT, lon(3), t0], ['b', 't2', LAT, lon(1.5), t0 - 200]] as [string, string, number, number, number][] }];
+    // b's report is 200 s old: left out, leaving one car.
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, t0)).toBeNull();
   });
 
   it('marks the feed incomplete when the newest snapshot is old', () => {
