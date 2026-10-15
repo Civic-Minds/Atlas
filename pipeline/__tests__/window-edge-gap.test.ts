@@ -110,6 +110,15 @@ describe('scopedTerminalHeadline at the window edge (#773)', () => {
     expect(graded([hm(23, 50)], riverport)).toBe('15');
     expect(graded([hm(23, 50)])).toBe('infrequent');
   });
+  it('a short turn between two of a line\'s buses at the window edge is not a handover', () => {
+    // CTA 95 Weekday to Damen: every 21 into the evening, 22:00 then 22:21, with a Stony Island
+    // short turn at 22:08 between. The 21-minute gap is no longer than the line's own, so the
+    // line continues; a 22:08 bus alone does not close it at 22:00.
+    const damen = [...every(hm(7, 0), hm(22, 0), 21).filter(t => t <= hm(22, 0)), hm(22, 21), hm(22, 45)];
+    const others = [hm(21, 2), hm(22, 8), hm(22, 28)];
+    expect(scopedTerminalHeadline(damen, 'Weekday', '3', false, others)?.tier)
+      .toBe(scopedTerminalHeadline(damen, 'Weekday', '3', false)?.tier);
+  });
 });
 
 async function fixtureZip(name: string): Promise<Buffer> {

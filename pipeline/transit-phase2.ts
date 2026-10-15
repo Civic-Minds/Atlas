@@ -62,18 +62,30 @@ export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
  * boundary both the route-tier closing edge here and the stop grade's closing edge wait
  * (scopedTerminalHeadline) use. A later departure of the line continues it, whatever the clock
  * time, 24:00+ included (a rider after a 21:13 last bus waits whether the next runs at 23:59 or
- * 24:01), unless the same route direction ran other headsigns in between: then the line's
- * service moved to another destination and its return is a separate block, so the line closes
- * at `last`. TransLink 408 runs to Ironwood every 15 until 18:21, to Riverport until 23:45, and
- * to Ironwood again at 24:45; without this the Ironwood line read infrequent. `otherHeadsignTimes`
- * are the route direction's departures that day under other headsigns
- * (otherHeadsignDepartureTimes); when omitted, every later departure continues the service.
+ * 24:01), unless the line handed its service over to the route's other headsigns: its own gap
+ * from `last` is longer than its longest gap inside the window (`windowTimes`) and the same route
+ * direction ran other headsigns in between (`otherHeadsignTimes`, from
+ * otherHeadsignDepartureTimes). Then the return is a separate block and the line closes at
+ * `last`. TransLink 408 runs to Ironwood every 15 until 18:21, to Riverport until 23:45, and to
+ * Ironwood again at 24:45: a 6h24 gap against 15, so it closes (it read infrequent). CTA 95 to
+ * Damen runs 22:00 and 22:21 with a Stony Island short turn at 22:08 between: a 21-minute gap no
+ * longer than its own, so it continues. Without `handover`, every later departure continues it.
  */
-export function serviceContinuesAfter(times: readonly number[], last: number, otherHeadsignTimes?: readonly number[]): boolean {
+export function serviceContinuesAfter(
+    times: readonly number[],
+    last: number,
+    handover?: { otherHeadsignTimes: readonly number[]; windowTimes: readonly number[] },
+): boolean {
     let next = Infinity;
     for (const time of times) if (time > last && time < next) next = time;
     if (next === Infinity) return false;
-    return !otherHeadsignTimes?.some(time => time > last && time < next);
+    if (!handover) return true;
+    let longestWindowGap = 0;
+    for (let i = 1; i < handover.windowTimes.length; i++) {
+        longestWindowGap = Math.max(longestWindowGap, handover.windowTimes[i] - handover.windowTimes[i - 1]);
+    }
+    if (next - last <= longestWindowGap) return true;
+    return !handover.otherHeadsignTimes.some(time => time > last && time < next);
 }
 
 /**
@@ -223,7 +235,7 @@ const determineTierWithEdgeGapAllowanceBase = (
     violationPercentByTier?: Record<number, number>,
 ): EdgeGapAllowanceResult => {
     const actualOpening = !serviceContinuesBefore(rawTimes, analysisTimes[0]);
-    const actualClosing = !serviceContinuesAfter(rawTimes, analysisTimes[analysisTimes.length - 1], otherHeadsignTimes);
+    const actualClosing = !serviceContinuesAfter(rawTimes, analysisTimes[analysisTimes.length - 1], otherHeadsignTimes && { otherHeadsignTimes, windowTimes: analysisTimes });
     for (const tier of tiers) {
         const gaps = analysisTimes.slice(1).map((time, index) => time - analysisTimes[index]);
         const existingGrace = Math.max(graceMinutes, Math.round(tier * gracePercent));

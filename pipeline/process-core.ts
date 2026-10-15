@@ -412,7 +412,7 @@ export function scopedTerminalHeadline(
   // gaps, not as departures, so the trip count, span and allowance stay the window's own.
   const edgeGaps = [
     ...(windowed[0] > start && serviceContinuesBefore(sorted, windowed[0]) ? [windowed[0] - start] : []),
-    ...(windowed[windowed.length - 1] < end && serviceContinuesAfter(sorted, windowed[windowed.length - 1], otherHeadsignTimes) ? [end - windowed[windowed.length - 1]] : []),
+    ...(windowed[windowed.length - 1] < end && serviceContinuesAfter(sorted, windowed[windowed.length - 1], otherHeadsignTimes && { otherHeadsignTimes, windowTimes: windowed }) ? [end - windowed[windowed.length - 1]] : []),
   ];
   const determined = determineTierWithEdgeGapAllowance(
     gaps,
