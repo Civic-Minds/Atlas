@@ -23,7 +23,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -790,19 +790,6 @@ export async function processGtfsBuffer(
     options?.slug === 'niagara' ? normalizeNrtAnalysisResult(result) : result,
   );
 
-  // Build lookup from (route::dir::DayType) → departure times for period headway computation.
-  // When multiple raw entries cover the same route/dir/dayType (Mon–Fri), keep the one with
-  // the most trips as the representative day.
-  const rawByDayType = new Map<string, number[]>();
-  for (const r of raw) {
-    const dayType = (['Monday','Tuesday','Wednesday','Thursday','Friday'] as const).includes(r.day as never)
-      ? 'Weekday'
-      : r.day === 'Saturday' ? 'Saturday' : 'Sunday';
-    const k = `${r.route}::${r.dir}::${dayType}`;
-    const existing = rawByDayType.get(k);
-    if (!existing || r.departureTimes.length > existing.length) rawByDayType.set(k, r.departureTimes);
-  }
-
   // Per-stop headway computation (AI-96): map serviceId → dayTypes, then tripId → groups,
   // so each service block contributes to every applicable weekday/weekend bucket.
   const serviceIdToDayTypes = new Map<string, Set<DayType>>();
@@ -1183,7 +1170,6 @@ export async function processGtfsBuffer(
       : `${groupName}::${result.dir}::${result.day}::${branchKey}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const incumbent = dedupedPattern.get(dedupeKey);
-    const isRailRoute = String(route?.route_type) === '2';
     const initialPeriodHeadways = computePeriodHeadways(result.times);
     const notRated = result.partialWeekday || result.previousNightTailOnly || result.serviceClass === 'irregular' || result.tier === 'span';
     const newHeadway = notRated ? null : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
@@ -1866,8 +1852,6 @@ export async function processGtfsBuffer(
   const rowRunsAtNight = new Map<GeoJsonFeature, boolean>();
   const rowNightStops = new Map<GeoJsonFeature, string[]>();
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
-    // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
-    feature.properties.frequentService = false;
     feature.properties.researchFrequentService = { daytime15: false, daytime30: false, extended15: false, extended30: false };
     feature.properties.nightService30 = false;
     feature.properties.nightService60 = false;
@@ -2897,9 +2881,6 @@ export async function processGtfsBuffer(
     // Frequent Network (#294 follow-on): entirely within normal (non-extended-hour) GTFS notation,
     // so unlike Night Service this needs no service_id union across the midnight boundary --
     // terminalRawTimes alone is the right input. Weekday only, per docs/research/frequent-service-research-2026-09/CRITERIA.md.
-    feature.properties.frequentService = (day === 'Weekday' && terminalRawTimes)
-      ? hasSustainedFrequentService(terminalRawTimes)
-      : false;
     feature.properties.researchFrequentService = terminalRawTimes
       ? computeResearchFrequentService(terminalRawTimes)
       : { daytime15: false, daytime30: false, extended15: false, extended30: false };

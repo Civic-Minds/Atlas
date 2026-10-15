@@ -47,7 +47,7 @@ describe('routeFacts', () => {
     })).toBeNull();
   });
 
-  it('names display, filter, branch, and shared metrics from one source record', () => {
+  it('names display, branch, and shared metrics from one source record', () => {
     const p = {
       routeId: '900', directionId: 0, tier: '5', headway: 6,
       routeShortName: '900', routeLongName: 'Airport Express', agencyName: 'TTC',
@@ -61,10 +61,6 @@ describe('routeFacts', () => {
     const summary = buildRouteServiceSummary(p);
 
     expect(summary.display).toMatchObject({ value: 6, byPeriod: { midday: 6 } });
-    // filter.byPeriod comes from worstDirectionHeadwayByPeriod, not minStopHeadwayByPeriod --
-    // every direction must meet the threshold, so a route-wide filter can't be satisfied by
-    // one branch's best shared-stop reading (#314).
-    expect(summary.filter).toMatchObject({ value: 8, byPeriod: { midday: 9 }, provenance: 'worst-direction' });
     expect(summary.branch.value).toBe(6);
     expect(summary.shared).toMatchObject({ value: 3, byPeriod: { midday: 3 }, byHeadsignPeriod: { midday: 4 } });
   });

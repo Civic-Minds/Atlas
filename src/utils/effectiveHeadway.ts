@@ -84,8 +84,7 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
     return pairedTripSafeHeadway(p, period, p.headwayByPeriod?.[period] ?? null);
   }
   const summary = buildRouteServiceSummary(p);
-  // Cards show the destination/branch cadence. Keep the route-wide metric in
-  // summary.filter for eligibility and use the shared headsign cadence only
+  // Cards show the destination/branch cadence. Use the shared headsign cadence only
   // when the branch has no more specific display metric.
   const branchHeadway = metricValueForPeriod(summary.display, period);
   if (branchHeadway != null) return branchHeadway;

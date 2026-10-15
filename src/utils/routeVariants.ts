@@ -31,7 +31,6 @@ const EXCLUDED_VARIANT_FAMILIES = new Set<string>([
 export interface VariantFamily {
   base: string;
   members: { shortName: string; routeId: string; headway: number | null; routeVariant?: string }[];
-  combinedHeadwayMin: number | null;
 }
 
 /**
@@ -66,9 +65,7 @@ export function findVariantFamily(
     const members = [...explicitByVariant.entries()]
       .map(([routeVariant, value]) => ({ shortName: routeVariant, routeVariant, routeId: value.routeId, headway: value.best }))
       .sort((a, b) => a.shortName.localeCompare(b.shortName, undefined, { numeric: true }));
-    const finite = members.map(m => m.headway).filter((h): h is number => h != null && h > 0);
-    const combinedHeadwayMin = finite.length >= 2 ? Math.round(1 / finite.reduce((sum, h) => sum + 1 / h, 0)) : null;
-    return { base, members, combinedHeadwayMin };
+    return { base, members };
   }
 
   const byShort = new Map<string, { routeId: string; best: number | null; shapes: ShapeProperties[] }>();
@@ -135,7 +132,5 @@ export function findVariantFamily(
   const keepIndices = new Set(largest[0]);
   const foldedMembers = members.filter((_, i) => keepIndices.has(i));
 
-  const finite = foldedMembers.map(m => m.headway).filter((h): h is number => h != null && h > 0);
-  const combinedHeadwayMin = finite.length >= 2 ? Math.round(1 / finite.reduce((sum, h) => sum + 1 / h, 0)) : null;
-  return { base, members: foldedMembers, combinedHeadwayMin };
+  return { base, members: foldedMembers };
 }

@@ -149,7 +149,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number; headway?: number }>>([]);
+  const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number }>>([]);
   const [showAllSearchResults, setShowAllSearchResults] = useState(false);
 
   const selectRoute = useCallback((key: string | null) => {
@@ -190,7 +190,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
       const rRecents = localStorage.getItem('atlas_recently_viewed_routes');
       if (rRecents) {
-        const parsed: Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number; headway?: number }> = JSON.parse(rRecents);
+        const parsed: Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number }> = JSON.parse(rRecents);
         // Defends against a stale localStorage entry saved by an older, buggy build (e.g. the
         // raw "agencySlug::routeId" key leaking into shortName instead of a real display name)
         // -- a code fix can't retroactively clean up what's already sitting in a browser's own
@@ -259,7 +259,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
       try {
         const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
-        const recents: Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number; headway?: number }> = recentsRaw ? JSON.parse(recentsRaw) : [];
+        const recents: Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number }> = recentsRaw ? JSON.parse(recentsRaw) : [];
         const filtered = recents.filter(r => r.key !== selectedRoute);
         filtered.unshift({
           key: selectedRoute,
@@ -267,7 +267,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           longName,
           agencyName,
           routeType: facts.routeType,
-          headway: routeCardDisplayHeadway(feat.properties as ShapeProperties, period) ?? undefined,
         });
         const limited = filtered.slice(0, 5);
         localStorage.setItem('atlas_recently_viewed_routes', JSON.stringify(limited));
@@ -276,7 +275,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         console.error(e);
       }
     }
-  }, [selectedRoute, nonCorridorLayers, period, currentDay]);
+  }, [selectedRoute, nonCorridorLayers, currentDay]);
 
   // Compute notable routes fallback
   // Only shown in the focused-search suggestions; skipped otherwise because the scan is
