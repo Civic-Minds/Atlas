@@ -122,8 +122,11 @@ export function selectByFeedDates(peeked: PeekedArchive[], todayYmd: string, pri
 
 export interface FeedDates {
   feedStart: string | null;
+  /** Latest service date across feed_info, calendar.txt and calendar_dates.txt; uncapped. */
   feedExpiry: string | null;
   feedVersion: string | null;
+  /** feed_info.txt feed_end_date alone, for recordedFeedExpiry (#875). */
+  feedInfoEnd: string | null;
 }
 
 /** Read the first and latest advertised service dates and feed_version from a GTFS zip. */
@@ -153,9 +156,10 @@ export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
         calendarDates,
       }),
       feedVersion: feedInfo.feed_version || null,
+      feedInfoEnd: feedInfo.feed_end_date || null,
     };
   } catch {
-    return { feedStart: null, feedExpiry: null, feedVersion: null };
+    return { feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null };
   }
 }
 

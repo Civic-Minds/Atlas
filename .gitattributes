@@ -1,0 +1,2 @@
+# Keep both sides of concurrent [Unreleased] entries instead of conflicting.
+CHANGELOG.md merge=union

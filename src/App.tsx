@@ -142,7 +142,7 @@ function withArtifactUrls(a: Agency): Agency {
   return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
 }
 
-export default function App() {
+export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     markAtlasOnce('app-ready');
   }, []);
@@ -191,7 +191,6 @@ export default function App() {
   // Search scans / map filters / prefetch run from this so keystrokes can
   // paint first. See useDebouncedValue for why this isn't useDeferredValue.
   const deferredQuery = useDebouncedValue(query);
-  const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
   const [appLinksOpen, setAppLinksOpen] = useState(false);
   const [infoTab, setInfoTab] = useState<Tab>('about');
@@ -537,24 +536,26 @@ export default function App() {
       {/* Unified header row — left and right sections share one flex container so they can never overlap */}
       <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
       <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
+        {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
         <button
           type="button"
           onClick={() => {
             if (inFrequentServiceStory) {
               navigate(FEATURE_ROUTES.frequentService.map);
-            } else if (inFrequentService || activeApp !== 'frequency') {
-              navigate('/');
+            } else if (onGoHome) {
+              onGoHome();
             } else {
-              setResetViewKey(k => k + 1);
+              navigate('/');
             }
           }}
-          aria-label={inFrequentServiceStory || inFrequentService || activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
-          className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
+          aria-label={inFrequentServiceStory ? 'Back to frequency map' : 'Atlas home'}
+          className="group flex items-center gap-2 shrink-0"
         >
-          <MapIcon className="w-3.5 h-3.5 text-white" />
+          <span className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl group-hover:opacity-80 transition-opacity">
+            <MapIcon className="w-3.5 h-3.5 text-white" />
+          </span>
+          {!phoneSearchExpanded && <AtlasBrand hideByline />}
         </button>
-
-        {!phoneSearchExpanded && <AtlasBrand hideByline />}
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
@@ -730,7 +731,6 @@ export default function App() {
               setLightMode={setLightMode}
               query={deferredQuery}
               setQuery={setQuery}
-              resetViewKey={resetViewKey}
               showUi={inFrequency || inFrequentService}
               showSelectionUi={inLive || inNight}
               showRouteLayers={inFrequency || inLive || inHistory || inNight || inFrequentService}
