@@ -15,7 +15,6 @@ These are the rules for "every N min or less". Read this before touching frequen
 ## Where the rule lives
 
 - `shared/worstDirection.ts` stamps the worst-direction values on every route feature. `selectDirectionPeriodPool` is the one place that decides which patterns speak for a direction in a period; the frequency and the full-window check both use it. `selectDirectionAllDayPool` decides the same for the all-day value.
-- `shared/nightServiceDirections.ts` applies rule 1 to Night Service after processing: a route-day keeps its night flags only if every direction has a passing pattern (a single-direction route counts as one direction).
 - `shared/tileFilterExprs.ts` is the map filter expression. It is the single definition of the rule.
 - `shared/routeHeadwayFilter.ts` evaluates that same expression for the app (counts, lists, route cards, overlay), so the app and the map always agree.
 - `shared/sharedStops.ts` reads the pooled values at shared stops (processing: `pipeline/sharedStretch.ts`). A shared stretch is judged stop by stop with the same `featurePassesHeadwayFilter`, fed the pooled value where it is lower than the stop's own and the stop's own value otherwise (`src/utils/frequencySegments.ts`).

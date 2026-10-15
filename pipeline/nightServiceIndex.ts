@@ -72,11 +72,6 @@ export function extractNightServiceRoutes(
     }));
 }
 
-/** Whole routes, not drawn patterns or days: one per agency and route name. */
-export function countUniqueNightRoutes(routes: readonly NightServiceRouteEntry[]): number {
-  return new Set(routes.map(r => `${r.agencySlug}::${r.routeShortName ?? ''}::${r.routeLongName ?? ''}`)).size;
-}
-
 /** Pure: aggregate every agency's extracted routes into the published index file. */
 export function buildNightServiceIndex(allRoutes: NightServiceRouteEntry[]): NightServiceIndexFile {
   const routes = [...allRoutes].sort((a, b) => {
@@ -89,7 +84,7 @@ export function buildNightServiceIndex(allRoutes: NightServiceRouteEntry[]): Nig
     generatedAt: new Date().toISOString(),
     criteria: NIGHT_SERVICE_CRITERIA,
     agencyCount: new Set(routes.map(r => r.agencySlug)).size,
-    routeCount: countUniqueNightRoutes(routes),
+    routeCount: routes.length,
     routes,
   };
 }
