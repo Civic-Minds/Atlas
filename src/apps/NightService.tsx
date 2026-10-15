@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Moon, X } from 'lucide-react';
+import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
 import {
   PANEL_TITLE,
@@ -16,6 +16,8 @@ import type { NightServiceFrequency } from '../../shared/nightService';
 import { nightServiceKey } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
+import ResearchInfo from '../components/ResearchInfo';
+import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -99,14 +101,6 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
     }
     return routes;
   }, [bounds, layers, frequency]);
-  const [introDismissed, setIntroDismissed] = useState(() => {
-    try { return localStorage.getItem('atlas_pref_night_intro_dismissed') === '1'; } catch { return false; }
-  });
-  const dismissIntro = () => {
-    setIntroDismissed(true);
-    try { localStorage.setItem('atlas_pref_night_intro_dismissed', '1'); } catch {}
-  };
-
   useEffect(() => {
     fetch(`${R2_PUBLIC_URL}/atlas/night-service.json`, { cache: 'no-store' })
       .then(r => {
@@ -182,32 +176,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
           <span className={PANEL_TITLE}>Night Service</span>
         </PanelTitleBar>
 
-        {data && !introDismissed && (
-          <div className="relative px-4 pt-2.5 pb-3 border-b border-[var(--border-primary)]">
-            <button
-              onClick={dismissIntro}
-              aria-label="Dismiss"
-              className="absolute top-2 right-2 text-[var(--text-dim)] hover:text-[var(--text-primary)]"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-            <p className={`pr-5 ${LIST_ROW_PRIMARY} leading-snug`}>
-              Which routes actually run through the night?
-            </p>
-            <p className="mt-1 pr-5 text-xs text-[var(--text-muted)] font-medium leading-snug">
-              A route counts here only if it has a departure at least every {frequency} minutes,
-              2am to 6am, with no gap at either end of the core overnight window.
-            </p>
-            <p className={`mt-2 ${LIST_ROW_DIM}`}>
-              {data.routeCount} qualifying route patterns across {data.agencyCount} agencies.
-            </p>
-          </div>
-        )}
-        {data && introDismissed && (
-          <p className="px-4 pt-2 pb-2 text-xs text-[var(--text-muted)] font-medium leading-snug border-b border-[var(--border-primary)]">
-            At least one departure every {frequency} minutes, 2am–6am local time, with no gap at either end of the window.
-          </p>
-        )}
+        {data && <ResearchInfo heading={NIGHT_INFO_HEADING}>{nightRuleText(frequency)}</ResearchInfo>}
 
         <PanelBody>
           {loadState === 'loading' && <p className={PANEL_EMPTY}>Loading…</p>}

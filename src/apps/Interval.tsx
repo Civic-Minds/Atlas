@@ -35,6 +35,8 @@ import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { getRegionalView, parseUrlView } from '../utils/regionView';
+import ResearchLegend from '../components/Interval/ResearchLegend';
+import { selectFrequentServiceFeatures, selectNightServiceFeatures } from '../components/Interval/map/useOverlaySources';
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 
@@ -632,6 +634,24 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     ];
   }, [compareActive, selectedRoute, layers, compareA, compareSide, selectedAgencies, selectedModes, hideSpan, hideLimitedService, livePollingOnly]);
 
+  // Whole routes and agencies for the research views' stat pills, counted from the routes each overlay
+  // draws (the night index has no 30 minute data, so it cannot answer for both settings).
+  const researchCounts = useMemo(() => {
+    if (!nightServiceView && !frequentServiceView) return null;
+    const features = nightServiceView
+      ? selectNightServiceFeatures(layers, nightServiceFrequency)
+      : selectFrequentServiceFeatures(layers, { frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes });
+    if (features.length === 0) return null;
+    const routes = new Set<string>();
+    const agencySlugs = new Set<string>();
+    for (const feature of features) {
+      const p = feature.properties as Record<string, unknown>;
+      routes.add(`${p.agencySlug}::${p.routeShortName ?? ''}::${p.routeLongName ?? ''}`);
+      agencySlugs.add(String(p.agencySlug ?? ''));
+    }
+    return { routes: routes.size, agencies: agencySlugs.size };
+  }, [nightServiceView, nightServiceFrequency, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes]);
+
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || frequentServiceView || nightServiceView || (maxHeadway === Infinity && period === 'all')) return false;
     const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
@@ -1018,7 +1038,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
       {showMapLegend && !nightServiceView && <PersistentMapLegend />}
 
-      {((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
+      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
         <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8`}>
@@ -1038,8 +1058,22 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               </span>
             </div>
           )}
+          {/* Research views (Night, Frequent Service): their own whole-route and agency counts, then the colour key, in the same pills. */}
+          {researchCounts && (
+            <div className="hidden sm:flex gap-2">
+              <div className={`${MAP_BADGE} h-8`}>
+                <span className={MAP_BADGE_COUNT}>{researchCounts.routes}</span>
+                <span className={MAP_BADGE_LABEL}>{researchCounts.routes === 1 ? 'route' : 'routes'}</span>
+              </div>
+              <div className={`${MAP_BADGE} h-8`}>
+                <span className={MAP_BADGE_COUNT}>{researchCounts.agencies}</span>
+                <span className={MAP_BADGE_LABEL}>{researchCounts.agencies === 1 ? 'agency' : 'agencies'}</span>
+              </div>
+            </div>
+          )}
+          {(nightServiceView || frequentServiceView) && <ResearchLegend view={nightServiceView ? 'night' : 'frequent'} frequentFrequency={frequentServiceFrequency} />}
           {/* Counts come from the loaded agency data, so they wait for it (the in-view counts come from the tiles). */}
-          {!compareActive && stats && (showMapContext || !isLoading) && (
+          {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading) && (
               <div className="hidden sm:flex gap-2">
                 <div className={`${MAP_BADGE} h-8`}>
                   {showMapContext ? (

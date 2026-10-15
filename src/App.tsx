@@ -28,6 +28,9 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
+import Panel from './components/ui/Panel';
+import ResearchInfo from './components/ResearchInfo';
+import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
@@ -806,6 +809,18 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               <React.Suspense fallback={null}>
                 <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} selectionActive={intervalSelectionActive} />
               </React.Suspense>
+            )}
+            {inFrequentService && (
+              <Panel
+                sidebar
+                enter
+                className={`${intervalSelectionActive ? 'invisible pointer-events-none' : 'pointer-events-auto'}`}
+                style={{ '--sidebar-left': `${sidebarLeft}px` } as React.CSSProperties}
+              >
+                <ResearchInfo heading={FREQUENT_INFO_HEADING} bordered={false}>
+                  {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
+                </ResearchInfo>
+              </Panel>
             )}
             {FEATURES.live && liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${liveShown ? 'opacity-100' : 'opacity-0'}`}>

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Night and Frequent Service share one info panel**: a heading and the rule in plain words, using the numbers you have selected (30 or 60 minutes; 15 or 30, days and time window), always visible with no close button. Route and agency counts moved into the map's stat pills (whole routes, not patterns), with the colour key beside them (CIV-235).
 - **Night page: clicking a route now works like the main map**: the other night routes fade, the route card opens in place of the list, and the card no longer shows speed or time-of-day filter notices that don't apply to Night.
 - **Night page: the route list no longer runs over the footer links**: the panel now stops above the About / What's new / Feedback row ([#905](https://github.com/Civic-Minds/Atlas/issues/905)).
 - **Night Service now needs every direction to qualify**: a route is listed only if all its directions run through the night, like the main frequency filter; before, one good direction was enough. The count above the list now counts whole routes. Takes effect after the next data refresh and map rebuild.
