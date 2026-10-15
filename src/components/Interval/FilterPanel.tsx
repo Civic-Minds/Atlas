@@ -9,6 +9,7 @@ import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
+import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
 import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
@@ -636,7 +637,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             onClick={() => setView('limited-routes')}
                             className="mt-1 text-xs text-[var(--accent)] hover:underline"
                           >
-                            {limitedServiceRouteCount.toLocaleString()} {limitedServiceRouteCount === 1 ? 'route' : 'routes'} affected →
+                            {limitedServiceRouteCount.toLocaleString()} {plural(limitedServiceRouteCount, 'route')} affected →
                           </button>
                         )}
                         {id === 'quality' && (

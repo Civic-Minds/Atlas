@@ -9,6 +9,7 @@ import {
   LIST_ROW_DIM,
 } from '../styles';
 import { R2_PUBLIC_URL } from '../../shared/config';
+import { plural } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { nightServiceKey } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
@@ -181,7 +182,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
               <div className={`${PANEL_SECTION_HEAD} ${agencyIndex > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
                 {agency.agencyName}
                 {agency.region && <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.region}</span>}
-                <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.routes.length} {agency.routes.length === 1 ? 'route' : 'routes'}</span>
+                <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.routes.length} {plural(agency.routes.length, 'route')}</span>
               </div>
               {agency.routes.map(route => (
                 <ListRow

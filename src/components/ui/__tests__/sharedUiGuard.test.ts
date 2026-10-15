@@ -22,6 +22,7 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'panel shell constants', pattern: /\b(PANEL_SHELL|PANEL_TITLE_BAR|PANEL_BODY)\b/, use: 'Panel, PanelTitleBar, PanelBody' },
   { name: 'hand-rolled option pill', pattern: /px-2(\.5)? py-0\.5 rounded-full/, use: 'Pill' },
   { name: 'hand-rolled switch', pattern: /role="switch"/, use: 'Toggle' },
+  { name: 'hand-rolled spinner', pattern: /border-t-transparent rounded-full animate-spin/, use: 'Spinner' },
   { name: 'hand-rolled page frame', pattern: /<main className="min-h-screen bg-\[var\(--bg-app\)\] px-/, use: 'PageShell' },
 ];
 

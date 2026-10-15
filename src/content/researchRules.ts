@@ -1,6 +1,7 @@
 import type { DayType } from '../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
+import { joinList } from '../../shared/overflowText';
 
 /** The rule shown in each research view's info panel, always using the numbers currently selected. */
 
@@ -26,8 +27,7 @@ export const FREQUENT_INFO_HEADING = 'Which routes are frequent?';
 function dayList(days: readonly DayType[]): string {
   const names = days.map(day => (day === 'Weekday' ? 'weekdays' : `${day}s`));
   if (names.length === 0) return 'the selected day';
-  if (names.length === 1) return names[0];
-  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+  return joinList(names);
 }
 
 export function frequentRuleText(options: {

@@ -1,3 +1,4 @@
+import { plural } from '../../shared/overflowText';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { delayAmount, headwayAbout } from '../utils/headwayText';
 
@@ -60,7 +61,7 @@ export function expiredFeedCheckHistory(options: {
   lastRefreshed?: string;
 }): string {
   if (options.count != null && options.since && options.lastChecked && formatStoredDate(options.lastChecked)) {
-    return `Atlas has checked for a new timetable ${options.count} time${options.count === 1 ? '' : 's'} since ${formatStoredDate(options.since)}, most recently on ${formatStoredDate(options.lastChecked)}.`;
+    return `Atlas has checked for a new timetable ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}, most recently on ${formatStoredDate(options.lastChecked)}.`;
   }
   if (options.lastRefreshed && formatStoredDate(options.lastRefreshed)) {
     return `Atlas last successfully refreshed the feed on ${formatStoredDate(options.lastRefreshed)}.`;

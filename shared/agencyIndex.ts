@@ -7,6 +7,7 @@ import { areaAgencySummaries } from './areaPages';
 import { areaRegionTitle, areaShortName } from './areaRegions';
 import { areaPagePath, type AreaConfig } from './areas';
 import { SITE_URL } from './seo';
+import { plural } from './overflowText';
 
 export const AGENCY_INDEX_PATH = '/agencies';
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -63,7 +64,7 @@ export function agencyIndexTitle(): string {
 }
 
 export function agencyIndexDescription(d: Pick<AgencyIndexData, 'agencyCount' | 'areas'>): string {
-  return `${d.agencyCount.toLocaleString('en-US')} transit ${d.agencyCount === 1 ? 'agency' : 'agencies'} and ${d.areas.length} ${d.areas.length === 1 ? 'region' : 'regions'}. Each agency's page shows how often every route runs.`;
+  return `${d.agencyCount.toLocaleString('en-US')} transit ${plural(d.agencyCount, 'agency', 'agencies')} and ${d.areas.length} ${plural(d.areas.length, 'region')}. Each agency's page shows how often every route runs.`;
 }
 
 export function resolveAgencyIndexSeo(

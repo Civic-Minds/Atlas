@@ -3,6 +3,7 @@ import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE, allRoutesMapHref } from '../shared/a
 import { ArrowRight } from 'lucide-react';
 import { PAGE_ACTION } from './pageStyles';
 import { HEADWAY_TIERS } from '../shared/config';
+import { plural } from '../shared/overflowText';
 
 const BAND_PHRASES = [...FREQUENCY_BANDS.map(b => b.phrase), NO_MIDDAY_PHRASE];
 const BAND_SHORT = ['≤10', '11–15', '16–20', '21–30', '31–60', '60+', 'no midday'];
@@ -21,7 +22,7 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
   const shown = counts.map((n, i) => ({ n, i })).filter(x => x.n > 0);
   // The unit goes on the first visible frequency band (not on "no midday"), so the row never reads "3 31–60" bare.
   const unitBand = shown.find(x => x.i < BAND_SHORT.length - 1)?.i;
-  const sentence = (x: { n: number; i: number }) => `${x.n} ${x.n === 1 ? 'route' : 'routes'} ${BAND_PHRASES[x.i]}`;
+  const sentence = (x: { n: number; i: number }) => `${x.n} ${plural(x.n, 'route')} ${BAND_PHRASES[x.i]}`;
   const faded = (i: number) => active !== null && active !== i;
   return (
     <div className="mt-5">

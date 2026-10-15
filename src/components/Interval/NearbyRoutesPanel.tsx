@@ -7,6 +7,7 @@ import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { PANEL_Z_INDEX, PANEL_TITLE, PANEL_EMPTY } from '../../styles';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
+import Spinner from '../ui/Spinner';
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
@@ -41,7 +42,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
 
       {loading ? (
         <div className="flex items-center gap-2 px-4 py-3">
-          <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
+          <Spinner />
           <span className="text-xs font-bold text-[var(--text-muted)]">Loading nearby…</span>
         </div>
       ) : routes.length === 0 ? (

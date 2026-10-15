@@ -2,6 +2,7 @@ import React from 'react';
 import { SIDEBAR_LEFT_FALLBACK, PANEL_EMPTY } from '../../styles';
 import Panel from '../ui/Panel';
 import { useDelayedFlag } from '../../hooks/useDelayedFlag';
+import Spinner from '../ui/Spinner';
 
 interface SelectionLoadPanelProps {
   /** What is being opened, for the message ("route" or "stop"). */
@@ -34,7 +35,7 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
         </div>
       ) : (
         <div className="flex items-center gap-2 px-4 py-3" role="status">
-          <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
+          <Spinner />
           <span className="text-xs font-bold text-[var(--text-muted)]">Loading {kind}…</span>
         </div>
       )}

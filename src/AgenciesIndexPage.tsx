@@ -8,6 +8,7 @@ import {
 import { agencyPagePath } from '../shared/agencyPages';
 import { areaPagePath } from '../shared/areas';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
+import { plural } from '../shared/overflowText';
 import historyAgencies from '../shared/data/history-agencies.json';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { isLiveEligibleSlug } from '../shared/livePollingConfig';
@@ -91,7 +92,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                   {r.region !== g.country && <h3 className="text-base font-black">{r.region}</h3>}
                   <ul className="mt-2 text-sm sm:columns-2 sm:gap-x-8">
                     {r.agencies.map(a => {
-                      const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{a.routes === 1 ? 'route' : 'routes'}</span>;
+                      const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{plural(a.routes, 'route')}</span>;
                       const live = FEATURES.live && isLiveEligibleSlug(a.slug);
                       const history = FEATURES.history && HISTORY_SLUGS.has(a.slug);
                       if (live || history) {

@@ -3,6 +3,7 @@ import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyCo
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp, History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
+import { plural } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { FLOATING_CARD, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, AGENCY_LIST_PRIMARY, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
@@ -886,7 +887,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                       <span className="min-w-0">
                         <span className={AGENCY_LIST_PRIMARY} title={agency.name}>{shortenAgencyName(agency.name)}</span>
                         <span className="block text-xs text-[var(--text-muted)]">
-                          {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
+                          {agency.routes.length} {plural(agency.routes.length, 'route')}
                         </span>
                       </span>
                       <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />

@@ -10,7 +10,7 @@ import { areaRegionName, areaRegionTitle } from './areaRegions';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { SITE_URL } from './seo';
-import { andOthers } from './overflowText';
+import { andOthers, joinList, plural } from './overflowText';
 
 export { headwayEvery };
 export const MAX_NEARBY = 8;
@@ -120,7 +120,7 @@ export const CONNECTS_WITH = ' and connects with ';
 
 /** "A", "A and B", "A, B and C", "A, B, C and 4 other agencies": the first three named, the rest counted. */
 export function namesList(names: readonly string[], named = 3): string {
-  if (names.length <= named) return names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+  if (names.length <= named) return joinList(names);
   const rest = names.length - named;
   return `${names.slice(0, named).join(', ')} ${andOthers(rest, 'agency', 'agencies')}`;
 }
@@ -139,7 +139,7 @@ export function agencyIntroSentence(
   const n = a.routes.length;
   if (n === 0) return `${a.name} has no weekday routes in the data.`;
   let s = `${introLead(a, place, modes)}${place}`;
-  if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${a.stops === 1 ? 'stop' : 'stops'}`;
+  if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${plural(a.stops, 'stop')}`;
   if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
   return `${s}.`;
 }
@@ -160,7 +160,7 @@ export function introLead(
   modes: ReadonlyArray<{ label: string; routes: number }> = [],
 ): string {
   const n = a.routes.length;
-  return `${introName(a.name, place)} operates ${n.toLocaleString('en-US')} ${n === 1 ? 'route' : 'routes'}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
+  return `${introName(a.name, place)} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -287,7 +287,7 @@ export function weekendLabel(sat: boolean | undefined, sun: boolean | undefined)
 /** One sentence that stands alone: "210 weekday routes." */
 export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string {
   const n = a.routes.length;
-  return `${n} weekday ${n === 1 ? 'route' : 'routes'}.`;
+  return `${n} weekday ${plural(n, 'route')}.`;
 }
 
 /** The fuller sentence for structured data: the intro plus what the page is. */

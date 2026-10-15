@@ -136,6 +136,17 @@ export const FEATURES = {
   agencyPages: AGENCY_PAGES_ENABLED,
 } as const;
 
+/** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */
+export function seoFlags() {
+  return {
+    researchApps: FEATURES.researchApps,
+    whatsNew: FEATURES.whatsNew,
+    live: FEATURES.live,
+    history: FEATURES.history,
+    agencyPages: FEATURES.agencyPages,
+  };
+}
+
 export const FEATURE_ROUTES = {
   research: '/research',
   nightService: '/research/night',

@@ -8,6 +8,7 @@ import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
+import { joinList } from '../../shared/overflowText';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
 import { effectiveFeedExpiry } from '../../shared/feedAvailability';
@@ -96,9 +97,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const countries = useMemo(() => countriesForAgencies(agencies), [agencies]);
   const countriesLabel = useMemo(() => {
     if (countries.length === 0) return 'North America';
-    if (countries.length === 1) return countries[0];
-    if (countries.length === 2) return countries.join(' and ');
-    return `${countries.slice(0, -1).join(', ')}, and ${countries[countries.length - 1]}`;
+    // Keeps its comma before the final "and" so this label reads as it always has.
+    return joinList(countries, { oxford: true });
   }, [countries]);
 
   useEffect(() => {

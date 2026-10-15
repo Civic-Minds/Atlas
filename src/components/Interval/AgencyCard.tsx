@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { FEATURES } from '../../../shared/config';
+import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
 import { areaLinkFor } from '../../../shared/agencyArea';
 import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
@@ -196,7 +197,7 @@ export function buildHeaderSummary(
   maxHeadway: number,
 ): string {
   const matching = routes.filter(r => r.matchesFilter).length;
-  const parts = [`${routes.length} route${routes.length !== 1 ? 's' : ''}`];
+  const parts = [`${routes.length} ${plural(routes.length, 'route')}`];
   const freqLabel = frequencyFilterLabel(maxHeadway);
   if (freqLabel) parts.push(`${matching} match filters`);
   return parts.join(' · ');
@@ -653,7 +654,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 <div className={CARD_NOTICE_INLINE}>
                   {!showOthersExpanded ? (
                     <CardHelpNotice
-                      message={`${otherRoutes.length} route${otherRoutes.length !== 1 ? 's' : ''} outside your filters.`}
+                      message={`${otherRoutes.length} ${plural(otherRoutes.length, 'route')} outside your filters.`}
                       actionLabel="Show →"
                       onLearnMore={() => setShowOtherRoutes(true)}
                     />

@@ -8,6 +8,7 @@ import { HEADWAY_TIERS } from '../../utils/colors';
 import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
 import { headwayFilterLabel } from '../../utils/headwayText';
+import { plural } from '../../../shared/overflowText';
 
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
 
@@ -114,7 +115,7 @@ export function CompareSideBar({ side, settings, onChange, counts, otherPhrase }
         <span className="text-xs font-black text-[var(--text-primary)] whitespace-nowrap" data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
         {counts && (
           <span className="text-xs font-semibold text-[var(--text-dim)] whitespace-nowrap" data-testid={`compare-counts-${side}`}>
-            <span className="hidden sm:inline">· </span>{counts.total} {counts.total === 1 ? 'route' : 'routes'}, {counts.only} not {otherPhrase}
+            <span className="hidden sm:inline">· </span>{counts.total} {plural(counts.total, 'route')}, {counts.only} not {otherPhrase}
           </span>
         )}
       </div>

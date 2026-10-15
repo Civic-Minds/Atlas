@@ -15,7 +15,7 @@ import { useColorVision } from '../context/ColorVisionContext';
 import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
-import { andOthers } from '../../shared/overflowText';
+import { andOthers, plural } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { CHIP } from '../pageStyles';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
@@ -26,6 +26,7 @@ import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
 import { useLiveCardMapLink, useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import { useSegmentDelay } from '../hooks/useSegmentDelay';
+import Spinner from '../components/ui/Spinner';
 
 interface Props {
   agencies: Agency[];
@@ -707,7 +708,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                             label={label}
                             subLabel={preview.some(v => delayLabel(v))
                               ? `${preview.map(delayLabel).filter(Boolean).join(' · ')}${extra > 0 ? ` · ${andOthers(extra, 'vehicle')}` : ''}`
-                              : `${vehicles.length} ${vehicles.length === 1 ? 'vehicle' : 'vehicles'}`}
+                              : `${vehicles.length} ${plural(vehicles.length, 'vehicle')}`}
                             onClick={() => setSelectedDirection(dirKey)}
                           />
                           <ChevronRight className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--text-dim)]" />
@@ -768,7 +769,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               </>
             ) : isLoading && totalVehicles === 0 ? (
               <div className="flex items-center justify-center gap-2 px-4 py-6">
-                <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
+                <Spinner />
                 <span className="text-xs font-bold text-[var(--text-muted)]">Loading feed…</span>
               </div>
             ) : hasAnyError ? (
@@ -849,7 +850,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 )}
                 {offScreenOnly && !query && (
                   <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
-                    Outside this view · {totalVehicles} vehicle{totalVehicles === 1 ? '' : 's'}
+                    Outside this view · {totalVehicles} {plural(totalVehicles, 'vehicle')}
                   </div>
                 )}
                 {renderRouteGroupList(sidebarRouteGroups)}
