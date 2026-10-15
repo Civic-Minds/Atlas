@@ -24,7 +24,10 @@ mkdir -p "$DATA/out"
 for route in "${ROUTES[@]}"; do
   ls "$DATA/archive/$route-"*.jsonl >/dev/null 2>&1 || { echo "live:analyze: no archived positions for route $route in $DATA/archive." >&2; exit 1; }
   echo "live:analyze: route $route ..."
+  # Some routes share a number with another service (506 runs streetcars and, in parallel, 506B replacement buses): analyse the named service only.
+  EXTRA=()
+  [ "$route" = "506" ] && EXTRA=(--exclude-headsign "replacement bus")
   NODE_OPTIONS=--max-old-space-size=8192 npx tsx scripts/live-segment-delay.ts \
-    --gtfs "$DATA/gtfs/candidates/surface" --archive "$DATA/archive" --route "$route" --days "$DAYS" \
+    --gtfs "$DATA/gtfs/candidates/surface" --archive "$DATA/archive" --route "$route" --days "$DAYS" ${EXTRA[@]+"${EXTRA[@]}"} \
     --out "$DATA/out/ttc-$route-segments.json" | grep -E "^(v3|dates)" || exit 1
 done

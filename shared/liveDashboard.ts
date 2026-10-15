@@ -63,6 +63,8 @@ export interface LiveV3 {
   thresholds: { earlyAtOrBelowMin: number; lateAtOrAboveMin: number; bunchedGapSec: number };
   method: string;
   swaps: { reassigned: number; dropped: number; rate: number };
+  /** Runs the analysis does not use, with why (old files do not have this). */
+  leftOut?: { noTimetableTrip: number; excluded: number; excludedLabel: string | null; kept: number };
   uncertainty: { nearCutoffShare: number; withinMin: number; note: string };
   totals: { runs: number; stopPassages: number; droppedOffTimetable: number };
   directionLabels: Record<string, string>;
@@ -84,8 +86,6 @@ export type LiveDashboardResponse =
 
 /** Routes whose analysis is built but not shown until a known problem is fixed. */
 export const LIVE_DASHBOARD_HOLD: Readonly<Record<string, string>> = {
-  'ttc::501': 'The 501 is not shown yet: about a quarter of the vehicles on it are buses that are not on the timetable (on Queen West), so its delays and gaps would be overstated until they are separated out.',
-  'ttc::506': 'The 506 is not shown yet: its timetable mixes the streetcar with a replacement bus under one route, so its line and gaps blend both.',
   'ttc::512': 'The 512 is held back: about 15% of its trips run under a trip number that does not match the timetable, so its delays cannot be trusted yet.',
 };
 

@@ -297,6 +297,13 @@ function Method({ data }: { data: Ready }) {
         <li>Vehicles are matched to timetable trips by trip number. If a trip is 15+ minutes off its own slot but another trip fits within 3 minutes at most stops, it is counted as that trip; otherwise it is left out.</li>
         <li>Because vehicles are seen only about once a minute, {pct(v3.uncertainty.nearCutoffShare)} of departures at stops with a scheduled time are within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit, and could land on either side of it.</li>
         <li>Late means {v3.thresholds.lateAtOrAboveMin}+ minutes after the timetable; ahead means {Math.abs(v3.thresholds.earlyAtOrBelowMin)}+ minutes before it. These are the same limits the Live map uses.</li>
+        {v3.leftOut && (v3.leftOut.noTimetableTrip > 0 || v3.leftOut.excluded > 0) && (
+          <li>
+            {v3.leftOut.noTimetableTrip > 0 && <>{v3.leftOut.noTimetableTrip.toLocaleString()} runs ({pct(v3.leftOut.noTimetableTrip / (v3.leftOut.kept + v3.leftOut.noTimetableTrip + v3.leftOut.excluded))} of the vehicle trips seen) were under a trip number that is not on the timetable, such as extra or unscheduled buses, so they cannot be compared with it and are left out. </>}
+            {v3.leftOut.excluded > 0 && <>{v3.leftOut.excluded.toLocaleString()} runs by {v3.leftOut.excludedLabel ?? 'another service'} that share this route number are also left out; they are a separate service. </>}
+            The figures describe the {v3.leftOut.kept.toLocaleString()} timetabled trips that were kept.
+          </li>
+        )}
         <li>{pct(v3.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</li>
         {data.replacementBuses && <li>This route is run by replacement buses in this timetable, so every figure describes the buses.</li>}
       </ul>

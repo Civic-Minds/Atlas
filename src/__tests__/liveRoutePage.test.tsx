@@ -112,6 +112,12 @@ describe('Live route dashboard', () => {
     expect(screen.getAllByText('Show as a table').length).toBe(5);
   });
 
+  it('says how many runs were left out and why, so the figures are honest about what they cover', async () => {
+    renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
+    await screen.findByRole('heading', { name: /how it is running/ });
+    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) were under a trip number that is not on the timetable.*500 runs by replacement buses that share this route number are also left out.*the 900 timetabled trips that were kept/)).toBeTruthy();
+  });
+
   it('says the 510 first stops are less exact and leaves them out of the ranking', async () => {
     renderPage({ ...ready, uncertainStart: [{ directionId: 1, stops: 4 }], note: 'Delay at the first few stops is less exact.' });
     await screen.findByRole('heading', { name: /how it is running/ });

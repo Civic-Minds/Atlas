@@ -510,12 +510,13 @@ export const LIVE_VEHICLE_POSITIONS_FEEDS: Record<string, string> = Object.fromE
  * Routes whose Live route analysis has been checked (local proof of concept). In Live mode only
  * these routes' lines are drawn, and only they get the route performance card.
  * 503 and 507 run entirely as replacement buses; the card says so (their close gaps are real
- * buses running together, not duplicates). Left out on purpose (2026-10-15): 501 (a quarter of
- * positions are unscheduled buses on Queen West with no timetable trips, so streetcar-only gaps
- * would overstate waits), and 506 and 512 (the timetable mixes the streetcar with a replacement
- * bus under one route, so the line and gaps blend both).
+ * buses running together, not duplicates). 501 and 506 joined once the analysis could separate
+ * what it can measure: the 501's runs under trip numbers missing from the timetable (unscheduled
+ * buses) and the 506's replacement buses (506B) are left out and counted on the page, and the
+ * remaining departures were hand-checked. Left out on purpose: 512 (its trip numbers do not match
+ * the timetable; see LIVE_DASHBOARD_HOLD).
  */
-export const LIVE_ANALYSIS_ROUTES: readonly string[] = ['ttc::503', 'ttc::504', 'ttc::505', 'ttc::507', 'ttc::509', 'ttc::510', 'ttc::511'];
+export const LIVE_ANALYSIS_ROUTES: readonly string[] = ['ttc::501', 'ttc::503', 'ttc::504', 'ttc::505', 'ttc::506', 'ttc::507', 'ttc::509', 'ttc::510', 'ttc::511'];
 
 export function hasLiveAnalysis(slug: string | null | undefined, routeShortName: string | null | undefined): boolean {
   return !!slug && !!routeShortName && LIVE_ANALYSIS_ROUTES.includes(`${slug}::${routeShortName}`);

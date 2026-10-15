@@ -32,6 +32,8 @@ const OUT = args.out;
 const TZ = 'America/Toronto';
 const DAYS = Number(args.days ?? 7);
 const OBS_OUT = args['obs-out'];
+/** Trips whose headsign matches this are another service under the same route number (e.g. replacement buses): left out and counted. */
+const EXCLUDE_HEADSIGN = args['exclude-headsign'] ? new RegExp(args['exclude-headsign'], 'i') : null;
 /** A stop passage more than this far from the timetable is a wrong trip match or a bad fix, not a delay. */
 const MAX_DELAY_SEC = 3600;
 /** The departure moment: the car is this far past the stop. */
@@ -84,7 +86,9 @@ function serviceDayStart(date: string): number {
 const prevDate = (d: string) => new Date(Date.parse(`${d}T12:00:00Z`) - 86400_000).toISOString().slice(0, 10);
 
 // --- static GTFS ---
-const trips = readCsv(join(GTFS, 'trips.txt'), r => r.route_id === ROUTE);
+const allRouteTrips = readCsv(join(GTFS, 'trips.txt'), r => r.route_id === ROUTE);
+const excludedTripIds = new Set(allRouteTrips.filter(t => EXCLUDE_HEADSIGN?.test(t.trip_headsign)).map(t => t.trip_id));
+const trips = allRouteTrips.filter(t => !excludedTripIds.has(t.trip_id));
 const tripById = new Map(trips.map(t => [t.trip_id, t]));
 const stopTimesPath = existsSync(join(GTFS, `${ROUTE}-stop_times.txt`)) ? join(GTFS, `${ROUTE}-stop_times.txt`) : join(GTFS, 'stop_times.txt');
 const timesByTrip = new Map<string, { stopId: string; seq: number; arr: number; dep: number; tp: boolean }[]>();
@@ -231,6 +235,9 @@ const passagesAt = new Map<string, { tripId: string; t: number }[]>();
 const holds: (HoldEvent & { directionId: number })[] = [];
 const runDelays: RunDelays[] = [];
 let delaysExcluded = 0;
+/** Runs (a vehicle on a trip number) the analysis does not use, with why, and the ones it does, by service date. */
+const leftOutRuns: { date: string; reason: 'excluded' | 'no_timetable_trip' }[] = [];
+const keptRuns: string[] = [];
 let runsWithDelays = 0;
 const swapLog: { date: string; outcome: 'reassigned' | 'dropped' }[] = [];
 const shortTurnEvents: { stopId: string; directionId: number; date: string }[] = [];
@@ -259,6 +266,10 @@ for (const [key, samples] of runs) {
     const run = dedup.slice(start, i);
     start = i;
     runsTotal++;
+    const runDate = serviceDateOf(run[0].t);
+    if (excludedTripIds.has(tripId)) leftOutRuns.push({ date: runDate, reason: 'excluded' });
+    else if (!tripById.has(tripId)) leftOutRuns.push({ date: runDate, reason: 'no_timetable_trip' });
+    else keptRuns.push(runDate);
     // Any ping (even a single one) counts as the trip being seen.
     const vehicleId = key.split('|')[0];
     const vr = vehicleRuns.get(vehicleId) ?? [];
@@ -715,6 +726,7 @@ const orderIndex = (dir: number, stopId: string) => stopOrder.get(dir)?.indexOf(
 const r1 = (x: number | null) => (x == null ? null : Math.round(x * 10) / 10);
 const r3 = (x: number | null) => (x == null ? null : Math.round(x * 1000) / 1000);
 
+const leftOutInWindow = (reason: 'excluded' | 'no_timetable_trip') => leftOutRuns.filter(x => x.reason === reason && inWindow.has(x.date)).length;
 const swapsInWindow = swapLog.filter(x => inWindow.has(x.date));
 const swapsReassigned = swapsInWindow.filter(x => x.outcome === 'reassigned').length;
 const swapsDropped = swapsInWindow.length - swapsReassigned;
@@ -807,6 +819,14 @@ const v3 = {
   window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS },
   thresholds: { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_AT_OR_ABOVE_MIN, bunchedGapSec: BUNCHED_GAP_SEC },
   method: 'Delay at a stop = the time the car left it (interpolated between archived positions, at the point 25 m past the stop on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Departure, not arrival: at terminals a car arrives and waits, which would look early. Trips are matched by trip number; a run 15+ min off its own trip is reassigned when another scheduled trip on the same pattern fits within 3 min at 80% of stops, otherwise dropped; passages over an hour off are dropped. Estimated from positions: the TTC feed has no delay values. Positions come about every minute, so each time is interpolated; ' + Math.round(nearCutoffShare * 100) + '% of timepoint departures fall within 0.75 min of an on-time cutoff, where a small error can change the label. "Early" means the car left before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
+  leftOut: {
+    /** Runs seen in the window under a trip number that is not in the timetable (unscheduled buses, extra moves). */
+    noTimetableTrip: leftOutInWindow('no_timetable_trip'),
+    /** Runs of the service left out on purpose (see `excludedLabel`). */
+    excluded: leftOutInWindow('excluded'),
+    excludedLabel: EXCLUDE_HEADSIGN ? 'replacement buses' : null,
+    kept: keptRuns.filter(d => inWindow.has(d)).length,
+  },
   swaps: { reassigned: swapsReassigned, dropped: swapsDropped, rate: r3(windowRuns.length + swapsDropped ? swapsInWindow.length / (windowRuns.length + swapsDropped) : 0) },
   uncertainty: { nearCutoffShare: r3(nearCutoffShare), withinMin: 0.75, note: 'Share of timepoint departures within 0.75 min of an on-time cutoff; positions are about a minute apart, so those can land on either side.' },
   totals: { runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded },
