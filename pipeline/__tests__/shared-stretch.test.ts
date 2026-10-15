@@ -328,9 +328,11 @@ describe('shared stretch pooling (real feeds)', () => {
     expect(new Set(shared.map((s: string) => c.stopTiers[s]))).toEqual(new Set(['10']));
     expect(new Set(tail.map((s: string) => c.stopTiers[s]))).toEqual(new Set(['20']));
     expectStretchesSound(routes);
-    // Northbound has one "Wilson" feature whose trips run on both shapes. The stops both serve
-    // read the whole destination (8, #690); the 29C-only stops get every 16, and the headline is
-    // the worst drawn stop's, 16 (#771: a pooled headline never overstates part of the line).
+    // Northbound starts at Dufferin Gate or Princes' Gates and every bus runs to Wilson. This
+    // fixture keeps every tenth stop, so the Princes' Gates stub is one stop here and the two
+    // origins stay one "Wilson" row (the full-stop fixture, converging-origins.test.ts, draws
+    // one row per origin, #879 class). The stops both serve read the whole destination (8,
+    // #690); the own-only stops get every 16, and the headline is the worst drawn stop's, 16.
     const north = routes.filter(p => p.directionId === 1);
     expect(north).toHaveLength(1);
     expect(north[0].headway).toBe(16);

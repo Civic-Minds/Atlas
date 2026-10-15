@@ -136,6 +136,7 @@ describe('failing routes draw only their passing shared stretches', () => {
   // already counts every trip. The single-pattern direction draws along the paired stops too.
   // Cut from the 2026-10 feeds: one weekday, trips starting 7 AM to noon, every stop, so the
   // all-day value (the midday median) is the one these fixtures can judge.
+  // Rail stays one row per headsign (converging origins are labelled on surface routes only).
   for (const [fixture, slug, single, branches, max] of [
     ['nyct-b-subway', 'nyct-subway', 'Beach', ['Park Blvd', '145 St'], 15],
     ['cta-green-line', 'cta', 'Harlem-Green', ['East 63rd-Cottage Grove', 'Ashland/63rd'], 15],

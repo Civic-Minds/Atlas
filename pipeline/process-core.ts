@@ -12,6 +12,7 @@ import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
+import { clearLoneOriginRows, labelConvergingOrigins } from './convergingOrigins.js';
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
@@ -711,6 +712,9 @@ export async function processGtfsBuffer(
   const activeServiceIdsByCalendarDay = new Map<DayName, Set<string>>(
     ALL_DAYS.map(day => [day, getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]),
   );
+  // Converging origins (TTC 29 northbound) get a route variant so each origin draws its own
+  // row, judged on the same active service sets the rest of the pipeline draws.
+  labelConvergingOrigins(gtfs, activeServiceIdsByCalendarDay);
   const activeServiceIdsByDay = new Map<DayType, Set<string>>();
   const calendarDaysForType = (dayType: DayType): DayName[] =>
     dayType === 'Weekday' ? [...WEEKDAYS] : [dayType as DayName];
@@ -1882,6 +1886,16 @@ export async function processGtfsBuffer(
     // fallback is not the stop's service and the worst-drawn-stop rule leaves it out.
     const ownFallbackHw = new Set<string>();
     const ownFallbackPeriodHw = new Map<string, Set<PeriodKey>>();
+    // The fallback periods where the other patterns add under three departures in the window:
+    // the pool adds nothing the pooled rule could read there, so the stop's service is the
+    // merged list's plain wait and the worst-drawn-stop rule keeps it (TTC 29's Dufferin Gate
+    // Loop pools one departure from a one-trip shape; the pooled rule refused the evening on
+    // the own list's 26-minute gap, and the row's evening showed the trunk's 8 over a stop that
+    // runs every 16, CIV-221). The floor reads the merged list, not the own list alone, so the
+    // one or two pooled departures still count (TriMet 72 Saturday morning at N Anchor &
+    // Channel: 3 own and 2 from a same-stop-list shape are every 33, not every 51). The stop's
+    // published value and companions still follow the own list, as for any fallback.
+    const thinPoolFallbackPeriodHw = new Map<string, Map<PeriodKey, PeriodValue>>();
     for (const [stopId, times] of stopMetricMap) {
       times.sort((a, b) => a - b);
       // Prefer midday (9–15h) then PM peak (15–19h) rather than a raw all-day window.
@@ -1935,6 +1949,18 @@ export async function processGtfsBuffer(
       if (middayPlain != null) allStopMiddayHwPlain[stopId] = middayPlain;
       if (hw != null && usedOwnFallback) ownFallbackHw.add(stopId);
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
+      /** Departures of the other patterns in the window: the merged list less the own list. */
+      const othersInWindow = (start: number, end: number): number => {
+        const ownCounts = new Map<number, number>();
+        for (const t of forCrossMidnightWindow(own, end)) if (t >= start && t <= end) ownCounts.set(t, (ownCounts.get(t) ?? 0) + 1);
+        let n = 0;
+        for (const t of forCrossMidnightWindow(times, end)) {
+          if (t < start || t > end) continue;
+          const c = ownCounts.get(t) ?? 0;
+          if (c > 0) ownCounts.set(t, c - 1); else n++;
+        }
+        return n;
+      };
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
         const pooledPh = isPooled ? pooledHeadwayInWindow(times, start, end, 3, false, own) : null;
         const ph = isPooled
@@ -1944,6 +1970,14 @@ export async function processGtfsBuffer(
           const set = ownFallbackPeriodHw.get(stopId) ?? new Set<PeriodKey>();
           set.add(pk);
           ownFallbackPeriodHw.set(stopId, set);
+          if (othersInWindow(start, end) < 3) {
+            const merged = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
+            if (merged != null) {
+              const thin = thinPoolFallbackPeriodHw.get(stopId) ?? new Map<PeriodKey, PeriodValue>();
+              thin.set(pk, { headway: merged, coverage: computePeriodCoverageHeadways(times)[pk] ?? null, maxGap: computePeriodMaxGaps(times)[pk] ?? null, sustained: computePeriodSustained(times)[pk] });
+              thinPoolFallbackPeriodHw.set(stopId, thin);
+            }
+          }
         }
         if (ph != null) byPeriod[pk] = ph;
       }
@@ -2525,20 +2559,18 @@ export async function processGtfsBuffer(
       // read no midday at all for one such stop). Null when the periods do not come from the pool.
       let worstDrawnStop: PeriodValue | null = null;
       if (periodsFromPool) {
-        let worstStopId: string | null = null;
         for (const stopId of servedByFewerTrips(periodPoolTimes)) {
-          if (ownFallbackPeriodHw.get(stopId)?.has(pk) || !stopHasReading(stopId)) continue;
-          const h = allStopPeriodHw[stopId]?.[pk] ?? null;
-          if (h == null) continue;
-          if (worstStopId == null || h > (allStopPeriodHw[worstStopId]?.[pk] ?? -Infinity)) worstStopId = stopId;
-        }
-        if (worstStopId != null) {
-          worstDrawnStop = {
-            headway: allStopPeriodHw[worstStopId]?.[pk] ?? null,
-            coverage: allStopPeriodCoverageHw[worstStopId]?.[pk] ?? null,
-            maxGap: allStopPeriodMaxGaps[worstStopId]?.[pk] ?? null,
-            sustained: allStopPeriodSustained[worstStopId]?.[pk],
-          };
+          if (!stopHasReading(stopId)) continue;
+          const thin = thinPoolFallbackPeriodHw.get(stopId)?.get(pk);
+          if (ownFallbackPeriodHw.get(stopId)?.has(pk) && !thin) continue;
+          const candidate: PeriodValue | null = thin ?? (allStopPeriodHw[stopId]?.[pk] == null ? null : {
+            headway: allStopPeriodHw[stopId]?.[pk] ?? null,
+            coverage: allStopPeriodCoverageHw[stopId]?.[pk] ?? null,
+            maxGap: allStopPeriodMaxGaps[stopId]?.[pk] ?? null,
+            sustained: allStopPeriodSustained[stopId]?.[pk],
+          });
+          if (candidate?.headway == null) continue;
+          if (worstDrawnStop == null || candidate.headway > (worstDrawnStop.headway ?? -Infinity)) worstDrawnStop = candidate;
         }
       }
       // Step 5 (routeGrading.ts): the period's value and its companions.
@@ -2633,6 +2665,8 @@ export async function processGtfsBuffer(
     }
   }
 
+  // A day where one origin of a slot is drawn alone gets its plain row back (CIV-221).
+  clearLoneOriginRows(features as Array<{ properties: Record<string, unknown> }>);
   annotateShortTurnVariants(features, shapes);
   stampWorstDirectionHeadways(features);
   stampRouteIrregularDirection(features);
