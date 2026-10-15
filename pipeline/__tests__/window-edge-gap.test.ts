@@ -211,3 +211,44 @@ describe('phase 2 closing edge: one service-day boundary (#773)', () => {
     expect([hm(23, 59), hm(24, 21)].map(later => tierOf([...daytime, later]))).toEqual(['20', '20']);
   });
 });
+
+describe('a line\'s own trips are never another headsign (#773 review)', () => {
+  beforeAll(() => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-11T12:00:00') });
+  });
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  // Phase 1 keeps the raw headsign ("7 Terminal"); the line shows its display form ("Terminal").
+  // Every 15 07:00-18:00, then one trip at 23:50 that passes the later stops after 24:00. No
+  // other headsign runs, so that trip continues the service at every stop and the 18:xx to
+  // 22:00 wait grades every stop infrequent. Compared raw against display, the line's own 23:50
+  // read as another headsign between, closing the line at the later stops (graded 15 there).
+  it('the display headsign matches the line\'s own raw-headsign trips', async () => {
+    const zip = new JSZip();
+    const csv = (rows: string[][]) => rows.map(r => r.join(',')).join('\n') + '\n';
+    const clock = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}:00`;
+    zip.file('agency.txt', csv([['agency_id', 'agency_name', 'agency_url', 'agency_timezone'], ['a', 'A', 'https://example.com', 'America/Toronto']]));
+    zip.file('routes.txt', csv([['route_id', 'agency_id', 'route_short_name', 'route_type'], ['r', 'a', '7', '3']]));
+    zip.file('calendar.txt', csv([['service_id', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'start_date', 'end_date'],
+      ['wk', '1', '1', '1', '1', '1', '0', '0', '20260101', '20271231']]));
+    const stops = Array.from({ length: 9 }, (_, i) => [`s${i}`, 43.70 + i * 0.01, -79.40] as const);
+    zip.file('stops.txt', csv([['stop_id', 'stop_name', 'stop_lat', 'stop_lon'], ...stops.map(([id, lat, lon]) => [id, id, String(lat), String(lon)])]));
+    zip.file('shapes.txt', csv([['shape_id', 'shape_pt_lat', 'shape_pt_lon', 'shape_pt_sequence'], ...stops.map(([, lat, lon], i) => ['A', String(lat), String(lon), String(i + 1)])]));
+    const trips = [['route_id', 'service_id', 'trip_id', 'trip_headsign', 'direction_id', 'shape_id']];
+    const times = [['trip_id', 'arrival_time', 'departure_time', 'stop_id', 'stop_sequence']];
+    [...every(hm(7, 0), hm(18, 0), 15), hm(23, 50)].forEach((start, n) => {
+      trips.push(['r', 'wk', `t${n}`, '7 Terminal', '0', 'A']);
+      stops.forEach(([id], i) => times.push([`t${n}`, clock(start + i * 4), clock(start + i * 4), id, String(i + 1)]));
+    });
+    zip.file('trips.txt', csv(trips));
+    zip.file('stop_times.txt', csv(times));
+    const result = await processGtfsBuffer(await zip.generateAsync({ type: 'nodebuffer' }), undefined, { slug: 'synthetic' });
+    const line = JSON.parse(result.geojson).features.map((f: any) => f.properties)
+      .find((p: any) => p.day === 'Weekday' && p.stopId == null);
+    expect(line.headsign).toBe('Terminal');
+    expect(Object.keys(line.stopTiers).length).toBeGreaterThan(3);
+    expect(new Set(Object.values(line.stopTiers))).toEqual(new Set(['infrequent']));
+  });
+});

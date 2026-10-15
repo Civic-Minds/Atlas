@@ -83,6 +83,9 @@ export function serviceContinuesAfter(times: readonly number[], last: number, ot
  * patterns `routeDirRaws` (#773): what serviceContinuesAfter checks a line's return after
  * midnight against.
  */
+const sameHeadsign = (a: string | null | undefined, b: string | null | undefined): boolean =>
+    (a ?? '').trim().toLowerCase() === (b ?? '').trim().toLowerCase();
+
 export function otherHeadsignDepartureTimes(
     routeDirRaws: readonly RawRouteDepartures[],
     day: DayName,
@@ -90,7 +93,8 @@ export function otherHeadsignDepartureTimes(
 ): number[] {
     const times = new Set<number>();
     for (const raw of routeDirRaws) {
-        if (raw.day !== day || (raw.headsign ?? '') === (headsign ?? '')) continue;
+        // Blank headsigns match each other, and case alone never makes another headsign.
+        if (raw.day !== day || sameHeadsign(raw.headsign, headsign)) continue;
         for (const time of raw.departureTimes) times.add(time);
     }
     return [...times].sort((x, y) => x - y);
