@@ -27,5 +27,6 @@
   "expiredFeedCheckExpiry": "20270530",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://github.com/Seattle-Monorail-Services/gtfs/raw/refs/heads/main/96_gtfs.zip"
+  "lastFeedSourceUrl": "https://github.com/Seattle-Monorail-Services/gtfs/raw/refs/heads/main/96_gtfs.zip",
+  "lastPeekedExpiry": "20270530"
 }
