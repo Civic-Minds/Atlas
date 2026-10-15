@@ -6,7 +6,7 @@
 import { readFile } from 'fs/promises';
 import { resolve } from 'path';
 import { getPolledRoute } from '../shared/livePollingConfig.js';
-import { LIVE_DASHBOARD_NOTES, dashboardUnavailable, type LiveDashboardResponse, type LiveV3 } from '../shared/liveDashboard.js';
+import { LIVE_DASHBOARD_NOTES, LIVE_DASHBOARD_UNCERTAIN_START, dashboardUnavailable, type LiveDashboardResponse, type LiveV3 } from '../shared/liveDashboard.js';
 
 function json(body: LiveDashboardResponse, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
@@ -32,6 +32,7 @@ async function handler(req: Request): Promise<Response> {
     return json({
       status: 'ready', agency: cfg.slug, route: cfg.displayRouteShortName, generatedAt: data.generatedAt,
       replacementBuses: data.replacementBuses === true, v3: data.v3, note: LIVE_DASHBOARD_NOTES[`${cfg.slug}::${cfg.displayRouteShortName}`] ?? null,
+      uncertainStart: [...(LIVE_DASHBOARD_UNCERTAIN_START[`${cfg.slug}::${cfg.displayRouteShortName}`] ?? [])],
     });
   } catch {
     return json({ status: 'no_analysis', reason: `No analysis file for ${cfg.displayRouteShortName} yet. Build it with "npm run live:analyze -- ${cfg.displayRouteShortName}" (needs the archive and timetable in ../_live-data).` });

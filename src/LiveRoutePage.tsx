@@ -7,6 +7,7 @@ import {
   type AdherenceBlock, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
+import { titleCase } from './utils/format';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
 import Pill from './components/ui/Pill';
@@ -19,6 +20,18 @@ import { PAGE_ACTION, TILE } from './pageStyles';
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
 const BANDS: [string, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
+/** Stop names come upper-case or mixed from the feed; show them the way the map does. */
+function withNiceNames(v3: LiveV3): LiveV3 {
+  const t = titleCase;
+  const stretch = <S extends { fromName: string; toName: string }>(x: S | null): S | null => (x ? { ...x, fromName: t(x.fromName), toName: t(x.toName) } : x);
+  return {
+    ...v3,
+    stops: v3.stops.map(x => ({ ...x, name: t(x.name) })),
+    buildup: v3.buildup.map(b => ({ ...b, start: stretch(b.start), biggest: stretch(b.biggest), stretches: b.stretches.map(x => stretch(x)!) })),
+    bunching: v3.bunching.map(d => ({ ...d, bands: Object.fromEntries(Object.entries(d.bands).map(([k, band]) => [k, { ...band, forms: stretch(band.forms), biggestRise: stretch(band.biggestRise), stops: band.stops.map(x => ({ ...x, name: t(x.name) })) }])) })),
+  };
+}
+const nRange = (ns: number[]) => (ns.length ? `${Math.min(...ns).toLocaleString()} to ${Math.max(...ns).toLocaleString()}` : '');
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const mins = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`;
 
@@ -89,7 +102,7 @@ function Adherence({ v3, day, dir }: { v3: LiveV3; day: Day; dir: number | null 
 }
 
 /** B3: where delays start. One chart per direction. */
-function Buildup({ v3, dir }: { v3: LiveV3; dir: number | null }) {
+function Buildup({ v3, dir, uncertainStart }: { v3: LiveV3; dir: number | null; uncertainStart: number[] }) {
   const rows = v3.buildup.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
   return (
     <Section id="b3" title="Where delays start">
@@ -105,7 +118,7 @@ function Buildup({ v3, dir }: { v3: LiveV3; dir: number | null }) {
           return (
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
-              <p className="mt-1 text-sm leading-6">{buildupSentence(label, b)}</p>
+              <p className="mt-1 text-sm leading-6">{buildupSentence(label, b, uncertainStart.includes(b.directionId))}</p>
               <LineChart
                 ariaLabel={`${label}: median delay along the route, with the 10th to 90th percentile range`}
                 points={stretches.map(s => ({ label: s.toName, y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n }))}
@@ -115,7 +128,7 @@ function Buildup({ v3, dir }: { v3: LiveV3; dir: number | null }) {
                 startLabel="Start of route"
                 endLabel="End of route"
               />
-              <p className="text-xs text-[var(--text-dim)]">Minutes late (line: median; band: 10th to 90th percentile).</p>
+              <p className="text-xs text-[var(--text-dim)]">Minutes late (line: median; band: 10th to 90th percentile). Each point is {nRange(stretches.map(x => x.n))} runs.</p>
               <div className="mt-3 overflow-x-auto">
                 <DataTable
                   caption={`${label}: the five stretches that add the most delay`}
@@ -208,10 +221,10 @@ function Bunching({ v3, dir }: { v3: LiveV3; dir: number | null }) {
                   endLabel="End of route"
                 />
               )}
-              <p className="text-xs text-[var(--text-dim)]">Gaps off the timetable, by stop (stops with 30+ gaps).</p>
+              <p className="text-xs text-[var(--text-dim)]">Gaps off the timetable, by stop. Each point is {nRange(measured.map(x => x.n))} gaps (stops with fewer than 30 are left out).</p>
               {stretch && (
                 <>
-                  <h4 className="mt-3 text-sm font-black">{data.kind === 'forms' ? 'Linked to' : 'Near the biggest rise, linked to'}</h4>
+                  <h4 className="mt-3 text-sm font-black">{data.kind === 'forms' ? 'Linked to, between' : 'Its biggest rise is between'} {stretch.fromName} and {stretch.toName}{data.kind === 'forms' ? '' : '. Linked to'}</h4>
                   <ul className="mt-1 space-y-1 text-sm">
                     {stretch.links.map(l => (
                       <li key={l.kind} className={l.linked ? '' : 'text-[var(--text-dim)]'}>
@@ -266,7 +279,7 @@ export default function LiveRoutePage() {
       </PageShell>
     );
   }
-  const { v3 } = data;
+  const v3 = withNiceNames(data.v3);
   return (
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
@@ -286,7 +299,7 @@ export default function LiveRoutePage() {
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         <Filters v3={v3} day={day} setDay={setDay} dir={dir} setDir={setDir} />
         <Adherence v3={v3} day={day} dir={dir} />
-        <Buildup v3={v3} dir={dir} />
+        <Buildup v3={v3} dir={dir} uncertainStart={data.uncertainStart} />
         <WorstStops v3={v3} dir={dir} />
         <Bunching v3={v3} dir={dir} />
         <Method data={data} />

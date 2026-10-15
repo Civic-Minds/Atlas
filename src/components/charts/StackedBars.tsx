@@ -11,7 +11,7 @@ export interface StackPart {
   color: string;
 }
 
-const W = 640, H = 150, PAD_L = 8, PAD_B = 18;
+const W = 640, H = 162, PAD_L = 8, PAD_B = 30;
 
 /** Columns that each split into shares (for example early / on time / late per hour). Inline SVG, tokens only. */
 export default function StackedBars({ columns, parts, ariaLabel }: { columns: readonly StackColumn[]; parts: readonly StackPart[]; ariaLabel: string }) {
@@ -34,7 +34,12 @@ export default function StackedBars({ columns, parts, ariaLabel }: { columns: re
                   <title>{`${c.label}: ${parts[k].name} ${Math.round(share * 100)}% (${c.n} departures)`}</title>
                 </rect>;
               })}
-              {i % 3 === 0 && <text x={PAD_L + i * slot + slot / 2} y={H - 4} textAnchor="middle" fontSize="13" fill="var(--text-dim)">{c.label}</text>}
+              {i % 3 === 0 && (
+                <text x={PAD_L + i * slot + slot / 2} textAnchor="middle" fontSize="13" fill="var(--text-dim)">
+                  <tspan x={PAD_L + i * slot + slot / 2} y={H - 16}>{c.label}</tspan>
+                  <tspan x={PAD_L + i * slot + slot / 2} y={H - 3} fontSize="11">n={c.n.toLocaleString()}</tspan>
+                </text>
+              )}
             </g>
           );
         })}

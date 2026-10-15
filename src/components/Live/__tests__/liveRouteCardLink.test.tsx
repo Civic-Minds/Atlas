@@ -40,7 +40,7 @@ describe('route card: "Full analysis" appears only when the page has data (U6)',
   afterEach(() => vi.unstubAllGlobals());
 
   it('links to the page and shows the three short facts when the analysis exists', async () => {
-    mockApi({ status: 'ready', agency: 'ttc', route: '505', generatedAt: '2026-10-15T00:00:00Z', replacementBuses: false, note: null, v3 });
+    mockApi({ status: 'ready', agency: 'ttc', route: '505', generatedAt: '2026-10-15T00:00:00Z', replacementBuses: false, note: null, uncertainStart: [], v3 });
     card();
     const link = await screen.findByRole('link', { name: /Full analysis/ });
     expect(link.getAttribute('href')).toBe('/apps/live/ttc/505');

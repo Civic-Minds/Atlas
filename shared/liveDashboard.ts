@@ -62,7 +62,7 @@ export interface LiveV3 {
 
 /** What /api/live-dashboard answers. `reason` is always a plain sentence that says what to do or when it will exist. */
 export type LiveDashboardResponse =
-  | { status: 'ready'; agency: string; route: string; generatedAt: string; replacementBuses: boolean; v3: LiveV3; note: string | null }
+  | { status: 'ready'; agency: string; route: string; generatedAt: string; replacementBuses: boolean; v3: LiveV3; note: string | null; /** Directions whose first stops are measured poorly (see `note`). */ uncertainStart: number[] }
   | { status: 'held' | 'no_analysis' | 'unknown_route'; reason: string };
 
 /** Routes whose analysis is built but not shown until a known problem is fixed. */
@@ -76,6 +76,9 @@ export const LIVE_DASHBOARD_HOLD: Readonly<Record<string, string>> = {
 export const LIVE_DASHBOARD_NOTES: Readonly<Record<string, string>> = {
   'ttc::510': 'Northbound trips start under Union Station and at the Queens Quay Loop, where positions arrive about every 90 seconds. Read the delay at the first stops as about +2 to +3 min.',
 };
+
+/** Directions whose delay at the first stops is uncertain, so the page says "about +2 to +3 min" instead of a single figure. */
+export const LIVE_DASHBOARD_UNCERTAIN_START: Readonly<Record<string, readonly number[]>> = { 'ttc::510': [1] };
 
 export function dashboardHold(agency: string, route: string): string | null {
   return LIVE_DASHBOARD_HOLD[`${agency}::${route}`] ?? null;
@@ -95,9 +98,11 @@ const pct = (x: number) => `${Math.round(x * 100)}%`;
 const min = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`;
 
 /** B3: one sentence per direction. */
-export function buildupSentence(label: string, b: DashboardBuildup): string {
+export function buildupSentence(label: string, b: DashboardBuildup, uncertainStart = false): string {
   if (b.start) return `${label}: delays start between ${b.start.fromName} and ${b.start.toName}: ${min(b.start.medianAddedMin)} added in ${pct(b.start.addedShare)} of ${b.start.n} runs.`;
-  const first = b.startingDelayMin == null ? '' : ` Median delay at the first stop is ${min(b.startingDelayMin)}.`;
+  const first = b.startingDelayMin == null ? ''
+    : uncertainStart ? ' Delay at the first stops is about +2 to +3 min (see the note above).'
+    : ` Median delay at the first stop is ${min(b.startingDelayMin)}.`;
   return `${label}: no single stretch adds more than a minute in half the runs.${first}`;
 }
 
@@ -117,9 +122,9 @@ export function bunchingSentence(label: string, b: DashboardBunchingBand): strin
 
 export const LINK_LABELS: Record<BunchingLinkKind, string> = {
   terminal_departures: 'Uneven departures at the terminal',
-  stood_still: 'Vehicles standing still near here',
-  slow_stretch: 'Running slower than the timetable',
-  short_turns: 'Trips cut short here',
+  stood_still: 'Vehicles standing still in this stretch',
+  slow_stretch: 'Running slower than the timetable in this stretch',
+  short_turns: 'Trips cut short in this stretch',
 };
 
 export function linkValueText(kind: BunchingLinkKind, value: number | null): string {

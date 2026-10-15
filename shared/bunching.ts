@@ -119,9 +119,9 @@ export function bunchingProfile(stops: readonly StopBunching[]): BunchingProfile
 export interface BunchingEvidence {
   /** Bad share at the terminal (first stop) and the scheduled bad share there is 0 by definition. */
   terminalBadShare: number | null;
-  /** Stood-still events per day and total minutes per day over the stretch's stops (and the two stops before it). */
+  /** Stood-still events per day and total minutes per day over the stretch's own stops (not the stops before it). */
   standStill: { eventsPerDay: number; minutesPerDay: number } | null;
-  /** The slowest segment's median running time minus the timetable's, seconds, within the stretch and two segments before. */
+  /** The slowest segment's median running time minus the timetable's, seconds, within the stretch (segments touching a terminal are left out: they include the layover). */
   slowestSegment: { fromStopId: string; toStopId: string; gainedSec: number } | null;
   /** Short-turned trips per day at those stops. */
   shortTurnsPerDay: number | null;

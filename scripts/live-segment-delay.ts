@@ -748,10 +748,11 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
     });
     const profile = bunchingProfile(stops);
     const evidenceFor = (fromId: string, toId: string) => {
-      const a = Math.max(0, order.indexOf(fromId) - 2), b = order.indexOf(toId);
+      const a = order.indexOf(fromId), b = order.indexOf(toId); // only inside the stretch itself
       const near = new Set(order.slice(a, b + 1));
       const evs = windowHolds.filter(h => h.directionId === dir && near.has(h.stopId));
-      const segs = windowSegments.filter(s => s.directionId === dir && near.has(s.fromStopId) && near.has(s.toStopId));
+      // Segments touching a terminal include the layover (the car arrives and waits), so they are not running slow.
+      const segs = windowSegments.filter(s => s.directionId === dir && near.has(s.fromStopId) && near.has(s.toStopId) && !terminalStops.has(s.fromStopId) && !terminalStops.has(s.toStopId));
       const slow = segs.map(s => ({ fromStopId: s.fromStopId, toStopId: s.toStopId, gainedSec: s.bands[band === 'all' ? 'all' : band]?.gainedMedianSec ?? null }))
         .filter((s): s is { fromStopId: string; toStopId: string; gainedSec: number } => s.gainedSec != null)
         .sort((x, y) => y.gainedSec - x.gainedSec)[0] ?? null;

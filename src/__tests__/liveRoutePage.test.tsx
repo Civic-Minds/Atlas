@@ -25,7 +25,7 @@ const v3: LiveV3 = {
   buildup: [0, 1].map(d => ({ directionId: d, startingDelayMin: 0.3, start: d === 0 ? stretch(2) : null, biggest: stretch(2), stretches: [0, 1, 2, 3].map(stretch) })),
   bunching: [0, 1].map(d => ({ directionId: d, bands: { all: { baselineBadShare: 0.06, kind: 'forms' as const, climb: 0.24, forms: { fromStopId: 's2', toStopId: 's3', fromName: 'Stop 2', toName: 'Stop 3', rise: 0.13, fromBadShare: 0.07, toBadShare: 0.2, links }, biggestRise: null, stops: bandStops } } })),
 };
-const ready: LiveDashboardResponse = { status: 'ready', agency: 'ttc', route: '505', generatedAt: '2026-10-15T20:00:00Z', replacementBuses: false, v3, note: null };
+const ready: LiveDashboardResponse = { status: 'ready', agency: 'ttc', route: '505', generatedAt: '2026-10-15T20:00:00Z', replacementBuses: false, v3, note: null, uncertainStart: [] };
 
 function renderPage(response: LiveDashboardResponse | Error, path = '/apps/live/ttc/505') {
   vi.stubGlobal('fetch', vi.fn(async () => { if (response instanceof Error) throw response; return { ok: true, json: async () => response }; }));
@@ -55,11 +55,29 @@ describe('Live route dashboard', () => {
     expect(within(b2).getAllByText(/late of 9\d/).length).toBeGreaterThan(0);
     // B4: forms sentence, every link with its number, linked wording.
     expect(screen.getAllByText(/bunching forms between Stop 2 and Stop 3/).length).toBe(2);
-    expect(screen.getAllByText(/Linked: Vehicles standing still near here \(0\.6 a day\)/).length).toBe(2);
+    expect(screen.getAllByText(/Linked: Vehicles standing still in this stretch \(0\.6 a day\)/).length).toBe(2);
     expect(screen.getAllByText(/Not linked: Uneven departures at the terminal \(5% of gaps off\)/).length).toBe(2);
     // Method.
     expect(screen.getByText(/Window: the last 7 service days/)).toBeTruthy();
     expect(screen.getByText(/4% of runs were on a trip number/)).toBeTruthy();
+  });
+
+  it('shows names in normal case, sample sizes on the charts, and no "here" in the links', async () => {
+    const loud = { ...v3, stops: v3.stops.map(x => ({ ...x, name: 'RONCESVALLES AVE AT QUEEN ST W' })) };
+    renderPage({ ...ready, v3: loud });
+    await screen.findByRole('heading', { name: /how it is running/ });
+    expect(screen.queryByText(/RONCESVALLES/)).toBeNull();
+    expect(screen.getAllByText(/Roncesvalles Ave at Queen St W/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Each point is 300 to 300 runs/).length).toBe(2);
+    expect(screen.getAllByText(/Each point is 60 to 60 gaps/).length).toBe(2);
+    expect(document.body.textContent).not.toMatch(/near here/);
+  });
+
+  it('says the 510 first-stop delay is about +2 to +3 min, not a single figure', async () => {
+    renderPage({ ...ready, uncertainStart: [1] });
+    await screen.findByRole('heading', { name: /how it is running/ });
+    expect(screen.getByText(/Westbound: .*Delay at the first stops is about \+2 to \+3 min/)).toBeTruthy();
+    expect(screen.queryByText(/Median delay at the first stop is/)).toBeNull();
   });
 
   it('shows how fresh the data is and warns when it is old', async () => {
