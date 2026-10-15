@@ -29,6 +29,7 @@ import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, 
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
+import { stampNightServiceEveryDirection } from '../shared/nightServiceDirections.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
 import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
@@ -2959,6 +2960,7 @@ export async function processGtfsBuffer(
   annotateShortTurnVariants(features, shapes);
   stampWorstDirectionHeadways(features);
   stampRouteIrregularDirection(features);
+  stampNightServiceEveryDirection(features);
 
   annotateSharedStretches(features, {
     memberOf: feature => {

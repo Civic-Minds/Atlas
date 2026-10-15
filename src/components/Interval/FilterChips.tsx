@@ -326,12 +326,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
           {([15, 30] as const).map(value => <Pill size="segment" key={value} onClick={() => setResearchFrequency(value)} selected={researchFrequency === value}>{headwayAmount(value)}</Pill>)}
         </div>
-        {researchFrequency === 30 && (
-          <div className="hidden xl:flex items-center gap-2 text-xs font-bold text-[var(--text-muted)]" aria-label="30-minute view legend">
-            <span className="flex items-center gap-1"><span className="inline-block h-1 rounded-full" style={{ background: getTierColor('15', colorMode), width: 12 }} />{headwayTierLabel(15)}</span>
-            <span className="flex items-center gap-1"><span className="inline-block h-0.5 rounded-full" style={{ background: getTierColor('30', colorMode), width: 12 }} />{headwayBandLabel(16, 30)}</span>
-          </div>
-        )}
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
           {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <Pill size="segment" key={value} onClick={() => setResearchWindow(value)} selected={researchWindow === value}>{label}</Pill>)}
         </div>

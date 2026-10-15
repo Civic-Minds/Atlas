@@ -48,6 +48,16 @@ describe('buildNightServiceIndex', () => {
     ]);
   });
 
+  it('counts whole routes, not drawn patterns or days', () => {
+    const entry = (routeShortName: string, directionId: number, day: string) => ({ agencySlug: 'ttc', agencyName: 'TTC', region: null, routeShortName, routeLongName: null, routeColor: null, directionId, headsign: null, day, nightService30: false, nightService60: true });
+    const index = buildNightServiceIndex([
+      entry('300', 0, 'Saturday'), entry('300', 1, 'Saturday'), entry('300', 0, 'Sunday'), entry('301', 0, 'Saturday'),
+    ]);
+    expect(index.routes).toHaveLength(4);
+    expect(index.routeCount).toBe(2);
+    expect(index.agencyCount).toBe(1);
+  });
+
   it('reports zero agencies and routes for an empty input', () => {
     const index = buildNightServiceIndex([]);
     expect(index.agencyCount).toBe(0);

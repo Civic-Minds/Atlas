@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Moon, X } from 'lucide-react';
-import { getNightServiceColor } from '../utils/colors';
-import { useColorVision } from '../context/ColorVisionContext';
+import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
 import {
   PANEL_TITLE,
   PANEL_EMPTY,
+  PANEL_SECTION_HEAD,
+  LIST_ROW_PRIMARY,
+  LIST_ROW_DIM,
   Z_PANEL,
   SIDEBAR_LEFT_FALLBACK,
   SIDEBAR_PANEL_WIDTH,
@@ -15,6 +16,8 @@ import type { NightServiceFrequency } from '../../shared/nightService';
 import { nightServiceKey } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
+import ResearchInfo from '../components/ResearchInfo';
+import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -58,6 +61,8 @@ interface Props {
   query?: string;
   frequency: NightServiceFrequency;
   onRouteSelect?: (agencySlug: string, routeId: string) => void;
+  /** A route is selected: its card takes this panel's place, as in Live. */
+  selectionActive?: boolean;
 }
 
 function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; w: number; n: number; e: number }): boolean {
@@ -79,9 +84,7 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
   return maxLon >= bounds.w && minLon <= bounds.e && maxLat >= bounds.s && minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, layers, query = '', frequency, onRouteSelect }: Props) {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+export default function NightService({ active, sidebarLeft, layers, query = '', frequency, onRouteSelect, selectionActive = false }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
@@ -98,14 +101,6 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
     }
     return routes;
   }, [bounds, layers, frequency]);
-  const [introDismissed, setIntroDismissed] = useState(() => {
-    try { return localStorage.getItem('atlas_pref_night_intro_dismissed') === '1'; } catch { return false; }
-  });
-  const dismissIntro = () => {
-    setIntroDismissed(true);
-    try { localStorage.setItem('atlas_pref_night_intro_dismissed', '1'); } catch {}
-  };
-
   useEffect(() => {
     fetch(`${R2_PUBLIC_URL}/atlas/night-service.json`, { cache: 'no-store' })
       .then(r => {
@@ -173,7 +168,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
   return (
       <Panel
         enter
-        className={`absolute top-[4.5rem] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] pointer-events-auto`}
+        className={`absolute top-[4.5rem] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-136px)] ${selectionActive ? 'invisible pointer-events-none' : 'pointer-events-auto'}`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
         <PanelTitleBar>
@@ -181,32 +176,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
           <span className={PANEL_TITLE}>Night Service</span>
         </PanelTitleBar>
 
-        {data && !introDismissed && (
-          <div className="relative px-4 pt-2.5 pb-3 border-b border-[var(--border-primary)]">
-            <button
-              onClick={dismissIntro}
-              aria-label="Dismiss"
-              className="absolute top-2 right-2 text-[var(--text-dim)] hover:text-[var(--text-primary)]"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-            <p className="pr-5 text-xs font-black text-[var(--text-primary)] leading-snug">
-              Which routes actually run through the night?
-            </p>
-            <p className="mt-1 pr-5 text-xs text-[var(--text-dim)] font-bold leading-snug">
-              A route counts here only if it has a departure at least every {frequency} minutes,
-              2am to 6am, with no gap at either end of the core overnight window.
-            </p>
-            <p className="mt-1.5 text-xs font-bold" style={{ color: getNightServiceColor(colorMode) }}>
-              {data.routeCount} qualifying route patterns across {data.agencyCount} agencies.
-            </p>
-          </div>
-        )}
-        {data && introDismissed && (
-          <p className="px-4 pt-2 pb-1 text-xs text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
-            At least one departure every {frequency} minutes, 2am–6am local time, with no gap at either end of the window.
-          </p>
-        )}
+        {data && <ResearchInfo heading={NIGHT_INFO_HEADING}>{nightRuleText(frequency)}</ResearchInfo>}
 
         <PanelBody>
           {loadState === 'loading' && <p className={PANEL_EMPTY}>Loading…</p>}
@@ -214,9 +184,9 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
           {loadState === 'ready' && agencies.length === 0 && (
             <p className={PANEL_EMPTY}>No agencies match that search.</p>
           )}
-          {loadState === 'ready' && agencies.map(agency => (
+          {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>
-              <div className="px-4 pt-2.5 pb-1 text-xs font-black text-[var(--text-primary)]">
+              <div className={`${PANEL_SECTION_HEAD} ${agencyIndex > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
                 {agency.agencyName}
                 {agency.region && <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.region}</span>}
                 <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.routes.length} {agency.routes.length === 1 ? 'route' : 'routes'}</span>
@@ -229,12 +199,12 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
                   className="disabled:cursor-default"
                 >
                   <div className="min-w-0 flex-1">
-                  <div className="text-xs font-black text-[var(--text-primary)] line-clamp-2 break-words" title={[route.routeShortName, route.routeLongName].filter(Boolean).join(" — ")}>
+                  <div className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={[route.routeShortName, route.routeLongName].filter(Boolean).join(" — ")}>
                     {route.routeShortName || route.routeLongName || 'Unnamed route'}
-                    {route.routeShortName && route.routeLongName && <span className="font-normal text-[var(--text-dim)]"> — {route.routeLongName}</span>}
+                    {route.routeShortName && route.routeLongName && <span className={`font-normal ${LIST_ROW_DIM}`}> — {route.routeLongName}</span>}
                   </div>
                   {route.destinations.length > 0 && (
-                    <div className="mt-0.5 text-xs font-bold text-[var(--text-dim)] truncate" title={route.destinations.join(' · ')}>
+                    <div className={`mt-0.5 ${LIST_ROW_DIM} truncate`} title={route.destinations.join(' · ')}>
                       To {route.destinations.join(' · ')}
                     </div>
                   )}
