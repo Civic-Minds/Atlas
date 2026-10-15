@@ -180,8 +180,6 @@ function StillRows({ rows, totalDays }: { rows: ReturnType<typeof usableStanding
   );
 }
 
-const crossOnly = (label: string) => label.split(' & ').pop()!;
-
 function stopLabel(name: string): string {
   const [st, x] = tidyStopName(name).split(' at ');
   const clean = (s: string) => s.replace(/\s+(East|West|North|South) Side$/i, '').replace(/ - .*$/, '').replace(/\s+(St|Ave|Rd|Blvd|Cres|Way)(\s+(East|West|North|South))?$/i, '').trim();
@@ -357,9 +355,11 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
         )}
         {ewt && ewt.peak.stat!.excessWaitSec! >= 30 && (
           <div className="text-xs font-bold text-[var(--text-muted)] tabular-nums">
-            Extra wait vs timetable: {ewt.first === ewt.peak
-              ? <>{mins(ewt.peak.stat!.excessWaitSec!)} min at {crossOnly(ewt.peak.label)}</>
-              : <>{mins(ewt.first.stat!.excessWaitSec!)} → {mins(ewt.peak.stat!.excessWaitSec!)} min ({crossOnly(ewt.first.label)} → {crossOnly(ewt.peak.label)})</>}
+            Extra wait vs timetable: {ewt.first === ewt.peak || ewt.first.stat!.excessWaitSec! < 30
+              ? <>up to {mins(ewt.peak.stat!.excessWaitSec!)} min ({stopLabel(ewt.peak.name)})</>
+              : ewt.first.label === ewt.peak.label
+                ? <>{mins(ewt.first.stat!.excessWaitSec!)} → {mins(ewt.peak.stat!.excessWaitSec!)} min ({stopLabel(ewt.first.name)} → {stopLabel(ewt.peak.name)})</>
+                : <>{mins(ewt.first.stat!.excessWaitSec!)} → {mins(ewt.peak.stat!.excessWaitSec!)} min ({ewt.first.label} → {ewt.peak.label})</>}
           </div>
         )}
       </Section>
