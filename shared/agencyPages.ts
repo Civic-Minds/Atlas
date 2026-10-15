@@ -236,27 +236,14 @@ export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>
   return counts;
 }
 
-/** The "every N min or less" filter value each band stands for; the last two bands (over 60, no midday) have none. */
-const BAND_FILTER_MINUTES = [10, 15, 20, 30, 60] as const;
-
-/** What the map shows for a band's link: the map's filter is "every N min or better", so the slower bands include the faster ones. */
-export function bandMapLinkLabel(band: number): string | null {
-  const minutes = BAND_FILTER_MINUTES[band];
-  return minutes === undefined ? null : `Show routes every ${minutes} min or better on the map`;
-}
-
 /**
- * The map link for one frequency band: the page's own map link (agency or area framing) plus the filter
- * the band stands for, with Weekday and Midday selected (the same `h`, `p` and `day` parameters the map reads).
- * `'all'` is the same view with no speed filter (every route). Null for the bands that are not a filter value
- * ("less often than 60", "no midday").
+ * The map link under the frequency bar: the page's own map link (agency or area framing) with Weekday, Midday and
+ * no speed filter (every route), using the same `h`, `p` and `day` parameters the map reads.
  */
-export function bandMapHref(mapHref: string, band: number | 'all'): string | null {
-  const minutes = band === 'all' ? 'all' : BAND_FILTER_MINUTES[band];
-  if (minutes === undefined) return null;
+export function allRoutesMapHref(mapHref: string): string {
   const [path, query = ''] = mapHref.split('?');
   const params = new URLSearchParams(query);
-  params.set('h', String(minutes));
+  params.set('h', 'all');
   params.set('p', 'midday');
   params.set('day', 'Weekday');
   return `${path}?${params.toString()}`;

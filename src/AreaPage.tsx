@@ -80,7 +80,12 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}
 
           <section className="mt-14" aria-labelledby="agencies-heading">
-            <h2 id="agencies-heading" className="text-xl font-black tracking-tight">Agencies and weekday frequency</h2>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+              <h2 id="agencies-heading" className="text-xl font-black tracking-tight">Agencies and weekday frequency</h2>
+              <a href="/agencies" className={PAGE_ACTION}>
+                See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </div>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={data.bands} mapHref={areaMapHref(data)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this area's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
@@ -98,12 +103,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
                 />
               </div>
             </div>
-            <p className="mt-2 text-sm text-[var(--text-muted)]">Mode columns count routes. A dash means none.</p>
           </section>
-
-          <a href="/agencies" className={`${PAGE_ACTION} mt-6`}>
-            See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </a>
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
             Area: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). {areaDatesText(data)}

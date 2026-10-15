@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE, bandMapHref, bandMapLinkLabel } from '../shared/agencyPages';
-import { LINK } from './pageStyles';
+import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE, allRoutesMapHref } from '../shared/agencyPages';
+import { ArrowRight } from 'lucide-react';
+import { PAGE_ACTION } from './pageStyles';
 import { HEADWAY_TIERS } from '../shared/config';
 
 const BAND_PHRASES = [...FREQUENCY_BANDS.map(b => b.phrase), NO_MIDDAY_PHRASE];
@@ -12,7 +13,7 @@ const BAND_FILLS = [...HEADWAY_TIERS.map(t => t.color), 'var(--control-inactive-
  * One flat stacked bar of route counts per weekday-midday frequency band. The legend is one short wrapping line;
  * hovering, focusing or tapping a segment shows the full sentence.
  */
-export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The page's map link: each band, its legend item and one line below the bar open the map with that frequency filter. */ mapHref?: string }) {
+export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The page's map link: the one link under the bar opens the map with these routes (Weekday midday). The bar itself is not clickable. */ mapHref?: string }) {
   const [active, setActive] = useState<number | null>(null);
   const total = counts.reduce((a, b) => a + b, 0);
   if (total === 0) return null;
@@ -34,15 +35,12 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
           </div>
         )}
         <div role="group" aria-label="Routes by weekday midday frequency" className="flex h-4 gap-0.5 overflow-hidden rounded-full">
-          {shown.map(x => {
-            const href = mapHref ? bandMapHref(mapHref, x.i) : null;
-            const style = { flexGrow: x.n, flexBasis: 0, background: BAND_FILLS[x.i] };
-            const handlers = { onMouseEnter: () => setActive(x.i), onFocus: () => setActive(x.i), onBlur: () => setActive(null) };
-            return href
-              ? <a key={x.i} href={href} aria-label={`${sentence(x)}. ${bandMapLinkLabel(x.i)}.`} className="h-full min-w-1 border-0 p-0 outline-offset-2" style={style} {...handlers} />
-              : <button key={x.i} type="button" aria-label={sentence(x)} className="h-full min-w-1 cursor-default border-0 p-0 outline-offset-2" style={style} {...handlers}
-                  onClick={() => setActive(a => (a === x.i ? null : x.i))} />;
-          })}
+          {shown.map(x => (
+            <button key={x.i} type="button" aria-label={sentence(x)} className="h-full min-w-1 cursor-default border-0 p-0 outline-offset-2"
+              style={{ flexGrow: x.n, flexBasis: 0, background: BAND_FILLS[x.i] }}
+              onMouseEnter={() => setActive(x.i)} onFocus={() => setActive(x.i)} onBlur={() => setActive(null)}
+              onClick={() => setActive(a => (a === x.i ? null : x.i))} />
+          ))}
         </div>
       </div>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
@@ -54,7 +52,7 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
             </li>
           ))}
         </ul>
-        {mapHref && <a href={bandMapHref(mapHref, 'all')!} className={`text-sm font-black sm:ml-auto ${LINK}`}>See these routes on the map</a>}
+        {mapHref && <a href={allRoutesMapHref(mapHref)} className={`${PAGE_ACTION} sm:ml-auto`}>See these routes on the map <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>}
       </div>
     </div>
   );
