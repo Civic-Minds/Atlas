@@ -10,12 +10,11 @@ describe('hasMiddayReading', () => {
     expect(hasMiddayReading([540, 600, 600, 660])).toBe(false);
     // Four within 90 minutes is a burst (cta 82: PM short turns minutes apart).
     expect(hasMiddayReading([720, 740, 760, 800])).toBe(false);
-    // Four inside two hours (a school-time shuttle 11:00-12:50) is not midday service either:
-    // the reading must spread over at least half of 9-15h (MIDDAY_READING_MIN_SPAN_MINUTES).
-    expect(hasMiddayReading([660, 700, 740, 770])).toBe(false);
+    // Four over two hours counts: the patterns of a line that alternates two full-length
+    // variants (SEPTA 40 Lombard / via Pine St) each hold their midday trips inside two hours.
+    expect(hasMiddayReading([660, 700, 740, 770])).toBe(true);
     expect(hasMiddayReading([600, 660, 720, 780])).toBe(true);
-    // Just past the old 90-minute burst span is still a burst for midday purposes.
-    expect(hasMiddayReading([720, 740, 760, 811])).toBe(false);
+    expect(hasMiddayReading([720, 740, 760, 811])).toBe(true);
     // Departures outside 9-15h do not count (a peak-only pattern).
     expect(hasMiddayReading([360, 400, 440, 480, 960, 1000, 1040])).toBe(false);
     expect(hasMiddayReading(undefined)).toBe(false);

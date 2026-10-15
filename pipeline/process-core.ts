@@ -650,15 +650,14 @@ export const MIN_POOLED_TIER_DEPARTURES = 8;
 /**
  * A midday reading, the test behind "limited" for a variant of a line with midday service
  * elsewhere (CIV-150, decision of 2026-10-14): at least MIN_ALL_DAY_TERMINAL_DEPARTURES unique
- * departures 9-15h, spread over at least half of that window. Four departures inside 90 minutes
- * are a burst, but four inside two hours (a school-time shuttle 11:00-12:50) are not midday
- * service either; phase 2's burst span was written for a whole day's sample.
+ * departures 9-15h, spread past a burst (BURST_MAX_SPAN_MINUTES). A longer minimum span was
+ * tried (half the window) and limited the patterns of lines that alternate two full-length
+ * variants, each of whose own midday departures sit inside two hours while riders get the pair
+ * all day (SEPTA 40 eastbound Lombard / via Pine St, CTA 26 and 20, TTC 134).
  */
-export const MIDDAY_READING_MIN_SPAN_MINUTES = 180;
-
 export function hasMiddayReading(times: readonly number[] | undefined): boolean {
   const midday = [...new Set(times ?? [])].filter(t => t >= 540 && t <= 900).sort((a, b) => a - b);
-  return midday.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES && midday[midday.length - 1] - midday[0] >= MIDDAY_READING_MIN_SPAN_MINUTES;
+  return midday.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES && midday[midday.length - 1] - midday[0] > BURST_MAX_SPAN_MINUTES;
 }
 
 export async function processGtfsBuffer(
