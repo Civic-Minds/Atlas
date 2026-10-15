@@ -189,6 +189,13 @@ describe('route values from the selector (shadow fields)', () => {
     expect(row(r, '63', day).stretchRoutePeriodHeadway.midday).toBe(every);
   });
 
+  it('TTC 300 Weekday night dir 1: with no shared stop, the trunk (most stop visits) is main, not the 2-stop Pearson hop', async () => {
+    const r = await run('ttc-300-weekday-night');
+    const d = r.stretches.get('300::1::Weekday')!;
+    expect(d.main!.stops.length).toBeGreaterThan(100);
+    expect(d.main!.refStop).not.toBe('14278');
+  });
+
   it('TTC 25 Weekday late: the north half (25C, no stop shared with 25B) is a tail; it runs every 6 with one 15-minute gap', async () => {
     // 25B (Broadview - Don Mills Station) and 25C (Don Mills Station - Steeles) share no stop, so
     // the busier 25B is the main stretch and 25C's run is a tail. Oracle at the north stop

@@ -152,9 +152,12 @@ export function directionStretches(
   let mainStops = longestRegular.stops.filter(stop => regular.every(p => p.stops.includes(stop)));
   if (mainStops.length === 0) {
     // Regular patterns that share no stop (a route run as two halves meeting at a hub, TTC 25
-    // at Don Mills Station; two routes drawn as one group): the busiest regular pattern is the
-    // main stretch, and the others' own runs are its tails.
-    mainStops = [...busiest(regular).stops];
+    // at Don Mills Station; two routes drawn as one group): the regular pattern with the most stop
+    // visits (trips times stops) is the main stretch, and the others' own runs are its tails. Not
+    // the one with the most trips: TTC 300's 2-stop Pearson T1-T3 hop would be main and the
+    // 117-stop trunk a tail.
+    const visits = (p: (typeof regular)[number]) => p.trips.length * p.stops.length;
+    mainStops = [...regular.reduce((x, y) => (visits(y) > visits(x) ? y : x)).stops];
   }
   const common = new Set(mainStops);
 
