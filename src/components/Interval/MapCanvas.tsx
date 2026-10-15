@@ -10,6 +10,7 @@ import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
 import { useHistoryLayer } from './map/useHistoryLayer';
+import { shouldApplyResetView } from './map/resetView';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
@@ -1970,10 +1971,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     map.fitBounds([[w, s], [e, n]], { padding: 48, maxZoom: 12, duration: 900 });
   }, [areaFocus, mapLoaded]);
 
-  // Handle Reset View — guard with resetViewKey === 0 to skip initial mount trigger
+  // Handle Reset View: only a press of the reset control refits (CIV-213), never the initial load.
+  const appliedResetViewKey = useRef<number | undefined>(undefined);
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || resetViewKey === 0) return;
+    if (!map || !mapLoaded || !shouldApplyResetView(resetViewKey, appliedResetViewKey.current)) return;
+    appliedResetViewKey.current = resetViewKey;
     const bounds = getAgencyBounds(agencies);
     if (bounds) {
       map.fitBounds([[bounds[0][1], bounds[0][0]], [bounds[1][1], bounds[1][0]]], { padding: 64, maxZoom: 10 });
