@@ -24,6 +24,15 @@ describe('inferLiveDirection', () => {
     expect(result).toEqual({ directionId: 0, headsign: 'Newmarket Terminal' });
   });
 
+  it('keeps the direction when a full route and its short turn share track', () => {
+    const result = inferLiveDirection(vehicle({ bearing: 270 }), [
+      feature(0, 'Newmarket Terminal', [[0, 0], [0.01, 0]]),
+      feature(1, 'Finch GO Bus Terminal', [[0.01, 0], [0, 0]]),
+      feature(1, 'Mid Terminal', [[0.01, 0], [0.002, 0]]),
+    ]);
+    expect(result).toEqual({ directionId: 1, headsign: null });
+  });
+
   it('returns no label when the directional match is ambiguous', () => {
     const result = inferLiveDirection(vehicle({ bearing: null }), [
       feature(0, 'Newmarket Terminal', [[0, 0], [0.01, 0]]),
