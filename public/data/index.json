@@ -6291,7 +6291,7 @@
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270116",
-      "timezone": "America/Vancouver",
+      "timezone": "America/Los_Angeles",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -9194,7 +9194,7 @@
         "Oxnard, California",
         "Ventura, California"
       ],
-      "timezone": "America/Vancouver",
+      "timezone": "America/Los_Angeles",
       "lastRawArchiveKey": "20260808-26a2b10b0d954217",
       "lastFeedCheckAt": "20261012",
       "expiredFeedCheckCount": 0,
@@ -14765,7 +14765,7 @@
         "Johnson City, Tennessee",
         "Washington County, Tennessee"
       ],
-      "timezone": "America/Toronto",
+      "timezone": "America/New_York",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-03",
