@@ -309,9 +309,11 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
           return waits.length ? Math.min(...waits) : null;
         };
         const waits = dirList.map(wait);
-        // A direction with a midday headway reading on a drawn line is judged by the sustained and
-        // coverage rules as before (GO 94 to Pickering: 09:35, 11:40, then hourly, a 125 wait).
-        const hasReading = dirList.map(direction => group.some(f =>
+        // A direction with a midday headway reading on a drawn line and a wait under three hours is
+        // judged by the sustained and coverage rules as before (GO 94 to Pickering: 09:35, 11:40,
+        // then hourly, a 125 wait). A reading from two trips at the edge of the window does not
+        // count: MBTA 354's AM run leaves at 09:10 and 09:40, then nothing until 16:00 (wait 320).
+        const hasReading = dirList.map((direction, i) => waits[i] != null && waits[i]! < 3 * 60 && group.some(f =>
           f.properties.directionId === direction && f.properties.headwayByPeriod?.midday != null));
         const runs = waits.map((v, i) => hasReading[i] || (v != null && v <= ALL_DAY_MIDDAY_MAX_WAIT));
         if (complete && runs.some(Boolean) && !runs.every(Boolean)) {
