@@ -160,7 +160,8 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     },
   },
   // TTC streetcar network — vehicles-map-only (no anchor-stop adherence config).
-  // Delay comes from the TTC's explicit per-stop delay values in TripUpdates.
+  // The TTC's TripUpdates carry predicted times but no delay values, so these vehicles report
+  // unknown lateness (status no_data), never on time (#866).
   // scheduledHeadwayMin values are fallbacks; the pipeline sidecar overrides them.
   ...([
     ['501', 5], ['505', 8], ['506', 7], ['507', 12],
