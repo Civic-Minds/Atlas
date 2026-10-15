@@ -309,13 +309,16 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
           return waits.length ? Math.min(...waits) : null;
         };
         const waits = dirList.map(wait);
-        const runs = waits.map(v => v != null && v <= ALL_DAY_MIDDAY_MAX_WAIT);
+        // A direction with a midday headway reading on a drawn line is judged by the sustained and
+        // coverage rules as before (GO 94 to Pickering: 09:35, 11:40, then hourly, a 125 wait).
+        const hasReading = dirList.map(direction => group.some(f =>
+          f.properties.directionId === direction && f.properties.headwayByPeriod?.midday != null));
+        const runs = waits.map((v, i) => hasReading[i] || (v != null && v <= ALL_DAY_MIDDAY_MAX_WAIT));
         if (complete && runs.some(Boolean) && !runs.every(Boolean)) {
           middayCaps.set(key, NO_PERIOD_SERVICE_TILE_VALUE);
         } else if (complete && runs.every(Boolean)) {
           const caps = dirList
-            .map((direction, i) => group.some(f => f.properties.directionId === direction && f.properties.headwayByPeriod?.midday != null)
-              ? null : waits[i])
+            .map((_, i) => hasReading[i] ? null : waits[i])
             .filter((v): v is number => v != null);
           if (caps.length > 0) middayCaps.set(key, Math.max(...caps));
         }

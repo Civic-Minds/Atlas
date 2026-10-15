@@ -422,7 +422,7 @@ describe('#899: the all-day midday cap from each direction\'s midday wait', () =
   const allDay = { amPeak: 20, midday: 20, pmPeak: 20, evening: 30, late: null, overnight: null };
   const peak = { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null };
   // One feature per direction; directionMiddayWait is the pipeline's direction-level value.
-  const route = (waits: [number | null | undefined, number | null | undefined], otherMidday = peak) => {
+  const route = (waits: [number | null | undefined, number | null | undefined], otherMidday: Record<string, number | null> = peak) => {
     const features = [
       feat({ routeShortName: '1', day: 'Weekday', directionId: 0, headway: 20, tier: '20', headwayByPeriod: allDay, periodCoverageHeadway: allDay }),
       feat({ routeShortName: '1', day: 'Weekday', directionId: 1, headway: 10, tier: '10', headwayByPeriod: otherMidday, periodCoverageHeadway: otherMidday }),
@@ -445,7 +445,10 @@ describe('#899: the all-day midday cap from each direction\'s midday wait', () =
     expect(route([20, 20], allDay)).toEqual([undefined, undefined]);
     // An hourly direction with one 64-minute midday gap runs at midday.
     expect(route([60, 64], allDay)).toEqual([undefined, undefined]);
-    // No direction-level wait on a sibling (an older artifact): no cap.
+    // A 125-minute wait on a direction with a midday headway reading (GO 94: 09:35, 11:40, then
+    // hourly) is judged by the coverage rules as before.
+    expect(route([20, 125], { amPeak: 60, midday: 60, pmPeak: 30, evening: null, late: null, overnight: null })).toEqual([undefined, undefined]);
+    // No direction-level wait on a sibling (an older artifact, or a synthesized direction): no cap.
     expect(route([20, undefined])).toEqual([undefined, undefined]);
   });
 
