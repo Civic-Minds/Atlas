@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
-- Live mode (local only): the route card now leads with where the route falls behind: stop pairs where vehicles take longer than the timetable (typical and 1 in 10), and stops where uneven spacing makes riders wait longer than scheduled, coloured on the map. Built from archived vehicle positions; the timetable folds to one line.
+- Live mode (local only): one Live mode. Live opens on the vehicles; a route's card shows the gaps between its cars right now, then at each stop the scheduled gap against the range 8 in 10 real gaps fell in, where cars stood still, and how running time compares with the timetable, with sample sizes and methods on a Details screen. Clicking a stretch zooms the map to it. The main map's route card links to Live instead of carrying the analysis, and Live views are shareable links.
+- Mode tabs (beta): Live has a real icon when shrunk, Compare shrinks to an icon in Live and History instead of disappearing, the active tab stands out more, and on phones the menu button names the active mode.
 - Live mode (local only): the route card's live lateness and the stop card's next arrivals now load instead of failing.
 - Trip time by hour now covers the whole day for TTC subway lines: Line 1 and Line 2 give the same end-to-end run a different shape per time band, and only one band's trips were being counted ([#852](https://github.com/Civic-Minds/Atlas/issues/852)).
 

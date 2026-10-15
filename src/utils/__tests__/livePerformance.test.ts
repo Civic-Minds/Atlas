@@ -22,7 +22,7 @@ const data = {
   // A branch stub (B1) with few trips must not become the line.
   segments: [seg(0, 600), seg(1, 600, 45), seg(2, 600), seg(3, 600), { ...seg(1, 50), toStopId: 'B1', toName: 'Branch at Stub' }],
   headways: [1, 2, 3].map(i => ({ stopId: `S${i}`, stopName: `King St at Stop ${i}`, directionId: 0, coordinates: [], bands: { all: gapStat(300, 240, 60, 600) } })),
-  tripDirections: { 0: ['t1', 't2', 't3'] },
+  tripDirections: { 0: ['t1', 't2', 't3'], 1: ['other'] },
 } as unknown as SegmentDelayData & { tripDirections: Record<string, string[]> };
 
 describe('livePerformance', () => {
@@ -73,6 +73,29 @@ describe('livePerformance', () => {
     expect(g.cars).toBe(2);
     expect(g.gapsMin).toEqual([4]);
     expect(g.scheduledSec).toBe(300);
+  });
+
+  it('marks the feed incomplete when a car on the section has a trip not in the timetable', () => {
+    const line = lineModel(data, 0)!;
+    const now = 1_000;
+    const g = liveGaps(data, line, withStats(line, 'all'), 'all', [
+      { id: 'a', tripId: 't1', lat: LAT, lon: lon(3.5), tsEpoch: now },
+      { id: 'b', tripId: 't2', lat: LAT, lon: lon(1.5), tsEpoch: now },
+      { id: 'x', tripId: 'unlisted', lat: LAT, lon: lon(2.5), tsEpoch: now },
+    ], now)!;
+    expect(g.incomplete).toBe(true);
+  });
+
+  it('marks the feed incomplete when fewer than half the scheduled cars are placed', () => {
+    // 4 shared stop pairs of 10 min each, every 5 min: 8 cars expected, 2 placed.
+    const slow = { ...data, segments: data.segments.map(s => ({ ...s, bands: { all: { ...s.bands.all!, actualMedianSec: 600 } } })) } as typeof data;
+    const line = lineModel(slow, 0)!;
+    const now = 1_000;
+    const g = liveGaps(slow, line, withStats(line, 'all'), 'all', [
+      { id: 'a', tripId: 't1', lat: LAT, lon: lon(3.5), tsEpoch: now },
+      { id: 'b', tripId: 't2', lat: LAT, lon: lon(1.5), tsEpoch: now },
+    ], now)!;
+    expect(g.incomplete).toBe(true);
   });
 
   it('returns nothing with fewer than two placed cars', () => {

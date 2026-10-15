@@ -332,7 +332,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
       {pickers}
 
       <Section title={`Right now · ${torontoTime(new Date(now))}`}>
-        {live ? (
+        {live && !live.incomplete ? (
           <>
             <Figures items={[`${live.cars} cars on ${line.sharedStreet ?? 'the line'}`, live.scheduledSec ? `scheduled every ${mins(live.scheduledSec)}` : null]} />
             <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-xs font-bold tabular-nums">
@@ -343,7 +343,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
             </div>
           </>
         ) : (
-          <div className="text-xs font-bold text-[var(--text-muted)]">{feedDegraded ? 'Live feed incomplete right now' : 'Fewer than 2 cars on the shared section'}</div>
+          <div className="text-xs font-bold text-[var(--text-muted)]">{feedDegraded || live?.incomplete ? 'Live feed incomplete right now' : 'Fewer than 2 cars on the shared section'}</div>
         )}
       </Section>
 

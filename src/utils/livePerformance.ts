@@ -258,6 +258,8 @@ export interface LiveCar {
 }
 
 export interface LiveGaps {
+  /** Too few cars placed for the schedule, or a car on the line we can't place: gaps would be invented. */
+  incomplete?: boolean;
   cars: number;
   /** Minutes between consecutive cars, front of the line first. */
   gapsMin: number[];
@@ -281,19 +283,37 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     const b = s.bands[band] ?? s.bands.all;
     t += b ? b.actualMedianSec : 0;
   }
+  const known = new Set(Object.values(data.tripDirections ?? {}).flat());
+  const onShared = (p: { segIndex: number } | null) => !!p && !!stops[p.segIndex]?.shared && !!stops[p.segIndex + 1]?.shared;
   const placed: number[] = [];
+  let unplaceable = 0;
   for (const c of cars) {
-    if (!trips.has(c.tripId)) continue;
     if (c.tsEpoch == null || nowSec - c.tsEpoch > LIVE_STALE_SEC) continue;
     const p = placeOnLine(line, [c.lon, c.lat]);
-    if (!p || !stops[p.segIndex]?.shared || !stops[p.segIndex + 1]?.shared) continue;
+    if (!trips.has(c.tripId)) {
+      // A current car on this section whose trip isn't in the timetable: we can't tell its direction,
+      // so any gap around it would be wrong.
+      if (!known.has(c.tripId) && onShared(p)) unplaceable++;
+      continue;
+    }
+    if (!p || !onShared(p)) continue;
     const seg = line.segments[p.segIndex];
     const b = seg.bands[band] ?? seg.bands.all;
     placed.push(cum[p.segIndex] + p.frac * (b ? b.actualMedianSec : 0));
   }
+  const sched = med(stops.filter(s => s.shared && s.stat).map(s => s.stat!.scheduledMedianGapSec));
+  // Same idea as the archive's "thin" feed rule: fewer than half the cars the schedule puts on this
+  // section means some aren't reporting, and a missing car would show as one long gap.
+  let sharedSec = 0;
+  line.segments.forEach((seg, i) => {
+    if (!stops[i]?.shared || !stops[i + 1]?.shared) return;
+    const b = seg.bands[band] ?? seg.bands.all;
+    sharedSec += b ? b.actualMedianSec : 0;
+  });
+  const expected = sched ? sharedSec / sched : 0;
+  if (unplaceable > 0 || (expected >= 2 && placed.length < expected / 2)) return { incomplete: true, cars: placed.length, gapsMin: [], scheduledSec: sched };
   if (placed.length < 2) return null;
   placed.sort((a, b) => b - a);
   const gapsMin = placed.slice(1).map((x, i) => Math.round((placed[i] - x) / 60));
-  const sched = med(stops.filter(s => s.shared && s.stat).map(s => s.stat!.scheduledMedianGapSec));
   return { cars: placed.length, gapsMin, scheduledSec: sched };
 }
