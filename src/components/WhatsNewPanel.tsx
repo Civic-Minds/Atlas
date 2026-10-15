@@ -73,7 +73,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
                 {release.items.map(item => (
                   <li key={item.text} className="flex items-start gap-2 leading-relaxed text-[var(--text-dim)]">
                     <span aria-hidden="true" className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[var(--text-muted)]" />
-                    <span><WhatsNewItemText item={item} tagClass="text-xs" leadClass="font-normal" /></span>
+                    <span><WhatsNewItemText item={item} tagClass="text-xs" leadClass="font-normal" hideNew /></span>
                   </li>
                 ))}
               </ul>

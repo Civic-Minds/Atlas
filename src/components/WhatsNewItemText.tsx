@@ -3,12 +3,12 @@ import type { WhatsNewItem } from '../data/whatsNew';
 const TAG = 'inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px font-bold leading-tight text-[var(--accent)] align-middle';
 
 /** One what's-new bullet: bold lead, colon, short clause, then "New" / "Beta" tags with a real space before them. */
-export function WhatsNewItemText({ item, tagClass = 'text-xs', leadClass = 'font-black' }: { item: WhatsNewItem; tagClass?: string; /** Weight of the lead; the what's-new panel uses a regular weight so its version heading stands out. */ leadClass?: string }) {
+export function WhatsNewItemText({ item, tagClass = 'text-xs', leadClass = 'font-black', hideNew = false }: { item: WhatsNewItem; tagClass?: string; /** Weight of the lead; the what's-new panel uses a regular weight so its version heading stands out. */ leadClass?: string; /** The what's-new panel's name already says it, so it drops the New pills. */ hideNew?: boolean }) {
   return (
     <>
       {item.lead && <><strong className={`${leadClass} text-[var(--text-primary)]`}>{item.lead}</strong>: </>}
       {item.text}
-      {item.isNew && <>{' '}<span className={`${TAG} ${tagClass} ml-1`}>New</span></>}
+      {item.isNew && !hideNew && <>{' '}<span className={`${TAG} ${tagClass} ml-1`}>New</span></>}
       {item.beta && <>{' '}<span className={`${TAG} ${tagClass} ml-1`}>Beta</span></>}
     </>
   );
