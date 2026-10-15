@@ -561,6 +561,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           onClick={() => {
             if (inFrequentServiceStory) {
               navigate(FEATURE_ROUTES.frequentService.map);
+            } else if (inLive || inHistory || inNight) {
+              // Leaving a mode: switch in place like the mode's own tab, so the map isn't torn down and rebuilt.
+              setActiveApp('frequency');
             } else if (onGoHome) {
               onGoHome();
             } else {
