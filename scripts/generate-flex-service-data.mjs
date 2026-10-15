@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 const [, , command, inputPath, outputPath] = process.argv;
 if (!command || !inputPath || !outputPath) {
-  console.error('Usage: node scripts/generate-flex-service-data.mjs <metro|ctran|ctran-stops> <input.geojson> <output.ts>');
+  console.error('Usage: node scripts/generate-flex-service-data.mjs <metro|ctran|ctran-stops> <input.geojson> <output>  (metro/ctran: config/on-demand-geometry/<slug>.json; ctran-stops: src/data/ctranCurrentFlexStops.ts)');
   process.exit(1);
 }
 
@@ -55,15 +55,12 @@ if (command === 'metro') {
   throw new Error(`Unknown command: ${command}`);
 }
 
-const exportName = command === 'metro'
-  ? 'METRO_MICRO_FLEX_FEATURES'
-  : command === 'ctran'
-    ? 'C_TRAN_CURRENT_FLEX_FEATURES'
-    : 'C_TRAN_CURRENT_FLEX_STOPS';
-const geometryType = command === 'ctran-stops' ? 'GeoJSON.Point' : 'GeoJSON.Polygon | GeoJSON.MultiPolygon';
-const attribution = command.startsWith('ctran')
-  ? '/* Reproduced with permission granted by C-TRAN under its GTFS data license. */\n'
-  : '';
-const contents = `${attribution}import type { GeoJSON } from 'geojson';\n\nexport const ${exportName}: GeoJSON.Feature<${geometryType}>[] = ${JSON.stringify(features, null, 2)};\n`;
+// Zone polygons are plain JSON (config/on-demand-geometry/<slug>.json); C-TRAN stops stay a TS module.
+let contents;
+if (command === 'ctran-stops') {
+  contents = `/* Reproduced with permission granted by C-TRAN under its GTFS data license. */\nimport type { GeoJSON } from 'geojson';\n\nexport const C_TRAN_CURRENT_FLEX_STOPS: GeoJSON.Feature<GeoJSON.Point>[] = ${JSON.stringify(features, null, 2)};\n`;
+} else {
+  contents = `${JSON.stringify(features, null, 2)}\n`;
+}
 fs.writeFileSync(outputPath, contents);
 console.log(`Generated ${outputPath} with ${features.length} feature(s)`);

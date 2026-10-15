@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import type { GeoJSON } from 'geojson';
 import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
 import { LEAMINGTON_LT_GO_STOP_FEATURES } from './leamingtonLtGoStops';
@@ -5,15 +7,22 @@ import { COBOURG_ON_DEMAND_STOP_FEATURES } from './cobourgOnDemandStops';
 import { MVTA_CONNECT_FEATURES, MVTA_CONNECT_STOPS } from './mvtaConnectData';
 import { EDMONTON_ON_DEMAND_FEATURES, EDMONTON_ON_DEMAND_STOPS, EDMONTON_ON_DEMAND_ZONE_METADATA } from './edmontonOnDemandData';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_SOURCE, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from './transCabServiceArea';
-import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
 import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
-import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import { ALL_POINTS_DIAL_A_RIDE_FEATURES, ASPEN_DOWNTOWNER_FEATURES, BAY_TRANSIT_EXPRESS_FEATURES, CAT_DIAL_A_RIDE_FEATURES, DURANGO_MICROTRANSIT_FEATURES, GLTC_FLEX_FEATURES, ISLAND_TRANSIT_GO_STOPS, SAM_RIDES_FEATURES, SNOQUALMIE_DOOR_TO_DOOR_FEATURES, TCTD_DIAL_A_RIDE_FEATURES, VALLEY_METRO_METROFLX_FEATURES } from './flexBatchData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../../shared/onDemandAvailability';
 import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
 import { CYRIDE_MOONLIGHT_EXPRESS_FEATURE, RFTA_CARBONDALE_DOWNTOWNER_FEATURE, UTA_NORTH_UTAH_COUNTY_FEATURE } from './onDemandOfficialLayers';
 import { ON_DEMAND_PUBLIC } from '../../shared/config';
+
+/** GTFS-Flex zone polygons kept as JSON in config/on-demand-geometry/<slug>.json (written by scripts/generate-flex-service-data.mjs). */
+const ON_DEMAND_GEOMETRY_DIR = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../config/on-demand-geometry');
+function loadFlexZones(slug: string): GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>[] {
+  return JSON.parse(fs.readFileSync(path.join(ON_DEMAND_GEOMETRY_DIR, `${slug}.json`), 'utf8')) as GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>[];
+}
+const METRO_MICRO_FLEX_FEATURES = loadFlexZones('metro-transit');
+/* C-TRAN zones: reproduced with permission granted by C-TRAN under its GTFS data license. */
+const C_TRAN_CURRENT_FLEX_FEATURES = loadFlexZones('ctran');
 
 /** Standalone on-demand agencies stay out of the public catalog until the launch flag flips (CIV-23). */
 const ON_DEMAND_ROLLOUT: { hiddenInProduction?: true; betaOnly?: true; rolloutNotice?: string } = ON_DEMAND_PUBLIC
