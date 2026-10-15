@@ -167,8 +167,17 @@ describe('classifyTripStops', () => {
     // Blocker 5, including a quiet stretch in the middle of the trip.
     expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['B', 100]]), pings: [0, 60, 110] }))
       .toEqual(['ran', 'ran', 'stopped_reporting', 'stopped_reporting', 'stopped_reporting']);
+    // A quiet spell the car came back from is a reporting gap, not "stopped reporting".
     expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['E', 400]]), pings: [0, 30, 60, 400] }))
-      .toEqual(['ran', 'timing_gap', 'stopped_reporting', 'stopped_reporting', 'ran']);
+      .toEqual(['ran', 'timing_gap', 'timing_gap', 'timing_gap', 'ran']);
+  });
+
+  it('a car that just finished its previous trip and switched number after leaving is not a late join', () => {
+    const args = { ...base, passT: pass([['B', 100], ['C', 200], ['D', 300], ['E', 400]]), pings: [90, 150, 400] };
+    expect(classifyTripStops(args)[0]).toBe('joined_late');
+    expect(classifyTripStops({ ...args, reportingFrom: -120 })[0]).toBe('timing_gap');
+    // Even when the car left later than the estimate implies (it ran fast afterwards).
+    expect(classifyTripStops({ ...args, reportingFrom: 80 }).slice(0, 2)).toEqual(['timing_gap', 'ran']);
   });
 
   it('labels untimed stops during a detour as off route, and stops after a turn-back separately', () => {
@@ -180,11 +189,16 @@ describe('classifyTripStops', () => {
 });
 
 describe('isTurnBack', () => {
-  const ok = { metresFromRouteEnd: 3000, nextTripSameDirection: false, gapSec: 300, distanceM: 100, stoppedBeforeScheduledEndSec: 900 };
-  it('needs the opposite direction and distance from the route end (blocker 3)', () => {
+  const ok = {
+    metresFromRouteEnd: 3000, nextTripSameDirection: false, gapSec: 300, distanceM: 100,
+    stoppedBeforeScheduledEndSec: 900, reversedM: 600, overlappingCars: false,
+  };
+  it('needs the opposite direction, distance from the route end, and an actual reversal', () => {
     expect(isTurnBack(ok)).toBe(true);
     expect(isTurnBack({ ...ok, nextTripSameDirection: true })).toBe(false); // trip-number change
-    expect(isTurnBack({ ...ok, metresFromRouteEnd: 400 })).toBe(false); // terminal loop
+    expect(isTurnBack({ ...ok, metresFromRouteEnd: 400 })).toBe(false); // terminal loop (from the last ping)
+    expect(isTurnBack({ ...ok, reversedM: 0 })).toBe(false); // took the next trip number early but kept going
+    expect(isTurnBack({ ...ok, overlappingCars: true })).toBe(false); // two cars on one trip number
   });
 });
 

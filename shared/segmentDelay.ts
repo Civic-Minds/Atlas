@@ -422,6 +422,7 @@ export function classifyTripStops(input: {
   passT: Map<string, number>; // timed pass per stop
   pings: number[]; // times this trip's vehicle reported (empty: never seen)
   offRoute?: [number, number][]; // intervals the vehicle was off the shape
+  reportingFrom?: number | null; // the car was already reporting (under its previous trip) from this time
   startedOtherTripAfterIndex?: number | null; // confirmed turn-back after this stop index
   feedDown: (t: number) => boolean; // feed down or degraded around t
   slackSec?: number;
@@ -448,15 +449,23 @@ export function classifyTripStops(input: {
     const last = stretches[stretches.length - 1];
     if (last && t - last[1] <= 300) last[1] = t; else stretches.push([t, t]);
   }
-  const firstPing = sorted[0];
+  // A car that finished its previous trip just before, turned at the terminal and
+  // only then switched trip number was there all along: not a late join.
+  const firstPing = input.reportingFrom != null ? Math.min(sorted[0], input.reportingFrom) : sorted[0];
+  if (input.reportingFrom != null && input.reportingFrom < sorted[0]) stretches.unshift([input.reportingFrom, sorted[0]]);
+  const lastPing = sorted[sorted.length - 1];
   return stopIds.map((s, i) => {
     if (passT.has(s)) return 'ran';
     if (input.startedOtherTripAfterIndex != null && i > input.startedOtherTripAfterIndex) return 'started_other_trip';
     const t = estimate(i);
     if (feedDown(t)) return 'feed_gap';
+    // The car was already there under its previous trip, so it passed every stop
+    // before its first timed one, whatever the estimate says.
+    if (input.reportingFrom != null && timed.length && i < timed[0]) return 'timing_gap';
     if (t < firstPing - slack) return 'joined_late';
-    if (!stretches.some(([a, b]) => t >= a - slack && t <= b + slack)) return 'stopped_reporting';
+    if (t > lastPing + slack) return 'stopped_reporting';
     if ((input.offRoute ?? []).some(([a, b]) => t >= a - slack && t <= b + slack)) return 'off_route';
+    // A quiet spell the car came back from is a gap in reporting, not the end of it.
     return 'timing_gap';
   });
 }
@@ -473,8 +482,14 @@ export function isTurnBack(input: {
   gapSec: number;
   distanceM: number;
   stoppedBeforeScheduledEndSec: number;
+  /** How far the car actually moved back along this trip's route in its next pings. */
+  reversedM: number;
+  /** Another car reported this trip at the same time (shared trip number): ambiguous. */
+  overlappingCars: boolean;
 }): boolean {
-  return input.metresFromRouteEnd >= 1000
+  return !input.overlappingCars
+    && input.reversedM >= 200
+    && input.metresFromRouteEnd >= 1000
     && !input.nextTripSameDirection
     && input.gapSec <= 1200
     && input.distanceM <= 500
