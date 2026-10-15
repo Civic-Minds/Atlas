@@ -197,7 +197,7 @@ interface Props {
   onZoom: (bounds: [number, number, number, number]) => void;
   onHighlight: (coordinates: [number, number][] | null) => void;
   /** Register a handler for clicks on the map (lon, lat); the card turns a click on the line into a stretch. */
-  registerMapClick: (fn: ((lonLat: [number, number]) => void) | null) => void;
+  registerMapClick: (fn: ((lonLat: [number, number], toleranceM: number) => void) | null) => void;
   /** Full-panel Details screen open/closed, so the parent can hide its other content. */
   onDetailsChange?: (open: boolean) => void;
 }
@@ -264,8 +264,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   // A click on the line opens the stretch between the strip rows either side of it.
   useEffect(() => {
     if (!line) { registerMapClick(null); return; }
-    registerMapClick(lonLat => {
-      const p = placeOnLine(line, lonLat, 80);
+    registerMapClick((lonLat, toleranceM) => {
+      const p = placeOnLine(line, lonLat, Math.max(40, toleranceM));
       if (!p || rows.length < 2) return;
       let i = rows.findIndex(r => r.index > p.segIndex) - 1;
       if (i < 0) i = p.segIndex < rows[0].index ? 0 : rows.length - 2;

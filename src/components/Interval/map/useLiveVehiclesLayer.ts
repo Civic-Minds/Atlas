@@ -352,7 +352,9 @@ export function useLiveVehiclesLayer(
       const handler = onMapClickRef.current;
       if (!handler) return;
       const info = deckOverlayRef.current?.pickObject({ x: e.point.x, y: e.point.y, radius: 12, layerIds: ['vehicles-dots'] });
-      handler([e.lngLat.lng, e.lngLat.lat], (info?.object as LiveVehicle | undefined) ?? null);
+      // A 12 px hit area, whatever the zoom.
+      const mPerPx = (40_075_016 * Math.cos((e.lngLat.lat * Math.PI) / 180)) / (512 * 2 ** map.getZoom());
+      handler([e.lngLat.lng, e.lngLat.lat], (info?.object as LiveVehicle | undefined) ?? null, 12 * mPerPx);
     };
     map.on('click', onClick);
     return () => { map.off('click', onClick); };

@@ -134,8 +134,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const [detailsOpen, setDetailsOpen] = useState(false);
   // With the performance card shown, the vehicle list folds behind one row.
   const [vehiclesOpen, setVehiclesOpen] = useState(false);
-  const mapLineClickRef = useRef<((lonLat: [number, number]) => void) | null>(null);
-  const registerMapClick = useCallback((fn: ((lonLat: [number, number]) => void) | null) => { mapLineClickRef.current = fn; }, []);
+  const mapLineClickRef = useRef<((lonLat: [number, number], toleranceM: number) => void) | null>(null);
+  const registerMapClick = useCallback((fn: ((lonLat: [number, number], toleranceM: number) => void) | null) => { mapLineClickRef.current = fn; }, []);
   const zoomToStretch = useCallback((bounds: [number, number, number, number]) => setFitArea({ bounds, ts: Date.now() }), []);
   // Deep link from a route card on the main map: /apps/live?route=ttc::504
   const pendingRouteRef = useRef<string | null>(null);
@@ -350,13 +350,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     lastOverlayFpRef.current = fp;
     setOverlay({
       vehicles: overlayVehicles, focusedVehicle, routeFeatures, selectedRouteKey: selectedRoute, focusArea, fitArea, highlight,
-      onMapClick: (lonLat, vehicle) => {
+      onMapClick: (lonLat, vehicle, toleranceM) => {
         if (vehicle) {
           const key = `${vehicle.agencySlug}::${vehicle.routeShortName}`;
           if (key !== selectedRouteRef.current) setSelectedRoute(key);
           return;
         }
-        mapLineClickRef.current?.(lonLat);
+        mapLineClickRef.current?.(lonLat, toleranceM);
       },
     });
   }, [active, overlayVehicles, focusedVehicle, routeFeatures, selectedRoute, focusArea, fitArea, highlight, setOverlay]);
