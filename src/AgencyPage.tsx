@@ -153,6 +153,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                 <div className="min-w-[44rem]">
                   <DataTable
                     caption={`${group.label} ${group.routes.length}`}
+                    fixed
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[

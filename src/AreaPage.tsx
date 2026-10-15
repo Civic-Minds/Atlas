@@ -88,6 +88,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
               <div style={{ minWidth: `${20 + data.modeColumns.length * 5}rem` }}>
                 <DataTable
                   caption="Agencies and route counts by mode"
+                  fixed
                   rows={data.agencies}
                   rowKey={a => a.slug}
                   columns={[

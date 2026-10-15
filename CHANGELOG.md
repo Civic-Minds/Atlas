@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Agency and area pages: route tables line up**: every table on the page now uses the same column layout, so AM peak, Midday, PM peak and the rest sit in the same place from the first table to the last.
 - **The map's address always carries the day**: reloads and shared links open on the day you chose, not on whatever day it is when the link is opened ([#909](https://github.com/Civic-Minds/Atlas/issues/909)).
 - **Agency and area pages: the frequency bar now opens the map**: each coloured band and its legend item links to the map framed on that agency or area, with that "every N min or less" filter and weekday midday selected, and a "See these routes on the map" link sits under the bar.
 - A stop a route only drops off at (the layover it starts from, the terminal it ends at) no longer grades the route or colours its first section limited: RFTA L on Sunday and LA Metro 28 read a tier lower than riders get because one shape's arrivals at such a stop were graded on their own ([#879](https://github.com/Civic-Minds/Atlas/issues/879)).

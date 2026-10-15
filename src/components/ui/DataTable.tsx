@@ -53,15 +53,29 @@ interface DataTableProps<T> {
   variant?: keyof typeof VARIANTS;
   /** Screen-reader caption. */
   caption?: string;
+  /**
+   * Fixed column layout: the first column has one set width and the others share the rest equally, so several
+   * tables of the same width line their columns up (agency and area pages). Long text in the first column wraps.
+   * Without it, each table sizes its columns to its own content.
+   */
+  fixed?: boolean;
 }
 
+/** Width of the first column in a fixed-layout table. One value for every table, so they all line up. */
+export const FIXED_FIRST_COLUMN = 'w-[16rem]';
+
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption }: DataTableProps<T>) {
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false }: DataTableProps<T>) {
   const v = VARIANTS[variant];
   const pad = (i: number) => (v.gap && i < columns.length - 1 ? ' pr-4' : '');
   return (
-    <table className={v.table}>
+    <table className={fixed ? `${v.table} table-fixed` : v.table}>
       {caption && <caption className="sr-only">{caption}</caption>}
+      {fixed && (
+        <colgroup>
+          {columns.map((col, i) => <col key={col.key} className={i === 0 ? FIXED_FIRST_COLUMN : undefined} />)}
+        </colgroup>
+      )}
       <thead className={v.thead}>
         <tr className={v.headRow}>
           {columns.map((col, i) => (
@@ -73,7 +87,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
         {rows.map(row => (
           <tr key={rowKey(row)} className={v.row}>
             {columns.map((col, i) => {
-              const className = `${v.td}${pad(i)}${col.className ? ` ${col.className}` : ''}`;
+              const className = `${v.td}${pad(i)}${fixed && i === 0 ? ' break-words' : ''}${col.className ? ` ${col.className}` : ''}`;
               return col.rowHeader
                 ? <th key={col.key} scope="row" className={className}>{col.cell(row)}</th>
                 : <td key={col.key} className={className}>{col.cell(row)}</td>;
