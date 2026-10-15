@@ -282,6 +282,15 @@ describe('night from the selector (D2, D3, D7: 2-5am at the middle stop)', () =>
   });
 });
 
+describe('night on disconnected pieces (NYC subway S)', () => {
+  it('S keeps passing: the 42 St shuttle stops overnight, Franklin Av and Rockaway Park run all night', async () => {
+    const r = await run('nyct-subway-s-weekday', 'nyct');
+    const p = row(r, 'S', 'Weekday');
+    expect(r.stretches.get('S::0::Weekday')!.disconnected).toBe(true);
+    expect([p.stretchNight30, p.stretchNight60]).toEqual([true, true]);
+  });
+});
+
 describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
   it('a dead start before about 4:09 is never sustained at the midpoint; today\'s flags are untouched', async () => {
     const r = await run('yrt-viva-weekday', 'yrt');

@@ -75,6 +75,12 @@ export interface DirectionStretches {
   regularPatternCount: number;
   /** Trips on patterns that are not regular. */
   variantTripCount: number;
+  /**
+   * The regular patterns share no stop: disconnected pieces (TTC 25's halves, NYC subway S's
+   * three shuttles). Each piece off the main stretch is a tail whatever its length, and at night
+   * only the pieces that run at night must pass.
+   */
+  disconnected?: boolean;
 }
 
 type Coord = [lat: number, lon: number];
@@ -150,7 +156,8 @@ export function directionStretches(
   // Main stretch: the stops every regular pattern serves, in the longest regular pattern's order.
   const longestRegular = regular.reduce((x, y) => (y.stops.length > x.stops.length ? y : x));
   let mainStops = longestRegular.stops.filter(stop => regular.every(p => p.stops.includes(stop)));
-  if (mainStops.length === 0) {
+  const disconnected = mainStops.length === 0;
+  if (disconnected) {
     // Regular patterns that share no stop (a route run as two halves meeting at a hub, TTC 25
     // at Don Mills Station; two routes drawn as one group): the regular pattern with the most stop
     // visits (trips times stops) is the main stretch, and the others' own runs are its tails. Not
@@ -189,9 +196,12 @@ export function directionStretches(
     let run: string[] = [];
     for (const stop of [...pattern.stops, null]) {
       if (stop !== null && !common.has(stop)) { run.push(stop); continue; }
-      if (run.length >= SHARED_STRETCH_MIN_STOPS) {
+      // A disconnected piece is not a branch off the main stretch, so it is a stretch of its
+      // own whatever its length (NYC subway S's 4-stop Franklin Av shuttle).
+      const wholePiece = disconnected && run.length === pattern.stops.length;
+      if (wholePiece || run.length >= SHARED_STRETCH_MIN_STOPS) {
         const length = runKm(run, stopCoord);
-        if (length != null && length >= SHARED_STRETCH_MIN_KM) runs.push({ stops: run, km: length });
+        if (length != null && (wholePiece || length >= SHARED_STRETCH_MIN_KM)) runs.push({ stops: run, km: length });
       }
       run = [];
     }
@@ -207,7 +217,7 @@ export function directionStretches(
   }
   const tails = main ? merged.map(t => stretch('tail', t.stops, t.km)) : [];
 
-  return { key, main, tails, regularPatternCount: regular.length, variantTripCount };
+  return { key, main, tails, regularPatternCount: regular.length, variantTripCount, disconnected: disconnected || undefined };
 }
 
 export interface StretchPeriod {
@@ -300,8 +310,11 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   const nightMid = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
   const runsAtNight = (t: Stretch) => t.nightTimes.some(x => x >= STRETCH_NIGHT_START_MIN && x < nightMid)
     && t.nightTimes.some(x => x > nightMid && x <= STRETCH_NIGHT_END_MIN);
-  const night = (gap: 30 | 60) => stretchNight(d.main!, gap) === true
-    && d.tails.filter(runsAtNight).every(t => stretchNight(t, gap) === true);
+  // Disconnected pieces: the main stretch is only one piece, so it drops out like a tail when it
+  // does not run at night (NYC subway S's 42 St shuttle); at least one piece must run.
+  const night = (gap: 30 | 60) => d.disconnected
+    ? [d.main!, ...d.tails].some(runsAtNight) && [d.main!, ...d.tails].filter(runsAtNight).every(t => stretchNight(t, gap) === true)
+    : stretchNight(d.main!, gap) === true && d.tails.filter(runsAtNight).every(t => stretchNight(t, gap) === true);
   return { period, night30: night(30), night60: night(60) };
 }
 

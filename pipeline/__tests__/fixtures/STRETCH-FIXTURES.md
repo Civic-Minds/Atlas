@@ -16,6 +16,7 @@ Each folder is one route's trips on the services active on one date, cut from th
 | ttc-63-weekday | same | 2026-10-21 | 63 |
 | ttc-25-weekday | same | 2026-10-21 | 25 |
 | ttc-300-weekday-night | same | 2026-10-21 | 300 |
+| nyct-subway-s-weekday | `_feeds/nyct-subway/20261031-fresh.zip` | 2026-10-21 | S (FS, GS, H) |
 | septa-66-weekday | `_feeds/septa/20270220-fresh.zip` | 2026-10-21 | 66 |
 | translink-044-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | 044 |
 | ttc-63-saturday | same | 2026-10-17 | 63 |
