@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Moon, X } from 'lucide-react';
-import { getNightServiceColor } from '../utils/colors';
-import { useColorVision } from '../context/ColorVisionContext';
 import { useViewport } from '../context/ViewportContext';
 import {
   PANEL_TITLE,
@@ -83,8 +81,6 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
 }
 
 export default function NightService({ active, sidebarLeft, layers, query = '', frequency, onRouteSelect }: Props) {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
@@ -193,20 +189,20 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
             >
               <X className="w-3.5 h-3.5" />
             </button>
-            <p className="pr-5 text-xs font-black text-[var(--text-primary)] leading-snug">
+            <p className={`pr-5 ${LIST_ROW_PRIMARY} leading-snug`}>
               Which routes actually run through the night?
             </p>
-            <p className="mt-1 pr-5 text-xs text-[var(--text-dim)] font-bold leading-snug">
+            <p className="mt-1 pr-5 text-xs text-[var(--text-muted)] font-medium leading-snug">
               A route counts here only if it has a departure at least every {frequency} minutes,
               2am to 6am, with no gap at either end of the core overnight window.
             </p>
-            <p className="mt-1.5 text-xs font-bold" style={{ color: getNightServiceColor(colorMode) }}>
+            <p className={`mt-2 ${LIST_ROW_DIM}`}>
               {data.routeCount} qualifying route patterns across {data.agencyCount} agencies.
             </p>
           </div>
         )}
         {data && introDismissed && (
-          <p className="px-4 pt-2 pb-1 text-xs text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
+          <p className="px-4 pt-2 pb-2 text-xs text-[var(--text-muted)] font-medium leading-snug border-b border-[var(--border-primary)]">
             At least one departure every {frequency} minutes, 2am–6am local time, with no gap at either end of the window.
           </p>
         )}
