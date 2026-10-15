@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 // Tables, pills, list rows and panel shells come from src/components/ui/. This fails when a screen
 // hand-rolls one again, so the look cannot drift screen by screen. To fix a failure, use the shared
-// component (DataTable, Pill, ListRow, Panel, LinkCard, Tag, ArrowLink, PanelEmpty, AgencyName). If a new variant is needed, add it to the shared component.
+// component (DataTable, Pill, ListRow, Panel, LinkCard, Tag, ArrowLink, PanelEmpty, AgencyName, PageTitle, SectionTitle, EmptyPage). If a new variant is needed, add it to the shared component.
 const SRC = resolve(__dirname, '../../..');
 
 function files(dir: string): string[] {
@@ -28,6 +28,8 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'typed arrow in a link', pattern: />[^<>{}]*[^\s<>{}][^<>{}]* →\s*</, use: 'ArrowLink' },
   { name: 'panel empty style', pattern: /\bPANEL_EMPTY\b/, use: 'PanelEmpty' },
   { name: 'hand-rolled agency place', pattern: /· \{(secondary|agencyPlace|agency\.region)\}/, use: 'AgencyName' },
+  { name: 'hand-rolled page heading', pattern: /<h1[ >]/, use: 'PageTitle' },
+  { name: 'hand-rolled section heading', pattern: /<h2 [^>]*className="[^"]*text-(xl|base) font-black/, use: 'SectionTitle' },
   { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
   { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP|CARD_NOTICE_ACTION)\b/, use: 'ArrowLink, Tag' },
   { name: 'hand-rolled page frame', pattern: /<main className="min-h-screen bg-\[var\(--bg-app\)\] px-/, use: 'PageShell' },
@@ -39,8 +41,11 @@ const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
   'components/Interval/FilterPanel.tsx': ['option pill classes'],
   'apps/History.tsx': ['option pill classes'],
+  // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
+  'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
+  'components/Interval/HeadwaySparkline.tsx': ['hand-rolled section heading'],
   // A filled call-to-action button (not a link) that ends in an arrow.
-  'apps/FrequentServiceStory.tsx': ['hand-rolled arrow link'],
+  'apps/FrequentServiceStory.tsx': ['hand-rolled arrow link', 'hand-rolled page heading'],
 };
 
 describe('shared UI components', () => {

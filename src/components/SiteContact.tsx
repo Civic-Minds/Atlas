@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { trackEvent } from '../lib/analytics';
 import ArrowLink from './ui/ArrowLink';
+import { PageTitle, SectionTitle } from './ui/PageTitle';
 
 const CONTACT_EMAIL = 'hey@ryanisnota.pro';
 
@@ -19,7 +20,7 @@ export default function SiteContact({
 }) {
   return (
     <section id={id} className={id ? 'scroll-mt-8' : undefined}>
-      <h2 className="text-base font-black text-[var(--text-primary)] mb-2">{title}</h2>
+      <SectionTitle level="item" className="mb-2">{title}</SectionTitle>
       <div className="space-y-2 text-[var(--text-dim)]">
         <p>{children}</p>
         <ArrowLink

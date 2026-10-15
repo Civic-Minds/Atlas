@@ -1,6 +1,7 @@
 import { FEATURES, FEATURE_ROUTES } from '../shared/config';
 import PageShell from './components/ui/PageShell';
 import ArrowLink from './components/ui/ArrowLink';
+import { PageTitle } from './components/ui/PageTitle';
 
 export default function AboutPage() {
   return (
@@ -8,7 +9,7 @@ export default function AboutPage() {
 
         <section className="border-b border-[var(--border-primary)] pb-20 pt-24 sm:pt-32">
           <div>
-            <h1 className="max-w-3xl text-5xl font-black tracking-[-0.045em] sm:text-7xl">Find the transit service that actually runs.</h1>
+            <PageTitle level="hero">Find the transit service that actually runs.</PageTitle>
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency, and place.</p>
             <div className="mt-9 flex flex-wrap gap-3">
               <ArrowLink href="/">Try Atlas</ArrowLink>

@@ -15,6 +15,7 @@ import { isLiveEligibleSlug } from '../shared/livePollingConfig';
 import { applySeoToDocument } from './lib/seoDom';
 import { LINK } from './pageStyles';
 import Tag from './components/ui/Tag';
+import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import PageShell from './components/ui/PageShell';
 
 /** Read this page's data from the JSON the prerender embedded next to the app root. */
@@ -73,12 +74,12 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
     <PageShell variant="wide">
 
         <article className="pb-16 pt-10 sm:pt-14">
-          <h1 className="text-2xl font-black tracking-tight sm:text-3xl">All agencies and regions</h1>
+          <PageTitle>All agencies and regions</PageTitle>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{agencyIndexDescription(data)}</p>
 
           {areas.length > 0 && (
             <section className="mt-12" aria-labelledby="index-regions">
-              <h2 id="index-regions" className="text-xl font-black tracking-tight">Regions</h2>
+              <SectionTitle id="index-regions">Regions</SectionTitle>
               <ul className="mt-3 text-sm sm:columns-2 lg:columns-3 sm:gap-x-8">
                 {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={`${LINK} underline underline-offset-2`} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
               </ul>
@@ -87,7 +88,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
 
           {groups.map(g => (
             <section key={g.country} className="mt-12" aria-labelledby={`index-${g.country}`}>
-              <h2 id={`index-${g.country}`} className="text-xl font-black tracking-tight">{g.country}</h2>
+              <SectionTitle id={`index-${g.country}`}>{g.country}</SectionTitle>
               {g.regions.map(r => (
                 <div key={r.region} className="mt-5">
                   {r.region !== g.country && <h3 className="text-base font-black">{r.region}</h3>}

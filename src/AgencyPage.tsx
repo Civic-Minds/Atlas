@@ -22,6 +22,8 @@ import { routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE } from '../shared/config';
 import PageShell from './components/ui/PageShell';
 import ArrowLink from './components/ui/ArrowLink';
+import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
 import { applySeoToDocument } from './lib/seoDom';
 import { titleCase } from './utils/format';
@@ -115,11 +117,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
   if (!agency) {
     return (
-      <PageShell variant="wide">
-          <h1 className="mt-24 text-3xl font-black tracking-tight">No page for this agency</h1>
-          <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Atlas has no frequency page at this address.</p>
-          <ArrowLink href="/" className="mt-6">Open the Atlas map</ArrowLink>
-      </PageShell>
+      <EmptyPage title="No page for this agency" body="Atlas has no frequency page at this address." action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
     );
   }
 
@@ -132,7 +130,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
         <article className="pb-16 pt-10 sm:pt-14">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{agencyPageH1(agency)}</h1>
+              <PageTitle>{agencyPageH1(agency)}</PageTitle>
               {data!.area
                 ? <ArrowLink tone="inline" className="mt-1" href={`/area/${data!.area.slug}`}>{areaRegionTitle(data!.area)}</ArrowLink>
                 : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
@@ -142,7 +140,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <Intro data={data!} />
 
           <section className="mt-14" aria-labelledby="routes-heading">
-            <h2 id="routes-heading" className="text-xl font-black tracking-tight">Routes and weekday frequency</h2>
+            <SectionTitle id="routes-heading">Routes and weekday frequency</SectionTitle>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={bandCounts(agency.routes)} mapHref={agencyMapHref(agency)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
@@ -170,9 +168,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">
               <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-                <h2 id="nearby-heading" className="text-xl font-black tracking-tight">
+                <SectionTitle id="nearby-heading">
                   {data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={`/area/${data!.area.slug}`}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
-                </h2>
+                </SectionTitle>
                 <ArrowLink href="/agencies">See all agencies</ArrowLink>
               </div>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">

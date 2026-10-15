@@ -2,13 +2,14 @@ import type { ReactNode } from 'react';
 import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
 import PageShell from './components/ui/PageShell';
+import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 
 type LegalDocument = 'terms' | 'privacy';
 
 const CONTACT_HREF = 'mailto:hey@ryanisnota.pro?subject=Atlas%20Privacy%20or%20Terms';
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
-  return <section id={id} className="scroll-mt-24"><h2 className="text-base font-black text-[var(--text-primary)] mb-2">{title}</h2><div className="space-y-2">{children}</div></section>;
+  return <section id={id} className="scroll-mt-24"><SectionTitle level="item" className="mb-2">{title}</SectionTitle><div className="space-y-2">{children}</div></section>;
 }
 
 const CONTENTS = {
@@ -47,7 +48,7 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents title={privacy ? 'Privacy Policy' : 'Terms of Service'} items={CONTENTS[privacy ? 'privacy' : 'terms'].map(([id, label]) => ({ id, label }))} />
           <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
-          <header><h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">{privacy ? 'Privacy Policy' : 'Terms of Service'}</h1><p className="mt-3">Last updated October 3, 2026.</p></header>
+          <header><PageTitle className="text-[var(--text-primary)]">{privacy ? 'Privacy Policy' : 'Terms of Service'}</PageTitle><p className="mt-3">Last updated October 3, 2026.</p></header>
           {privacy ? <>
             <p>Atlas is a free public transit map and analysis service operated by Civic Minds. You do not need an account or need to provide personal information to browse the map.</p>
             <Section id="scope" title="Scope">

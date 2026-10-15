@@ -4,6 +4,7 @@ import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
 import PageShell from './components/ui/PageShell';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
+import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 
 const DOCS_CONTENTS = [
   ['overview', 'Overview'],
@@ -24,7 +25,7 @@ const DOCS_CONTENTS = [
 function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   return (
     <section id={id} className="scroll-mt-24">
-      <h2 className="text-base font-black mb-2">{title}</h2>
+      <SectionTitle level="item" className="mb-2">{title}</SectionTitle>
       <div className="space-y-2 text-sm leading-relaxed text-[var(--text-dim)]">{children}</div>
     </section>
   );
@@ -69,7 +70,7 @@ export default function AboutDocsPage() {
           <article className="space-y-8">
           <header>
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-black tracking-tight">Documentation</h1>
+              <PageTitle>Documentation</PageTitle>
             </div>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-dim)]">
               A technical overview of how Atlas turns published transit data into analysed, verified, and mapped service information.
