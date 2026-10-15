@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { FEATURES } from '../shared/config';
 import {
-  LINK_LABELS, bunchingSentence, buildupSentence, linkValueText, rankStops,
+  LINK_LABELS, bunchingSentence, freshness, buildupSentence, linkValueText, rankStops,
   type AdherenceBlock, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
+import { useLiveDashboard } from './hooks/useLiveDashboard';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
 import Pill from './components/ui/Pill';
@@ -22,20 +23,6 @@ const pct = (x: number) => `${Math.round(x * 100)}%`;
 const mins = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`;
 
 type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
-
-function useDashboard(agency: string, route: string) {
-  const [state, setState] = useState<{ kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveDashboardResponse }>({ kind: 'loading' });
-  useEffect(() => {
-    let live = true;
-    setState({ kind: 'loading' });
-    fetch(`/api/live-dashboard?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`)
-      .then(r => r.json() as Promise<LiveDashboardResponse>)
-      .then(data => { if (live) setState({ kind: 'done', data }); })
-      .catch(() => { if (live) setState({ kind: 'error', reason: 'The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.' }); });
-    return () => { live = false; };
-  }, [agency, route]);
-  return state;
-}
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
@@ -261,7 +248,7 @@ function Method({ data }: { data: Ready }) {
 
 export default function LiveRoutePage() {
   const { agency = '', route = '' } = useParams();
-  const state = useDashboard(agency, route);
+  const state = useLiveDashboard(agency, route);
   const [day, setDay] = useState<Day>('all');
   const [dir, setDir] = useState<number | null>(null);
   if (!FEATURES.live) return <LiveOffNotice />;
@@ -292,6 +279,10 @@ export default function LiveRoutePage() {
           </div>
           <a href="/apps/live" className={PAGE_ACTION}>View on Live map <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>
         </div>
+        {(() => {
+          const f = freshness(v3, route, Date.now());
+          return <p className={`mt-2 text-sm ${f.stale ? 'font-bold text-[var(--status-caution-text)]' : 'text-[var(--text-muted)]'}`} role={f.stale ? 'status' : undefined}>{f.text}</p>;
+        })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         <Filters v3={v3} day={day} setDay={setDay} dir={dir} setDir={setDir} />
         <Adherence v3={v3} day={day} dir={dir} />

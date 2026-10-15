@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LIVE_DASHBOARD_HOLD, LINK_LABELS, buildupSentence, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardStop } from '../liveDashboard';
+import { freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, buildupSentence, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardStop, type LiveV3 } from '../liveDashboard';
 
 const stop = (id: string, dir: number, late: number, n = 100, ranked = true): DashboardStop => ({ stopId: id, name: id, directionId: dir, order: 0, n, medianMin: 0, p90Min: 5, lateShare: late, earlyShare: 0, ranked });
 
@@ -39,5 +39,21 @@ describe('sentences', () => {
     expect(linkValueText('stood_still', 0.57)).toBe('0.6 a day');
     expect(linkValueText('slow_stretch', 273)).toBe('+273 s vs timetable');
     expect(linkValueText('terminal_departures', null)).toBe('not measured');
+  });
+});
+
+describe('freshness', () => {
+  const v3 = (dates: string[]) => ({ window: { days: dates.length, dates, requestedDays: 7 } }) as unknown as LiveV3;
+  const noon = (d: string) => Date.parse(`${d}T20:00:00Z`);
+  it('is quiet when the newest day is recent', () => {
+    expect(freshness(v3(['2026-10-13', '2026-10-14']), '505', noon('2026-10-15'))).toMatchObject({ stale: false, text: 'Data up to 2026-10-14.' });
+  });
+  it('warns, and says how to rebuild, after more than two days', () => {
+    const f = freshness(v3(['2026-10-10']), '505', noon('2026-10-15'));
+    expect(f.stale).toBe(true);
+    expect(f.text).toMatch(/Data up to 2026-10-10, 5 days ago.*npm run live:analyze -- 505/);
+  });
+  it('says so when there are no days at all', () => {
+    expect(freshness(v3([]), '505', 0).stale).toBe(true);
   });
 });

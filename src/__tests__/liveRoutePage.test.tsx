@@ -62,6 +62,21 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/4% of runs were on a trip number/)).toBeTruthy();
   });
 
+  it('shows how fresh the data is and warns when it is old', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-15T20:00:00Z'));
+    try {
+      const { unmount } = renderPage(ready);
+      expect(await screen.findByText('Data up to 2026-10-14.')).toBeTruthy();
+      unmount();
+      vi.setSystemTime(new Date('2026-10-25T20:00:00Z'));
+      renderPage(ready);
+      expect(await screen.findByRole('status')).toHaveProperty('textContent', expect.stringMatching(/Data up to 2026-10-14, 11 days ago.*npm run live:analyze -- 505/));
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('filters by day and direction', async () => {
     renderPage(ready);
     await screen.findByRole('heading', { name: /how it is running/ });

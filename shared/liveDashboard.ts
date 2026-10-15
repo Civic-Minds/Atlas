@@ -136,3 +136,50 @@ export function rankStops(stops: readonly DashboardStop[], directionId: number |
     .filter(s => s.ranked && (directionId == null || s.directionId === directionId))
     .sort((a, b) => b.lateShare - a.lateShare || b.n - a.n);
 }
+
+export interface CardSummary {
+  /** Share of timepoint departures that are not late, with the count it is out of. */
+  notLate: { share: number; n: number } | null;
+  /** The stop where the most cars leave late (ranked stops only). */
+  worstStop: { name: string; lateShare: number; n: number } | null;
+  /** Where delays start, as one sentence, or null when no stretch adds more than a minute in half the runs. */
+  startsText: string | null;
+}
+
+/** The three short facts on the route card (one direction), from the same file the page reads. */
+export function cardSummary(v3: LiveV3, directionId: number): CardSummary {
+  const counts = v3.adherence.timepoints.all.byDirection[String(directionId)];
+  const worst = rankStops(v3.stops, directionId)[0];
+  const start = v3.buildup.find(b => b.directionId === directionId)?.start;
+  return {
+    notLate: counts && counts.n > 0 ? { share: counts.notLateShare, n: counts.n } : null,
+    worstStop: worst ? { name: worst.name, lateShare: worst.lateShare, n: worst.n } : null,
+    startsText: start ? `${start.fromName} to ${start.toName} (${min(start.medianAddedMin)} in ${pct(start.addedShare)} of runs)` : null,
+  };
+}
+
+/** The analysis is "stale" once its newest day is more than this many days old. */
+export const STALE_AFTER_DAYS = 2;
+
+export interface Freshness {
+  /** Newest service date in the window (YYYY-MM-DD). */
+  upTo: string | null;
+  daysOld: number | null;
+  stale: boolean;
+  /** Plain sentence for the page; for a stale analysis it also says how to rebuild. */
+  text: string;
+}
+
+/** "Data up to <date>", and a warning when it is more than two days old. `route` is for the rebuild command. */
+export function freshness(v3: LiveV3, route: string, now: number): Freshness {
+  const upTo = v3.window.dates[v3.window.dates.length - 1] ?? null;
+  if (!upTo) return { upTo: null, daysOld: null, stale: true, text: `This analysis has no days in it. Rebuild it with "npm run live:analyze -- ${route}".` };
+  const daysOld = Math.floor((now - Date.parse(`${upTo}T12:00:00Z`)) / 86_400_000);
+  const stale = daysOld > STALE_AFTER_DAYS;
+  return {
+    upTo, daysOld, stale,
+    text: stale
+      ? `Data up to ${upTo}, ${daysOld} days ago. Rebuild it with "npm run live:analyze -- ${route}" (needs fresh archived positions).`
+      : `Data up to ${upTo}.`,
+  };
+}
