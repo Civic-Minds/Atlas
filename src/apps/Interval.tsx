@@ -27,6 +27,7 @@ import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
+import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
 import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
@@ -643,14 +644,25 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }, routesForStop);
   }, [day, frequentServiceView, hideLimitedService, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute]);
 
-  useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
-  useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
+  // Filters a shared link set when the page opened apply to this visit only; they become the
+  // saved preference once the viewer changes them (#891). Mirrors each initializer's URL read.
+  const [filtersFromUrl] = useState(() => {
+    const sp = new URLSearchParams(window.location.search);
+    return {
+      headway: !!(sp.get('h') || sp.get('headway') || sp.get('max')),
+      day: !!(sp.get('day') || sp.get('d')),
+      span: sp.get('span') != null,
+      limited: sp.get('limited') != null,
+    };
+  });
+  usePersistedFilterPref('atlas_pref_headway', String(maxHeadway), filtersFromUrl.headway);
+  usePersistedFilterPref('atlas_pref_day', day, filtersFromUrl.day);
+  usePersistedFilterPref('atlas_pref_hide_span', String(hideSpan), filtersFromUrl.span);
+  usePersistedFilterPref('atlas_pref_hide_limited', String(hideLimitedService), filtersFromUrl.limited);
   useEffect(() => {
-    try { localStorage.setItem('atlas_pref_hide_span', String(hideSpan)); } catch {}
     syncUrlParams({ span: hideSpan ? null : '0' });
   }, [hideSpan]);
   useEffect(() => {
-    try { localStorage.setItem('atlas_pref_hide_limited', String(hideLimitedService)); } catch {}
     syncUrlParams({ limited: hideLimitedService ? null : '0' });
   }, [hideLimitedService]);
   useEffect(() => {
