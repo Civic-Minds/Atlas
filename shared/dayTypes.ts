@@ -10,15 +10,6 @@ export function getNowDay(): DayType {
   return 'Weekday';
 }
 
-/**
- * The day to write into the address bar: null when it is today's default day (omitted for a short URL),
- * otherwise the day itself. The default is today's, not always Weekday: on a Saturday, Weekday must stay in the
- * address, or a reload or a copied link opens on Saturday (#909).
- */
-export function dayUrlParam(day: DayType, today: DayType = getNowDay()): DayType | null {
-  return day === today ? null : day;
-}
-
 export const ALL_DAYS: DayName[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const WEEKDAYS: DayName[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
