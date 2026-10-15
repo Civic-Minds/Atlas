@@ -188,19 +188,29 @@ describe('short-turn and burst variants (#732)', () => {
     // capmetro 322 NB shape 2561: 06:00 and 15:30, and every other 322 trip pair has its own shape,
     // so this pair is the route's only drawn feature. stl 26 d1 (06:09, 10:07) sits beside a
     // 68-trip direction.
-    const alone = applyAnalysisCriteria(raw('322', [360, 930], { dir: '1', shapeId: '2561' }), undefined, undefined, undefined, ALL_COVERED);
-    expect(alone.find(r => r.day === 'Weekday')).toMatchObject({ serviceClass: 'regular' });
+    // The direction runs more pairs on other shapes, so the pair keeps its class; a direction whose
+    // whole day is that one pair is one-off (#720).
+    const alone = applyAnalysisCriteria([
+      ...raw('322', [360, 930], { dir: '1', shapeId: '2561' }),
+      ...raw('322', [420, 990], { dir: '1', shapeId: '2562' }),
+    ], undefined, undefined, undefined, ALL_COVERED);
+    expect(alone.find(r => r.day === 'Weekday' && r.shapeId === '2561')).toMatchObject({ serviceClass: 'regular' });
+    const onlyPair = applyAnalysisCriteria(raw('322', [360, 930], { dir: '1', shapeId: '2561' }), undefined, undefined, undefined, ALL_COVERED);
+    expect(onlyPair.find(r => r.day === 'Weekday')).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
     const beside = applyAnalysisCriteria([
       ...raw('26', every(420, 1320, 17), { dir: '0', shapeId: 'AOUT2626E1' }),
       ...raw('26', [369, 607], { dir: '1', shapeId: 'AOUT2626E5' }),
     ], undefined, undefined, undefined, ALL_COVERED);
     expect(beside.find(r => r.day === 'Weekday' && r.dir === '1')).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
     // A regular pattern with no shape data cannot show the stray's road is drawn: kept.
+    // A regular pattern with no shape data cannot show the stray's road is drawn: kept, unless the
+    // stray's direction runs only those two trips all day, which is one-off service (#720).
     const noShape = applyAnalysisCriteria([
       ...raw('26', every(420, 1320, 17), { dir: '0' }),
       ...raw('26', [369, 607], { dir: '1', shapeId: 'AOUT2626E5' }),
+      ...raw('26', [700, 1000], { dir: '1', shapeId: 'AOUT2626E6' }),
     ], undefined, undefined, undefined, ALL_COVERED);
-    expect(noShape.find(r => r.day === 'Weekday' && r.dir === '1')).toMatchObject({ serviceClass: 'regular' });
+    expect(noShape.find(r => r.day === 'Weekday' && r.dir === '1' && r.shapeId === 'AOUT2626E5')).toMatchObject({ serviceClass: 'regular' });
   });
 
   it('a burst in the other direction does not count as a sibling', () => {

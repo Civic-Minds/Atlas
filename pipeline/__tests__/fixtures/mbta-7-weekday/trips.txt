@@ -1,0 +1,922 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,trip_route_type,route_pattern_id,bikes_allowed
+7,BUS20264-hba46011-Weekday-02,78174709,City Point,,0,A07-54,070199,1,,7-1-0,1
+7,BUS20264-hba46011-Weekday-02,78174653,City Point,,0,A07-54,070198,1,,7-3-0,1
+7,BUS20264-hba46011-Weekday-02,78174662,City Point,,0,A07-54,070198,1,,7-3-0,1
+7,BUS20264-hba46011-Weekday-02,78174671,City Point,,0,A07-54,070198,1,,7-3-0,1
+7,BUS20264-hba46ns1-Weekday-02,78249297,City Point,,0,A07-55,070199,1,,7-1-0,1
+7,BUS20264-hba46ns1-Weekday-02,78249238,City Point,,0,A07-55,070198,1,,7-3-0,1
+7,BUS20264-hba46ns1-Weekday-02,78249247,City Point,,0,A07-55,070198,1,,7-3-0,1
+7,BUS20264-hba46ns1-Weekday-02,78249256,City Point,,0,A07-55,070198,1,,7-3-0,1
+7,BUS20264-hbc46046-Saturday-02,78980599,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980600,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980604,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980606,City Point,,0,C07-24,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980608,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980609,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980611,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980612,City Point,,0,C07-24,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980615,City Point,,0,C07-27,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980617,City Point,,0,C07-24,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980618,City Point,,0,C07-27,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980621,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980624,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980625,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980628,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980629,City Point,,0,C07-25,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980630,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980633,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980634,City Point,,0,C07-25,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980636,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980638,City Point,,0,C07-25,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980640,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980643,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980644,City Point,,0,C09-61,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980706,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46046-Saturday-02,78980710,City Point,,0,C09-61,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979190,City Point,,0,C11-133,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979207,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979208,City Point,,0,C07-44,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979209,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979210,City Point,,0,C07-64,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979211,City Point,,0,C07-64,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979212,City Point,,0,C47-294,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979213,City Point,,0,C07-60,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979214,City Point,,0,C47-294,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979215,City Point,,0,C07-53,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979216,City Point,,0,C07-55,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979217,City Point,,0,C07-53,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979218,City Point,,0,C07-55,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979219,City Point,,0,C07-58,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979220,City Point,,0,C07-60,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979221,City Point,,0,C07-53,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979222,City Point,,0,C07-55,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979223,City Point,,0,C07-57,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979224,City Point,,0,C07-58,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979225,City Point,,0,C10-120,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979226,City Point,,0,C11-144,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979227,City Point,,0,C10-120,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979228,City Point,,0,C11-144,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979229,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979230,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979231,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979187,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979191,City Point via East First St,,0,C11-133,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979192,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979193,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979194,City Point via East First St,,0,C11-133,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979195,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979196,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979197,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979198,City Point via East First St,,0,C07-52,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979199,City Point via East First St,,0,C07-49,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979200,City Point via East First St,,0,C07-46,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979201,City Point via East First St,,0,C07-48,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979203,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979204,City Point via East First St,,0,C07-49,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979205,City Point via East First St,,0,C07-44,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979206,City Point via East First St,,0,C07-48,070194,1,,7-2-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979167,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979168,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979169,City Point,,0,C07-53,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979170,City Point,,0,C07-55,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979171,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979172,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979173,City Point,,0,C07-58,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979174,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979175,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979176,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979177,City Point,,0,C07-53,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979178,City Point,,0,C07-58,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979179,City Point,,0,C07-55,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979180,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979181,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979182,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979183,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979184,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979185,City Point,,0,C07-53,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979186,City Point,,0,C07-55,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979188,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,BUS20264-hbc46f41-Weekday-02,78979189,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78305999,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306000,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306003,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306004,City Point,,0,C07-32,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306005,City Point,,0,C07-32,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306006,City Point,,0,C501-267,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306007,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306008,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306009,City Point,,0,C07-32,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306010,City Point,,0,C07-32,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306011,City Point,,0,C501-267,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306012,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306013,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306014,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306015,City Point,,0,C07-29,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306016,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306017,City Point,,0,C07-29,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306018,City Point,,0,C57-207,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306019,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306020,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306021,City Point,,0,C07-30,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306022,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306023,City Point,,0,C57-207,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306024,City Point,,0,C07-31,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306025,City Point,,0,C07-29,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306026,City Point,,0,C07-31,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306027,City Point,,0,C07-30,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306028,City Point,,0,C07-29,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306029,City Point,,0,C07-31,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306030,City Point,,0,C07-30,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306031,City Point,,0,C07-30,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306032,City Point,,0,C07-31,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306049,City Point,,0,C07-25,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306050,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306051,City Point,,0,C07-27,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306052,City Point,,0,C07-27,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306053,City Point,,0,C10-75,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306054,City Point,,0,C07-25,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306055,City Point,,0,C07-27,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306056,City Point,,0,C10-75,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306057,City Point,,0,C07-25,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306058,City Point,,0,C11-77,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306059,City Point,,0,C07-27,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306060,City Point,,0,C07-27,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306061,City Point,,0,C07-25,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306062,City Point,,0,C07-27,070199,1,,7-1-0,1
+7,BUS20264-hbc46tp6-Saturday-02,78306063,City Point,,0,C11-77,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182726,City Point,,0,C11-133,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182743,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182744,City Point,,0,C07-44,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182745,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182746,City Point,,0,C07-64,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182747,City Point,,0,C07-64,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182748,City Point,,0,C47-294,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182749,City Point,,0,C07-60,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182750,City Point,,0,C47-294,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182751,City Point,,0,C07-53,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182752,City Point,,0,C07-55,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182753,City Point,,0,C07-53,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182754,City Point,,0,C07-55,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182755,City Point,,0,C07-58,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182756,City Point,,0,C07-60,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182757,City Point,,0,C07-53,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182758,City Point,,0,C07-55,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182759,City Point,,0,C07-57,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182760,City Point,,0,C07-58,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182761,City Point,,0,C10-120,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182762,City Point,,0,C11-144,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182763,City Point,,0,C10-120,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182764,City Point,,0,C11-144,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182765,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182766,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182767,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182723,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182727,City Point via East First St,,0,C11-133,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182728,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182729,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182730,City Point via East First St,,0,C11-133,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182731,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182732,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182733,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182734,City Point via East First St,,0,C07-52,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182735,City Point via East First St,,0,C07-49,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182736,City Point via East First St,,0,C07-46,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182737,City Point via East First St,,0,C07-48,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182739,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182740,City Point via East First St,,0,C07-49,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182741,City Point via East First St,,0,C07-44,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182742,City Point via East First St,,0,C07-48,070194,1,,7-2-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182703,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182704,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182705,City Point,,0,C07-53,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182706,City Point,,0,C07-55,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182707,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182708,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182709,City Point,,0,C07-58,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182710,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182711,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182712,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182713,City Point,,0,C07-53,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182714,City Point,,0,C07-58,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182715,City Point,,0,C07-55,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182716,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182717,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182718,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182719,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182720,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182721,City Point,,0,C07-53,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182722,City Point,,0,C07-55,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182724,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,BUS20264-hbc46wk1-Weekday-02,78182725,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300913,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300914,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300918,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300920,City Point,,0,C07-24,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300922,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300923,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300925,City Point,,0,C07-23,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300926,City Point,,0,C07-24,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300929,City Point,,0,C07-27,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300931,City Point,,0,C07-24,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300932,City Point,,0,C07-27,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300935,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300938,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300939,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300942,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300943,City Point,,0,C07-25,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300944,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300947,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300948,City Point,,0,C07-25,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300950,City Point,,0,C07-28,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300952,City Point,,0,C07-25,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300954,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300957,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79300958,City Point,,0,C09-61,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79301020,City Point,,0,C07-26,070199,1,,7-1-0,1
+7,BUS20264-sbc46w16-Saturday-01,79301024,City Point,,0,C09-61,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307850,City Point,,0,C11-133,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307867,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307868,City Point,,0,C07-44,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307869,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307870,City Point,,0,C07-64,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307871,City Point,,0,C07-64,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307872,City Point,,0,C47-294,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307873,City Point,,0,C07-60,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307874,City Point,,0,C47-294,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307875,City Point,,0,C07-53,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307876,City Point,,0,C07-55,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307877,City Point,,0,C07-53,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307878,City Point,,0,C07-55,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307879,City Point,,0,C07-58,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307880,City Point,,0,C07-60,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307881,City Point,,0,C07-53,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307882,City Point,,0,C07-55,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307883,City Point,,0,C07-57,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307884,City Point,,0,C07-58,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307885,City Point,,0,C10-120,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307886,City Point,,0,C11-144,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307887,City Point,,0,C10-120,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307888,City Point,,0,C11-144,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307889,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307890,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307891,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307847,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307851,City Point via East First St,,0,C11-133,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307852,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307853,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307854,City Point via East First St,,0,C11-133,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307855,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307856,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307857,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307858,City Point via East First St,,0,C07-52,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307859,City Point via East First St,,0,C07-49,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307860,City Point via East First St,,0,C07-46,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307861,City Point via East First St,,0,C07-48,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307863,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307864,City Point via East First St,,0,C07-49,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307865,City Point via East First St,,0,C07-44,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307866,City Point via East First St,,0,C07-48,070194,1,,7-2-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307827,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307828,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307829,City Point,,0,C07-53,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307830,City Point,,0,C07-55,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307831,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307832,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307833,City Point,,0,C07-58,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307834,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307835,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307836,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307837,City Point,,0,C07-53,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307838,City Point,,0,C07-58,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307839,City Point,,0,C07-55,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307840,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307841,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307842,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307843,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307844,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307845,City Point,,0,C07-53,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307846,City Point,,0,C07-55,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307848,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,BUS20264-sbc46wf1-Weekday-01,79307849,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253607,City Point,,0,C01-13,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253625,City Point,,0,C07-50,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253626,City Point,,0,C11-139,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253627,City Point,,0,C07-50,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253628,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253629,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253630,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253631,City Point,,0,C07-60,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253632,City Point,,0,C07-56,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253633,City Point,,0,C07-54,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253634,City Point,,0,C07-56,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253635,City Point,,0,C07-54,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253636,City Point,,0,C07-56,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253637,City Point,,0,C07-58,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253638,City Point,,0,C07-60,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253639,City Point,,0,C07-54,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253640,City Point,,0,C07-56,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253641,City Point,,0,C07-57,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253642,City Point,,0,C07-58,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253643,City Point,,0,C10-127,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253645,City Point,,0,C07-57,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253646,City Point,,0,C10-127,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253647,City Point,,0,C07-57,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253648,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253649,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253650,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,DayafterThanksgivingDay,78253608,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253609,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253610,City Point via East First St,,0,C07-48,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253611,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253612,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253613,City Point via East First St,,0,C07-48,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253614,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253615,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253616,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253617,City Point via East First St,,0,C07-52,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253618,City Point via East First St,,0,C23-236,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253619,City Point via East First St,,0,C07-51,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253621,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253622,City Point via East First St,,0,C07-52,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253623,City Point via East First St,,0,C23-236,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253624,City Point via East First St,,0,C07-51,070194,1,,7-2-0,1
+7,DayafterThanksgivingDay,78253582,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253583,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253584,City Point,,0,C07-54,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253586,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253587,City Point,,0,C09-100,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253588,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253589,City Point,,0,C07-58,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253590,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253591,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253592,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253593,City Point,,0,C07-54,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253595,City Point,,0,C07-58,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253596,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253597,City Point,,0,C09-100,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253598,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253599,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253600,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253601,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253602,City Point,,0,C07-54,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253604,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253605,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,DayafterThanksgivingDay,78253606,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,VeteransDay,78269389,City Point,,0,C01-13,070199,1,,7-1-0,1
+7,VeteransDay,78269407,City Point,,0,C07-50,070199,1,,7-1-0,1
+7,VeteransDay,78269408,City Point,,0,C11-139,070199,1,,7-1-0,1
+7,VeteransDay,78269409,City Point,,0,C07-50,070199,1,,7-1-0,1
+7,VeteransDay,78269410,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,VeteransDay,78269411,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,VeteransDay,78269412,City Point,,0,C07-63,070199,1,,7-1-0,1
+7,VeteransDay,78269413,City Point,,0,C07-60,070199,1,,7-1-0,1
+7,VeteransDay,78269414,City Point,,0,C07-56,070199,1,,7-1-0,1
+7,VeteransDay,78269415,City Point,,0,C07-54,070199,1,,7-1-0,1
+7,VeteransDay,78269416,City Point,,0,C07-56,070199,1,,7-1-0,1
+7,VeteransDay,78269417,City Point,,0,C07-54,070199,1,,7-1-0,1
+7,VeteransDay,78269418,City Point,,0,C07-56,070199,1,,7-1-0,1
+7,VeteransDay,78269419,City Point,,0,C07-58,070199,1,,7-1-0,1
+7,VeteransDay,78269420,City Point,,0,C07-60,070199,1,,7-1-0,1
+7,VeteransDay,78269421,City Point,,0,C07-54,070199,1,,7-1-0,1
+7,VeteransDay,78269422,City Point,,0,C07-56,070199,1,,7-1-0,1
+7,VeteransDay,78269423,City Point,,0,C07-57,070199,1,,7-1-0,1
+7,VeteransDay,78269424,City Point,,0,C07-58,070199,1,,7-1-0,1
+7,VeteransDay,78269425,City Point,,0,C10-127,070199,1,,7-1-0,1
+7,VeteransDay,78269426,City Point,,0,C07-57,070199,1,,7-1-0,1
+7,VeteransDay,78269427,City Point,,0,C10-127,070199,1,,7-1-0,1
+7,VeteransDay,78269428,City Point,,0,C07-57,070199,1,,7-1-0,1
+7,VeteransDay,78269429,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,VeteransDay,78269430,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,VeteransDay,78269431,City Point,,0,C07-62,070199,1,,7-1-0,1
+7,VeteransDay,78269390,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,VeteransDay,78269391,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,VeteransDay,78269392,City Point via East First St,,0,C07-48,070194,1,,7-2-0,1
+7,VeteransDay,78269393,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,VeteransDay,78269394,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,VeteransDay,78269395,City Point via East First St,,0,C07-48,070194,1,,7-2-0,1
+7,VeteransDay,78269396,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,VeteransDay,78269397,City Point via East First St,,0,C07-45,070194,1,,7-2-0,1
+7,VeteransDay,78269398,City Point via East First St,,0,C07-47,070194,1,,7-2-0,1
+7,VeteransDay,78269399,City Point via East First St,,0,C07-52,070194,1,,7-2-0,1
+7,VeteransDay,78269400,City Point via East First St,,0,C23-236,070194,1,,7-2-0,1
+7,VeteransDay,78269401,City Point via East First St,,0,C07-51,070194,1,,7-2-0,1
+7,VeteransDay,78269403,City Point via East First St,,0,C07-50,070194,1,,7-2-0,1
+7,VeteransDay,78269404,City Point via East First St,,0,C07-52,070194,1,,7-2-0,1
+7,VeteransDay,78269405,City Point via East First St,,0,C23-236,070194,1,,7-2-0,1
+7,VeteransDay,78269406,City Point via East First St,,0,C07-51,070194,1,,7-2-0,1
+7,VeteransDay,78269367,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,VeteransDay,78269368,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,VeteransDay,78269369,City Point,,0,C07-54,070198,1,,7-3-0,1
+7,VeteransDay,78269370,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,VeteransDay,78269371,City Point,,0,C09-100,070198,1,,7-3-0,1
+7,VeteransDay,78269372,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,VeteransDay,78269373,City Point,,0,C07-58,070198,1,,7-3-0,1
+7,VeteransDay,78269374,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,VeteransDay,78269375,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,VeteransDay,78269376,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,VeteransDay,78269377,City Point,,0,C07-54,070198,1,,7-3-0,1
+7,VeteransDay,78269378,City Point,,0,C07-58,070198,1,,7-3-0,1
+7,VeteransDay,78269379,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,VeteransDay,78269380,City Point,,0,C09-100,070198,1,,7-3-0,1
+7,VeteransDay,78269381,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,VeteransDay,78269382,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,VeteransDay,78269383,City Point,,0,C07-60,070198,1,,7-3-0,1
+7,VeteransDay,78269384,City Point,,0,C07-61,070198,1,,7-3-0,1
+7,VeteransDay,78269385,City Point,,0,C07-54,070198,1,,7-3-0,1
+7,VeteransDay,78269386,City Point,,0,C07-56,070198,1,,7-3-0,1
+7,VeteransDay,78269387,City Point,,0,C07-57,070198,1,,7-3-0,1
+7,VeteransDay,78269388,City Point,,0,C07-59,070198,1,,7-3-0,1
+7,BUS20264-hba46011-Weekday-02,78174643,Otis & Summer,,1,A07-54,070197,1,,7-1-1,1
+7,BUS20264-hba46011-Weekday-02,78174630,Federal St,,1,A07-54,070193,1,,7-4-1,1
+7,BUS20264-hba46011-Weekday-02,78174639,Federal St,,1,A07-54,070193,1,,7-4-1,1
+7,BUS20264-hba46ns1-Weekday-02,78249228,Otis & Summer,,1,A07-55,070197,1,,7-1-1,1
+7,BUS20264-hba46ns1-Weekday-02,78249215,Federal St,,1,A07-55,070193,1,,7-4-1,1
+7,BUS20264-hba46ns1-Weekday-02,78249223,Federal St,,1,A07-55,070193,1,,7-4-1,1
+7,BUS20264-hbc46046-Saturday-02,78980596,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980598,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980601,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980602,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980603,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980605,Otis & Summer,,1,C07-24,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980607,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980610,Otis & Summer,,1,C07-24,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980613,Otis & Summer,,1,C07-24,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980614,Otis & Summer,,1,C07-24,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980616,Otis & Summer,,1,C07-27,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980619,Otis & Summer,,1,C07-27,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980620,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980622,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980623,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980626,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980627,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980631,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980632,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980635,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980637,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980639,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980641,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980642,Otis & Summer,,1,C09-61,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980645,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46046-Saturday-02,78980709,Otis & Summer,,1,C09-61,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979090,Otis & Summer,,1,C11-133,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979091,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979092,Otis & Summer,,1,C11-133,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979093,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979094,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979095,Otis & Summer,,1,C11-133,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979096,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979098,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979102,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979105,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979108,Otis & Summer,,1,C07-46,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979111,Otis & Summer,,1,C15-151,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979112,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979113,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979114,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979115,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979116,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979117,Otis & Summer,,1,C11-132,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979118,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979119,Otis & Summer,,1,C07-51,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979120,Otis & Summer,,1,C07-46,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979121,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979122,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979123,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979124,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979125,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979126,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979127,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979128,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979129,Otis & Summer,,1,C07-64,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979130,Otis & Summer,,1,C07-64,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979131,Otis & Summer,,1,C07-64,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979132,Otis & Summer,,1,C47-294,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979133,Otis & Summer,,1,C07-55,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979134,Otis & Summer,,1,C07-53,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979135,Otis & Summer,,1,C07-55,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979136,Otis & Summer,,1,C07-60,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979137,Otis & Summer,,1,C07-53,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979138,Otis & Summer,,1,C07-55,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979139,Otis & Summer,,1,C07-58,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979160,Otis & Summer,,1,C10-120,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979161,Otis & Summer,,1,C07-56,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979162,Otis & Summer,,1,C10-120,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979163,Otis & Summer,,1,C11-144,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979164,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979165,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979166,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979235,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979140,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979141,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979142,Federal St,,1,C07-53,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979143,Federal St,,1,C07-55,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979144,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979145,Federal St,,1,C07-58,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979146,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979147,Federal St,,1,C07-55,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979148,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979149,Federal St,,1,C07-53,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979150,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979151,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979152,Federal St,,1,C07-58,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979153,Federal St,,1,C07-59,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979154,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979155,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979156,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979157,Federal St,,1,C07-53,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979158,Federal St,,1,C07-55,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979159,Federal St,,1,C07-59,070193,1,,7-4-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979097,South Station,,1,C07-52,070200,1,,7-5-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979099,South Station,,1,C07-49,070200,1,,7-5-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979100,South Station,,1,C11-132,070200,1,,7-5-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979101,South Station,,1,C07-51,070200,1,,7-5-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979103,South Station,,1,C07-44,070200,1,,7-5-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979104,South Station,,1,C07-45,070200,1,,7-5-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979106,South Station,,1,C07-47,070200,1,,7-5-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979107,South Station,,1,C11-132,070200,1,,7-5-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979109,South Station,,1,C07-51,070200,1,,7-5-1,1
+7,BUS20264-hbc46f41-Weekday-02,78979110,South Station,,1,C07-50,070200,1,,7-5-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305971,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305972,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305973,Otis & Summer,,1,C501-267,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305974,Otis & Summer,,1,C07-32,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305975,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305976,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305977,Otis & Summer,,1,C07-32,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305978,Otis & Summer,,1,C501-267,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305979,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305980,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305981,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305982,Otis & Summer,,1,C07-31,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305983,Otis & Summer,,1,C07-31,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305984,Otis & Summer,,1,C07-30,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305985,Otis & Summer,,1,C07-30,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305986,Otis & Summer,,1,C07-32,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305987,Otis & Summer,,1,C501-267,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305988,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305989,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305990,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305991,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305992,Otis & Summer,,1,C07-29,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305993,Otis & Summer,,1,C07-30,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305994,Otis & Summer,,1,C07-31,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305995,Otis & Summer,,1,C07-29,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305996,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305997,Otis & Summer,,1,C07-29,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78305998,Otis & Summer,,1,C07-31,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306001,Otis & Summer,,1,C57-207,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306002,Otis & Summer,,1,C57-207,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306033,Otis & Summer,,1,C10-75,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306034,Otis & Summer,,1,C10-75,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306035,Otis & Summer,,1,C07-27,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306036,Otis & Summer,,1,C07-27,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306037,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306038,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306039,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306040,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306041,Otis & Summer,,1,C07-27,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306042,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306043,Otis & Summer,,1,C07-27,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306044,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306045,Otis & Summer,,1,C07-27,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306046,Otis & Summer,,1,C07-27,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306047,Otis & Summer,,1,C11-77,070197,1,,7-1-1,1
+7,BUS20264-hbc46tp6-Saturday-02,78306048,Otis & Summer,,1,C11-77,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182626,Otis & Summer,,1,C11-133,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182627,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182628,Otis & Summer,,1,C11-133,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182629,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182630,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182631,Otis & Summer,,1,C11-133,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182632,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182634,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182638,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182641,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182644,Otis & Summer,,1,C07-46,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182647,Otis & Summer,,1,C15-151,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182648,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182649,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182650,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182651,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182652,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182653,Otis & Summer,,1,C11-132,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182654,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182655,Otis & Summer,,1,C07-51,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182656,Otis & Summer,,1,C07-46,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182657,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182658,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182659,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182660,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182661,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182662,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182663,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182664,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182665,Otis & Summer,,1,C07-64,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182666,Otis & Summer,,1,C07-64,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182667,Otis & Summer,,1,C07-64,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182668,Otis & Summer,,1,C47-294,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182669,Otis & Summer,,1,C07-55,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182670,Otis & Summer,,1,C07-53,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182671,Otis & Summer,,1,C07-55,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182672,Otis & Summer,,1,C07-60,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182673,Otis & Summer,,1,C07-53,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182674,Otis & Summer,,1,C07-55,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182675,Otis & Summer,,1,C07-58,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182696,Otis & Summer,,1,C10-120,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182697,Otis & Summer,,1,C07-56,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182698,Otis & Summer,,1,C10-120,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182699,Otis & Summer,,1,C11-144,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182700,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182701,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182702,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182771,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182676,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182677,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182678,Federal St,,1,C07-53,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182679,Federal St,,1,C07-55,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182680,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182681,Federal St,,1,C07-58,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182682,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182683,Federal St,,1,C07-55,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182684,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182685,Federal St,,1,C07-53,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182686,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182687,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182688,Federal St,,1,C07-58,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182689,Federal St,,1,C07-59,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182690,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182691,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182692,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182693,Federal St,,1,C07-53,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182694,Federal St,,1,C07-55,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182695,Federal St,,1,C07-59,070193,1,,7-4-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182633,South Station,,1,C07-52,070200,1,,7-5-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182635,South Station,,1,C07-49,070200,1,,7-5-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182636,South Station,,1,C11-132,070200,1,,7-5-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182637,South Station,,1,C07-51,070200,1,,7-5-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182639,South Station,,1,C07-44,070200,1,,7-5-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182640,South Station,,1,C07-45,070200,1,,7-5-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182642,South Station,,1,C07-47,070200,1,,7-5-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182643,South Station,,1,C11-132,070200,1,,7-5-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182645,South Station,,1,C07-51,070200,1,,7-5-1,1
+7,BUS20264-hbc46wk1-Weekday-02,78182646,South Station,,1,C07-50,070200,1,,7-5-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300910,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300912,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300915,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300916,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300917,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300919,Otis & Summer,,1,C07-24,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300921,Otis & Summer,,1,C07-23,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300924,Otis & Summer,,1,C07-24,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300927,Otis & Summer,,1,C07-24,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300928,Otis & Summer,,1,C07-24,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300930,Otis & Summer,,1,C07-27,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300933,Otis & Summer,,1,C07-27,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300934,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300936,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300937,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300940,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300941,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300945,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300946,Otis & Summer,,1,C07-28,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300949,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300951,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300953,Otis & Summer,,1,C07-25,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300955,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300956,Otis & Summer,,1,C09-61,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79300959,Otis & Summer,,1,C07-26,070197,1,,7-1-1,1
+7,BUS20264-sbc46w16-Saturday-01,79301023,Otis & Summer,,1,C09-61,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307750,Otis & Summer,,1,C11-133,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307751,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307752,Otis & Summer,,1,C11-133,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307753,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307754,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307755,Otis & Summer,,1,C11-133,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307756,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307758,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307762,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307765,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307768,Otis & Summer,,1,C07-46,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307771,Otis & Summer,,1,C15-151,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307772,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307773,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307774,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307775,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307776,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307777,Otis & Summer,,1,C11-132,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307778,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307779,Otis & Summer,,1,C07-51,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307780,Otis & Summer,,1,C07-46,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307781,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307782,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307783,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307784,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307785,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307786,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307787,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307788,Otis & Summer,,1,C07-44,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307789,Otis & Summer,,1,C07-64,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307790,Otis & Summer,,1,C07-64,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307791,Otis & Summer,,1,C07-64,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307792,Otis & Summer,,1,C47-294,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307793,Otis & Summer,,1,C07-55,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307794,Otis & Summer,,1,C07-53,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307795,Otis & Summer,,1,C07-55,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307796,Otis & Summer,,1,C07-60,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307797,Otis & Summer,,1,C07-53,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307798,Otis & Summer,,1,C07-55,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307799,Otis & Summer,,1,C07-58,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307820,Otis & Summer,,1,C10-120,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307821,Otis & Summer,,1,C07-56,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307822,Otis & Summer,,1,C10-120,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307823,Otis & Summer,,1,C11-144,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307824,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307825,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307826,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307895,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307800,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307801,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307802,Federal St,,1,C07-53,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307803,Federal St,,1,C07-55,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307804,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307805,Federal St,,1,C07-58,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307806,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307807,Federal St,,1,C07-55,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307808,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307809,Federal St,,1,C07-53,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307810,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307811,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307812,Federal St,,1,C07-58,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307813,Federal St,,1,C07-59,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307814,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307815,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307816,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307817,Federal St,,1,C07-53,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307818,Federal St,,1,C07-55,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307819,Federal St,,1,C07-59,070193,1,,7-4-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307757,South Station,,1,C07-52,070200,1,,7-5-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307759,South Station,,1,C07-49,070200,1,,7-5-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307760,South Station,,1,C11-132,070200,1,,7-5-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307761,South Station,,1,C07-51,070200,1,,7-5-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307763,South Station,,1,C07-44,070200,1,,7-5-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307764,South Station,,1,C07-45,070200,1,,7-5-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307766,South Station,,1,C07-47,070200,1,,7-5-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307767,South Station,,1,C11-132,070200,1,,7-5-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307769,South Station,,1,C07-51,070200,1,,7-5-1,1
+7,BUS20264-sbc46wf1-Weekday-01,79307770,South Station,,1,C07-50,070200,1,,7-5-1,1
+7,DayafterThanksgivingDay,78253502,Otis & Summer,,1,C01-13,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253503,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253504,Otis & Summer,,1,C01-13,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253505,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253506,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253507,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253508,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253510,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253514,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253517,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253520,Otis & Summer,,1,C23-236,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253523,Otis & Summer,,1,C15-152,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253524,Otis & Summer,,1,C07-51,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253525,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253526,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253527,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253528,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253529,Otis & Summer,,1,C07-53,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253530,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253531,Otis & Summer,,1,C07-46,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253532,Otis & Summer,,1,C23-236,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253533,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253534,Otis & Summer,,1,C07-51,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253535,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253536,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253537,Otis & Summer,,1,C11-139,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253538,Otis & Summer,,1,C07-51,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253539,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253540,Otis & Summer,,1,C11-139,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253541,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253542,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253543,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253544,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253545,Otis & Summer,,1,C07-56,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253546,Otis & Summer,,1,C07-54,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253547,Otis & Summer,,1,C07-56,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253548,Otis & Summer,,1,C07-60,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253549,Otis & Summer,,1,C07-54,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253550,Otis & Summer,,1,C07-56,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253551,Otis & Summer,,1,C07-58,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253574,Otis & Summer,,1,C10-127,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253576,Otis & Summer,,1,C07-57,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253577,Otis & Summer,,1,C10-127,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253578,Otis & Summer,,1,C07-57,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253579,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253580,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253581,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253653,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,DayafterThanksgivingDay,78253552,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253553,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253554,Federal St,,1,C07-54,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253555,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253556,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253557,Federal St,,1,C07-58,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253558,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253559,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253560,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253561,Federal St,,1,C07-54,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253563,Federal St,,1,C09-100,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253564,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253565,Federal St,,1,C07-58,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253566,Federal St,,1,C07-59,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253567,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253568,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253569,Federal St,,1,C07-54,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253571,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253572,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253573,Federal St,,1,C07-59,070193,1,,7-4-1,1
+7,DayafterThanksgivingDay,78253509,South Station,,1,C07-47,070200,1,,7-5-1,1
+7,DayafterThanksgivingDay,78253511,South Station,,1,C07-52,070200,1,,7-5-1,1
+7,DayafterThanksgivingDay,78253512,South Station,,1,C07-53,070200,1,,7-5-1,1
+7,DayafterThanksgivingDay,78253513,South Station,,1,C07-46,070200,1,,7-5-1,1
+7,DayafterThanksgivingDay,78253515,South Station,,1,C07-48,070200,1,,7-5-1,1
+7,DayafterThanksgivingDay,78253516,South Station,,1,C07-49,070200,1,,7-5-1,1
+7,DayafterThanksgivingDay,78253518,South Station,,1,C07-50,070200,1,,7-5-1,1
+7,DayafterThanksgivingDay,78253519,South Station,,1,C07-53,070200,1,,7-5-1,1
+7,DayafterThanksgivingDay,78253521,South Station,,1,C07-46,070200,1,,7-5-1,1
+7,DayafterThanksgivingDay,78253522,South Station,,1,C07-45,070200,1,,7-5-1,1
+7,VeteransDay,78269290,Otis & Summer,,1,C01-13,070197,1,,7-1-1,1
+7,VeteransDay,78269291,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,VeteransDay,78269292,Otis & Summer,,1,C01-13,070197,1,,7-1-1,1
+7,VeteransDay,78269293,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,VeteransDay,78269294,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,VeteransDay,78269295,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,VeteransDay,78269296,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,VeteransDay,78269298,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,VeteransDay,78269302,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,VeteransDay,78269305,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,VeteransDay,78269308,Otis & Summer,,1,C23-236,070197,1,,7-1-1,1
+7,VeteransDay,78269311,Otis & Summer,,1,C15-152,070197,1,,7-1-1,1
+7,VeteransDay,78269312,Otis & Summer,,1,C07-51,070197,1,,7-1-1,1
+7,VeteransDay,78269313,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,VeteransDay,78269314,Otis & Summer,,1,C07-49,070197,1,,7-1-1,1
+7,VeteransDay,78269315,Otis & Summer,,1,C07-47,070197,1,,7-1-1,1
+7,VeteransDay,78269316,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,VeteransDay,78269317,Otis & Summer,,1,C07-53,070197,1,,7-1-1,1
+7,VeteransDay,78269318,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,VeteransDay,78269319,Otis & Summer,,1,C07-46,070197,1,,7-1-1,1
+7,VeteransDay,78269320,Otis & Summer,,1,C23-236,070197,1,,7-1-1,1
+7,VeteransDay,78269321,Otis & Summer,,1,C07-48,070197,1,,7-1-1,1
+7,VeteransDay,78269322,Otis & Summer,,1,C07-51,070197,1,,7-1-1,1
+7,VeteransDay,78269323,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,VeteransDay,78269324,Otis & Summer,,1,C07-52,070197,1,,7-1-1,1
+7,VeteransDay,78269325,Otis & Summer,,1,C11-139,070197,1,,7-1-1,1
+7,VeteransDay,78269326,Otis & Summer,,1,C07-51,070197,1,,7-1-1,1
+7,VeteransDay,78269327,Otis & Summer,,1,C07-50,070197,1,,7-1-1,1
+7,VeteransDay,78269328,Otis & Summer,,1,C11-139,070197,1,,7-1-1,1
+7,VeteransDay,78269329,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,VeteransDay,78269330,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,VeteransDay,78269331,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,VeteransDay,78269332,Otis & Summer,,1,C07-63,070197,1,,7-1-1,1
+7,VeteransDay,78269333,Otis & Summer,,1,C07-56,070197,1,,7-1-1,1
+7,VeteransDay,78269334,Otis & Summer,,1,C07-54,070197,1,,7-1-1,1
+7,VeteransDay,78269335,Otis & Summer,,1,C07-56,070197,1,,7-1-1,1
+7,VeteransDay,78269336,Otis & Summer,,1,C07-60,070197,1,,7-1-1,1
+7,VeteransDay,78269337,Otis & Summer,,1,C07-54,070197,1,,7-1-1,1
+7,VeteransDay,78269338,Otis & Summer,,1,C07-56,070197,1,,7-1-1,1
+7,VeteransDay,78269339,Otis & Summer,,1,C07-58,070197,1,,7-1-1,1
+7,VeteransDay,78269360,Otis & Summer,,1,C10-127,070197,1,,7-1-1,1
+7,VeteransDay,78269361,Otis & Summer,,1,C07-57,070197,1,,7-1-1,1
+7,VeteransDay,78269362,Otis & Summer,,1,C10-127,070197,1,,7-1-1,1
+7,VeteransDay,78269363,Otis & Summer,,1,C07-57,070197,1,,7-1-1,1
+7,VeteransDay,78269364,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,VeteransDay,78269365,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,VeteransDay,78269366,Otis & Summer,,1,C07-62,070197,1,,7-1-1,1
+7,VeteransDay,78269434,Otis & Summer,,1,C07-45,070197,1,,7-1-1,1
+7,VeteransDay,78269340,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,VeteransDay,78269341,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,VeteransDay,78269342,Federal St,,1,C07-54,070193,1,,7-4-1,1
+7,VeteransDay,78269343,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,VeteransDay,78269344,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,VeteransDay,78269345,Federal St,,1,C07-58,070193,1,,7-4-1,1
+7,VeteransDay,78269346,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,VeteransDay,78269347,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,VeteransDay,78269348,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,VeteransDay,78269349,Federal St,,1,C07-54,070193,1,,7-4-1,1
+7,VeteransDay,78269350,Federal St,,1,C09-100,070193,1,,7-4-1,1
+7,VeteransDay,78269351,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,VeteransDay,78269352,Federal St,,1,C07-58,070193,1,,7-4-1,1
+7,VeteransDay,78269353,Federal St,,1,C07-59,070193,1,,7-4-1,1
+7,VeteransDay,78269354,Federal St,,1,C07-60,070193,1,,7-4-1,1
+7,VeteransDay,78269355,Federal St,,1,C07-61,070193,1,,7-4-1,1
+7,VeteransDay,78269356,Federal St,,1,C07-54,070193,1,,7-4-1,1
+7,VeteransDay,78269357,Federal St,,1,C07-56,070193,1,,7-4-1,1
+7,VeteransDay,78269358,Federal St,,1,C07-57,070193,1,,7-4-1,1
+7,VeteransDay,78269359,Federal St,,1,C07-59,070193,1,,7-4-1,1
+7,VeteransDay,78269297,South Station,,1,C07-47,070200,1,,7-5-1,1
+7,VeteransDay,78269299,South Station,,1,C07-52,070200,1,,7-5-1,1
+7,VeteransDay,78269300,South Station,,1,C07-53,070200,1,,7-5-1,1
+7,VeteransDay,78269301,South Station,,1,C07-46,070200,1,,7-5-1,1
+7,VeteransDay,78269303,South Station,,1,C07-48,070200,1,,7-5-1,1
+7,VeteransDay,78269304,South Station,,1,C07-49,070200,1,,7-5-1,1
+7,VeteransDay,78269306,South Station,,1,C07-50,070200,1,,7-5-1,1
+7,VeteransDay,78269307,South Station,,1,C07-53,070200,1,,7-5-1,1
+7,VeteransDay,78269309,South Station,,1,C07-46,070200,1,,7-5-1,1
+7,VeteransDay,78269310,South Station,,1,C07-45,070200,1,,7-5-1,1

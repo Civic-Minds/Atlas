@@ -1,0 +1,129 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+337,1,50803992,South - 337S Islington Short Turn,S,0,2233242,1122540,1,1
+337,1,50803990,South - 337 Islington towards Lake Shore,,0,2233824,1122539,1,1
+337,1,50803995,South - 337 Islington towards Lake Shore,,0,2233825,1122539,1,1
+337,1,50803996,South - 337 Islington towards Lake Shore,,0,2233240,1122537,1,1
+337,1,50803993,South - 337 Islington towards Lake Shore,,0,2233824,1122537,1,1
+337,1,50803994,South - 337 Islington towards Lake Shore,,0,2233825,1122537,1,1
+337,1,50803991,South - 337 Islington towards Lake Shore,,0,2233240,1122537,1,1
+337,1,50803997,North - 337 Islington towards Steeles,,1,2233826,1122543,1,1
+337,1,50804000,North - 337 Islington towards Steeles,,1,2233827,1122543,1,1
+337,1,50804001,North - 337 Islington towards Steeles,,1,2233828,1122543,1,1
+337,1,50804002,North - 337 Islington towards Steeles,S,1,2233240,1122542,1,1
+337,1,50804003,North - 337 Islington towards Steeles,,1,2233824,1122541,1,1
+337,1,50803998,North - 337 Islington towards Steeles,,1,2233825,1122541,1,1
+337,1,50803999,North - 337 Islington towards Steeles,,1,2233240,1122541,1,1
+373,1,50805414,South - 373 Royal York towards Royal York Stn,,0,2234673,1122650,1,1
+373,1,50805419,South - 373 Royal York towards Royal York Stn,,0,2234675,1122650,1,1
+373,1,50805415,South - 373 Royal York towards Royal York Stn,,0,2233363,1122650,1,1
+373,1,50805416,South - 373 Royal York towards Royal York Stn,,0,2234656,1122650,1,1
+373,1,50805417,South - 373 Royal York towards Royal York Stn,,0,2234674,1122650,1,1
+373,1,50805418,South - 373 Royal York towards Royal York Stn,,0,2234673,1122650,1,1
+373,1,50805426,North - 373 Royal York towards Steeles and Kipling,,1,2234673,1122653,1,1
+373,1,50805424,North - 373 Royal York towards Steeles and Kipling,,1,2234675,1122653,1,1
+373,1,50805423,North - 373 Royal York towards Steeles and Kipling,,1,2233363,1122652,1,1
+373,1,50805420,North - 373 Royal York towards Steeles and Kipling,,1,2234656,1122652,1,1
+373,1,50805421,North - 373 Royal York towards Steeles and Kipling,,1,2234674,1122652,1,1
+373,1,50805422,North - 373 Royal York towards Steeles and Kipling,,1,2234673,1122652,1,1
+373,1,50805425,North - 373 Royal York towards Steeles and Kipling,,1,2234675,1122652,1,1
+337,2,50840294,South - 337 Islington towards Lake Shore,,0,2235518,1122538,1,1
+337,2,50840296,South - 337 Islington towards Lake Shore,,0,2235954,1122539,1,1
+337,2,50840295,South - 337 Islington towards Lake Shore,,0,2235955,1122539,1,1
+337,2,50840291,South - 337 Islington towards Lake Shore,,0,2235520,1122537,1,1
+337,2,50840290,South - 337 Islington towards Lake Shore,,0,2235954,1122537,1,1
+337,2,50840293,South - 337 Islington towards Lake Shore,,0,2235955,1122537,1,1
+337,2,50840292,South - 337 Islington towards Lake Shore,,0,2235520,1122537,1,1
+337,2,50840298,North - 337 Islington towards Steeles,,1,2235518,1122541,1,1
+337,2,50840297,North - 337 Islington towards Steeles,,1,2235956,1122543,1,1
+337,2,50840301,North - 337 Islington towards Steeles,,1,2235957,1122543,1,1
+337,2,50840303,North - 337 Islington towards Steeles,,1,2235958,1122543,1,1
+337,2,50840299,North - 337 Islington towards Steeles,S,1,2235520,1122542,1,1
+337,2,50840304,North - 337 Islington towards Steeles,,1,2235954,1122541,1,1
+337,2,50840302,North - 337 Islington towards Steeles,,1,2235955,1122541,1,1
+337,2,50840300,North - 337 Islington towards Steeles,,1,2235520,1122541,1,1
+373,2,50841632,South - 373 Royal York towards Royal York Stn,,0,2236561,1122650,1,1
+373,2,50841637,South - 373 Royal York towards Royal York Stn,,0,2236592,1122650,1,1
+373,2,50841633,South - 373 Royal York towards Royal York Stn,,0,2235590,1122650,1,1
+373,2,50841634,South - 373 Royal York towards Royal York Stn,,0,2236568,1122650,1,1
+373,2,50841635,South - 373 Royal York towards Royal York Stn,,0,2236593,1122650,1,1
+373,2,50841636,South - 373 Royal York towards Royal York Stn,,0,2236561,1122650,1,1
+373,2,50841644,North - 373 Royal York towards Steeles and Kipling,,1,2236561,1122653,1,1
+373,2,50841642,North - 373 Royal York towards Steeles and Kipling,,1,2236592,1122653,1,1
+373,2,50841641,North - 373 Royal York towards Steeles and Kipling,,1,2235590,1122653,1,1
+373,2,50841638,North - 373 Royal York towards Steeles and Kipling,,1,2236568,1122652,1,1
+373,2,50841639,North - 373 Royal York towards Steeles and Kipling,,1,2236593,1122652,1,1
+373,2,50841640,North - 373 Royal York towards Steeles and Kipling,,1,2236561,1122652,1,1
+373,2,50841643,North - 373 Royal York towards Steeles and Kipling,,1,2236592,1122652,1,1
+337,3,50872023,South - 337 Islington towards Lake Shore,,0,2237033,1122537,1,1
+337,3,50872015,South - 337 Islington towards Lake Shore,,0,2237463,1122537,1,1
+337,3,50872022,South - 337 Islington towards Lake Shore,,0,2237466,1122537,1,1
+337,3,50872016,South - 337 Islington towards Lake Shore,,0,2237034,1122538,1,1
+337,3,50872024,South - 337 Islington towards Lake Shore,,0,2237033,1122538,1,1
+337,3,50872019,South - 337 Islington towards Lake Shore,,0,2237465,1122539,1,1
+337,3,50872017,South - 337 Islington towards Lake Shore,,0,2237464,1122539,1,1
+337,3,50872018,South - 337 Islington towards Lake Shore,,0,2237035,1122537,1,1
+337,3,50872021,South - 337 Islington towards Lake Shore,,0,2237465,1122537,1,1
+337,3,50872025,South - 337 Islington towards Lake Shore,,0,2237464,1122537,1,1
+337,3,50872020,South - 337 Islington towards Lake Shore,,0,2237035,1122537,1,1
+337,3,50872026,North - 337 Islington towards Steeles,,1,2237033,1122541,1,1
+337,3,50872031,North - 337 Islington towards Steeles,,1,2237463,1122541,1,1
+337,3,50872032,North - 337 Islington towards Steeles,,1,2237466,1122541,1,1
+337,3,50872034,North - 337 Islington towards Steeles,,1,2237034,1122541,1,1
+337,3,50872027,North - 337 Islington towards Steeles,,1,2237033,1122541,1,1
+337,3,50872035,North - 337 Islington towards Steeles,,1,2237463,1122543,1,1
+337,3,50872029,North - 337 Islington towards Steeles,,1,2237466,1122543,1,1
+337,3,50872033,North - 337 Islington towards Steeles,S,1,2237035,1122542,1,1
+337,3,50872036,North - 337 Islington towards Steeles,,1,2237465,1122541,1,1
+337,3,50872030,North - 337 Islington towards Steeles,,1,2237464,1122541,1,1
+337,3,50872028,North - 337 Islington towards Steeles,,1,2237035,1122541,1,1
+373,3,50873192,South - 373 Royal York towards Royal York Stn,,0,2237966,1122650,1,1
+373,3,50873193,South - 373 Royal York towards Royal York Stn,,0,2237967,1122650,1,1
+373,3,50873194,South - 373 Royal York towards Royal York Stn,,0,2237968,1122650,1,1
+373,3,50873195,South - 373 Royal York towards Royal York Stn,,0,2237101,1122650,1,1
+373,3,50873196,South - 373 Royal York towards Royal York Stn,,0,2237106,1122650,1,1
+373,3,50873191,South - 373 Royal York towards Royal York Stn,,0,2237970,1122650,1,1
+373,3,50873350,South - 373 Royal York towards Royal York Stn,,0,2237967,1122650,1,1
+373,3,50873346,South - 373 Royal York towards Royal York Stn,,0,2237105,1122650,1,1
+373,3,50873347,South - 373 Royal York towards Royal York Stn,,0,2237982,1122650,1,1
+373,3,50873348,South - 373 Royal York towards Royal York Stn,,0,2237972,1122650,1,1
+373,3,50873349,South - 373 Royal York towards Royal York Stn,,0,2237971,1122650,1,1
+373,3,50873358,North - 373 Royal York towards Steeles and Kipling,,1,2237967,1122652,1,1
+373,3,50873359,North - 373 Royal York towards Steeles and Kipling,,1,2237968,1122652,1,1
+373,3,50873360,North - 373 Royal York towards Steeles and Kipling,,1,2237101,1122652,1,1
+373,3,50873361,North - 373 Royal York towards Steeles and Kipling,,1,2237106,1122652,1,1
+373,3,50873362,North - 373 Royal York towards Steeles and Kipling,,1,2237557,1122652,1,1
+373,3,50873357,North - 373 Royal York towards Steeles and Kipling,,1,2237970,1122653,1,1
+373,3,50873355,North - 373 Royal York towards Steeles and Kipling,,1,2237967,1122653,1,1
+373,3,50873354,North - 373 Royal York towards Steeles and Kipling,,1,2237105,1122653,1,1
+373,3,50873351,North - 373 Royal York towards Steeles and Kipling,,1,2237982,1122652,1,1
+373,3,50873352,North - 373 Royal York towards Steeles and Kipling,,1,2237972,1122652,1,1
+373,3,50873353,North - 373 Royal York towards Steeles and Kipling,,1,2237971,1122652,1,1
+373,3,50873356,North - 373 Royal York towards Steeles and Kipling,,1,2237970,1122652,1,1
+337,4,50901402,South - 337 Islington towards Lake Shore,,0,2238375,1122538,1,1
+337,4,50901399,South - 337 Islington towards Lake Shore,,0,2238749,1122539,1,1
+337,4,50901400,South - 337 Islington towards Lake Shore,,0,2238750,1122539,1,1
+337,4,50901397,South - 337 Islington towards Lake Shore,,0,2238379,1122537,1,1
+337,4,50901398,South - 337 Islington towards Lake Shore,,0,2238749,1122537,1,1
+337,4,50901403,South - 337 Islington towards Lake Shore,,0,2238750,1122537,1,1
+337,4,50901396,South - 337 Islington towards Lake Shore,,0,2238379,1122537,1,1
+337,4,50901410,North - 337 Islington towards Steeles,,1,2238375,1122541,1,1
+337,4,50901411,North - 337 Islington towards Steeles,,1,2239271,1122543,1,1
+337,4,50901407,North - 337 Islington towards Steeles,,1,2238751,1122543,1,1
+337,4,50901405,North - 337 Islington towards Steeles,,1,2238858,1122543,1,1
+337,4,50901409,North - 337 Islington towards Steeles,S,1,2238379,1122542,1,1
+337,4,50901404,North - 337 Islington towards Steeles,,1,2238749,1122541,1,1
+337,4,50901406,North - 337 Islington towards Steeles,,1,2238750,1122541,1,1
+337,4,50901408,North - 337 Islington towards Steeles,,1,2238379,1122541,1,1
+373,4,50902588,South - 373 Royal York towards Royal York Stn,,0,2239263,1122650,1,1
+373,4,50902593,South - 373 Royal York towards Royal York Stn,,0,2239261,1122650,1,1
+373,4,50902589,South - 373 Royal York towards Royal York Stn,,0,2238436,1122650,1,1
+373,4,50902590,South - 373 Royal York towards Royal York Stn,,0,2239222,1122650,1,1
+373,4,50902591,South - 373 Royal York towards Royal York Stn,,0,2239262,1122650,1,1
+373,4,50902592,South - 373 Royal York towards Royal York Stn,,0,2239263,1122650,1,1
+373,4,50902600,North - 373 Royal York towards Steeles and Kipling,,1,2239263,1122653,1,1
+373,4,50902598,North - 373 Royal York towards Steeles and Kipling,,1,2239261,1122653,1,1
+373,4,50902597,North - 373 Royal York towards Steeles and Kipling,,1,2238436,1122653,1,1
+373,4,50902594,North - 373 Royal York towards Steeles and Kipling,,1,2239222,1122652,1,1
+373,4,50902595,North - 373 Royal York towards Steeles and Kipling,,1,2239262,1122652,1,1
+373,4,50902596,North - 373 Royal York towards Steeles and Kipling,,1,2239263,1122652,1,1
+373,4,50902599,North - 373 Royal York towards Steeles and Kipling,,1,2239261,1122652,1,1

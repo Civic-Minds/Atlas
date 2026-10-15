@@ -1,0 +1,100 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+1023,50501,Decoto Rd & Fremont Blvd,,37.571627,-122.031504,E,https://www.actransit.org/stop/50501,,,,0
+1034,51008,Fremont BART,,37.557715,-121.975664,E,https://www.actransit.org/stop/51008,,,,0
+1040,55899,38932 Fremont Blvd (Near Mowry Av),,37.549489,-121.989737,E,https://www.actransit.org/stop/55899,,,,0
+1043,55229,Fremont Blvd & Alder Av (American Sr High School),,37.563424,-122.016985,E,https://www.actransit.org/stop/55229,,,,0
+1044,53115,Fremont Blvd & Alder Av (American Sr High School),,37.562291,-122.015315,E,https://www.actransit.org/stop/53115,,,,0
+1045,54114,Fremont Blvd & Beacon Av,,37.546558,-121.984742,E,https://www.actransit.org/stop/54114,,,,0
+1046,56551,Fremont Blvd & Beacon Av,,37.546940,-121.984824,E,https://www.actransit.org/stop/56551,,,,0
+1049,55145,Fremont Blvd & Bonde Way,,37.558916,-122.008553,E,https://www.actransit.org/stop/55145,,,,0
+1051,52959,Fremont Blvd & Centerville Jr High School,,37.555719,-122.001914,E,https://www.actransit.org/stop/52959,,,,0
+1052,55011,Fremont Blvd & Central Av,,37.556094,-122.003174,E,https://www.actransit.org/stop/55011,,,,0
+1054,55952,Fremont Blvd & Country Dr,,37.551033,-121.992770,E,https://www.actransit.org/stop/55952,,,,0
+1059,55245,Fremont Blvd & Decoto Rd,,37.570184,-122.031460,E,https://www.actransit.org/stop/55245,,,,0
+1065,56505,Fremont Blvd & Eggers Dr,,37.552744,-121.996647,E,https://www.actransit.org/stop/56505,,,,0
+1066,58553,Fremont Blvd & Eggers Dr,,37.552947,-121.996513,E,https://www.actransit.org/stop/58553,,,,0
+1071,51751,Fremont Blvd & Gibraltar Dr,,37.564323,-122.019463,E,https://www.actransit.org/stop/51751,,,,0
+1078,56700,Fremont Blvd & London Com,,37.550739,-121.992839,E,https://www.actransit.org/stop/56700,,,,0
+1083,56788,Fremont Blvd & Mowry Av,,37.548003,-121.987554,E,https://www.actransit.org/stop/56788,,,,0
+1084,57575,Fremont Blvd & Mowry Av,,37.548307,-121.987415,E,https://www.actransit.org/stop/57575,,,,0
+1085,52112,Fremont Blvd & Nicolet Av,,37.565696,-122.022225,E,https://www.actransit.org/stop/52112,,,,0
+1086,56625,Fremont Blvd & Nicolet Av,,37.566684,-122.023561,E,https://www.actransit.org/stop/56625,,,,0
+1087,58559,Fremont Blvd & Norris Rd,,37.554525,-122.000116,E,https://www.actransit.org/stop/58559,,,,0
+1088,55071,Fremont Blvd & Village Ter,,37.554474,-121.999485,E,https://www.actransit.org/stop/55071,,,,0
+1094,55787,Fremont Blvd & Peralta Ct,,37.558545,-122.007441,E,https://www.actransit.org/stop/55787,,,,0
+1100,58722,Fremont Blvd & Tamayo St,,37.567713,-122.026433,E,https://www.actransit.org/stop/58722,,,,0
+1101,53563,Fremont Blvd & Tamayo St,,37.567837,-122.025898,E,https://www.actransit.org/stop/53563,,,,0
+1103,56055,Fremont Blvd & Thornton Av,,37.561271,-122.012711,E,https://www.actransit.org/stop/56055,,,,0
+1133,53099,Mission Blvd & Antelope Dr (S Grimmer Blvd),,37.507127,-121.919582,E,https://www.actransit.org/stop/53099,,,,0
+1134,51577,Mission Blvd & Anza St,,37.531016,-121.919345,E,https://www.actransit.org/stop/51577,,,,0
+1135,52218,Mission Blvd & Anza St,,37.530287,-121.919372,E,https://www.actransit.org/stop/52218,,,,0
+1136,56467,Mission Blvd & Calle Amigo Dr,,37.563002,-121.959103,E,https://www.actransit.org/stop/56467,,,,0
+1137,52320,Mission Blvd & Calle Amigo Dr,,37.562502,-121.959024,E,https://www.actransit.org/stop/52320,,,,0
+1138,51780,Mission Blvd & Callery Ct,,37.547251,-121.935209,E,https://www.actransit.org/stop/51780,,,,0
+1139,51844,Mission Blvd & Callery Ct,,37.547038,-121.935407,E,https://www.actransit.org/stop/51844,,,,0
+1140,55733,Mission Blvd & Cedar St,,37.528035,-121.918659,E,https://www.actransit.org/stop/55733,,,,0
+1141,53166,Mission Blvd & Cougar Dr,,37.513283,-121.919241,E,https://www.actransit.org/stop/53166,,,,0
+1142,52003,Mission Blvd & Dalgo Rd,,37.554146,-121.946844,E,https://www.actransit.org/stop/52003,,,,0
+1143,52243,Mission Blvd & Castro Ln,,37.550244,-121.940353,E,https://www.actransit.org/stop/52243,,,,0
+1144,57260,Mission Blvd & Driscoll Rd,,37.549381,-121.939409,E,https://www.actransit.org/stop/57260,,,,0
+1145,53230,Mission Blvd & Esparito Av,,37.551578,-121.942385,E,https://www.actransit.org/stop/53230,,,,0
+1146,53228,Mission Blvd & Hunter Ln,,37.520326,-121.918055,E,https://www.actransit.org/stop/53228,,,,0
+1147,54998,Mission Blvd & I-680 Fwy,,37.540176,-121.923947,E,https://www.actransit.org/stop/54998,,,,0
+1148,56520,Mission Blvd & I-680 Fwy,,37.539106,-121.923628,E,https://www.actransit.org/stop/56520,,,,0
+1149,52725,Mission Blvd & Las Palmas Av,,37.557906,-121.952873,E,https://www.actransit.org/stop/52725,,,,0
+1150,52006,Mission Blvd & Las Palmas Av,,37.558411,-121.953197,E,https://www.actransit.org/stop/52006,,,,0
+1151,56530,Mission Blvd & Mackintosh St,,37.554245,-121.946490,E,https://www.actransit.org/stop/56530,,,,0
+1152,55072,Mission Blvd & Mill Creek Rd,,37.537579,-121.922047,E,https://www.actransit.org/stop/55072,,,,0
+1156,53199,Mission Blvd & Ondina Dr,,37.551266,-121.942423,E,https://www.actransit.org/stop/53199,,,,0
+1158,55338,Mission Blvd & Palm Av (Mission San Jose High),,37.545116,-121.932092,E,https://www.actransit.org/stop/55338,,,,0
+1159,59558,Mission Blvd & Palm Av (Mission San Jose High),,37.545412,-121.932056,E,https://www.actransit.org/stop/59558,,,,0
+1162,59800,Mission Blvd & Pine St,,37.525790,-121.917704,E,https://www.actransit.org/stop/59800,,,,0
+1163,54580,Mission Blvd & Starr St,,37.537748,-121.922410,E,https://www.actransit.org/stop/54580,,,,0
+1164,53430,Mission Blvd & Stevenson Blvd,,37.561261,-121.957502,E,https://www.actransit.org/stop/53430,,,,0
+1165,55079,Mission Blvd & Stevenson Blvd,,37.560137,-121.956488,E,https://www.actransit.org/stop/55079,,,,0
+1166,52780,Mission Blvd & Via San Dimas,,37.542344,-121.926853,E,https://www.actransit.org/stop/52780,,,,0
+1167,53780,Mission Blvd & Via San Dimas,,37.542163,-121.927012,E,https://www.actransit.org/stop/53780,,,,0
+1168,56603,Mission Blvd & Washington Blvd,,37.533518,-121.920200,E,https://www.actransit.org/stop/56603,,,,0
+1169,53053,Mission Blvd & Washington Blvd,,37.534751,-121.920303,E,https://www.actransit.org/stop/53053,,,,0
+1220,57563,Ohlone College Key C,,37.528604,-121.913530,E,https://www.actransit.org/stop/57563,,,,0
+1222,50788,Ohlone College-Key D,,37.530161,-121.911290,E,https://www.actransit.org/stop/50788,,,,0
+1300,51245,S Grimmer Blvd & Ishi Dr,,37.506614,-121.923805,E,https://www.actransit.org/stop/51245,,,,0
+1301,58534,S Grimmer Blvd & Ishi Dr,,37.506464,-121.923619,E,https://www.actransit.org/stop/58534,,,,0
+1302,58645,S Grimmer Blvd & Parkmeadow Dr,,37.506778,-121.932463,E,https://www.actransit.org/stop/58645,,,,0
+1303,52296,S Grimmer Blvd & Parkmeadow Dr,,37.506854,-121.932788,E,https://www.actransit.org/stop/52296,,,,0
+1304,51250,S Grimmer Blvd & Paseo Padre Pkwy,,37.507438,-121.928793,E,https://www.actransit.org/stop/51250,,,,0
+1305,51560,S Grimmer Blvd & Paseo Padre Pkwy,,37.507219,-121.927786,E,https://www.actransit.org/stop/51560,,,,0
+1339,52289,Walnut Av & Fremont Blvd,,37.546436,-121.982232,E,https://www.actransit.org/stop/52289,,,,0
+1340,51788,Walnut Av & Fremont Blvd,,37.546350,-121.981948,E,https://www.actransit.org/stop/51788,,,,0
+1341,53699,Walnut Av & Gallaudet Dr,,37.561063,-121.968135,E,https://www.actransit.org/stop/53699,,,,0
+1342,53911,Walnut Av & Gallaudet Dr,,37.560969,-121.968812,E,https://www.actransit.org/stop/53911,,,,0
+1344,56090,Walnut Av & Godfrey Pl,,37.563586,-121.964489,E,https://www.actransit.org/stop/56090,,,,0
+1345,53787,Walnut Av & Guardino Dr,,37.559105,-121.971765,E,https://www.actransit.org/stop/53787,,,,0
+1346,57211,Walnut Av & Guardino Dr,,37.559014,-121.971411,E,https://www.actransit.org/stop/57211,,,,0
+1349,53389,Walnut Av & Mission Blvd,,37.565269,-121.961689,E,https://www.actransit.org/stop/53389,,,,0
+1350,52663,Walnut Av & Overacker Av,,37.564913,-121.962673,E,https://www.actransit.org/stop/52663,,,,0
+1394,50722,Walnut Av & Walnut Circle,,37.561745,-121.965938,E,https://www.actransit.org/stop/50722,,,,0
+1403,56155,Walnut Av & Liberty St,,37.549156,-121.980166,E,https://www.actransit.org/stop/56155,,,,0
+4617,54720,Decoto Rd & Clover St (Royal Ann Dr),,37.580556,-122.023761,E,https://www.actransit.org/stop/54720,,,,0
+4622,53338,Decoto Rd & Meyers Dr,,37.590181,-122.020720,E,https://www.actransit.org/stop/53338,,,,0
+4624,55295,Decoto Rd & Perry Rd,,37.582837,-122.023266,E,https://www.actransit.org/stop/55295,,,,0
+4625,50252,Decoto Rd & Royal Ann Dr (Clover St),,37.580981,-122.023916,E,https://www.actransit.org/stop/50252,,,,0
+4628,57718,Decoto Rd & Union Square,,37.590314,-122.020371,E,https://www.actransit.org/stop/57718,,,,0
+4667,50783,Union City BART,,37.589894,-122.016840,E,https://www.actransit.org/stop/50783,,,,0
+5203,50903,Mission Blvd & Pine Rd,,37.525415,-121.917965,E,https://www.actransit.org/stop/50903,,,,0
+5204,50904,Mission Blvd & Durham Rd,,37.513120,-121.919620,E,https://www.actransit.org/stop/50904,,,,0
+5205,50906,Mission Blvd & Hunter Ln,,37.520526,-121.917739,E,https://www.actransit.org/stop/50906,,,,0
+5546,52229,Fremont BART,,37.557513,-121.975846,E,https://www.actransit.org/stop/52229,,,,0
+5889,52057,Warmsprings BART,,37.501495,-121.938282,E,https://www.actransit.org/stop/52057,,,,0
+6117,52843,Fremont Blvd & Thornton Av,,37.560332,-122.011478,E,https://www.actransit.org/stop/52843,,,,0
+6217,52902,Fremont Blvd:Central Av,,37.556817,-122.004060,E,https://www.actransit.org/stop/52902,,,,0
+6242,52958,Walnut Av & Paseo Padre Pkwy,,37.551602,-121.978228,E,https://www.actransit.org/stop/52958,,,,0
+6243,52962,Walnut Av & Paseo Padre Pkwy,,37.552276,-121.977420,E,https://www.actransit.org/stop/52962,,,,0
+6276,53067,Fremont Blvd & Peralta Blvd,,37.557886,-122.006580,E,https://www.actransit.org/stop/53067,,,,0
+6319,53171,Decoto Rd & Perry Rd,,37.583805,-122.022637,E,https://www.actransit.org/stop/53171,,,,0
+6320,53173,Decoto Rd & Paseo Padre Pkwy,,37.576645,-122.027408,E,https://www.actransit.org/stop/53173,,,,0
+6339,53214,Decoto Rd & Paseo Padre Pkwy,,37.577280,-122.026434,E,https://www.actransit.org/stop/53214,,,,0
+6341,53261,Walnut Av & Godfrey St,,37.563645,-121.964014,E,https://www.actransit.org/stop/53261,,,,0
+6386,53478,Decoto Rd & Alvarado-Niles Rd,,37.588103,-122.021151,E,https://www.actransit.org/stop/53478,,,,0
+6387,53479,Decoto Rd & Alvarado-Niles Rd,,37.586797,-122.021918,E,https://www.actransit.org/stop/53479,,,,0
+6414,53541,Walnut St & Liberty St,,37.549321,-121.979745,E,https://www.actransit.org/stop/53541,,,,0

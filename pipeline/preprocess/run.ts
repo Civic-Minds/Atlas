@@ -10,6 +10,7 @@ import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-lab
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
+import { mergeTerminalBays } from './merge-terminal-bays.js';
 import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
@@ -122,6 +123,10 @@ export function normalizeGtfs(
     gtfs = result.gtfs;
     onStatus?.(`Untimed stops: interpolated ${result.filled} stop times between timepoints`);
   }
+  // Before the headsigns are filled from last stops, so both bays of one terminal share one.
+  const bays = mergeTerminalBays(gtfs);
+  gtfs = bays.gtfs;
+  if (bays.mergedTrips > 0) onStatus?.(`Terminal bays: ${bays.mergedTrips} trips of ${bays.mergedPatterns} pattern(s) end at the other bay of their terminal (#754)`);
   gtfs = synthesizeTripHeadsigns(gtfs);
   if (options?.mergeEquivalentShapeVariants || options?.mergeEquivalentShapeVariantsAllModes) {
     const merged = mergeEquivalentShapeVariants(gtfs, { allModes: options.mergeEquivalentShapeVariantsAllModes === true });

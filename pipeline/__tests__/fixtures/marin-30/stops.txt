@@ -1,0 +1,13 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding,platform_code,tts_stop_name
+40463,40463,Kerner Blvd & Larkspur St,,37.962776,-122.502007,,,0,,,1,,Kerner Boulevard & Larkspur Street
+40461,40461,Kerner Blvd & Bahia Way,,37.964417,-122.501236,,,0,,,1,,Kerner Boulevard & Bahia Way
+40446,40446,Kerner Blvd & Canal St,,37.967403,-122.499694,,,0,,,1,,Kerner Boulevard & Canal Street
+40459,40459,Canal St & Sonoma St,,37.966949,-122.50354,,,0,,,1,,Canal Street & Sonoma Street
+40457,40457,Canal St & Novato St,,37.965949,-122.505719,,,0,,,2,,Canal Street & Novato Street
+40455,40455,Medway Rd & Mill St,,37.964584,-122.508949,,,0,,,1,,Medway Road & Mill Street
+40451,40451,Francisco Blvd E & Bay St,,37.96656,-122.516441,,,0,,,1,,Francisco Boulevard East & Bay Street
+40429,40429,3rd St & Grand Ave,,37.971031,-122.519012,,,0,,,1,,3rd Street & Grand Avenue
+44005,44005,San Rafael Transit Center-Platform A,Platform A NB,37.971161,-122.522453,,,0,srtc,,1,,San Rafael Transit Center
+40414,40414,2nd St & Grand Ave,,37.970277,-122.519689,,,0,,,1,,2nd Street & Grand Avenue
+41367,41367,Francisco Blvd E & Medway Rd,,37.96273,-122.510052,,,0,,,1,,Francisco Boulevard East & Medway Road
+40467,40467,Bellam Blvd & Francisco Blvd E,,37.96067,-122.504399,,,0,,,1,,Bellam Boulevard & Francisco Boulevard East
