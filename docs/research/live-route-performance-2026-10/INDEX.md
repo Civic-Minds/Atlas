@@ -56,7 +56,7 @@ than 90 km/h are dropped as bad GPS fixes.
   trips take X+ longer", rounded down). Stop pairs are flagged at 30 s or more
   (amber) and 60 s or more (red), tested on the raw seconds.
 - **"Looser than needed":** only when the typical pass beats the timetable by
-  30 s or more *and* 9 in 10 passes beat it too.
+  30 s or more *and* 9 in 10 passes are at or under it (matching the timetable exactly counts).
 - **Excluded:** stop pairs with fewer than 30 passes or fewer than 5 days;
   stop pairs touching either end of a main pattern, or the stop next to it
   (layover and loop time isn't delay).
