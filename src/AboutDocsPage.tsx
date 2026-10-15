@@ -60,6 +60,7 @@ export default function AboutDocsPage() {
   const showResearch = FEATURES.researchApps;
   const showAgencyPages = FEATURES.agencyPages;
   const showCompare = FEATURES.compareMode;
+  const showOnDemand = FEATURES.onDemand;
 
   return (
     <PageShell stickyHeader>
@@ -354,15 +355,41 @@ export default function AboutDocsPage() {
           </Section>
 
           <Section id="glossary" title="Glossary">
-            <p><strong className="text-[var(--text-primary)]">GTFS:</strong> A standard set of files describing transit routes, stops, trips, calendars, and shapes.</p>
+            <p><strong className="text-[var(--text-primary)]">GTFS:</strong> A standard set of files describing transit routes, stops, trips, calendars, and shapes. Agencies publish it; Atlas reads it.</p>
             <p><strong className="text-[var(--text-primary)]">GTFS-Flex:</strong> GTFS extensions for demand-responsive service, including service areas, location groups, virtual stops, and booking rules.</p>
-            <p><strong className="text-[var(--text-primary)]">Headway:</strong> The time between consecutive scheduled departures.</p>
-            <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: AM Peak (6 to 9 a.m.), Midday (9 a.m. to 3 p.m.), PM Peak (3 to 7 p.m.), Evening (7 to 11 p.m.), Late (11 p.m. to 2 a.m.), or Overnight (2 to 6 a.m.).</p>
-            <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as every 10, 15, 20, 30, or 60 minutes or less, used to colour and filter service on the map.</p>
-            <p><strong className="text-[var(--text-primary)]">Service class:</strong> The operating pattern assigned to a route or pattern: regular, time-limited, or irregular.</p>
-            <p><strong className="text-[var(--text-primary)]">Sustained service:</strong> Service whose departure gaps remain within the qualification tolerance across the analysed window, rather than only appearing frequent in a short burst.</p>
+            <p><strong className="text-[var(--text-primary)]">Headway:</strong> The time between consecutive scheduled departures, which is roughly how long a rider who just missed a vehicle waits for the next one.</p>
+            <p><strong className="text-[var(--text-primary)]">Frequency:</strong> How often a route runs, stated as a headway. Atlas reports scheduled frequency: what the timetable promises, not what happened on the street.</p>
+            <p><strong className="text-[var(--text-primary)]">“About every N min”:</strong> The typical wait on a route card: the middle value (median) of the scheduled gaps, so one unusually long or short gap does not change it. A range such as “about every 6–12 min” means the typical wait differs between directions or branches.</p>
+            <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as every 10, 15, 20, 30, or 60 minutes or less, used to colour and filter routes on the map. The filter reads “every 10 min or better” and the legend “≤10 min”; both mean the route clears that band.</p>
+            <p><strong className="text-[var(--text-primary)]">Route rating:</strong> A route’s tier, line colour, and filter result are set by the worst service it gives anywhere: its slower direction and its least frequent stop along the line. The rating is what a rider can count on along the whole line, so it can be lower than the card’s typical wait.</p>
+            <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: AM Peak (6 to 9 a.m.), Midday (9 a.m. to 3 p.m.), PM Peak (3 to 7 p.m.), Evening (7 to 11 p.m.), Late (11 p.m. to 2 a.m.), or Overnight (2 to 6 a.m.). Each period is measured on its own, so a quiet evening is not hidden by a busy midday.</p>
+            <p><strong className="text-[var(--text-primary)]">Span:</strong> The hours a route runs, from its first trip to its last. A tier only counts if service keeps up across the whole span being measured, not just for a short burst.</p>
+            <p><strong className="text-[var(--text-primary)]">Branch:</strong> One of several paths that share a route name, such as trips that split to different destinations or turn back early. The route card lists each branch with its own wait.</p>
+            <p><strong className="text-[var(--text-primary)]">Shared stretch:</strong> The part of a route where its branches run together, so riders there get the combined service of every branch. The card shows it as “Shared stretch”, or “Combined” when the value is estimated from the branches’ own waits; it never lifts the route’s own rating.</p>
+            <p><strong className="text-[var(--text-primary)]">Limited:</strong> Shown instead of a wait when a route runs during a period but has too few trips for a trustworthy frequency. It tells a planner the service exists without claiming a cadence it does not have.</p>
+            <p><strong className="text-[var(--text-primary)]">Service class:</strong> The operating pattern of a route: regular (runs through the normal day), time-limited (runs predictably for only part of the day, such as rush hour), or irregular (school runs, routes with one or two trips, and other one-off service).</p>
+            <p><strong className="text-[var(--text-primary)]">Time-limited route:</strong> A route that runs predictably for only part of the day, such as peak hours only. Periods when it does not run stay empty instead of borrowing an all-day value.{showBetaFeatures ? ' Outside the public build, “Hide limited-service routes” hides these.' : ''}</p>
+            <p><strong className="text-[var(--text-primary)]">Irregular route:</strong> Exceptional or very sparse service, such as school buses, one- or two-trip routes, and demand-responsive shuttles. Hidden by default with “Hide irregular routes”, because a frequency for it would mislead.</p>
+            <p><strong className="text-[var(--text-primary)]">Sustained service:</strong> Service whose gaps stay within the tier’s small tolerance across the whole window, rather than only looking frequent in a short burst.</p>
+            <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs through the selected period but not consistently. The card names the longest gap, so a planner can see a hole the typical wait hides.</p>
+            <p><strong className="text-[var(--text-primary)]">“Weekday schedules vary”:</strong> Shown when the route earns different tiers on different weekdays. The tier shown is the slowest weekday’s; the wait is a typical weekday’s.</p>
+            <p><strong className="text-[var(--text-primary)]">Expired feed notice:</strong> “[Agency]’s timetable ended on [date]” means the newest schedule Atlas could verify has run out. Atlas keeps showing it, checks weekly for a newer feed, and the agency’s website may already have a newer timetable.</p>
+            {showOnDemand && <p><strong className="text-[var(--text-primary)]">On-demand zone:</strong> An area served by booked rides instead of a fixed route, such as a dial-a-ride or microtransit zone. It is drawn as a shaded area with its hours and is never given a route frequency.</p>}
             <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status, and correction history attached to an Atlas result.</p>
             <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>
+            {(showBetaFeatures || showLive) && (
+              <Subsection title="Coming with Live">
+                <p>These terms describe the live route-performance view, which compares recorded vehicle positions with the timetable. It is still being tested and covers only a few routes.</p>
+                <p><strong className="text-[var(--text-primary)]">Running time:</strong> How long vehicles actually take between two stops, compared with what the timetable allows for that time of day. The card says “Takes N min longer than scheduled” where the schedule is too tight, meaning riders arrive later than promised there.</p>
+                <p><strong className="text-[var(--text-primary)]">“1 in 10 take N+ min longer”:</strong> The slow end of running time: one trip in ten (the 90th percentile) is at least this much late on that stretch. It shows how much padding a reliable schedule would need, not just the typical delay.</p>
+                <p><strong className="text-[var(--text-primary)]">“Looser than needed”:</strong> A stretch where the timetable allows more time than vehicles use, typically and on 9 trips in 10. Vehicles there may wait to stay on schedule, so the time could be moved to where it runs short.</p>
+                <p><strong className="text-[var(--text-primary)]">Spacing:</strong> How evenly vehicles arrive at a stop compared with the timetable’s gaps, also called headway adherence. The card gives the share of gaps “close to scheduled”, meaning within half of the scheduled gap either way.</p>
+                <p><strong className="text-[var(--text-primary)]">Extra wait:</strong> How much longer a rider arriving at random waits than the timetable implies, the measure transit agencies call excess wait time. Bunched vehicles raise it even when every trip runs, which is why it is the standard check for frequent routes.</p>
+                <p><strong className="text-[var(--text-primary)]">“Stood still 2+ min”:</strong> A vehicle barely moved for two minutes or more near a stop. It could be holding for time, a signal, or a blockage; the data cannot tell which.</p>
+                <p><strong className="text-[var(--text-primary)]">Unseen trips:</strong> Scheduled trips that no vehicle reported in the live feed. They are left out of the spacing numbers, so real waits can be longer than shown, and they are not a count of cancellations.</p>
+                <p><strong className="text-[var(--text-primary)]">Time bands:</strong> The parts of the day live numbers are grouped by: All day, AM rush (7 to 10 a.m.), Midday (10 a.m. to 3 p.m.), PM rush (3 to 7 p.m.), and Evening (7 to 10 p.m.). Each stretch is compared with the timetable for the same band.</p>
+              </Subsection>
+            )}
           </Section>
 
           <SiteContact title="Technical questions and feedback" subject="Atlas Feedback" linkLabel="Contact us with a question or correction">

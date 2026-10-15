@@ -28,6 +28,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Added
 
+- **The docs glossary now explains the words used on route cards and filters in plain language**: "about every N min", tiers, the whole-line route rating, shared stretches, limited, time-limited and irregular routes, and the expired-feed notice. Beta also lists the coming Live terms (running time, "1 in 10", extra wait, spacing).
 - **The route card says when only the shared section meets the filter**: a route whose branches fail the filter but share a frequent stretch now says so, instead of looking like a mix-up (CIV-82).
 - **Search finds metro areas, not just agencies and stops**: typing "Montreal" (accents and case ignored) lists the area at the top, and picking it zooms the map there, like opening a ?area= link
 
