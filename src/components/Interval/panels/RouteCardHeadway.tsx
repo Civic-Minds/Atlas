@@ -193,6 +193,8 @@ export interface RouteCardHeadwayProps {
   hideSpan: boolean;
   routeIsStale: boolean;
   selectedRouteOutOfFilter: boolean;
+  /** Night and Frequent Service ignore the period and speed filters, so the card shows no notice about them. */
+  hideFilterNotices?: boolean;
   /** Compare mode: this route on each side. */
   compareRows?: CompareRouteRow[] | null;
   expDateStr: string;
@@ -226,6 +228,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   hideSpan,
   routeIsStale,
   selectedRouteOutOfFilter,
+  hideFilterNotices = false,
   compareRows = null,
   expDateStr,
   hoveredBranch,
@@ -276,14 +279,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       selectedPeriod.endHour,
     ).join(', ')
     : '';
-  const periodNotice = selectedPeriod && !hasPeriodService
+  const periodNotice = !hideFilterNotices && selectedPeriod && !hasPeriodService
       ? periodServiceNotice(
       formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
       hasPartialPeriodService,
       activePeriodRangeText,
     )
     : null;
-  const unevenNotice = selectedPeriod && hasPeriodService && unevenGap > 0
+  const unevenNotice = !hideFilterNotices && selectedPeriod && hasPeriodService && unevenGap > 0
     ? unevenServiceNotice(unevenGap)
     : null;
   const coreGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));

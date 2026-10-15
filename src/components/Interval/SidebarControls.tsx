@@ -1093,6 +1093,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   hideSpan={hideSpan}
                   routeIsStale={routeIsStale}
                   selectedRouteOutOfFilter={selectedRouteOutOfFilter}
+                  hideFilterNotices={nightServiceView}
                   compareRows={compareRows}
                   expDateStr={expDateStr}
                   hoveredBranch={hoveredBranch}

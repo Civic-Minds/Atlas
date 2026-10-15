@@ -633,7 +633,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   }, [compareActive, selectedRoute, layers, compareA, compareSide, selectedAgencies, selectedModes, hideSpan, hideLimitedService, livePollingOnly]);
 
   const selectedRouteOutOfFilter = useMemo(() => {
-    if (!selectedRoute || frequentServiceView || (maxHeadway === Infinity && period === 'all')) return false;
+    if (!selectedRoute || frequentServiceView || nightServiceView || (maxHeadway === Infinity && period === 'all')) return false;
     const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
     const features = layers[slug]?.features.filter(f => {
       const p = f.properties as ShapeProperties;

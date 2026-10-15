@@ -59,6 +59,8 @@ interface Props {
   query?: string;
   frequency: NightServiceFrequency;
   onRouteSelect?: (agencySlug: string, routeId: string) => void;
+  /** A route is selected: its card takes this panel's place, as in Live. */
+  selectionActive?: boolean;
 }
 
 function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; w: number; n: number; e: number }): boolean {
@@ -80,7 +82,7 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
   return maxLon >= bounds.w && minLon <= bounds.e && maxLat >= bounds.s && minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, layers, query = '', frequency, onRouteSelect }: Props) {
+export default function NightService({ active, sidebarLeft, layers, query = '', frequency, onRouteSelect, selectionActive = false }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
@@ -172,7 +174,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
   return (
       <Panel
         enter
-        className={`absolute top-[4.5rem] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-136px)] pointer-events-auto`}
+        className={`absolute top-[4.5rem] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-136px)] ${selectionActive ? 'invisible pointer-events-none' : 'pointer-events-auto'}`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
         <PanelTitleBar>

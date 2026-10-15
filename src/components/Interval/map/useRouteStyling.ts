@@ -358,6 +358,25 @@ export function useRouteStyling(
         }
       }
 
+      // Night Service draws its own overlay layer: fade it behind a selected route exactly like the main
+      // map does for its route layers (same match expression, same dim values).
+      if (map.getLayer('night-service-routes-layer')) {
+        if (nightServiceView && selectedRoute) {
+          const focused = buildFocusedRoutePaint(routeKeyMatchExpression(selectedRoute), DIM_OPACITY, DIM_WIDTH);
+          map.setPaintProperty('night-service-routes-layer', 'line-opacity', focused.opacity as any);
+          map.setPaintProperty('night-service-routes-layer', 'line-width', [
+            'interpolate', ['linear'], ['zoom'],
+            8, ['case', routeKeyMatchExpression(selectedRoute), 3.5, 1.5],
+            11, ['case', routeKeyMatchExpression(selectedRoute), 3.5, 2.0],
+            14, ['case', routeKeyMatchExpression(selectedRoute), 3.5, 2.5],
+            17, 3.5,
+          ] as any);
+        } else {
+          map.setPaintProperty('night-service-routes-layer', 'line-opacity', 0.9);
+          map.setPaintProperty('night-service-routes-layer', 'line-width', ['interpolate', ['linear'], ['zoom'], 8, 2, 11, 2.5, 14, 3.2, 17, 4.5]);
+        }
+      }
+
       // The bright qualifying-segment overlay only makes sense alongside the dimmed-base-route
       // treatment above (default state, nothing else focused) -- otherwise it would draw a bright
       // "this part qualifies" line over routes a selection/hover/stop-focus state has already
