@@ -9,6 +9,8 @@ import { escapeHtml } from '../../../lib/escapeHtml';
 import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint';
 import { useColorVision } from '../../../context/ColorVisionContext';
 import { delayAmount } from '../../../utils/headwayText';
+import { frameRoute } from './routeFraming';
+import { lineCoordinates } from '../../../../shared/routeGeometry';
 
 /** Exported for unit tests — GTFS-RT text must be escaped before innerHTML. */
 export function vehicleTooltipHtml(v: LiveVehicle): string | null {
@@ -45,15 +47,6 @@ const statusRgb: Record<string, [number, number, number]> = {
  * Live vehicle map layers: deck.gl is dynamically imported only when Live is
  * active so Frequency Map doesn't pay the deck bundle cost up front.
  */
-/** Frame part of a live route the way selecting the route does; on a phone the sheet sits below, not beside. */
-function fitLiveBounds(map: maplibregl.Map, [w, s, e, n]: [number, number, number, number], maxZoom = 14) {
-  const narrow = map.getContainer().clientWidth < 640;
-  map.fitBounds([[w, s], [e, n]], {
-    padding: narrow ? { top: 60, bottom: Math.round(map.getContainer().clientHeight * 0.45), left: 30, right: 30 } : { top: 120, bottom: 120, left: 320, right: 80 },
-    maxZoom,
-  });
-}
-
 export function useLiveVehiclesLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
   deckOverlayRef: React.RefObject<MapboxOverlay | null>,
@@ -269,21 +262,7 @@ export function useLiveVehiclesLayer(
 
       if (routeKey && liveFittedRouteRef.current !== routeKey) {
         liveFittedRouteRef.current = routeKey;
-        let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-        features.forEach(f => {
-          const geom = f.geometry as { type: string; coordinates: number[][] | number[][][] };
-          const coords =
-            geom.type === 'LineString' ? (geom.coordinates as number[][])
-            : geom.type === 'MultiLineString' ? (geom.coordinates as number[][][]).flat()
-            : [];
-          for (const [lng, lat] of coords) {
-            if (lng < minLng) minLng = lng;
-            if (lng > maxLng) maxLng = lng;
-            if (lat < minLat) minLat = lat;
-            if (lat > maxLat) maxLat = lat;
-          }
-        });
-        if (minLng < maxLng) fitLiveBounds(map, [minLng, minLat, maxLng, maxLat]);
+        frameRoute(map, features.flatMap(f => lineCoordinates(f.geometry)));
       }
     } else {
       source.setData({ type: 'FeatureCollection', features: [] });
@@ -317,7 +296,8 @@ export function useLiveVehiclesLayer(
     const map = mapRef.current;
     const area = liveOverlay?.fitArea;
     if (!map || !mapLoaded || !area) return;
-    fitLiveBounds(map, area.bounds, 16);
+    const [w, so, e, n] = area.bounds;
+    frameRoute(map, [[w, so], [e, n]], { maxZoom: 16 });
   }, [liveOverlay?.fitArea, mapLoaded, mapRef]);
 
   // Highlighted stretch, drawn over the route shape.

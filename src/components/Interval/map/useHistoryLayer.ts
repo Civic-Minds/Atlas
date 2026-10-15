@@ -4,6 +4,7 @@ import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useHistoryMapOverlay } from '../../../context/HistoryMapOverlay';
 import { useColorVision } from '../../../context/ColorVisionContext';
 import { isDrawableLineCoordinates, lineCoordinates } from '../../../../shared/routeGeometry';
+import { routeFramePadding } from './routeFraming';
 
 /** History map layers: route shape, time-scrubber routes, and camera fit. */
 export function useHistoryLayer(
@@ -93,7 +94,7 @@ export function useHistoryLayer(
         if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
       });
       if (minLng < maxLng) {
-        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
+        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: routeFramePadding(map, 'right'), maxZoom: 14 });
       }
     } else if (historyOverlay.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0) {
       let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
@@ -107,7 +108,7 @@ export function useHistoryLayer(
         }
       }
       if (minLng < maxLng && minLat < maxLat) {
-        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 11 });
+        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: routeFramePadding(map, 'right'), maxZoom: 11 });
       }
     }
 
@@ -132,7 +133,7 @@ export function useHistoryLayer(
             }
           }
           if (minLng < maxLng && minLat < maxLat) {
-            map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 11 });
+            map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: routeFramePadding(map, 'right'), maxZoom: 11 });
           }
         };
         tryZoomHandlerRef.current = fitAgencyRoutes;
@@ -158,7 +159,7 @@ export function useHistoryLayer(
             });
           });
           if (minLng < maxLng) {
-            map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
+            map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: routeFramePadding(map, 'right'), maxZoom: 14 });
           }
         };
         tryZoomHandlerRef.current = tryZoom;

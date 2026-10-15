@@ -42,6 +42,7 @@ import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
 import { fitTargetForPoints, routeFitTarget } from '../../utils/routeFitTarget';
+import { routeFramePadding } from './map/routeFraming';
 import { lineCoordinates } from '../../../shared/routeGeometry';
 import Panel from '../ui/Panel';
 import ListRow from '../ui/ListRow';
@@ -1954,19 +1955,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }
 
     if (target?.kind === 'bounds') {
-      // Asymmetric padding: route card sits on the left (~sidebar + panel width).
-      // Uniform padding (80) centers the line in the full canvas so the west end
-      // hides under the card — same issue live vehicles already avoided with left: 320.
-      map.fitBounds(target.bounds, {
-        padding: { top: 80, bottom: 80, left: 320, right: 80 },
-        maxZoom: 14,
-      });
+      // Asymmetric padding keeps the line clear of the route card (routeFraming).
+      map.fitBounds(target.bounds, { padding: routeFramePadding(map), maxZoom: 14 });
       fittedRouteRef.current = selectedRoute;
     } else if (target?.kind === 'point') {
       map.flyTo({
         center: target.center,
         zoom: Math.max(map.getZoom(), 14),
-        padding: { top: 80, bottom: 80, left: 320, right: 80 },
+        padding: routeFramePadding(map),
         duration: 900,
         essential: true,
       });
