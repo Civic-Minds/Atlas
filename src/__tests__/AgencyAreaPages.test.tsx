@@ -191,3 +191,19 @@ describe('not found is never shown while loading', () => {
     await waitFor(() => expect(screen.getByText('No page for this region')).toBeTruthy(), { timeout: 25000 });
   }, 60000);
 });
+
+describe('AgencyPage "See all agencies"', () => {
+  it('sits in the Nearby agencies heading row when there are nearby agencies, and once only', () => {
+    const data = agencyPageData(TTC, [TTC, HSR], '2026-10-13T00:00:00Z', { slug: 'toronto', name: 'Toronto' });
+    view(<AgencyPage data={data} />);
+    const links = screen.getAllByRole('link', { name: 'See all agencies' });
+    expect(links).toHaveLength(1);
+    expect(links[0].parentElement).toBe(screen.getByRole('heading', { name: /Nearby agencies/ }).parentElement);
+  });
+
+  it('still has the link when there are no nearby agencies', () => {
+    view(<AgencyPage data={agencyPageData(TTC, [TTC], '2026-10-13T00:00:00Z')} />);
+    expect(screen.queryByRole('heading', { name: /Nearby agencies/ })).toBeNull();
+    expect(screen.getAllByRole('link', { name: 'See all agencies' })).toHaveLength(1);
+  });
+});

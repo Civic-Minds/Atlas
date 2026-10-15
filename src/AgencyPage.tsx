@@ -172,9 +172,14 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">
-              <h2 id="nearby-heading" className="text-xl font-black tracking-tight">
-                {data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={`/area/${data!.area.slug}`}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
-              </h2>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+                <h2 id="nearby-heading" className="text-xl font-black tracking-tight">
+                  {data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={`/area/${data!.area.slug}`}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
+                </h2>
+                <a href="/agencies" className={PAGE_ACTION}>
+                  See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+              </div>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (
                   <li key={o.slug}><a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(o.slug)}>{o.name}</a></li>
@@ -183,9 +188,11 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             </section>
           )}
 
-          <a href="/agencies" className={`${PAGE_ACTION} mt-6`}>
-            See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </a>
+          {nearby.length === 0 && (
+            <a href="/agencies" className={`${PAGE_ACTION} mt-6`}>
+              See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          )}
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
             {agencyDatesText(agency, data!.releaseDate)}
