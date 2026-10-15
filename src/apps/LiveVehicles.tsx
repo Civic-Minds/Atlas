@@ -85,6 +85,9 @@ function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
 
 const MIN_LIVE_ZOOM = 9;
 
+/** Direction work per polled vehicle, kept across zoom steps (see resolvedVehiclesBySlug). */
+const resolvedDirections = new WeakMap<LiveVehicle, LiveVehicle>();
+
 export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false, routeRequest = null }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
@@ -132,15 +135,25 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const resolved: Record<string, LiveVehicle[]> = {};
     for (const [slug, vehicles] of Object.entries(vehiclesBySlug)) {
       const fc = layers[slug] ?? localLayers[slug];
-      resolved[slug] = fc
-        ? vehicles.map(vehicle => {
-            const routeFeatures = fc.features.filter(feature =>
-              (feature.properties as any)?.routeShortName === vehicle.routeShortName,
-            );
-            const match = inferLiveDirection(vehicle, routeFeatures);
-            return { ...vehicle, directionId: match.directionId, headsign: match.headsign };
-          })
-        : vehicles;
+      if (!fc) { resolved[slug] = vehicles; continue; }
+      // Group the route shapes once, not once per vehicle.
+      const featuresByRoute = new Map<string, GeoJSON.Feature[]>();
+      for (const feature of fc.features) {
+        const name = (feature.properties as any)?.routeShortName;
+        const list = featuresByRoute.get(name);
+        if (list) list.push(feature); else featuresByRoute.set(name, [feature]);
+      }
+      resolved[slug] = vehicles.map(vehicle => {
+        // `layers` is rebuilt on every zoom step, but a vehicle's direction doesn't change until the next
+        // poll gives a new vehicle object, so work it out once per vehicle.
+        const cached = resolvedDirections.get(vehicle);
+        if (cached) return cached;
+        const routeFeatures = featuresByRoute.get(vehicle.routeShortName) ?? [];
+        const match = inferLiveDirection(vehicle, routeFeatures);
+        const out = { ...vehicle, directionId: match.directionId, headsign: match.headsign };
+        if (routeFeatures.length > 0) resolvedDirections.set(vehicle, out);
+        return out;
+      });
     }
     return resolved;
   }, [vehiclesBySlug, layers, localLayers]);
