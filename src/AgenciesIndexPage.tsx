@@ -12,7 +12,7 @@ import historyAgencies from '../shared/data/history-agencies.json';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { isLiveEligibleSlug } from '../shared/livePollingConfig';
 import { applySeoToDocument } from './lib/seoDom';
-import { CHIP, LINK } from './pageStyles';
+import { TAG, LINK } from './pageStyles';
 import PageShell from './components/ui/PageShell';
 
 /** Read this page's data from the JSON the prerender embedded next to the app root. */
@@ -38,8 +38,8 @@ const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAg
 function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
   return (
     <>
-      {live && <span className={`${CHIP} ml-1.5 inline-block`}>Live</span>}
-      {history && <span className={`${CHIP} ml-1 inline-block`}>History</span>}
+      {live && <span className={`${TAG} ml-1.5 inline-block`}>Live</span>}
+      {history && <span className={`${TAG} ml-1 inline-block`}>History</span>}
     </>
   );
 }
@@ -88,12 +88,12 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
               <h2 id={`index-${g.country}`} className="text-xl font-black tracking-tight">{g.country}</h2>
               {g.regions.map(r => (
                 <div key={r.region} className="mt-5">
-                  <h3 className="text-base font-black">{r.region}</h3>
+                  {r.region !== g.country && <h3 className="text-base font-black">{r.region}</h3>}
                   <ul className="mt-2 text-sm sm:columns-2 sm:gap-x-8">
                     {r.agencies.map(a => {
                       const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{a.routes === 1 ? 'route' : 'routes'}</span>;
-                      const live = FEATURES.beta && isLiveEligibleSlug(a.slug);
-                      const history = FEATURES.beta && HISTORY_SLUGS.has(a.slug);
+                      const live = FEATURES.live && isLiveEligibleSlug(a.slug);
+                      const history = FEATURES.history && HISTORY_SLUGS.has(a.slug);
                       if (live || history) {
                         // Tagged rows stay on one line: a long name shortens with "…" instead of wrapping.
                         return (

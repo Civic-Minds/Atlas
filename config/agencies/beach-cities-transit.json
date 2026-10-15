@@ -6,6 +6,7 @@
     33.8492,
     -118.3884
   ],
+  "region": "California",
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1999/latest.zip",
   "lastFeedExpiry": "20281015",
   "lastFeedVersion": "New Schedule",

@@ -65,12 +65,12 @@ export function CompareSidePicker({ side, onChange }: { side: CompareSide; onCha
  * sits with the other views rather than with the filter chips. It toggles like the other view tabs:
  * pressed while comparing, and pressing it again goes back to the single map.
  */
-export function CompareTab({ active, onStart, onExit, collapsed = false }: { active: boolean; onStart: () => void; onExit: () => void; /** Another mode is active: show the icon only. */ collapsed?: boolean }) {
+export function CompareTab({ active, onStart, onExit }: { active: boolean; onStart: () => void; onExit: () => void }) {
   return (
     <ModeTab
       icon={<Columns2 className="h-3.5 w-3.5" aria-hidden="true" />}
       label="Compare" ariaLabel="Compare two maps"
-      active={active} collapsed={collapsed}
+      active={active}
       onClick={active ? onExit : onStart}
     />
   );

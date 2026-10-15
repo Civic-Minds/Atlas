@@ -18,6 +18,7 @@ import {
   type AgencyPageRoute,
 } from '../shared/agencyPages';
 import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
+import { andOthers } from '../shared/overflowText';
 import { routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE } from '../shared/config';
 import PageShell from './components/ui/PageShell';
@@ -72,7 +73,7 @@ function Intro({ data }: { data: AgencyPageData }) {
               {c.page ? <a className={link} href={agencyPagePath(c.slug)}>{c.name}</a> : c.name}
             </span>
           ))}
-          {others > 0 ? ` and ${others} ${others === 1 ? 'other' : 'others'}` : ''}
+          {others > 0 ? ` ${andOthers(others, 'agency', 'agencies')}` : ''}
         </>
       )}
       .
@@ -145,14 +146,14 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <section className="mt-14" aria-labelledby="routes-heading">
             <h2 id="routes-heading" className="text-xl font-black tracking-tight">Routes and weekday frequency</h2>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
-            <FrequencyBar counts={bandCounts(agency.routes)} />
+            <FrequencyBar counts={bandCounts(agency.routes)} mapHref={agencyMapHref(agency)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
             {stats.byMode.map(group => (
               <div key={group.mode} className="mt-4 overflow-x-auto">
                 <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
-                <div className="min-w-[44rem]">
                   <DataTable
                     caption={`${group.label} ${group.routes.length}`}
+                    fixed
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
@@ -164,16 +165,20 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                       { key: 'overnight', header: 'Overnight', cell: r => cell('overnight', r) },
                     ]}
                   />
-                </div>
               </div>
             ))}
           </section>
 
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">
-              <h2 id="nearby-heading" className="text-xl font-black tracking-tight">
-                {data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={`/area/${data!.area.slug}`}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
-              </h2>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+                <h2 id="nearby-heading" className="text-xl font-black tracking-tight">
+                  {data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={`/area/${data!.area.slug}`}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
+                </h2>
+                <a href="/agencies" className={PAGE_ACTION}>
+                  See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+              </div>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (
                   <li key={o.slug}><a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(o.slug)}>{o.name}</a></li>
@@ -182,9 +187,11 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             </section>
           )}
 
-          <a href="/agencies" className={`${PAGE_ACTION} mt-6`}>
-            See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </a>
+          {nearby.length === 0 && (
+            <a href="/agencies" className={`${PAGE_ACTION} mt-6`}>
+              See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          )}
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
             {agencyDatesText(agency, data!.releaseDate)}

@@ -1,6 +1,4 @@
 import React from 'react';
-import { useInRouterContext, useNavigate } from 'react-router';
-import { useSegmentDelay } from '../../../hooks/useSegmentDelay';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
@@ -180,8 +178,6 @@ export interface RouteCardHeadwayProps {
   agencyFeatures?: readonly GeoJSON.Feature[];
   /** Lettered variants sharing this route's base number (GRTC 1/1A/1B/1C style). */
   variantFamily?: VariantFamily | null;
-  liveRouteInfo: object | null;
-  liveStatus: string;
   routeSlug: string | undefined;
   routeAgency: Agency | undefined;
   setSelectedAgencySlug: ((slug: string | null) => void) | undefined;
@@ -193,6 +189,8 @@ export interface RouteCardHeadwayProps {
   hideSpan: boolean;
   routeIsStale: boolean;
   selectedRouteOutOfFilter: boolean;
+  /** Night and Frequent Service ignore the period and speed filters, so the card shows no notice about them. */
+  hideFilterNotices?: boolean;
   /** Compare mode: this route on each side. */
   compareRows?: CompareRouteRow[] | null;
   expDateStr: string;
@@ -201,20 +199,10 @@ export interface RouteCardHeadwayProps {
   onInfoOpen?: OpenInfoFn;
 }
 
-/** Router navigation when the card is inside a router (the app); null in isolated renders (tests). */
-function useOptionalNavigate() {
-  const inRouter = useInRouterContext();
-  // The router context never appears or disappears for a mounted card, so the hook order is stable.
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  return inRouter ? useNavigate() : null;
-}
-
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   currentRoute,
   agencyFeatures,
   variantFamily,
-  liveRouteInfo,
-  liveStatus,
   routeSlug,
   routeAgency,
   setSelectedAgencySlug,
@@ -226,6 +214,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   hideSpan,
   routeIsStale,
   selectedRouteOutOfFilter,
+  hideFilterNotices = false,
   compareRows = null,
   expDateStr,
   hoveredBranch,
@@ -233,9 +222,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   onInfoOpen,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
-  // Routes with Live analysis link to it; the analysis itself lives only in Live mode.
-  const hasLiveAnalysis = useSegmentDelay(routeSlug, currentRoute.routeShortName) != null;
-  const navigate = useOptionalNavigate();
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
   const routeOverrideNote = routeAgency?.overrideNote
@@ -276,14 +262,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       selectedPeriod.endHour,
     ).join(', ')
     : '';
-  const periodNotice = selectedPeriod && !hasPeriodService
+  const periodNotice = !hideFilterNotices && selectedPeriod && !hasPeriodService
       ? periodServiceNotice(
       formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
       hasPartialPeriodService,
       activePeriodRangeText,
     )
     : null;
-  const unevenNotice = selectedPeriod && hasPeriodService && unevenGap > 0
+  const unevenNotice = !hideFilterNotices && selectedPeriod && hasPeriodService && unevenGap > 0
     ? unevenServiceNotice(unevenGap)
     : null;
   const coreGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
@@ -425,12 +411,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
 
   return (
     <SidebarCardShell>
-      {liveRouteInfo && liveStatus !== 'noData' && (
-        <div className="flex items-center gap-1.5 -mt-1 mb-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-dim)] shrink-0" />
-          <span className="text-xs font-black text-[var(--text-dim)]">Scheduled</span>
-        </div>
-      )}
       <SidebarCardHeaderBlock>
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
@@ -445,23 +425,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             ref={reportRef}
             title={`${routeAgency?.name ?? agencyDisplayName} ${currentRoute.routeShortName ?? 'Unknown route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
             details={reportDetails}
-            showLiveReason={!!liveRouteInfo && liveStatus !== 'noData'}
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
         </div>
       </SidebarCardHeaderBlock>
-      {hasLiveAnalysis && (
-        <button
-          type="button"
-          onClick={() => {
-            const to = `/apps/live?route=${encodeURIComponent(`${routeSlug}::${currentRoute.routeShortName}`)}`;
-            if (navigate) navigate(to); else window.location.assign(to);
-          }}
-          className="mb-3 w-full text-left text-xs font-bold text-[var(--accent)] hover:underline"
-        >
-          See how the {currentRoute.routeShortName} is doing in Live →
-        </button>
-      )}
       {(<>
       {compareRows && (() => {
         const { headline, lines } = compareCardSummary(compareRows);

@@ -9,6 +9,8 @@ export interface DataTableColumn<T> {
   className?: string;
   /** Render the body cells of this column as row headers (th scope="row"). */
   rowHeader?: boolean;
+  /** Fixed layout only: width in rem. Defaults to FIXED_FIRST_COLUMN_REM for the first column, FIXED_COLUMN_REM for the rest. */
+  width?: number;
 }
 
 /**
@@ -53,15 +55,36 @@ interface DataTableProps<T> {
   variant?: keyof typeof VARIANTS;
   /** Screen-reader caption. */
   caption?: string;
+  /**
+   * Fixed column layout: the first column has one set width and every other column has the same set width, so
+   * columns line up across tables and pages (agency and area pages). The table is only as wide as its columns and
+   * leftover space stays empty on the right. Long text in the first column wraps.
+   * Without it, each table sizes its columns to its own content.
+   */
+  fixed?: boolean;
 }
 
+/** Width of the first column in a fixed-layout table. One value for every table, so they all line up. */
+export const FIXED_FIRST_COLUMN_REM = 16;
+/** Width of every other column in a fixed-layout table. */
+export const FIXED_COLUMN_REM = 8;
+
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption }: DataTableProps<T>) {
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false }: DataTableProps<T>) {
   const v = VARIANTS[variant];
+  const widths = columns.map((col, i) => col.width ?? (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
   const pad = (i: number) => (v.gap && i < columns.length - 1 ? ' pr-4' : '');
   return (
-    <table className={v.table}>
+    <table
+      className={fixed ? `${v.table} table-fixed` : v.table}
+      style={fixed ? { width: `${widths.reduce((a, b) => a + b, 0)}rem` } : undefined}
+    >
       {caption && <caption className="sr-only">{caption}</caption>}
+      {fixed && (
+        <colgroup>
+          {columns.map((col, i) => <col key={col.key} style={{ width: `${widths[i]}rem` }} />)}
+        </colgroup>
+      )}
       <thead className={v.thead}>
         <tr className={v.headRow}>
           {columns.map((col, i) => (
@@ -73,7 +96,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
         {rows.map(row => (
           <tr key={rowKey(row)} className={v.row}>
             {columns.map((col, i) => {
-              const className = `${v.td}${pad(i)}${col.className ? ` ${col.className}` : ''}`;
+              const className = `${v.td}${pad(i)}${fixed && i === 0 ? ' break-words' : ''}${col.className ? ` ${col.className}` : ''}`;
               return col.rowHeader
                 ? <th key={col.key} scope="row" className={className}>{col.cell(row)}</th>
                 : <td key={col.key} className={className}>{col.cell(row)}</td>;

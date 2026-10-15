@@ -24,10 +24,7 @@ vi.mock('../apps/LiveVehicles', () => ({ default: () => null }));
 vi.mock('../apps/History', () => ({ default: () => null }));
 vi.mock('../apps/NightService', () => ({ default: () => null }));
 vi.mock('../components/InfoPanel', () => ({ default: () => null }));
-vi.mock('../../shared/historyEligibility', () => ({
-  agencyQualifiesForHistory: () => true,
-  agencyQualifiesForHistoryExplore: () => true,
-}));
+vi.mock('../../shared/data/history-agencies.json', () => ({ default: { minYears: 10, slugs: ['ttc'] } }));
 vi.mock('../../shared/config', async importOriginal => {
   const actual = await importOriginal<typeof import('../../shared/config')>();
   return { ...actual, FEATURES: { ...actual.FEATURES, live: true, history: true, compareMode: true, collapseModeTabs: true } };
@@ -49,7 +46,7 @@ describe('switching modes (#888)', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
     vi.stubGlobal('fetch', vi.fn(async (url: string) => ({
       ok: true,
-      json: async () => (String(url).includes('history-config') ? [{ slug: 'ttc' }] : { agencies: [] }),
+      json: async () => ({ agencies: [] }),
     })));
   });
   afterEach(() => vi.unstubAllGlobals());
@@ -89,5 +86,55 @@ describe('switching modes (#888)', () => {
 
     expect(mapMounts).toBe(1);
     expect(agencyLists.size).toBe(1);
+  });
+
+  it('the Atlas logo leaves Live and History in place, without remounting the map', async () => {
+    const onGoHome = vi.fn();
+    render(<BrowserRouter><App onGoHome={onGoHome} /></BrowserRouter>);
+    await screen.findByTestId('map', undefined, { timeout: 5000 });
+    const historyTab = () => screen.getByRole('button', { name: /Historical service|Back to frequency map/ });
+    await waitFor(() => historyTab());
+
+    for (const open of [() => screen.getByRole('button', { name: 'Live vehicles' }), historyTab]) {
+      await act(async () => { fireEvent.click(open()); });
+      await waitFor(() => expect(window.location.pathname).not.toBe('/'));
+      await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Atlas home' })); });
+      await waitFor(() => expect(window.location.pathname).toBe('/'));
+    }
+    expect(onGoHome).not.toHaveBeenCalled();
+    expect(mapMounts).toBe(1);
+
+    // On the plain map the logo still resets everything, as before.
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Atlas home' })); });
+    expect(onGoHome).toHaveBeenCalledTimes(1);
+  });
+
+  // #909: the address always carries the day. Omitting "today's default" broke shared links: copied on a
+  // Wednesday, opened on a Saturday, it showed Saturday.
+  for (const [label, iso, today] of [['Wednesday', '2026-10-14T12:00:00', 'Weekday'], ['Saturday', '2026-10-17T12:00:00', 'Saturday'], ['Sunday', '2026-10-18T12:00:00', 'Sunday']] as const) {
+    it(`always writes day= to the address (${label})`, async () => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date(iso));
+      try {
+        render(<BrowserRouter><App /></BrowserRouter>);
+        await screen.findByTestId('map', undefined, { timeout: 5000 });
+        await waitFor(() => expect(new URLSearchParams(window.location.search).get('day')).toBe(today));
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  }
+
+  it('keeps a day taken from the link, even when it is not today', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-17T12:00:00')); // a Saturday
+    window.history.replaceState(null, '', '/?day=Weekday');
+    try {
+      render(<BrowserRouter><App /></BrowserRouter>);
+      await screen.findByTestId('map', undefined, { timeout: 5000 });
+      await waitFor(() => expect(new URLSearchParams(window.location.search).get('day')).toBe('Weekday'));
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

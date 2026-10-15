@@ -44,6 +44,18 @@ export function useOnDemandSources(
   }, [mapLoaded, onDemandServiceAreaData, onDemandStopData, selectedAgencySlug]);
 }
 
+/** The route features the Night Service overlay draws: service in the chosen night window. */
+export function selectNightServiceFeatures(
+  layers: Record<string, GeoJSON.FeatureCollection> | undefined,
+  nightServiceFrequency: NightServiceFrequency,
+): GeoJSON.Feature[] {
+  if (!layers) return [];
+  return Object.values(layers).flatMap(collection => collection.features.filter(feature => {
+    const properties = feature.properties as Record<string, any> | null;
+    return feature.geometry.type === 'LineString' && (properties?.[nightServiceKey(nightServiceFrequency)] === true || (nightServiceFrequency === 60 && properties?.nightService === true));
+  }));
+}
+
 /** Night Service overlay: routes with service in the chosen night window. */
 export function useNightServiceLayer(
   mapRef: MapRef,
@@ -54,13 +66,10 @@ export function useNightServiceLayer(
     nightServiceFrequency: NightServiceFrequency;
   },
 ) {
-  const nightServiceFeatures = useMemo(() => {
-    if (!nightServiceView || !layers) return [];
-    return Object.values(layers).flatMap(collection => collection.features.filter(feature => {
-      const properties = feature.properties as Record<string, any> | null;
-      return feature.geometry.type === 'LineString' && (properties?.[nightServiceKey(nightServiceFrequency)] === true || (nightServiceFrequency === 60 && properties?.nightService === true));
-    }));
-  }, [layers, nightServiceFrequency, nightServiceView]);
+  const nightServiceFeatures = useMemo(
+    () => (nightServiceView ? selectNightServiceFeatures(layers, nightServiceFrequency) : []),
+    [layers, nightServiceFrequency, nightServiceView],
+  );
 
   useEffect(() => {
     const map = mapRef.current;
@@ -77,6 +86,49 @@ export function useNightServiceLayer(
   }, [nightServiceFeatures, nightServiceView, mapLoaded]);
 }
 
+/** The route features the Frequent Service overlay draws: frequent on every chosen day, with their band. */
+export function selectFrequentServiceFeatures(
+  layers: Record<string, GeoJSON.FeatureCollection> | undefined,
+  { frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes }: {
+    frequentServiceDays: DayType[];
+    frequentServiceFrequency: FrequentServiceFrequency;
+    frequentServiceWindow: FrequentServiceWindow;
+    selectedModes: Set<number>;
+  },
+): GeoJSON.Feature[] {
+  if (!layers) return [];
+  const key = frequentServiceQueryKey(frequentServiceFrequency, frequentServiceWindow);
+  const grouped = new Map<string, GeoJSON.Feature[]>();
+  for (const feature of Object.values(layers ?? {}).flatMap(collection => collection.features)) {
+    if (feature.geometry.type !== 'LineString') continue;
+    const props = feature.properties as Record<string, any> | null;
+    if (!props?.day || !frequentServiceDays.includes(props.day) || !props.researchFrequentService?.[key]) continue;
+    const routeModes = [...selectedModes].filter(mode => mode !== ON_DEMAND_MODE);
+    if (selectedModes.size > 0 && (routeModes.length === 0 || !routeModes.includes(effectiveMode({
+      routeType: props.routeType,
+      routeLongName: props.routeLongName,
+      routeShortName: props.routeShortName,
+      agencySlug: props.agencySlug,
+    })))) continue;
+    const group = grouped.get(frequentServiceFeatureKey(props)) ?? [];
+    group.push(feature);
+    grouped.set(frequentServiceFeatureKey(props), group);
+  }
+  const qualifyingKeys = new Set([...grouped.entries()]
+    .filter(([, features]) => new Set(features.map(feature => (feature.properties as any)?.day)).size === frequentServiceDays.length)
+    .map(([group]) => group));
+  return Object.values(layers ?? {}).flatMap(collection => collection.features.filter(feature => {
+    const props = feature.properties as Record<string, any> | null;
+    return feature.geometry.type === 'LineString' && props?.day === frequentServiceDays[0] && qualifyingKeys.has(frequentServiceFeatureKey(props));
+  }).map(feature => ({
+    ...feature,
+    properties: {
+      ...(feature.properties ?? {}),
+      frequentServiceBand: frequentServiceBand(feature.properties as Record<string, any>, frequentServiceWindow, frequentServiceFrequency),
+    },
+  })));
+}
+
 /** Frequent-service overlay: routes frequent on every chosen day, banded every 15 or every 30. */
 export function useFrequentServiceLayer(
   mapRef: MapRef,
@@ -90,39 +142,10 @@ export function useFrequentServiceLayer(
     selectedModes: Set<number>;
   },
 ) {
-  const frequentServiceFeatures = useMemo(() => {
-    if (!frequentServiceView || !layers) return [];
-    const key = frequentServiceQueryKey(frequentServiceFrequency, frequentServiceWindow);
-    const grouped = new Map<string, GeoJSON.Feature[]>();
-    for (const feature of Object.values(layers ?? {}).flatMap(collection => collection.features)) {
-      if (feature.geometry.type !== 'LineString') continue;
-      const props = feature.properties as Record<string, any> | null;
-      if (!props?.day || !frequentServiceDays.includes(props.day) || !props.researchFrequentService?.[key]) continue;
-      const routeModes = [...selectedModes].filter(mode => mode !== ON_DEMAND_MODE);
-      if (selectedModes.size > 0 && (routeModes.length === 0 || !routeModes.includes(effectiveMode({
-        routeType: props.routeType,
-        routeLongName: props.routeLongName,
-        routeShortName: props.routeShortName,
-        agencySlug: props.agencySlug,
-      })))) continue;
-      const group = grouped.get(frequentServiceFeatureKey(props)) ?? [];
-      group.push(feature);
-      grouped.set(frequentServiceFeatureKey(props), group);
-    }
-    const qualifyingKeys = new Set([...grouped.entries()]
-      .filter(([, features]) => new Set(features.map(feature => (feature.properties as any)?.day)).size === frequentServiceDays.length)
-      .map(([group]) => group));
-    return Object.values(layers ?? {}).flatMap(collection => collection.features.filter(feature => {
-      const props = feature.properties as Record<string, any> | null;
-      return feature.geometry.type === 'LineString' && props?.day === frequentServiceDays[0] && qualifyingKeys.has(frequentServiceFeatureKey(props));
-    }).map(feature => ({
-      ...feature,
-      properties: {
-        ...(feature.properties ?? {}),
-        frequentServiceBand: frequentServiceBand(feature.properties as Record<string, any>, frequentServiceWindow, frequentServiceFrequency),
-      },
-    })));
-  }, [frequentServiceDays, frequentServiceFrequency, frequentServiceView, frequentServiceWindow, layers, selectedModes]);
+  const frequentServiceFeatures = useMemo(
+    () => (frequentServiceView ? selectFrequentServiceFeatures(layers, { frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes }) : []),
+    [frequentServiceDays, frequentServiceFrequency, frequentServiceView, frequentServiceWindow, layers, selectedModes],
+  );
 
   useEffect(() => {
     const map = mapRef.current;

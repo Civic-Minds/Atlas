@@ -37,6 +37,7 @@ import { describeMapExport, type MapExportBox, type MapExportDetails, type MapEx
 import { getRouteLabel, titleCase } from '../../utils/format';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
+import { mapViewKind, viewAllowsOnDemand } from '../../../shared/viewLayers';
 import { useOnDemandStatus, useReportOnDemandVisible } from '../../hooks/useOnDemandData';
 import { FEATURES } from '../../../shared/config';
 import { trackEvent, withShareTags, SHARE_UTM_MEDIUM_LINK, type ShareMedium } from '../../lib/analytics';
@@ -449,7 +450,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Each zone and stop is filtered on its own hours (zones/stops that aren't
   // running are hidden, like fixed routes); ones with no hours on file stay
   // visible but are drawn muted so they never read as confirmed service.
-  const onDemandShown = FEATURES.onDemand && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE));
+  const onDemandAllowed = viewAllowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }));
+  const onDemandShown = FEATURES.onDemand && onDemandAllowed && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE));
   useReportOnDemandVisible(onDemandShown);
   const onDemandAgencies = useMemo(() => (
     onDemandShown
@@ -615,7 +617,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
     };
 
-    map.on('sourcedata', checkRouteTiles);
+    // 'sourcedata' fires for every tile that lands, many times a second while panning, and each check
+    // deserialises every loaded route tile. Coalesce those bursts; idle and moveend still check at once.
+    let sourceDataTimer: number | undefined;
+    const checkRouteTilesSoon = () => {
+      if (sourceDataTimer !== undefined) return;
+      sourceDataTimer = window.setTimeout(() => { sourceDataTimer = undefined; checkRouteTiles(); }, 300);
+    };
+    map.on('sourcedata', checkRouteTilesSoon);
     map.on('idle', checkRouteTiles);
     map.on('moveend', checkRouteTiles);
     const fallbackTimer = window.setTimeout(() => {
@@ -634,7 +643,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     return () => {
       window.clearTimeout(fallbackTimer);
-      map.off('sourcedata', checkRouteTiles);
+      if (sourceDataTimer !== undefined) window.clearTimeout(sourceDataTimer);
+      map.off('sourcedata', checkRouteTilesSoon);
       map.off('idle', checkRouteTiles);
       map.off('moveend', checkRouteTiles);
     };
@@ -1226,7 +1236,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <MapNoticePill raised={onDemandStatus === 'error' && onDemandShown} className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           {mapHint}
         </MapNoticePill>
-      ) : onDemandStatus !== 'error' && selectedModes.has(ON_DEMAND_MODE) && (
+      ) : onDemandStatus !== 'error' && onDemandAllowed && selectedModes.has(ON_DEMAND_MODE) && (
         // A missing zone must never read as "no on-demand service here" (CIV-23).
         <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           On-demand coverage is still growing. Not every service is mapped yet.

@@ -6,6 +6,8 @@
  * Style: bold `lead`, then one short `text` clause. Order by importance: big launches first (`isNew`), small fixes last. Keep it to about six items.
  * Only list things that are live on the public site; mark beta-only changes with `beta: true`
  * so they show on the beta site only. When a beta change graduates, drop its `beta` flag.
+ * One bullet = one audience: tag it beta or leave it public; never mix both in one bullet.
+ * A change that is partly public and partly beta becomes two bullets.
  * Keep past releases in the list: the panel shows only the latest, /changelog shows them all.
  * Add each new release at the top instead of replacing the previous one.
  */

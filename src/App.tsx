@@ -18,7 +18,7 @@ const NightService = React.lazy(() => import('./apps/NightService'));
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 import { isAppGated, type AppId } from './utils/appGate';
-import { modeTabCollapsed } from './components/ModeTabLabel';
+import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
@@ -26,8 +26,12 @@ const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
 import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './components/InfoPanel';
 import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
-import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
+import type { HistoryAgencyList } from '../shared/historyEligibility';
+import { preloadHistory } from './utils/historyConfig';
+import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
+import ResearchInfo from './components/ResearchInfo';
+import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
@@ -192,8 +196,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     [catalogAgencies, onDemandData.index, onDemandData.geometries],
   );
   const [agenciesLoadState, setAgenciesLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
-  const [historyExploreAgencyCount, setHistoryExploreAgencyCount] = useState<number | null>(null);
+  // History-eligible agencies come from the small committed list build-history writes, so the History tab
+  // doesn't wait on (or download) the multi-megabyte history-config.json.
+  const historyAgencySlugs = useMemo<Set<string> | null>(
+    () => (FEATURES.history ? new Set((historyAgencyList as HistoryAgencyList).slugs) : null),
+    [],
+  );
+  const historyExploreAgencyCount = historyAgencySlugs ? historyAgencySlugs.size : null;
   const [query, setQuery] = useState('');
   // Search scans / map filters / prefetch run from this so keystrokes can
   // paint first. See useDebouncedValue for why this isn't useDeferredValue.
@@ -402,6 +411,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // The Live tab follows the address straight away, in both directions.
   const liveTabOn = urlApp === 'live';
   const inNight = activeApp === 'night';
+  // History and Night Service stay mounted once opened (so switching back doesn't remount them) but are
+  // not loaded, or their data fetched, until the first visit.
+  const [historyOpened, setHistoryOpened] = useState(false);
+  const [nightOpened, setNightOpened] = useState(false);
+  useEffect(() => { if (activeApp === 'history') setHistoryOpened(true); }, [activeApp]);
+  useEffect(() => { if (inNight) setNightOpened(true); }, [inNight]);
   const loadedAgencySlugs = useMemo(
     () => new Set([
       ...Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug),
@@ -410,10 +425,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     ]),
     [layers, viewportAgencySlugs],
   );
-  // Desktop mode tabs: while one mode is on, the others shrink to icons (beta).
-  const activeModeTab = inLive ? 'live' : activeApp === 'history' ? 'history' : compareActive ? 'compare' : null;
-  const liveTabCollapsed = modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'live');
-  const historyTabCollapsed = modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'history');
+  // One rule for the desktop mode tabs (beta): while any non-map view is on, the unselected tabs
+  // shrink to icons. ModeTab applies it, so views and future views never decide this themselves.
+  const nonMapViewActive = FEATURES.collapseModeTabs
+    && (inLive || inHistory || inNight || inFrequentService || compareActive);
   const showCompareControl = FEATURES.compareMode && inFrequency;
   const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
@@ -428,6 +443,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
     [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
   )));
+  // On the plain map (not in Live, where the extra download isn't worth it), warm History in idle time once its
+  // tab is on offer, so the first open doesn't wait on the code or the multi-megabyte config.
+  const warmHistory = showHistoryControl && inFrequency && agenciesLoadState === 'ready';
+  useEffect(() => {
+    if (!warmHistory) return;
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(preloadHistory, { timeout: 5000 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = window.setTimeout(preloadHistory, 3000);
+    return () => window.clearTimeout(id);
+  }, [warmHistory]);
   // Always open History on the agency chooser rather than guessing one from
   // whatever the map happens to be showing -- auto-jumping straight to an
   // agency (e.g. TTC, just because the map defaults to Toronto) surprised
@@ -476,9 +504,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   // Sync day filter to URL (for refresh/share of active view). URL wins on load if present
   // (see initializer); effects ensure current value (from LS/default/URL) is reflected.
-  // 'Weekday' (common default) omitted for short URLs.
+  // Always written, never omitted as a "default": the default is today's day, so a link copied on a Wednesday
+  // would open on Saturday for a friend (#909).
   useEffect(() => {
-    syncUrlParams({ day: day !== 'Weekday' ? day : null });
+    syncUrlParams({ day });
   }, [day]);
 
   useEffect(() => {
@@ -499,22 +528,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       .catch(() => setAgenciesLoadState('error'));
   }, []);
 
-  // These are only needed by optional UI. Keep them out of the public first load:
-  // public has no History control, and refresh details are shown only in the Info panel.
-  useEffect(() => {
-    if (!FEATURES.history) return;
-    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
-      .then(r => r.json())
-      .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) => {
-        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistory).map(a => a.slug)));
-        setHistoryExploreAgencyCount(data.filter(agencyQualifiesForHistoryExplore).length);
-      })
-      .catch(() => {
-        setHistoryAgencySlugs(new Set());
-        setHistoryExploreAgencyCount(0);
-      });
-  }, []);
-
+  // Refresh details are shown only in the Info panel, so keep them out of the first load.
   useEffect(() => {
     if (!infoOpen || feedRefreshMeta) return;
     Promise.all([
@@ -547,13 +561,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   return (
     <ViewportProvider>
+    <ModeTabsProvider nonMapViewActive={nonMapViewActive}>
     <OnDemandStatusProvider data={onDemandData}>
     <OnDemandViewportLoader data={onDemandData} />
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
-      {/* Unified header row — left and right sections share one flex container so they can never overlap */}
-      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
+      {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
+      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6 h-[28px]'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
       <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
         <button
@@ -561,6 +576,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           onClick={() => {
             if (inFrequentServiceStory) {
               navigate(FEATURE_ROUTES.frequentService.map);
+            } else if (inLive || inHistory || inNight) {
+              // Leaving a mode: switch in place like the mode's own tab, so the map isn't torn down and rebuilt.
+              setActiveApp('frequency');
             } else if (onGoHome) {
               onGoHome();
             } else {
@@ -636,7 +654,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           <ModeTab
             icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label="Live" extra={liveAgencyCount} ariaLabel="Live vehicles"
-            active={liveTabOn} collapsed={liveTabCollapsed}
+            active={liveTabOn}
             onClick={() => setActiveApp(liveTabOn ? 'frequency' : 'live')}
           />
         )}
@@ -646,8 +664,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             icon={<HistoryIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
             ariaLabel={inHistory ? 'Back to frequency map' : 'Historical service'}
-            active={inHistory} collapsed={historyTabCollapsed}
+            active={inHistory}
             onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
+            onWarm={preloadHistory}
           />
         )}
 
@@ -657,7 +676,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         {FEATURES.compareMode && (inLive || inHistory) && (
           <CompareTab
             active={false}
-            collapsed={modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'compare')}
             onStart={() => { setCompareStartRequest(Date.now()); setActiveApp('frequency'); }}
             onExit={() => {}}
           />
@@ -691,6 +709,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   )}
                   {showHistoryControl && (
                     <ModeTab
+                      onWarm={preloadHistory}
                       variant="menu" icon={<HistoryIcon className="w-3.5 h-3.5" aria-hidden="true" />}
                       label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
                       active={inHistory}
@@ -794,15 +813,20 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               dataSaver={dataSaver}
               setDataSaver={setDataSaver}
             />
-            {FEATURES.history && (
-              <React.Suspense fallback={null}>
+            {FEATURES.history && (historyOpened || inHistory) && (
+              <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
                 <History active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
-            {FEATURES.beta && (
+            {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} selectionActive={intervalSelectionActive} />
               </React.Suspense>
+            )}
+            {inFrequentService && (
+              <ResearchInfo heading={FREQUENT_INFO_HEADING} sidebarLeft={sidebarLeft} hidden={intervalSelectionActive}>
+                {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
+              </ResearchInfo>
             )}
             {FEATURES.live && liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${liveShown ? 'opacity-100' : 'opacity-0'}`}>
@@ -827,7 +851,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </ErrorBoundary>
         {(agenciesLoadState === 'loading' || modeCatchingUp) && (
           <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">
-            {agenciesLoadState === 'loading' ? 'Loading agency data…' : 'Loading map…'}
+            Loading map…
           </div>
         )}
         {agenciesLoadState === 'error' && (
@@ -870,6 +894,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>
     </OnDemandStatusProvider>
+    </ModeTabsProvider>
     </ViewportProvider>
   );
 }

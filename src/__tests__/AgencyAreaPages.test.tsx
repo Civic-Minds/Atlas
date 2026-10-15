@@ -48,9 +48,34 @@ describe('AgencyPage', () => {
     expect(screen.getByRole('button', { name: /1 route every 10 min or better/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: /route every 16–20 min/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: /with no regular midday service/ })).toBeTruthy();
-    fireEvent.focus(screen.getByRole('button', { name: /route every 16–20 min/ }));
-    expect(screen.getByRole('tooltip').textContent).toMatch(/route every 16–20 min/);
+    expect(screen.queryByRole('tooltip')).toBeNull(); // no tooltip: the legend item is highlighted instead
+    const segment = screen.getByRole('button', { name: /route every 16–20 min/ });
+    const other = screen.getByRole('button', { name: /1 route every 10 min or better/ });
+    fireEvent.focus(segment);
+    const legend16 = document.querySelector('li[data-active="true"]')!;
+    expect(legend16.textContent).toContain('16–20');
+    expect((other as HTMLElement).style.opacity).toBe('0.35');
+    expect((segment as HTMLElement).style.opacity).toBe('1');
+    fireEvent.blur(segment);
+    expect(document.querySelector('li[data-active="true"]')).toBeNull();
+    expect((other as HTMLElement).style.opacity).toBe('1');
+    // and the other way round: hovering a legend item highlights it and fades the other segments
+    const item = [...document.querySelectorAll('li')].find(li => li.textContent!.includes('16–20'))!;
+    fireEvent.mouseEnter(item);
+    expect(item.getAttribute('data-active')).toBe('true');
+    expect((other as HTMLElement).style.opacity).toBe('0.35');
+    fireEvent.mouseLeave(item);
+    expect((other as HTMLElement).style.opacity).toBe('1');
     expect(screen.queryByText(/pick a standard/i)).toBeNull();
+  });
+
+  it('has one map link under the bar (Weekday midday, every route); the bar and its legend are not links', () => {
+    view(<AgencyPage data={data} />);
+    expect(screen.queryByRole('link', { name: /route every/ })).toBeNull();
+    const link = screen.getByRole('link', { name: 'See these routes on the map' });
+    const url = new URL(link.getAttribute('href')!, 'http://x');
+    expect([url.pathname, url.searchParams.get('agencies'), url.searchParams.get('h'), url.searchParams.get('p'), url.searchParams.get('day')]).toEqual(['/', 'ttc', 'all', 'midday', 'Weekday']);
+    expect(link.querySelector('svg')).toBeTruthy(); // the shared page-link arrow
   });
 
   it('hides a stat it cannot compute instead of showing a blank', () => {
@@ -71,7 +96,7 @@ describe('AgencyPage intro', () => {
 
   it('says it once under the title, linking connecting agencies that have a page and counting the rest', () => {
     const d = agencyPageData(withConns, [withConns, HSR], null);
-    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway/metro, 3 bus) in Toronto with 7,566 stops and connects with Hamilton Street Railway, Tiny Transit, C and 1 other.');
+    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway/metro, 3 bus) in Toronto with 7,566 stops and connects with Hamilton Street Railway, Tiny Transit, C and 1 other agency.');
     view(<AgencyPage data={d} />);
     const p = screen.getByText(/operates 5 routes \(2 subway\/metro, 3 bus\) in Toronto with 7,566 stops/);
     expect(p.textContent).toBe(d.intro);
@@ -146,6 +171,16 @@ describe('AreaPage', () => {
     expect(screen.queryByText(/15 min or better/)).toBeNull();
     expect(screen.getAllByRole('button', { name: /every 10 min or better/ }).length).toBeGreaterThan(0);
   });
+
+  it('has one map link under the bar framed on the area, and "See all agencies" in the section heading row', () => {
+    view(<AreaPage data={data} />);
+    expect(screen.queryByRole('link', { name: /route every/ })).toBeNull();
+    const url = new URL(screen.getByRole('link', { name: 'See these routes on the map' }).getAttribute('href')!, 'http://x');
+    expect([url.searchParams.get('area'), url.searchParams.get('h'), url.searchParams.get('p'), url.searchParams.get('day')]).toEqual(['toronto', 'all', 'midday', 'Weekday']);
+    const seeAll = screen.getByRole('link', { name: 'See all agencies' });
+    expect(seeAll.parentElement).toBe(screen.getByRole('heading', { name: 'Agencies and weekday frequency' }).parentElement);
+    expect(screen.queryByText(/A dash means none/)).toBeNull();
+  });
 });
 
 describe('not found is never shown while loading', () => {
@@ -171,4 +206,20 @@ describe('not found is never shown while loading', () => {
     expect(screen.queryByText('No page for this region')).toBeNull();
     await waitFor(() => expect(screen.getByText('No page for this region')).toBeTruthy(), { timeout: 25000 });
   }, 60000);
+});
+
+describe('AgencyPage "See all agencies"', () => {
+  it('sits in the Nearby agencies heading row when there are nearby agencies, and once only', () => {
+    const data = agencyPageData(TTC, [TTC, HSR], '2026-10-13T00:00:00Z', { slug: 'toronto', name: 'Toronto' });
+    view(<AgencyPage data={data} />);
+    const links = screen.getAllByRole('link', { name: 'See all agencies' });
+    expect(links).toHaveLength(1);
+    expect(links[0].parentElement).toBe(screen.getByRole('heading', { name: /Nearby agencies/ }).parentElement);
+  });
+
+  it('still has the link when there are no nearby agencies', () => {
+    view(<AgencyPage data={agencyPageData(TTC, [TTC], '2026-10-13T00:00:00Z')} />);
+    expect(screen.queryByRole('heading', { name: /Nearby agencies/ })).toBeNull();
+    expect(screen.getAllByRole('link', { name: 'See all agencies' })).toHaveLength(1);
+  });
 });

@@ -23,7 +23,21 @@ export function modeTabSpacing(collapsed: boolean): string {
   return collapsed ? 'px-2.5 gap-0' : 'px-3 gap-1.5';
 }
 
-/** Whether a mode tab should collapse: another mode is active and the feature is on. */
-export function modeTabCollapsed(enabled: boolean, activeMode: string | null, self: string): boolean {
-  return enabled && activeMode != null && activeMode !== self;
+/**
+ * The one rule for the top-bar mode tabs: while any non-map view is on (History, Live, Compare,
+ * Night, Frequent Service, or a future one), every tab that is not the selected one shows only its
+ * icon. On the plain map all tabs stay expanded. Off when the feature is off (public).
+ */
+export function modeTabCollapsed(enabled: boolean, nonMapViewActive: boolean, selected: boolean): boolean {
+  return enabled && nonMapViewActive && !selected;
 }
+
+const ModeTabsContext = React.createContext(false);
+
+/** Wrap the page once with whether a non-map view is active. Tabs read it, so none decides on its own. */
+export const ModeTabsProvider = ({ nonMapViewActive, children }: { nonMapViewActive: boolean; children: React.ReactNode }) => (
+  <ModeTabsContext.Provider value={nonMapViewActive}>{children}</ModeTabsContext.Provider>
+);
+
+/** True when the other mode tabs should collapse (a non-map view is on). Feature flag applied by the provider's caller. */
+export const useModeTabsCollapseOthers = () => React.useContext(ModeTabsContext);

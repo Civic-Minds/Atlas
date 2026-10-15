@@ -10,6 +10,7 @@ import { areaRegionName, areaRegionTitle } from './areaRegions';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { SITE_URL } from './seo';
+import { andOthers } from './overflowText';
 
 export { headwayEvery };
 export const MAX_NEARBY = 8;
@@ -117,11 +118,11 @@ export function connectionNames<T>(connections: readonly T[], named = 3): { name
 /** The literal the intro sentence puts before the connecting agencies (the page splits on it to link the names). */
 export const CONNECTS_WITH = ' and connects with ';
 
-/** "A", "A and B", "A, B and C", "A, B, C and 4 others": the first three named, the rest counted. */
+/** "A", "A and B", "A, B and C", "A, B, C and 4 other agencies": the first three named, the rest counted. */
 export function namesList(names: readonly string[], named = 3): string {
   if (names.length <= named) return names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
   const rest = names.length - named;
-  return `${names.slice(0, named).join(', ')} and ${rest} ${rest === 1 ? 'other' : 'others'}`;
+  return `${names.slice(0, named).join(', ')} ${andOthers(rest, 'agency', 'agencies')}`;
 }
 
 /**
@@ -234,6 +235,19 @@ export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>
     counts[FREQUENCY_BANDS.findIndex(b => b.test(r.midday!))]++;
   }
   return counts;
+}
+
+/**
+ * The map link under the frequency bar: the page's own map link (agency or area framing) with Weekday, Midday and
+ * no speed filter (every route), using the same `h`, `p` and `day` parameters the map reads.
+ */
+export function allRoutesMapHref(mapHref: string): string {
+  const [path, query = ''] = mapHref.split('?');
+  const params = new URLSearchParams(query);
+  params.set('h', 'all');
+  params.set('p', 'midday');
+  params.set('day', 'Weekday');
+  return `${path}?${params.toString()}`;
 }
 
 export interface AgencyPageStats {

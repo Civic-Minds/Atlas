@@ -165,8 +165,8 @@ describe('agencyIntroSentence', () => {
     expect(agencyIntroSentence({ ...base, routes: rs([3, 10], [3, 12]) }, 'Hamilton', conns('GO Transit', 'Burlington Transit')))
       .toBe('Hamilton Street Railway operates 2 routes in Hamilton with 1,980 stops and connects with GO Transit and Burlington Transit.');
     expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton', conns('A', 'B', 'C', 'D', 'E')))
-      .toBe('Hamilton Street Railway operates 1 route in Hamilton with 1,980 stops and connects with A, B, C and 2 others.');
-    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton', conns('A', 'B', 'C', 'D'))).toContain('A, B, C and 1 other.');
+      .toBe('Hamilton Street Railway operates 1 route in Hamilton with 1,980 stops and connects with A, B, C and 2 other agencies.');
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton', conns('A', 'B', 'C', 'D'))).toContain('A, B, C and 1 other agency.');
   });
 
   it('adds the mode split only with more than one mode', () => {
