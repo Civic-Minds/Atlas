@@ -93,10 +93,24 @@ describe('livePerformance', () => {
     expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, 1_000 + 600)!.incomplete).toBe(true);
   });
 
-  it('marks the feed incomplete when a car on the section has a trip not in the timetable', () => {
+  it('marks the feed incomplete when a moving car on the section has a trip whose direction can\'t be told', () => {
     const line = lineModel(data, 0)!;
-    const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5], ['x', 'unlisted', 2.5]])];
-    expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, 1_000)!.incomplete).toBe(true);
+    // Moving, but back and forth: direction can't be told.
+    const snaps = [0, 1, 2].map(k => snap(1_000 + k * 60, [['a', 't1', 3.5], ['b', 't2', 1.5], ['x', 'unlisted', k === 1 ? 2.8 : 2.5]]));
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, 1_120)!.incomplete).toBe(true);
+  });
+
+  it('counts an unlisted car that is moving forward along this line, and ignores a parked one', () => {
+    const line = lineModel(data, 0)!;
+    const t0 = 10_000;
+    const snaps = [0, 1, 2, 3].map(k => snap(t0 + k * 60, [
+      ['a', 't1', 3 + k * 0.1],
+      ['bus', '-123', 2 + k * 0.1], // unlisted, ~250 m forward in 3 min
+      ['parked', '-456', 2.5], // unlisted, not moving
+    ]));
+    const g = liveGaps(data, line, withStats(line, 'all'), 'all', snaps, t0 + 180)!;
+    expect(g.incomplete).toBeUndefined();
+    expect(g.cars).toBe(2);
   });
 
   it('marks the feed incomplete when fewer than half the scheduled cars are placed', () => {

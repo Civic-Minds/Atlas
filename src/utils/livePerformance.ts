@@ -296,11 +296,41 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     const p = placeOnLine(line, [lon, lat]);
     return p ? { m: start[p.segIndex] + p.frac * len[p.segIndex], segIndex: p.segIndex } : null;
   };
+  const known = new Set(Object.values(data.tripDirections ?? {}).flat());
+  // Trips the timetable doesn't list (e.g. added buses with negative trip numbers) count in this
+  // direction only when their own recent track moved 200 m or more forward along this line.
+  const added = new Map<string, { m: number; t: number }[]>();
+  for (const snap of snapshots) {
+    for (const [id, tripId, lat, lon, t] of snap.v) {
+      if (known.has(tripId)) continue;
+      const a = along(lon, lat);
+      if (!a) continue;
+      const key = `${id}|${tripId}`;
+      if (!added.has(key)) added.set(key, []);
+      added.get(key)!.push({ m: a.m, t });
+    }
+  }
+  const forward = new Set<string>(), backward = new Set<string>();
+  for (const [key, tr] of added) {
+    const recent = tr.filter(x => tr[tr.length - 1].t - x.t <= 600);
+    if (recent.length < 2) continue;
+    const moved = recent[recent.length - 1].m - recent[0].m;
+    if (moved >= 200) forward.add(key);
+    else if (moved <= -200) backward.add(key);
+  }
+  const movingOtherWay = (id: string, tripId: string) => backward.has(`${id}|${tripId}`);
+  const moving = (id: string, tripId: string) => {
+    const tr = added.get(`${id}|${tripId}`) ?? [];
+    const recent = tr.filter(x => tr[tr.length - 1].t - x.t <= 600);
+    return recent.length >= 2 && Math.max(...recent.map(x => x.m)) - Math.min(...recent.map(x => x.m)) >= 200;
+  };
+  const inDirection = (id: string, tripId: string) => trips.has(tripId) || forward.has(`${id}|${tripId}`);
+
   // Each car's track on its current trip: (reported time, metres along the line).
   const tracks = new Map<string, { t: number; m: number }[]>();
   for (const snap of snapshots) {
     for (const [id, tripId, lat, lon, t] of snap.v) {
-      if (!trips.has(tripId)) continue;
+      if (!inDirection(id, tripId)) continue;
       const a = along(lon, lat);
       if (!a) continue;
       const key = `${id}|${tripId}`;
@@ -309,16 +339,17 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
       if (!tr.length || t > tr[tr.length - 1].t) tr.push({ t, m: a.m });
     }
   }
-  const known = new Set(Object.values(data.tripDirections ?? {}).flat());
   const now: { key: string; t: number; m: number }[] = [];
   let unplaceable = 0;
   for (const [id, tripId, lat, lon, t] of latest.v) {
     if (latest.capturedAt - t > LIVE_STALE_SEC) continue;
     const a = along(lon, lat);
-    if (!trips.has(tripId)) {
-      // A current car on this section whose trip isn't in the timetable: we can't tell its direction,
-      // so the gaps either side of it would be wrong.
-      if (!known.has(tripId) && a && onShared(a.segIndex)) unplaceable++;
+    if (!inDirection(id, tripId)) {
+      // A current car on this section whose direction we can't tell (unlisted trip, not moving
+      // forward along either line): the gaps either side of it would be wrong.
+      // An unlisted car that hasn't moved 200 m in 10 min either way is treated as parked (standby
+      // buses wait on the line), not as a missing car.
+      if (!known.has(tripId) && a && onShared(a.segIndex) && moving(id, tripId) && !movingOtherWay(id, tripId)) unplaceable++;
       continue;
     }
     if (a && onShared(a.segIndex)) now.push({ key: `${id}|${tripId}`, t, m: a.m });

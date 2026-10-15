@@ -456,7 +456,7 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
           <li>"8 in 10 gaps" is the 10th to 90th percentile of actual gaps. Typical is the median. Extra wait is the average wait for a rider arriving at random, minus the same for the timetable.</li>
           <li>Time between stops compares every car's time for each stop pair with the timetable for that time of day. Line ends and the stop next to them are left out (layover and loop time).</li>
           <li>Stood still: moved 25 m or less for 2+ min within 60 m of a stop. Could be holding for time, a signal or a blockage; the data can't tell which. Terminals, turn-back points and carhouses are left out; a stop needs 10 times on 5 days.</li>
-          <li>Right now: from the last 30 min of recorded positions, a gap is how long ago the car ahead passed the spot where the car behind is now. "–" means that passing wasn't seen. Hidden when the feed is behind, a car on the line has a trip the timetable doesn't list, or fewer than half the scheduled cars are reporting.</li>
+          <li>Right now: from the last 30 min of recorded positions, a gap is how long ago the car ahead passed the spot where the car behind is now. "–" means that passing wasn't seen. Cars on trips the timetable doesn't list (e.g. added buses) count once their own track shows which way they're going; ones that haven't moved 200 m in 10 min are treated as parked. Hidden when the feed is behind, a moving car's direction can't be told, or fewer than half the scheduled cars are reporting.</li>
           <li>Values are rounded to the nearest ½ min; stops with fewer than 30 gaps or 5 days are left out.</li>
         </ul>
       </Section>
