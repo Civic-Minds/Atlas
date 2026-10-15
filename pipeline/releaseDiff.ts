@@ -40,11 +40,15 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { findModeOverride, getGtfsModeName, VIRTUAL_LRT_MODE } from '../shared/modes.js';
 import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archiveSelection.js';
-import { TIER_RANK } from './headway-utils.js';
+import { RAIL_TIER_MAXES, TIER_RANK } from './headway-utils.js';
 import { SURFACE_TIER_MAXES } from '../shared/config.js';
 
-/** The gate compares weekday tiers on the surface scale only; rail's 5 and 8 are not route shifts (valleymetro SKYT 5 -> 10). */
-const GATE_TIERS = new Set([...SURFACE_TIER_MAXES.map(String), 'infrequent']);
+/**
+ * The weekday tiers the gate compares: the surface scale plus rail's 5 and 8, so a rail line
+ * moving two steps on its own scale (5 -> 10, 8 -> 15) is a route shift like a bus moving
+ * 10 -> 20 (#871). Only 'span' is left out: it is no service, not a tier.
+ */
+const GATE_TIERS = new Set([...SURFACE_TIER_MAXES.map(String), ...RAIL_TIER_MAXES.map(String), 'infrequent']);
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 
 export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'route-shift', 'headway-lost', 'day-lost', 'day-shrunk', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;

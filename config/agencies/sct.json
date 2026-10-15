@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://tracksctbus.org/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3115/latest.zip",
-  "lastFeedExpiry": "20281014",
+  "lastFeedExpiry": "20281015",
   "lastFeedVersion": "272-10/1/2026,262-7/17/2026,265-7/30/2026",
   "lastRefreshedAt": "2026-10-12",
   "cities": [

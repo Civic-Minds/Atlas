@@ -131,6 +131,9 @@ export function decideDedupe(
   // its early-morning or evening trips give it a period value: TTC 86 Saturday's 58-trip
   // morning-and-evening shape (every 8 at its terminal, nothing 9-19h) held the Kennedy slot
   // against the 69-trip all-day shape, and the direction read limited with no midday value.
+  // Unlike Step 3b this has no same-line guard, so a longer peak-only line to the same
+  // destination (#728, #865) also gives up the slot to a midday pattern; the catalog scan of
+  // the change lost or gained no headline, so it stays unguarded until a case needs one.
   const bothTimed = !replacesMaplessWithShape && candidate.headway != null && incumbent.headway != null;
   if (bothTimed && incumbent.runsMidday && incumbent.departures >= MIN_THIN_REPLACING_DEPARTURES && (!candidate.runsInDay || !candidate.hasDaytime)) return 'keep';
   const replacesNightOnly = bothTimed && candidate.runsMidday && candidate.departures >= MIN_THIN_REPLACING_DEPARTURES

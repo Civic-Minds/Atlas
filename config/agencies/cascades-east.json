@@ -27,5 +27,6 @@
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://passio3.com/cet/passioTransit/gtfs/google_transit.zip"
+  "lastFeedSourceUrl": "https://passio3.com/cet/passioTransit/gtfs/google_transit.zip",
+  "lastPeekedExpiry": "20271231"
 }
