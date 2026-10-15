@@ -145,7 +145,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <section className="mt-14" aria-labelledby="routes-heading">
             <h2 id="routes-heading" className="text-xl font-black tracking-tight">Routes and weekday frequency</h2>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
-            <FrequencyBar counts={bandCounts(agency.routes)} />
+            <FrequencyBar counts={bandCounts(agency.routes)} mapHref={agencyMapHref(agency)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
             {stats.byMode.map(group => (
               <div key={group.mode} className="mt-4 overflow-x-auto">

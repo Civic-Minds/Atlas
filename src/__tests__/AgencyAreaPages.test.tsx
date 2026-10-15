@@ -45,12 +45,29 @@ describe('AgencyPage', () => {
   it('shows the frequency band bar with counts and no fixed threshold', () => {
     view(<AgencyPage data={data} />);
     expect(screen.queryByText(/15 min or better/)).toBeNull();
-    expect(screen.getByRole('button', { name: /1 route every 10 min or better/ })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /route every 16–20 min/ })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /with no regular midday service/ })).toBeTruthy();
-    fireEvent.focus(screen.getByRole('button', { name: /route every 16–20 min/ }));
+    expect(screen.getAllByRole('link', { name: /1 route every 10 min or better/ }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('link', { name: /route every 16–20 min/ }).length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: /with no regular midday service/ })).toBeTruthy(); // not a filter value: no link
+    fireEvent.focus(screen.getAllByRole('link', { name: /route every 16–20 min/ })[0]);
     expect(screen.getByRole('tooltip').textContent).toMatch(/route every 16–20 min/);
     expect(screen.queryByText(/pick a standard/i)).toBeNull();
+  });
+
+  it('opens the map framed on the agency with the band\'s filter, weekday and midday, from the band, its legend item and one plain link', () => {
+    view(<AgencyPage data={data} />);
+    const hrefs = screen.getAllByRole('link', { name: /route every 10 min or better/ }).map(a => a.getAttribute('href')!);
+    expect(hrefs).toHaveLength(2); // the bar segment and its legend item
+    for (const href of hrefs) {
+      const url = new URL(href, 'http://x');
+      expect(url.pathname).toBe('/');
+      expect(url.searchParams.get('agencies')).toBe('ttc');
+      expect(url.searchParams.get('h')).toBe('10');
+      expect(url.searchParams.get('p')).toBe('midday');
+      expect(url.searchParams.get('day')).toBe('Weekday');
+    }
+    expect(new URL(screen.getAllByRole('link', { name: /route every 21–30 min/ })[0].getAttribute('href')!, 'http://x').searchParams.get('h')).toBe('30');
+    const all = new URL(screen.getByRole('link', { name: 'See these routes on the map' }).getAttribute('href')!, 'http://x');
+    expect([all.searchParams.get('agencies'), all.searchParams.get('h'), all.searchParams.get('p'), all.searchParams.get('day')]).toEqual(['ttc', 'all', 'midday', 'Weekday']);
   });
 
   it('hides a stat it cannot compute instead of showing a blank', () => {
@@ -144,7 +161,14 @@ describe('AreaPage', () => {
   it('shows the band bar and no fixed threshold', () => {
     view(<AreaPage data={data} />);
     expect(screen.queryByText(/15 min or better/)).toBeNull();
-    expect(screen.getAllByRole('button', { name: /every 10 min or better/ }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('link', { name: /every 10 min or better/ }).length).toBeGreaterThan(0);
+  });
+
+  it('opens the map framed on the area with the band\'s filter, and has one plain link under the bar', () => {
+    view(<AreaPage data={data} />);
+    const url = new URL(screen.getAllByRole('link', { name: /every 11–15 min/ })[0].getAttribute('href')!, 'http://x');
+    expect([url.searchParams.get('area'), url.searchParams.get('h'), url.searchParams.get('p'), url.searchParams.get('day')]).toEqual(['toronto', '15', 'midday', 'Weekday']);
+    expect(screen.getByRole('link', { name: 'See these routes on the map' }).getAttribute('href')).toContain('area=toronto');
   });
 });
 
