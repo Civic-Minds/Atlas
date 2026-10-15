@@ -87,7 +87,15 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
       regularPeriod,
       coverage,
     ];
-    return [
+    // Frequency focus step 5a: a route stamped with the stretch selector's filter value (rv_) is
+    // judged on it, every direction's worst counting stretch, for each row that is not span and
+    // runs in the period itself; a null value (no regular service) arrives as the sentinel. Routes
+    // without rv_ (older releases, routes with no stretch data) keep the rule below.
+    const rowRuns = ['any',
+      ...[hph, `pch_${period}`].map(key => ['all', ['has', key], ['<', ['get', key], NO_PERIOD_SERVICE_TILE_VALUE]]),
+      ['==', ['get', `pws_${period}`], true],
+    ];
+    const legacy = [
       'case',
       // New artifacts keep the active cadence for a properly sustained period that covers
       // the window (coverage <= 60). If the period is marked unsustained or has no service for most
@@ -99,6 +107,16 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
       qualifiedCadence,
       coverage,
     ];
+    return [
+      'case',
+      ['has', `rv_${period}`],
+      ['case',
+        ['==', ['get', 'tier'], 'span'], NO_PERIOD_SERVICE_TILE_VALUE,
+        rowRuns, ['get', `rv_${period}`],
+        NO_PERIOD_SERVICE_TILE_VALUE,
+      ],
+      legacy,
+    ];
   }
   return allDay;
 }
@@ -108,7 +126,7 @@ export function tilePeriodServiceExpr(period: PeriodFilter): unknown[] {
   if (period === 'all') return ['literal', true];
   const [, wdph, hph] = periodHeadwayFlatKeys(period);
   const keys = [`msph_${period}`, wdph, hph, `wdpch_${period}`, `pch_${period}`];
-  return ['any',
+  const legacy = ['any',
     ...keys.map(key => [
       'all',
       ['has', key],
@@ -118,6 +136,10 @@ export function tilePeriodServiceExpr(period: PeriodFilter): unknown[] {
     // tier ("limited"), but it still has service in this period on those weekdays.
     ['==', ['get', `pws_${period}`], true],
   ];
+  // Step 5a: a route stamped by the stretch selector runs in the period only when one of its
+  // directions runs through it (rr_); stray or part-day trips alone (YRT Viva overnight) no longer
+  // draw it under "All". The row must still run there itself.
+  return ['case', ['has', `rr_${period}`], ['all', ['==', ['get', `rr_${period}`], true], legacy], legacy];
 }
 
 /** MapLibre filter clause for the selected period and frequency ceiling. */

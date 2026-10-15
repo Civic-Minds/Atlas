@@ -13,6 +13,7 @@
  * computes the same stretches from the feed zip.
  */
 import { TIME_PERIODS, type PeriodKey } from '../shared/config.js';
+import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import {
   computePeriodCoverageHeadways,
   computePeriodHeadways,
@@ -326,7 +327,18 @@ export function directionNightVerdict(d: DirectionStretches, gap: 30 | 60): Nigh
 }
 
 export interface DirectionRollup {
-  period: Record<PeriodKey, { value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null }>;
+  period: Record<PeriodKey, {
+    value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null;
+    /**
+     * Step 5a filter value: the worst counting stretch, each read as the tile rule reads a row
+     * (steady with a full-window wait of PERIOD_COVERAGE_MAX_HEADWAY or less: its headway; else its
+     * wait). null: the main stretch runs only stray or part-day trips in the period (no departure on
+     * one side of its midpoint), so the direction has no regular service there.
+     */
+    filterValue: number | null;
+    /** The main stretch runs through the period (departures on both sides of its midpoint). */
+    runs: boolean;
+  }>;
   night30: boolean;
   night60: boolean;
 }
@@ -345,7 +357,21 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       sustained: counting.length > 0 ? counting.every(p => p.sustained === true) : null,
       sustainedMid: counting.length > 0 ? counting.every(p => p.sustainedMid === true) : null,
       mainValue: main[key].counts ? main[key].value : null,
+      filterValue: null,
+      runs: false,
     };
+  }
+  // Step 5a: the filter value and whether the direction runs, per period.
+  for (const { key, start, end } of PERIOD_WINDOWS) {
+    const mid = (start + end) / 2;
+    const timesIn = (s: Stretch) => [...new Set(forCrossMidnightWindow([...s.times], end))].filter(t => t >= start && t <= end);
+    const throughMidpoint = (s: Stretch) => { const t = timesIn(s); return t.some(x => x < mid) && t.some(x => x >= mid); };
+    const runs = throughMidpoint(d.main);
+    const filterOf = (p: StretchPeriod) => (p.sustained === true && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage);
+    const counting = [main[key], ...tails.map(t => t[key])].filter((p, i) => p.counts && (i === 0 ? runs : true));
+    const values = counting.map(filterOf).filter((v): v is number => v != null);
+    period[key].runs = runs;
+    period[key].filterValue = runs && values.length > 0 ? Math.max(...values) : null;
   }
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
   // of the window's midpoint. One that only starts its day inside the window (CTA 20's downtown
@@ -355,7 +381,13 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
 }
 
 export interface RouteRollup {
-  period: Record<PeriodKey, { value: number | null; coverage: number | null; range: [number, number] | null }>;
+  period: Record<PeriodKey, {
+    value: number | null; coverage: number | null; range: [number, number] | null;
+    /** Step 5a filter value: every direction's filterValue, the worst; null when any has none. */
+    filterValue: number | null;
+    /** At least one direction runs through the period ("All" for that period still draws the route). */
+    runs: boolean;
+  }>;
   night30: boolean;
   night60: boolean;
 }
@@ -377,10 +409,13 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     const mains = known.map(d => d.period[key].mainValue).filter((v): v is number => v != null);
     const coverages = known.map(d => d.period[key].coverage);
     const low = mains.length === known.length && mains.length > 0 ? Math.max(...mains) : null;
+    const filterValues = known.map(d => d.period[key].filterValue);
     period[key] = {
       value,
       coverage: value != null && coverages.every(v => v != null) ? Math.max(...(coverages as number[])) : null,
       range: value != null && low != null && low !== value ? [Math.min(low, value), value] : null,
+      filterValue: complete && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
+      runs: known.some(d => d.period[key].runs),
     };
   }
   return {
@@ -463,9 +498,25 @@ export function stampStretchShadow(
     p.stretchPeriodRange = byPeriod(k => route.period[k].range);
     p.stretchNight30 = route.night30;
     p.stretchNight60 = route.night60;
+    p.routeFilterHeadwayByPeriod = byPeriod(k => route.period[k].filterValue);
+    p.routeRunsByPeriod = byPeriod(k => route.period[k].runs);
     p.stretchMeta = {
       main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount } : null,
       tails: stretches.tails.map(t => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount })),
     };
+  }
+  // The filter fields sit on every feature of a route-day or on none (no mixing with today's pools).
+  const complete = new Map<string, boolean>();
+  for (const feature of features) {
+    const slot = slotOf(feature);
+    if (!slot) continue;
+    const routeKey = `${slot.group}::${slot.day}`;
+    complete.set(routeKey, (complete.get(routeKey) ?? true) && feature.properties.routeFilterHeadwayByPeriod !== undefined);
+  }
+  for (const feature of features) {
+    const slot = slotOf(feature);
+    if (slot && complete.get(`${slot.group}::${slot.day}`)) continue;
+    delete feature.properties.routeFilterHeadwayByPeriod;
+    delete feature.properties.routeRunsByPeriod;
   }
 }

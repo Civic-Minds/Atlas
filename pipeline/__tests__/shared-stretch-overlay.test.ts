@@ -24,6 +24,13 @@ async function processed(fixture: string, slug: string): Promise<GeoJSON.Feature
   for (const file of readdirSync(dir)) zip.file(file, readFileSync(resolve(dir, file)));
   const result = await processGtfsBuffer(await zip.generateAsync({ type: 'nodebuffer' }), undefined, { slug });
   const fc = JSON.parse(result.geojson) as GeoJSON.FeatureCollection;
+  // These tests cover the CIV-82 overlay for a route that fails on today's rule. With the step 5a
+  // filter values (routeFilterHeadwayByPeriod) TTC 29 passes outright (every 8 on its main
+  // stretch, pinned in tripSets.test.ts), so the overlay is read without them here.
+  for (const f of fc.features) {
+    delete (f.properties as any).routeFilterHeadwayByPeriod;
+    delete (f.properties as any).routeRunsByPeriod;
+  }
   // The app normalizes loaded agency JSON the same way (worst-direction stamps).
   normalizeRouteFilterFeatures(fc.features as any);
   for (const f of fc.features) (f.properties as any).agencySlug = slug;

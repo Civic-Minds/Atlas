@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
+import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { directionStretches, rollupDirection, rollupRoute, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
@@ -378,5 +379,50 @@ describe('Night flags read the stretches (step 4 switch)', () => {
     const rows = r.rows.filter(p => p.routeShortName === '337' && p.day === 'Weekday' && p.nightService60);
     expect(rows.length).toBeGreaterThan(0);
     expect(rows.some(p => p.nightService30)).toBe(false);
+  });
+});
+
+describe('step 5a: the frequency filter reads the stretch selector (rv_)', () => {
+  const filterable = (r: Run, route: string) => {
+    const features = r.rows.filter(p => p.routeShortName === route).map(p => ({ properties: JSON.parse(JSON.stringify(p)) }));
+    normalizeRouteFilterFeatures(features);
+    return features.map(f => f.properties);
+  };
+  const passes = (r: Run, route: string, day: string, period: any, max: number) => routePassesHeadwayFilter(filterable(r, route), period, day, max);
+
+  it('LA Metro 51 Weekday AM: the slower branch (24) decides, so it fails every 20 and passes every 30 (D1)', async () => {
+    const r = await run('lacmta-51-weekday');
+    expect([passes(r, '51', 'Weekday', 'amPeak', 20), passes(r, '51', 'Weekday', 'amPeak', 30)]).toEqual([false, true]);
+  });
+  it('TTC 134 Weekday midday passes every 15 (today the 231 wait hides it, #907)', async () => {
+    const r = await run('ttc-134-weekday');
+    expect(passes(r, '134', 'Weekday', 'midday', 15)).toBe(true);
+  });
+  it('TTC 123 Weekday midday: 23 (branches), passes 30 and fails 20', async () => {
+    const r = await run('ttc-123-weekday');
+    expect([passes(r, '123', 'Weekday', 'midday', 20), passes(r, '123', 'Weekday', 'midday', 30)]).toEqual([false, true]);
+  });
+  it('TTC 507 Weekday midday: Marine Parade (25) decides, passes 30 and fails 20', async () => {
+    const r = await run('ttc-507-weekday');
+    expect([passes(r, '507', 'Weekday', 'midday', 20), passes(r, '507', 'Weekday', 'midday', 30)]).toEqual([false, true]);
+  });
+  it('CTA 36 Saturday PM: 12, passes every 15 (#602)', async () => {
+    const r = await run('cta-36-saturday');
+    expect(passes(r, '36', 'Saturday', 'pmPeak', 15)).toBe(true);
+  });
+  it('TTC 29 Weekday midday: every 8 on its main stretch, passes every 10', async () => {
+    const r = await run('ttc-29-weekday');
+    expect(passes(r, '29', 'Weekday', 'midday', 10)).toBe(true);
+  });
+  it('MBTA 436 Weekday PM: the middle-stop wait of 69 fails every 60', async () => {
+    const r = await run('mbta-436-weekday');
+    expect(passes(r, '436', 'Weekday', 'pmPeak', 60)).toBe(false);
+  });
+  it('YRT Viva overnight: stray morning runs only, so no route is drawn under All overnight', async () => {
+    const r = await run('yrt-viva-weekday', 'yrt');
+    for (const route of ['blue', 'purple', 'orange', 'yellow']) {
+      expect(passes(r, route, 'Weekday', 'overnight', Infinity), route).toBe(false);
+      expect(passes(r, route, 'Weekday', 'overnight', 60), route).toBe(false);
+    }
   });
 });

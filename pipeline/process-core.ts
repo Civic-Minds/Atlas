@@ -3045,6 +3045,18 @@ export async function processGtfsBuffer(
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
       return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
     });
+    // A partial-weekday route-day (#710) keeps today's filter: its stretch reads one weekday, while
+    // its service runs on others and continues on the next day's service after midnight.
+    const partialRouteDays = new Set([...partialWeekdayFeatures].map(f => {
+      const slot = featureStopHeadwaySlots.get(f);
+      return slot ? `${slot.shortName}::${slot.day}` : null;
+    }).filter((k): k is string => k != null));
+    for (const feature of features) {
+      const slot = featureStopHeadwaySlots.get(feature);
+      if (!slot || !partialRouteDays.has(`${slot.shortName}::${slot.day}`)) continue;
+      delete feature.properties.routeFilterHeadwayByPeriod;
+      delete feature.properties.routeRunsByPeriod;
+    }
     // Step 4: Night reads the stretches. A route qualifies when every direction it runs by day
     // passes at the middle of its main stretch (and each tail that runs at night passes), 2-5am;
     // its rows that run at night are lit. A route with no stretch verdict does not qualify.

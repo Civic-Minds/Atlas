@@ -10,6 +10,11 @@ const PERIOD_FLAT_PREFIXES = [
   ['headwayByPeriod', 'hph'],
   // Partial-weekday routes (#710): true where the route runs in the period on some weekdays.
   ['partialWeekdayServiceByPeriod', 'pws'],
+  // Frequency focus step 5a: the route's filter value per period from the stretch selector, and
+  // whether any direction runs through the period. Read first by tileEffectiveHeadwayExpr and
+  // tilePeriodServiceExpr when present.
+  ['routeFilterHeadwayByPeriod', 'rv'],
+  ['routeRunsByPeriod', 'rr'],
 ] as const;
 
 // MVT (the format tippecanoe/PMTiles serialize to) has no null value type -- a property written
@@ -69,7 +74,7 @@ export const TILE_ROUTE_SCALAR_KEYS: readonly string[] = [
   'noRouteShape', 'frequentService', 'nightService', 'nightService30', 'nightService60',
 ];
 
-export const TILE_ROUTE_FLAT_KEY = /^(pch|wdpch|hps|msph|wdph|hph|pws)_/;
+export const TILE_ROUTE_FLAT_KEY = /^(pch|wdpch|hps|msph|wdph|hph|pws|rv|rr)_/;
 
 /** The route properties that go into tiles: the allowed scalars plus the flat period keys. */
 export function pickTileRouteProperties(props: Record<string, unknown>): Record<string, unknown> {

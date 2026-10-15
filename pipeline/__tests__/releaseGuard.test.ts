@@ -119,10 +119,12 @@ describe('tile rules fingerprint', () => {
   // version 5, bumped once for the whole focus branch.
   // Step 3 strips its shadow stretch keys in prepareAgencyRoutesForTiles; the tile allowlist already
   // left them out, so no tile value changes: hash only.
+  // Step 5a adds the rv_/rr_ route filter keys and reads them first in the period filter: a tile
+  // change, covered by the same version 5 bump (one bump for the whole focus branch).
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: 'e6b7dfc2c6dc0bc661820e78b94ee0780bdc7d41fa30f0677022c9d2628c0475',
+      fingerprint: '6635d66fb292c721c7c1f18463caacec591e50c8dee11bfbbfdaad366382277c',
     });
   });
 });
