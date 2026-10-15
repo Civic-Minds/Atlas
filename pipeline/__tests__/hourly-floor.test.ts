@@ -51,18 +51,22 @@ describe('hourly chart floored like the period values', () => {
     const result = await processGtfsBuffer(await fixtureZip('ttc-29-weekday'), undefined, { slug: 'ttc' });
     const north = JSON.parse(result.geojson).features.map((f: any) => f.properties)
       .filter((p: any) => p.stopId == null && p.day === 'Weekday' && p.routeId === '29' && p.directionId === 1);
-    // One "Wilson" row: the Dufferin Gate and Princes' Gates origins pool at the trunk (8) and
-    // the row is floored at its own-only stops (16, #771).
-    expect(north).toHaveLength(1);
+    // One "Wilson" row per origin (CIV-221): the Dufferin Gate and Princes' Gates origins pool
+    // at the trunk (8) and each row is floored at its own-only stops (16, #771).
+    expect(north).toHaveLength(2);
+    // Hour 14, where the own stops run more often: [headway, longest gap] per origin.
+    const hour14: Record<string, [number, number]> = {
+      "from Princes' Gates Loop at Canada Blvd - CNE East Entrance": [14, 19],
+      'from Dufferin Gate Loop': [13, 13],
+    };
     for (const row of north) {
       expect(row.headway).toBe(16);
       expect(row.headwayByPeriod.midday).toBe(16);
-      // Each hour takes the same floor (16 through the midday, 14 in the 14:00 hour where the
-      // own stops run more often), never the trunk's 8, and the hour's longest gap is the floor
-      // stop's, not the trunk's.
+      // Each hour takes the same floor (16 through the midday, the origin's own value in the
+      // 14:00 hour where the own stops run more often), never the trunk's 8, and the hour's
+      // longest gap is the floor stop's, not the trunk's.
       for (const h of [10, 11, 12, 13]) { expect(row.headwayByHour[h], `hour ${h}`).toBe(16); expect(row.maxGapByHour[h], `gap ${h}`).toBe(16); }
-      expect(row.headwayByHour[14]).toBe(14);
-      expect(row.maxGapByHour[14]).toBe(19);
+      expect([row.headwayByHour[14], row.maxGapByHour[14]], row.routeVariant).toEqual(hour14[row.routeVariant]);
       // The trunk's every 8 still shows at the shared stops.
       const trunk = row.stopOrder.slice(-20).map((s: string) => row.stopHeadways[s]);
       expect(trunk.every((v: number) => v === 8)).toBe(true);
