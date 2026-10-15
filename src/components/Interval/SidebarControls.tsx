@@ -277,7 +277,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [selectedRoute, nonCorridorLayers, period, currentDay]);
 
   // Compute notable routes fallback
+  // Only shown in the focused-search suggestions; skipped otherwise because the scan is
+  // quadratic in route features and reran on every layer update (froze Live zooming, CIV-218).
   const notableRoutes = useMemo(() => {
+    if (!searchFocused) return [];
     const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number; limited: boolean; sharedHeadway?: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
@@ -318,7 +321,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .map(route => ({ ...route, longName: combineSuggestedRouteNames(route.longNames) ?? '' }))
       .sort((a, b) => a.headway - b.headway)
       .slice(0, 5);
-  }, [nonCorridorLayers, period, currentDay]);
+  }, [nonCorridorLayers, period, currentDay, searchFocused]);
 
   const suggestedRoutes = useMemo(() => {
     const viewedKeys = new Set(recentlyViewed.map(r => r.key));
