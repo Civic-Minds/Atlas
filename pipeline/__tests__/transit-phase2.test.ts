@@ -140,6 +140,14 @@ describe('applyAnalysisCriteria', () => {
     expect(r!.tier).toBe('10');
   });
 
+  it('a one-off route on one or two weekdays stays one-off, not part-time (#720, coast-rta TL-157)', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'TL-157', day: 'Tuesday', departureTimes: [400] }),
+      raw({ route: 'TL-157', day: 'Thursday', departureTimes: [400] }),
+    ]);
+    expect(results.find(x => x.route === 'TL-157' && x.day === 'Weekday')).toMatchObject({ tier: 'span', serviceClass: 'irregular' });
+  });
+
   it('draws a pattern with one departure a day as one-off, not dropped (#720, TARC 99)', () => {
     // TARC 99 (UPS West Louisville Shuttle): each of its shapes runs once a day, 04:29 or 22:10.
     const results = applyAnalysisCriteria([

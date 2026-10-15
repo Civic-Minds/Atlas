@@ -57,14 +57,11 @@ afterAll(() => {
 
 describe('real bus + rail supplemental feed (MDOT MTA)', () => {
   it('keeps both bus directions and both subway directions as drawn weekday routes', () => {
-    // One-off patterns (#720: a single Reisterstown Plaza short-turn train) are drawn too, hidden by default.
-    const weekday = routeLines(merged).filter(f => f.properties.day === 'Weekday' && f.properties.serviceClass !== 'irregular');
+    const weekday = routeLines(merged).filter(f => f.properties.day === 'Weekday');
     const bus = weekday.filter(f => f.properties.routeShortName === '69');
     const subway = weekday.filter(f => f.properties.routeShortName === 'METRO SUBWAYLINK');
     expect(bus.map(f => f.properties.headsign).sort()).toEqual(['JUMPERS HOLE', 'PATAPSCO LIGHT RAIL']);
     expect(subway.map(f => f.properties.headsign).sort()).toEqual(['JOHNS HOPKINS STATION (METRO)', 'OWINGS MILLS STATION (METRO)']);
-    const oneOff = routeLines(merged).filter(f => f.properties.day === 'Weekday' && f.properties.serviceClass === 'irregular');
-    expect(oneOff.every(f => f.properties.tier === 'span' && f.properties.headway == null)).toBe(true);
     expect(bus.every(f => f.properties.routeType === 3)).toBe(true);
     expect(subway.every(f => f.properties.routeType === 1)).toBe(true);
     expect(merged.supplementalFeatureCounts).toEqual([{ url: SUBWAY_URL, featureCount: expect.any(Number) }]);
@@ -73,7 +70,7 @@ describe('real bus + rail supplemental feed (MDOT MTA)', () => {
   });
 
   it('gives every drawn route a stop order with real per-stop headways, for bus and rail', () => {
-    for (const f of routeLines(merged).filter(line => line.properties.day === 'Weekday' && line.properties.serviceClass !== 'irregular')) {
+    for (const f of routeLines(merged).filter(line => line.properties.day === 'Weekday')) {
       const { stopOrder, stopHeadways } = f.properties;
       expect(stopOrder.length, f.properties.headsign).toBeGreaterThan(10);
       const values = stopOrder.map((id: string) => stopHeadways?.[id]).filter((v: unknown) => v != null);

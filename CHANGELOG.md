@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
-- Routes that run only once a day in a direction are now drawn as one-off service, hidden by default by the one-off switch, instead of missing from the map: TARC 99, the UPS West Louisville shuttle, had no line at all ([#720](https://github.com/Civic-Minds/Atlas/issues/720), [#862](https://github.com/Civic-Minds/Atlas/issues/862)).
+- **Routes that run once a day are drawn as one-off service**: TARC 99 and 19 Coast RTA trippers were missing from the map; the one-off switch hides them by default ([#720](https://github.com/Civic-Minds/Atlas/issues/720), [#862](https://github.com/Civic-Minds/Atlas/issues/862))
 - **Shared links now keep History and full-day chart views**: a History link opens on the same agency, route, year, region filter and route search, and a route card link reopens the full-day chart on the same direction; defaults stay out of the URL so links stay short ([#882](https://github.com/Civic-Minds/Atlas/issues/882)).
 - Scrolling past the top or bottom of a side panel on the map no longer drags the whole page and leaves a blank bar above the map; the info panel footer also loses its stray trailing dot ([#883](https://github.com/Civic-Minds/Atlas/issues/883)).
 - A route direction whose drawn pattern runs only in the mornings and evenings no longer hides the all-day pattern under the same destination: TTC 86 westbound to Kennedy on Saturdays showed as limited with no midday frequency while buses run every 10 all day ([#877](https://github.com/Civic-Minds/Atlas/issues/877)).

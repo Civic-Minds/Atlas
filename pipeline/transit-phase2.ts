@@ -775,6 +775,8 @@ export function applyAnalysisCriteria(
         const previousNightTailOnly = !partialWeekday && rep.previousNightTail === true;
         const noTimetable = partialWeekday || previousNightTailOnly;
         const serviceClass = previousNightTailOnly ? 'time-limited' : ownServiceClass;
+        // #720: a rollup that reads one-off (irregular) stays one-off whatever weekdays it runs on.
+        const oneOff = ownServiceClass === 'irregular';
         // Rail rollup: apply the existing midday representative-day logic on top of
         // the day-type representative selection used by all modes.
         // For dir=0 (outbound): avoids Friday extra-train distortion.
@@ -829,7 +831,7 @@ export function applyAnalysisCriteria(
             baseHeadway: Math.round(stats.baseHeadway * 10) / 10,
             peakWindow: stats.peakWindow,
             serviceSpan: span,
-            tier: noTimetable ? 'infrequent' : worstTier,
+            tier: oneOff ? 'span' : noTimetable ? 'infrequent' : worstTier,
             partialWeekday: partialWeekday || undefined,
             // Periods it runs in on the weekdays it does serve, so "any frequency" in that
             // period still draws it as limited while a frequency threshold hides it. A day that
@@ -848,7 +850,9 @@ export function applyAnalysisCriteria(
             })(),
             // Partial-weekday routes are limited service: the "hide limited" toggle hides them
             // on every surface (map, lists, counts), like any other time-limited route (#710).
-            serviceClass: partialWeekday ? 'time-limited' : serviceClass,
+            // One-off service stays one-off on the weekdays it runs (#720): coast-rta's TL-1xx
+            // trippers run once a day on one or two weekdays.
+            serviceClass: partialWeekday && !oneOff ? 'time-limited' : serviceClass,
             tripCount: avgTrips,
             gaps: stats.gaps,
             times: rollupTimes,
