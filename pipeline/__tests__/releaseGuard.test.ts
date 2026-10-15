@@ -111,13 +111,13 @@ describe('tile rules fingerprint', () => {
   // #840 only adds a Cache-Control header to the release archive uploads; no tile value changes: hash only.
   // #720 reclasses service (one-departure patterns drawn as one-off, rush-hour-only as limited), which
   // changes which routes the class filters show from the tiles: version 4, after the app accepted 4.
-  // #899 adds the routeHasNoMiddayDirection key and an all-day filter clause that reads it. No
+  // #899 adds the worstDirectionMiddayCap key and an all-day filter clause that reads it. No
   // version bump, as for #710's pws keys: older tiles lack the key and evaluate exactly as before,
   // and older apps ignore it; the overview tiles keep it too. Hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 4,
-      fingerprint: '9928df9e6812c44620b0fae81e271e70bb034a1f480a5059a75a94d48f6152ea',
+      fingerprint: 'e633b752dfc9092602489869283ca2ce5c627d23eb3be7fb1b1a56e480dc9559',
     });
   });
 });

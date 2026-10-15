@@ -65,7 +65,7 @@ async function writeGeoJsonFeatureCollection(filePath: string, features: Feature
  * Build the deliberately small route set used by the zoomed-out map. At those
  * zooms the user needs the network shape, not every bend in every route.
  */
-function buildOverviewRoutes(routes: Feature[]): Feature[] {
+export function buildOverviewRoutes(routes: Feature[]): Feature[] {
   return routes.map(feature => ({
     ...feature,
     properties: Object.fromEntries(

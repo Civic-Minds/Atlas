@@ -4,7 +4,6 @@ import type { PeriodKey } from '../../shared/config';
 import { clipBetweenStopIndices, clipLinestring } from './lineClip';
 import { headwayToTierColor, type ColorVisionMode } from './colors';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
-import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 import { PERIOD_KEYS } from '../../shared/config';
 import { splitRouteKey } from './routeKey';
 import {
@@ -173,11 +172,9 @@ export function sharedStopFilterView(
   const headwayByPeriodSustained: Record<string, boolean> = {};
   const periods = onlyPeriod == null ? PERIOD_KEYS : onlyPeriod === 'all' ? [] : [onlyPeriod as PeriodKey];
   if (onlyPeriod === 'all') {
-    // #899: the route's all-day midday cap holds for its stretches too.
     return {
       tier: p.tier,
       headway: (pooled('headway') as number | undefined) ?? p.stopHeadways?.[stopId] ?? null,
-      ...(p.worstDirectionMiddayCap != null ? { worstDirectionMiddayCap: p.worstDirectionMiddayCap } : {}),
     };
   }
   if (onlyPeriod != null) {
@@ -285,7 +282,7 @@ function stopFilterValue(ctx: SharedPassContext, p: ShapeProperties, stopId: str
   let viewKey: string;
   if (period === 'all') {
     const pooled = getPooledStop(ctx.index, p, stopId, 'headway') as number | undefined;
-    viewKey = `all|${p.tier}|${pooled ?? p.stopHeadways?.[stopId] ?? null}|${p.worstDirectionMiddayCap ?? ''}`;
+    viewKey = `all|${p.tier}|${pooled ?? p.stopHeadways?.[stopId] ?? null}`;
   } else {
     const pk = period as PeriodKey;
     const pooled = getPooledPeriod(ctx.index, p, stopId, pk);
@@ -296,12 +293,7 @@ function stopFilterValue(ctx: SharedPassContext, p: ShapeProperties, stopId: str
   let value = ctx.viewValues.get(viewKey);
   if (value === undefined) {
     const view = sharedStopFilterView(ctx.index, p, stopId, period);
-    // #899: the all-day filter clause caps a route at its midday cap; the stop value follows it
-    // (routeFilterHeadway alone is the colour value and does not read the cap). A value above
-    // the cap's no-service sentinel never passes.
-    const raw = routeFilterHeadway(view, period);
-    const cap = period === 'all' ? view.worstDirectionMiddayCap as number | undefined : undefined;
-    value = raw == null || cap == null ? raw : (cap >= NO_PERIOD_SERVICE_TILE_VALUE ? null : Math.max(raw, cap));
+    value = routeFilterHeadway(view, period);
     ctx.viewValues.set(viewKey, value);
   }
   byKey.set(key, value);
@@ -350,6 +342,10 @@ export function sharedStretchStopPass(
     const p = f.properties as unknown as StretchProps;
     if (!p.stopOrder || !p.stopPositions || p.stopPositions.length !== p.stopOrder.length) continue;
     if (!options.includePassing && featurePassesHeadwayFilter(p, period, maxHeadway)) continue; // passing routes: handled above
+    // #899: with an all-day threshold set, the route's midday cap decides pass or fail for its
+    // stretches too (a direction with no midday service fails them all). It never changes the
+    // values shown, and with no threshold it does nothing.
+    if (period === 'all' && maxHeadway !== Infinity && (p.worstDirectionMiddayCap ?? 0) > maxHeadway) continue;
     const groupKey = `${p.routeId}|${p.day ?? ''}`;
     const byDir = ctx.groups.get(groupKey);
     if (!byDir) continue;
