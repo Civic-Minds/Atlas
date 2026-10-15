@@ -17,8 +17,6 @@ import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMa
 import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
-import { useSegmentBand, useSegmentDelay, useSegmentView } from '../../hooks/useSegmentDelay';
-import { headwayFeatures, segmentFeatures, standingStillFeatures } from '../../utils/segmentDelayView';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { syncUrlParams } from '../../utils/syncUrlParams';
@@ -1044,15 +1042,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
   }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, colorMode]);
 
-  // Live POC: stop pairs where vehicles lose time, drawn over the selected route.
-  const segmentRoute = selectedRoute ? splitRouteKey(selectedRoute) : null;
-  const segmentDelayData = useSegmentDelay(segmentRoute?.agencySlug, segmentRoute?.routeId);
-  const segmentBand = useSegmentBand();
-  const segmentView = useSegmentView();
-  const segmentDelayFeatures = useMemo(
-    () => (segmentView === 'spacing' ? headwayFeatures : segmentView === 'still' ? standingStillFeatures : segmentFeatures)(segmentDelayData, segmentBand, colorMode),
-    [segmentDelayData, segmentBand, segmentView, colorMode],
-  );
 
   const sharedHoverSegments = useMemo(
     () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day, colorMode),
@@ -1138,13 +1127,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     source.setData({ type: 'FeatureCollection', features: sharedHoverSegments });
   }, [sharedHoverSegments, mapLoaded]);
 
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-    const source = map.getSource('segment-delay') as maplibregl.GeoJSONSource | undefined;
-    if (!source) return;
-    source.setData({ type: 'FeatureCollection', features: segmentDelayFeatures });
-  }, [segmentDelayFeatures, mapLoaded]);
 
   useEffect(() => {
     const map = mapRef.current;

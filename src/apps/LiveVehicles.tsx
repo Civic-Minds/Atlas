@@ -20,6 +20,9 @@ import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../compo
 import { liveVehiclesEqual, liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, delayAmount, headwayAbout, headwayEvery } from '../utils/headwayText';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
+import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
+import { syncUrlParams } from '../utils/syncUrlParams';
+import { useSegmentDelay } from '../hooks/useSegmentDelay';
 
 interface Props {
   agencies: Agency[];
@@ -31,6 +34,8 @@ interface Props {
   layers?: Record<string, GeoJSON.FeatureCollection>;
   sidebarLeft?: number;
   selectionActive?: boolean;
+  /** A route picked on the map or in a link, handed over from the main map. */
+  routeRequest?: { slug: string; routeShortName: string; ts: number } | null;
 }
 
 interface RouteGroup {
@@ -78,7 +83,7 @@ function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
 
 const MIN_LIVE_ZOOM = 9;
 
-export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false }: Props) {
+export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false, routeRequest = null }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { setOverlay } = useLiveVehiclesMapOverlay();
@@ -119,8 +124,21 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // selectedRoute is a composite "slug::routeShortName" key
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const selectedRouteRef = useRef(selectedRoute);
+  selectedRouteRef.current = selectedRoute;
   const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
   const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
+  // Stretch zoom and highlight from the route card; map clicks are routed back to it.
+  const [fitArea, setFitArea] = useState<{ bounds: [number, number, number, number]; ts: number } | null>(null);
+  const [highlight, setHighlight] = useState<[number, number][] | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  // With the performance card shown, the vehicle list folds behind one row.
+  const [vehiclesOpen, setVehiclesOpen] = useState(false);
+  const mapLineClickRef = useRef<((lonLat: [number, number]) => void) | null>(null);
+  const registerMapClick = useCallback((fn: ((lonLat: [number, number]) => void) | null) => { mapLineClickRef.current = fn; }, []);
+  const zoomToStretch = useCallback((bounds: [number, number, number, number]) => setFitArea({ bounds, ts: Date.now() }), []);
+  // Deep link from a route card on the main map: /apps/live?route=ttc::504
+  const pendingRouteRef = useRef<string | null>(null);
 
   const isZoomedIn = zoom !== null && zoom >= MIN_LIVE_ZOOM;
 
@@ -204,6 +222,31 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, visibleSlugKey, fetchForSlug]);
+
+  // A route handed over from the map or a link opens once its agency is in view.
+  useEffect(() => {
+    if (!active || !routeRequest) return;
+    const key = `${routeRequest.slug}::${routeRequest.routeShortName}`;
+    pendingRouteRef.current = key;
+    setFocusedVehicle(null);
+    if (visibleSlugs.includes(routeRequest.slug)) {
+      pendingRouteRef.current = null;
+      setSelectedRoute(key);
+      return;
+    }
+    const bbox = LIVE_AGENCY_BBOXES[routeRequest.slug];
+    if (bbox) setFocusArea({ bounds: bbox, minZoom: MIN_LIVE_ZOOM + 0.2, ts: Date.now() });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, routeRequest]);
+  useEffect(() => {
+    const pending = pendingRouteRef.current;
+    if (pending && visibleSlugs.includes(pending.split('::')[0])) {
+      pendingRouteRef.current = null;
+      setSelectedRoute(pending);
+    }
+  }, [visibleSlugs]);
+  useEffect(() => { setHighlight(null); setDetailsOpen(false); setVehiclesOpen(false); }, [selectedRoute]);
+
 
   // Clear selected route when it's no longer in view
   useEffect(() => {
@@ -299,11 +342,25 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       focusedVehicle?.ts ?? '',
       routeFeatures.length,
       focusArea?.ts ?? '',
+      fitArea?.ts ?? '',
+      highlight?.length ?? 0,
+      highlight?.[0]?.join(',') ?? '',
     ].join('::');
     if (fp === lastOverlayFpRef.current) return;
     lastOverlayFpRef.current = fp;
-    setOverlay({ vehicles: overlayVehicles, focusedVehicle, routeFeatures, selectedRouteKey: selectedRoute, focusArea });
-  }, [active, overlayVehicles, focusedVehicle, routeFeatures, selectedRoute, focusArea, setOverlay]);
+    setOverlay({
+      vehicles: overlayVehicles, focusedVehicle, routeFeatures, selectedRouteKey: selectedRoute, focusArea, fitArea, highlight,
+      onMapClick: (lonLat, vehicle) => {
+        if (vehicle) {
+          const key = `${vehicle.agencySlug}::${vehicle.routeShortName}`;
+          if (key !== selectedRouteRef.current) setSelectedRoute(key);
+          return;
+        }
+        mapLineClickRef.current?.(lonLat);
+      },
+    });
+  }, [active, overlayVehicles, focusedVehicle, routeFeatures, selectedRoute, focusArea, fitArea, highlight, setOverlay]);
+
 
   // Clear overlay when deactivating or unmounting
   useEffect(() => {
@@ -484,6 +541,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const selectedGroup = selectedRoute
     ? routeGroups.find(g => `${g.agencySlug}::${g.routeShortName}` === selectedRoute) ?? null
     : null;
+  const performance = useSegmentDelay(selectedGroup?.agencySlug, selectedGroup?.routeShortName);
   const selectedAgencyName = selectedGroup
     ? (agencies.find(a => a.slug === selectedGroup.agencySlug)?.name ?? selectedGroup.agencySlug)
     : null;
@@ -522,6 +580,22 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // Direction drill-down within a route
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
   useEffect(() => { setSelectedDirection(null); }, [selectedRoute]);
+  // The view is in the URL so a shared link reopens it: route, followed vehicle, vehicle-list direction.
+  const restoreRef = useRef(active ? { vehicle: new URLSearchParams(window.location.search).get('vehicle'), group: new URLSearchParams(window.location.search).get('group') } : null);
+  useEffect(() => {
+    if (!active) return;
+    if (pendingRouteRef.current) return;
+    syncUrlParams({ route: selectedRoute, vehicle: focusedVehicle?.id ?? null, group: selectedDirection });
+  }, [active, selectedRoute, focusedVehicle?.id, selectedDirection]);
+  // Restore the followed vehicle and list direction from a shared link, once the route is open.
+  useEffect(() => {
+    const r = restoreRef.current;
+    if (!r || !selectedGroup) return;
+    restoreRef.current = null;
+    const v = r.vehicle ? selectedGroup.vehicles.find(x => x.id === r.vehicle) : null;
+    if (v) setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
+    if (r.group) { setSelectedDirection(r.group); setVehiclesOpen(true); }
+  }, [selectedGroup]);
 
   // Group vehicles by headsign if available, else by directionId
   const vehiclesByDirection = useMemo(() => {
@@ -645,7 +719,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               ) : (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
               )}
-              <span className={PANEL_TITLE}>Live Vehicles</span>
+              <span className={PANEL_TITLE}>Live</span>
             </PanelTitleBar>
           )}
 
@@ -653,6 +727,31 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           <PanelBody>
             {selectedGroup ? (
               <>
+              <div className="px-4 pt-4">
+                <LiveRoutePerformance
+                  key={selectedRoute ?? ''}
+                  slug={selectedGroup.agencySlug}
+                  routeShortName={selectedGroup.routeShortName}
+                  vehicles={selectedGroup.vehicles}
+                  feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
+                  onZoom={zoomToStretch}
+                  onHighlight={setHighlight}
+                  registerMapClick={registerMapClick}
+                  onDetailsChange={setDetailsOpen}
+                />
+              </div>
+              {!detailsOpen && performance && (
+                <button
+                  type="button"
+                  onClick={() => setVehiclesOpen(o => !o)}
+                  aria-expanded={vehiclesOpen}
+                  className="mx-4 mt-3 mb-4 pt-3 w-[calc(100%-2rem)] border-t border-[var(--border-primary)] flex items-center justify-between text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                >
+                  <span>Vehicles · {selectedGroup.vehicles.length}</span>
+                  <ChevronRight className={`w-3 h-3 transition-transform ${vehiclesOpen ? 'rotate-90' : ''}`} />
+                </button>
+              )}
+              {!detailsOpen && (!performance || vehiclesOpen) && (
               <div className="px-4 py-4">
                 {selectedRouteHeadwayLine && (
                   <div className="text-xs font-black text-[var(--text-dim)] mb-4">
@@ -709,6 +808,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   </SidebarCardListRows>
                 )}
               </div>
+              )}
               </>
             ) : !isZoomedIn || (visibleSlugs.length === 0 && !isLoading) ? (
               <>

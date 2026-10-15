@@ -45,6 +45,15 @@ const statusRgb: Record<string, [number, number, number]> = {
  * Live vehicle map layers: deck.gl is dynamically imported only when Live is
  * active so Frequency Map doesn't pay the deck bundle cost up front.
  */
+/** Frame part of a live route the way selecting the route does; on a phone the sheet sits below, not beside. */
+function fitLiveBounds(map: maplibregl.Map, [w, s, e, n]: [number, number, number, number], maxZoom = 14) {
+  const narrow = map.getContainer().clientWidth < 640;
+  map.fitBounds([[w, s], [e, n]], {
+    padding: narrow ? { top: 60, bottom: Math.round(map.getContainer().clientHeight * 0.45), left: 30, right: 30 } : { top: 120, bottom: 120, left: 320, right: 80 },
+    maxZoom,
+  });
+}
+
 export function useLiveVehiclesLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
   deckOverlayRef: React.RefObject<MapboxOverlay | null>,
@@ -238,6 +247,7 @@ export function useLiveVehiclesLayer(
   // Live route dynamic shape overlay (MapLibre GeoJSON — not deck)
   useEffect(() => {
     const map = mapRef.current;
+    if (import.meta.env.DEV && map) (window as unknown as { __liveMap?: maplibregl.Map }).__liveMap = map;
     if (!map || !mapLoaded) return;
 
     const source = map.getSource('live-route-shape') as maplibregl.GeoJSONSource;
@@ -274,12 +284,7 @@ export function useLiveVehiclesLayer(
             if (lat > maxLat) maxLat = lat;
           }
         });
-        if (minLng < maxLng) {
-          map.fitBounds([[minLng, minLat], [maxLng, maxLat]], {
-            padding: { top: 120, bottom: 120, left: 320, right: 80 },
-            maxZoom: 14,
-          });
-        }
+        if (minLng < maxLng) fitLiveBounds(map, [minLng, minLat, maxLng, maxLat]);
       }
     } else {
       source.setData({ type: 'FeatureCollection', features: [] });
@@ -307,4 +312,50 @@ export function useLiveVehiclesLayer(
     if (!cam) return;
     map.flyTo({ center: cam.center, zoom: Math.max(cam.zoom ?? 0, area.minZoom ?? 0) });
   }, [liveOverlay?.focusArea, mapLoaded, mapRef]);
+
+  // Stretch zoom from the route card: same framing as selecting the route.
+  useEffect(() => {
+    const map = mapRef.current;
+    const area = liveOverlay?.fitArea;
+    if (!map || !mapLoaded || !area) return;
+    fitLiveBounds(map, area.bounds, 16);
+  }, [liveOverlay?.fitArea, mapLoaded, mapRef]);
+
+  // Highlighted stretch, drawn over the route shape.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const coords = liveOverlay?.highlight ?? null;
+    const data: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: coords && coords.length > 1 ? [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } }] : [],
+    };
+    const source = map.getSource('live-stretch') as maplibregl.GeoJSONSource | undefined;
+    if (source) { source.setData(data); return; }
+    if (!coords) return;
+    map.addSource('live-stretch', { type: 'geojson', data });
+    map.addLayer({
+      id: 'live-stretch-layer',
+      type: 'line',
+      source: 'live-stretch',
+      paint: { 'line-color': '#2563eb', 'line-width': ['interpolate', ['linear'], ['zoom'], 11, 5, 14, 8, 17, 11], 'line-opacity': 0.45 },
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+    });
+  }, [liveOverlay?.highlight, mapLoaded, mapRef]);
+
+  // Clicks while Live is open: a vehicle opens its route; anywhere else goes to the route card (stretch picking).
+  const onMapClickRef = useRef(liveOverlay?.onMapClick);
+  onMapClickRef.current = liveOverlay?.onMapClick;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const onClick = (e: maplibregl.MapMouseEvent) => {
+      const handler = onMapClickRef.current;
+      if (!handler) return;
+      const info = deckOverlayRef.current?.pickObject({ x: e.point.x, y: e.point.y, radius: 12, layerIds: ['vehicles-dots'] });
+      handler([e.lngLat.lng, e.lngLat.lat], (info?.object as LiveVehicle | undefined) ?? null);
+    };
+    map.on('click', onClick);
+    return () => { map.off('click', onClick); };
+  }, [mapLoaded, mapRef, deckOverlayRef]);
 }

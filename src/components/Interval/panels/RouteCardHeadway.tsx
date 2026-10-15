@@ -1,5 +1,5 @@
 import React from 'react';
-import SegmentDelaySection from './SegmentDelaySection';
+import { useNavigate } from 'react-router';
 import { useSegmentDelay } from '../../../hooks/useSegmentDelay';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import type { Agency } from '../../../App';
@@ -224,11 +224,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   onInfoOpen,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
-  // Live mode: "where it falls behind" leads the card and the timetable folds to one line.
-  const segmentData = useSegmentDelay(routeSlug, currentRoute.routeShortName);
-  const liveLayout = segmentData != null;
-  const [scheduleOpen, setScheduleOpen] = React.useState(false);
-  React.useEffect(() => { setScheduleOpen(false); }, [routeSlug, currentRoute.routeShortName]);
+  // Routes with Live analysis link to it; the analysis itself lives only in Live mode.
+  const hasLiveAnalysis = useSegmentDelay(routeSlug, currentRoute.routeShortName) != null;
+  const navigate = useNavigate();
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
   const routeOverrideNote = routeAgency?.overrideNote
@@ -441,20 +439,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           />
         </div>
       </SidebarCardHeaderBlock>
-      {liveLayout && (
-        <>
-          <SegmentDelaySection slug={routeSlug ?? null} routeShortName={currentRoute.routeShortName ?? null} />
-          <button
-            type="button"
-            onClick={() => setScheduleOpen(open => !open)}
-            aria-expanded={scheduleOpen}
-            className="mt-3 pt-3 w-full border-t border-[var(--border-primary)] text-left text-xs font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
-          >
-            {scheduleHeadline ?? 'Scheduled: see timetable'} {scheduleOpen ? '▾' : '▸'}
-          </button>
-        </>
+      {hasLiveAnalysis && (
+        <button
+          type="button"
+          onClick={() => navigate(`/apps/live?route=${encodeURIComponent(`${routeSlug}::${currentRoute.routeShortName}`)}`)}
+          className="mb-3 w-full text-left text-xs font-bold text-[var(--accent)] hover:underline"
+        >
+          See how the {currentRoute.routeShortName} is doing in Live →
+        </button>
       )}
-      {(!liveLayout || scheduleOpen) && (<>
+      {(<>
       {compareRows && (() => {
         const { headline, lines } = compareCardSummary(compareRows);
         return (

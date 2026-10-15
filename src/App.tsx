@@ -272,6 +272,9 @@ export default function App() {
     setSelectedAgencySlug(slug);
     closeInfo();
   }, [activeApp, closeInfo]);
+  // In Live mode a route picked on the map (or deep-linked) opens Live's own card.
+  const [liveRouteRequest, setLiveRouteRequest] = useState<{ slug: string; routeShortName: string; ts: number } | null>(null);
+  const handleLiveRouteSelected = useCallback((slug: string, routeShortName: string) => setLiveRouteRequest({ slug, routeShortName, ts: Date.now() }), []);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
   const handleNightRouteClick = useCallback((slug: string, routeId: string) => { setPendingNightRoute({ slug, routeId, frequency: nightServiceFrequency }); closeInfo(); }, [closeInfo, nightServiceFrequency]);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
@@ -761,6 +764,7 @@ export default function App() {
               onViewportAgencySlugsChange={setViewportAgencySlugs}
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
+              onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
               onCompareActiveChange={setCompareActive}
               headerPortalContainer={headerPortalEl}
               viewTabsPortalContainer={viewTabsPortalEl}
@@ -801,6 +805,7 @@ export default function App() {
                     layers={layers}
                     sidebarLeft={sidebarLeft}
                     selectionActive={intervalSelectionActive}
+                    routeRequest={liveRouteRequest}
                   />
                 </React.Suspense>
               </div>
