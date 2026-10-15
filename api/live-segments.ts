@@ -5,16 +5,7 @@
  */
 import { readFile } from 'fs/promises';
 import { resolve } from 'path';
-import { getPolledRoute } from '../shared/livePollingConfig.js';
-
-/**
- * Routes whose analysis has been checked. Left out on purpose (2026-10-15): 501 (39% of runs
- * on trip numbers the timetable doesn't list), 506 and 512 (the timetable mixes the streetcar
- * with a replacement bus under one route, so the line and gaps blend both), 507 (replacement
- * buses only, no streetcar service), and 503 for now (gaps under ½ min are common near the
- * York St end, which looks like one car counted under two trip numbers; needs a check).
- */
-const ANALYSED = new Set(['ttc::504', 'ttc::505', 'ttc::509', 'ttc::510', 'ttc::511']);
+import { getPolledRoute, hasLiveAnalysis } from '../shared/livePollingConfig.js';
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -30,7 +21,7 @@ async function handler(req: Request): Promise<Response> {
   if (!agency || !route) return json({ error: 'agency and route are required' }, 400);
   // Whitelist: only configured live routes map to a file name (no path input reaches the filesystem).
   const cfg = getPolledRoute(agency, route);
-  if (!cfg || !ANALYSED.has(`${cfg.slug}::${cfg.displayRouteShortName}`)) return json({ noData: true });
+  if (!cfg || !hasLiveAnalysis(cfg.slug, cfg.displayRouteShortName)) return json({ noData: true });
   const dir = process.env.LIVE_SEGMENTS_DIR ?? resolve('../_live-data/out');
   try {
     const raw = await readFile(resolve(dir, `${cfg.slug}-${cfg.displayRouteShortName}-segments.json`), 'utf8');

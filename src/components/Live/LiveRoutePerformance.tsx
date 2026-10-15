@@ -286,8 +286,12 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
     return <Details data={data} line={line} stops={stops} band={band} bandLabel={bandLabel} directionLabel={directions.find(d => d.id === directionId)?.label ?? ''} still={still} range={range} onBack={() => setScreen({ kind: 'card' })} />;
   }
 
+  const replacement = (data as { replacementBuses?: boolean }).replacementBuses
+    ? <div className="text-xs font-black text-[var(--status-caution-text)]">Replacement buses: all figures describe the buses running this route</div>
+    : null;
   const pickers = (
     <div className="flex flex-col gap-1.5">
+      {replacement}
       <Chips options={SEGMENT_BAND_OPTIONS} value={band} onChange={setBand} />
       {directions.length > 1 && <Chips options={directions} value={directionId} onChange={d => { setDir(d); setScreen({ kind: 'card' }); }} />}
     </div>
@@ -412,6 +416,7 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
         <div className="min-w-0">
           <div className="text-sm font-black text-[var(--text-primary)] leading-tight">Details</div>
           <div className="text-xs font-bold text-[var(--text-muted)]">{directionLabel} · {bandLabel} · {totalDays} days, {range}</div>
+          {(data as { replacementBuses?: boolean }).replacementBuses && <div className="text-xs font-black text-[var(--status-caution-text)]">Replacement buses</div>}
         </div>
       </div>
 

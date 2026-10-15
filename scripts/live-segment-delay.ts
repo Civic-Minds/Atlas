@@ -646,6 +646,8 @@ const result = {
   gtfs: readCsv(join(GTFS, 'feed_info.txt'))[0]?.feed_version ?? null,
   dates: usedDates,
   directionLabels,
+  // The timetable runs this route entirely as replacement buses (e.g. 503, 507 in fall 2026).
+  replacementBuses: trips.length > 0 && trips.every(t => /replacement bus/i.test(t.trip_headsign)),
   // Trip number -> direction, so the live card can place current vehicles (the live feed's trip IDs match this timetable).
   tripDirections: Object.fromEntries([...new Set(trips.map(t => t.direction_id))].map(d => [d, trips.filter(t => t.direction_id === d).map(t => t.trip_id)])),
   runsTotal,

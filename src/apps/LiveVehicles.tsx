@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Info, Moon, Sun, WifiOff, ArrowLeft, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES } from '../../shared/livePollingConfig';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, hasLiveAnalysis } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
@@ -60,9 +60,10 @@ const ELIGIBLE_SLUGS = new Set(
     .map(r => r.slug)
 );
 
+/** Schedule status for a vehicle, or '' when the feed gives none (never a "No data" placeholder). */
 function delayLabel(v: LiveVehicle): string {
   if (v.statusLabel) return v.statusLabel;
-  if (v.delayMin === null) return 'No data';
+  if (v.delayMin === null) return '';
   if (v.delayMin <= -1.5) return `${delayAmount(Math.round(Math.abs(v.delayMin)))} early`;
   if (v.delayMin >= 5.5) return `${delayAmount(Math.round(v.delayMin))} late`;
   return 'On time';
@@ -208,7 +209,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       const [slug, rsn] = selectedRoute.split('::');
       if (!slug || !rsn) return [];
       const fc = layers[slug] ?? localLayers[slug];
-      if (!fc) return [];
+      if (!fc || !hasLiveAnalysis(slug, rsn)) return [];
       return fc.features.filter(f => {
         const p = f.properties as any;
         return p && p.routeShortName === rsn;
@@ -218,7 +219,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     for (const [slug, vehicles] of Object.entries(vehiclesBySlug)) {
       const fc = layers[slug] ?? localLayers[slug];
       if (!fc) continue;
-      const activeRSNs = new Set(vehicles.map(v => v.routeShortName));
+      const activeRSNs = new Set(vehicles.map(v => v.routeShortName).filter(rsn => hasLiveAnalysis(slug, rsn)));
       fc.features.forEach(f => {
         const p = f.properties as any;
         if (p && activeRSNs.has(p.routeShortName)) result.push(f);
@@ -500,9 +501,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const useHeadsign = selectedGroup.vehicles.some(v => v.headsign);
     const map = new Map<string, LiveVehicle[]>();
     for (const v of selectedGroup.vehicles) {
-      const key = useHeadsign
-        ? (v.headsign ?? 'Unknown')
-        : v.directionId != null ? String(v.directionId) : 'unknown';
+      // A car whose direction can't be told is left out of the groups (no "Unknown" group).
+      const key = useHeadsign ? v.headsign : v.directionId != null ? String(v.directionId) : null;
+      if (!key) continue;
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(v);
     }
@@ -512,9 +513,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // True when we can actually show meaningful direction groups (more than one, or one with a real label)
   const canGroupByDirection = useMemo(() => {
     if (!vehiclesByDirection) return false;
+    if (vehiclesByDirection.size === 0) return false;
     if (vehiclesByDirection.size > 1) return true;
     const [soleKey] = [...vehiclesByDirection.keys()];
-    if (soleKey === 'unknown') return false;
     const useHeadsign = selectedGroup?.vehicles.some(v => v.headsign) ?? false;
     if (!useHeadsign) {
       const label = directionLabels.get(parseInt(soleKey));
@@ -649,6 +650,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               )}
               {!detailsOpen && (!performance || vehiclesOpen) && (
               <div className="px-4 py-4">
+                {!performance && (
+                  <div className="text-xs font-bold text-[var(--text-muted)] mb-3">Route performance isn't available for this route</div>
+                )}
                 {selectedRouteHeadwayLine && (
                   <div className="text-xs font-black text-[var(--text-dim)] mb-4">
                     {selectedRouteHeadwayLine}
@@ -667,7 +671,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                         <div key={dirKey} className="relative pr-4">
                           <CardDirectionRow
                             label={label}
-                            subLabel={`${preview.map(delayLabel).join(' · ')}${extra > 0 ? ` · +${extra} more` : ''}`}
+                            subLabel={preview.some(v => delayLabel(v))
+                              ? `${preview.map(delayLabel).filter(Boolean).join(' · ')}${extra > 0 ? ` · +${extra} more` : ''}`
+                              : `${vehicles.length} ${vehicles.length === 1 ? 'vehicle' : 'vehicles'}`}
                             onClick={() => setSelectedDirection(dirKey)}
                           />
                           <ChevronRight className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--text-dim)]" />

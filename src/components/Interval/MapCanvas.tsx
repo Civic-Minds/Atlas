@@ -15,7 +15,7 @@ import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from 
 import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
 import { Z_PANEL, MAP_BADGE } from '../../styles';
-import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
+import { LIVE_ANALYSIS_ROUTES, hasLiveAnalysis } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
@@ -786,6 +786,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         const properties = feature.properties as Record<string, any> | null;
         if (!properties?.routeId || !properties.routeShortName) return [];
         if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') return [];
+        if (liveRoutesOnly && !hasLiveAnalysis(properties.agencySlug ?? slug, properties.routeShortName)) return [];
         const periodHeadway = routeFilterHeadway(properties, period);
         return [{
           ...feature,
@@ -798,7 +799,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
     });
     return { type: 'FeatureCollection', features };
-  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies, colorMode]);
+  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies, colorMode, liveRoutesOnly]);
 
   useEffect(() => {
     onMapContextAgencyCountChange?.(mapContextAgencies.length);
@@ -1037,11 +1038,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const frequencySegmentOverlay = useMemo(() => {
     // nightServiceView colors routes by a boolean nightService flag, not by headway tier --
     // the #317 overlay is a frequency-filter concept and doesn't apply there.
-    if (!showRouteLayers || nightServiceView || frequentServiceView || !filteredLayers) {
+    // Live draws only its own routes, so the frequency overlay stays off there too.
+    if (!showRouteLayers || nightServiceView || frequentServiceView || liveRoutesOnly || !filteredLayers) {
       return { segments: [], partialMatches: [], sharedStretchRoutes: [] };
     }
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
-  }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, colorMode]);
+  }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, liveRoutesOnly, colorMode]);
 
 
   const sharedHoverSegments = useMemo(
@@ -1189,7 +1191,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       canvasContextAttributes: { antialias: true, preserveDrawingBuffer: true },
     });
 
-    cleanupMap = map;
+      mapRef.current = map;
       mapRef.current = map;
 
       map.on('load', async () => {
@@ -2070,11 +2072,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }
 
     if (liveRoutesOnly) {
-      const livePairs = LIVE_POLLING_ROUTES
-        .filter(r => (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active)
-        .map(r => ['all',
-          ['==', ['get', 'agencySlug'], r.slug],
-          ['==', ['get', 'routeShortName'], r.displayRouteShortName],
+      // Live draws only the routes with Live route data; vehicles of other routes still show as dots.
+      const livePairs = LIVE_ANALYSIS_ROUTES
+        .map(key => key.split('::'))
+        .map(([slug, rsn]) => ['all',
+          ['==', ['get', 'agencySlug'], slug],
+          ['==', ['get', 'routeShortName'], rsn],
         ]);
       routeFilter = concatFilters(routeFilter, livePairs.length > 0 ? ['any', ...livePairs] : ['==', ['get', 'agencySlug'], '']);
     }
