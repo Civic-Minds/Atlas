@@ -305,17 +305,17 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     return true;
   });
   const [hideLowQuality, setHideLowQuality] = useState(() => {
-    if (!FEATURES.beta || typeof window === 'undefined') return false;
+    if (!FEATURES.persistedSettings || typeof window === 'undefined') return false;
     const urlValue = new URLSearchParams(window.location.search).get('quality');
     if (urlValue != null) return urlValue === '1';
     return localStorage.getItem('atlas_pref_hide_low_quality') === 'true';
   });
   const [showMapLegend, setShowMapLegend] = useState(() => (
-    FEATURES.beta && typeof window !== 'undefined' && localStorage.getItem('atlas_pref_map_legend') === 'true'
+    FEATURES.persistedSettings && typeof window !== 'undefined' && localStorage.getItem('atlas_pref_map_legend') === 'true'
   ));
   const [dataSaver, setDataSaver] = useState(() => (
     (() => {
-      if (!FEATURES.beta || typeof window === 'undefined') return false;
+      if (!FEATURES.persistedSettings || typeof window === 'undefined') return false;
       const urlValue = new URLSearchParams(window.location.search).get('dataSaver');
       if (urlValue != null) return urlValue === '1';
       return localStorage.getItem('atlas_pref_data_saver') === 'true';
@@ -323,16 +323,16 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   ));
 
   useEffect(() => {
-    if (FEATURES.beta) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
-    syncUrlParams({ quality: FEATURES.beta && hideLowQuality ? '1' : null });
+    if (FEATURES.persistedSettings) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
+    syncUrlParams({ quality: FEATURES.persistedSettings && hideLowQuality ? '1' : null });
   }, [hideLowQuality]);
 
   useEffect(() => {
-    if (FEATURES.beta) localStorage.setItem('atlas_pref_map_legend', String(showMapLegend));
+    if (FEATURES.persistedSettings) localStorage.setItem('atlas_pref_map_legend', String(showMapLegend));
   }, [showMapLegend]);
 
   useEffect(() => {
-    if (FEATURES.beta) localStorage.setItem('atlas_pref_data_saver', String(dataSaver));
+    if (FEATURES.persistedSettings) localStorage.setItem('atlas_pref_data_saver', String(dataSaver));
   }, [dataSaver]);
 
   const visibleAgencies = useMemo(
@@ -739,7 +739,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         </button>
       </div>
       </div>
-      {FEATURES.beta && <AppUpdateBanner />}
+      {FEATURES.updateBanner && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
         <ErrorBoundary label="The map encountered an error.">
@@ -772,8 +772,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setFrequentServiceDays={setFrequentServiceDays}
               setFrequentServiceFrequency={setFrequentServiceFrequency}
               setFrequentServiceWindow={setFrequentServiceWindow}
-              showMapContext={FEATURES.beta}
-              showMatchPercentage={FEATURES.beta}
+              showMapContext={FEATURES.mapContext}
+              showMatchPercentage={FEATURES.matchPercentage}
               filterToAgencies={inHistory}
               agencyFilterSlugs={inHistory ? historyFilterSlugs : null}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
@@ -807,7 +807,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               analyticsApp={activeApp}
               hideLowQuality={hideLowQuality}
               setHideLowQuality={setHideLowQuality}
-              feedQualityEnabled={FEATURES.beta}
+              feedQualityEnabled={FEATURES.feedQuality}
               showMapLegend={showMapLegend}
               setShowMapLegend={setShowMapLegend}
               dataSaver={dataSaver}

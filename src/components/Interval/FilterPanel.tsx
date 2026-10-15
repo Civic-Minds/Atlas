@@ -570,7 +570,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </div>
               </div>
 
-              {FEATURES.beta && (
+              {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
                     <p className="text-xs font-bold text-[var(--text-dim)]">Map</p>
@@ -589,7 +589,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </>
               )}
 
-              {FEATURES.beta && (
+              {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
                     <p className="text-xs font-bold text-[var(--text-dim)]">Data &amp; performance</p>

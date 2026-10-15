@@ -261,7 +261,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     ['all', 'All'],
     ['live', 'Live'],
     ['history', 'History'],
-    ...(FEATURES.beta ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
+    ...(FEATURES.outdatedFilter ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
   ];
 
   const selectedAgency = selectedSlug ? agencies.find(a => a.slug === selectedSlug) : null;

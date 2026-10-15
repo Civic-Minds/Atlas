@@ -6,7 +6,7 @@ import { WHATS_NEW, visibleWhatsNew } from './data/whatsNew';
 import { FEATURES } from '../shared/config';
 
 export default function ChangelogPage() {
-  const entries = buildChangelog(visibleWhatsNew(FEATURES.beta, WHATS_NEW));
+  const entries = buildChangelog(visibleWhatsNew(FEATURES.whatsNewBetaItems, WHATS_NEW));
 
   return (
     <PageShell stickyHeader>
