@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { recordedFeedExpiry } from '../refreshMeta.js';
 import JSZip from 'jszip';
 import {
   archiveKeyServiceDate,
@@ -220,7 +221,7 @@ describe('peekFeedDates', () => {
     zip.file('calendar.txt', 'service_id,start_date,end_date\nwk,20260101,20261128\n');
     zip.file('calendar_dates.txt', 'service_id,date,exception_type\nwk,20261231,2\n');
     const buf = await zip.generateAsync({ type: 'nodebuffer' });
-    expect(await peekFeedDates(buf)).toEqual({ feedStart: '20260101', feedExpiry: '20261128', feedVersion: 'v7' });
+    expect(await peekFeedDates(buf)).toEqual({ feedStart: '20260101', feedExpiry: '20261128', feedVersion: 'v7', feedInfoEnd: '20261001' });
   });
 
   it('reads a future start from calendar.txt (Breeze/scat starts Oct 19)', async () => {
@@ -232,7 +233,7 @@ describe('peekFeedDates', () => {
   });
 
   it('returns nulls for an unreadable zip', async () => {
-    expect(await peekFeedDates(Buffer.from('not a zip'))).toEqual({ feedStart: null, feedExpiry: null, feedVersion: null });
+    expect(await peekFeedDates(Buffer.from('not a zip'))).toEqual({ feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null });
   });
 });
 
@@ -293,5 +294,31 @@ describe('includeHiddenArgError', () => {
     expect(includeHiddenArgError(true, [])).toMatch(/--only-slug/);
     expect(includeHiddenArgError(true, ['sun-tran'])).toBeNull();
     expect(includeHiddenArgError(false, [])).toBeNull();
+  });
+});
+
+describe('reprocess and publish read one expiry (#875)', () => {
+  const simiZip = async () => {
+    // Simi Valley's only archived zip: feed_info ends 20250601, the calendar is a 20301231 placeholder.
+    const zip = new JSZip();
+    zip.file('feed_info.txt', 'feed_publisher_name,feed_start_date,feed_end_date\nSimi Valley,20230601,20250601\n');
+    zip.file('calendar.txt', 'service_id,monday,start_date,end_date\nwk,1,20230601,20301231\n');
+    return zip.generateAsync({ type: 'nodebuffer' });
+  };
+
+  it('refuses the Simi Valley zip at reprocess on the expiry publish records', async () => {
+    const { feedExpiry: calendarEnd, feedInfoEnd } = await peekFeedDates(await simiZip());
+    expect(calendarEnd).toBe('20301231');
+    const expiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, '20261015');
+    expect(expiry).toBe('20250601');
+    expect(feedDateRefusal(expiry, '20250601', '20261015')).toMatch(/ended 20250601, before today/);
+  });
+
+  it('still accepts a current feed_info under a placeholder calendar', async () => {
+    const zip = new JSZip();
+    zip.file('feed_info.txt', 'feed_publisher_name,feed_end_date\nX,20270331\n');
+    zip.file('calendar.txt', 'service_id,start_date,end_date\nwk,20260101,20500101\n');
+    const { feedExpiry: calendarEnd, feedInfoEnd } = await peekFeedDates(await zip.generateAsync({ type: 'nodebuffer' }));
+    expect(feedDateRefusal(recordedFeedExpiry(feedInfoEnd, calendarEnd, '20261015'), null, '20261015')).toBeNull();
   });
 });
