@@ -39,7 +39,7 @@ import { isRailLikeRoute } from '../shared/modes.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
-import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
+import { explainDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
@@ -1045,6 +1045,7 @@ export async function processGtfsBuffer(
   const dedupedFeatures = new Map<string, GeoJsonFeature>();
   // What dedupe knows about the pattern holding each slot (featureDedupe.ts).
   const dedupedPattern = new Map<string, DedupePattern>();
+  const dedupeTraceRoutes = process.env.ATLAS_DEDUPE_TRACE ? new Set(process.env.ATLAS_DEDUPE_TRACE.split(',').map(r => r.trim())) : null;
   // Feature → the shapeId it was actually built from, so the per-stop headway
   // resolution loop below can pool departures scoped to that exact physical path.
   const featureShapeId = new Map<GeoJsonFeature, string>();
@@ -1132,7 +1133,14 @@ export async function processGtfsBuffer(
       carriesRepDay: newCarriesRepDay,
       line: hasRouteShape ? points!.map(([lat, lon]) => [lon, lat]) : undefined,
     };
-    if (decideDedupe(incumbent, candidate, repWeekday) === 'keep') continue;
+    const dedupe = explainDedupe(incumbent, candidate, repWeekday);
+    // Dry-run diagnosis (CIV-209): ATLAS_DEDUPE_TRACE=86,504 (route names, or *) prints each slot
+    // decision with the rule that made it, so a case like #877 reads in one line.
+    if (dedupeTraceRoutes && (dedupeTraceRoutes.has('*') || dedupeTraceRoutes.has(shortName))) {
+      const side = (p: DedupePattern | undefined) => (p ? `${p.departures} deps, dedupe headway ${p.dedupeHeadway ?? 'none'}` : 'empty');
+      onStatus?.(`dedupe ${shortName} dir ${result.dir} ${result.day} "${cleanedForDedup ?? ''}": ${dedupe.decision} (${dedupe.reason}); candidate shape ${result.shapeId ?? 'none'} ${side(candidate)} vs incumbent ${side(incumbent)}`);
+    }
+    if (dedupe.decision === 'keep') continue;
 
     const newFeature: GeoJsonFeature = {
       type: 'Feature',
