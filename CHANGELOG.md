@@ -37,6 +37,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Live mode (local only): the route card's live lateness and the stop card's next arrivals now load instead of failing.
 - Trip time by hour now covers the whole day for TTC subway lines: Line 1 and Line 2 give the same end-to-end run a different shape per time band, and only one band's trips were being counted ([#852](https://github.com/Civic-Minds/Atlas/issues/852)).
 
+### Security
+- **Live realtime endpoints are no longer deployed publicly**: they were still shipping as public functions after #895; they now run only on the local dev server ([#901](https://github.com/Civic-Minds/Atlas/issues/901)).
+
 ### Changed
 
 - **Beta: the agencies list marks Live and History agencies**: small "Live" and "History" tags next to agency names show which agencies have live vehicle data and which have 10+ years of schedule history. Public is unchanged.
