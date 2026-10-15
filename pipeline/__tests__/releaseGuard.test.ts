@@ -109,9 +109,11 @@ describe('tile rules fingerprint', () => {
   // draw with the previous app, so the switch needs no dual-version window.
   // #749 changes the all-day worst-direction headline (a tile property): version 3.
   // #840 only adds a Cache-Control header to the release archive uploads; no tile value changes: hash only.
+  // #720 reclasses service (one-departure patterns drawn as one-off, rush-hour-only as limited), which
+  // changes which routes the class filters show from the tiles: version 4, after the app accepted 4.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
-      version: 3,
+      version: 4,
       fingerprint: 'b9d31effb11335b6bdacf90a5fe4bedd0eb6a7acffdaaf5b247731cd7af40e1c',
     });
   });
