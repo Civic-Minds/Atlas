@@ -1,5 +1,8 @@
 import { PERIOD_KEYS, type HeadwayByPeriod, type HeadwayByPeriodSustained, type PeriodKey } from './config.js';
-import { PERIOD_COVERAGE_MAX_HEADWAY } from './periodEligibility.js';
+import { NO_PERIOD_SERVICE_TILE_VALUE } from './pmtilesProps.js';
+
+/** #899: the longest midday wait at which a direction still runs at midday (the longest all-day threshold). */
+export const ALL_DAY_MIDDAY_MAX_WAIT = 120;
 
 export type WorstDirectionFeature = {
   properties: {
@@ -15,7 +18,9 @@ export type WorstDirectionFeature = {
     worstDirectionHeadwayByPeriod?: HeadwayByPeriod;
     periodCoverageHeadway?: HeadwayByPeriod;
     worstDirectionPeriodCoverageHeadway?: HeadwayByPeriod;
-    routeHasNoMiddayDirection?: boolean;
+    worstDirectionMiddayCap?: number;
+    /** #899: the route direction's midday wait from every trip it runs (process-core). */
+    directionMiddayWait?: number | null;
     [key: string]: unknown;
   };
 };
@@ -260,7 +265,7 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
   // uses. A direction with no steady pattern in the period keeps every sibling's coverage, so a
   // direction that leaves most of the window without service still fails the route.
   const coverageStamps = new Map<string, HeadwayByPeriod>();
-  const noMiddayDirection = new Set<string>();
+  const middayCaps = new Map<string, number>();
   for (const [key, group] of coverageGroups) {
     if (!group.some(f => f.properties.periodCoverageHeadway !== undefined)) continue;
     const stamp: HeadwayByPeriod = {};
@@ -280,21 +285,40 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
         return waits.length ? Math.max(...waits) : null;
       });
       stamp[period] = values.some(v => v == null) ? null : Math.max(...values as number[]);
-      // #899: a route passes an all-day "every N" only when every direction meets it, and a
-      // direction that does not run through the midday never does (rush-hour-only, a few trips,
-      // one-off, or an AM run that ends at 09:10). The all-day worst-direction value skips one-off
-      // patterns and reads a rush-hour direction by its peak headline, so the other direction
-      // alone decided. A direction runs through the midday when its midday wait, read from the
-      // same pool as the coverage stamp, is at most PERIOD_COVERAGE_MAX_HEADWAY: one stray midday
-      // departure leaves a longer wait. The route-day is flagged instead of changing the all-day
-      // value, which also colours the line: the shared filter fails a flagged route at every
-      // all-day threshold, and colour, cards and "All frequencies" are unchanged. Mixed old/new
-      // artifacts (a null value) give no flag.
+      // #899: a route passes an all-day "every N" only when every direction meets it. The all-day
+      // worst-direction value skips one-off patterns and reads a rush-hour direction by its peak
+      // headline, so a direction with little or no midday service did not count. Its midday wait
+      // caps the route instead:
+      // - a direction with no midday service (a wait over two hours, the longest all-day
+      //   threshold: an AM run ending at 09:10, a stray 12:00 short turn) beside one that has it
+      //   fails the route at every all-day threshold;
+      // - a direction with no midday headway reading but some midday service (a wait of two hours
+      //   or less) caps it at that wait (rush-hour-heavy, every 100 at midday: fails every 30,
+      //   passes every 120).
+      // A direction with a midday headway is already read at its midday cadence. The cap is
+      // its own value, not the all-day one, which also colours the line: colour, cards and "All
+      // frequencies" are unchanged. Mixed old/new artifacts give no cap.
       if (period === 'midday' && directions.size > 1) {
-        const complete = [...directions].every(direction => !group.some(f =>
-          f.properties.directionId === direction && f.properties.periodCoverageHeadway === undefined));
-        const runsMidday = values.map(v => v != null && v <= PERIOD_COVERAGE_MAX_HEADWAY);
-        if (complete && runsMidday.some(Boolean) && !runsMidday.every(Boolean)) noMiddayDirection.add(key);
+        const dirList = [...directions];
+        // The pipeline's direction-level midday wait (every trip at its first stop; process-core).
+        // Older artifacts without it get no cap.
+        const complete = group.every(f => f.properties.directionMiddayWait !== undefined);
+        const wait = (direction: number): number | null => {
+          const waits = group.filter(f => f.properties.directionId === direction)
+            .map(f => f.properties.directionMiddayWait).filter((v): v is number => v != null);
+          return waits.length ? Math.min(...waits) : null;
+        };
+        const waits = dirList.map(wait);
+        const runs = waits.map(v => v != null && v <= ALL_DAY_MIDDAY_MAX_WAIT);
+        if (complete && runs.some(Boolean) && !runs.every(Boolean)) {
+          middayCaps.set(key, NO_PERIOD_SERVICE_TILE_VALUE);
+        } else if (complete && runs.every(Boolean)) {
+          const caps = dirList
+            .map((direction, i) => group.some(f => f.properties.directionId === direction && f.properties.headwayByPeriod?.midday != null)
+              ? null : waits[i])
+            .filter((v): v is number => v != null);
+          if (caps.length > 0) middayCaps.set(key, Math.max(...caps));
+        }
       }
     }
     coverageStamps.set(key, stamp);
@@ -305,8 +329,9 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
     const sn = routeGroupName(f.properties);
     if (!sn) continue;
     const key = routeDayKey(sn, f.properties.routeBranch, f.properties.day);
-    if (noMiddayDirection.has(key)) f.properties.routeHasNoMiddayDirection = true;
-    else delete f.properties.routeHasNoMiddayDirection;
+    const middayCap = middayCaps.get(key);
+    if (middayCap != null) f.properties.worstDirectionMiddayCap = middayCap;
+    else delete f.properties.worstDirectionMiddayCap;
     const coverage = coverageStamps.get(key);
     if (coverage) f.properties.worstDirectionPeriodCoverageHeadway = coverage;
     else delete f.properties.worstDirectionPeriodCoverageHeadway;

@@ -1,0 +1,54 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+14255,14255,Don Mills Rd at Lawrence Ave East South Side,,43.736625,-79.343442,,,,,,1
+5260,5260,Lawrence Ave East at The Donway East,,43.737804,-79.340749,,,,,,1
+8378,8378,Underhill Dr at Brookbanks Dr South Side,,43.753216,-79.327525,,,,,,1
+8379,8379,Underhill Dr at Brookbanks Dr,,43.753391,-79.327649,,,,,,1
+8383,8383,Underhill Dr at Doonaree Dr South Side,,43.745369,-79.32597,,,,,,1
+7567,7567,Brookbanks Dr at Valley Woods Rd,,43.752304,-79.331617,,,,,,1
+11531,11531,29 Valley Woods Rd,,43.753958,-79.33291,,,,,,1
+1962,1962,Don Mills Rd at Clock Tower Rd,,43.734675,-79.342942,,,,,,1
+13436,13436,Underhill Dr at Roanoke Rd North Side,,43.742154,-79.325202,,,,,,1
+11529,11529,Opposite 29 Valley Woods Rd,,43.753842,-79.333227,,,,,,1
+1923,1923,Don Mills Rd at The Donway West (South),,43.732335,-79.342295,,,,,,1
+8388,8388,Underhill Dr at Shawfield Cres (South),,43.750167,-79.326233,,,,,,1
+7915,7915,Laurentide Dr at Silverdale Cres,,43.755278,-79.340341,,,,,,2
+7916,7916,Laurentide Dr at Tetbury Cres,,43.753215,-79.338987,,,,,,1
+11530,11530,Valley Woods Rd at Brookbanks Dr,,43.752396,-79.331912,,,,,,1
+8103,8103,Silverdale Cres at York Mills Rd,,43.756875,-79.341192,,,,,,1
+1946,1946,Don Mills Rd at Lawrence Ave East,,43.736801,-79.34314,,,,,,1
+8375,8375,Underhill Dr at Beveridge Dr North Side,,43.748107,-79.326209,,,,,,1
+5313,5313,Lawrence Ave East at Railside Rd (West) East Side,,43.740739,-79.323821,,,,,,1
+4725,4725,Wynford Dr at Gervais Dr,,43.723387,-79.336594,,,,,,1
+1961,1961,Don Mills Rd at Clock Tower Rd,,43.73428,-79.342483,,,,,,1
+11528,11528,44 Valley Woods Rd,,43.755137,-79.333446,,,,,,1
+8376,8376,Underhill Dr at Beveridge Dr,,43.748182,-79.326399,,,,,,1
+11397,11397,1200-1202 York Mills Rd,,43.759132,-79.333893,,,,,,1
+8385,8385,Underhill Dr at Kellythorne Dr,,43.750408,-79.326334,,,,,,1
+8381,8381,Underhill Dr at Cassandra Blvd (North),,43.752467,-79.326211,,,,,,1
+5275,5275,Lawrence Ave East at Greenland Rd East Side,,43.738331,-79.337526,,,,,,1
+8367,8367,Three Valleys Dr at Laurentide Dr,,43.751485,-79.336354,,,,,,1
+7912,7912,Laurentide Dr at Bushbury Dr,,43.754865,-79.340939,,,,,,1
+8384,8384,Underhill Dr at Doonaree Dr,,43.745335,-79.325826,,,,,,1
+5333,5333,Lawrence Ave East at Woodcliff Pl West Side,,43.738509,-79.337564,,,,,,1
+11106,11106,Three Valleys Dr at Groveland Cres,,43.751639,-79.335076,,,,,,1
+9079,9079,York Mills Rd at Lochinvar Cres,,43.757624,-79.339319,,,,,,2
+8377,8377,Underhill Dr at Broadlands Blvd,,43.744031,-79.326011,,,,,,1
+4720,4720,Wynford Dr at Don Mills Rd East Side,,43.723099,-79.338338,,,,,,2
+8387,8387,Underhill Dr at Roanoke Rd,,43.742,-79.325315,,,,,,1
+7911,7911,Laurentide Dr at Barnwood Crt East Side,,43.753092,-79.33874,,,,,,1
+8380,8380,Underhill Dr at Cassandra Blvd (North) South Side,,43.75243,-79.326374,,,,,,1
+1942,1942,Don Mills Rd at Green Belt Dr North Side,,43.727486,-79.340618,,,,,,1
+1922,1922,Don Mills Rd at The Donway East (South) North Side,,43.732636,-79.342026,,,,,,1
+7913,7913,Laurentide Dr at Larabee Cres,,43.752395,-79.336977,,,,,,1
+7566,7566,Brookbanks Dr at Valley Woods Rd,,43.752164,-79.331971,,,,,,1
+9075,9075,York Mills Rd at Laurentide Dr,,43.757636,-79.338064,,,,,,1
+11534,11534,Silverdale Cres at York Mills Rd South Side,,43.756605,-79.341245,,,,,,1
+7917,7917,Laurentide Dr at Three Valleys Dr,,43.751768,-79.336782,,,,,,1
+5259,5259,Lawrence Ave East at The Donway East,,43.737567,-79.341124,,,,,,1
+11533,11533,113 Valley Woods Rd,,43.75896,-79.332778,,,,,,1
+8382,8382,Underhill Dr at Cornerbrook Dr,,43.743816,-79.326092,,,,,,1
+11532,11532,Opposite 44 Valley Woods Rd,,43.755229,-79.333336,,,,,,1
+15526,15526,Don Mills Rd at Barber Greene Rd South Side,,43.727242,-79.340888,,,,,,1
+16688,16688,York Mills Rd at Valley Woods Rd,,43.759402,-79.332792,,,,,,1
+16733,16733,Don Valley Station,,43.721218,-79.337832,,,,,,1
+16748,16748,Wynford Dr at Don Mills Rd,,43.723157,-79.339184,,,,,,1

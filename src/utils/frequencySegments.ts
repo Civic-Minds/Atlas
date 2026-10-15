@@ -4,6 +4,7 @@ import type { PeriodKey } from '../../shared/config';
 import { clipBetweenStopIndices, clipLinestring } from './lineClip';
 import { headwayToTierColor, type ColorVisionMode } from './colors';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
+import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 import { PERIOD_KEYS } from '../../shared/config';
 import { splitRouteKey } from './routeKey';
 import {
@@ -172,12 +173,11 @@ export function sharedStopFilterView(
   const headwayByPeriodSustained: Record<string, boolean> = {};
   const periods = onlyPeriod == null ? PERIOD_KEYS : onlyPeriod === 'all' ? [] : [onlyPeriod as PeriodKey];
   if (onlyPeriod === 'all') {
-    // #899: a route with a direction that has no midday service passes no all-day threshold, so
-    // none of its stretches do either.
+    // #899: the route's all-day midday cap holds for its stretches too.
     return {
       tier: p.tier,
       headway: (pooled('headway') as number | undefined) ?? p.stopHeadways?.[stopId] ?? null,
-      ...(p.routeHasNoMiddayDirection === true ? { routeHasNoMiddayDirection: true } : {}),
+      ...(p.worstDirectionMiddayCap != null ? { worstDirectionMiddayCap: p.worstDirectionMiddayCap } : {}),
     };
   }
   if (onlyPeriod != null) {
@@ -285,7 +285,7 @@ function stopFilterValue(ctx: SharedPassContext, p: ShapeProperties, stopId: str
   let viewKey: string;
   if (period === 'all') {
     const pooled = getPooledStop(ctx.index, p, stopId, 'headway') as number | undefined;
-    viewKey = `all|${p.tier}|${pooled ?? p.stopHeadways?.[stopId] ?? null}|${p.routeHasNoMiddayDirection === true}`;
+    viewKey = `all|${p.tier}|${pooled ?? p.stopHeadways?.[stopId] ?? null}|${p.worstDirectionMiddayCap ?? ''}`;
   } else {
     const pk = period as PeriodKey;
     const pooled = getPooledPeriod(ctx.index, p, stopId, pk);
@@ -296,9 +296,12 @@ function stopFilterValue(ctx: SharedPassContext, p: ShapeProperties, stopId: str
   let value = ctx.viewValues.get(viewKey);
   if (value === undefined) {
     const view = sharedStopFilterView(ctx.index, p, stopId, period);
-    // #899: the filter clause fails a flagged route at every all-day threshold; the stop value
-    // follows it (routeFilterHeadway alone is the colour value and does not read the flag).
-    value = period === 'all' && view.routeHasNoMiddayDirection === true ? null : routeFilterHeadway(view, period);
+    // #899: the all-day filter clause caps a route at its midday cap; the stop value follows it
+    // (routeFilterHeadway alone is the colour value and does not read the cap). A value above
+    // the cap's no-service sentinel never passes.
+    const raw = routeFilterHeadway(view, period);
+    const cap = period === 'all' ? view.worstDirectionMiddayCap as number | undefined : undefined;
+    value = raw == null || cap == null ? raw : (cap >= NO_PERIOD_SERVICE_TILE_VALUE ? null : Math.max(raw, cap));
     ctx.viewValues.set(viewKey, value);
   }
   byKey.set(key, value);
