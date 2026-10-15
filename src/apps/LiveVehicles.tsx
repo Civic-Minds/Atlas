@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Info, Moon, Sun, WifiOff, ArrowLeft, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, hasLiveAnalysis, agencyHasLiveAnalysis } from '../../shared/livePollingConfig';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute, hasLiveAnalysis, agencyHasLiveAnalysis } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
@@ -578,6 +578,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       : capitalizeFirst(headwayAbout(gap));
   }, [selectedGroup, headwaysBySlug, layers, localLayers]);
 
+  // A route picked (from a link or the address) that has no card: say why, never show nothing.
+  const requestedRouteNote = useMemo((): string | null => {
+    if (!selectedRoute || selectedGroup || isLoading) return null;
+    const [slug, routeShortName] = selectedRoute.split('::');
+    const agencyName = shortenAgencyName(agencies.find(a => a.slug === slug)?.name ?? slug);
+    if (!getPolledRoute(slug, routeShortName)) {
+      const followed = LIVE_POLLING_ROUTES.filter(r => r.slug === slug).map(r => r.displayRouteShortName);
+      return followed.length > 0
+        ? `Live does not follow ${agencyName} ${routeShortName}. It follows ${agencyName} routes ${followed.join(', ')}.`
+        : `Live does not follow any ${agencyName} routes.`;
+    }
+    return `No ${agencyName} ${routeShortName} vehicles are running right now. Live checks again every few seconds.`;
+  }, [selectedRoute, selectedGroup, isLoading, agencies]);
+
   if (!active) return null;
 
   const totalVehicles = allVehicles.length;
@@ -637,6 +651,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
           {/* Content */}
           <PanelBody>
+            {requestedRouteNote && <p className={PANEL_EMPTY}>{requestedRouteNote}</p>}
             {selectedGroup ? (
               <>
               <div className="px-4 pt-4">

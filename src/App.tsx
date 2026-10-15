@@ -30,6 +30,7 @@ import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
+import LiveOffNotice from './components/LiveOffNotice';
 import ResearchInfo from './components/ResearchInfo';
 import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
@@ -177,9 +178,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const urlApp: AppId = PATH_TO_APP[useUrlPathname()] ?? 'frequency';
   const modeCatchingUp = urlApp !== routedApp;
 
+  // In a local copy, a switched-off Live says so instead of silently redirecting. Deployments keep the redirect.
+  const liveOffHere = gated && routedApp === 'live' && import.meta.env.DEV;
   useEffect(() => {
-    if (gated) navigate('/', { replace: true });
-  }, [gated, navigate]);
+    if (gated && !liveOffHere) navigate('/', { replace: true });
+  }, [gated, liveOffHere, navigate]);
 
   function setActiveApp(app: AppId) {
     trackEvent('app_opened', { app });
@@ -558,6 +561,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     root.classList.add('map-page');
     return () => root.classList.remove('map-page');
   }, []);
+
+  if (liveOffHere) return <LiveOffNotice />;
 
   return (
     <ViewportProvider>
