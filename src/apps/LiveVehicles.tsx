@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Info, Moon, Sun, WifiOff, ArrowLeft, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES } from '../../shared/livePollingConfig';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, hasLiveAnalysis } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
-import { PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_EMPTY, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_EMPTY, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors } from '../utils/colors';
@@ -17,9 +17,13 @@ import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
-import { liveVehiclesEqual, liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
+import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, delayAmount, headwayAbout, headwayEvery } from '../utils/headwayText';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
+import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
+import { useLiveFeeds } from '../hooks/useLiveFeeds';
+import { useLiveCardMapLink, useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
+import { useSegmentDelay } from '../hooks/useSegmentDelay';
 
 interface Props {
   agencies: Agency[];
@@ -31,6 +35,8 @@ interface Props {
   layers?: Record<string, GeoJSON.FeatureCollection>;
   sidebarLeft?: number;
   selectionActive?: boolean;
+  /** A route picked on the map or in a link, handed over from the main map. */
+  routeRequest?: { slug: string; routeShortName: string; ts: number } | null;
 }
 
 interface RouteGroup {
@@ -43,7 +49,6 @@ interface RouteGroup {
   dominantStatus: LiveVehicle['status'];
 }
 
-const POLL_INTERVAL_MS = 15_000;
 // After this many consecutive failures (~45s), stop implying the feed will
 // definitely recover — it may be structurally broken, not a transient blip.
 const STUCK_FAIL_THRESHOLD = 3;
@@ -55,9 +60,10 @@ const ELIGIBLE_SLUGS = new Set(
     .map(r => r.slug)
 );
 
+/** Schedule status for a vehicle, or '' when the feed gives none (never a "No data" placeholder). */
 function delayLabel(v: LiveVehicle): string {
   if (v.statusLabel) return v.statusLabel;
-  if (v.delayMin === null) return 'No data';
+  if (v.delayMin === null) return '';
   if (v.delayMin <= -1.5) return `${delayAmount(Math.round(Math.abs(v.delayMin)))} early`;
   if (v.delayMin >= 5.5) return `${delayAmount(Math.round(v.delayMin))} late`;
   return 'On time';
@@ -78,25 +84,46 @@ function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
 
 const MIN_LIVE_ZOOM = 9;
 
-export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false }: Props) {
+export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false, routeRequest = null }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { setOverlay } = useLiveVehiclesMapOverlay();
   const { bounds, zoom } = useViewport();
 
-  // Per-agency vehicle state
-  const [vehiclesBySlug, setVehiclesBySlug] = useState<Record<string, LiveVehicle[]>>({});
-  // Observed headways from the API: slug → routeShortName → { gapMin, samples }
-  const [headwaysBySlug, setHeadwaysBySlug] = useState<Record<string, Record<string, { gapMin: number; samples: number }>>>({});
-  const [loadingBySlug, setLoadingBySlug] = useState<Record<string, boolean>>({});
-  const [errorBySlug, setErrorBySlug] = useState<Record<string, string | null>>({});
-  // Consecutive failures per slug — used to soften "will retry automatically"
-  // once a feed has clearly been down for a while, not just a blip.
-  const [failCountBySlug, setFailCountBySlug] = useState<Record<string, number>>({});
-  const [degradedBySlug, setDegradedBySlug] = useState<Record<string, string | null>>({});
-
   // Locally-fetched agency GeoJSON (fallback when Interval layers haven't loaded yet)
   const [localLayers, setLocalLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
+
+
+  // selectedRoute is a composite "slug::routeShortName" key
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const selectedRouteRef = useRef(selectedRoute);
+  selectedRouteRef.current = selectedRoute;
+  const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
+  const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
+  const { fitArea, highlight, setHighlight, zoomToStretch, registerMapClick, mapLineClickRef } = useLiveCardMapLink();
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  // With the performance card shown, the vehicle list folds behind one row.
+  const [vehiclesOpen, setVehiclesOpen] = useState(false);
+  // A route handed over from the main map (or a link), waiting for its agency to come into view.
+  const pendingRouteRef = useRef<string | null>(null);
+
+  const isZoomedIn = zoom !== null && zoom >= MIN_LIVE_ZOOM;
+
+  // Which agency slugs are currently in the viewport
+  const visibleSlugs = useMemo(() => {
+    if (!bounds || !isZoomedIn) return [];
+    return Object.entries(LIVE_AGENCY_BBOXES)
+      .filter(([slug, [w, s, e, n]]) =>
+        ELIGIBLE_SLUGS.has(slug) &&
+        bounds.e > w && bounds.w < e &&
+        bounds.n > s && bounds.s < n
+      )
+      .map(([slug]) => slug);
+  }, [bounds]);
+
+  const visibleSlugKey = useMemo(() => [...visibleSlugs].sort().join(','), [visibleSlugs]);
+
+  const { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, failCountBySlug, degradedBySlug } = useLiveFeeds(active, visibleSlugs, visibleSlugKey);
 
   // Fill missing direction metadata from static directional route shapes. Some
   // GTFS-RT feeds provide vehicle positions without direction_id or headsign.
@@ -117,93 +144,16 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return resolved;
   }, [vehiclesBySlug, layers, localLayers]);
 
-  // selectedRoute is a composite "slug::routeShortName" key
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
-  const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
-  const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
+  useLiveRouteRequest({
+    active, routeRequest, visibleSlugs, pendingRouteRef,
+    open: key => { setFocusedVehicle(null); setSelectedRoute(key); },
+    flyTo: slug => {
+      const bbox = LIVE_AGENCY_BBOXES[slug];
+      if (bbox) setFocusArea({ bounds: bbox, minZoom: MIN_LIVE_ZOOM + 0.2, ts: Date.now() });
+    },
+  });
+  useEffect(() => { setHighlight(null); setDetailsOpen(false); setVehiclesOpen(false); }, [selectedRoute]);
 
-  const isZoomedIn = zoom !== null && zoom >= MIN_LIVE_ZOOM;
-
-  // Which agency slugs are currently in the viewport
-  const visibleSlugs = useMemo(() => {
-    if (!bounds || !isZoomedIn) return [];
-    return Object.entries(LIVE_AGENCY_BBOXES)
-      .filter(([slug, [w, s, e, n]]) =>
-        ELIGIBLE_SLUGS.has(slug) &&
-        bounds.e > w && bounds.w < e &&
-        bounds.n > s && bounds.s < n
-      )
-      .map(([slug]) => slug);
-  }, [bounds]);
-
-  const visibleSlugKey = useMemo(() => [...visibleSlugs].sort().join(','), [visibleSlugs]);
-
-  const fetchForSlug = useCallback(async (slug: string) => {
-    try {
-      const res = await fetch(`/api/live-vehicles?agency=${slug}`);
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Can't reach this feed right now.");
-      }
-      const data = await res.json();
-      const tagged: LiveVehicle[] = (data.vehicles || []).map((v: any) => ({ ...v, agencySlug: slug }));
-      // Skip React updates when poll returns the same map-relevant vehicle state
-      // (avoids full Live + deck rebuild every 15s while buses idle).
-      setVehiclesBySlug(prev => {
-        const prior = prev[slug];
-        if (prior && liveVehiclesEqual(prior, tagged)) return prev;
-        return { ...prev, [slug]: tagged };
-      });
-      setHeadwaysBySlug(prev => ({ ...prev, [slug]: data.headways || {} }));
-      setErrorBySlug(prev => (prev[slug] == null ? prev : { ...prev, [slug]: null }));
-      setFailCountBySlug(prev => (prev[slug] ? { ...prev, [slug]: 0 } : prev));
-      const degradedMsg = data.degraded ? (data.degradedReason ?? 'Some data unavailable') : null;
-      setDegradedBySlug(prev => (prev[slug] === degradedMsg ? prev : { ...prev, [slug]: degradedMsg }));
-    } catch (err: any) {
-      setErrorBySlug(prev => ({ ...prev, [slug]: err.message || 'Feed unavailable' }));
-      setFailCountBySlug(prev => ({ ...prev, [slug]: (prev[slug] ?? 0) + 1 }));
-    }
-  }, []);
-
-  // Start/stop polling when visible slugs change
-  useEffect(() => {
-    if (!active || visibleSlugs.length === 0) {
-      setVehiclesBySlug({});
-      setHeadwaysBySlug({});
-      setLoadingBySlug({});
-      setErrorBySlug({});
-      setFailCountBySlug({});
-      setDegradedBySlug({});
-      return;
-    }
-
-    // Initial fetch
-    const loading: Record<string, boolean> = {};
-    visibleSlugs.forEach(s => (loading[s] = true));
-    setLoadingBySlug(loading);
-    Promise.all(visibleSlugs.map(s => fetchForSlug(s))).finally(() =>
-      setLoadingBySlug(prev => {
-        const next = { ...prev };
-        visibleSlugs.forEach(s => (next[s] = false));
-        return next;
-      })
-    );
-
-    const pollId = setInterval(() => visibleSlugs.forEach(fetchForSlug), POLL_INTERVAL_MS);
-    return () => {
-      clearInterval(pollId);
-      // Clear stale data for slugs that left the viewport
-      setVehiclesBySlug(prev => {
-        const keep = new Set(visibleSlugs);
-        const next: typeof prev = {};
-        for (const [s, v] of Object.entries(prev)) {
-          if (keep.has(s)) next[s] = v;
-        }
-        return next;
-      });
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, visibleSlugKey, fetchForSlug]);
 
   // Clear selected route when it's no longer in view
   useEffect(() => {
@@ -259,7 +209,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       const [slug, rsn] = selectedRoute.split('::');
       if (!slug || !rsn) return [];
       const fc = layers[slug] ?? localLayers[slug];
-      if (!fc) return [];
+      if (!fc || !hasLiveAnalysis(slug, rsn)) return [];
       return fc.features.filter(f => {
         const p = f.properties as any;
         return p && p.routeShortName === rsn;
@@ -269,7 +219,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     for (const [slug, vehicles] of Object.entries(vehiclesBySlug)) {
       const fc = layers[slug] ?? localLayers[slug];
       if (!fc) continue;
-      const activeRSNs = new Set(vehicles.map(v => v.routeShortName));
+      const activeRSNs = new Set(vehicles.map(v => v.routeShortName).filter(rsn => hasLiveAnalysis(slug, rsn)));
       fc.features.forEach(f => {
         const p = f.properties as any;
         if (p && activeRSNs.has(p.routeShortName)) result.push(f);
@@ -299,11 +249,25 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       focusedVehicle?.ts ?? '',
       routeFeatures.length,
       focusArea?.ts ?? '',
+      fitArea?.ts ?? '',
+      highlight?.length ?? 0,
+      highlight?.[0]?.join(',') ?? '',
     ].join('::');
     if (fp === lastOverlayFpRef.current) return;
     lastOverlayFpRef.current = fp;
-    setOverlay({ vehicles: overlayVehicles, focusedVehicle, routeFeatures, selectedRouteKey: selectedRoute, focusArea });
-  }, [active, overlayVehicles, focusedVehicle, routeFeatures, selectedRoute, focusArea, setOverlay]);
+    setOverlay({
+      vehicles: overlayVehicles, focusedVehicle, routeFeatures, selectedRouteKey: selectedRoute, focusArea, fitArea, highlight,
+      onMapClick: (lonLat, vehicle, toleranceM) => {
+        if (vehicle) {
+          const key = `${vehicle.agencySlug}::${vehicle.routeShortName}`;
+          if (key !== selectedRouteRef.current) setSelectedRoute(key);
+          return;
+        }
+        mapLineClickRef.current?.(lonLat, toleranceM);
+      },
+    });
+  }, [active, overlayVehicles, focusedVehicle, routeFeatures, selectedRoute, focusArea, fitArea, highlight, setOverlay]);
+
 
   // Clear overlay when deactivating or unmounting
   useEffect(() => {
@@ -484,6 +448,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const selectedGroup = selectedRoute
     ? routeGroups.find(g => `${g.agencySlug}::${g.routeShortName}` === selectedRoute) ?? null
     : null;
+  const performance = useSegmentDelay(selectedGroup?.agencySlug, selectedGroup?.routeShortName);
   const selectedAgencyName = selectedGroup
     ? (agencies.find(a => a.slug === selectedGroup.agencySlug)?.name ?? selectedGroup.agencySlug)
     : null;
@@ -522,6 +487,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // Direction drill-down within a route
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
   useEffect(() => { setSelectedDirection(null); }, [selectedRoute]);
+  useLiveViewUrl({
+    active, selectedRoute, focusedVehicle, selectedDirection, selectedGroup, pendingRouteRef,
+    onRestore: (vehicle, group) => {
+      if (vehicle) setFocusedVehicle({ id: vehicle.id, lat: vehicle.lat, lon: vehicle.lon, ts: Date.now() });
+      if (group) { setSelectedDirection(group); setVehiclesOpen(true); }
+    },
+  });
 
   // Group vehicles by headsign if available, else by directionId
   const vehiclesByDirection = useMemo(() => {
@@ -529,9 +501,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const useHeadsign = selectedGroup.vehicles.some(v => v.headsign);
     const map = new Map<string, LiveVehicle[]>();
     for (const v of selectedGroup.vehicles) {
-      const key = useHeadsign
-        ? (v.headsign ?? 'Unknown')
-        : v.directionId != null ? String(v.directionId) : 'unknown';
+      // A car whose direction can't be told is left out of the groups (no "Unknown" group).
+      const key = useHeadsign ? v.headsign : v.directionId != null ? String(v.directionId) : null;
+      if (!key) continue;
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(v);
     }
@@ -541,9 +513,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // True when we can actually show meaningful direction groups (more than one, or one with a real label)
   const canGroupByDirection = useMemo(() => {
     if (!vehiclesByDirection) return false;
+    if (vehiclesByDirection.size === 0) return false;
     if (vehiclesByDirection.size > 1) return true;
     const [soleKey] = [...vehiclesByDirection.keys()];
-    if (soleKey === 'unknown') return false;
     const useHeadsign = selectedGroup?.vehicles.some(v => v.headsign) ?? false;
     if (!useHeadsign) {
       const label = directionLabels.get(parseInt(soleKey));
@@ -601,7 +573,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       <div
-        className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
+        className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100dvh-170px)] sm:max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
         <Panel enter>
@@ -645,7 +617,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               ) : (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
               )}
-              <span className={PANEL_TITLE}>Live Vehicles</span>
+              <span className={PANEL_TITLE}>Live</span>
             </PanelTitleBar>
           )}
 
@@ -653,7 +625,34 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           <PanelBody>
             {selectedGroup ? (
               <>
+              <div className="px-4 pt-4">
+                <LiveRoutePerformance
+                  key={selectedRoute ?? ''}
+                  slug={selectedGroup.agencySlug}
+                  routeShortName={selectedGroup.routeShortName}
+                  feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
+                  onZoom={zoomToStretch}
+                  onHighlight={setHighlight}
+                  registerMapClick={registerMapClick}
+                  onDetailsChange={setDetailsOpen}
+                />
+              </div>
+              {!detailsOpen && performance && (
+                <button
+                  type="button"
+                  onClick={() => setVehiclesOpen(o => !o)}
+                  aria-expanded={vehiclesOpen}
+                  className="mx-4 mt-3 mb-4 pt-3 w-[calc(100%-2rem)] border-t border-[var(--border-primary)] flex items-center justify-between text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                >
+                  <span>Vehicles · {selectedGroup.vehicles.length}</span>
+                  <ChevronRight className={`w-3 h-3 transition-transform ${vehiclesOpen ? 'rotate-90' : ''}`} />
+                </button>
+              )}
+              {!detailsOpen && (!performance || vehiclesOpen) && (
               <div className="px-4 py-4">
+                {!performance && (
+                  <div className="text-xs font-bold text-[var(--text-muted)] mb-3">Route performance isn't available for this route</div>
+                )}
                 {selectedRouteHeadwayLine && (
                   <div className="text-xs font-black text-[var(--text-dim)] mb-4">
                     {selectedRouteHeadwayLine}
@@ -672,7 +671,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                         <div key={dirKey} className="relative pr-4">
                           <CardDirectionRow
                             label={label}
-                            subLabel={`${preview.map(delayLabel).join(' · ')}${extra > 0 ? ` · +${extra} more` : ''}`}
+                            subLabel={preview.some(v => delayLabel(v))
+                              ? `${preview.map(delayLabel).filter(Boolean).join(' · ')}${extra > 0 ? ` · +${extra} more` : ''}`
+                              : `${vehicles.length} ${vehicles.length === 1 ? 'vehicle' : 'vehicles'}`}
                             onClick={() => setSelectedDirection(dirKey)}
                           />
                           <ChevronRight className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--text-dim)]" />
@@ -709,6 +710,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   </SidebarCardListRows>
                 )}
               </div>
+              )}
               </>
             ) : !isZoomedIn || (visibleSlugs.length === 0 && !isLoading) ? (
               <>

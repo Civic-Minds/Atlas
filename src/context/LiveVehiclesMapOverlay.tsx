@@ -29,6 +29,12 @@ export interface LiveVehiclesMapOverlay {
   // One-shot request to fly the map to a coverage area: [w, s, e, n] bounds,
   // landing at ≥ minZoom so live tracking activates. ts re-triggers repeat clicks.
   focusArea?: { bounds: [number, number, number, number]; minZoom?: number; ts: number } | null;
+  // One-shot fit to a stretch of the selected route, with the same framing as the route fit.
+  fitArea?: { bounds: [number, number, number, number]; ts: number } | null;
+  // Stretch of the selected route to draw on top of it.
+  highlight?: [number, number][] | null;
+  // Map click while Live is open: the vehicle under the pointer, if any.
+  onMapClick?: (lonLat: [number, number], vehicle: LiveVehicle | null, toleranceM: number) => void;
 }
 
 interface ContextValue {

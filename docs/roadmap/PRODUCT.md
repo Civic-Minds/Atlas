@@ -19,6 +19,7 @@ User experience and the workflow of a transit professional using Atlas.
 - [ ] **Restore live vehicle map**: live vehicle positions for configured agencies after the hosted data path and coverage are rebuilt
 - [ ] **Restore schedule adherence panel**: on-demand comparison of scheduled vs. actual headway for supported routes
 - [ ] **Historical drift analysis**: combine archived snapshots with on-demand TripUpdates to surface patterns over time (e.g. "always 5 min late on Tuesdays at this stop")
+  - Local proof of concept (2026-10-14, branch `feature/live-local-poc`): archived TTC 504 positions vs the timetable show where running time is lost per stop pair (median and 1 in 10, by time of day) and where spacing breaks down per stop (excess wait). Uses positions only; TTC live trip IDs match the "Surface Routes and Schedules for BusTime" GTFS, not the package Atlas currently imports. Next: missed or cancelled trips per stop, holds, short turns, 511.
 
 ---
 

@@ -9,6 +9,8 @@ import { escapeHtml } from '../../../lib/escapeHtml';
 import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint';
 import { useColorVision } from '../../../context/ColorVisionContext';
 import { delayAmount } from '../../../utils/headwayText';
+import { frameRoute } from './routeFraming';
+import { lineCoordinates } from '../../../../shared/routeGeometry';
 
 /** Exported for unit tests — GTFS-RT text must be escaped before innerHTML. */
 export function vehicleTooltipHtml(v: LiveVehicle): string | null {
@@ -260,26 +262,7 @@ export function useLiveVehiclesLayer(
 
       if (routeKey && liveFittedRouteRef.current !== routeKey) {
         liveFittedRouteRef.current = routeKey;
-        let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-        features.forEach(f => {
-          const geom = f.geometry as { type: string; coordinates: number[][] | number[][][] };
-          const coords =
-            geom.type === 'LineString' ? (geom.coordinates as number[][])
-            : geom.type === 'MultiLineString' ? (geom.coordinates as number[][][]).flat()
-            : [];
-          for (const [lng, lat] of coords) {
-            if (lng < minLng) minLng = lng;
-            if (lng > maxLng) maxLng = lng;
-            if (lat < minLat) minLat = lat;
-            if (lat > maxLat) maxLat = lat;
-          }
-        });
-        if (minLng < maxLng) {
-          map.fitBounds([[minLng, minLat], [maxLng, maxLat]], {
-            padding: { top: 120, bottom: 120, left: 320, right: 80 },
-            maxZoom: 14,
-          });
-        }
+        frameRoute(map, features.flatMap(f => lineCoordinates(f.geometry)), { phoneSheet: true });
       }
     } else {
       source.setData({ type: 'FeatureCollection', features: [] });
@@ -307,4 +290,53 @@ export function useLiveVehiclesLayer(
     if (!cam) return;
     map.flyTo({ center: cam.center, zoom: Math.max(cam.zoom ?? 0, area.minZoom ?? 0) });
   }, [liveOverlay?.focusArea, mapLoaded, mapRef]);
+
+  // Stretch zoom from the route card: same framing as selecting the route.
+  useEffect(() => {
+    const map = mapRef.current;
+    const area = liveOverlay?.fitArea;
+    if (!map || !mapLoaded || !area) return;
+    const [w, so, e, n] = area.bounds;
+    frameRoute(map, [[w, so], [e, n]], { maxZoom: 16, phoneSheet: true });
+  }, [liveOverlay?.fitArea, mapLoaded, mapRef]);
+
+  // Highlighted stretch, drawn over the route shape.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const coords = liveOverlay?.highlight ?? null;
+    const data: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: coords && coords.length > 1 ? [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } }] : [],
+    };
+    const source = map.getSource('live-stretch') as maplibregl.GeoJSONSource | undefined;
+    if (source) { source.setData(data); return; }
+    if (!coords) return;
+    map.addSource('live-stretch', { type: 'geojson', data });
+    map.addLayer({
+      id: 'live-stretch-layer',
+      type: 'line',
+      source: 'live-stretch',
+      paint: { 'line-color': '#2563eb', 'line-width': ['interpolate', ['linear'], ['zoom'], 11, 5, 14, 8, 17, 11], 'line-opacity': 0.45 },
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+    });
+  }, [liveOverlay?.highlight, mapLoaded, mapRef]);
+
+  // Clicks while Live is open: a vehicle opens its route; anywhere else goes to the route card (stretch picking).
+  const onMapClickRef = useRef(liveOverlay?.onMapClick);
+  onMapClickRef.current = liveOverlay?.onMapClick;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const onClick = (e: maplibregl.MapMouseEvent) => {
+      const handler = onMapClickRef.current;
+      if (!handler) return;
+      const info = deckOverlayRef.current?.pickObject({ x: e.point.x, y: e.point.y, radius: 12, layerIds: ['vehicles-dots'] });
+      // A 12 px hit area, whatever the zoom.
+      const mPerPx = (40_075_016 * Math.cos((e.lngLat.lat * Math.PI) / 180)) / (512 * 2 ** map.getZoom());
+      handler([e.lngLat.lng, e.lngLat.lat], (info?.object as LiveVehicle | undefined) ?? null, 12 * mPerPx);
+    };
+    map.on('click', onClick);
+    return () => { map.off('click', onClick); };
+  }, [mapLoaded, mapRef, deckOverlayRef]);
 }

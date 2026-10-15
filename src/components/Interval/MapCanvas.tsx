@@ -16,7 +16,7 @@ import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from 
 import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
 import { Z_PANEL, MAP_BADGE } from '../../styles';
-import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
+import { LIVE_ANALYSIS_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
@@ -44,6 +44,7 @@ import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
 import { fitTargetForPoints, routeFitTarget } from '../../utils/routeFitTarget';
+import { routeFramePadding } from './map/routeFraming';
 import { lineCoordinates } from '../../../shared/routeGeometry';
 import Panel from '../ui/Panel';
 import ListRow from '../ui/ListRow';
@@ -300,6 +301,7 @@ interface MapCanvasProps {
   liveRoutesOnly?: boolean;
   hideSpan?: boolean;
   filterToAgencies?: boolean;
+  agencyFilterSlugs?: string[] | null;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   tileFilter?: any;
   selectedAgencySlug?: string | null;
@@ -386,6 +388,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   liveRoutesOnly = false,
   hideSpan = false,
   filterToAgencies = false,
+  agencyFilterSlugs = null,
   onHistoryRouteClick,
   tileFilter,
   selectedAgencySlug,
@@ -1044,6 +1047,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
   }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, colorMode]);
 
+
   // CIV-152 (beta): the sections of every visible line whose every-gap grade differs from
   // the route's own tier, in their own colour over the base line (#690 stopTiers, judged by
   // the slower direction). All-day only; the filter still reads the route-level values.
@@ -1149,6 +1153,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!source) return;
     source.setData({ type: 'FeatureCollection', features: sharedHoverSegments });
   }, [sharedHoverSegments, mapLoaded]);
+
 
   useEffect(() => {
     const map = mapRef.current;
@@ -2011,19 +2016,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }
 
     if (target?.kind === 'bounds') {
-      // Asymmetric padding: route card sits on the left (~sidebar + panel width).
-      // Uniform padding (80) centers the line in the full canvas so the west end
-      // hides under the card — same issue live vehicles already avoided with left: 320.
-      map.fitBounds(target.bounds, {
-        padding: { top: 80, bottom: 80, left: 320, right: 80 },
-        maxZoom: 14,
-      });
+      // Asymmetric padding keeps the line clear of the route card (routeFraming).
+      map.fitBounds(target.bounds, { padding: routeFramePadding(map), maxZoom: 14 });
       fittedRouteRef.current = selectedRoute;
     } else if (target?.kind === 'point') {
       map.flyTo({
         center: target.center,
         zoom: Math.max(map.getZoom(), 14),
-        padding: { top: 80, bottom: 80, left: 320, right: 80 },
+        padding: routeFramePadding(map),
         duration: 900,
         essential: true,
       });
@@ -2125,17 +2125,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       routeFilter = effectiveTileFilter;
     }
 
-    if (filterToAgencies && agencies.length > 0) {
-      const slugAllowlist: any = ['in', ['get', 'agencySlug'], ['literal', agencies.map(a => a.slug)]];
+    if (filterToAgencies && (agencyFilterSlugs ?? agencies).length > 0) {
+      const slugAllowlist: any = ['in', ['get', 'agencySlug'], ['literal', agencyFilterSlugs ?? agencies.map(a => a.slug)]];
       routeFilter = concatFilters(routeFilter, slugAllowlist);
     }
 
     if (liveRoutesOnly) {
-      const livePairs = LIVE_POLLING_ROUTES
-        .filter(r => (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active)
-        .map(r => ['all',
-          ['==', ['get', 'agencySlug'], r.slug],
-          ['==', ['get', 'routeShortName'], r.displayRouteShortName],
+      // Live draws only the routes with Live route data; vehicles of other routes still show as dots.
+      const livePairs = LIVE_ANALYSIS_ROUTES
+        .map(key => key.split('::'))
+        .map(([slug, rsn]) => ['all',
+          ['==', ['get', 'agencySlug'], slug],
+          ['==', ['get', 'routeShortName'], rsn],
         ]);
       routeFilter = concatFilters(routeFilter, livePairs.length > 0 ? ['any', ...livePairs] : ['==', ['get', 'agencySlug'], '']);
     }
@@ -2157,6 +2158,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     if (hasOverviewRoutes) map.setFilter('overview-routes-layer', routeFilter as any);
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
+    // Local (non-tile) routes: Live's route allowlist as a layer filter, so switching modes never
+    // rebuilds the local route data.
+    if (hasLocalRoutes) map.setFilter('local-routes-layer', liveRoutesOnly ? ['any', ...LIVE_ANALYSIS_ROUTES.map(k => k.split('::')).map(([slug, rsn]) => ['all', ['==', ['get', 'agencySlug'], slug], ['==', ['get', 'routeShortName'], rsn]])] as any : null);
     const routeSortKey = buildRouteSortKeyExpression(headwayExpr);
     if (hasOverviewRoutes) map.setLayoutProperty('overview-routes-layer', 'line-sort-key', routeSortKey as any);
     if (hasRoutes) map.setLayoutProperty('routes-layer', 'line-sort-key', routeSortKey as any);
@@ -2352,6 +2356,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         && !onDemandFocus
         && !nightServiceView
         && !frequentServiceView
+        // Live draws only its own routes. The overlay is hidden, not recomputed, so leaving Live
+        // doesn't redo it inside the route change (that left Live on screen with the URL at "/").
+        && !liveRoutesOnly
         && !(selectedStop && routesForStop?.siblingIdsByAgency);
       if (map.getLayer('frequency-qualifying-segments-layer')) {
         map.setLayoutProperty(
@@ -2399,7 +2406,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

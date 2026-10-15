@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp, History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
@@ -479,7 +479,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
   // typing a new search gets raced back to whatever agency the map still
   // has selected, since that prop doesn't change just because the user typed.
   const appliedInitialSlugRef = useRef(false);
-  // Shared links: History's view is read from the URL once, when it opens (it remounts on every visit).
+  // Shared links: History's view is read from the URL when it opens (here on mount, and below on each later opening).
   const [urlState] = useState<HistoryUrlState | null>(() => (
     active && typeof window !== 'undefined' ? parseHistoryUrlState(window.location.search) : null
   ));
@@ -491,6 +491,22 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set(urlState?.regions ?? []));
   const [routeQuery, setRouteQuery] = useState(() => urlState?.routeQuery ?? '');
   const [activeFilter, setActiveFilter] = useState<HistoryRouteFilterKey | null>(() => (urlState?.routeMode as HistoryRouteFilterKey | null) ?? null);
+  // History stays mounted across modes (#888), so each time it opens it re-reads the URL and
+  // starts fresh, as the old remount did.
+  const wasActiveRef = useRef(active);
+  useLayoutEffect(() => {
+    if (active && !wasActiveRef.current) {
+      const fresh = typeof window !== 'undefined' ? parseHistoryUrlState(window.location.search) : null;
+      setSelectedSlug(fresh?.agency ?? null);
+      setSelectedRouteShortName(fresh?.route ?? null);
+      setSelectedYear(0);
+      pendingUrlYearRef.current = fresh?.year ?? 0;
+      setRegionFilter(new Set(fresh?.regions ?? []));
+      setRouteQuery(fresh?.routeQuery ?? '');
+      setActiveFilter((fresh?.routeMode as HistoryRouteFilterKey | null) ?? null);
+    }
+    wasActiveRef.current = active;
+  }, [active]);
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
   const { setOverlay } = useHistoryMapOverlay();
