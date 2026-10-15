@@ -260,7 +260,7 @@ export interface HeadwayBandStat {
   actualMedianGapSec: number;
   /** Share of gaps within ±50% of that window's scheduled gap. */
   withinShare: number;
-  /** Actual average wait minus scheduled average wait (TfL-style EWT); null if unmeasurable. */
+  /** Actual average wait minus scheduled average wait (excess wait time, "Extra wait" on the card); null if unmeasurable. */
   excessWaitSec: number | null;
   /** Nearest-rank 10th and 90th percentiles of the actual gaps: 8 in 10 gaps fall between them. */
   gapP10Sec: number;

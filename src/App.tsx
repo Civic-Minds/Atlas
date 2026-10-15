@@ -26,7 +26,9 @@ const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
 import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './components/InfoPanel';
 import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
-import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
+import type { HistoryAgencyList } from '../shared/historyEligibility';
+import { preloadHistory } from './utils/historyConfig';
+import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import Panel from './components/ui/Panel';
 import ResearchInfo from './components/ResearchInfo';
@@ -195,8 +197,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     [catalogAgencies, onDemandData.index, onDemandData.geometries],
   );
   const [agenciesLoadState, setAgenciesLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
-  const [historyExploreAgencyCount, setHistoryExploreAgencyCount] = useState<number | null>(null);
+  // History-eligible agencies come from the small committed list build-history writes, so the History tab
+  // doesn't wait on (or download) the multi-megabyte history-config.json.
+  const historyAgencySlugs = useMemo<Set<string> | null>(
+    () => (FEATURES.history ? new Set((historyAgencyList as HistoryAgencyList).slugs) : null),
+    [],
+  );
+  const historyExploreAgencyCount = historyAgencySlugs ? historyAgencySlugs.size : null;
   const [query, setQuery] = useState('');
   // Search scans / map filters / prefetch run from this so keystrokes can
   // paint first. See useDebouncedValue for why this isn't useDeferredValue.
@@ -405,6 +412,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // The Live tab follows the address straight away, in both directions.
   const liveTabOn = urlApp === 'live';
   const inNight = activeApp === 'night';
+  // History and Night Service stay mounted once opened (so switching back doesn't remount them) but are
+  // not loaded, or their data fetched, until the first visit.
+  const [historyOpened, setHistoryOpened] = useState(false);
+  const [nightOpened, setNightOpened] = useState(false);
+  useEffect(() => { if (activeApp === 'history') setHistoryOpened(true); }, [activeApp]);
+  useEffect(() => { if (inNight) setNightOpened(true); }, [inNight]);
   const loadedAgencySlugs = useMemo(
     () => new Set([
       ...Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug),
@@ -431,6 +444,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
     [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
   )));
+  // On the plain map (not in Live, where the extra download isn't worth it), warm History in idle time once its
+  // tab is on offer, so the first open doesn't wait on the code or the multi-megabyte config.
+  const warmHistory = showHistoryControl && inFrequency && agenciesLoadState === 'ready';
+  useEffect(() => {
+    if (!warmHistory) return;
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(preloadHistory, { timeout: 5000 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = window.setTimeout(preloadHistory, 3000);
+    return () => window.clearTimeout(id);
+  }, [warmHistory]);
   // Always open History on the agency chooser rather than guessing one from
   // whatever the map happens to be showing -- auto-jumping straight to an
   // agency (e.g. TTC, just because the map defaults to Toronto) surprised
@@ -502,22 +528,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       .catch(() => setAgenciesLoadState('error'));
   }, []);
 
-  // These are only needed by optional UI. Keep them out of the public first load:
-  // public has no History control, and refresh details are shown only in the Info panel.
-  useEffect(() => {
-    if (!FEATURES.history) return;
-    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
-      .then(r => r.json())
-      .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) => {
-        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistory).map(a => a.slug)));
-        setHistoryExploreAgencyCount(data.filter(agencyQualifiesForHistoryExplore).length);
-      })
-      .catch(() => {
-        setHistoryAgencySlugs(new Set());
-        setHistoryExploreAgencyCount(0);
-      });
-  }, []);
-
+  // Refresh details are shown only in the Info panel, so keep them out of the first load.
   useEffect(() => {
     if (!infoOpen || feedRefreshMeta) return;
     Promise.all([
@@ -655,6 +666,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             ariaLabel={inHistory ? 'Back to frequency map' : 'Historical service'}
             active={inHistory}
             onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
+            onWarm={preloadHistory}
           />
         )}
 
@@ -697,6 +709,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   )}
                   {showHistoryControl && (
                     <ModeTab
+                      onWarm={preloadHistory}
                       variant="menu" icon={<HistoryIcon className="w-3.5 h-3.5" aria-hidden="true" />}
                       label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
                       active={inHistory}
@@ -800,12 +813,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               dataSaver={dataSaver}
               setDataSaver={setDataSaver}
             />
-            {FEATURES.history && (
-              <React.Suspense fallback={null}>
+            {FEATURES.history && (historyOpened || inHistory) && (
+              <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
                 <History active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
-            {FEATURES.beta && (
+            {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
                 <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} selectionActive={intervalSelectionActive} />
               </React.Suspense>
@@ -845,7 +858,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </ErrorBoundary>
         {(agenciesLoadState === 'loading' || modeCatchingUp) && (
           <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">
-            {agenciesLoadState === 'loading' ? 'Loading agency data…' : 'Loading map…'}
+            Loading map…
           </div>
         )}
         {agenciesLoadState === 'error' && (

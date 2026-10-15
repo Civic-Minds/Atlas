@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Info, Moon, Sun, WifiOff, ArrowLeft, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, hasLiveAnalysis } from '../../shared/livePollingConfig';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, hasLiveAnalysis, agencyHasLiveAnalysis } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
@@ -16,6 +16,7 @@ import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shorten
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { inferLiveDirection } from '../utils/liveDirection';
+import { CHIP } from '../pageStyles';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, delayAmount, headwayAbout, headwayEvery } from '../utils/headwayText';
@@ -84,6 +85,9 @@ function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
 
 const MIN_LIVE_ZOOM = 9;
 
+/** Direction work per polled vehicle, kept across zoom steps (see resolvedVehiclesBySlug). */
+const resolvedDirections = new WeakMap<LiveVehicle, LiveVehicle>();
+
 export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false, routeRequest = null }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
@@ -109,6 +113,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const isZoomedIn = zoom !== null && zoom >= MIN_LIVE_ZOOM;
 
+  // Agency picked from "Live in these places": the list shows only its routes, since
+  // neighbouring agencies' bboxes overlap (Toronto / York Region).
+  const [placeScope, setPlaceScope] = useState<string | null>(null);
+  const placeScopeArrivedRef = useRef(false);
+
   // Which agency slugs are currently in the viewport
   const visibleSlugs = useMemo(() => {
     if (!bounds || !isZoomedIn) return [];
@@ -121,6 +130,17 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       .map(([slug]) => slug);
   }, [bounds]);
 
+  // Drop the scope once the user leaves that agency's area or zooms back out.
+  useEffect(() => {
+    if (!placeScope) { placeScopeArrivedRef.current = false; return; }
+    if (isZoomedIn && visibleSlugs.length > 0) {
+      placeScopeArrivedRef.current = true;
+      if (!visibleSlugs.includes(placeScope)) setPlaceScope(null);
+    } else if (!isZoomedIn && placeScopeArrivedRef.current) {
+      setPlaceScope(null);
+    }
+  }, [placeScope, isZoomedIn, visibleSlugs]);
+
   const visibleSlugKey = useMemo(() => [...visibleSlugs].sort().join(','), [visibleSlugs]);
 
   const { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, failCountBySlug, degradedBySlug } = useLiveFeeds(active, visibleSlugs, visibleSlugKey);
@@ -131,15 +151,25 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const resolved: Record<string, LiveVehicle[]> = {};
     for (const [slug, vehicles] of Object.entries(vehiclesBySlug)) {
       const fc = layers[slug] ?? localLayers[slug];
-      resolved[slug] = fc
-        ? vehicles.map(vehicle => {
-            const routeFeatures = fc.features.filter(feature =>
-              (feature.properties as any)?.routeShortName === vehicle.routeShortName,
-            );
-            const match = inferLiveDirection(vehicle, routeFeatures);
-            return { ...vehicle, directionId: match.directionId, headsign: match.headsign };
-          })
-        : vehicles;
+      if (!fc) { resolved[slug] = vehicles; continue; }
+      // Group the route shapes once, not once per vehicle.
+      const featuresByRoute = new Map<string, GeoJSON.Feature[]>();
+      for (const feature of fc.features) {
+        const name = (feature.properties as any)?.routeShortName;
+        const list = featuresByRoute.get(name);
+        if (list) list.push(feature); else featuresByRoute.set(name, [feature]);
+      }
+      resolved[slug] = vehicles.map(vehicle => {
+        // `layers` is rebuilt on every zoom step, but a vehicle's direction doesn't change until the next
+        // poll gives a new vehicle object, so work it out once per vehicle.
+        const cached = resolvedDirections.get(vehicle);
+        if (cached) return cached;
+        const routeFeatures = featuresByRoute.get(vehicle.routeShortName) ?? [];
+        const match = inferLiveDirection(vehicle, routeFeatures);
+        const out = { ...vehicle, directionId: match.directionId, headsign: match.headsign };
+        if (routeFeatures.length > 0) resolvedDirections.set(vehicle, out);
+        return out;
+      });
     }
     return resolved;
   }, [vehiclesBySlug, layers, localLayers]);
@@ -329,11 +359,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Viewport-filter the sidebar list: only show routes with at least one vehicle on screen
   const displayedRouteGroups = useMemo(() => {
-    if (!bounds) return routeGroups;
-    return routeGroups.filter(g =>
+    const scoped = placeScope ? routeGroups.filter(g => g.agencySlug === placeScope) : routeGroups;
+    if (!bounds) return scoped;
+    return scoped.filter(g =>
       g.vehicles.some(v => v.lat >= bounds.s && v.lat <= bounds.n && v.lon >= bounds.w && v.lon <= bounds.e)
     );
-  }, [routeGroups, bounds]);
+  }, [routeGroups, bounds, placeScope]);
 
   const vehiclesInViewport = useMemo(() => {
     if (!bounds) return allVehicles.length;
@@ -362,6 +393,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         slug,
         place: LIVE_AGENCY_PLACES[slug] ?? slug,
         agencyName: shortenAgencyName(agencies.find(a => a.slug === slug)?.name ?? ''),
+        withPerformance: agencyHasLiveAnalysis(slug),
       }))
       .sort((a, b) => a.place.localeCompare(b.place));
   }, [agencies]);
@@ -369,12 +401,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const handlePlaceClick = useCallback((slug: string) => {
     const bounds = LIVE_AGENCY_BBOXES[slug];
     if (!bounds) return;
+    setPlaceScope(slug);
     // Land safely above the tracking threshold so vehicles appear right away
     setFocusArea({ bounds, minZoom: MIN_LIVE_ZOOM + 0.2, ts: Date.now() });
   }, []);
 
   const offScreenOnly = displayedRouteGroups.length === 0 && routeGroups.length > 0;
-  const sidebarRouteGroups = offScreenOnly ? routeGroups : displayedRouteGroups;
+  const sidebarRouteGroups = offScreenOnly ? (placeScope ? routeGroups.filter(g => g.agencySlug === placeScope) : routeGroups) : displayedRouteGroups;
 
   const multipleAgencies = useMemo(() => {
     const slugs = new Set(sidebarRouteGroups.map(g => g.agencySlug));
@@ -724,6 +757,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     name={p.agencyName}
                     variant="spaced"
                     onClick={() => handlePlaceClick(p.slug)}
+                    subtitle={(
+                      <span className={`${CHIP} inline-block mt-1.5 whitespace-nowrap`}>{p.withPerformance ? 'Vehicles + performance' : 'Vehicles'}</span>
+                    )}
                     right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
                   />
                 ))}

@@ -615,7 +615,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
     };
 
-    map.on('sourcedata', checkRouteTiles);
+    // 'sourcedata' fires for every tile that lands, many times a second while panning, and each check
+    // deserialises every loaded route tile. Coalesce those bursts; idle and moveend still check at once.
+    let sourceDataTimer: number | undefined;
+    const checkRouteTilesSoon = () => {
+      if (sourceDataTimer !== undefined) return;
+      sourceDataTimer = window.setTimeout(() => { sourceDataTimer = undefined; checkRouteTiles(); }, 300);
+    };
+    map.on('sourcedata', checkRouteTilesSoon);
     map.on('idle', checkRouteTiles);
     map.on('moveend', checkRouteTiles);
     const fallbackTimer = window.setTimeout(() => {
@@ -634,7 +641,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     return () => {
       window.clearTimeout(fallbackTimer);
-      map.off('sourcedata', checkRouteTiles);
+      if (sourceDataTimer !== undefined) window.clearTimeout(sourceDataTimer);
+      map.off('sourcedata', checkRouteTilesSoon);
       map.off('idle', checkRouteTiles);
       map.off('moveend', checkRouteTiles);
     };
