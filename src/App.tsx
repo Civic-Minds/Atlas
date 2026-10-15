@@ -408,6 +408,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // The Live tab follows the address straight away, in both directions.
   const liveTabOn = urlApp === 'live';
   const inNight = activeApp === 'night';
+  // History and Night Service stay mounted once opened (so switching back doesn't remount them) but are
+  // not loaded, or their data fetched, until the first visit.
+  const [historyOpened, setHistoryOpened] = useState(false);
+  const [nightOpened, setNightOpened] = useState(false);
+  useEffect(() => { if (activeApp === 'history') setHistoryOpened(true); }, [activeApp]);
+  useEffect(() => { if (inNight) setNightOpened(true); }, [inNight]);
   const loadedAgencySlugs = useMemo(
     () => new Set([
       ...Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug),
@@ -785,12 +791,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               dataSaver={dataSaver}
               setDataSaver={setDataSaver}
             />
-            {FEATURES.history && (
+            {FEATURES.history && (historyOpened || inHistory) && (
               <React.Suspense fallback={null}>
                 <History active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
-            {FEATURES.beta && (
+            {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
                 <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} />
               </React.Suspense>
