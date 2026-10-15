@@ -139,6 +139,8 @@ describe('tier regraded on the destination pool along the drawn line (#728)', ()
     const a = [...every(360, 540, 10), ...every(1140, 1320, 10)];
     const b = every(360, 1320, 30);
     const lines = await weekdayLines(await feed({ a, b, bSeq: ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8'] }));
+    // B starts one stop in: one origin with two first stops, not a starting branch (#879
+    // class needs a two-stop stub), so the line stays one row and refuses the lift.
     expect(lines).toHaveLength(1);
     expect(lines[0].tier).toBe('infrequent');
   });

@@ -12,11 +12,12 @@ import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
+import { labelConvergingOrigins } from './convergingOrigins.js';
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { PERIOD_KEYS, TIME_PERIODS, SPARKLINE_HOURS, SURFACE_TIER_MAXES, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
+import { PERIOD_KEYS, periodKeyForHour, TIME_PERIODS, SPARKLINE_HOURS, SURFACE_TIER_MAXES, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
@@ -664,6 +665,8 @@ export async function processGtfsBuffer(
 ): Promise<ProcessResult> {
   let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair });
   gtfs = normalizeGtfs(gtfs, options, onStatus);
+  // Converging origins (TTC 29 northbound) get a route variant so each origin draws its own row.
+  labelConvergingOrigins(gtfs);
 
   const validation = validateGtfs(gtfs, options?.slug ?? 'feed');
   if (validation.errors > 0) {
@@ -2563,9 +2566,29 @@ export async function processGtfsBuffer(
 
     // Hourly headways from terminal stop for the sparkline.
     const terminalHourHw = terminalStopId ? allStopHourHw[terminalStopId] : undefined;
+    // The hourly series is floored like the period values (#771): an hour read from the
+    // destination pool is never better than the worst drawn stop some pooled trips skip, so the
+    // card's chart and its rows rate the same line. An hourly stop has no hour value (the hour
+    // window needs three departures), so its period value stands in (TriMet 35's deviation
+    // stops: every 60 under a trunk every 30).
+    const hourFloor = (h: number): number | null => {
+      if (!periodsFromPool) return null;
+      const pk = periodKeyForHour(h);
+      let floor: number | null = null;
+      for (const stopId of servedByFewerTrips(periodPoolTimes)) {
+        if (!stopHasReading(stopId)) continue;
+        const v = allStopHourHw[stopId]?.[h] ?? (pk ? allStopPeriodHw[stopId]?.[pk] ?? null : null);
+        if (v != null && (floor == null || v > floor)) floor = v;
+      }
+      return floor;
+    };
     const headsignTerminalHourHw = terminalScopedTimes
       ? Object.fromEntries(
-          SPARKLINE_HOURS.map(h => [h, adaptiveMedianHeadwayInWindow(terminalScopedTimes, h * 60, 3)]),
+          SPARKLINE_HOURS.map(h => {
+            const v = adaptiveMedianHeadwayInWindow(terminalScopedTimes, h * 60, 3);
+            const floor = hourFloor(h);
+            return [h, v != null && floor != null && floor > v ? floor : v];
+          }),
         ) as HeadwayByHour
       : undefined;
     const terminalHourGaps = terminalStopId

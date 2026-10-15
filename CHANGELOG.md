@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- A route direction whose buses start at two different places and run the same line to one destination, like TTC 29 northbound from Dufferin Gate and from Princes' Gates to Wilson, now shows one row per starting point beside the shared-stretch row, the way branches to different destinations already do, instead of one row with a range; the hourly chart is held to the same stops as the rows ([#879](https://github.com/Civic-Minds/Atlas/issues/879) class).
 - A route direction whose drawn pattern runs only in the mornings and evenings no longer hides the all-day pattern under the same destination: TTC 86 westbound to Kennedy on Saturdays showed as limited with no midday frequency while buses run every 10 all day ([#877](https://github.com/Civic-Minds/Atlas/issues/877)).
 - Data releases now stop for review when a subway or streetcar line drops two steps on its own frequency scale (every 5 to every 10), which the release check used to miss unless the headway doubled ([#871](https://github.com/Civic-Minds/Atlas/issues/871)).
 - **An hourly or half-hourly route no longer drops a frequency tier for one bus a minute or two late in the timetable**: a whole-day sample (eight gaps or more) may carry one gap inside the grace, so WMATA P72 on Saturday stays "every 60" with a 61-minute gap instead of infrequent, and RCT 117 and TTC 79 keep their tiers; short samples still fail on one long gap.

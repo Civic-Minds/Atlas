@@ -20,10 +20,10 @@ async function weekday(name: string, slug: string): Promise<Array<[number, strin
     .sort((a: any, b: any) => a[0] - b[0] || String(a[1]).localeCompare(String(b[1])));
 }
 
-async function weekdayProps(name: string, slug: string, headsign: string): Promise<any> {
+async function weekdayProps(name: string, slug: string, headsign: string, variant?: string): Promise<any> {
   const result = await processGtfsBuffer(await fixtureZip(name), undefined, { slug });
   return JSON.parse(result.geojson).features.map((feature: any) => feature.properties)
-    .find((p: any) => p.day === 'Weekday' && p.stopId == null && p.headsign === headsign);
+    .find((p: any) => p.day === 'Weekday' && p.stopId == null && p.headsign === headsign && (variant == null || String(p.routeVariant ?? '').trim().startsWith(variant)));
 }
 
 // #771: a headline or period read from the destination pool (#690) is never better than the
@@ -42,17 +42,19 @@ describe('headline when a destination is split over several shapes', () => {
     // Real MTA Maryland feed (service 2251, 2026-08-23 to 2027-02-06). Morgan State shape 172172
     // (59 stops, 10 its own) and the Hopkins shape 172171 (51 stops) share 49 stops; each runs
     // about every 40 in the evening (Morgan 18:47 19:21 20:01 20:41 21:21). Before: evening 20.
-    const p = await weekdayProps('mta-maryland-silver-split', 'mta-maryland', 'CURTIS BAY');
+    // Two starting points to Curtis Bay (Morgan State and Charles St), each a row since the
+    // converging-origins rule (#879 class); the Morgan State row carries the 10 own stops.
+    const p = await weekdayProps('mta-maryland-silver-split', 'mta-maryland', 'CURTIS BAY', 'from MORGAN STATE UNIVERSITY');
     expect(p.headwayByPeriod.evening).toBeGreaterThanOrEqual(40);
-    // 29 since #813: at the terminal the pool adds nothing at midday, so it is read as the own
-    // pattern's typical wait, not floored at the merged list's mean (31).
-    expect(p.headway).toBe(29);
-    // The floored evening is the worst Morgan State stop's own reading, companions included:
-    // its coverage, max gap and sustained flag describe the 43 shown, not the terminal pool's.
-    const worst = '3656';
-    expect(p.headwayByPeriod.evening).toBe(p.stopPeriodHeadways[worst].evening);
-    expect(p.periodCoverageHeadway.evening).toBe(p.stopPeriodCoverageHeadways[worst].evening);
-    expect(p.maxGapByPeriod.evening).toBe(56);
+    // 30 at the terminal: at midday the pool adds nothing, so it is read as the own pattern's
+    // typical wait, not floored at the merged list's mean (31). The Charles St row reads 29.
+    expect(p.headway).toBe(30);
+    expect((await weekdayProps('mta-maryland-silver-split', 'mta-maryland', 'CURTIS BAY', 'from CHARLES ST & UNIVERSITY PKWY nb')).headway).toBe(29);
+    // The Morgan State row is the Morgan pattern itself, so its evening is that pattern's own
+    // reading with its own companions (every 40, coverage and longest gap 62), not the pool's 20.
+    expect(p.headwayByPeriod.evening).toBe(40);
+    expect(p.periodCoverageHeadway.evening).toBe(62);
+    expect(p.maxGapByPeriod.evening).toBe(62);
     expect(p.headwayByPeriodSustained.evening).toBe(true);
   });
 
