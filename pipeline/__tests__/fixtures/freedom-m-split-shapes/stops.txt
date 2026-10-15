@@ -1,0 +1,45 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,wheelchair_boarding
+1088801,1088801,W. Pike St. & S. Shady Ave.,,40.241309,-80.213181,,,0,,0
+1088802,1088802,E. Pike St. & S. McNary St.,,40.251943,-80.208359,,,0,,0
+1088803,1088803,W. Pike St. & Hutchinson Ave.,,40.258073,-80.194009,,,0,,0
+1088804,1088804,W. Pike St. & Hutchinson Ave.,,40.258025,-80.194097,,,0,,0
+1088805,1088805,E. Pike St. & S. McNary St.,,40.252079,-80.208408,,,0,,0
+1088806,1088806,W. Pike St. & S. Shady Ave.,,40.241394,-80.213287,,,0,,0
+1088813,1088813,Liberty Ave + William Penn,,40.443541,-79.995329,,,0,,0
+1088815,1088815,Baird Ave. & Broad St.,,40.171728,-80.264396,,,0,,0
+1088816,1088816,Ridge Ave. & Murtland Ave.,,40.180049,-80.240653,,,0,,0
+1088817,1088817,Murtland Ave. & North Ave.,,40.180324,-80.235688,,,0,,0
+1088818,1088818,Rt. 980 & Morganza Rd.,,40.262088,-80.176927,,,0,,0
+1088819,1088819,Rt. 980 & Morganza Rd.,,40.262109,-80.177059,,,0,,0
+835153,835153,5th Ave. & Smithfield St.,,40.440011,-79.998625,,,0,,0
+835154,835154,Smithfield St. @ 6th Ave.,,40.44155,-79.997761,,,0,,0
+835157,835157,Baird Ave. & Chesnut St.,,40.168963,-80.262585,,,0,,0
+835158,835158,Beau St. Park & Ride,,40.179608,-80.222311,,,0,,0
+835160,835160,Blvd of the Allies @ Wood St. / Pt. Park,,40.43841,-80.002156,,,0,,0
+835161,835161,Blvd of the Allies @ Wood St. / Pt. Park,,40.438417,-80.00173,,,0,,0
+835167,835167,Central Assembly of God - Pike St.,,40.230728,-80.215817,,,0,,0
+835168,835168,Central Assembly of God - Pike St.,,40.229781,-80.216205,,,0,,0
+835170,835170,West Chestnut St. @ Shop N Save Plaza,,40.171673,-80.25054,,,0,,0
+835172,835172,Pike St. & Country Club Rd.,,40.215098,-80.224655,,,0,,0
+835176,835176,East Busway - near Amtrak/Greyhound,,40.444846,-79.9911,,,0,,0
+835181,835181,E. Wylie Ave. & Allison Ave. (to Transit,,40.182851,-80.263204,,,0,,0
+835186,835186,Pike Inn - Pike St.,,40.247985,-80.211043,,,0,,0
+835187,835187,Pike Inn - Pike St.,,40.248002,-80.210893,,,0,,0
+835188,835188,Pike St. & 2nd St.,,40.246474,-80.211901,,,0,,0
+835189,835189,Pike St. & 2nd St.,,40.246585,-80.211936,,,0,,0
+835191,835191,Jessop Place Park & Ride,,40.175304,-80.267763,,,0,,0
+835192,835192,Gateway Center - Liberty Ave. & Stanwix,,40.441318,-80.004381,,,0,,0
+835193,835193,Liberty @ 10th St.,,40.443751,-79.99509,,,0,,0
+835194,835194,Liberty Ave. - 3 Gateway Center,,40.441426,-80.005849,,,0,,0
+835200,835200,Pike St. & Third St.,,40.21938,-80.220697,,,0,,0
+835201,835201,Pike St. & Third St.,,40.219544,-80.220706,,,0,,0
+835206,835206,N. Lincoln St. & Highland Ave.,,40.176054,-80.24263,,,0,,0
+835210,835210,W. Pike St. & Buccaneer Dr.,,40.224255,-80.217875,,,0,,0
+835211,835211,W. Pike St. & Racetrack Rd.,,40.22375,-80.218303,,,0,,0
+835213,835213,Southpointe Park & Ride,,40.296044,-80.160072,,,0,,0
+835220,835220,Trinity Point Dr.,,40.183716,-80.223793,,,0,,0
+835230,835230,W. Chestnut St. & McCarrel Ave. (to Tran,,40.16949,-80.261009,,,0,,0
+835231,835231,Pike St. & Greenside Ave.,,40.259131,-80.18465,,,0,,0
+835232,835232,Pike St. & Greenside Ave.,,40.259254,-80.184468,,,0,,0
+835234,835234,East Chestnut St. Transit Center,,40.172538,-80.244737,,,0,,0
+835235,835235,East Busway - near Amtrak/Greyhound,,40.443898,-79.992077,,,0,,0

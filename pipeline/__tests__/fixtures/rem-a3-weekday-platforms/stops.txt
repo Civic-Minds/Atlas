@@ -1,0 +1,52 @@
+stop_id,stop_name,stop_lat,stop_lon,zone_id,location_type,parent_station,stop_code,wheelchair_boarding
+STA_ZCD_BT_QUAI_01_DUQ,Station Du Quartier - Quai 1,  45.446947, -73.433524,2,0,ST_DUQ_1,,1
+STA_ZCD_BT_QUAI_02_DUQ,Station Du Quartier - Quai 2,  45.446857, -73.433660,2,0,ST_DUQ_1,,1
+STA_ZCD_BT_QUAI_01_GCT,Station Gare Centrale - Quai 1,  45.500115, -73.566838,1,0,ST_GCT_1,,1
+STA_ZCD_BT_QUAI_02_GCT,Station Gare Centrale - Quai 2,  45.499906, -73.567020,1,0,ST_GCT_1,,1
+STA_ZCD_BT_QUAI_01_IDS,Station Île-des-Soeurs - Quai 1,  45.470357, -73.538538,1,0,ST_IDS_1,,1
+STA_ZCD_BT_QUAI_02_IDS,Station Île-des-Soeurs - Quai 2,  45.470305, -73.538547,1,0,ST_IDS_1,,1
+STA_ZCD_BT_QUAI_01_PAN,Station Panama - Quai 1,  45.465012, -73.470171,2,0,ST_PAN_1,,1
+STA_ZCD_BT_QUAI_02_PAN,Station Panama - Quai 2,  45.464879, -73.470190,2,0,ST_PAN_1,,1
+STA_ZCD_BT_QUAI_01_RIV,Station Brossard - Quai 1,  45.438003, -73.430645,2,0,ST_RIV_1,,1
+STA_ZCD_BT_QUAI_02_RIV,Station Brossard - Quai 2,  45.438056, -73.430683,2,0,ST_RIV_1,,1
+STA_ZCD_BT_QUAI_01_A40,Station Côte-de-Liesse - Quai 1,  45.521855, -73.661850,1,0,ST_A40_1,,1
+STA_ZCD_BT_QUAI_02_A40,Station Côte-de-Liesse - Quai 2,  45.521795, -73.661889,1,0,ST_A40_1,,1
+STA_ZCD_BT_QUAI_01_BFC,Station Bois-Franc - Quai 1,  45.522063, -73.712578,1,0,ST_BFC_1,,1
+STA_ZCD_BT_QUAI_02_BFC,Station Bois-Franc - Quai 2,  45.521984, -73.712496,1,0,ST_BFC_1,,1
+STA_ZCD_BT_QUAI_01_CAN,Station Canora - Quai 1,  45.513969, -73.634518,1,0,ST_CAN_1,,1
+STA_ZCD_BT_QUAI_02_CAN,Station Canora - Quai 2,  45.513950, -73.634656,1,0,ST_CAN_1,,1
+STA_ZCD_BT_QUAI_01_EDM,Station Édouard-Montpetit - Quai 1,  45.510126, -73.612697,1,0,ST_EDM_1,,1
+STA_ZCD_BT_QUAI_02_EDM,Station Édouard-Montpetit - Quai 2,  45.510080, -73.612719,1,0,ST_EDM_1,,1
+STA_ZCD_BT_QUAI_01_MCG,Station McGill - Quai 1,  45.502695, -73.572374,1,0,ST_MCG_1,,1
+STA_ZCD_BT_QUAI_02_MCG,Station McGill - Quai 2,  45.502651, -73.572415,1,0,ST_MCG_1,,1
+STA_ZCD_BT_QUAI_01_MPE,Station Montpellier - Quai 1,  45.524904, -73.672490,1,0,ST_MPE_1,,1
+STA_ZCD_BT_QUAI_02_MPE,Station Montpellier - Quai 2,  45.524859, -73.672509,1,0,ST_MPE_1,,1
+STA_ZCD_BT_QUAI_01_MRL,Station Ville-de-Mont-Royal - Quai 1,  45.516564, -73.643536,1,0,ST_MRL_1,,1
+STA_ZCD_BT_QUAI_02_MRL,Station Ville-de-Mont-Royal - Quai 2,  45.516508, -73.643564,1,0,ST_MRL_1,,1
+STA_ZCD_BT_QUAI_01_RUI,Station Du-Ruisseau - Quai 1,  45.528947, -73.690272,1,0,ST_RUI_1,,1
+STA_ZCD_BT_QUAI_02_RUI,Station Du-Ruisseau - Quai 2,  45.528905, -73.690271,1,0,ST_RUI_1,,1
+STA_ZCD_BT_QUAI_01_DSO,Station Des Sources quai 1,  45.477149, -73.791083,,0,ST_DSO_1,,1
+STA_ZCD_BT_QUAI_02_DSO,Station Des Sources quai 2,  45.476552, -73.792184,,0,ST_DSO_1,,1
+STA_ZCD_BT_QUAI_01_JYV,Station Kirkland quai 1,  45.440299, -73.885598,,0,ST_JYV_1,,1
+STA_ZCD_BT_QUAI_02_JYV,Station Kirkland quai 2,  45.440253, -73.885567,,0,ST_JYV_1,,1
+STA_ZCD_BT_QUAI_01_PTC,Station Fairview-Pointe-Claire quai 1,  45.459965, -73.835361,,0,ST_PTC_1,,1
+STA_ZCD_BT_QUAI_02_PTC,Station Fairview-Pointe-Claire quai 2,  45.459909, -73.835311,,0,ST_PTC_1,,1
+STA_ZCD_BT_QUAI_01_SAB,Station Anse-à-l'Orme,  45.431631, -73.909951,,0,ST_SAB_1,,1
+STA_ZCD_BT_QUAI_02_SAB,Station Anse-à-l'Orme,  45.431542, -73.909865,,0,ST_SAB_1,,1
+ST_DUQ_1,Station Du Quartier,  45.446859, -73.433519,2,1,,,1
+ST_GCT_1,Station Gare Centrale,  45.500048, -73.566978,1,1,,,1
+ST_IDS_1,Station Île-des-Soeurs,  45.470324, -73.538877,1,1,,,1
+ST_PAN_1,Station Panama,  45.464961, -73.470599,2,1,,,1
+ST_RIV_1,Station Brossard,  45.438065, -73.430552,2,1,,,1
+ST_RUI_1,Station Du Ruisseau,  45.528930, -73.690165,1,1,,,1
+ST_MRL_1,Station Ville-de-Mont-Royal,  45.516531, -73.643543,1,1,,,1
+ST_MPE_1,Station Montpellier,  45.524940, -73.672720,1,1,,,1
+ST_MCG_1,Station McGill,  45.502535, -73.572116,1,1,,,1
+ST_EDM_1,Station Édouard-Montpetit,  45.510012, -73.612189,1,1,,,1
+ST_CAN_1,Station Canora,  45.513970, -73.634647,1,1,,,1
+ST_BFC_1,Station Bois-Franc,  45.522024, -73.712529,1,1,,,1
+ST_A40_1,Station Côte-de-Liesse,  45.521823, -73.661868,1,1,,,1
+ST_DSO_1,Station Des Sources,  45.477123, -73.791056,,1,,,1
+ST_JYV_1,Station Kirkland,  45.440275, -73.885581,,1,,,1
+ST_PTC_1,Station Fairview-Pointe-Claire,  45.459943, -73.835339,,1,,,1
+ST_SAB_1,Station Anse-à-l'Orme,  45.431596, -73.909901,,1,,,1

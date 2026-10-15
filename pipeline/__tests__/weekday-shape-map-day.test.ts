@@ -106,6 +106,8 @@ describe('Weekday shape maps on a non-representative weekday', () => {
       '395 0 Rouge Hill GO': 30,
       '395 1 York Mills Station': 30,
     });
+    // A night route's stop grades (CIV-152) are real tiers or absent, never a limited marker.
+    for (const p of weekday) expect(Object.values(p.stopTiers ?? {})).not.toContain('span');
   });
 
   it('keeps TTC 35 branch headways when 35A and 35B share a displayed headsign', async () => {
@@ -135,7 +137,8 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     // Sat Oct 17 / Sun Oct 18: Ossington trips every 19-20 at Castle Frank, both patterns
     // together every 10. The headline is the branch, not the pooled terminal. Since the #746
     // dedupe rule an all-day Ossington shape holds the slot over the late-night one, so Sunday
-    // reads the branch's 19 (tier 20) instead of 20 (tier 30) from the scoped sample.
+    // reads the branch's 19 (tier 20) instead of 20 (tier 30) from the scoped sample. #690's
+    // pool adds nothing at Castle Frank in the window, so it reads as the own pattern (#813).
     const result = await processGtfsBuffer(await fixtureZip('ttc-94-converging'), undefined, { slug: 'ttc' });
     const castleFrank = JSON.parse(result.geojson).features
       .map((feature: any) => feature.properties)

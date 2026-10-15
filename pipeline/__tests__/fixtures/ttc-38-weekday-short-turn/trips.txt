@@ -1,0 +1,233 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+38,1,50805354,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122657,1,1
+38,1,50805399,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233841,1122656,1,1
+38,1,50805320,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122656,1,1
+38,1,50805321,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233896,1122655,1,1
+38,1,50805322,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805405,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233893,1122655,1,1
+38,1,50805406,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805407,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233894,1122655,1,1
+38,1,50805408,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233841,1122655,1,1
+38,1,50805409,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122655,1,1
+38,1,50805410,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233896,1122655,1,1
+38,1,50805411,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805412,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233893,1122655,1,1
+38,1,50805314,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805315,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233894,1122655,1,1
+38,1,50805316,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233895,1122655,1,1
+38,1,50805317,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233841,1122655,1,1
+38,1,50805318,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122655,1,1
+38,1,50805319,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233896,1122655,1,1
+38,1,50805366,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805364,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233890,1122654,1,1
+38,1,50805367,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233893,1122655,1,1
+38,1,50805365,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233891,1122654,1,1
+38,1,50805368,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805332,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233892,1122654,1,1
+38,1,50805369,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233894,1122655,1,1
+38,1,50805400,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233897,1122654,1,1
+38,1,50805370,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233895,1122655,1,1
+38,1,50805401,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233899,1122654,1,1
+38,1,50805371,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233841,1122655,1,1
+38,1,50805402,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233898,1122654,1,1
+38,1,50805372,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122655,1,1
+38,1,50805403,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233890,1122654,1,1
+38,1,50805373,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233896,1122655,1,1
+38,1,50805404,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233891,1122654,1,1
+38,1,50805374,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805340,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233892,1122654,1,1
+38,1,50805375,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233893,1122655,1,1
+38,1,50805337,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233897,1122654,1,1
+38,1,50805376,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805338,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233899,1122654,1,1
+38,1,50805377,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233894,1122655,1,1
+38,1,50805339,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233898,1122654,1,1
+38,1,50805378,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233895,1122655,1,1
+38,1,50805333,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233890,1122654,1,1
+38,1,50805379,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233841,1122655,1,1
+38,1,50805334,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233891,1122654,1,1
+38,1,50805413,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122655,1,1
+38,1,50805323,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233892,1122654,1,1
+38,1,50805355,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233896,1122655,1,1
+38,1,50805324,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233897,1122654,1,1
+38,1,50805356,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805335,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233899,1122654,1,1
+38,1,50805357,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233893,1122655,1,1
+38,1,50805325,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233898,1122654,1,1
+38,1,50805358,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805326,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233890,1122654,1,1
+38,1,50805359,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233894,1122655,1,1
+38,1,50805327,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233891,1122654,1,1
+38,1,50805360,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233895,1122655,1,1
+38,1,50805328,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233892,1122654,1,1
+38,1,50805361,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233841,1122655,1,1
+38,1,50805329,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233897,1122654,1,1
+38,1,50805362,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122655,1,1
+38,1,50805330,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233899,1122654,1,1
+38,1,50805363,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233896,1122655,1,1
+38,1,50805331,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233898,1122654,1,1
+38,1,50805310,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805307,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233890,1122654,1,1
+38,1,50805311,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233893,1122655,1,1
+38,1,50805308,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233891,1122654,1,1
+38,1,50805312,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805309,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233892,1122654,1,1
+38,1,50805313,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233894,1122655,1,1
+38,1,50805394,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233897,1122654,1,1
+38,1,50805382,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233895,1122655,1,1
+38,1,50805395,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233899,1122654,1,1
+38,1,50805383,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233901,1122655,1,1
+38,1,50805396,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233898,1122654,1,1
+38,1,50805384,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233841,1122655,1,1
+38,1,50805397,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233890,1122654,1,1
+38,1,50805385,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122655,1,1
+38,1,50805398,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233891,1122654,1,1
+38,1,50805386,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233896,1122655,1,1
+38,1,50805341,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233892,1122654,1,1
+38,1,50805387,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805342,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233897,1122654,1,1
+38,1,50805388,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233893,1122655,1,1
+38,1,50805343,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233899,1122654,1,1
+38,1,50805389,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805344,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233898,1122654,1,1
+38,1,50805390,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233894,1122655,1,1
+38,1,50805345,East - 38B Highland Creek towards U of T Scarborough via Scarborough Centre Stn,B,0,2233890,1122654,1,1
+38,1,50805391,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233895,1122655,1,1
+38,1,50805392,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233901,1122655,1,1
+38,1,50805393,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233841,1122655,1,1
+38,1,50805380,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122655,1,1
+38,1,50805336,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233896,1122655,1,1
+38,1,50805381,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805346,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233893,1122655,1,1
+38,1,50805347,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805348,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233894,1122655,1,1
+38,1,50805349,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233900,1122655,1,1
+38,1,50805350,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233901,1122655,1,1
+38,1,50805351,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233841,1122655,1,1
+38,1,50805352,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122655,1,1
+38,1,50805353,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233896,1122655,1,1
+38,1,50805427,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805428,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805429,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233894,1122655,1,1
+38,1,50805430,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233900,1122655,1,1
+38,1,50805431,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122655,1,1
+38,1,50805432,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805433,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805434,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233894,1122655,1,1
+38,1,50805435,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233900,1122655,1,1
+38,1,50805436,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233838,1122655,1,1
+38,1,50805437,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233839,1122655,1,1
+38,1,50805438,East - 38A Highland Creek towards Rouge Hill GO Stn via Scarborough Centre Stn,A,0,2233840,1122655,1,1
+38,1,50805481,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805482,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233893,1122659,1,1
+38,1,50805483,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805484,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805485,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233841,1122659,1,1
+38,1,50805486,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233838,1122659,1,1
+38,1,50805523,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233890,1122658,1,1
+38,1,50805487,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233896,1122659,1,1
+38,1,50805524,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233892,1122658,1,1
+38,1,50805488,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805525,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233897,1122658,1,1
+38,1,50805489,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233893,1122659,1,1
+38,1,50805526,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233899,1122658,1,1
+38,1,50805490,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805527,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233898,1122658,1,1
+38,1,50805491,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805528,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233890,1122658,1,1
+38,1,50805492,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233841,1122659,1,1
+38,1,50805529,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233892,1122658,1,1
+38,1,50805493,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233838,1122659,1,1
+38,1,50805530,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233897,1122658,1,1
+38,1,50805494,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233896,1122659,1,1
+38,1,50805531,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233899,1122658,1,1
+38,1,50805495,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805467,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233898,1122658,1,1
+38,1,50805496,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233893,1122659,1,1
+38,1,50805468,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233890,1122658,1,1
+38,1,50805497,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805469,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233891,1122658,1,1
+38,1,50805498,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805470,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233892,1122658,1,1
+38,1,50805499,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233895,1122659,1,1
+38,1,50805471,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233897,1122658,1,1
+38,1,50805500,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233841,1122659,1,1
+38,1,50805472,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233899,1122658,1,1
+38,1,50805501,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233838,1122659,1,1
+38,1,50805473,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233898,1122658,1,1
+38,1,50805502,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233896,1122659,1,1
+38,1,50805474,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233890,1122658,1,1
+38,1,50805503,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805475,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233891,1122658,1,1
+38,1,50805536,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233893,1122659,1,1
+38,1,50805476,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233892,1122658,1,1
+38,1,50805537,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805477,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233897,1122658,1,1
+38,1,50805538,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805439,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233899,1122658,1,1
+38,1,50805539,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233895,1122659,1,1
+38,1,50805440,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233898,1122658,1,1
+38,1,50805540,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233841,1122659,1,1
+38,1,50805441,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233890,1122658,1,1
+38,1,50805551,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233838,1122659,1,1
+38,1,50805442,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233891,1122658,1,1
+38,1,50805478,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233896,1122659,1,1
+38,1,50805443,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233892,1122658,1,1
+38,1,50805479,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805444,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233897,1122658,1,1
+38,1,50805480,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233893,1122659,1,1
+38,1,50805445,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233899,1122658,1,1
+38,1,50805506,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805453,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233898,1122658,1,1
+38,1,50805507,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805532,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233890,1122658,1,1
+38,1,50805508,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233895,1122659,1,1
+38,1,50805533,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233891,1122658,1,1
+38,1,50805509,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233841,1122659,1,1
+38,1,50805534,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233892,1122658,1,1
+38,1,50805447,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233838,1122659,1,1
+38,1,50805535,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233897,1122658,1,1
+38,1,50805448,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233896,1122659,1,1
+38,1,50805449,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805450,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233893,1122659,1,1
+38,1,50805451,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805452,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805446,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233895,1122659,1,1
+38,1,50805454,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233901,1122659,1,1
+38,1,50805455,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233841,1122659,1,1
+38,1,50805456,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233838,1122659,1,1
+38,1,50805457,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233896,1122659,1,1
+38,1,50805458,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805459,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233893,1122659,1,1
+38,1,50805460,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805461,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805462,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233895,1122659,1,1
+38,1,50805463,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233901,1122659,1,1
+38,1,50805464,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233841,1122659,1,1
+38,1,50805465,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233838,1122659,1,1
+38,1,50805466,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233896,1122659,1,1
+38,1,50805504,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805505,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233893,1122659,1,1
+38,1,50805542,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805543,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805544,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233895,1122659,1,1
+38,1,50805545,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233901,1122659,1,1
+38,1,50805546,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233841,1122659,1,1
+38,1,50805547,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233838,1122659,1,1
+38,1,50805548,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233896,1122659,1,1
+38,1,50805549,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805550,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233893,1122659,1,1
+38,1,50805510,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805511,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805512,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233900,1122659,1,1
+38,1,50805513,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233841,1122659,1,1
+38,1,50805514,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233838,1122659,1,1
+38,1,50805515,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805516,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805541,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805517,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233900,1122659,1,1
+38,1,50805518,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233838,1122659,1,1
+38,1,50805519,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233839,1122659,1,1
+38,1,50805520,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233840,1122659,1,1
+38,1,50805521,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233894,1122659,1,1
+38,1,50805522,West - 38 Highland Creek towards Kennedy Station via Scarborough Centre Stn,,1,2233900,1122659,1,1

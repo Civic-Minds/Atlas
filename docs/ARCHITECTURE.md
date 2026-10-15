@@ -117,7 +117,6 @@ Local: `npm run dev:api` (custom tsx server on port 5001; only registers `live-v
 Production-like: `vercel dev` if preferred.
 
 Used by the deployed app:
-- `/api/atlas-pmtiles` — unused since tiles load directly from the data domain; kept only so older cached bundles still draw
 - `/api/carto-tiles` — basemap tile proxy (keeps `CARTO_BASEMAP_API_KEY` server-side)
 - `/api/geo` — approximate location fallback from Vercel's edge headers
 - `/api/version` — current build ID for the app-update banner

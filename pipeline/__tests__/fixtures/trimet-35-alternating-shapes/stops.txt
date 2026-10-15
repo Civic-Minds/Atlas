@@ -1,0 +1,184 @@
+stop_id,stop_code,stop_name,tts_stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,wheelchair_boarding,platform_code,direction,position
+3,3,A Ave & Second St,ae avenue & second street,Eastbound stop in Lake Oswego (Stop ID 3),45.419388,-122.665197,B,https://trimet.org/home/stop/3,0,,1,,East,Farside
+143,143,SW Arthur & 1st,southwest arthur & 1st,Westbound stop in Portland (Stop ID 143),45.503812,-122.678451,B,https://trimet.org/home/stop/143,0,,1,,West,Nearside
+147,147,B Ave & Second St,b avenue & second street,Westbound stop in Lake Oswego (Stop ID 147),45.420841,-122.665113,B,https://trimet.org/home/stop/147,0,,1,,West,Nearside
+1612,1612,NW Everett & 2nd,northwest everett & 2nd,Eastbound stop in Portland (Stop ID 1612),45.525237,-122.672587,B,https://trimet.org/home/stop/1612,0,,1,,East,Nearside
+2182,2182,N Greeley & Ainsworth,north greeley & ainzworth,Northbound stop in Portland (Stop ID 2182),45.566278,-122.695498,B,https://trimet.org/home/stop/2182,0,,1,,North,Nearside
+2183,2183,N Greeley & Ainsworth,north greeley & ainzworth,Southbound stop in Portland (Stop ID 2183),45.566487,-122.695668,B,https://trimet.org/home/stop/2183,0,,1,,South,Nearside
+2185,2185,N Greeley & Bryant,north greeley & bryant,Northbound stop in Portland (Stop ID 2185),45.573462,-122.695441,B,https://trimet.org/home/stop/2185,0,,1,,North,Nearside
+2186,2186,N Greeley & Bryant,north greeley & bryant,Southbound stop in Portland (Stop ID 2186),45.573657,-122.695573,B,https://trimet.org/home/stop/2186,0,,1,,South,Nearside
+2195,2195,N Greeley & Going Overpass,north greeley & going overpass,Northbound stop in Portland (Stop ID 2195),45.555604,-122.692295,B,https://trimet.org/home/stop/2195,0,,1,,North,At
+2196,2196,N Greeley & Going,north greeley & going,Southbound stop in Portland (Stop ID 2196),45.556464,-122.693165,B,https://trimet.org/home/stop/2196,0,,1,,South,Nearside
+2208,2208,N Greeley & Killingsworth,north greeley & killings worth,Northbound stop in Portland (Stop ID 2208),45.562598,-122.695522,B,https://trimet.org/home/stop/2208,0,,1,,North,Nearside
+2209,2209,N Greeley & Killingsworth,north greeley & killings worth,Southbound stop in Portland (Stop ID 2209),45.562849,-122.695701,B,https://trimet.org/home/stop/2209,0,,1,,South,Nearside
+2221,2221,N Greeley & Rosa Parks Way,north greeley & rosa parks way,Northbound stop in Portland (Stop ID 2221),45.570295,-122.695457,B,https://trimet.org/home/stop/2221,0,,1,,North,Farside
+2222,2222,N Greeley & Rosa Parks Way,north greeley & rosa parks way,Southbound stop in Portland (Stop ID 2222),45.569648,-122.695658,B,https://trimet.org/home/stop/2222,0,,1,,South,Farside
+2226,2226,N Greeley & Sumner,north greeley & sumner,Northbound stop in Portland (Stop ID 2226),45.560559,-122.694632,B,https://trimet.org/home/stop/2226,0,,1,,North,At
+2227,2227,N Greeley & Sumner,north greeley & sumner,Southbound stop in Portland (Stop ID 2227),45.559951,-122.694563,B,https://trimet.org/home/stop/2227,0,,1,,South,Opposite
+2566,2566,200 Block SW Harrison,200 block southwest harrison,Eastbound stop in Portland (Stop ID 2566),45.509982,-122.679032,B,https://trimet.org/home/stop/2566,0,,1,,East,At
+2567,2567,200 Block SW Harrison,200 block southwest harrison,Westbound stop in Portland (Stop ID 2567),45.510136,-122.67893,B,https://trimet.org/home/stop/2567,0,,1,,West,Opposite
+2580,2580,SW Harrison & 4th,southwest harrison & 4th,Eastbound stop in Portland (Stop ID 2580),45.51052,-122.681095,B,https://trimet.org/home/stop/2580,0,,1,,East,Nearside
+2945,2945,N Interstate & Albina,north interstate & albeina,Southbound stop in Portland (Stop ID 2945),45.539267,-122.675252,B,https://trimet.org/home/stop/2945,0,,1,,South,Nearside
+2962,2962,N Interstate & Graham,north interstate & graham,Northbound stop in Portland (Stop ID 2962),45.543111,-122.677065,B,https://trimet.org/home/stop/2962,0,,1,,North,Farside
+2964,2964,N Interstate & Graham,north interstate & graham,Southbound stop in Portland (Stop ID 2964),45.543273,-122.67737,B,https://trimet.org/home/stop/2964,0,,1,,South,Opposite
+3365,3365,N Interstate & Larrabee,north interstate & larrabee,Northbound stop in Portland (Stop ID 3365),45.532537,-122.671201,B,https://trimet.org/home/stop/3365,0,,1,,North,Farside
+3535,3535,N Lombard & Peninsular,north lombard & peninsular,Westbound stop in Portland (Stop ID 3535),45.577203,-122.696995,B,https://trimet.org/home/stop/3535,0,,1,,West,Nearside
+3603,3603,S Macadam & Boundary,south macadam & boundary,Northbound stop in Portland (Stop ID 3603),45.484878,-122.674891,B,https://trimet.org/home/stop/3603,0,,1,,North,Nearside
+3604,3604,S Macadam & Boundary,south macadam & boundary,Southbound stop in Portland (Stop ID 3604),45.485125,-122.675334,B,https://trimet.org/home/stop/3604,0,,1,,South,Nearside
+3611,3611,S Macadam & Gaines,south macadam & gaines,Northbound stop in Portland (Stop ID 3611),45.496371,-122.672819,B,https://trimet.org/home/stop/3611,0,,1,,North,Nearside
+3612,3612,S Macadam & Hamilton Ct,south macadam & hamilton court,Southbound stop in Portland (Stop ID 3612),45.489956,-122.67383,B,https://trimet.org/home/stop/3612,0,,1,,South,Opposite
+3613,3613,S Macadam & Hamilton Ct,south macadam & hamilton court,Northbound stop in Portland (Stop ID 3613),45.489817,-122.673596,B,https://trimet.org/home/stop/3613,0,,1,,North,Nearside
+3614,3614,S Macadam & Nebraska,south macadam & nebraska,Southbound stop in Portland (Stop ID 3614),45.477347,-122.672264,B,https://trimet.org/home/stop/3614,0,,1,,South,Nearside
+3619,3619,S Macadam & Nebraska,south macadam & nebraska,Northbound stop in Portland (Stop ID 3619),45.477128,-122.671902,B,https://trimet.org/home/stop/3619,0,,1,,North,Nearside
+3620,3620,S Macadam & Nevada,south macadam & nevada,Southbound stop in Portland (Stop ID 3620),45.47304,-122.671599,B,https://trimet.org/home/stop/3620,0,,1,,South,Nearside
+3622,3622,S Macadam & Nevada,south macadam & nevada,Northbound stop in Portland (Stop ID 3622),45.472877,-122.671349,B,https://trimet.org/home/stop/3622,0,,1,,North,Opposite
+3623,3623,S Macadam & Pendleton,south macadam & pendleton,Northbound stop in Portland (Stop ID 3623),45.480907,-122.673171,B,https://trimet.org/home/stop/3623,0,,1,,North,Nearside
+3624,3624,S Macadam & Pendleton,south macadam & pendleton,Southbound stop in Portland (Stop ID 3624),45.481295,-122.673582,B,https://trimet.org/home/stop/3624,0,,1,,South,Nearside
+4432,4432,N Peninsular & Farragut,north peninsular & farragut,Northbound stop in Portland (Stop ID 4432),45.5792,-122.697144,B,https://trimet.org/home/stop/4432,0,,1,,North,Farside
+4433,4433,N Peninsular & Farragut,north peninsular & farragut,Southbound stop in Portland (Stop ID 4433),45.579228,-122.697319,B,https://trimet.org/home/stop/4433,0,,1,,South,Nearside
+4434,4434,N Peninsular & Halleck,north peninsular & halleck,Northbound stop in Portland (Stop ID 4434),45.582511,-122.697155,B,https://trimet.org/home/stop/4434,0,,1,,North,Nearside
+4435,4435,N Peninsular & Halleck,north peninsular & halleck,Southbound stop in Portland (Stop ID 4435),45.582853,-122.697297,B,https://trimet.org/home/stop/4435,0,,1,,South,Nearside
+4437,4437,N Peninsular & Russet,north peninsular & russet,Southbound stop in Portland (Stop ID 4437),45.577837,-122.697333,B,https://trimet.org/home/stop/4437,0,,1,,South,Farside
+4438,4438,N Peninsular & Watts,north peninsular & watts,Northbound stop in Portland (Stop ID 4438),45.581461,-122.69715,B,https://trimet.org/home/stop/4438,0,,1,,North,Farside
+4439,4439,N Peninsular & Watts,north peninsular & watts,Southbound stop in Portland (Stop ID 4439),45.58137,-122.697297,B,https://trimet.org/home/stop/4439,0,,1,,South,Nearside
+4491,4491,N Portsmouth & Amherst,north ports mouth & amherst,Southbound stop in Portland (Stop ID 4491),45.578279,-122.727278,B,https://trimet.org/home/stop/4491,0,,1,,South,Nearside
+4492,4492,N Portsmouth & Depauw,north ports mouth & depaw,Northbound stop in Portland (Stop ID 4492),45.580348,-122.725529,B,https://trimet.org/home/stop/4492,0,,1,,North,Farside
+4494,4494,N Portsmouth & Lombard St,north ports mouth & lombard street,Southbound stop in Portland (Stop ID 4494),45.582812,-122.723944,B,https://trimet.org/home/stop/4494,0,,1,,South,Nearside
+4495,4495,N Portsmouth & Lombard St,north ports mouth & lombard street,Northbound stop in Portland (Stop ID 4495),45.582341,-122.724032,B,https://trimet.org/home/stop/4495,0,,1,,North,Nearside
+4496,4496,N Portsmouth & Oberlin,north ports mouth & oberlin,Southbound stop in Portland (Stop ID 4496),45.581148,-122.72518,B,https://trimet.org/home/stop/4496,0,,1,,South,Nearside
+4497,4497,N Portsmouth & Princeton,north ports mouth & princeton,Northbound stop in Portland (Stop ID 4497),45.579091,-122.726467,B,https://trimet.org/home/stop/4497,0,,1,,North,Farside
+4498,4498,N Portsmouth & Syracuse,north ports mouth & searekiuse,Southbound stop in Portland (Stop ID 4498),45.579725,-122.726226,B,https://trimet.org/home/stop/4498,0,,1,,South,Nearside
+4501,4501,N Portsmouth & Willis,north ports mouth & willis,Northbound stop in Portland (Stop ID 4501),45.584327,-122.722552,B,https://trimet.org/home/stop/4501,0,,1,,North,Nearside
+4502,4502,N Portsmouth & Yale,north ports mouth & yale,Northbound stop in Portland (Stop ID 4502),45.577362,-122.727758,B,https://trimet.org/home/stop/4502,0,,1,,North,Nearside
+4894,4894,SW Riverside & Briarwood,southwest riverside & briearewood,Southbound stop in Clackamas Co. (Stop ID 4894),45.428389,-122.658312,B,https://trimet.org/home/stop/4894,0,,1,,South,Opposite
+4895,4895,SW Riverside & Briarwood,southwest riverside & briearewood,Northbound stop in Clackamas Co. (Stop ID 4895),45.428091,-122.658199,B,https://trimet.org/home/stop/4895,0,,1,,North,Nearside
+4896,4896,SW Riverside & Elk Rock,southwest riverside & elk rock,Northbound stop in Clackamas Co. (Stop ID 4896),45.431452,-122.655405,B,https://trimet.org/home/stop/4896,0,,1,,North,Farside
+4897,4897,S Riverside & Greenwood,south riverside & greenwood,Northbound stop in Multnomah Co. (Stop ID 4897),45.435942,-122.653339,B,https://trimet.org/home/stop/4897,0,,1,,North,Opposite
+4898,4898,S Riverside & Breyman,south riverside & breyman,Southbound stop in Multnomah Co. (Stop ID 4898),45.435884,-122.653519,B,https://trimet.org/home/stop/4898,0,,1,,South,Nearside
+4899,4899,SW Riverside & Midvale,southwest riverside & midvale,Southbound stop in Clackamas Co. (Stop ID 4899),45.430954,-122.655956,B,https://trimet.org/home/stop/4899,0,,1,,South,Farside
+4900,4900,S Riverside & Military,south riverside & military,Southbound stop in Multnomah Co. (Stop ID 4900),45.441689,-122.655039,B,https://trimet.org/home/stop/4900,0,,1,,South,Nearside
+4901,4901,S Riverside & Military,south riverside & military,Northbound stop in Multnomah Co. (Stop ID 4901),45.441516,-122.654607,B,https://trimet.org/home/stop/4901,0,,1,,North,Nearside
+4902,4902,S Riverside & Palatine Hill,south riverside & palatine hill,Southbound stop in Multnomah Co. (Stop ID 4902),45.445621,-122.656914,B,https://trimet.org/home/stop/4902,0,,1,,South,Farside
+4904,4904,S Riverside & Palatine Hill,south riverside & palatine hill,Northbound stop in Multnomah Co. (Stop ID 4904),45.446028,-122.656694,B,https://trimet.org/home/stop/4904,0,,1,,North,Opposite
+4905,4905,S Riverside & Radcliffe,south riverside & radcliffe,Southbound stop in Multnomah Co. (Stop ID 4905),45.452119,-122.659894,B,https://trimet.org/home/stop/4905,0,,1,,South,Farside
+4906,4906,S Riverside & Riverdale,south riverside & riverdale,Southbound stop in Multnomah Co. (Stop ID 4906),45.450683,-122.659093,B,https://trimet.org/home/stop/4906,0,,1,,South,Nearside
+4908,4908,S Riverside & Riverdale,south riverside & riverdale,Northbound stop in Multnomah Co. (Stop ID 4908),45.450778,-122.658963,B,https://trimet.org/home/stop/4908,0,,1,,North,Opposite
+4909,4909,S Riverside & Riverwood,south riverside & riverwood,Southbound stop in Multnomah Co. (Stop ID 4909),45.447149,-122.65736,B,https://trimet.org/home/stop/4909,0,,1,,South,Opposite
+4910,4910,S Riverside & Riverwood,south riverside & riverwood,Northbound stop in Multnomah Co. (Stop ID 4910),45.446977,-122.656971,B,https://trimet.org/home/stop/4910,0,,1,,North,Nearside
+5505,5505,N State & B Ave,north state & b avenue,Northbound stop in Lake Oswego (Stop ID 5505),45.420961,-122.662402,B,https://trimet.org/home/stop/5505,0,,1,,North,Farside
+5506,5506,N State & B Ave,north state & b avenue,Southbound stop in Lake Oswego (Stop ID 5506),45.42077,-122.662683,B,https://trimet.org/home/stop/5506,0,,1,,South,Nearside
+5507,5507,N State & D Ave,north state & d avenue,Southbound stop in Lake Oswego (Stop ID 5507),45.422664,-122.66199,B,https://trimet.org/home/stop/5507,0,,1,,South,Farside
+5509,5509,N State & Foothills Rd,north state & foothills road,Northbound stop in Lake Oswego (Stop ID 5509),45.418046,-122.663034,B,https://trimet.org/home/stop/5509,0,,1,,North,Farside
+5510,5510,N State & Foothills,north state & foothills,Southbound stop in Lake Oswego (Stop ID 5510),45.417547,-122.663423,B,https://trimet.org/home/stop/5510,0,,1,,South,Opposite
+5511,5511,S State & Middlecrest,south state & middle crest,Southbound stop in Lake Oswego (Stop ID 5511),45.413169,-122.66441,B,https://trimet.org/home/stop/5511,0,,1,,South,Nearside
+5512,5512,S State & North Shore Rd,south state & north shore road,Northbound stop in Lake Oswego (Stop ID 5512),45.415481,-122.663643,B,https://trimet.org/home/stop/5512,0,,1,,North,Opposite
+5513,5513,N State & North Shore Rd,north state & north shore road,Southbound stop in Lake Oswego (Stop ID 5513),45.415755,-122.663813,B,https://trimet.org/home/stop/5513,0,,1,,South,Nearside
+5514,5514,S State & Wilbur,south state & wilbur,Northbound stop in Lake Oswego (Stop ID 5514),45.412934,-122.664192,B,https://trimet.org/home/stop/5514,0,,1,,North,Nearside
+5703,5703,S Taylors Ferry & River view Cemetery,south taylors farey & river view cemetery,Eastbound stop in Portland (Stop ID 5703),45.466422,-122.673404,B,https://trimet.org/home/stop/5703,0,,1,,East,At
+5704,5704,S Taylors Ferry & Riverview,south taylors farey & riverview,Southbound stop in Portland (Stop ID 5704),45.467327,-122.673213,B,https://trimet.org/home/stop/5704,0,,1,,South,At
+5705,5705,S Taylors Ferry & Riverview Abbey,south taylors farey & riverview abbey,Westbound stop in Portland (Stop ID 5705),45.466206,-122.673839,B,https://trimet.org/home/stop/5705,0,,1,,West,At
+5717,5717,SW Taylors Ferry & 2nd,southwest taylors farey & 2nd,Eastbound stop in Portland (Stop ID 5717),45.464037,-122.679612,B,https://trimet.org/home/stop/5717,0,,1,,East,Opposite
+5718,5718,SW Taylors Ferry & 2nd,southwest taylors farey & 2nd,Westbound stop in Portland (Stop ID 5718),45.463874,-122.680325,B,https://trimet.org/home/stop/5718,0,,1,,West,Nearside
+5780,5780,SW Terwilliger & Alice,southwest ter*williger & alice,Southbound stop in Portland (Stop ID 5780),45.457215,-122.685021,B,https://trimet.org/home/stop/5780,0,,1,,South,Farside
+5781,5781,SW Terwilliger & Alice,southwest ter*williger & alice,Northbound stop in Portland (Stop ID 5781),45.457387,-122.684866,B,https://trimet.org/home/stop/5781,0,,1,,North,Opposite
+5794,5794,9800 Block SW Terwilliger,ninety-eight-hundred block southwest ter*williger,Southbound stop in Portland (Stop ID 5794),45.454482,-122.683815,B,https://trimet.org/home/stop/5794,0,,1,,South,At
+5797,5797,SW Terwilliger & L&C Law School,southwest ter*williger & landc law school,Westbound stop in Portland (Stop ID 5797),45.453101,-122.67696,B,https://trimet.org/home/stop/5797,0,,1,,West,Opposite
+5798,5798,SW Terwilliger & Lobelia,southwest ter*williger & loh beelyuh,Northbound stop in Portland (Stop ID 5798),45.461056,-122.684848,B,https://trimet.org/home/stop/5798,0,,1,,North,Nearside
+5799,5799,SW Terwilliger & Lobelia,southwest ter*williger & loh beelyuh,Southbound stop in Portland (Stop ID 5799),45.461282,-122.685031,B,https://trimet.org/home/stop/5799,0,,1,,South,Nearside
+5801,5801,SW Terwilliger & Primrose,southwest ter*williger & primrose,Northbound stop in Portland (Stop ID 5801),45.459424,-122.684861,B,https://trimet.org/home/stop/5801,0,,1,,North,Nearside
+5802,5802,SW Terwilliger & Primrose,southwest ter*williger & primrose,Southbound stop in Portland (Stop ID 5802),45.459268,-122.685036,B,https://trimet.org/home/stop/5802,0,,1,,South,Farside
+5806,5806,SW Terwilliger & Taylors Ferry,southwest ter*williger & taylors farey,Northbound stop in Portland (Stop ID 5806),45.462811,-122.684835,B,https://trimet.org/home/stop/5806,0,,1,,North,Nearside
+5807,5807,SW Terwilliger & Taylors Ferry,southwest ter*williger & taylors farey,Southbound stop in Portland (Stop ID 5807),45.462726,-122.685074,B,https://trimet.org/home/stop/5807,0,,1,,South,Farside
+5813,5813,SW Terwilliger & 2nd,southwest ter*williger & 2nd,Westbound stop in Portland (Stop ID 5813),45.454037,-122.682536,B,https://trimet.org/home/stop/5813,0,,1,,West,Farside
+5814,5814,SW Terwilliger & 6th,southwest ter*williger & 6th,Northbound stop in Portland (Stop ID 5814),45.456153,-122.68466,B,https://trimet.org/home/stop/5814,0,,1,,North,Opposite
+6300,6300,Willamette Dr & Mapleton Dr,willamette drive & mapleton drive,Southbound stop in West Linn (Stop ID 6300),45.383952,-122.639159,B,https://trimet.org/home/stop/6300,0,,1,,South,Farside
+6301,6301,Willamette Dr & Arbor Dr,willamette drive & arbor drive,Northbound stop in West Linn (Stop ID 6301),45.395398,-122.650239,B,https://trimet.org/home/stop/6301,0,,1,,North,Nearside
+6302,6302,Willamette Dr & Arbor,willamette drive & arbor,Southbound stop in West Linn (Stop ID 6302),45.395547,-122.650701,B,https://trimet.org/home/stop/6302,0,,1,,South,Nearside
+6303,6303,Willamette Dr & Barlow,willamette drive & barlow,Westbound stop in West Linn (Stop ID 6303),45.373268,-122.628189,B,https://trimet.org/home/stop/6303,0,,1,,West,Opposite
+6304,6304,Willamette Dr & Barlow,willamette drive & barlow,Eastbound stop in West Linn (Stop ID 6304),45.373327,-122.628594,B,https://trimet.org/home/stop/6304,0,,1,,East,Nearside
+6306,6306,Willamette Dr & Burns,willamette drive & burns,Westbound stop in West Linn (Stop ID 6306),45.366549,-122.613845,B,https://trimet.org/home/stop/6306,0,,1,,West,Nearside
+6309,6309,Willamette Dr & Cedar Oak,willamette drive & cedar oak,Northbound stop in West Linn (Stop ID 6309),45.387439,-122.641532,B,https://trimet.org/home/stop/6309,0,,1,,North,Farside
+6310,6310,Pacific Hwy & Cherry Ln,pacific highway & cherry lane,Northbound stop in Lake Oswego (Stop ID 6310),45.403925,-122.659515,B,https://trimet.org/home/stop/6310,0,,1,,North,Opposite
+6311,6311,Pacific Hwy (Hwy 43) & Cherry Ln,pacific highway (highway 43) & cherry lane,Southbound stop in Lake Oswego (Stop ID 6311),45.404016,-122.659829,B,https://trimet.org/home/stop/6311,0,,1,,South,Farside
+6312,6312,Willamette Dr & Elliott,willamette drive & elliott,Westbound stop in West Linn (Stop ID 6312),45.371083,-122.623519,B,https://trimet.org/home/stop/6312,0,,1,,West,Farside
+6314,6314,Willamette Dr & West A,willamette drive & west a,Eastbound stop in West Linn (Stop ID 6314),45.370779,-122.623305,B,https://trimet.org/home/stop/6314,0,,1,,East,Nearside
+6317,6317,Pacific Hwy & Glenmorrie,pacific highway & glenmorrie,Northbound stop in Lake Oswego (Stop ID 6317),45.402215,-122.657707,B,https://trimet.org/home/stop/6317,0,,1,,North,Farside
+6318,6318,Pacific Hwy & Glenmorrie,pacific highway & glenmorrie,Southbound stop in Lake Oswego (Stop ID 6318),45.401974,-122.65766,B,https://trimet.org/home/stop/6318,0,,1,,South,Farside
+6319,6319,Willamette Dr & Hidden Springs,willamette drive & hidden springs,Southbound stop in West Linn (Stop ID 6319),45.385992,-122.640349,B,https://trimet.org/home/stop/6319,0,,1,,South,Nearside
+6320,6320,Willamette Dr & Holly,willamette drive & holly,Northbound stop in West Linn (Stop ID 6320),45.364688,-122.611059,B,https://trimet.org/home/stop/6320,0,,1,,North,Nearside
+6321,6321,Willamette Dr & Holmes St,willamette drive & holmes street,Northbound stop in West Linn (Stop ID 6321),45.368942,-122.618513,B,https://trimet.org/home/stop/6321,0,,1,,North,Nearside
+6322,6322,Willamette Dr & Holmes St,willamette drive & holmes street,Southbound stop in West Linn (Stop ID 6322),45.369092,-122.619035,B,https://trimet.org/home/stop/6322,0,,1,,South,Opposite
+6323,6323,Willamette Dr & Hughes Dr,willamette drive & hughes drive,Northbound stop in West Linn (Stop ID 6323),45.374612,-122.630229,B,https://trimet.org/home/stop/6323,0,,1,,North,Nearside
+6324,6324,Willamette Dr & Hughes Dr,willamette drive & hughes drive,Southbound stop in West Linn (Stop ID 6324),45.374412,-122.630157,B,https://trimet.org/home/stop/6324,0,,1,,South,Opposite
+6325,6325,Willamette Dr & Jolie Pointe,willamette drive & jolie point,Northbound stop in West Linn (Stop ID 6325),45.377663,-122.633949,B,https://trimet.org/home/stop/6325,0,,1,,North,Nearside
+6326,6326,Willamette Dr & Jolie Pointe,willamette drive & jolie point,Southbound stop in West Linn (Stop ID 6326),45.377434,-122.633994,B,https://trimet.org/home/stop/6326,0,,1,,South,Opposite
+6327,6327,Pacific Hwy & Laurel,pacific highway & laurel,Northbound stop in Lake Oswego (Stop ID 6327),45.407848,-122.65996,B,https://trimet.org/home/stop/6327,0,,1,,North,Opposite
+6328,6328,Pacific Hwy & Burnham,pacific highway & burnham,Southbound stop in Lake Oswego (Stop ID 6328),45.407262,-122.660129,B,https://trimet.org/home/stop/6328,0,,1,,South,Opposite
+6331,6331,Willamette Dr & Mapleton,willamette drive & mapleton,Northbound stop in West Linn (Stop ID 6331),45.384375,-122.638938,B,https://trimet.org/home/stop/6331,0,,1,,North,Nearside
+6332,6332,Willamette Dr & Mark Ln,willamette drive & mark lane,Northbound stop in West Linn (Stop ID 6332),45.378966,-122.635446,B,https://trimet.org/home/stop/6332,0,,1,,North,Nearside
+6333,6333,Willamette Dr & Linnwood,willamette drive & linnwood,Southbound stop in West Linn (Stop ID 6333),45.379073,-122.635893,B,https://trimet.org/home/stop/6333,0,,1,,South,Nearside
+6334,6334,Pacific Hwy & Furman,pacific highway & furmen,Northbound stop in Lake Oswego (Stop ID 6334),45.39787,-122.652786,B,https://trimet.org/home/stop/6334,0,,1,,North,Farside
+6335,6335,Pacific Hwy & Holy Names Drive,pacific highway & holy names drive,Northbound stop in Lake Oswego (Stop ID 6335),45.399599,-122.654727,B,https://trimet.org/home/stop/6335,0,,1,,North,Farside
+6336,6336,Pacific Hwy & Brookhurst Dr,pacific highway & brookhurst drive,Southbound stop in Lake Oswego (Stop ID 6336),45.398837,-122.654379,B,https://trimet.org/home/stop/6336,0,,1,,South,Farside
+6338,6338,Pacific Hwy & Marylbrook Dr,pacific highway & marylbrook drive,Southbound stop in Lake Oswego (Stop ID 6338),45.397094,-122.652483,B,https://trimet.org/home/stop/6338,0,,1,,South,Farside
+6339,6339,Willamette Dr & McKillican,willamette drive & mckillican,Southbound stop in West Linn (Stop ID 6339),45.365642,-122.61254,B,https://trimet.org/home/stop/6339,0,,1,,South,Nearside
+6344,6344,Willamette Dr & Pimlico,willamette drive & pimlico,Northbound stop in West Linn (Stop ID 6344),45.376565,-122.632686,B,https://trimet.org/home/stop/6344,0,,1,,North,Opposite
+6345,6345,Willamette Dr & Pimlico,willamette drive & pimlico,Southbound stop in West Linn (Stop ID 6345),45.376424,-122.632774,B,https://trimet.org/home/stop/6345,0,,1,,South,Nearside
+6346,6346,Willamette Dr & Shady Hollow,willamette drive & shady hollow,Northbound stop in West Linn (Stop ID 6346),45.392603,-122.647198,B,https://trimet.org/home/stop/6346,0,,1,,North,Nearside
+6347,6347,Willamette Dr & Shady Hollow,willamette drive & shady hollow,Southbound stop in West Linn (Stop ID 6347),45.392742,-122.647595,B,https://trimet.org/home/stop/6347,0,,1,,South,Opposite
+6348,6348,Willamette Dr & Holly (near gas stn),willamette drive & holly (near gas station),Southbound stop in West Linn (Stop ID 6348),45.364339,-122.611061,B,https://trimet.org/home/stop/6348,0,,1,,South,Farside
+6349,6349,Willamette Dr & Walling Way,willamette drive & walling way,Northbound stop in West Linn (Stop ID 6349),45.389813,-122.644088,B,https://trimet.org/home/stop/6349,0,,1,,North,Farside
+6350,6350,Willamette Dr & Walling Circle,willamette drive & walling circle,Southbound stop in West Linn (Stop ID 6350),45.38952,-122.644142,B,https://trimet.org/home/stop/6350,0,,1,,South,Nearside
+6352,6352,Willamette Dr & Webb St,willamette drive & webb street,Southbound stop in West Linn (Stop ID 6352),45.367984,-122.617173,B,https://trimet.org/home/stop/6352,0,,1,,South,Nearside
+6373,6373,N Willis & Bayard,north willis & bayard,Westbound stop in Portland (Stop ID 6373),45.584081,-122.700248,B,https://trimet.org/home/stop/6373,0,,1,,West,Nearside
+6374,6374,N Willis & Chautauqua,north willis & chautauqua,Eastbound stop in Portland (Stop ID 6374),45.583965,-122.708099,B,https://trimet.org/home/stop/6374,0,,1,,East,Nearside
+6375,6375,N Willis & Druid,north willis & druid,Westbound stop in Portland (Stop ID 6375),45.584136,-122.717751,B,https://trimet.org/home/stop/6375,0,,1,,West,Farside
+6376,6376,N Willis & Druid,north willis & druid,Eastbound stop in Portland (Stop ID 6376),45.58403,-122.717539,B,https://trimet.org/home/stop/6376,0,,1,,East,Nearside
+6377,6377,N Willis & Emerald,north willis & emerald,Eastbound stop in Portland (Stop ID 6377),45.583928,-122.700058,B,https://trimet.org/home/stop/6377,0,,1,,East,Nearside
+6381,6381,N Willis & Newman,north willis & newman,Eastbound stop in Portland (Stop ID 6381),45.584052,-122.715537,B,https://trimet.org/home/stop/6381,0,,1,,East,Nearside
+6382,6382,N Willis & Newman,north willis & newman,Westbound stop in Portland (Stop ID 6382),45.584164,-122.715611,B,https://trimet.org/home/stop/6382,0,,1,,West,Farside
+6383,6383,N Willis & Peninsular,north willis & peninsular,Eastbound stop in Portland (Stop ID 6383),45.583938,-122.697375,B,https://trimet.org/home/stop/6383,0,,1,,East,Nearside
+6384,6384,N Willis & Peninsular,north willis & peninsular,Westbound stop in Portland (Stop ID 6384),45.584058,-122.697643,B,https://trimet.org/home/stop/6384,0,,1,,West,Farside
+6385,6385,N Willis & Portsmouth,north willis & ports mouth,Westbound stop in Portland (Stop ID 6385),45.584424,-122.722381,B,https://trimet.org/home/stop/6385,0,,1,,West,Nearside
+6387,6387,N Willis & Washburne,north willis & washburne,Westbound stop in Portland (Stop ID 6387),45.584071,-122.705598,B,https://trimet.org/home/stop/6387,0,,1,,West,Farside
+6388,6388,N Willis & Washburne,north willis & washburne,Eastbound stop in Portland (Stop ID 6388),45.58394,-122.705466,B,https://trimet.org/home/stop/6388,0,,1,,East,Nearside
+6389,6389,N Willis & Wayland,north willis & wayland,Westbound stop in Portland (Stop ID 6389),45.584085,-122.711144,B,https://trimet.org/home/stop/6389,0,,1,,West,Nearside
+6392,6392,N Willis & Woolsey,north willis & woolsey,Eastbound stop in Portland (Stop ID 6392),45.583982,-122.713192,B,https://trimet.org/home/stop/6392,0,,1,,East,Farside
+6472,6472,2200 Block SW 1st,twenty-two-hundred block southwest 1st,Northbound stop in Portland (Stop ID 6472),45.506687,-122.678537,B,https://trimet.org/home/stop/6472,0,,1,,North,At
+7586,7586,SW 5th & Alder,southwest 5th & alder,Southbound stop in Portland (Stop ID 7586),45.519602,-122.677207,B,https://trimet.org/home/stop/7586,0,,1,,South,Nearside
+7614,7614,SW 5th & Main,southwest 5th & main,Southbound stop in Portland (Stop ID 7614),45.516269,-122.679016,B,https://trimet.org/home/stop/7614,0,,1,,South,Nearside
+7631,7631,SW 5th & Pine,southwest 5th & pine,Southbound stop in Portland (Stop ID 7631),45.522236,-122.675827,B,https://trimet.org/home/stop/7631,0,,1,,South,Opposite
+7751,7751,SW 6th & W Burnside,southwest 6th & west burnside,Northbound stop in Portland (Stop ID 7751),45.52288,-122.676415,B,https://trimet.org/home/stop/7751,0,,1,,North,Nearside
+7789,7789,SW 6th & Salmon,southwest 6th & salmon,Northbound stop in Portland (Stop ID 7789),45.516934,-122.679687,B,https://trimet.org/home/stop/7789,0,,1,,North,Nearside
+7803,7803,SW 6th & Washington,southwest 6th & washington,Northbound stop in Portland (Stop ID 7803),45.520244,-122.677859,B,https://trimet.org/home/stop/7803,0,,1,,North,Nearside
+8207,8207,Lake Oswego Transit Center ,lake ozweego transit center ,Southbound stop in Lake Oswego (Stop ID 8207),45.420174,-122.667983,B,https://trimet.org/home/stop/8207,0,,1,,South,At
+8208,8208,Lake Oswego Transit Center ,lake ozweego transit center ,Southbound stop in Lake Oswego (Stop ID 8208),45.420627,-122.66788,B,https://trimet.org/home/stop/8208,0,,1,,South,At
+8762,8762,Oregon City Transit Center ,oregon city transit center ,Westbound stop in Oregon City (Stop ID 8762),45.35979,-122.604629,B,https://trimet.org/home/stop/8762,0,,1,,West,At
+8886,8886,NW Everett & 5th,northwest everett & 5th,Eastbound stop in Portland (Stop ID 8886),45.525182,-122.675622,B,https://trimet.org/home/stop/8886,0,,1,,East,Nearside
+9301,9301,NW 5th & Davis,northwest 5th & davis,Southbound stop in Portland (Stop ID 9301),45.524705,-122.675552,B,https://trimet.org/home/stop/9301,0,,1,,South,Nearside
+9311,9311,NW Glisan & 3rd,northwest gleesun & 3rd,Westbound stop in Portland (Stop ID 9311),45.526817,-122.674106,B,https://trimet.org/home/stop/9311,0,,1,,West,Farside
+9635,9635,N Portsmouth & Willamette,north ports mouth & willamette,Southbound stop in Portland (Stop ID 9635),45.576356,-122.728767,B,https://trimet.org/home/stop/9635,0,,1,,South,Nearside
+10611,10611,N Willis & Chautauqua,north willis & chautauqua,Westbound stop in Portland (Stop ID 10611),45.584101,-122.707659,B,https://trimet.org/home/stop/10611,0,,1,,West,Nearside
+11486,11486,SW 6th & Columbia,southwest 6th & columbia,Northbound stop in Portland (Stop ID 11486),45.514267,-122.681095,B,https://trimet.org/home/stop/11486,0,,1,,North,Nearside
+11813,11813,N Interstate & Multnomah (Rose Quarter),north interstate & multnomah (rose quarter),Southbound stop in Portland (Stop ID 11813),45.529875,-122.667658,B,https://trimet.org/home/stop/11813,0,,1,,South,Nearside
+11814,11814,N Interstate & Rose Quarter TC,north interstate & rose quarter transit-center,Northbound stop in Portland (Stop ID 11814),45.529724,-122.666304,B,https://trimet.org/home/stop/11814,0,,1,,North,At
+11839,11839,N Interstate & Albina,north interstate & albeina,Northbound stop in Portland (Stop ID 11839),45.539549,-122.675234,B,https://trimet.org/home/stop/11839,0,,1,,North,Farside
+11840,11840,N Interstate & Tillamook,north interstate & till-a-mook,Northbound stop in Portland (Stop ID 11840),45.538115,-122.674426,B,https://trimet.org/home/stop/11840,0,,1,,North,Farside
+11844,11844,N Interstate & Tillamook,north interstate & till-a-mook,Southbound stop in Portland (Stop ID 11844),45.538047,-122.674731,B,https://trimet.org/home/stop/11844,0,,1,,South,Nearside
+11845,11845,N Interstate & Larrabee,north interstate & larrabee,Southbound stop in Portland (Stop ID 11845),45.532205,-122.671298,B,https://trimet.org/home/stop/11845,0,,1,,South,Nearside
+12729,12729,SW Terwilliger & L&C Law School,southwest ter*williger & landc law school,Eastbound stop in Portland (Stop ID 12729),45.45296,-122.677017,B,https://trimet.org/home/stop/12729,0,,1,,East,At
+12760,12760,S Moody & Gibbs,south moody & gibbs,Southbound stop in Portland (Stop ID 12760),45.499337,-122.671815,B,https://trimet.org/home/stop/12760,0,,1,,South,Nearside
+12880,12880,S Moody & Gaines,south moody & gaines,Southbound stop in Portland (Stop ID 12880),45.496182,-122.671942,B,https://trimet.org/home/stop/12880,0,,1,,South,Farside
+13167,13167,SW 5th & Clay,southwest 5th & clay,Southbound stop in Portland (Stop ID 13167),45.513593,-122.680499,B,https://trimet.org/home/stop/13167,0,,1,,South,Nearside
+13180,13180,S River Pkwy & River Dr,south river parkway & river drive,Eastbound stop in Portland (Stop ID 13180),45.507144,-122.674544,B,https://trimet.org/home/stop/13180,0,,1,,East,Nearside
+13183,13183,S Moody & Thomas,south moody & thomas,Southbound stop in Portland (Stop ID 13183),45.494384,-122.672042,B,https://trimet.org/home/stop/13183,0,,1,,South,Nearside
+13184,13184,S Macadam & Lowell,south macadam & lowell,Northbound stop in Portland (Stop ID 13184),45.493472,-122.672863,B,https://trimet.org/home/stop/13184,0,,1,,North,Nearside
+13185,13185,S Macadam & Tram Tower,south macadam & tram tower,Northbound stop in Portland (Stop ID 13185),45.499184,-122.672726,B,https://trimet.org/home/stop/13185,0,,1,,North,At
+13305,13305,SW Harrison & 6th,southwest harrison & 6th,Westbound stop in Portland (Stop ID 13305),45.511054,-122.682648,B,https://trimet.org/home/stop/13305,0,,1,,West,Nearside
+13601,13601,S Moody & Meade South,south moody & meade south,Southbound stop in Portland (Stop ID 13601),45.503115,-122.672793,B,https://trimet.org/home/stop/13601,0,,1,,South,At
+13603,13603,Willamette Dr & Webb St,willamette drive & webb street,Northbound stop in West Linn (Stop ID 13603),45.367791,-122.616513,B,https://trimet.org/home/stop/13603,0,,1,,North,Nearside
+14212,14212,N Lombard & Greeley,north lombard & greeley,Eastbound stop in Portland (Stop ID 14212),45.577055,-122.695943,B,https://trimet.org/home/stop/14212,0,,1,,East,Nearside
+14398,14398,S Terwilliger & Tryon Creek State Park Entrance,south ter*williger & tryon creek state park entrance,Southbound stop in Portland (Stop ID 14398),45.442456,-122.672766,B,https://trimet.org/home/stop/14398,0,,1,,South,At
+14399,14399,S Terwilliger & Northgate Ave,south ter*williger & northgate avenue,Northbound stop in Multnomah Co. (Stop ID 14399),45.440905,-122.670631,B,https://trimet.org/home/stop/14399,0,,1,,North,Nearside
+14479,14479,S Terwilliger & Iron Mountain Trailhead,south ter*williger & iron mountain trailhead,Southbound stop in Clackamas Co. (Stop ID 14479),45.432284,-122.666187,B,https://trimet.org/home/stop/14479,0,,1,,South,At
+14480,14480,S Terwilliger & Iron Mountain,south ter*williger & iron mountain,Northbound stop in Multnomah Co. (Stop ID 14480),45.434513,-122.666877,B,https://trimet.org/home/stop/14480,0,,1,,North,Farside

@@ -1,0 +1,29 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+93,31,842079,Pottstown High-York,,0,6031,315631,1,1
+93,31,842082,Pottstown High-York,,0,6031,315623,1,1
+93,31,842077,Pottstown High-York,,0,6032,315623,1,1
+93,31,842076,Pottstown High-York,,0,6031,315623,1,1
+93,31,842078,Pottstown High-York,,0,6176,315623,1,1
+93,31,842087,Pottstown High-York,,0,6033,315623,1,1
+93,31,842075,Pottstown High-York,,0,6034,315623,1,1
+93,31,842085,Pottstown High-York,,0,6176,315623,1,1
+93,31,842084,Pottstown High-York,,0,6033,315623,1,1
+93,31,842083,Pottstown High-York,,0,6034,315623,1,1
+93,31,842081,Pottstown High-York,,0,6176,315623,1,1
+93,31,842088,Pottstown High-York,,0,6033,315623,1,1
+93,31,842086,Pottstown High-York,,0,6034,315631,1,1
+93,31,842080,Pottstown High-York,,0,6033,315631,1,1
+93,31,842102,Norristown Transit Center,,1,6031,315632,1,1
+93,31,842101,Norristown Transit Center,,1,6031,315633,1,1
+93,31,842100,Norristown Transit Center,,1,6032,315633,1,1
+93,31,842099,Norristown Transit Center,,1,6031,315633,1,1
+93,31,842098,Norristown Transit Center,,1,6176,315633,1,1
+93,31,842097,Norristown Transit Center,,1,6033,315633,1,1
+93,31,842096,Norristown Transit Center,,1,6034,315633,1,1
+93,31,842095,Norristown Transit Center,,1,6176,315633,1,1
+93,31,842094,Norristown Transit Center,,1,6033,315633,1,1
+93,31,842093,Norristown Transit Center,,1,6034,315633,1,1
+93,31,842092,Norristown Transit Center,,1,6176,315633,1,1
+93,31,842091,Norristown Transit Center,,1,6033,315633,1,1
+93,31,842090,Norristown Transit Center,,1,6034,315632,1,1
+93,31,842089,Norristown Transit Center,,1,6033,315632,1,1

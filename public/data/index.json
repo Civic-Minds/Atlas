@@ -5852,6 +5852,8 @@
         -73.4
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media",
+      "hiddenInProduction": true,
+      "overrideNote": "Greater Glens Falls Transit is now run by CDTA, and its routes are shown under CDTA: 402 Bay/College, 404 Hudson Falls/Fort Edward, 407 West Glens Falls, 411 Glen St/Walmart, 412 Glen St/Aviation Mall, 419 Route 9/Lake George, 804 East-West Commuter and the 876-877 summer trolleys. Route 5 Moreau-South Glens Falls, the Ridge Street Commuter and the two shopper routes did not carry over.",
       "lastFeedExpiry": "20231231",
       "lastFeedVersion": "",
       "lastRefreshedAt": "20260811",
@@ -17736,23 +17738,43 @@
         32.6,
         -93.5
       ],
-      "feedUrl": "http://sportranbus.com/gtfs",
+      "feedUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
       "region": "Louisiana",
-      "lastFeedExpiry": "20991231",
-      "lastFeedVersion": "Service 10/13/2024",
-      "lastRefreshedAt": "2026-08-10",
+      "lastFeedExpiry": "20270109",
+      "lastFeedVersion": "20260929",
+      "lastRefreshedAt": "2026-10-14",
       "cities": [
         "Bossier City, Louisiana",
         "Shreveport, Louisiana"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1060/latest.zip",
-      "lastFeedCheckAt": "20261012",
+      "lastFeedCheckAt": "20261014",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20991231",
+      "expiredFeedCheckExpiry": "20270109",
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1060/latest.zip"
+      "lastFeedSourceUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
+      "feedQuality": {
+        "status": "review",
+        "score": 80,
+        "reasons": [
+          "2 route shapes needed adjustment before display."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 2,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 58
+        },
+        "checkedAt": "2026-10-14"
+      },
+      "lastPeekedExpiry": "20270109",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0
     },
     {
       "slug": "billings",

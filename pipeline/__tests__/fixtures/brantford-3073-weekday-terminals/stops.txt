@@ -1,0 +1,57 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,wheelchair_boarding
+84738,901,Costco,,43.1688451263909,-80.2404820919037,,,0,,2
+84519,186,Lynden Park Mall,,43.1707273534062,-80.2385857701302,,,0,,2
+84736,918,Holiday Dr,,43.16394,-80.24045,,,0,,2
+84737,802,Holiday Dr at Wayne Gretzky Pkwy,,43.1626677184812,-80.2422533766654,,,0,,2
+84807,107,Terminal platform 7,,43.1407937617445,-80.2646556510334,,,0,,2
+84808,567,Queen St at Colborne St,,43.1384610320562,-80.2657615052795,,,0,,2
+84809,570,Beckett Building,,43.138559,-80.262114,,,0,,2
+84810,569,Colborne St at Echo St,,43.138721,-80.259531,,,0,,2
+84715,606,Colborne St E at Park Ave,,43.1390509622747,-80.2543096044633,,,0,,2
+84716,768,Colborne St East at Murray St,,43.139244,-80.251789,,,0,,2
+84717,770,Colborne St East at Stanley St,,43.139608,-80.246235,,,0,,2
+84718,772,Colborne St East at Puleston St,,43.140536,-80.240093,,,0,,2
+84719,773,Colborne St East at Mohawk Plaza,,43.141332,-80.237109,,,0,,2
+84720,776,Colborne St East at Forest Rd,,43.1425567746983,-80.2317534682029,,,0,,2
+84721,778,Colborne St East at Echo Villa,,43.143702,-80.226872,,,0,,2
+84722,779,Colborne St East at Chester St,,43.144026,-80.222902,,,0,,2
+84723,781,Colborne St East at Clara Cres,,43.1443597354609,-80.2175784343586,,,0,,2
+84724,783,974 Colborne St East,,43.1447909456952,-80.2116712270183,,,0,,2
+84725,784,Garden Ave at Colborne St E,,43.1454585381533,-80.2091417521496,,,0,,2
+84726,785,Grey St at Adelaide Ave,,43.147381,-80.210284,,,0,,2
+84727,786,Grey St at Brisbane Blvd,,43.148113,-80.21224,,,0,,2
+84728,788,Grey St at Linden Ave,,43.148657,-80.216934,,,0,,2
+84729,1009,Grey St at Rowanwood Ave,,43.1489234394745,-80.2203839594898,,,0,,2
+84730,793,Woodman Park Community Centre,,43.147757,-80.22937,,,0,,2
+84731,794,Grey St at Patterson Ave,,43.147289,-80.231501,,,0,,2
+84732,796,St. Joseph's Lifecare Centre,,43.145893,-80.234878,,,0,,2
+84733,797,Wayne Gretzky Pkwy at Grey St,,43.1472542515344,-80.2364213791332,,,0,,2
+84734,798,Wayne Gretzky Pkwy at Elgin St,,43.150197,-80.237584,,,0,,2
+84735,799,Wayne Gretzky Pkwy at Henry St,,43.1541304454263,-80.2391093233827,,,0,,2
+89277,99993,Lynden Park Mall (Arrive),,43.1707550449293,-80.2384128408366,,,0,,2
+84739,859,121 Roy Blvd,,43.170551,-80.23225,,,0,,2
+84740,860,Roy Blvd at Sage Ct,,43.171803,-80.227986,,,0,,2
+84741,861,Roy Blvd at Lynden Rd,,43.1756212033571,-80.2263099209874,,,0,,2
+84742,1020,Sinclair Blvd at Shellington Place,,43.1709,-80.216462,,,0,,2
+84743,863,56 Sinclair Blvd,,43.170994,-80.220767,,,0,,2
+84744,924,Aspire Bakery,,43.169582,-80.224658,,,0,,2
+84745,864,55 Sinclair Blvd,,43.17085,-80.218753,,,0,,2
+84746,865,Sinclair Blvd Service Station,,43.17079,-80.216545,,,0,,2
+84747,866,150 Garden Ave,,43.156359,-80.209516,,,0,,2
+84748,867,Garden Ave at Elgin St,,43.153784,-80.209413,,,0,,2
+84749,925,Garden Ave at Brennan St,,43.1498578443006,-80.2093588454037,,,0,,2
+84750,868,Linden Ave at Lyndhurst St,,43.146539,-80.217797,,,0,,2
+84751,869,Linden Ave at Colborne St E,,43.1446401869418,-80.2175112326722,,,0,,2
+84752,823,Colborne St E at Morley Ave,,43.1442282792897,-80.2213641257429,,,0,,2
+84753,824,Colborne St E at James Ave,,43.143835,-80.226346,,,0,,2
+84754,825,Colborne St E at Patterson Ave,,43.14314,-80.229773,,,0,,2
+84755,827,Colborne St E at First Ave,,43.141932,-80.23517,,,0,,2
+84756,828,Colborne St East at Puleston St,,43.1405951658879,-80.2404119711464,,,0,,2
+84757,830,Dalhousie St at Stanley St,,43.140539,-80.246941,,,0,,2
+84758,831,Dalhousie St at Brock St,,43.140356,-80.250538,,,0,,2
+84759,833,Dalhousie St at Park Ave,,43.139995,-80.255214,,,0,,2
+84760,834,Dalhousie St at Clarence St,,43.1397977794954,-80.2587209680882,,,0,,2
+84713,106,Terminal platform 6,,43.1409229330105,-80.2646710737345,,,0,,2
+84761,1021,Brantford Medical Centre,,43.172667,-80.217101,,,0,,2
+84762,928,Shellington Place at Sinclair Blvd,,43.1709660499116,-80.2167093116741,,,0,,2
+84596,102,Terminal platform 2,,43.1407086259834,-80.2647046013439,,,0,,2

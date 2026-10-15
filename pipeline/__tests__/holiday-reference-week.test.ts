@@ -148,6 +148,9 @@ describe('reference date clamp skips an expired newest period (RCT)', () => {
     const weekday = JSON.parse(result.geojson).features
       .map((feature: any) => feature.properties)
       .filter((p: any) => p.day === 'Weekday' && p.stopId == null);
+    // Since CIV-152 the worst stop grade is the line's tier. 117 runs on the hour at every
+    // stop with one 61-62 minute gap mid-afternoon: one near miss over nine gaps, within the
+    // grader's floor (GRACE_FLOOR_MIN_GAPS), tier 60. 118's stops alternate real holes.
     for (const [route, tier] of [['117', '60'], ['118', 'infrequent']]) {
       const features = weekday.filter((p: any) => p.routeId === route);
       expect(features.length).toBeGreaterThan(0);

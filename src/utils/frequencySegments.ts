@@ -311,7 +311,9 @@ export interface SharedStretchPassResult {
  * route pass. A stop qualifies when its pooled-or-own value passes the shared filter AND the
  * matching stop of the opposite direction passes too, judged the same way on the best opposite
  * feature there. With maxHeadway Infinity every stop with a value on both sides qualifies (the
- * card's no-filter view). Features without pooled data give nothing.
+ * card's no-filter view). Since #690 a feature's own stop values already count every pattern
+ * serving the stop; `sharedStretches` says which stops those are. Features without stretches
+ * give nothing, unless they are the single-pattern direction described below.
  *
  * A direction run as ONE pattern (its own stop values already count every trip, e.g. NYCT B
  * "Beach", CTA Green "Harlem-Green") draws along the stops that pair with the branched
@@ -328,7 +330,6 @@ export function sharedStretchStopPass(
 ): SharedStretchPassResult[] {
   const out: SharedStretchPassResult[] = [];
   const ctx = sharedPassContext(allFeatures);
-  if (ctx.index.size === 0) return out;
   const passes = (v: number | null): v is number => v != null && v <= maxHeadway;
   const hasStretches = (q: StretchProps) => !!q.sharedStretches?.length;
 

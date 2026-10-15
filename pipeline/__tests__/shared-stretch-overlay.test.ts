@@ -94,7 +94,7 @@ describe('failing routes draw only their passing shared stretches', () => {
     }
   });
 
-  it('draws nothing new without pooled data (today\'s live data), and counts never change', async () => {
+  it('draws nothing new without the stretch ranges, and counts never change', async () => {
     const fc = weekday(await ttc29());
     const bare = strip(fc);
     for (const period of ['all', 'amPeak', 'midday'] as const) {
@@ -117,10 +117,11 @@ describe('failing routes draw only their passing shared stretches', () => {
     const index = buildSharedStopIndex(fc.features);
     const a = routes.find(p => p.headsign === 'Exhibition (Dufferin Gate)');
     const stopId = a.stopOrder[3];
+    // Since #690 the feature's own stop value is the pooled one (8), with or without the index.
     const stopMetric = buildRouteStopMetric(a, stopId, index);
     expect(stopMetric.value).toBe(8);
-    expect(stopMetric.provenance).toBe('shared-stretch');
-    expect(buildRouteStopMetric(a, stopId).value).toBe(16);
+    expect(buildRouteStopMetric(a, stopId).value).toBe(8);
+    expect(a.stopHeadways[stopId]).toBe(8);
     const south = routes.filter(p => p.directionId === 0);
     // The card reads the overlay's own per-stop pass (shallow copies of the props, as the card holds).
     const copies = south.map(p => ({ ...p }));
