@@ -276,6 +276,15 @@ describe('stampWorstDirectionHeadways', () => {
       expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(150);
     });
 
+    it('a direction of span rows alone keeps their coverage, so it never vanishes', () => {
+      const features = [
+        route(0, { tier: '30', headwayByPeriod: { midday: 30 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 32 } }),
+        route(1, { tier: 'span', periodCoverageHeadway: { midday: 45 } }),
+      ];
+      stampWorstDirectionHeadways(features);
+      expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.midday).toBe(45);
+    });
+
     it('a pool member without a coverage value does not open the stamp to every sibling (TTC 123 Weekday)', () => {
       // Direction 0's Long Branch via East Mall row borrows its midday value from its branch and
       // has no coverage; the 2-trip West Mall row (unsteady, 336) must not set the route's wait.
