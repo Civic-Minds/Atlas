@@ -54,4 +54,23 @@ describe('stretch-departures.py', () => {
     expect(out).toContain('measured at: Delta (D)');
     expect(out).toContain('n=4 first=2:10 last=5:10 max gap=60');
   });
+
+  it('--at mid measures at the middle stop of the stretch (stops served by more than half of the trips, index n // 2)', async () => {
+    const out = run(await buildZip(), '--at', 'mid');
+    expect(out).toContain('measured at: mid');
+    // Direction 0 stretch A, B, C: all three are served by more than half of its 9 trips, so the middle is B.
+    expect(out).toContain('middle stop (served by more than half of the trips, index n // 2): Bravo (B)');
+    // Direction 1 stretch D, C, B, A (4 stops): index 2 is B.
+    expect(out).toMatch(/direction 1[\s\S]*middle stop[^\n]*: Bravo \(B\)/);
+  });
+
+  it('--json prints the same numbers as structured data', async () => {
+    const data = JSON.parse(run(await buildZip(), '--at', 'mid', '--json'));
+    const d0 = data.directions.find((d: { direction: string }) => d.direction === '0');
+    expect(data.at).toBe('mid');
+    expect(d0.main.stop).toBe('B');
+    expect(d0.main.n).toBe(9);
+    expect(d0.main.max_gap).toBe(30);
+    expect(d0.tails).toEqual([]);
+  });
 });
