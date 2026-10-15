@@ -26,7 +26,6 @@ import { applySeoToDocument } from './lib/seoDom';
 import { titleCase } from './utils/format';
 import { LINK, PAGE_ACTION } from './pageStyles';
 import { FrequencyBar } from './pageParts';
-import SiteFooter from './components/SiteFooter';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
@@ -192,8 +191,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             {agency.websiteUrl && <> Agency website: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{introName(agency.name, agency.city)}</a>.</>}
           </p>
         </article>
-
-        <SiteFooter />
     </PageShell>
   );
 }

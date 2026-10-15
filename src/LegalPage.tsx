@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
-import SiteFooter from './components/SiteFooter';
 import PageShell from './components/ui/PageShell';
 
 type LegalDocument = 'terms' | 'privacy';
@@ -112,7 +111,6 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
               Questions about these Terms can be sent to us.
             </SiteContact>
           </>}
-          <SiteFooter />
           </article>
         </div>
     </PageShell>

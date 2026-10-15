@@ -87,8 +87,8 @@ export function updateHiddenRouteRegions(current: Set<string>, region: string): 
 const SETTINGS = [
   {
     id: 'span',
-    label: 'Hide irregular routes',
-    description: 'Hides exceptional services such as school buses, one- or two-trip routes, and demand-responsive shuttles.',
+    label: 'Hide one-off routes',
+    description: 'School runs, a few trips a day, on-demand.',
   },
 ] as const;
 
@@ -316,11 +316,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
   const settings = [
     ...SETTINGS,
-    ...(ATLAS_MODE === 'public' ? [] : [{
+    {
+      // #720: part-time routes are on public too. Rush-hour-only routes join this switch once the
+      // pipeline classes them time-limited (they are still irregular in today's data).
       id: 'limited',
-      label: 'Hide limited-service routes',
-      description: 'Hides peak-only or otherwise time-limited service, without hiding regular infrequent routes.',
-    }]),
+      label: 'Hide part-time routes',
+      description: 'Only at rush hour, evenings, or some days.',
+    },
     ...(feedQualityEnabled ? [{
       id: 'quality',
       label: 'Hide degraded feeds',

@@ -1,7 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import { FEATURES, FEATURE_ROUTES } from '../shared/config';
 import PageShell from './components/ui/PageShell';
-import SiteFooter from './components/SiteFooter';
 
 export default function AboutPage() {
   return (
@@ -61,8 +60,6 @@ export default function AboutPage() {
             </a>
           </div>
         </section>}
-
-        <SiteFooter />
     </PageShell>
   );
 }

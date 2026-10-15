@@ -16,7 +16,6 @@ import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { LINK, PAGE_ACTION } from './pageStyles';
 import { FrequencyBar } from './pageParts';
-import SiteFooter from './components/SiteFooter';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
 
@@ -109,8 +108,6 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
             Area: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). {areaDatesText(data)}
           </p>
         </article>
-
-        <SiteFooter />
     </PageShell>
   );
 }
