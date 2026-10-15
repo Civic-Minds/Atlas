@@ -314,3 +314,31 @@ describe('route roll-up (rule 1)', () => {
     expect(rollupRoute([dir(10), dir(20)]).period.midday.value).toBe(20);
   });
 });
+
+describe('night tails (D3 with the D8 midpoint)', () => {
+  // A trunk every 20 all night, and a branch tail whose only window trips start its day at
+  // 4:47 and 4:57 (CTA 20's downtown loop): the tail does not run at night and drops out.
+  const coords = new Map<string, [number, number]>();
+  const trunk = Array.from({ length: 10 }, (_, i) => `t${i}`);
+  const tail = Array.from({ length: 6 }, (_, i) => `x${i}`);
+  trunk.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+  tail.forEach((id, i) => coords.set(id, [43.7 + (i + 1) * 0.004, -79.4]));
+  const build = (tailStarts: number[]) => {
+    const out: DirectionTrip[] = [];
+    // Every 20 from 01:00 to 23:00 (+24h for the night) on the trunk.
+    for (let m = 60; m <= 1380 + 360; m += 20) out.push({ tripId: `a${m}`, visits: trunk.map((stopId, i) => ({ stopId, minutes: m + i })) });
+    for (const m of tailStarts) out.push({ tripId: `b${m}`, visits: [...trunk, ...tail].map((stopId, i) => ({ stopId, minutes: m + i })) });
+    return directionStretches('k', out, id => coords.get(id));
+  };
+  it('a tail that only starts its day inside the window is ignored', () => {
+    // Tail trips from 4:47 every 30 through the day.
+    const d = build(Array.from({ length: 40 }, (_, i) => 287 + 30 * i));
+    expect(d.tails).toHaveLength(1);
+    expect(rollupDirection(d)!.night60).toBe(true);
+  });
+  it('a tail that runs across the window midpoint must pass', () => {
+    // Tail trips at 2:10 and 4:20 only: across the midpoint, a 130-minute gap.
+    const d = build([1570, 1700, ...Array.from({ length: 36 }, (_, i) => 360 + 30 * i)]);
+    expect(rollupDirection(d)!.night60).toBe(false);
+  });
+});

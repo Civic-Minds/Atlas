@@ -294,8 +294,14 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       mainValue: main[key].counts ? main[key].value : null,
     };
   }
+  // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
+  // of the window's midpoint. One that only starts its day inside the window (CTA 20's downtown
+  // loop at 4:47 and 4:57) or only ends it there does not run at night, and drops out.
+  const nightMid = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
+  const runsAtNight = (t: Stretch) => t.nightTimes.some(x => x >= STRETCH_NIGHT_START_MIN && x < nightMid)
+    && t.nightTimes.some(x => x > nightMid && x <= STRETCH_NIGHT_END_MIN);
   const night = (gap: 30 | 60) => stretchNight(d.main!, gap) === true
-    && d.tails.every(t => stretchNight(t, gap) !== false);
+    && d.tails.filter(runsAtNight).every(t => stretchNight(t, gap) === true);
   return { period, night30: night(30), night60: night(60) };
 }
 
