@@ -113,14 +113,19 @@ function middleStop(stops: readonly string[], tripStops: readonly ReadonlySet<st
 }
 
 /** True when the trips, read at `stop`, run steadily through at least one period (steady and on both sides of its midpoint). */
-function runsSteadily(trips: readonly DirectionTrip[], stop: string): boolean {
+function runsSteadily(trips: readonly DirectionTrip[], stop: string, periods: readonly PeriodKey[]): boolean {
   const times: number[] = [];
   for (const trip of trips) {
     const visit = trip.visits.find(v => v.stopId === stop);
     if (visit && visit.counted !== false) times.push(visit.minutes);
   }
-  return Object.values(periodSustainedMid(times)).some(Boolean);
+  const steady = periodSustainedMid(times);
+  return periods.some(period => steady[period] === true);
 }
+
+/** The daytime periods (06:00-23:00) that shape a route's stretches; late and overnight only shape a night route's. */
+const DAYTIME_PERIODS: readonly PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
+const ALL_PERIODS: readonly PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'];
 
 /**
  * Splits one route direction day into its main stretch and tails, and reads each at its middle
@@ -146,7 +151,14 @@ export function directionStretches(
   // Regular: the pattern runs steadily through at least one period at its own middle stop (the
   // steady test plus the D8 midpoint test). Stray, part-day and garage trips fail it, whatever
   // their share of trips; a branch every 30 all day passes it (TTC 102D to Major Mackenzie, 18%).
-  let regular = all.filter(p => !p.trips.every(t => t.limited) && runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)]));
+  // Daytime service shapes the stretches: a night-only pattern (CTA 87's owl over part of the
+  // route) is a variant by day, so it cannot shrink the main stretch to its own stops and leave the
+  // rest of the route as tails that drop out at night. A route with no steady daytime pattern
+  // (a night route) is shaped by the patterns that run steadily in any period.
+  const eligible = all.filter(p => !p.trips.every(t => t.limited));
+  const steadyIn = (periods: readonly PeriodKey[]) => eligible.filter(p => runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)], periods));
+  let regular = steadyIn(DAYTIME_PERIODS);
+  if (regular.length === 0) regular = steadyIn(ALL_PERIODS);
   // No pattern runs steadily: the most common one alone is regular.
   const busiest = (list: typeof all) => list.reduce((x, y) => (y.trips.length > x.trips.length ? y : x));
   if (regular.length === 0) regular = [busiest(all)];

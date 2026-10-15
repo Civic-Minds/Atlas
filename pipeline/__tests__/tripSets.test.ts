@@ -291,6 +291,15 @@ describe('night on disconnected pieces (NYC subway S)', () => {
   });
 });
 
+describe('night-only patterns do not shape the stretches (CTA 87)', () => {
+  it('the owl covers part of the route, so 87 fails Night: the trunk\'s middle stop opens at 4:10', async () => {
+    // Oracle at the middle stop of the daytime main stretch, 2-5: 3 departures, start gap 130.
+    const r = await run('cta-87-weekday');
+    expect(r.stretches.get('87::0::Weekday')!.main!.stops.length).toBeGreaterThan(13);
+    expect(row(r, '87', 'Weekday').stretchNight60).toBe(false);
+  });
+});
+
 describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
   it('a dead start before about 4:09 is never sustained at the midpoint; today\'s flags are untouched', async () => {
     const r = await run('yrt-viva-weekday', 'yrt');
