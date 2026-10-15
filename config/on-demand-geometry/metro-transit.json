@@ -1,6 +1,4 @@
-import type { GeoJSON } from 'geojson';
-
-export const METRO_MICRO_FLEX_FEATURES: GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>[] = [
+[
   {
     "type": "Feature",
     "properties": {
@@ -6322,4 +6320,4 @@ export const METRO_MICRO_FLEX_FEATURES: GeoJSON.Feature<GeoJSON.Polygon | GeoJSO
       ]
     }
   }
-];
+]
