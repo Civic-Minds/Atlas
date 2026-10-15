@@ -1408,8 +1408,11 @@ export async function processGtfsBuffer(
           if (!visitSet.has(visitKey)) {
             visitSet.add(visitKey);
             pushAll(st.stop_id);
-            if (grp.inGroup && chainedEnd === undefined) {
-              addStretchVisit(gKey, st.trip_id, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined });
+            // Every visit shapes the pattern; a chained trip's end is not a departure the
+            // direction map counts (TTC 63 runs as two trips joined at Ossington, so dropping
+            // that stop from the pattern left the two halves sharing no stop).
+            if (grp.inGroup) {
+              addStretchVisit(gKey, st.trip_id, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined, counted: chainedEnd === undefined ? undefined : false });
             }
             // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
             const parentVisitKey = parentId ? `${grp.dayType}:${parentId}` : null;
@@ -3001,7 +3004,7 @@ export async function processGtfsBuffer(
       if (synthesizedGroups.has(gKey.slice(0, gKey.indexOf('::')))) continue;
       const directionTrips = [...trips].map(([tripId, visits]) => ({
         tripId,
-        visits: [...visits].sort((a, b) => a.seq - b.seq).map(({ stopId, minutes, overnightOnly }) => ({ stopId, minutes, overnightOnly })),
+        visits: [...visits].sort((a, b) => a.seq - b.seq).map(({ stopId, minutes, overnightOnly, counted }) => ({ stopId, minutes, overnightOnly, counted })),
       }));
       stretchesByKey.set(gKey, directionStretches(gKey, directionTrips, stopId => {
         const stop = stopsById.get(stopId);

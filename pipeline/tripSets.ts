@@ -23,9 +23,6 @@ import {
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
 
-/** A pattern with at least this share of the direction day's trips is regular (the oracle's --min-share). */
-export const REGULAR_PATTERN_MIN_SHARE = 0.2;
-
 /** Night for the stretch fields (D7): 2-5am, GTFS 26:00 to 29:00. */
 export const STRETCH_NIGHT_START_MIN = 26 * 60;
 export const STRETCH_NIGHT_END_MIN = 29 * 60;
@@ -36,6 +33,11 @@ export interface TripVisit {
   minutes: number;
   /** A departure on a genuinely overnight-only service (#297): also counts at minutes + 1440 for night. */
   overnightOnly?: boolean;
+  /**
+   * false: the visit shapes the trip's pattern but is not a departure stopDepsByGroup counts (a
+   * chained trip's end, where the next trip of the block departs instead). Default true.
+   */
+  counted?: boolean;
 }
 
 /** One trip of a route direction day: its first visit of each stop, in stop_sequence order. */
@@ -98,6 +100,16 @@ function middleStop(stops: readonly string[], tripStops: readonly ReadonlySet<st
   return pool[Math.floor(pool.length / 2)];
 }
 
+/** True when the trips, read at `stop`, run steadily through at least one period (steady and on both sides of its midpoint). */
+function runsSteadily(trips: readonly DirectionTrip[], stop: string): boolean {
+  const times: number[] = [];
+  for (const trip of trips) {
+    const visit = trip.visits.find(v => v.stopId === stop);
+    if (visit && visit.counted !== false) times.push(visit.minutes);
+  }
+  return Object.values(periodSustainedMid(times)).some(Boolean);
+}
+
 /**
  * Splits one route direction day into its main stretch and tails, and reads each at its middle
  * stop. `trips` are the same trips (first visits, frequency-expanded departures included) that
@@ -109,35 +121,36 @@ export function directionStretches(
   stopCoord: (stopId: string) => Coord | undefined,
 ): DirectionStretches {
   const withVisits = trips.filter(trip => trip.visits.length > 0);
-  const patterns = new Map<string, { stops: string[]; trips: number }>();
+  const patterns = new Map<string, { stops: string[]; trips: DirectionTrip[] }>();
   for (const trip of withVisits) {
     const stops = trip.visits.map(v => v.stopId);
     const id = stops.join('>');
     const entry = patterns.get(id);
-    if (entry) entry.trips++;
-    else patterns.set(id, { stops, trips: 1 });
+    if (entry) entry.trips.push(trip);
+    else patterns.set(id, { stops, trips: [trip] });
   }
   const all = [...patterns.values()];
   if (all.length === 0) return { key, main: null, tails: [], regularPatternCount: 0, variantTripCount: 0 };
-  let regular = all.filter(p => p.trips / withVisits.length >= REGULAR_PATTERN_MIN_SHARE);
-  // No pattern reaches the share: the most common one alone is regular.
-  if (regular.length === 0) regular = [all.reduce((a, b) => (b.trips > a.trips ? b : a))];
-  const variantTripCount = withVisits.length - regular.reduce((n, p) => n + p.trips, 0);
+  // Regular: the pattern runs steadily through at least one period at its own middle stop (the
+  // steady test plus the D8 midpoint test). Stray, part-day and garage trips fail it, whatever
+  // their share of trips; a branch every 30 all day passes it (TTC 102D to Major Mackenzie, 18%).
+  let regular = all.filter(p => runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)]));
+  // No pattern runs steadily: the most common one alone is regular.
+  const busiest = (list: typeof all) => list.reduce((x, y) => (y.trips.length > x.trips.length ? y : x));
+  if (regular.length === 0) regular = [busiest(all)];
+  const variantTripCount = withVisits.length - regular.reduce((n, p) => n + p.trips.length, 0);
 
   const tripStops = withVisits.map(trip => new Set(trip.visits.map(v => v.stopId)));
   // Main stretch: the stops every regular pattern serves, in the longest regular pattern's order.
-  let common = new Set(regular[0].stops.filter(stop => regular.every(p => p.stops.includes(stop))));
-  const longestRegular = regular.reduce((a, b) => (b.stops.length > a.stops.length ? b : a));
-  let mainStops = longestRegular.stops.filter(stop => common.has(stop));
+  const longestRegular = regular.reduce((x, y) => (y.stops.length > x.stops.length ? y : x));
+  let mainStops = longestRegular.stops.filter(stop => regular.every(p => p.stops.includes(stop)));
   if (mainStops.length === 0) {
-    // Regular patterns that share no stop: the stops more than half the trips serve, in the
-    // longest pattern's order.
-    const serves = new Map<string, number>();
-    for (const set of tripStops) for (const stop of set) serves.set(stop, (serves.get(stop) ?? 0) + 1);
-    const longest = all.reduce((a, b) => (b.stops.length > a.stops.length ? b : a));
-    mainStops = longest.stops.filter(stop => (serves.get(stop) ?? 0) * 2 > withVisits.length);
-    common = new Set(mainStops);
+    // Regular patterns that share no stop (a route run as two halves meeting at a hub, TTC 25
+    // at Don Mills Station; two routes drawn as one group): the busiest regular pattern is the
+    // main stretch, and the others' own runs are its tails.
+    mainStops = [...busiest(regular).stops];
   }
+  const common = new Set(mainStops);
 
   const timesAt = (stop: string) => {
     const times = new Set<number>();
@@ -145,7 +158,7 @@ export function directionStretches(
     let count = 0;
     for (const trip of withVisits) {
       const visit = trip.visits.find(v => v.stopId === stop);
-      if (!visit) continue;
+      if (!visit || visit.counted === false) continue;
       count++;
       times.add(visit.minutes);
       if (visit.overnightOnly) overnight.push(visit.minutes + 1440);
@@ -232,7 +245,8 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
     const steady = sustained[key] === true;
     const value = !runs ? null : steady ? (headways[key] ?? null) : coverage[key] ?? null;
     out[key] = {
-      counts: runs && (s.kind === 'main' || steady),
+      // A tail speaks for the direction only where it runs steadily through the period.
+      counts: runs && (s.kind === 'main' || (steady && sustainedWithMidpoint([...new Set(forCrossMidnightWindow(times, end))].sort((a, b) => a - b), sustained[key], start, end) === true)),
       value,
       headway: headways[key] ?? null,
       coverage: coverage[key] ?? null,
@@ -283,27 +297,33 @@ export interface RouteRollup {
 }
 
 /**
- * Rule 1: the route value is the worst direction. The range (D1, display only) runs from the
- * worst direction's main stretch to the route value, null when they agree. Night: every direction
- * the route runs by day must pass; `daytimeDirections` counts them.
+ * Rule 1: the route value is the worst direction, and a direction with no value (no stretch data,
+ * or no regular service in the period) leaves the route with none: never one direction alone.
+ * The range (D1, display only) runs from the worst direction's main stretch to the route value,
+ * null when they agree. Night: every direction the route runs by day must pass. `dirs` holds one
+ * entry per direction the route runs by day, null where it has no stretch data.
  */
-export function rollupRoute(dirs: readonly DirectionRollup[], daytimeDirections: number): RouteRollup {
+export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRollup {
   const period = {} as RouteRollup['period'];
+  const known = dirs.filter((d): d is DirectionRollup => d != null);
+  const complete = dirs.length > 0 && known.length === dirs.length;
   for (const { key } of PERIOD_WINDOWS) {
-    const values = dirs.map(d => d.period[key].value).filter((v): v is number => v != null);
-    const mains = dirs.map(d => d.period[key].mainValue).filter((v): v is number => v != null);
-    const coverages = dirs.map(d => d.period[key].coverage).filter((v): v is number => v != null);
-    const value = values.length > 0 ? Math.max(...values) : null;
-    const low = mains.length > 0 ? Math.max(...mains) : null;
+    const values = known.map(d => d.period[key].value);
+    const value = complete && values.every(v => v != null) ? Math.max(...(values as number[])) : null;
+    const mains = known.map(d => d.period[key].mainValue).filter((v): v is number => v != null);
+    const coverages = known.map(d => d.period[key].coverage);
+    const low = mains.length === known.length && mains.length > 0 ? Math.max(...mains) : null;
     period[key] = {
       value,
-      coverage: coverages.length > 0 ? Math.max(...coverages) : null,
+      coverage: value != null && coverages.every(v => v != null) ? Math.max(...(coverages as number[])) : null,
       range: value != null && low != null && low !== value ? [Math.min(low, value), value] : null,
     };
   }
-  const nightAll = (pick: (d: DirectionRollup) => boolean) =>
-    dirs.length > 0 && dirs.length >= daytimeDirections && dirs.every(pick);
-  return { period, night30: nightAll(d => d.night30), night60: nightAll(d => d.night60) };
+  return {
+    period,
+    night30: complete && known.every(d => d.night30),
+    night60: complete && known.every(d => d.night60),
+  };
 }
 
 /** Shadow keys stamped by stampStretchShadow. JSON only: tiles leave them out (prepareAgencyRoutesForTiles). */
@@ -355,8 +375,8 @@ export function stampStretchShadow(
     const routeKey = `${group}::${day}`;
     if (!routeRollups.has(routeKey)) {
       const dirIds = [...(routeDirs.get(routeKey) ?? [])];
-      const dirs = dirIds.map(dirId => rollupOf(`${group}::${dirId}::${day}`)).filter((d): d is DirectionRollup => d != null);
-      routeRollups.set(routeKey, dirs.length > 0 ? rollupRoute(dirs, dirIds.length) : null);
+      const dirs = dirIds.map(dirId => rollupOf(`${group}::${dirId}::${day}`));
+      routeRollups.set(routeKey, dirs.some(d => d != null) ? rollupRoute(dirs) : null);
     }
     return routeRollups.get(routeKey)!;
   };

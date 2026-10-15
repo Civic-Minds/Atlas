@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
-import { directionStretches, rollupDirection, type DirectionStretches, type DirectionTrip } from '../tripSets';
+import { directionStretches, rollupDirection, rollupRoute, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -51,9 +51,10 @@ describe('tails: the shared-stretch test (5 stops, 1 km)', () => {
     // Latitude degrees: 1 km is about 0.009.
     tail.forEach((id, i) => coords.set(id, [43.7 + (i + 1) * spacingKm * 0.009, -79.4]));
     const out: DirectionTrip[] = [];
-    for (let n = 0; n < 10; n++) {
-      out.push({ tripId: `a${n}`, visits: trunk.map((stopId, i) => ({ stopId, minutes: 600 + n * 10 + i })) });
-      out.push({ tripId: `b${n}`, visits: [...trunk, ...tail].map((stopId, i) => ({ stopId, minutes: 605 + n * 10 + i })) });
+    // Both patterns run every 10 through midday (09:00-15:00), so both are regular.
+    for (let n = 0; n < 36; n++) {
+      out.push({ tripId: `a${n}`, visits: trunk.map((stopId, i) => ({ stopId, minutes: 540 + n * 10 + i })) });
+      out.push({ tripId: `b${n}`, visits: [...trunk, ...tail].map((stopId, i) => ({ stopId, minutes: 545 + n * 10 + i })) });
     }
     return { trips: out, coord: id => coords.get(id) };
   };
@@ -69,19 +70,43 @@ describe('tails: the shared-stretch test (5 stops, 1 km)', () => {
     const { trips: t, coord } = trips(4, 0.42);
     expect(directionStretches('k', t, coord).tails).toEqual([]);
   });
-  it('a pattern under 20% of trips is a variant: no tail, its trips count where they serve', () => {
+  it('a pattern that does not run steadily through any period is a variant: no tail, its trips count where they serve', () => {
+    // Pattern B runs 3 trips at 10:00-10:20 only: part of a period, not through it.
     const { trips: t, coord } = trips(6, 0.5);
-    const fewB = t.filter(trip => trip.tripId.startsWith('a') || trip.tripId === 'b0');
+    const fewB = t.filter(trip => trip.tripId.startsWith('a') || ['b6', 'b7', 'b8'].includes(trip.tripId));
     const d = directionStretches('k', fewB, coord);
     expect(d.regularPatternCount).toBe(1);
     expect(d.tails).toEqual([]);
-    expect(d.variantTripCount).toBe(1);
-    expect(d.main!.tripCount).toBe(11);
+    expect(d.variantTripCount).toBe(3);
+    expect(d.main!.tripCount).toBe(39);
+  });
+
+  it('a branch with a small share of trips that runs steadily all day is regular, and its run is a tail', () => {
+    // Pattern B every 30 through midday (12 trips) beside A every 10 (36): a quarter of the trips, steady.
+    const { trips: t, coord } = trips(6, 0.5);
+    const sparseB = t.filter(trip => trip.tripId.startsWith('a') || (trip.tripId.startsWith('b') && Number(trip.tripId.slice(1)) % 3 === 0));
+    const d = directionStretches('k', sparseB, coord);
+    expect(d.regularPatternCount).toBe(2);
+    expect(d.tails.map(s => s.stops.length)).toEqual([6]);
+  });
+
+  it('regular patterns that share no stop: the busiest is the main stretch, the other a tail (TTC 25 at Don Mills Station)', () => {
+    const coords = new Map<string, [number, number]>();
+    const south = Array.from({ length: 8 }, (_, i) => `s${i}`);
+    const north = Array.from({ length: 6 }, (_, i) => `n${i}`);
+    south.forEach((id, i) => coords.set(id, [43.6 + i * 0.005, -79.4]));
+    north.forEach((id, i) => coords.set(id, [43.7 + i * 0.005, -79.4]));
+    const out: DirectionTrip[] = [];
+    for (let n = 0; n < 36; n++) out.push({ tripId: `s${n}`, visits: south.map((stopId, i) => ({ stopId, minutes: 540 + n * 10 + i })) });
+    for (let n = 0; n < 24; n++) out.push({ tripId: `n${n}`, visits: north.map((stopId, i) => ({ stopId, minutes: 545 + n * 15 + i })) });
+    const d = directionStretches('k', out, id => coords.get(id));
+    expect(d.main!.stops).toEqual(south);
+    expect(d.tails.map(s => s.stops)).toEqual([north]);
   });
 });
 
 describe('trip membership matches stopDepsByGroup (spec section 1)', () => {
-  it.each(['ttc-29-weekday', 'ttc-94-weekday', 'ttc-507-weekday'])('%s: every main stretch reads the same departures as the direction map at its stop', async name => {
+  it.each(['ttc-29-weekday', 'ttc-94-weekday', 'ttc-507-weekday', 'ttc-63-weekday'])('%s: every main stretch reads the same departures as the direction map at its stop', async name => {
     const r = await run(name);
     let checked = 0;
     for (const [key, d] of r.stretches) {
@@ -122,16 +147,14 @@ describe('route values from the selector (shadow fields)', () => {
     expect(row(r, '123', 'Weekday').stretchPeriodRange.midday).toEqual([11, 23]);
   });
 
-  it('TTC 102 Weekday midday: main every 5, Markham tails every 10 (oracle at the middle stop)', async () => {
-    // The spec's hand value for the tails (every 30) was marked hand-check first; the oracle at
-    // the middle stop finds Markham Rd at Nashdene (15 stops, 10/15) and at McNicoll (16 stops, 10/24).
+  it('TTC 102 Weekday midday: main every 5; the Major Mackenzie branch (102D, 18% of trips, every 30 all day) sets the route at 30', async () => {
+    // 102D runs steadily all day, so it is regular despite its share and its own run is a tail.
     const r = await run('ttc-102-weekday');
     expect(mainValue(r, '102::0::Weekday', 'midday')).toBe(5);
     expect(mainValue(r, '102::1::Weekday', 'midday')).toBe(5);
-    expect(r.stretches.get('102::0::Weekday')!.tails.map(t => t.refStop)).toEqual(['10841']);
-    expect(r.stretches.get('102::1::Weekday')!.tails.map(t => t.refStop)).toEqual(['13629']);
-    expect(row(r, '102', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(10);
-    expect(row(r, '102', 'Weekday').stretchPeriodRange.midday).toEqual([5, 10]);
+    expect(row(r, '102', 'Weekday', 1).stretchPeriodHeadway.midday).toBe(30);
+    expect(row(r, '102', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(30);
+    expect(row(r, '102', 'Weekday').stretchPeriodRange.midday).toEqual([5, 30]);
   });
 
   it('TTC 29 Weekday midday: converging origins form no tail in either direction, every 8', async () => {
@@ -149,6 +172,34 @@ describe('route values from the selector (shadow fields)', () => {
     expect(mainValue(r, '94::0::Weekday', 'midday')).toBe(10);
     expect(row(r, '94', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(20);
     expect(row(r, '94', 'Weekday').stretchPeriodRange.midday).toEqual([10, 20]);
+  });
+
+  it.each([['ttc-63-weekday', 'Weekday', 7], ['ttc-63-saturday', 'Saturday', 5]] as const)('TTC 63 %s: two trips joined at Ossington still share their stop; the halves are tails', async (name, day, every) => {
+    // TTC 63 runs each direction as two trips chained at Ossington Station. A chained trip's end
+    // is not a departure, but it is on the pattern, so the halves share Ossington (main stretch)
+    // and each half is a tail: oracle Oakwood 7/10 and Queen at Shaw 7/10 (dir 0), Oakwood 7/9
+    // and Ossington at Argyle 7/7 (dir 1) on weekdays; Saturday's tails run 62-69 midday trips
+    // each (every 5).
+    const r = await run(name);
+    for (const [dir, ossington] of [[0, '14746'], [1, '14743']] as const) {
+      const d = r.stretches.get(`63::${dir}::${day}`)!;
+      expect(d.main?.refStop).toBe(ossington);
+      expect(d.tails).toHaveLength(2);
+    }
+    expect(row(r, '63', day).stretchRoutePeriodHeadway.midday).toBe(every);
+  });
+
+  it('TTC 25 Weekday late: the north half (25C, no stop shared with 25B) is a tail; it runs every 6 with one 15-minute gap', async () => {
+    // 25B (Broadview - Don Mills Station) and 25C (Don Mills Station - Steeles) share no stop, so
+    // the busier 25B is the main stretch and 25C's run is a tail. Oracle at the north stop
+    // (Don Mills Rd at Seneca Hill, 1968), 23:00-26:00: 27 departures, every 6, max gap 15 (25:31-25:46).
+    const r = await run('ttc-25-weekday');
+    const d = r.stretches.get('25::0::Weekday')!;
+    expect(d.tails.map(t => t.stops.length)).toEqual([14]);
+    expect(d.tails[0].refStop).toBe('1968');
+    const tail = stretchPeriods(d.tails[0]).late;
+    expect([tail.value, tail.coverage]).toEqual([6, 15]);
+    expect(row(r, '25', 'Weekday').stretchRoutePeriodHeadway.late).toBe(6);
   });
 
   it('CTA 36 Saturday PM: every 12, not the #602 29', async () => {
@@ -217,5 +268,22 @@ describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
     expect(row(r, 'yellow', 'Weekday', 0).headwayByPeriodSustained.overnight).not.toBe(true);
     expect(row(r, 'orange', 'Weekday', 1).headwayByPeriodSustained.overnight).toBe(true);
     expect(row(r, 'purple', 'Weekday', 1).headwayByPeriodSustained.overnight).toBe(true);
+  });
+});
+
+describe('route roll-up (rule 1)', () => {
+  const dir = (value: number | null) => ({
+    period: Object.fromEntries(['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'].map(k => [k, { value, coverage: value, sustained: true, sustainedMid: true, mainValue: value }])),
+    night30: true,
+    night60: true,
+  }) as any;
+  it('a direction with no stretch data leaves the route with no value, never the other direction alone', () => {
+    const route = rollupRoute([dir(10), null]);
+    expect(route.period.midday.value).toBeNull();
+    expect([route.night30, route.night60]).toEqual([false, false]);
+  });
+  it('a direction with no value in a period leaves the route with none in that period', () => {
+    expect(rollupRoute([dir(10), dir(null)]).period.midday.value).toBeNull();
+    expect(rollupRoute([dir(10), dir(20)]).period.midday.value).toBe(20);
   });
 });

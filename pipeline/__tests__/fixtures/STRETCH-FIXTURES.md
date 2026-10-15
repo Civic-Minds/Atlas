@@ -13,6 +13,9 @@ Each folder is one route's trips on the services active on one date, cut from th
 | ttc-102-weekday | same | 2026-10-21 | 102 |
 | ttc-94-weekday | same | 2026-10-21 | 94 |
 | ttc-505-weekday | same | 2026-10-21 | 505 |
+| ttc-63-weekday | same | 2026-10-21 | 63 |
+| ttc-25-weekday | same | 2026-10-21 | 25 |
+| ttc-63-saturday | same | 2026-10-17 | 63 |
 | ttc-301-weekday-night | same | 2026-10-21 | 301 |
 | ttc-320-weekday-night | same | 2026-10-21 | 320 |
 | cta-36-saturday | `_feeds/cta/20261130-fresh.zip` | 2026-10-17 | 36 |
@@ -22,8 +25,11 @@ Each folder is one route's trips on the services active on one date, cut from th
 
 Where the middle-stop number differs from the spec's dispatch-end or hand value:
 
-- TTC 102: the Markham tails run every 10 (oracle: Nashdene 10/15, McNicoll 10/24), so the route
-  reads 10, not the spec's hand value of 30.
+- TTC 102: with the steady-pattern gate (step 3 review), the Major Mackenzie branch (102D, 18% of
+  trips, every 30 all day) is regular, so the route reads 30, range 5-30.
 - TTC 29: neither direction has a tail on this feed (main stretches of 45 and 44 stops), so the
   route reads 8, not 16. The tail thresholds themselves are pinned on synthetic trips.
 - MBTA 436 PM: the middle stop's full-window wait is 69 (dir 0), against step 2a's 57.
+- TTC 63: the oracle counts both the arriving and the departing trip at Ossington (113 departures,
+  median 2); the selector, like stopDepsByGroup, counts a chained trip's end once, as the next
+  trip's departure.
