@@ -417,3 +417,35 @@ describe('all-day worst-direction headline sets aside occasional patterns (#749)
     expect(features.map(f => f.properties.tier)).toEqual(['infrequent', 'infrequent', '60']);
   });
 });
+
+describe('#899: a direction with no midday service fails every all-day threshold', () => {
+  const allDayCov = { amPeak: 20, midday: 20, pmPeak: 20, evening: 30, late: null, overnight: null };
+  const peakCov = { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null };
+  const route = (other: { tier: string; headway: number | null }, cov: Record<string, number | null> | null = peakCov) => {
+    const features = [
+      feat({ routeShortName: '1', day: 'Weekday', directionId: 0, headway: 20, tier: '20', headwayByPeriod: allDayCov, periodCoverageHeadway: allDayCov }),
+      feat({ routeShortName: '1', day: 'Weekday', directionId: 1, headway: other.headway, tier: other.tier, headwayByPeriod: peakCov, periodCoverageHeadway: cov ?? undefined }),
+    ];
+    stampWorstDirectionHeadways(features);
+    return features;
+  };
+
+  it('flags the route-day when one direction runs at midday and the other never does', () => {
+    // Rush-hour-only (rated since #720) or one-off (span), the flag is the same.
+    for (const other of [{ tier: '10', headway: 10 }, { tier: 'span', headway: null }]) {
+      const features = route(other);
+      expect(features.every(f => f.properties.routeHasNoMiddayDirection === true)).toBe(true);
+      // The all-day value itself, which also colours the line, is unchanged.
+      expect(features[0].properties.worstDirectionHeadway).toBe(20);
+    }
+  });
+
+  it('leaves the flag off when both directions run at midday, for one direction, and for older artifacts', () => {
+    expect(route({ tier: '20', headway: 20 }, allDayCov).some(f => f.properties.routeHasNoMiddayDirection)).toBe(false);
+    const one = [feat({ routeShortName: '2', day: 'Weekday', directionId: 0, headway: 20, tier: '20', periodCoverageHeadway: peakCov })];
+    stampWorstDirectionHeadways(one);
+    expect(one[0].properties.routeHasNoMiddayDirection).toBeUndefined();
+    // No period coverage on a sibling: no complete picture, no flag.
+    expect(route({ tier: '10', headway: 10 }, null).some(f => f.properties.routeHasNoMiddayDirection)).toBe(false);
+  });
+});

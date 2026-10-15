@@ -14,6 +14,7 @@ export type WorstDirectionFeature = {
     worstDirectionHeadwayByPeriod?: HeadwayByPeriod;
     periodCoverageHeadway?: HeadwayByPeriod;
     worstDirectionPeriodCoverageHeadway?: HeadwayByPeriod;
+    routeHasNoMiddayDirection?: boolean;
     [key: string]: unknown;
   };
 };
@@ -281,11 +282,30 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
     coverageStamps.set(key, stamp);
   }
 
+  // #899: a route passes an all-day "every N" only when every direction meets it, and a direction
+  // with no midday departure at all (rush-hour-only, a few trips, one-off) never does. The all-day
+  // worst-direction value skips one-off patterns and reads a rush-hour direction by its peak
+  // headline, so the other direction alone decided. Flag the route-day instead of changing that
+  // value, which also colours the line: the shared filter fails a flagged route at every all-day
+  // threshold, and colour, cards and "All frequencies" are unchanged. Every sibling must carry its
+  // period coverage (span included), as for the coverage stamp; older artifacts get no flag.
+  const noMiddayDirection = new Set<string>();
+  for (const [key, group] of coverageGroups) {
+    if (group.some(f => f.properties.periodCoverageHeadway === undefined)) continue;
+    const directions = new Set(group.map(f => f.properties.directionId as number));
+    if (directions.size < 2) continue;
+    const runsMidday = [...directions].map(direction => group.some(f =>
+      f.properties.directionId === direction && f.properties.periodCoverageHeadway?.midday != null));
+    if (runsMidday.some(Boolean) && !runsMidday.every(Boolean)) noMiddayDirection.add(key);
+  }
+
   for (const f of features) {
     if (!f.properties) continue;
     const sn = routeGroupName(f.properties);
     if (!sn) continue;
     const key = routeDayKey(sn, f.properties.routeBranch, f.properties.day);
+    if (noMiddayDirection.has(key)) f.properties.routeHasNoMiddayDirection = true;
+    else delete f.properties.routeHasNoMiddayDirection;
     const coverage = coverageStamps.get(key);
     if (coverage) f.properties.worstDirectionPeriodCoverageHeadway = coverage;
     else delete f.properties.worstDirectionPeriodCoverageHeadway;
