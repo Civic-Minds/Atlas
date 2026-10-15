@@ -266,14 +266,28 @@ describe('stampWorstDirectionHeadways', () => {
       expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.midday).toBe(329);
     });
 
-    it('a direction that runs nothing in the period falls back to every sibling (late start still fails)', () => {
+    it('a direction that runs nothing in the period falls back to its non-span siblings (late start still fails)', () => {
       const features = [
         route(0, { tier: '10', headwayByPeriod: { overnight: 20 }, headwayByPeriodSustained: { overnight: true }, periodCoverageHeadway: { overnight: 25 } }),
         route(1, { tier: '30', headwayByPeriod: { overnight: null }, periodCoverageHeadway: { overnight: 150 } }),
         route(1, { tier: 'span', periodCoverageHeadway: { overnight: 200 } }),
       ];
       stampWorstDirectionHeadways(features);
-      expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(200);
+      expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(150);
+    });
+
+    it('a pool member without a coverage value does not open the stamp to every sibling (TTC 123 Weekday)', () => {
+      // Direction 0's Long Branch via East Mall row borrows its midday value from its branch and
+      // has no coverage; the 2-trip West Mall row (unsteady, 336) must not set the route's wait.
+      const features = [
+        route(0, { tier: '30', headwayByPeriod: { midday: 23 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 23 } }),
+        route(0, { tier: '30', headwayByPeriod: { midday: 23 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: null } }),
+        route(0, { tier: '30', headwayByPeriod: { midday: 178 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 336 } }),
+        route(1, { tier: '30', headwayByPeriod: { midday: 23 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 23 } }),
+      ];
+      stampWorstDirectionHeadways(features);
+      expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.midday).toBe(23);
+      expect(features[0].properties.worstDirectionHeadwayByPeriod?.midday).toBe(23);
     });
 
     it('with no steady pattern, a direction is judged by the patterns that run, regular first (NYCT B17)', () => {
