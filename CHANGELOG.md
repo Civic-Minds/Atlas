@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Live: picking Toronto no longer lists York Region routes**: choosing a place from "Live in these places" now shows only that agency's routes, even where neighbouring agencies overlap ([#900](https://github.com/Civic-Minds/Atlas/issues/900)).
 - Zooming the Live map no longer stalls: working out each vehicle's direction was redone for every vehicle on every zoom step, and is now done once per update (CIV-218, part).
 - Clicking the Atlas logo while in Live, History or Night Service now leaves that mode in place, like its own tab, instead of rebuilding the whole map (which flashed). On the plain map the logo still resets everything.
 - History opens faster the first time: its code and data are fetched in idle time once the map has loaded (or as soon as you point at the tab), and the tab shows "Loading history…" straight away if it isn't ready (CIV-218, part).
