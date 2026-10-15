@@ -67,6 +67,8 @@ interface Props {
   setSearchFocused?: (focused: boolean) => void;
   hideFilterPanel?: boolean;
   filterToAgencies?: boolean;
+  /** With filterToAgencies: the agencies to draw (History), so the agencies prop can stay the same list. */
+  agencyFilterSlugs?: string[] | null;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   onOnDemandZoneClick?: (selection: { slug: string; zoneId: string }) => void;
   day: DayType;
@@ -143,7 +145,7 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -875,6 +877,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             liveRoutesOnly={liveRoutesOnly}
             hideSpan={hideSpan}
             filterToAgencies={filterToAgencies}
+            agencyFilterSlugs={agencyFilterSlugs}
             onHistoryRouteClick={onHistoryRouteClick}
             tileFilter={tileFilter}
             selectedAgencySlug={selectedAgencySlug}
@@ -953,6 +956,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 liveRoutesOnly={liveRoutesOnly}
                 hideSpan={hideSpan}
                 filterToAgencies={filterToAgencies}
+                agencyFilterSlugs={agencyFilterSlugs}
                 onHistoryRouteClick={onHistoryRouteClick}
                 tileFilter={compareStats.tileFilter}
                 selectedAgencySlug={selectedAgencySlug}

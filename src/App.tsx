@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
+import ModeTab from './components/ModeTab';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasBrand from './components/AtlasBrand';
@@ -17,7 +18,7 @@ const NightService = React.lazy(() => import('./apps/NightService'));
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 import { isAppGated, type AppId } from './utils/appGate';
-import { ModeTabLabel, modeTabCollapsed, modeTabSpacing } from './components/ModeTabLabel';
+import { modeTabCollapsed } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
@@ -388,9 +389,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   // Interval reloads all its agency data whenever this list's identity changes, so it must stay the same
   // array until its contents change (a fresh filter() every render looped History at phone width).
-  const intervalAgencies = useMemo(
-    () => inHistory && historyAgencySlugs ? visibleAgencies.filter(a => historyAgencySlugs.has(a.slug)) : visibleAgencies,
-    [inHistory, historyAgencySlugs, visibleAgencies],
+  // The map's agency list stays the same object across modes, so switching to History doesn't
+  // reload the map's data (#888). History narrows what's drawn with a filter instead.
+  const intervalAgencies = visibleAgencies;
+  const historyFilterSlugs = useMemo(
+    () => (historyAgencySlugs ? [...historyAgencySlugs] : null),
+    [historyAgencySlugs],
   );
   const inLive = activeApp === 'live';
   // Live's own UI switches off the moment the address leaves /apps/live (CIV-214).
@@ -629,35 +633,22 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         </div>
 
         {showLiveControl && (
-          <button
+          <ModeTab
+            icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
+            label="Live" extra={liveAgencyCount} ariaLabel="Live vehicles"
+            active={liveTabOn} collapsed={liveTabCollapsed}
             onClick={() => setActiveApp(liveTabOn ? 'frequency' : 'live')}
-            aria-label="Live vehicles"
-            aria-pressed={liveTabOn}
-            title={liveTabCollapsed ? 'Live vehicles' : undefined}
-            className={`hidden sm:flex h-8 ${modeTabSpacing(liveTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${liveTabOn ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-          >
-            <Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-            <ModeTabLabel collapsed={liveTabCollapsed}>
-              <span>Live</span>
-              <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
-            </ModeTabLabel>
-          </button>
+          />
         )}
 
         {showHistoryControl && (
-          <a
-            href={inHistory ? '/' : '/apps/history'}
-            aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
-            aria-current={inHistory ? 'page' : undefined}
-            title={historyTabCollapsed ? 'Historical service' : undefined}
-            className={`hidden sm:flex h-8 ${modeTabSpacing(historyTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-          >
-            <HistoryIcon className="w-3.5 h-3.5 shrink-0" />
-            <ModeTabLabel collapsed={historyTabCollapsed}>
-              <span>History</span>
-              {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
-            </ModeTabLabel>
-          </a>
+          <ModeTab
+            icon={<HistoryIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
+            label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
+            ariaLabel={inHistory ? 'Back to frequency map' : 'Historical service'}
+            active={inHistory} collapsed={historyTabCollapsed}
+            onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
+          />
         )}
 
         {/* Compare (beta) portals in here from Interval. Phones reach it from the filter panel. */}
@@ -692,28 +683,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               {appLinksOpen && (
                 <div className={`absolute top-10 right-0 ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
                   {showLiveControl && (
-                    <button
-                      type="button"
+                    <ModeTab
+                      variant="menu" icon={<Radio className="w-3.5 h-3.5" aria-hidden="true" />}
+                      label="Live" extra={liveAgencyCount} active={liveTabOn}
                       onClick={() => { setActiveApp(liveTabOn ? 'frequency' : 'live'); setAppLinksOpen(false); }}
-                      aria-pressed={liveTabOn}
-                      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${liveTabOn ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-                    >
-                      <Radio className="w-3.5 h-3.5" aria-hidden="true" />
-                      <span>Live</span>
-                      <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
-                    </button>
+                    />
                   )}
                   {showHistoryControl && (
-                    <a
-                      href={inHistory ? '/' : '/apps/history'}
-                      onClick={() => setAppLinksOpen(false)}
-                      aria-current={inHistory ? 'page' : undefined}
-                      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-                    >
-                      <HistoryIcon className="w-3.5 h-3.5" />
-                      <span>History</span>
-                      {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
-                    </a>
+                    <ModeTab
+                      variant="menu" icon={<HistoryIcon className="w-3.5 h-3.5" aria-hidden="true" />}
+                      label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
+                      active={inHistory}
+                      onClick={() => { setActiveApp(inHistory ? 'frequency' : 'history'); setAppLinksOpen(false); }}
+                    />
                   )}
                   <div ref={moreMenuPortalRef} className="contents" />
                 </div>
@@ -774,6 +756,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               showMapContext={FEATURES.beta}
               showMatchPercentage={FEATURES.beta}
               filterToAgencies={inHistory}
+              agencyFilterSlugs={inHistory ? historyFilterSlugs : null}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               hideFilterPanel={inLive || inHistory || inNight || inFrequentService}
               onInfoOpen={openInfo}
@@ -813,7 +796,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             />
             {FEATURES.history && (
               <React.Suspense fallback={null}>
-                <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+                <History active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (

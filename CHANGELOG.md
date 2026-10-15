@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Switching between the map, Live, History and Compare no longer reloads the page: History's tab was a plain link, so opening or leaving History reloaded the whole app and refetched the map's data ([#888](https://github.com/Civic-Minds/Atlas/issues/888)).
 - Leaving Live (by its tab, the logo or the back button) now hides Live at once and shows "Loading map…" while the frequency map draws, instead of leaving Live on screen for several seconds with the address already back at the map (CIV-214).
 - **A shared map link opens where it points again**: the map zoomed out to all of North America a few seconds after loading any link with a position
 - A feed whose calendar runs to a far-off placeholder date now expires on its feed_info end date, and the reprocess and publish steps agree on it: Simi Valley's 2023 feed passed reprocess as current while the publish step blocked it as expired ([#875](https://github.com/Civic-Minds/Atlas/issues/875)).

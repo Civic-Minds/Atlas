@@ -301,6 +301,7 @@ interface MapCanvasProps {
   liveRoutesOnly?: boolean;
   hideSpan?: boolean;
   filterToAgencies?: boolean;
+  agencyFilterSlugs?: string[] | null;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   tileFilter?: any;
   selectedAgencySlug?: string | null;
@@ -387,6 +388,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   liveRoutesOnly = false,
   hideSpan = false,
   filterToAgencies = false,
+  agencyFilterSlugs = null,
   onHistoryRouteClick,
   tileFilter,
   selectedAgencySlug,
@@ -2123,8 +2125,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       routeFilter = effectiveTileFilter;
     }
 
-    if (filterToAgencies && agencies.length > 0) {
-      const slugAllowlist: any = ['in', ['get', 'agencySlug'], ['literal', agencies.map(a => a.slug)]];
+    if (filterToAgencies && (agencyFilterSlugs ?? agencies).length > 0) {
+      const slugAllowlist: any = ['in', ['get', 'agencySlug'], ['literal', agencyFilterSlugs ?? agencies.map(a => a.slug)]];
       routeFilter = concatFilters(routeFilter, slugAllowlist);
     }
 
@@ -2404,7 +2406,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {
