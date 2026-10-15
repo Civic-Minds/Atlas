@@ -247,7 +247,6 @@ export function useLiveVehiclesLayer(
   // Live route dynamic shape overlay (MapLibre GeoJSON — not deck)
   useEffect(() => {
     const map = mapRef.current;
-    if (import.meta.env.DEV && map) (window as unknown as { __liveMap?: maplibregl.Map }).__liveMap = map;
     if (!map || !mapLoaded) return;
 
     const source = map.getSource('live-route-shape') as maplibregl.GeoJSONSource;

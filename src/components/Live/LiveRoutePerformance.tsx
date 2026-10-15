@@ -23,6 +23,7 @@ export function mins(sec: number): string {
 
 const HEAD = 'text-xs font-black text-[var(--text-dim)]';
 const ROW_LABEL = 'text-xs font-bold text-[var(--text-primary)] truncate';
+const DETAIL = 'text-xs font-bold text-[var(--text-muted)] tabular-nums leading-snug';
 const NUM = 'text-xs font-bold text-[var(--text-muted)] tabular-nums whitespace-nowrap';
 const AMBER = 'var(--status-caution-text)';
 
@@ -107,7 +108,7 @@ function GapStrip({ stops, onRow, activeIndex }: { stops: LineStop[]; onRow?: (i
   return (
     <div className="flex flex-col">
       <div className="flex items-center gap-2 pb-0.5">
-        <span className="w-[40%] shrink-0" />
+        <span className="w-[30%] shrink-0" />
         <div className="relative flex-1 h-3 text-[10px] font-bold text-[var(--text-dim)] tabular-nums">
           <span className="absolute left-0">0</span>
           <span className="absolute right-0">{Math.round(scale / 60)} min</span>
@@ -122,7 +123,7 @@ function GapStrip({ stops, onRow, activeIndex }: { stops: LineStop[]; onRow?: (i
           disabled={!onRow}
           className={`flex items-center gap-2 py-1 -mx-1 px-1 rounded text-left ${onRow ? 'hover:bg-[var(--bg-secondary)]' : 'cursor-default'} ${activeIndex === i ? 'bg-[var(--bg-secondary)]' : ''}`}
         >
-          <span className={`${ROW_LABEL} w-[40%] shrink-0`}>{s.label}</span>
+          <span className={`${ROW_LABEL} w-[30%] shrink-0`} title={stopLabel(s.name)}>{s.label}</span>
           <GapBar stop={s} scaleSec={scale} />
           <span className={`${NUM} w-[3.75rem] shrink-0 text-right`}>{mins(s.stat!.gapP10Sec)}–{mins(s.stat!.gapP90Sec)}</span>
         </button>
@@ -141,6 +142,20 @@ function Figures({ items }: { items: (string | null)[] }) {
     <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-xs font-bold text-[var(--text-primary)] tabular-nums">
       {items.filter(Boolean).map((t, i, arr) => (
         <span key={i} className="whitespace-nowrap">{t}{i < arr.length - 1 && <span className="text-[var(--text-dim)] ml-2">·</span>}</span>
+      ))}
+    </div>
+  );
+}
+
+/** A row of small labelled figures. */
+function Stats({ items }: { items: [string, string][] }) {
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      {items.map(([label, value]) => (
+        <div key={label} className="min-w-0">
+          <div className="text-[10px] font-bold text-[var(--text-dim)] truncate">{label}</div>
+          <div className="text-sm font-black text-[var(--text-primary)] tabular-nums whitespace-nowrap">{value}</div>
+        </div>
       ))}
     </div>
   );
@@ -334,10 +349,10 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
 
       <Section title={`${bandLabel} · ${directions.find(d => d.id === directionId)?.label ?? ''}${summary ? ` · ${summary.street}` : ''}`}>
         {summary && (
-          <Figures items={[
-            `Scheduled every ${mins(summary.scheduledSec)}`,
-            `Typical gap ${mins(summary.typicalSec)}`,
-            `8 in 10 gaps ${mins(summary.p10Sec)}–${mins(summary.p90Sec)} min`,
+          <Stats items={[
+            ['Scheduled', `every ${mins(summary.scheduledSec)}`],
+            ['Typical gap', `${mins(summary.typicalSec)} min`],
+            ['8 in 10 gaps', `${mins(summary.p10Sec)}–${mins(summary.p90Sec)} min`],
           ]} />
         )}
         {ewt && ewt.peak.stat!.excessWaitSec! >= 30 && (
@@ -395,7 +410,7 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
         {measured.length === 0 ? <div className="text-xs text-[var(--text-muted)]">Not enough gaps measured.</div> : measured.map(s => (
           <div key={s.stopId} className="flex flex-col">
             <span className={ROW_LABEL}>{s.label}</span>
-            <span className={`${NUM} whitespace-normal`}>
+            <span className={DETAIL}>
               Scheduled every {mins(s.stat!.scheduledMedianGapSec)} · typical {mins(s.stat!.actualMedianGapSec)} · 8 in 10: {mins(s.stat!.gapP10Sec)}–{mins(s.stat!.gapP90Sec)} min
               {s.stat!.excessWaitSec != null && <> · extra wait {mins(s.stat!.excessWaitSec)} min</>} · {s.stat!.gaps} gaps, {s.stat!.days} days
             </span>
@@ -410,7 +425,7 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
           return (
             <div key={`${s.fromStopId}>${s.toStopId}`} className="flex flex-col">
               <span className={ROW_LABEL}>{stopLabel(s.fromName)} to {stopLabel(s.toName)}</span>
-              <span className={`${NUM} whitespace-normal`}>
+              <span className={DETAIL}>
                 Typical {b.gainedMedianSec >= 0 ? '+' : ''}{mins(b.gainedMedianSec)} min vs timetable
                 {p90 > halfMinutes(b.gainedMedianSec) && p90 > 0 && <> · 1 in 10 take {p90}+ min longer</>} · {b.trips} trips, {b.days} days
               </span>

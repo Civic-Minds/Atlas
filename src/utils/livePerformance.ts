@@ -3,7 +3,7 @@
  * order, the gap strip, the shared-section summary, stretches, and the
  * "Right now" gaps between the vehicles currently on the line.
  */
-import { MIN_DAYS, MIN_SEGMENT_TRIPS, tidyStopName, usableStandingStill, type HeadwayBandStat, type HeadwayStop, type RankedStill, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
+import { MIN_DAYS, MIN_SEGMENT_TRIPS, tidyStopName, type HeadwayBandStat, type HeadwayStop, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
 
 /** A stop needs this many gaps (over MIN_DAYS days) to appear in the strip. */
 export const MIN_STRIP_GAPS = 30;
@@ -110,7 +110,8 @@ export function lineModel(data: SegmentDelayData, directionId: number): LineMode
       stopId,
       name: names[index],
       street: st,
-      label: st === sharedStreet ? cross(names[index]) : `${st.replace(/\s+(St|Ave|Rd)$/i, '')} & ${cross(names[index])}`,
+      // The cross street alone: the strip runs in line order, so the street is clear from context.
+      label: cross(names[index]),
       index,
       stat: null,
       headway,
@@ -296,10 +297,3 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
   const sched = med(stops.filter(s => s.shared && s.stat).map(s => s.stat!.scheduledMedianGapSec));
   return { cars: placed.length, gapsMin, scheduledSec: sched };
 }
-
-export function stillOnLine(data: SegmentDelaySegment[] | null, all: RankedStill[], directionId: number, stopIds?: Set<string>): RankedStill[] {
-  void data;
-  return all.filter(s => s.stop.directionId === directionId && (!stopIds || stopIds.has(s.stop.stopId)));
-}
-
-export { usableStandingStill };
