@@ -294,6 +294,16 @@ export function stretchNight(s: Stretch, maxGap: 30 | 60): boolean | null {
   return hasSustainedServiceInWindow([...s.nightTimes], STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN, maxGap);
 }
 
+/**
+ * D3 with the D8 midpoint: service runs at night when it has departures on both sides of the
+ * 2-5am window's midpoint (3:30, which counts as the later side). `nightTimes` are GTFS minutes
+ * as nightServiceDepartureTimes builds them.
+ */
+export function runsAcrossNightMidpoint(nightTimes: readonly number[]): boolean {
+  const mid = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
+  return nightTimes.some(x => x >= STRETCH_NIGHT_START_MIN && x < mid) && nightTimes.some(x => x >= mid && x <= STRETCH_NIGHT_END_MIN);
+}
+
 export interface DirectionRollup {
   period: Record<PeriodKey, { value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null }>;
   night30: boolean;
@@ -319,9 +329,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
   // of the window's midpoint. One that only starts its day inside the window (CTA 20's downtown
   // loop at 4:47 and 4:57) or only ends it there does not run at night, and drops out.
-  const nightMid = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
-  const runsAtNight = (t: Stretch) => t.nightTimes.some(x => x >= STRETCH_NIGHT_START_MIN && x < nightMid)
-    && t.nightTimes.some(x => x > nightMid && x <= STRETCH_NIGHT_END_MIN);
+  const runsAtNight = (t: Stretch) => runsAcrossNightMidpoint(t.nightTimes);
   // Disconnected pieces: the main stretch is only one piece, so it drops out like a tail when it
   // does not run at night (NYC subway S's 42 St shuttle); at least one piece must run.
   const night = (gap: 30 | 60) => d.disconnected

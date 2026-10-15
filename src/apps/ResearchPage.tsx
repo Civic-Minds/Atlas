@@ -8,7 +8,7 @@ const CARDS = [
     href: FEATURE_ROUTES.nightService,
     Icon: Moon,
     title: 'Night service',
-    body: 'Find routes with sustained service from 2am to 6am.',
+    body: 'Find routes with sustained service from 2am to 5am.',
   },
   {
     href: FEATURE_ROUTES.frequentService.story,

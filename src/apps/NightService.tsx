@@ -195,7 +195,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
             </p>
             <p className="mt-1 pr-5 text-xs text-[var(--text-dim)] font-bold leading-snug">
               A route counts here only if it has a departure at least every {frequency} minutes,
-              2am to 6am, with no gap at either end of the core overnight window.
+              2am to 5am, with no gap at either end of the core overnight window.
             </p>
             <p className="mt-1.5 text-xs font-bold" style={{ color: getNightServiceColor(colorMode) }}>
               {data.routeCount} qualifying route patterns across {data.agencyCount} agencies.
@@ -204,7 +204,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
         )}
         {data && introDismissed && (
           <p className="px-4 pt-2 pb-1 text-xs text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
-            At least one departure every {frequency} minutes, 2am–6am local time, with no gap at either end of the window.
+            At least one departure every {frequency} minutes, 2am–5am local time, with no gap at either end of the window.
           </p>
         )}
 

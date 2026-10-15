@@ -43,7 +43,7 @@ import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { directionStretches, periodSustainedMid, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { directionStretches, periodSustainedMid, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
@@ -1844,6 +1844,7 @@ export async function processGtfsBuffer(
     return best;
   };
 
+  const rowRunsAtNight = new Map<GeoJsonFeature, boolean>();
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
     // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
     feature.properties.frequentService = false;
@@ -2025,6 +2026,19 @@ export async function processGtfsBuffer(
       60,
     );
     feature.properties.nightService = feature.properties.nightService60;
+    // Frequency focus step 4: whether this row itself runs at night: more than half of its own
+    // stops get departures across the 2-5am window's midpoint, from any trip of the direction
+    // (CTA 77's westbound owl runs on a pattern that is not drawn and turns short of the rows' end
+    // stops). The route verdict comes from the stretches after the loop; only rows that run at
+    // night are lit, so a row that is mostly a branch whose owl ends at 2:17 is not drawn as
+    // all-night service.
+    {
+      const own = nightShapeStops.map(({ stopId }) => stopId);
+      const atNight = own.filter(stopId => runsAcrossNightMidpoint(
+        nightServiceDepartureTimes(stopMap.get(stopId) ?? [], stopDepsByGroupNight.get(gKey)?.get(stopId) ?? []),
+      )).length;
+      rowRunsAtNight.set(feature, own.length > 0 && atNight * 2 > own.length);
+    }
 
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};
@@ -3031,6 +3045,17 @@ export async function processGtfsBuffer(
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
       return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
     });
+    // Step 4: Night reads the stretches. A route qualifies when every direction it runs by day
+    // passes at the middle of its main stretch (and each tail that runs at night passes), 2-5am;
+    // its rows that run at night are lit. A route with no stretch verdict does not qualify.
+    for (const feature of features) {
+      if (!featureStopHeadwaySlots.has(feature)) continue;
+      const p = feature.properties;
+      const runs = rowRunsAtNight.get(feature) === true;
+      p.nightService30 = p.stretchNight30 === true && runs;
+      p.nightService60 = p.stretchNight60 === true && runs;
+      p.nightService = p.nightService60;
+    }
   }
 
   annotateSharedStretches(features, {

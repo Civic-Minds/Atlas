@@ -1,0 +1,170 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_station,wheelchair_boarding
+1148,1148,Sheridan & Diversey,"Sheridan & Diversey, Northbound, Northeast Corner",41.93311655,-87.63918003,0,,1
+1149,1149,Sheridan & Surf,"Sheridan & Surf, Northbound, Northeast Corner",41.93450366,-87.63926562,0,,1
+1150,1150,Sheridan & Oakdale,"Sheridan & Oakdale, Northbound, Northeast Corner",41.93576986,-87.63933276,0,,1
+1151,1151,Sheridan & Wellington,"Sheridan & Wellington, Northbound, Northeast Corner",41.93676486,-87.63936476,0,,1
+1152,1152,Sheridan & Barry,"Sheridan & Barry, Northbound, Northeast Corner",41.93788934,-87.63940466,0,,1
+1153,1153,Sheridan & Briar,"Sheridan & Briar, Northbound, Southeast Corner",41.93870211,-87.63943264,0,,1
+4987,4987,Belmont & Orchard,"Belmont & Orchard, Eastbound, Southwest Corner",41.93996133,-87.64693015,0,,1
+4990,4990,Belmont & Pine Grove,"Belmont & Pine Grove, Eastbound, Southwest Corner",41.94002233,-87.64207215,0,,1
+4993,4993,Belmont & Sheridan,"Belmont & Sheridan, Westbound, Northwest Corner",41.94018454,-87.63991532,0,,1
+4994,4994,Belmont & Pine Grove,"Belmont & Pine Grove, Westbound, Northside of the Street",41.94014247,-87.64187708,0,,1
+4996,4996,Belmont & Broadway,"Belmont & Broadway, Westbound, Northeast Corner",41.94011989,-87.64429106,0,,1
+4998,4998,Belmont & Halsted,"Belmont & Halsted, Westbound, Northeast Corner",41.94005814,-87.64913468,0,,1
+7858,7858,Belmont & Kimball (Blue Line),"Belmont & Kimball (Blue Line), Eastbound, Southeast Corner",41.93921726,-87.71218857,0,,1
+7859,7859,Belmont & Spaulding,"Belmont & Spaulding, Eastbound, Southwest Corner",41.9392513,-87.71005936,0,,1
+7860,7860,Belmont & Kedzie,"Belmont & Kedzie, Eastbound, Southwest Corner",41.93927286,-87.70778478,0,,1
+7861,7861,Belmont & Albany,"Belmont & Albany, Eastbound, Southwest Corner",41.93929186,-87.70530078,0,,1
+7863,7863,Belmont & Francisco,"Belmont & Francisco, Eastbound, Southwest Corner",41.93930184,-87.70042064,0,,1
+7865,7865,Belmont & California,"Belmont & California, Eastbound, Southeast Corner",41.93933686,-87.69758278,0,,1
+7866,7866,Belmont & Washtenaw,"Belmont & Washtenaw, Eastbound, Southwest Corner",41.9393938,-87.69542819,0,,1
+7868,7868,Belmont & Campbell,"Belmont & Campbell, Eastbound, Southside of the Street",41.93942181,-87.69073919,0,,1
+7937,7937,Belmont & Western/Clybourn,"Belmont & Western/Clybourn, Westbound, Northwest Corner",41.93955533,-87.68849068,0,,1
+7938,7938,Belmont & Campbell,"Belmont & Campbell, Westbound, Northeast Corner",41.93953376,-87.69045055,0,,1
+7940,7940,Belmont & Washtenaw,"Belmont & Washtenaw, Westbound, Northeast Corner",41.93950018,-87.69506918,0,,1
+7941,7941,Belmont & California,"Belmont & California, Westbound, Northeast Corner",41.93950018,-87.69767219,0,,1
+7942,7942,Belmont & Francisco,"Belmont & Francisco, Westbound, Northeast Corner",41.93945892,-87.700099,0,,1
+7945,7945,Belmont & Kedzie,"Belmont & Kedzie, Westbound, Northwest Corner",41.93940266,-87.70755021,0,,1
+7947,7947,Belmont & Kimball (Blue Line),"Belmont & Kimball (Blue Line), Westbound, Bus Terminal",41.93904851,-87.71220153,0,,1
+9224,9224,Belmont & Cumberland Terminal,"Belmont & Cumberland Terminal, Southeastbound, Bus Terminal",41.93727458,-87.83554395,0,,1
+9225,9225,Belmont & Plainfield,"Belmont & Plainfield, Eastbound, Southside of the Street",41.93759657,-87.83341978,0,,1
+9226,9226,Belmont & Pioneer,"Belmont & Pioneer, Eastbound, Southside of the Street",41.93764056,-87.83112578,0,,1
+9227,9227,Belmont & Panama,"Belmont & Panama, Eastbound, Southside of the Street",41.93768656,-87.82856178,0,,1
+9228,9228,Belmont & Pacific (80th Avenue),"Belmont & Pacific (80th Avenue), Eastbound, Southwest Corner",41.93769997,-87.82639511,0,,1
+9229,9229,Belmont & Orange (79th Avenue),"Belmont & Orange (79th Avenue), Eastbound, Southwest Corner",41.93771797,-87.82391638,0,,1
+9230,9230,Belmont & Ozanam (78th Avenue),"Belmont & Ozanam (78th Avenue), Eastbound, Southwest Corner",41.93776997,-87.82148038,0,,1
+9231,9231,Belmont & Overhill (77th Avenue),"Belmont & Overhill (77th Avenue), Eastbound, Southwest Corner",41.93782097,-87.81904138,0,,1
+9232,9232,Belmont & Oriole (76th Avenue),"Belmont & Oriole (76th Avenue), Eastbound, Southwest Corner",41.93784497,-87.81659139,0,,1
+9233,9233,Belmont & Olcott,"Belmont & Olcott, Eastbound, Southwest Corner",41.93792285,-87.81419181,0,,1
+9234,9234,Belmont & Oketo,"Belmont & Oketo, Eastbound, Southwest Corner",41.93793585,-87.81174181,0,,1
+9236,9236,Belmont & Harlem,"Belmont & Harlem, Eastbound, Southwest Corner",41.93793311,-87.80695871,0,,1
+9237,9237,Belmont & Nottingham,"Belmont & Nottingham, Eastbound, Southwest Corner",41.93797985,-87.80435981,0,,1
+9239,9239,Belmont & New England,"Belmont & New England, Eastbound, Southwest Corner",41.93806785,-87.79822581,0,,1
+9240,9240,Belmont & Oak Park,"Belmont & Oak Park, Eastbound, Southwest Corner",41.93810385,-87.7958028,0,,1
+9241,9241,Belmont & Normandy,"Belmont & Normandy, Eastbound, Southwest Corner",41.93814386,-87.7933788,0,,1
+9242,9242,Belmont & Nashville,"Belmont & Nashville, Eastbound, Southwest Corner",41.93820628,-87.79084241,0,,1
+9243,9243,Belmont & Natchez,"Belmont & Natchez, Eastbound, Southwest Corner",41.93824528,-87.78851341,0,,1
+9245,9245,Belmont & Mobile,"Belmont & Mobile, Eastbound, Southwest Corner",41.93830018,-87.78355979,0,,1
+9246,9246,Belmont & Melvina,"Belmont & Melvina, Eastbound, Southwest Corner",41.93833118,-87.78114079,0,,1
+9247,9247,Belmont & Meade,"Belmont & Meade, Eastbound, Southwest Corner",41.93839617,-87.7787155,0,,1
+9252,9252,Belmont & Major,"Belmont & Major, Eastbound, Southwest Corner",41.93845529,-87.76901685,0,,1
+9256,9256,Belmont & Lockwood,"Belmont & Lockwood, Eastbound, Southwest Corner",41.93856051,-87.75924672,0,,1
+9258,9258,Belmont & Leclaire,"Belmont & Leclaire, Eastbound, Southwest Corner",41.93867686,-87.75435079,0,,1
+9263,9263,Belmont & Knox,"Belmont & Knox, Eastbound, Southwest Corner",41.93881334,-87.74329901,0,,1
+9264,9264,Belmont & Kilbourn,"Belmont & Kilbourn, Eastbound, Southwest Corner",41.93883716,-87.73964585,0,,1
+9268,9268,Belmont & Karlov,"Belmont & Karlov, Eastbound, Southwest Corner",41.93890482,-87.7297172,0,,1
+9269,9269,Belmont & Pulaski,"Belmont & Pulaski, Eastbound, Southwest Corner",41.93903786,-87.72733578,0,,1
+9270,9270,Belmont & Milwaukee,"Belmont & Milwaukee, Eastbound, Southwest Corner",41.93906939,-87.72398978,0,,1
+9273,9273,Belmont & Central Park,"Belmont & Central Park, Eastbound, Southwest Corner",41.93915639,-87.71746677,0,,1
+9274,9274,Belmont & St. Louis,"Belmont & St. Louis, Eastbound, Southwest Corner",41.93922318,-87.71516905,0,,1
+9280,9280,Belmont & Ravenswood,"Belmont & Ravenswood, Eastbound, Southwest Corner",41.93958668,-87.67393001,0,,1
+9281,9281,Belmont & Paulina,"Belmont & Paulina, Eastbound, Southwest Corner",41.9396176,-87.67121369,0,,1
+9285,9285,Belmont & Lakewood,"Belmont & Lakewood, Eastbound, Southwest Corner",41.93966815,-87.66125618,0,,1
+9291,9291,Belmont & Sheridan,"Belmont & Sheridan, Eastbound, Southwest Corner",41.94005697,-87.63977817,0,,1
+9293,9293,Lake Shore Drive & Briar,"Lake Shore Drive & Briar, Southbound, Northwest Corner",41.93887796,-87.63800024,0,,1
+9294,9294,Lake Shore Drive & Wellington,"Lake Shore Drive & Wellington, Southbound, Northwest Corner",41.93670076,-87.63694184,0,,1
+9295,9295,Lake Shore Drive & Oakdale,"Lake Shore Drive & Oakdale, Southbound, Northwest Corner",41.93570628,-87.63684586,0,,1
+9296,9296,St. Joseph Hospital,"St. Joseph Hospital, Southbound, Westside of the Street",41.9340008,-87.63655255,0,,1
+9302,9302,Belmont & Lakewood,"Belmont & Lakewood, Westbound, Northeast Corner",41.9398827,-87.66123959,0,,1
+9306,9306,Belmont & Paulina,"Belmont & Paulina, Westbound, Northeast Corner",41.93973235,-87.67100895,0,,1
+9307,9307,Belmont & Ravenswood,"Belmont & Ravenswood, Westbound, Northeast Corner",41.9396985,-87.67377502,0,,1
+9308,9308,Belmont & Wolcott,"Belmont & Wolcott, Westbound, Northeast Corner",41.93967086,-87.67573411,0,,1
+9312,9312,Belmont & Oakley,"Belmont & Oakley, Westbound, Northeast Corner",41.93955277,-87.68552555,0,,1
+9317,9317,Belmont & Milwaukee,"Belmont & Milwaukee, Westbound, Northeast Corner",41.93922638,-87.72376353,0,,1
+9321,9321,Belmont & Kildare,"Belmont & Kildare, Westbound, Northeast Corner",41.9390667,-87.73449248,0,,1
+9322,9322,Belmont & Kostner,"Belmont & Kostner, Westbound, Northeast Corner",41.93903942,-87.73693612,0,,1
+9323,9323,Belmont & Kilbourn,"Belmont & Kilbourn, Westbound, Northeast Corner",41.93898687,-87.73939582,0,,1
+9324,9324,Belmont & Kilpatrick,"Belmont & Kilpatrick, Westbound, Northeast Corner",41.9389382,-87.74379709,0,,1
+9326,9326,Belmont & Lamon,"Belmont & Lamon, Westbound, Northeast Corner",41.93884878,-87.74919625,0,,1
+9327,9327,Belmont & Lavergne,"Belmont & Lavergne, Westbound, Northeast Corner",41.93883289,-87.75169194,0,,1
+9328,9328,Belmont & Leclaire,"Belmont & Leclaire, Westbound, Northeast Corner",41.93880393,-87.75413266,0,,1
+9329,9329,Belmont & Laramie,"Belmont & Laramie, Westbound, Northeast Corner",41.93877947,-87.75650206,0,,1
+9330,9330,Belmont & Lockwood,"Belmont & Lockwood, Westbound, Northeast Corner",41.93874392,-87.75906129,0,,1
+9331,9331,Belmont & Long,"Belmont & Long, Westbound, Northeast Corner",41.93873015,-87.76145063,0,,1
+9332,9332,Belmont & Linder,"Belmont & Linder, Westbound, Northeast Corner",41.9387018,-87.7639292,0,,1
+9333,9333,Belmont & Central,,41.9386511,-87.76636868,0,,1
+9334,9334,Belmont & Major,"Belmont & Major, Westbound, Northeast Corner",41.93860251,-87.76886613,0,,1
+9335,9335,Belmont & Menard,"Belmont & Menard, Westbound, Northeast Corner",41.93858334,-87.77127399,0,,1
+9337,9337,Belmont & Mason,"Belmont & Mason, Westbound, Northside of the Street",41.93854514,-87.77500835,0,,1
+9338,9338,Belmont & Austin,"Belmont & Austin, Westbound, Northeast Corner",41.93853338,-87.77606939,0,,1
+9339,9339,Belmont & Meade,"Belmont & Meade, Westbound, Northeast Corner",41.93848837,-87.7785584,0,,1
+9340,9340,Belmont & Melvina,"Belmont & Melvina, Westbound, Northeast Corner",41.93841435,-87.78101319,0,,1
+9341,9341,Belmont & Mobile,"Belmont & Mobile, Westbound, Northeast Corner",41.9384054,-87.78343941,0,,1
+9343,9343,Belmont & Natchez,"Belmont & Natchez, Westbound, Northeast Corner",41.93831546,-87.78839234,0,,1
+9344,9344,Belmont & Nashville,"Belmont & Nashville, Westbound, Northside of the Street",41.93830245,-87.79081035,0,,1
+9345,9345,Belmont & Normandy,"Belmont & Normandy, Westbound, Northeast Corner",41.93828544,-87.79319936,0,,1
+9346,9346,Belmont & Oak Park,"Belmont & Oak Park, Westbound, Northeast Corner",41.93825219,-87.79558687,0,,1
+9347,9347,Belmont & New England,"Belmont & New England, Westbound, Northeast Corner",41.93819497,-87.79804836,0,,1
+9349,9349,Belmont & Nottingham,"Belmont & Nottingham, Westbound, Northeast Corner",41.93810449,-87.80414248,0,,1
+9350,9350,Belmont & Harlem,"Belmont & Harlem, Westbound, Northeast Corner",41.93807632,-87.80647601,0,,1
+9351,9351,Belmont & Octavia,"Belmont & Octavia, Westbound, Northeast Corner",41.93801296,-87.80902795,0,,1
+9352,9352,Belmont & Oketo,"Belmont & Oketo, Westbound, Northeast Corner",41.93803281,-87.81114428,0,,1
+9353,9353,Belmont & Olcott,"Belmont & Olcott, Westbound, Northeast Corner",41.93800963,-87.81397626,0,,1
+9354,9354,Belmont & Oriole (76th Avenue),"Belmont & Oriole (76th Avenue), Westbound, Northeast Corner",41.93802156,-87.8163926,0,,1
+9356,9356,Belmont & Ozanam (78th Avenue),"Belmont & Ozanam (78th Avenue), Westbound, Northeast Corner",41.93794241,-87.82130749,0,,1
+9357,9357,Belmont & Orange (79th Avenue),"Belmont & Orange (79th Avenue), Westbound, Northeast Corner",41.93789851,-87.82374926,0,,1
+9358,9358,Belmont & Pacific (80th Avenue),"Belmont & Pacific (80th Avenue), Westbound, Northeast Corner",41.93783022,-87.82620216,0,,1
+9359,9359,Belmont & Panama,"Belmont & Panama, Westbound, Northeast Corner",41.93777522,-87.82871316,0,,1
+9360,9360,Belmont & Pioneer,"Belmont & Pioneer, Westbound, Northeast Corner",41.93774932,-87.83104443,0,,1
+9361,9361,Belmont & Plainfield,"Belmont & Plainfield, Westbound, Northeast Corner",41.93766852,-87.83354923,0,,1
+9362,9362,Belmont & Pontiac,"Belmont & Pontiac, Westbound, Northeast Corner",41.93767475,-87.83474392,0,,1
+14150,14150,Belmont & Halsted Terminal,"Belmont & Halsted Terminal, Northbound, Bus Terminal",41.94022698,-87.64877427,0,,1
+14634,14634,Belmont & Cicero,"Belmont & Cicero, Eastbound, Southeast Corner",41.93877242,-87.74657113,0,,1
+14635,14635,Belmont & Keeler,"Belmont & Keeler, Eastbound, Southside of the Street",41.93893342,-87.73175406,0,,1
+14637,14637,Belmont & Pulaski,"Belmont & Pulaski, Westbound, Northwest Corner",41.93917641,-87.72738976,0,,1
+14638,14638,Belmont & Keeler,"Belmont & Keeler, Westbound, Northwest Corner",41.93910939,-87.7323026,0,,1
+14639,14639,Belmont & Cicero,"Belmont & Cicero, Westbound, Northwest Corner",41.93890003,-87.74720434,0,,1
+14912,14912,Belmont & Lincoln/Ashland,"Belmont & Lincoln/Ashland, Eastbound, Southeast Corner",41.93965062,-87.66826154,0,,1
+14913,14913,Belmont & Clark,"Belmont & Clark, Eastbound, Southeast Corner",41.93991836,-87.65029829,0,,1
+14914,14914,Belmont & Broadway,"Belmont & Broadway, Eastbound, Southeast Corner",41.93999866,-87.64406545,0,,1
+14915,14915,Belmont & Clark,"Belmont & Clark, Westbound, Northwest Corner",41.94002921,-87.65108108,0,,1
+14916,14916,Belmont & Racine,"Belmont & Racine, Westbound, Northwest Corner",41.93990784,-87.65923187,0,,1
+14917,14917,Belmont & Southport,"Belmont & Southport, Westbound, Northwest Corner",41.93983703,-87.6641252,0,,1
+14918,14918,Belmont & Lincoln/Ashland,"Belmont & Lincoln/Ashland, Westbound, Northwest Corner",41.93975373,-87.66913293,0,,1
+14920,14920,Belmont & Greenview,"Belmont & Greenview, Westbound, Northwest Corner",41.93982267,-87.6664128,0,,1
+14971,14971,Lake Shore Drive & Barry,"Lake Shore Drive & Barry, Southbound, Northwest Corner",41.9378548,-87.63741078,0,,1
+15332,15332,Belmont & Lavergne,"Belmont & Lavergne, Eastbound, Southeast Corner",41.93871586,-87.75151027,0,,1
+15480,15480,Belmont & Menard,"Belmont & Menard, Eastbound, Southeast Corner",41.93846168,-87.77113316,0,,1
+17017,17017,Belmont & Central,"Belmont & Central, Eastbound, Southeast Corner",41.93851878,-87.76624933,0,,1
+17019,17019,Belmont & Central,"Belmont & Central, Westbound, Northwest Corner",41.93864775,-87.76678245,0,,1
+17313,17313,Belmont & Leavitt,"Belmont & Leavitt, Westbound, Northwest Corner",41.93957847,-87.68354686,0,,1
+17314,17314,Belmont & Leavitt,"Belmont & Leavitt, Eastbound, Southeast Corner",41.93947141,-87.68289447,0,,1
+17315,17315,Belmont & Damen,"Belmont & Damen, Eastbound, Southeast Corner",41.93951776,-87.67800424,0,,1
+17329,17329,Belmont & Damen,"Belmont & Damen, Westbound, Northwest Corner",41.93964701,-87.67870854,0,,1
+17342,17342,Belmont & Western/Clybourn,"Belmont & Western/Clybourn, Eastbound, Southeast Corner",41.93939541,-87.68764413,0,,1
+17367,17367,Belmont & Overhill (77th Avenue),"Belmont & Overhill (77th Avenue), Westbound, Northwest Corner",41.93800703,-87.81920755,0,,1
+17379,17379,Belmont Red/Brown/Purple Line Station,"Belmont Red/Brown/Purple Line Station, Eastbound, Southside of the Street",41.93987796,-87.65306818,0,,1
+17380,17380,Belmont Red/Brown/Purple Line Station,"Belmont Red/Brown/Purple Line Station, Westbound, Northside of the Street",41.93997516,-87.65337745,0,,1
+17388,17388,Belmont & Karlov,"Belmont & Karlov, Westbound, Northwest Corner",41.93913616,-87.72980176,0,,1
+17457,17457,Belmont & Austin,"Belmont & Austin, Eastbound, Southeast Corner",41.93839317,-87.77598844,0,,1
+17459,17459,Belmont & Laramie,"Belmont & Laramie, Eastbound, Southeast Corner",41.93865446,-87.75637528,0,,1
+17468,17468,Belmont & Mason,"Belmont & Mason, Eastbound, Southeast Corner",41.9384145,-87.77471635,0,,1
+17469,17469,Belmont & Lamon,"Belmont & Lamon, Eastbound, Southeast Corner",41.9387461,-87.74904912,0,,1
+17470,17470,Belmont & Kenosha,"Belmont & Kenosha, Eastbound, Southwest Corner",41.93893887,-87.73416732,0,,1
+17478,17478,Belmont & Sacramento,"Belmont & Sacramento, Eastbound, Southeast Corner",41.93930365,-87.70244747,0,,1
+17479,17479,Belmont & Sacramento,"Belmont & Sacramento, Westbound, Northwest Corner",41.93944131,-87.70307547,0,,1
+17480,17480,Belmont & Sayre,"Belmont & Sayre, Eastbound, Southeast Corner",41.9380302,-87.80084869,0,,1
+17481,17481,Belmont & Narragansett,"Belmont & Narragansett, Eastbound, Southeast Corner",41.93825919,-87.78565831,0,,1
+17482,17482,Belmont & Narragansett,"Belmont & Narragansett, Westbound, Northwest Corner",41.93838926,-87.78630223,0,,1
+17483,17483,Belmont & Sayre,"Belmont & Sayre, Westbound, Northwest Corner",41.93813911,-87.80158376,0,,1
+17655,17655,Belmont & Octavia,"Belmont & Octavia, Eastbound, Southeast Corner",41.93790505,-87.8089434,0,,1
+17833,17833,Belmont & Greenview,"Belmont & Greenview, Eastbound, Southeast Corner",41.93968346,-87.66589632,0,,1
+17845,17845,Belmont & Linder,"Belmont & Linder, Eastbound, Southeast Corner",41.93855275,-87.76387296,0,,1
+17901,17901,Belmont & Orchard,"Belmont & Orchard, Westbound, Northside of the Street",41.94011361,-87.64702261,0,,1
+18260,18260,Belmont & Long,"Belmont & Long, Eastbound, Southeast Corner",41.93858873,-87.7613608,0,,1
+18263,18263,Belmont & Wolcott,"Belmont & Wolcott, Eastbound, Southeast Corner",41.93955596,-87.67564664,0,,1
+18394,18394,Kimball & Belmont (Blue Line),,41.93910066,-87.71257087,0,,1
+18648,18648,Belmont & Southport,"Belmont & Southport, Eastbound, Southeast Corner",41.93969143,-87.66367767,0,,1
+18674,18674,Belmont & Spaulding,"Belmont & Spaulding, Westbound, Northside of the Street",41.93940386,-87.70987637,0,,1
+18675,18675,Belmont & Albany,"Belmont & Albany, Westbound, Northwest Corner",41.93940362,-87.70531267,0,,1
+18678,18678,Belmont & Oakley,"Belmont & Oakley, Eastbound, Southeast Corner",41.93943541,-87.68530361,0,,1
+18679,18679,Belmont & Hoyne,"Belmont & Hoyne, Eastbound, Southeast Corner",41.93948351,-87.68044691,0,,1
+18680,18680,Belmont & Hoyne,"Belmont & Hoyne, Westbound, Northwest Corner",41.93962406,-87.68102384,0,,1
+18702,18702,Belmont & Seminary,"Belmont & Seminary, Eastbound, Southeast Corner",41.93980797,-87.65636199,0,,1
+18703,18703,Belmont & Seminary,"Belmont & Seminary, Westbound, Northwest Corner",41.93994193,-87.65668798,0,,1
+18719,18719,Belmont & Kostner,"Belmont & Kostner, Eastbound, Southwest Corner",41.93889686,-87.73647062,0,,1
+18757,18757,Belmont & St. Louis,"Belmont & St. Louis, Westbound, Northside of the Street",41.93930384,-87.71521203,0,,1
+18758,18758,Belmont & Central Park,"Belmont & Central Park, Westbound, Northwest Corner",41.93927613,-87.71787146,0,,1
+18759,18759,Belmont & Ridgeway,"Belmont & Ridgeway, Westbound, Northeast Corner",41.93923372,-87.72097635,0,,1
+18760,18760,Belmont & Ridgeway,"Belmont & Ridgeway, Eastbound, Southeast Corner",41.93911577,-87.72026836,0,,1
+18801,18801,Belmont & Racine,"Belmont & Racine, Eastbound, Southeast Corner",41.93977668,-87.65854232,0,,1

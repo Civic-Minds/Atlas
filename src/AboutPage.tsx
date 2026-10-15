@@ -55,7 +55,7 @@ export default function AboutPage() {
             </a>
             <a href={FEATURE_ROUTES.nightService} className="group border-l-2 border-[var(--accent-border)] pl-4">
               <h3 className="text-lg font-black group-hover:text-[var(--accent)]">What still runs overnight?</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Find routes with sustained scheduled service from 2am to 6am.</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Find routes with sustained scheduled service from 2am to 5am.</p>
               <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)]">Explore Night Service <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
             </a>
           </div>

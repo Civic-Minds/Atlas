@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Night Service now covers 2am to 5am and judges whole routes**: a route qualifies when every direction runs at the stated frequency through the middle of its main route and on every branch that runs at night. Night networks that hand over to day routes around 5am (STM, TTC 305/373/385/396, TransLink N-routes) now count, and routes split over several night patterns (TTC 312, 334, 335, 336, 337, CTA 20, 53, 79, WMATA D20) are no longer missed. Routes whose night service covers only part of the route (CTA 87, NYC subway 3) no longer qualify.
 - A night route is no longer marked as having no night service because its check read a stop of another pattern: TTC 301 westbound to Long Branch runs every 15 overnight but failed, as its end stop was taken from a different branch with no night trips.
 - A route no longer drops out of a frequency filter because of a rare variant's long wait: TTC 123 on weekdays read a 336-minute midday wait from a 2-trip West Mall pattern and was hidden at "every 30 midday", though its main service runs every 23.
 - A stop a route only drops off at (the layover it starts from, the terminal it ends at) no longer grades the route or colours its first section limited: RFTA L on Sunday and LA Metro 28 read a tier lower than riders get because one shape's arrivals at such a stop were graded on their own ([#879](https://github.com/Civic-Minds/Atlas/issues/879)).

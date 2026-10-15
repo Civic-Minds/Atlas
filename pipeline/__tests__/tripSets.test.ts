@@ -360,3 +360,23 @@ describe('night tails (D3 with the D8 midpoint)', () => {
     expect(rollupDirection(d)!.night60).toBe(false);
   });
 });
+
+describe('Night flags read the stretches (step 4 switch)', () => {
+  it('CTA 77 passes Night 60 on its main stretch; its westbound rows are lit though the owl runs on an undrawn pattern', async () => {
+    const r = await run('cta-77-weekday');
+    const rows = r.rows.filter(p => p.routeShortName === '77' && p.day === 'Weekday');
+    expect(rows.every(p => p.stretchNight60 === true)).toBe(true);
+    for (const dir of [0, 1]) expect(rows.some(p => p.directionId === dir && p.nightService60 === true), `dir ${dir}`).toBe(true);
+    expect(rows.every(p => p.nightService === p.nightService60)).toBe(true);
+  });
+  it('a route that fails keeps every row dark (CTA 87)', async () => {
+    const r = await run('cta-87-weekday');
+    expect(r.rows.filter(p => p.routeShortName === '87' && p.day === 'Weekday').some(p => p.nightService60 || p.nightService30)).toBe(false);
+  });
+  it('TTC 337 rows pass 60 and not 30, as the route does', async () => {
+    const r = await run('ttc-337-373-night');
+    const rows = r.rows.filter(p => p.routeShortName === '337' && p.day === 'Weekday' && p.nightService60);
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.some(p => p.nightService30)).toBe(false);
+  });
+});
