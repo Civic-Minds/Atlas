@@ -1,0 +1,37 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,wheelchair_boarding
+3106,3106,Downtown Terminal (Return),Bus Mall,49.8490251510754,-99.948708113951,0,0
+20,20,Princess Avenue @ 2nd Street,,49.8469249812916,-99.9400968813954,0,0
+21,21,Princess Avenue @ 5th Street,,49.8469088880366,-99.9437996711612,0,0
+47,47,6th Street @ Rosser Avenue,Aborigional Healing Wellness,49.8481064944331,-99.9460178581487,0,0
+45,45,6th Street @ Princess Avenue,A.R. McDiarmid Building,49.8458963540731,-99.946007129312,0,0
+44,44,6th Street @ Louise Avenue,,49.84356,-99.946035,0,0
+3093,3093,6th Street @ VanHorne Avenue,Co-op Gas,49.8397098386115,-99.9460017648936,0,0
+3092,3092,6th Street @ College Avenue,,49.8372958503542,-99.9459923771615,0,0
+3091,3091,6th Street @ Southern Avenue,,49.8344996472895,-99.9459736016973,0,0
+3090,3090,6th Street @ Hill Avenue,,49.8315022785367,-99.9459803072202,0,0
+3089,3089,6th Street @ Brock Avenue,,49.8284,-99.946,0,0
+2069,2069,Richmond Avenue @ 6th Street,,49.8275,-99.9464,0,0
+3027,3027,9th Street @ Richmond Avenue,,49.8264,-99.9501,0,0
+3025,3025,9th Street @ Aberdeen Avenue,,49.8233,-99.9501,0,0
+3021,3021,9th Street @ Mcleod Drive,,49.8212,-99.9501,0,0
+3010,3010,Maryland Avenue @ Mcleod Drive (East),,49.8200358343146,-99.9484881727986,0,0
+3012,3012,Maryland Avenue @ McLeod Drive,,49.8200237643733,-99.946689751547,0,0
+3014,3014,Maryland Avenue @ Cornell Bay,,49.82,-99.9439,0,0
+2056,2056,Crocus Plains High School - south,Crocus Plains HS,49.820011694432,-99.9404871428303,0,0
+39,39,1st Street @ Aberdeen Avenue,,49.8238982155262,-99.9390266799346,0,0
+3030,3030,Richmond Avenue @ 1st Street,,49.8273756997213,-99.9380932711418,0,0
+3031,3031,Richmond Avenue @ Percy Street,North of Y Daycare,49.8273569242571,-99.9303001123846,0,0
+3032,3032,Civic Services Complex - south side,Civic Services,49.8273502187342,-99.9255016401709,0,0
+3045,3045,Garwood Drive @ Hazelwood Drive,,49.8288857834867,-99.9244140043505,0,0
+3043,3043,Garwood Drive @ Elderwood Cres,,49.8308,-99.9287,0,0
+3040,3040,Queens Avenue @ Elderwood Drive,,49.8301477629034,-99.931780691849,0,0
+3038,3038,Queens Avenue @ Applewood Bay,Mormon Church,49.8301705616814,-99.9364973566829,0,0
+3046,3046,Queen's Avenue E @ 1st Street,,49.830178608309,-99.9388523363383,0,0
+3047,3047,1st Street @ Madison Cres,,49.8336024483205,-99.9389287792998,0,0
+3051,3051,Park Avenue @ 1st Street,Macs,49.835866232864,-99.9384070896153,0,0
+3052,3052,Park Avenue @ Frederick Street,,49.8361974856971,-99.9348732790276,0,0
+3053,3053,College Avenue @ Russell Street,Enterprise Rent-A-Car,49.8374715350551,-99.9366006217361,0,0
+3049,3049,1st Street @ College Avenue,MPI,49.8378980063139,-99.9389234148814,0,0
+2062,2062,1st Street @ McTavish Avenue,,49.8408980572759,-99.9389287792998,0,0
+3016,3016,1st Street @ Victoria Avenue,Lions Manor,49.8433026578011,-99.9389448725548,0,0
+3114,3114,6th Street @ Greyhound,,49.8475,-99.9459,0,0

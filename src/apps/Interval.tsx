@@ -349,14 +349,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       return true;
     }
   });
+  // #720: part-time routes are hidden by default on every build. A shared link (limited=0) or a
+  // saved preference keeps its meaning; only a visitor with neither gets the new default.
   const [hideLimitedService, setHideLimitedService] = useState(() => {
-    if (ATLAS_MODE === 'public') return false;
     try {
       const urlValue = new URLSearchParams(window.location.search).get('limited');
       if (urlValue != null) return urlValue !== '0';
-      return localStorage.getItem('atlas_pref_hide_limited') === 'true';
+      const saved = localStorage.getItem('atlas_pref_hide_limited');
+      return saved == null ? true : saved === 'true';
     } catch {
-      return false;
+      return true;
     }
   });
   const [livePollingOnly, setLivePollingOnly] = useState(false);
@@ -659,7 +661,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     syncUrlParams({ span: hideSpan ? null : '0' });
   }, [hideSpan]);
   useEffect(() => {
-    if (ATLAS_MODE === 'public') return;
     try { localStorage.setItem('atlas_pref_hide_limited', String(hideLimitedService)); } catch {}
     syncUrlParams({ limited: hideLimitedService ? null : '0' });
   }, [hideLimitedService]);

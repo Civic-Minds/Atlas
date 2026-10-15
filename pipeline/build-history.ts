@@ -22,6 +22,7 @@ import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
 import { resolveCurrentHistoryRoute } from './historyIdentity.js';
 import { historyRouteKey } from './historyRouteKey.js';
+import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { isDrawableLineCoordinates, lineStringCoordinatesOrNull } from '../shared/routeGeometry.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
@@ -526,6 +527,9 @@ async function main() {
   }
   await r2Put('atlas/history-config.json', JSON.stringify(historyData));
   console.log(`Generated ${historyData.length} agencies → atlas/history-config.json (R2)`);
+  // Keep the UI's small eligible-agency list in step with what was just published (commit it).
+  const eligible = writeHistoryAgencyList(historyData);
+  console.log(`Wrote shared/data/history-agencies.json (${eligible} agencies) — commit it`);
 }
 
 main().catch(err => {

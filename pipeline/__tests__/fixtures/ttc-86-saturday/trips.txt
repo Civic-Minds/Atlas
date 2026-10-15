@@ -1,0 +1,340 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+86,2,50855719,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236666,1123291,1,1
+86,2,50855718,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236671,1123291,1,1
+86,2,50855706,East - 86C Scarborough towards Sheppard,C,0,2236666,1123286,1,1
+86,2,50855705,East - 86C Scarborough towards Sheppard,C,0,2236639,1123286,1,1
+86,2,50855663,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236627,1123292,1,1
+86,2,50855704,East - 86C Scarborough towards Sheppard,C,0,2236669,1123286,1,1
+86,2,50855720,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236672,1123291,1,1
+86,2,50855703,East - 86C Scarborough towards Sheppard,C,0,2236640,1123286,1,1
+86,2,50855670,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236671,1123292,1,1
+86,2,50855702,East - 86C Scarborough towards Sheppard,C,0,2236637,1123286,1,1
+86,2,50855715,East - 86C Scarborough towards Sheppard,C,0,2236667,1123286,1,1
+86,2,50855737,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236638,1123292,1,1
+86,2,50855714,East - 86C Scarborough towards Sheppard,C,0,2236672,1123286,1,1
+86,2,50855679,East - 86A Scarborough towards Toronto Zoo,A,0,2236668,1123288,1,1
+86,2,50855738,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236666,1123292,1,1
+86,2,50855713,East - 86A Scarborough towards Toronto Zoo,A,0,2236627,1123288,1,1
+86,2,50855712,East - 86A Scarborough towards Toronto Zoo,A,0,2236639,1123288,1,1
+86,2,50855739,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236669,1123292,1,1
+86,2,50855711,East - 86A Scarborough towards Toronto Zoo,A,0,2236671,1123288,1,1
+86,2,50855710,East - 86A Scarborough towards Toronto Zoo,A,0,2236640,1123288,1,1
+86,2,50855740,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236637,1123292,1,1
+86,2,50855709,East - 86A Scarborough towards Toronto Zoo,A,0,2236638,1123288,1,1
+86,2,50855708,East - 86A Scarborough towards Toronto Zoo,A,0,2236667,1123288,1,1
+86,2,50855741,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236665,1123292,1,1
+86,2,50855674,East - 86A Scarborough towards Toronto Zoo,A,0,2236672,1123288,1,1
+86,2,50855751,East - 86A Scarborough towards Toronto Zoo,A,0,2236666,1123288,1,1
+86,2,50855742,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236670,1123292,1,1
+86,2,50855729,East - 86A Scarborough towards Toronto Zoo,A,0,2236668,1123288,1,1
+86,2,50855701,East - 86A Scarborough towards Toronto Zoo,A,0,2236627,1123288,1,1
+86,2,50855743,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236669,1123292,1,1
+86,2,50855700,East - 86A Scarborough towards Toronto Zoo,A,0,2236639,1123288,1,1
+86,2,50855736,East - 86A Scarborough towards Toronto Zoo,A,0,2236671,1123288,1,1
+86,2,50855676,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236637,1123292,1,1
+86,2,50855723,East - 86A Scarborough towards Toronto Zoo,A,0,2236640,1123288,1,1
+86,2,50855693,East - 86A Scarborough towards Toronto Zoo,A,0,2236638,1123288,1,1
+86,2,50855726,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236665,1123292,1,1
+86,2,50855692,East - 86A Scarborough towards Toronto Zoo,A,0,2236667,1123288,1,1
+86,2,50855691,East - 86A Scarborough towards Toronto Zoo,A,0,2236672,1123288,1,1
+86,2,50855722,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236670,1123292,1,1
+86,2,50855690,East - 86A Scarborough towards Toronto Zoo,A,0,2236666,1123288,1,1
+86,2,50855689,East - 86A Scarborough towards Toronto Zoo,A,0,2236668,1123288,1,1
+86,2,50855721,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236669,1123292,1,1
+86,2,50855688,East - 86A Scarborough towards Toronto Zoo,A,0,2236627,1123288,1,1
+86,2,50855687,East - 86A Scarborough towards Toronto Zoo,A,0,2236639,1123288,1,1
+86,2,50855731,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236637,1123292,1,1
+86,2,50855686,East - 86A Scarborough towards Toronto Zoo,A,0,2236671,1123288,1,1
+86,2,50855685,East - 86A Scarborough towards Toronto Zoo,A,0,2236640,1123288,1,1
+86,2,50855695,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236665,1123292,1,1
+86,2,50855684,East - 86A Scarborough towards Toronto Zoo,A,0,2236638,1123288,1,1
+86,2,50855727,East - 86A Scarborough towards Toronto Zoo,A,0,2236667,1123288,1,1
+86,2,50855749,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236670,1123292,1,1
+86,2,50855683,East - 86A Scarborough towards Toronto Zoo,A,0,2236672,1123288,1,1
+86,2,50855682,East - 86A Scarborough towards Toronto Zoo,A,0,2236666,1123288,1,1
+86,2,50855748,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236669,1123292,1,1
+86,2,50855681,East - 86A Scarborough towards Toronto Zoo,A,0,2236668,1123288,1,1
+86,2,50855680,East - 86A Scarborough towards Toronto Zoo,A,0,2236627,1123288,1,1
+86,2,50855747,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236637,1123292,1,1
+86,2,50855662,East - 86A Scarborough towards Toronto Zoo,A,0,2236639,1123288,1,1
+86,2,50855724,East - 86A Scarborough towards Toronto Zoo,A,0,2236671,1123288,1,1
+86,2,50855746,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236665,1123292,1,1
+86,2,50855745,East - 86A Scarborough towards Toronto Zoo,A,0,2236640,1123288,1,1
+86,2,50855753,East - 86A Scarborough towards Toronto Zoo,A,0,2236673,1123288,1,1
+86,2,50855667,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236670,1123292,1,1
+86,2,50855678,East - 86A Scarborough towards Toronto Zoo,A,0,2236638,1123288,1,1
+86,2,50855677,East - 86A Scarborough towards Toronto Zoo,A,0,2236667,1123288,1,1
+86,2,50855666,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236669,1123292,1,1
+86,2,50855673,East - 86A Scarborough towards Toronto Zoo,A,0,2236672,1123288,1,1
+86,2,50855672,East - 86A Scarborough towards Toronto Zoo,A,0,2236666,1123288,1,1
+86,2,50855665,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236637,1123292,1,1
+86,2,50855671,East - 86A Scarborough towards Toronto Zoo,A,0,2236668,1123288,1,1
+86,2,50855750,East - 86A Scarborough towards Toronto Zoo,A,0,2236627,1123288,1,1
+86,2,50855664,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236665,1123292,1,1
+86,2,50855694,East - 86A Scarborough towards Toronto Zoo,A,0,2236639,1123288,1,1
+86,2,50855725,East - 86A Scarborough towards Toronto Zoo,A,0,2236671,1123288,1,1
+86,2,50855707,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236670,1123292,1,1
+86,2,50855717,East - 86A Scarborough towards Toronto Zoo,A,0,2236640,1123288,1,1
+86,2,50855730,East - 86A Scarborough towards Toronto Zoo,A,0,2236673,1123288,1,1
+86,2,50855752,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236669,1123292,1,1
+86,2,50855734,East - 86A Scarborough towards Toronto Zoo,A,0,2236638,1123288,1,1
+86,2,50855675,East - 86A Scarborough towards Toronto Zoo,A,0,2236667,1123288,1,1
+86,2,50855735,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236637,1123292,1,1
+86,2,50855733,East - 86A Scarborough towards Toronto Zoo,A,0,2236672,1123288,1,1
+86,2,50855732,East - 86A Scarborough towards Toronto Zoo,A,0,2236666,1123288,1,1
+86,2,50855661,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236665,1123292,1,1
+86,2,50855754,East - 86A Scarborough towards Toronto Zoo,A,0,2236668,1123288,1,1
+86,2,50855698,East - 86A Scarborough towards Toronto Zoo,A,0,2236627,1123288,1,1
+86,2,50855716,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236670,1123292,1,1
+86,2,50855697,East - 86A Scarborough towards Toronto Zoo,A,0,2236639,1123288,1,1
+86,2,50855669,East - 86A Scarborough towards Toronto Zoo,A,0,2236671,1123288,1,1
+86,2,50855728,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236669,1123292,1,1
+86,2,50855668,East - 86A Scarborough towards Toronto Zoo,A,0,2236640,1123288,1,1
+86,2,50855699,East - 86A Scarborough towards Toronto Zoo,A,0,2236673,1123288,1,1
+86,2,50855660,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236637,1123292,1,1
+86,2,50855744,East - 86A Scarborough towards Toronto Zoo,A,0,2236638,1123288,1,1
+86,2,50855696,East - 86A Scarborough towards Toronto Zoo,A,0,2236667,1123288,1,1
+86,2,50855659,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236665,1123292,1,1
+86,2,50855790,East - 86A Scarborough towards Toronto Zoo,A,0,2236672,1123288,1,1
+86,2,50855789,East - 86A Scarborough towards Toronto Zoo,A,0,2236666,1123288,1,1
+86,2,50855818,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236670,1123292,1,1
+86,2,50855788,East - 86A Scarborough towards Toronto Zoo,A,0,2236668,1123288,1,1
+86,2,50855787,East - 86A Scarborough towards Toronto Zoo,A,0,2236627,1123288,1,1
+86,2,50855802,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236669,1123292,1,1
+86,2,50855811,East - 86A Scarborough towards Toronto Zoo,A,0,2236639,1123288,1,1
+86,2,50855768,East - 86A Scarborough towards Toronto Zoo,A,0,2236671,1123288,1,1
+86,2,50855801,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236637,1123292,1,1
+86,2,50855793,East - 86A Scarborough towards Toronto Zoo,A,0,2236640,1123288,1,1
+86,2,50855792,East - 86A Scarborough towards Toronto Zoo,A,0,2236673,1123288,1,1
+86,2,50855800,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236665,1123292,1,1
+86,2,50855791,East - 86A Scarborough towards Toronto Zoo,A,0,2236638,1123288,1,1
+86,2,50855819,East - 86A Scarborough towards Toronto Zoo,A,0,2236667,1123288,1,1
+86,2,50855799,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236670,1123292,1,1
+86,2,50855777,East - 86A Scarborough towards Toronto Zoo,A,0,2236672,1123288,1,1
+86,2,50855776,East - 86A Scarborough towards Toronto Zoo,A,0,2236666,1123288,1,1
+86,2,50855798,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236669,1123292,1,1
+86,2,50855775,East - 86A Scarborough towards Toronto Zoo,A,0,2236668,1123288,1,1
+86,2,50855796,East - 86C Scarborough towards Sheppard,C,0,2236627,1123286,1,1
+86,2,50855827,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236637,1123292,1,1
+86,2,50855826,East - 86C Scarborough towards Sheppard,C,0,2236639,1123286,1,1
+86,2,50855805,East - 86C Scarborough towards Sheppard,C,0,2236671,1123286,1,1
+86,2,50855797,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236665,1123292,1,1
+86,2,50855795,East - 86C Scarborough towards Sheppard,C,0,2236640,1123286,1,1
+86,2,50855772,East - 86C Scarborough towards Sheppard,C,0,2236673,1123286,1,1
+86,2,50855808,East - 86D Scarborough towards Beechgrove via Lawrence,D,0,2236670,1123292,1,1
+86,2,50855812,East - 86C Scarborough towards Sheppard,C,0,2236638,1123286,1,1
+86,2,50855778,East - 86C Scarborough towards Sheppard,C,0,2236667,1123286,1,1
+86,2,50855804,East - 86C Scarborough towards Sheppard,C,0,2236672,1123286,1,1
+86,2,50855803,East - 86C Scarborough towards Sheppard,C,0,2236666,1123286,1,1
+86,2,50855755,East - 86C Scarborough towards Sheppard,C,0,2236637,1123286,1,1
+86,2,50855781,East - 86C Scarborough towards Sheppard,C,0,2236668,1123286,1,1
+86,2,50855786,East - 86C Scarborough towards Sheppard,C,0,2236627,1123286,1,1
+86,2,50855765,East - 86C Scarborough towards Sheppard,C,0,2236639,1123286,1,1
+86,2,50855764,East - 86C Scarborough towards Sheppard,C,0,2236671,1123286,1,1
+86,2,50855763,East - 86C Scarborough towards Sheppard,C,0,2236640,1123286,1,1
+86,2,50855825,East - 86C Scarborough towards Sheppard,C,0,2236673,1123286,1,1
+86,2,50855824,East - 86C Scarborough towards Sheppard,C,0,2236638,1123286,1,1
+86,2,50855780,East - 86C Scarborough towards Sheppard,C,0,2236667,1123286,1,1
+86,2,50855810,East - 86C Scarborough towards Sheppard,C,0,2236672,1123286,1,1
+86,2,50855809,East - 86C Scarborough towards Sheppard,C,0,2236666,1123286,1,1
+86,2,50855762,East - 86C Scarborough towards Sheppard,C,0,2236637,1123286,1,1
+86,2,50855813,East - 86C Scarborough towards Sheppard,C,0,2236668,1123286,1,1
+86,2,50855771,East - 86C Scarborough towards Sheppard,C,0,2236627,1123286,1,1
+86,2,50855770,East - 86C Scarborough towards Sheppard,C,0,2236639,1123286,1,1
+86,2,50855769,East - 86C Scarborough towards Sheppard,C,0,2236671,1123286,1,1
+86,2,50855794,East - 86C Scarborough towards Sheppard,C,0,2236640,1123286,1,1
+86,2,50855816,East - 86C Scarborough towards Sheppard,C,0,2236673,1123286,1,1
+86,2,50855815,East - 86C Scarborough towards Sheppard,C,0,2236638,1123286,1,1
+86,2,50855774,East - 86C Scarborough towards Sheppard,C,0,2236667,1123286,1,1
+86,2,50855773,East - 86C Scarborough towards Sheppard,C,0,2236666,1123286,1,1
+86,2,50855823,East - 86C Scarborough towards Sheppard,C,0,2236637,1123286,1,1
+86,2,50855822,East - 86C Scarborough towards Sheppard,C,0,2236668,1123286,1,1
+86,2,50855821,East - 86C Scarborough towards Sheppard,C,0,2236639,1123286,1,1
+86,2,50855820,East - 86C Scarborough towards Sheppard,C,0,2236671,1123286,1,1
+86,2,50855767,East - 86C Scarborough towards Sheppard,C,0,2236640,1123286,1,1
+86,2,50855759,East - 86C Scarborough towards Sheppard,C,0,2236638,1123286,1,1
+86,2,50855758,East - 86C Scarborough towards Sheppard,C,0,2236667,1123286,1,1
+86,2,50855757,East - 86C Scarborough towards Sheppard,C,0,2236666,1123286,1,1
+86,2,50855761,East - 86C Scarborough towards Sheppard,C,0,2236637,1123286,1,1
+86,2,50855760,East - 86C Scarborough towards Sheppard,C,0,2236668,1123286,1,1
+86,2,50855779,East - 86C Scarborough towards Sheppard,C,0,2236639,1123286,1,1
+86,2,50855814,East - 86C Scarborough towards Sheppard,C,0,2236671,1123286,1,1
+86,2,50855766,East - 86C Scarborough towards Sheppard,C,0,2236640,1123286,1,1
+86,2,50855756,East - 86C Scarborough towards Sheppard,C,0,2236638,1123286,1,1
+86,2,50855806,East - 86C Scarborough towards Sheppard,C,0,2236667,1123286,1,1
+86,2,50855817,East - 86C Scarborough towards Sheppard,C,0,2236666,1123286,1,1
+86,2,50855785,East - 86C Scarborough towards Sheppard,C,0,2236637,1123286,1,1
+86,2,50855784,East - 86C Scarborough towards Sheppard,C,0,2236639,1123286,1,1
+86,2,50855783,East - 86C Scarborough towards Sheppard,C,0,2236671,1123286,1,1
+86,2,50855782,East - 86C Scarborough towards Sheppard,C,0,2236640,1123286,1,1
+86,2,50855807,East - 86C Scarborough towards Sheppard,C,0,2236667,1123286,1,1
+86,2,50855886,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123298,1,1
+86,2,50855943,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123295,1,1
+86,2,50855851,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123295,1,1
+86,2,50855850,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123295,1,1
+86,2,50855885,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123298,1,1
+86,2,50855915,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123295,1,1
+86,2,50855914,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123295,1,1
+86,2,50855910,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123295,1,1
+86,2,50855901,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123298,1,1
+86,2,50855903,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123295,1,1
+86,2,50855929,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123295,1,1
+86,2,50855865,West - 86 Scarborough towards Kennedy Station,,1,2236627,1123298,1,1
+86,2,50855928,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123295,1,1
+86,2,50855927,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123295,1,1
+86,2,50855900,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123298,1,1
+86,2,50855926,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123295,1,1
+86,2,50855897,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123295,1,1
+86,2,50855916,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123298,1,1
+86,2,50855942,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123295,1,1
+86,2,50855941,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123295,1,1
+86,2,50855877,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123298,1,1
+86,2,50855939,West - 86 Scarborough towards Kennedy Station,,1,2236670,1123295,1,1
+86,2,50855940,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123297,1,1
+86,2,50855957,West - 86 Scarborough towards Kennedy Station,,1,2236627,1123297,1,1
+86,2,50855938,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123297,1,1
+86,2,50855948,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123298,1,1
+86,2,50855833,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123297,1,1
+86,2,50855832,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123297,1,1
+86,2,50855950,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123298,1,1
+86,2,50855831,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123297,1,1
+86,2,50855830,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123297,1,1
+86,2,50855951,West - 86 Scarborough towards Kennedy Station,,1,2236665,1123298,1,1
+86,2,50855829,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123297,1,1
+86,2,50855849,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123297,1,1
+86,2,50855898,West - 86 Scarborough towards Kennedy Station,,1,2236670,1123298,1,1
+86,2,50855848,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123297,1,1
+86,2,50855847,West - 86 Scarborough towards Kennedy Station,,1,2236627,1123297,1,1
+86,2,50855870,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123298,1,1
+86,2,50855876,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123297,1,1
+86,2,50855884,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123297,1,1
+86,2,50855956,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123298,1,1
+86,2,50855875,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123297,1,1
+86,2,50855881,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123297,1,1
+86,2,50855925,West - 86 Scarborough towards Kennedy Station,,1,2236665,1123298,1,1
+86,2,50855874,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123297,1,1
+86,2,50855873,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123297,1,1
+86,2,50855895,West - 86 Scarborough towards Kennedy Station,,1,2236670,1123298,1,1
+86,2,50855960,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123297,1,1
+86,2,50855856,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123297,1,1
+86,2,50855922,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123298,1,1
+86,2,50855828,West - 86 Scarborough towards Kennedy Station,,1,2236627,1123297,1,1
+86,2,50855962,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123297,1,1
+86,2,50855921,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123298,1,1
+86,2,50855961,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123297,1,1
+86,2,50855891,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123297,1,1
+86,2,50855912,West - 86 Scarborough towards Kennedy Station,,1,2236665,1123298,1,1
+86,2,50855890,West - 86 Scarborough towards Kennedy Station,,1,2236673,1123297,1,1
+86,2,50855889,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123297,1,1
+86,2,50855911,West - 86 Scarborough towards Kennedy Station,,1,2236670,1123298,1,1
+86,2,50855952,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123297,1,1
+86,2,50855905,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123297,1,1
+86,2,50855899,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123298,1,1
+86,2,50855902,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123297,1,1
+86,2,50855947,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123297,1,1
+86,2,50855949,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123298,1,1
+86,2,50855852,West - 86 Scarborough towards Kennedy Station,,1,2236627,1123297,1,1
+86,2,50855883,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123297,1,1
+86,2,50855936,West - 86 Scarborough towards Kennedy Station,,1,2236665,1123298,1,1
+86,2,50855882,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123297,1,1
+86,2,50855855,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123297,1,1
+86,2,50855935,West - 86 Scarborough towards Kennedy Station,,1,2236670,1123298,1,1
+86,2,50855959,West - 86 Scarborough towards Kennedy Station,,1,2236673,1123297,1,1
+86,2,50855872,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123297,1,1
+86,2,50855934,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123298,1,1
+86,2,50855871,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123297,1,1
+86,2,50855888,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123297,1,1
+86,2,50855933,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123298,1,1
+86,2,50855846,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123297,1,1
+86,2,50855845,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123297,1,1
+86,2,50855932,West - 86 Scarborough towards Kennedy Station,,1,2236665,1123298,1,1
+86,2,50855844,West - 86 Scarborough towards Kennedy Station,,1,2236627,1123297,1,1
+86,2,50855843,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123297,1,1
+86,2,50855931,West - 86 Scarborough towards Kennedy Station,,1,2236670,1123298,1,1
+86,2,50855842,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123297,1,1
+86,2,50855841,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123297,1,1
+86,2,50855937,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123298,1,1
+86,2,50855840,West - 86 Scarborough towards Kennedy Station,,1,2236673,1123297,1,1
+86,2,50855839,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123297,1,1
+86,2,50855904,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123298,1,1
+86,2,50855838,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123297,1,1
+86,2,50855837,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123297,1,1
+86,2,50855880,West - 86 Scarborough towards Kennedy Station,,1,2236665,1123298,1,1
+86,2,50855836,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123297,1,1
+86,2,50855887,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123297,1,1
+86,2,50855879,West - 86 Scarborough towards Kennedy Station,,1,2236670,1123298,1,1
+86,2,50855854,West - 86 Scarborough towards Kennedy Station,,1,2236627,1123297,1,1
+86,2,50855946,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123297,1,1
+86,2,50855878,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123298,1,1
+86,2,50855908,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123297,1,1
+86,2,50855907,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123297,1,1
+86,2,50855945,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123298,1,1
+86,2,50855906,West - 86 Scarborough towards Kennedy Station,,1,2236673,1123297,1,1
+86,2,50855963,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123297,1,1
+86,2,50855944,West - 86 Scarborough towards Kennedy Station,,1,2236665,1123298,1,1
+86,2,50855919,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123297,1,1
+86,2,50855918,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123297,1,1
+86,2,50855864,West - 86 Scarborough towards Kennedy Station,,1,2236670,1123298,1,1
+86,2,50855917,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123297,1,1
+86,2,50855869,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123297,1,1
+86,2,50855863,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123298,1,1
+86,2,50855868,West - 86 Scarborough towards Kennedy Station,,1,2236627,1123297,1,1
+86,2,50855867,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123297,1,1
+86,2,50855862,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123298,1,1
+86,2,50855866,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123297,1,1
+86,2,50855909,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123297,1,1
+86,2,50855861,West - 86 Scarborough towards Kennedy Station,,1,2236665,1123298,1,1
+86,2,50855920,West - 86 Scarborough towards Kennedy Station,,1,2236673,1123297,1,1
+86,2,50855859,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123297,1,1
+86,2,50855860,West - 86 Scarborough towards Kennedy Station,,1,2236670,1123298,1,1
+86,2,50855858,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123297,1,1
+86,2,50855857,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123297,1,1
+86,2,50855853,West - 86 Scarborough towards Kennedy Station,,1,2236669,1123298,1,1
+86,2,50855923,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123297,1,1
+86,2,50855955,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123297,1,1
+86,2,50855896,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123298,1,1
+86,2,50855894,West - 86 Scarborough towards Kennedy Station,,1,2236627,1123295,1,1
+86,2,50855954,West - 86S Scarborough Short Turn towards Kingston Rd,S,1,2236665,1123293,1,1
+86,2,50855893,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123295,1,1
+86,2,50855892,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123295,1,1
+86,2,50855953,West - 86S Scarborough Short Turn towards Kingston Rd,S,1,2236670,1123293,1,1
+86,2,50855913,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123295,1,1
+86,2,50855835,West - 86 Scarborough towards Kennedy Station,,1,2236673,1123295,1,1
+86,2,50855834,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123295,1,1
+86,2,50855930,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123295,1,1
+86,2,50855924,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123295,1,1
+86,2,50855958,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123295,1,1
+86,2,50855991,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123295,1,1
+86,2,50855979,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123295,1,1
+86,2,50855981,West - 86 Scarborough towards Kennedy Station,,1,2236627,1123295,1,1
+86,2,50855990,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123295,1,1
+86,2,50855989,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123295,1,1
+86,2,50855988,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123295,1,1
+86,2,50855987,West - 86 Scarborough towards Kennedy Station,,1,2236673,1123295,1,1
+86,2,50855986,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123295,1,1
+86,2,50855985,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123295,1,1
+86,2,50855984,West - 86 Scarborough towards Kennedy Station,,1,2236672,1123295,1,1
+86,2,50855967,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123295,1,1
+86,2,50855973,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123295,1,1
+86,2,50855971,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123295,1,1
+86,2,50855982,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123295,1,1
+86,2,50855983,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123295,1,1
+86,2,50855969,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123295,1,1
+86,2,50855968,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123295,1,1
+86,2,50855997,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123295,1,1
+86,2,50855996,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123295,1,1
+86,2,50855995,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123295,1,1
+86,2,50855994,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123295,1,1
+86,2,50855993,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123295,1,1
+86,2,50855992,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123295,1,1
+86,2,50855976,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123295,1,1
+86,2,50855975,West - 86 Scarborough towards Kennedy Station,,1,2236638,1123295,1,1
+86,2,50855974,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123295,1,1
+86,2,50855980,West - 86 Scarborough towards Kennedy Station,,1,2236666,1123295,1,1
+86,2,50855978,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123295,1,1
+86,2,50855977,West - 86 Scarborough towards Kennedy Station,,1,2236668,1123295,1,1
+86,2,50855972,West - 86 Scarborough towards Kennedy Station,,1,2236639,1123295,1,1
+86,2,50855966,West - 86 Scarborough towards Kennedy Station,,1,2236671,1123295,1,1
+86,2,50855965,West - 86 Scarborough towards Kennedy Station,,1,2236640,1123295,1,1
+86,2,50855964,West - 86 Scarborough towards Kennedy Station,,1,2236667,1123295,1,1
+86,2,50855970,West - 86 Scarborough towards Kennedy Station,,1,2236637,1123295,1,1

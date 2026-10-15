@@ -1,0 +1,67 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+114,40,957863,I-95 Industrial Park,,0,4546,319544,1,1
+114,40,957869,Penn State,,0,4545,319542,1,1
+114,40,957864,I-95 Industrial Park,,0,4547,319544,1,1
+114,40,957870,Wawa Station,,0,4549,319539,1,1
+114,40,957871,I-95 Industrial Park,,0,4546,319544,1,1
+114,40,957872,Penn State,,0,4548,319542,1,1
+114,40,957865,I-95 Industrial Park,,0,4547,319544,1,1
+114,40,957873,Wawa Station,,0,4550,319539,1,1
+114,40,957874,Chester Transit Center,,0,4545,319543,1,1
+114,40,957880,Wawa Station,,0,4504,319539,1,1
+114,40,957875,Chester Transit Center,,0,4546,319543,1,1
+114,40,957881,Penn State,,0,4547,319542,1,1
+114,40,957876,Chester Transit Center,,0,4548,319543,1,1
+114,40,957882,Wawa Station,,0,4546,319539,1,1
+114,40,957877,Chester Transit Center,,0,4550,319543,1,1
+114,40,957883,Wawa Station,,0,4548,319539,1,1
+114,40,957878,Chester Transit Center,,0,4504,319543,1,1
+114,40,957884,Penn State,,0,4551,319542,1,1
+114,40,957879,Chester Transit Center,,0,4552,319543,1,1
+114,40,957885,Wawa Station,,0,4553,319539,1,1
+114,40,957866,Chester Transit Center,,0,4554,319543,1,1
+114,40,957886,Penn State,,0,4552,319542,1,1
+114,40,957867,I-95 Industrial Park,,0,4555,319544,1,1
+114,40,957887,Wawa Station,,0,4554,319539,1,1
+114,40,957868,I-95 Industrial Park,,0,4551,319544,1,1
+114,40,957888,Wawa Station,,0,4556,319539,1,1
+114,40,957895,Wawa Station,,0,4553,319539,1,1
+114,40,957889,15th-Highland,,0,4555,319541,1,1
+114,40,957890,Penn State,,0,4552,319542,1,1
+114,40,957891,Wawa Station,,0,4554,319539,1,1
+114,40,957892,Wawa Station,,0,4553,319539,1,1
+114,40,957893,15th-Highland,,0,4552,319541,1,1
+114,40,957894,Chester Transit Center,,0,4553,319543,1,1
+114,40,957927,Darby Transit Center,,1,4545,319547,1,1
+114,40,957928,Darby Transit Center,,1,4547,319547,1,1
+114,40,957918,Darby Transit Center,,1,4546,319546,1,1
+114,40,957896,Darby Transit Center,,1,4548,319549,1,1
+114,40,957919,Darby Transit Center,,1,4547,319546,1,1
+114,40,957897,Darby Transit Center,,1,4545,319549,1,1
+114,40,957920,Darby Transit Center,,1,4546,319546,1,1
+114,40,957898,Darby Transit Center,,1,4549,319545,1,1
+114,40,957921,Darby Transit Center,,1,4547,319546,1,1
+114,40,957899,Darby Transit Center,,1,4548,319549,1,1
+114,40,957926,Darby Transit Center,,1,4546,319547,1,1
+114,40,957900,Darby Transit Center,,1,4550,319545,1,1
+114,40,957922,Darby Transit Center,,1,4548,319547,1,1
+114,40,957901,Darby Transit Center,,1,4504,319545,1,1
+114,40,957923,Darby Transit Center,,1,4550,319547,1,1
+114,40,957904,Darby Transit Center,,1,4547,319549,1,1
+114,40,957924,Darby Transit Center,,1,4504,319547,1,1
+114,40,957902,Darby Transit Center,,1,4546,319545,1,1
+114,40,957925,Darby Transit Center,,1,4552,319547,1,1
+114,40,957903,Darby Transit Center,,1,4548,319545,1,1
+114,40,957914,Darby Transit Center,,1,4554,319547,1,1
+114,40,957905,Darby Transit Center,,1,4551,319549,1,1
+114,40,957915,Darby Transit Center,,1,4556,319547,1,1
+114,40,957906,Darby Transit Center,,1,4553,319545,1,1
+114,40,957916,Darby Transit Center,,1,4555,319546,1,1
+114,40,957907,Darby Transit Center,,1,4552,319549,1,1
+114,40,957917,Darby Transit Center,,1,4551,319546,1,1
+114,40,957908,Darby Transit Center,,1,4554,319545,1,1
+114,40,957909,Darby Transit Center,,1,4556,319545,1,1
+114,40,957910,Darby Transit Center,,1,4553,319545,1,1
+114,40,957911,Darby Transit Center,,1,4552,319549,1,1
+114,40,957912,Darby Transit Center,,1,4554,319545,1,1
+114,40,957913,Darby Transit Center,,1,4553,319545,1,1

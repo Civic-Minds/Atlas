@@ -66,7 +66,10 @@ export function getModeCategory(routeType: string): string {
         return 'rail';
     }
 
-    // Default to surface for all other types (Buses, Trolleybuses, Ferries, etc.)
+    // Default to surface for all other types (Buses, Trolleybuses, Ferries, etc.). Gondolas (6)
+    // and trolleybuses (11) stay on the surface scale on purpose: a trolleybus is a bus in
+    // mixed traffic, and the rail scale's 5 and 8 exist for exclusive-guideway service riders
+    // treat as turn-up-and-go, which a gondola's continuous cabins are not graded as.
     return 'surface';
 }
 

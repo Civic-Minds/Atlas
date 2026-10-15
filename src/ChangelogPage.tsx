@@ -1,7 +1,6 @@
 import { WhatsNewItemText } from './components/WhatsNewItemText';
 import PageContents from './components/PageContents';
 import PageShell from './components/ui/PageShell';
-import SiteFooter from './components/SiteFooter';
 import { buildChangelog } from './lib/changelog';
 import { WHATS_NEW, visibleWhatsNew } from './data/whatsNew';
 import { FEATURES } from '../shared/config';
@@ -33,7 +32,6 @@ export default function ChangelogPage() {
                 </ul>
               </section>
             ))}
-            <SiteFooter />
           </article>
         </div>
     </PageShell>

@@ -5,6 +5,10 @@ const CARTO_STYLES = new Set(['light_all', 'dark_all']);
 // and serves stale for another 30 days while revalidating, so few requests reach this function.
 const TILE_CACHE_OK = 'public, max-age=604800, s-maxage=31536000, stale-while-revalidate=2592000';
 const TILE_CACHE_NONE = 'no-store, max-age=0';
+// MapLibre's default zoom range. Anything outside it (or any extra query param)
+// is rejected so junk URLs can't create new edge-cache keys that each cost a CARTO fetch.
+const MAX_ZOOM = 22;
+const ALLOWED_PARAMS = new Set(['style', 'z', 'x', 'y']);
 
 // CARTO answers a missing or invalid key with HTTP 200 and an "API KEY REQUIRED" watermark tile,
 // marked by an ETag starting with "wm-". Never let that be cached as if it were a real tile.
@@ -32,8 +36,16 @@ export async function handleCartoTiles(request: Request): Promise<Response> {
   const key = process.env.CARTO_BASEMAP_API_KEY;
 
   if (!key) return errorResponse('Basemap is not configured', 503);
-  const isTilePart = (value: string | null): value is string => Boolean(value && /^\d+$/.test(value));
-  if (!style || !CARTO_STYLES.has(style) || !isTilePart(z) || !isTilePart(x) || !isTilePart(y)) {
+  const isTilePart = (value: string | null): value is string => Boolean(value && /^(0|[1-9]\d{0,6})$/.test(value));
+  const paramNames = [...url.searchParams.keys()];
+  // Exactly style, z, x, y once each: extra or repeated params would vary the cache key.
+  const hasOnlyAllowedParams = paramNames.length === ALLOWED_PARAMS.size
+    && paramNames.every(name => ALLOWED_PARAMS.has(name));
+  if (!hasOnlyAllowedParams || !style || !CARTO_STYLES.has(style) || !isTilePart(z) || !isTilePart(x) || !isTilePart(y)) {
+    return errorResponse('Invalid tile request', 400);
+  }
+  const tilesPerSide = 2 ** Number(z);
+  if (Number(z) > MAX_ZOOM || Number(x) >= tilesPerSide || Number(y) >= tilesPerSide) {
     return errorResponse('Invalid tile request', 400);
   }
 

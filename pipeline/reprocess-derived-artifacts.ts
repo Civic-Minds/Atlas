@@ -52,7 +52,7 @@ import './loadEnv.js';
 import { type GtfsPreprocess } from './process-core.js';
 import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem } from './agencyFeeds.js';
 import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js';
-import { stampReprocessedFeedExpiry } from './refreshMeta.js';
+import { recordedFeedExpiry, stampReprocessedFeedExpiry } from './refreshMeta.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
 import {
@@ -65,6 +65,7 @@ import {
   peekFeedDates,
   reprocessCountryLaunchSkip,
   selectArchiveForAgency,
+  selectByFeedDates,
   type ArtifactCounts,
 } from './archiveSelection.js';
 import {
@@ -156,10 +157,19 @@ function shouldProcess(agency: Agency): boolean {
 }
 
 async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: string } | null> {
-  const selection = selectArchiveForAgency(await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`), agency);
+  const objects = await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`);
+  const selection = selectArchiveForAgency(objects, agency);
   if (selection.ok) return { key: selection.key, reason: selection.reason };
   if (selection.noArchive) return null;
-  throw new Refusal(selection.reason);
+  // Key dates and upload order disagree: read each zip's own service dates instead (#859).
+  const prior = selection.reason.replace(/^cannot tell which archived zip is newest: /, '');
+  const peeked = await Promise.all(objects.filter(obj => obj.key.endsWith('.zip')).map(async obj => {
+    const buf = await r2GetArchiveBuffer(obj.key);
+    return { obj, dates: buf ? await peekFeedDates(buf) : { feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null } };
+  }));
+  const byDates = selectByFeedDates(peeked, todayYmd, prior);
+  if (byDates.ok) return { key: byDates.key, reason: byDates.reason };
+  throw new Refusal(byDates.reason);
 }
 
 function localArchivePath(fileStem: string): string | null {
@@ -195,7 +205,10 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     if (!body) throw new Error(`could not read ${sourceKey ?? localPath}`);
 
     console.log(`\n${agency.slug}: ${row.sourceKey} (${row.selection})`);
-    const { feedStart, feedExpiry } = await peekFeedDates(body);
+    // The same expiry the publish step reads from index.json (#875): a placeholder calendar
+    // never keeps an expired feed_info in service here while the release gate calls it expired.
+    const { feedStart, feedExpiry: calendarEnd, feedInfoEnd } = await peekFeedDates(body);
+    const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd);
     row.feedExpiry = feedExpiry;
     const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, todayYmd);
     if (dateRefusal) throw new Refusal(dateRefusal);
@@ -210,7 +223,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     const live = await readLiveSummary(agency.slug, r2Get);
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
-    gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry } }, live });
+    gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd } }, live });
     processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry });
 
     const agencyDir = resolve(outputDir, agency.slug);

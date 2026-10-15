@@ -48,6 +48,8 @@ export interface RouteProperties {
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
   stopHeadways?: Record<string, number | null>;
+  /** CIV-152: each drawn stop's every-gap tier on its pooled list (the route tier's method); stops with no all-day reading are absent. */
+  stopTiers?: Record<string, string>;
   stopPeriodHeadways?: Record<string, HeadwayByPeriod>;
   stopOrder?: string[];
   stopPositions?: number[];

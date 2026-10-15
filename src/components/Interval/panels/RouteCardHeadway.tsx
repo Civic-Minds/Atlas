@@ -2,6 +2,7 @@ import React from 'react';
 import { useInRouterContext, useNavigate } from 'react-router';
 import { useSegmentDelay } from '../../../hooks/useSegmentDelay';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
+import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
@@ -420,6 +421,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     `**Atlas URL:** ${currentAtlasUrl()}`,
   ].join('\n');
 
+  const patternLabel = routePatternLabel(currentRoute.directions);
+
   return (
     <SidebarCardShell>
       {liveRouteInfo && liveStatus !== 'noData' && (
@@ -469,6 +472,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         );
       })()}
+      {patternLabel && (
+        <p className="text-xs font-bold text-[var(--text-dim)] -mt-1 mb-3 truncate" data-testid="route-pattern-label">{patternLabel}</p>
+      )}
       {FEATURES.beta && variantFamily && (
         <p className="text-xs text-[var(--text-dim)] -mt-1 mb-3">
           Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
@@ -725,7 +731,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       );
                     })();
                   })}
-                  {(!hideSpan || group.realTier.length === 0) && exclusiveSpans.length === 1 && (
+                  {/* Span-only branches use the same limited row whether or not the irregular-service
+                      filter is on: the filter hides them from the map, not from the route's own card. */}
+                  {exclusiveSpans.length === 1 && (
                     <CardDirectionRow
                       key="s0"
                       label={branchLabel(group, exclusiveSpans[0], gi) || 'limited service'}
@@ -733,11 +741,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       {...branchHoverProps(group.dirId, exclusiveSpans[0].headsign)}
                     />
                   )}
-                  {(!hideSpan || group.realTier.length === 0) && exclusiveSpans.length > 1 && (
+                  {exclusiveSpans.length > 1 && (
                     <CardDirectionRow key="smulti" label={exclusiveSpanNames.join(' · ')} limited />
-                  )}
-                  {hideSpan && group.realTier.length > 0 && exclusiveSpanNames.length > 0 && (
-                    <CardDirectionRow key="span-hint" label={exclusiveSpanNames.join(' · ')} limitedHint />
                   )}
                 </div>
               </React.Fragment>

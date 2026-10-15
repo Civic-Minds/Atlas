@@ -149,7 +149,7 @@ describe('release diff gate: red flags', () => {
     expect(flags[0].message).toContain('5738 15->4 min');
   });
 
-  it('takes the most frequent tier across a route\'s directions and ignores tiers off the scale', () => {
+  it('takes the most frequent tier across a route\'s directions and ignores span', () => {
     const line = (routeId: string, tier: string, headway: number | null) => ({
       type: 'Feature',
       geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
@@ -157,11 +157,27 @@ describe('release diff gate: red flags', () => {
     });
     const artifact = (features: unknown[]) => JSON.stringify({ type: 'FeatureCollection', features });
     const live = summarizeArtifact(artifact([line('A', '60', 30), line('A', '15', 12), line('A', 'span', null), line('SKYT', '5', 5)]), null);
-    expect(live.weekdayTiers).toEqual({ A: '15' });
-    // A one-step tier move and a headway change under 2x stay quiet; the legacy
-    // rail tier '5' -> '10' (valleymetro SKYT, a correct change) is not a tier change.
-    const next = summarizeArtifact(artifact([line('A', '30', 20), line('A', '20', 18), line('SKYT', '10', 5)]), null);
+    expect(live.weekdayTiers).toEqual({ A: '15', SKYT: '5' });
+    // A one-step tier move and a headway change under 2x stay quiet, on the rail scale too (5 -> 8).
+    const next = summarizeArtifact(artifact([line('A', '30', 20), line('A', '20', 18), line('SKYT', '8', 5)]), null);
     expect(evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY)).toEqual([]);
+  });
+
+  it('flags a rail line that drops two steps on its own scale with the headway unchanged (#871)', () => {
+    const line = (routeId: string, tier: string, headway: number | null) => ({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+      properties: { routeId, day: 'Weekday', tier, headway },
+    });
+    const artifact = (features: unknown[]) => JSON.stringify({ type: 'FeatureCollection', features });
+    // valleymetro SKYT every 5: tier 5 -> 10 is two steps (5, 8, 10), hidden before because the
+    // gate only knew the surface scale and the headway did not double.
+    const live = summarizeArtifact(artifact([line('SKYT', '5', 5), line('1', '8', 6)]), null);
+    const next = summarizeArtifact(artifact([line('SKYT', '10', 5), line('1', '15', 6)]), null);
+    const flags = evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['x:route-shift:yellow']);
+    expect(flags[0].message).toContain('SKYT tier 5->10');
+    expect(flags[0].message).toContain('1 tier 8->15');
   });
 
   it('flags already-expired service as red when the output changes, yellow when unchanged', () => {

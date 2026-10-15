@@ -1,0 +1,78 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+9604,9604,Ellesmere Rd at McCowan Rd East Side,,43.77225,-79.25047,,,,,,1
+13068,13068,Lawrence Ave East at East Ave - Rouge Hill GO Station,,43.780829,-79.131368,,,,,,1
+9885,9885,Port Union Rd at Adenmore Rd North Side,,43.781768,-79.13747,,,,,,1
+7480,7480,Lawson Rd at Kingston Rd - Highway 2A Overpass,,43.784126,-79.168334,,,,,,1
+11560,11560,Highland Creek Overpass at Kingston Rd,,43.784282,-79.168278,,,,,,1
+7691,7691,Ellesmere Rd at Helicon Gate West Side,,43.778605,-79.222594,,,,,,1
+7974,7974,Military Trail at Lash Crt,,43.783478,-79.181795,,,,,,2
+1049,1049,Ellesmere Rd at Markham Rd,,43.776669,-79.231287,,,,,,2
+7701,7701,Ellesmere Rd at Mornelle Crt,,43.785001,-79.195193,,,,,,1
+7968,7968,Opposite 1314 Military Trail,,43.784336,-79.183802,,,,,,2
+7933,7933,Lawson Rd at Meadowvale Rd,,43.785189,-79.160874,,,,,,1
+8036,8036,Port Union Rd at Conference Blvd,,43.786201,-79.139586,,,,,,1
+7927,7927,Lawson Rd at Centennial Rd,,43.787318,-79.151189,,,,,,1
+7924,7924,Lawson Rd at Cedarview Dr East Side,,43.786882,-79.153183,,,,,,1
+1044,1044,Ellesmere Rd at Dolly Varden Blvd,,43.775626,-79.235048,,,,,,1
+7697,7697,Ellesmere Rd at Midland Ave,,43.768149,-79.270795,,,,,,1
+7704,7704,Ellesmere Rd at Neilson Rd - Scarborough Health Network Centenary Hospital,,43.782441,-79.205092,,,,,,1
+7920,7920,Lawson Rd at Highway 2A Overpass East Side,,43.782906,-79.165851,,,,,,1
+1613,1613,Triton Rd at Borough Dr,,43.773482,-79.261427,,,,,,1
+1046,1046,Ellesmere Rd at Gander Dr East Side,,43.777555,-79.226206,,,,,,1
+7676,7676,Ellesmere Rd at Bellamy Rd North,,43.774149,-79.241959,,,,,,1
+8004,8004,Old Kingston Rd at Morrish Rd West Side,,43.783129,-79.171091,,,,,,1
+7699,7699,Ellesmere Rd at Military Trail (East) West Side,,43.786502,-79.189027,,,,,,2
+1052,1052,Ellesmere Rd at Scarborough Golf Club Rd,,43.778371,-79.222373,,,,,,1
+1051,1051,Ellesmere Rd at Orton Park Rd,,43.7796,-79.217311,,,,,,1
+7935,7935,Lawson Rd at Wichey Rd,,43.788892,-79.14401,,,,,,1
+7973,7973,Military Trail at Gladys Rd,,43.783008,-79.179576,,,,,,2
+7702,7702,Ellesmere Rd at Morningside Ave,,43.785158,-79.193623,,,,,,1
+7712,7712,Ellesmere Rd at Parkington Cres,,43.773539,-79.245841,,,,,,1
+7705,7705,Ellesmere Rd at Neilson Rd - Scarborough Health Network Centenary Hospital,,43.782805,-79.204762,,,,,,1
+7975,7975,Military Trail at Old Kingston Rd,,43.782049,-79.174233,,,,,,1
+7922,7922,59 Lawson Rd,,43.783965,-79.164127,,,,,,1
+7934,7934,Lawson Rd at Port Union Rd,,43.789502,-79.141184,,,,,,1
+7700,7700,Ellesmere Rd at Military Trail (West),,43.779894,-79.217004,,,,,,1
+7925,7925,Lawson Rd at Cedarview Dr,,43.786901,-79.153707,,,,,,1
+7921,7921,58 Lawson Rd,,43.784124,-79.164244,,,,,,2
+10141,10141,Port Union Rd at Lawrence Ave East North Side,,43.780021,-79.136654,,,,,,1
+7926,7926,Lawson Rd at Centennial Rd West Side,,43.787462,-79.151168,,,,,,1
+7977,7977,Military Trail at University of Toronto Scarborough,,43.785926,-79.186773,,,,,,1
+7677,7677,Ellesmere Rd at Bellamy Rd North,,43.774537,-79.241437,,,,,,1
+7923,7923,Lawson Rd at Brumwell St East Side,,43.788189,-79.147236,,,,,,1
+1045,1045,Ellesmere Rd at Dormington Dr West Side,,43.777547,-79.227204,,,,,,1
+7711,7711,Ellesmere Rd at Parkington Cres,,43.773188,-79.246369,,,,,,1
+1612,1612,Triton Rd at Borough Dr,,43.773658,-79.261533,,,,,,1
+1043,1043,Ellesmere Rd at Dolly Varden Blvd West Side,,43.775797,-79.235291,,,,,,1
+7698,7698,Ellesmere Rd at Military Trail (East),,43.786439,-79.188422,,,,,,1
+7970,7970,Military Trail at Bobmar Rd,,43.782638,-79.177488,,,,,,2
+8035,8035,Port Union Rd at Clappison Blvd,,43.7815,-79.137591,,,,,,1
+8002,8002,Old Kingston Rd at Military Trail,,43.782122,-79.172681,,,,,,2
+9889,9889,Lawson Rd at Wichey Rd,,43.789085,-79.143788,,,,,,2
+7695,7695,Ellesmere Rd at McCowan Rd,,43.77237,-79.251163,,,,,,1
+7932,7932,Lawson Rd at Meadowvale Rd West Side,,43.785289,-79.161088,,,,,,1
+8003,8003,Old Kingston Rd at Morrish Rd,,43.783097,-79.170854,,,,,,1
+1048,1048,Ellesmere Rd at Markham Rd,,43.776245,-79.232002,,,,,,1
+7971,7971,Military Trail at Conlins Rd North Side,,43.783779,-79.182208,,,,,,1
+7703,7703,Ellesmere Rd at Morningside Ave,,43.785523,-79.193129,,,,,,1
+9890,9890,Lawson Rd at Brumwell St,,43.788338,-79.147327,,,,,,1
+9891,9891,Port Union Rd at Lawrence Ave East,,43.780253,-79.137057,,,,,,1
+14766,14766,Scarborough Centre Station,,43.774499,-79.257246,,,,,,1
+15114,15114,University of Toronto Scarborough,,43.78451,-79.184841,,,,,,1
+16037,16037,Rouge Hill GO Station Loop,,43.780709,-79.130359,,,,,,1
+16335,16335,Scarborough Centre Station,,43.774807,-79.256381,,,,,,1
+16374,16374,Ellesmere Rd at Midland Ave East Side,,43.767989,-79.270397,,,,,,1
+16390,16390,Kennedy Station - Platform B,,43.731978,-79.263574,,,,,,1
+16453,16453,Kennedy Station Drop-off Platform,,43.732229,-79.263511,,,,,,2
+16645,16645,McCowan Rd at Town Centre Crt South Side,,43.774229,-79.252204,,,,,,1
+16655,16655,1410 Military Trail,,43.782914,-79.178372,,,,,,1
+16415,16415,Lawson Rd at Roydawn Ct,,43.785911,-79.157582,,,,,,1
+16416,16416,Lawson Rd at Satchell Blvd West Side,,43.786135,-79.157282,,,,,,1
+16807,16807,Port Union Rd at Tilley Dr,,43.788615,-79.140347,,,,,,1
+16808,16808,Port Union Rd at Conference Blvd,,43.786023,-79.139246,,,,,,1
+16912,16912,Tara Avenue,,43.742683,-79.267034,,,,,,1
+16913,16913,Tara Avenue,,43.742028,-79.266923,,,,,,1
+16914,16914,Lawrence East,,43.74964,-79.269965,,,,,,1
+16915,16915,Lawrence East,,43.749381,-79.270003,,,,,,1
+16916,16916,Ellesmere,,43.766819,-79.27646,,,,,,1
+16917,16917,Ellesmere,,43.76647,-79.276535,,,,,,1

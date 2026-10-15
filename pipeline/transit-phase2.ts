@@ -48,6 +48,18 @@ export type TierDeterminer = (
  */
 export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
 
+/**
+ * A sample with at least this many gaps may always carry one gap inside the grace. The
+ * allowance is a share of the gaps (violationPercent, 5% on the 20-60 tiers), floor-rounded, so
+ * an hourly line read over a 12-hour weekend window (12 gaps) or a 16-hour weekday (16 gaps)
+ * allowed none: one 61-minute gap failed it, at its origin and at every stop downstream where
+ * running time drifts a minute (wmata P72 Saturday, ttc 79, 7,088 of 60,628 catalog lines graded
+ * stop by stop). Eight gaps is nine departures over at least eight hours at the hourly tier, a
+ * whole-day sample, and one gap in eight (12.5%) is in line with the 10% the frequent tiers
+ * already allow; under eight a single long gap is a seventh of the day or more and still fails.
+ */
+export const GRACE_FLOOR_MIN_GAPS = 8;
+
 /** Departures packed into this many minutes or fewer are a burst, not a schedule. */
 export const BURST_MAX_SPAN_MINUTES = 90;
 /** A burst is a variant only of a regular pattern running within this many minutes of it (#732). */
@@ -78,8 +90,10 @@ export const determineTier = (
     for (const T of tiers) {
         const grace = Math.max(graceMinutes, Math.round(T * gracePercent));
         const tierViolationPercent = violationPercentByTier?.[T] ?? violationPercent;
-        const percentageAllowance = Math.floor((headways.length + preCountedGraceViolations) * tierViolationPercent);
-        const allowedViolations = Math.min(3, Math.max(maxGraceViolations, percentageAllowance));
+        const gapCount = headways.length + preCountedGraceViolations;
+        const percentageAllowance = Math.floor(gapCount * tierViolationPercent);
+        const floorAllowance = gapCount >= GRACE_FLOOR_MIN_GAPS ? 1 : 0;
+        const allowedViolations = Math.min(3, Math.max(maxGraceViolations, percentageAllowance, floorAllowance));
         const minTrips = Math.ceil(spanMinutes / T);
         if (tripCount < minTrips) continue;
 

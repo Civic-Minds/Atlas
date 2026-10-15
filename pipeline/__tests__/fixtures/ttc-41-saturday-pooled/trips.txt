@@ -1,0 +1,230 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+41,2,50842268,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236051,1122748,1,1
+41,2,50842267,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235995,1122748,1,1
+41,2,50842266,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235994,1122748,1,1
+41,2,50842265,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236024,1122752,1,1
+41,2,50842298,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236041,1122752,1,1
+41,2,50842263,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236034,1122752,1,1
+41,2,50842262,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236051,1122752,1,1
+41,2,50842261,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235995,1122752,1,1
+41,2,50842260,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235994,1122752,1,1
+41,2,50842279,South - 41 Keele towards Keele Station,,0,2236039,1122750,1,1
+41,2,50842259,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236024,1122752,1,1
+41,2,50842293,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236041,1122752,1,1
+41,2,50842292,South - 41 Keele towards Keele Station,,0,2236049,1122750,1,1
+41,2,50842258,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236034,1122752,1,1
+41,2,50842257,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236050,1122752,1,1
+41,2,50842289,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236051,1122752,1,1
+41,2,50842291,South - 41 Keele towards Keele Station,,0,2236042,1122750,1,1
+41,2,50842255,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236040,1122752,1,1
+41,2,50842252,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236039,1122752,1,1
+41,2,50842254,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235995,1122752,1,1
+41,2,50842253,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235994,1122752,1,1
+41,2,50842264,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236049,1122752,1,1
+41,2,50842250,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236024,1122752,1,1
+41,2,50842296,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236041,1122752,1,1
+41,2,50842295,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236042,1122752,1,1
+41,2,50842290,South - 41 Keele towards Keele Station,,0,2236047,1122750,1,1
+41,2,50842251,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236038,1122752,1,1
+41,2,50842294,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236034,1122752,1,1
+41,2,50842278,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236050,1122752,1,1
+41,2,50842256,South - 41 Keele towards Keele Station,,0,2236043,1122750,1,1
+41,2,50842269,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236051,1122752,1,1
+41,2,50842277,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236053,1122752,1,1
+41,2,50842276,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236040,1122752,1,1
+41,2,50842297,South - 41 Keele towards Keele Station,,0,2236048,1122750,1,1
+41,2,50842275,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236039,1122752,1,1
+41,2,50842274,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236052,1122752,1,1
+41,2,50842273,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235995,1122752,1,1
+41,2,50842272,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235994,1122752,1,1
+41,2,50842271,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236044,1122752,1,1
+41,2,50842270,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236047,1122752,1,1
+41,2,50842288,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236046,1122752,1,1
+41,2,50842287,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236049,1122752,1,1
+41,2,50842286,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236024,1122752,1,1
+41,2,50842285,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236041,1122752,1,1
+41,2,50842284,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236043,1122752,1,1
+41,2,50842283,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236042,1122752,1,1
+41,2,50842282,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236038,1122752,1,1
+41,2,50842281,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236048,1122752,1,1
+41,2,50842280,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236025,1122752,1,1
+41,2,50842357,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236050,1122752,1,1
+41,2,50842343,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236045,1122752,1,1
+41,2,50842341,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236053,1122752,1,1
+41,2,50842340,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236040,1122752,1,1
+41,2,50842355,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236039,1122752,1,1
+41,2,50842328,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236052,1122752,1,1
+41,2,50842327,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235995,1122752,1,1
+41,2,50842322,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235994,1122752,1,1
+41,2,50842321,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236044,1122752,1,1
+41,2,50842320,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236047,1122752,1,1
+41,2,50842310,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236046,1122752,1,1
+41,2,50842319,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236049,1122752,1,1
+41,2,50842318,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236024,1122752,1,1
+41,2,50842301,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236041,1122752,1,1
+41,2,50842303,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236043,1122752,1,1
+41,2,50842302,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236042,1122752,1,1
+41,2,50842334,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236038,1122752,1,1
+41,2,50842333,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236048,1122752,1,1
+41,2,50842332,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236025,1122752,1,1
+41,2,50842331,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236050,1122752,1,1
+41,2,50842330,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236045,1122752,1,1
+41,2,50842329,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236053,1122752,1,1
+41,2,50842300,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236040,1122752,1,1
+41,2,50842356,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236039,1122752,1,1
+41,2,50842354,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236052,1122752,1,1
+41,2,50842326,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235995,1122752,1,1
+41,2,50842337,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235994,1122752,1,1
+41,2,50842353,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236044,1122752,1,1
+41,2,50842309,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236047,1122752,1,1
+41,2,50842308,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236046,1122752,1,1
+41,2,50842313,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236049,1122752,1,1
+41,2,50842317,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236024,1122752,1,1
+41,2,50842316,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236041,1122752,1,1
+41,2,50842315,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236043,1122752,1,1
+41,2,50842363,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236042,1122752,1,1
+41,2,50842314,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236038,1122752,1,1
+41,2,50842312,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236048,1122752,1,1
+41,2,50842306,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236025,1122752,1,1
+41,2,50842323,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236050,1122752,1,1
+41,2,50842307,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236045,1122752,1,1
+41,2,50842352,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236053,1122752,1,1
+41,2,50842351,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236040,1122752,1,1
+41,2,50842350,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236052,1122752,1,1
+41,2,50842349,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235995,1122752,1,1
+41,2,50842348,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236044,1122752,1,1
+41,2,50842347,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236046,1122752,1,1
+41,2,50842346,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236024,1122752,1,1
+41,2,50842345,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236043,1122752,1,1
+41,2,50842344,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236032,1122752,1,1
+41,2,50842342,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236025,1122752,1,1
+41,2,50842336,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236045,1122752,1,1
+41,2,50842339,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236040,1122752,1,1
+41,2,50842338,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236031,1122752,1,1
+41,2,50842325,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2235995,1122752,1,1
+41,2,50842324,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236044,1122752,1,1
+41,2,50842362,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236046,1122752,1,1
+41,2,50842361,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236033,1122752,1,1
+41,2,50842358,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236032,1122752,1,1
+41,2,50842359,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236045,1122752,1,1
+41,2,50842360,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236031,1122752,1,1
+41,2,50842305,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236044,1122752,1,1
+41,2,50842304,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236033,1122752,1,1
+41,2,50842366,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236032,1122752,1,1
+41,2,50842365,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236045,1122752,1,1
+41,2,50842311,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236031,1122752,1,1
+41,2,50842299,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236033,1122752,1,1
+41,2,50842364,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236032,1122751,1,1
+41,2,50842335,South - 41 Keele towards Keele Station via Keelesdale Station,,0,2236031,1122751,1,1
+41,2,50842368,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236024,1122755,1,1
+41,2,50842429,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236041,1122755,1,1
+41,2,50842416,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236034,1122753,1,1
+41,2,50842385,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236051,1122753,1,1
+41,2,50842384,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235995,1122753,1,1
+41,2,50842383,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235994,1122753,1,1
+41,2,50842382,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236024,1122753,1,1
+41,2,50842404,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236041,1122753,1,1
+41,2,50842397,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236034,1122753,1,1
+41,2,50842391,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236051,1122753,1,1
+41,2,50842427,North - 41 Keele towards Pioneer Village Station,,1,2236050,1122754,1,1
+41,2,50842390,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236039,1122753,1,1
+41,2,50842402,North - 41 Keele towards Pioneer Village Station,,1,2236040,1122754,1,1
+41,2,50842414,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235995,1122753,1,1
+41,2,50842372,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235994,1122753,1,1
+41,2,50842396,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236049,1122753,1,1
+41,2,50842425,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236024,1122753,1,1
+41,2,50842426,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236041,1122753,1,1
+41,2,50842395,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236042,1122753,1,1
+41,2,50842386,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236034,1122753,1,1
+41,2,50842394,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236050,1122753,1,1
+41,2,50842419,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236051,1122753,1,1
+41,2,50842418,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236040,1122753,1,1
+41,2,50842411,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236039,1122753,1,1
+41,2,50842369,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235995,1122753,1,1
+41,2,50842417,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235994,1122753,1,1
+41,2,50842428,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236047,1122753,1,1
+41,2,50842403,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236049,1122753,1,1
+41,2,50842401,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236024,1122753,1,1
+41,2,50842370,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236041,1122753,1,1
+41,2,50842413,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236043,1122753,1,1
+41,2,50842398,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236042,1122753,1,1
+41,2,50842374,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236038,1122753,1,1
+41,2,50842367,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236048,1122753,1,1
+41,2,50842434,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236025,1122753,1,1
+41,2,50842410,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236050,1122753,1,1
+41,2,50842409,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236051,1122753,1,1
+41,2,50842408,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236053,1122753,1,1
+41,2,50842412,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236040,1122753,1,1
+41,2,50842424,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236039,1122753,1,1
+41,2,50842423,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236052,1122753,1,1
+41,2,50842422,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235995,1122753,1,1
+41,2,50842421,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235994,1122753,1,1
+41,2,50842420,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236044,1122753,1,1
+41,2,50842405,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236047,1122753,1,1
+41,2,50842377,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236046,1122753,1,1
+41,2,50842376,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236049,1122753,1,1
+41,2,50842406,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236024,1122753,1,1
+41,2,50842407,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236041,1122753,1,1
+41,2,50842381,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236043,1122753,1,1
+41,2,50842380,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236042,1122753,1,1
+41,2,50842379,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236038,1122753,1,1
+41,2,50842378,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236048,1122753,1,1
+41,2,50842389,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236025,1122753,1,1
+41,2,50842375,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236050,1122753,1,1
+41,2,50842399,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236045,1122753,1,1
+41,2,50842393,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236053,1122753,1,1
+41,2,50842392,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236040,1122753,1,1
+41,2,50842400,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236039,1122753,1,1
+41,2,50842430,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236052,1122753,1,1
+41,2,50842388,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235995,1122753,1,1
+41,2,50842373,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235994,1122753,1,1
+41,2,50842371,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236044,1122753,1,1
+41,2,50842415,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236047,1122753,1,1
+41,2,50842433,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236046,1122753,1,1
+41,2,50842432,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236049,1122753,1,1
+41,2,50842431,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236024,1122753,1,1
+41,2,50842387,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236041,1122753,1,1
+41,2,50842460,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236043,1122753,1,1
+41,2,50842459,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236042,1122753,1,1
+41,2,50842458,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236038,1122753,1,1
+41,2,50842471,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236048,1122753,1,1
+41,2,50842470,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236025,1122753,1,1
+41,2,50842454,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236050,1122753,1,1
+41,2,50842439,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236045,1122753,1,1
+41,2,50842438,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236053,1122753,1,1
+41,2,50842453,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236040,1122753,1,1
+41,2,50842452,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236039,1122753,1,1
+41,2,50842451,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236052,1122753,1,1
+41,2,50842450,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235995,1122753,1,1
+41,2,50842449,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235994,1122753,1,1
+41,2,50842448,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236044,1122753,1,1
+41,2,50842443,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236047,1122753,1,1
+41,2,50842442,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236046,1122753,1,1
+41,2,50842441,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236049,1122753,1,1
+41,2,50842440,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236024,1122753,1,1
+41,2,50842474,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236041,1122753,1,1
+41,2,50842473,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236043,1122753,1,1
+41,2,50842475,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236038,1122753,1,1
+41,2,50842435,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236025,1122753,1,1
+41,2,50842455,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236045,1122753,1,1
+41,2,50842457,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236040,1122753,1,1
+41,2,50842437,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236052,1122753,1,1
+41,2,50842436,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2235995,1122753,1,1
+41,2,50842469,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236044,1122753,1,1
+41,2,50842447,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236046,1122753,1,1
+41,2,50842446,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236024,1122753,1,1
+41,2,50842445,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236043,1122753,1,1
+41,2,50842444,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236032,1122753,1,1
+41,2,50842472,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236025,1122753,1,1
+41,2,50842468,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236045,1122753,1,1
+41,2,50842467,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236040,1122753,1,1
+41,2,50842461,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236031,1122753,1,1
+41,2,50842476,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236044,1122753,1,1
+41,2,50842477,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236033,1122753,1,1
+41,2,50842466,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236032,1122753,1,1
+41,2,50842465,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236045,1122753,1,1
+41,2,50842464,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236031,1122753,1,1
+41,2,50842463,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236044,1122753,1,1
+41,2,50842462,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236033,1122753,1,1
+41,2,50842478,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236032,1122753,1,1
+41,2,50842456,North - 41 Keele towards Pioneer Village Station via Keelesdale Station,,1,2236031,1122753,1,1

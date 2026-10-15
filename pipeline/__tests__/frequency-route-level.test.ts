@@ -70,7 +70,9 @@ describe('route-level frequencies.txt expansion (#706)', () => {
     expect(features.map((f: any) => f.properties.day).sort()).toEqual(['Saturday', 'Sunday', 'Weekday']);
     for (const { properties } of features) {
       expect(properties.tier).toBe('infrequent');
-      expect(properties.headway).toBeGreaterThan(120);
+      // Three trips a day is not an all-day service: since CIV-150 the line is limited and has no
+      // headline (it read 200+ before, the two-gap all-day fallback).
+      expect(properties.headway).toBeNull();
       expect(Object.values(properties.headwayByPeriod ?? {})).not.toContain(56);
       for (const hw of Object.values(properties.stopHeadways ?? {})) expect(hw).not.toBe(56);
     }

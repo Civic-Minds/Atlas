@@ -91,11 +91,42 @@ export function selectArchiveForAgency(
   return { ok: true, key: pick.key, reason: `latest service date ${maxDate}, matching the live feed (${why})` };
 }
 
+/** An archived zip with the service dates read from inside it (`peekFeedDates`). */
+export interface PeekedArchive {
+  obj: ArchiveObject;
+  dates: FeedDates;
+}
+
+/**
+ * Second look after `selectArchiveForAgency` refuses (#859). Key dates and upload order can both
+ * mislead: an expired feed re-uploaded after the current one (grt), or legacy `YYYYMMDD.zip` keys
+ * whose date is not the service end (cascades-east). Here only the dates inside each zip count:
+ * among the zips still in service today, the one running latest wins. Zips tied on that date must
+ * be the same feed (same start, end and feed_version); then the newest upload is taken. No zip in
+ * service, or a tie between different feeds, stays refused.
+ */
+export function selectByFeedDates(peeked: PeekedArchive[], todayYmd: string, priorReason: string): ArchiveSelection {
+  const current = peeked.filter(p => !!p.dates.feedExpiry && p.dates.feedExpiry >= todayYmd);
+  if (current.length === 0) return refuse(`${priorReason}, and no archived zip is in service by its own dates`);
+  const latest = current.map(p => p.dates.feedExpiry!).sort().at(-1)!;
+  const top = current.filter(p => p.dates.feedExpiry === latest);
+  const feedId = (d: FeedDates) => `${d.feedStart}|${d.feedExpiry}|${d.feedVersion}`;
+  if (new Set(top.map(p => feedId(p.dates))).size > 1) {
+    return refuse(`${priorReason}, and ${top.length} different feeds run to ${latest}`);
+  }
+  const pick = top.length === 1 ? top[0].obj : newestUpload(top.map(p => p.obj)) ?? top[0].obj;
+  const same = top.length > 1 ? `; ${top.length} archived copies of the same feed` : '';
+  return { ok: true, key: pick.key, reason: `in service to ${latest} by its own dates${same} (${priorReason})` };
+}
+
 
 export interface FeedDates {
   feedStart: string | null;
+  /** Latest service date across feed_info, calendar.txt and calendar_dates.txt; uncapped. */
   feedExpiry: string | null;
   feedVersion: string | null;
+  /** feed_info.txt feed_end_date alone, for recordedFeedExpiry (#875). */
+  feedInfoEnd: string | null;
 }
 
 /** Read the first and latest advertised service dates and feed_version from a GTFS zip. */
@@ -125,9 +156,10 @@ export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
         calendarDates,
       }),
       feedVersion: feedInfo.feed_version || null,
+      feedInfoEnd: feedInfo.feed_end_date || null,
     };
   } catch {
-    return { feedStart: null, feedExpiry: null, feedVersion: null };
+    return { feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null };
   }
 }
 

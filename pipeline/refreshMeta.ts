@@ -93,9 +93,16 @@ export function addYearsYmd(ymd: string, years: number): string {
  * years and today + 2 years (today + 2 years alone without feed_info), so a
  * placeholder far-future end never stops an agency from showing as outdated.
  * The recorded value is the later of feed_info end and that capped end.
+ * A placeholder calendar (ending more than 2 years after today) says nothing
+ * about when service ends, so feed_info end wins outright when there is one
+ * (#875: Simi Valley's 20230601 zip, feed_info 20250601 and a 20301231
+ * calendar, read as current to 20270601).
+ * Every expiry check reads this: refresh and reprocess record it in index.json,
+ * the reprocess date check and the release gate compare it with today.
  */
 export function recordedFeedExpiry(feedExpiry: string | null, peekedExpiry: string | null, todayYmd: string): string | null {
   const today = todayYmd.replace(/-/g, '');
+  if (validYmd(feedExpiry) && validYmd(peekedExpiry) && peekedExpiry > addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)) return feedExpiry;
   const limits = [addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)];
   if (validYmd(feedExpiry)) limits.push(addYearsYmd(feedExpiry, PLACEHOLDER_EXPIRY_YEARS));
   const capped = validYmd(peekedExpiry) ? [peekedExpiry, ...limits].sort()[0] : null;

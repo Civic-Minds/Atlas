@@ -80,8 +80,12 @@ describe('tier regraded on the destination pool along the drawn line (#728)', ()
     const south = lines.find((p: any) => p.directionId === 1 && p.headsign === 'KENNEDY SOUTH');
     expect(south).toBeDefined();
     expect(south.headwayByPeriod.midday).toBe(8);
-    expect(south.headway).toBe(16);
+    // Since #690 the headline reads the same pool (every 8 at the terminal, not the shape's own
+    // 16), every stop the 7A serves too reads the pool, and every stop grades 20 (CIV-152).
+    expect(south.headway).toBe(8);
     expect(south.tier).toBe('20');
+    expect(new Set(Object.values(south.stopHeadways))).toEqual(new Set([8]));
+    expect(new Set(Object.values(south.stopTiers))).toEqual(new Set(['20']));
   });
 
   it('a lone shape with a real hole keeps its grade: there is no larger pool to read', async () => {
@@ -173,14 +177,16 @@ describe('tier regraded on the destination pool along the drawn line (#728)', ()
     expect(lines[0].tier).toBe('30');
   });
 
-  it('the lift never passes the headline: two interleaved hourly patterns stay at 60', async () => {
-    // A and B each every 60 on the same road, offset by 30: the pool runs every 30 but the drawn
-    // shape's own headline is 60, so the tier stays 60 (the headline source is not changed here).
+  it('two interleaved hourly patterns under one destination read every 30 and tier 30 (#690)', async () => {
+    // A and B each every 60 on the same road, offset by 30: one service split over two shape ids
+    // (RFTA L: five hourly shapes, every 30 combined). Before #690 the drawn shape's own headline
+    // (60) capped the lift; the headline now reads the destination pool too.
     const a = every(360, 1320, 60); const b = a.map(t => t + 30);
     const lines = await weekdayLines(await feed({ a, b, bStops: 9 }));
     expect(lines).toHaveLength(1);
-    expect(lines[0].headway).toBe(60);
-    expect(lines[0].tier).toBe('60');
+    expect(lines[0].headway).toBe(30);
+    expect(lines[0].tier).toBe('30');
+    expect(new Set(Object.values(lines[0].stopHeadways))).toEqual(new Set([30]));
   });
 
   it('a peak-only sibling never lifts an hourly line: the pool fails the every-gap grade', async () => {

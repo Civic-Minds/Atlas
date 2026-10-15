@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { recordedFeedExpiry } from '../refreshMeta.js';
 import JSZip from 'jszip';
 import {
   archiveKeyServiceDate,
@@ -10,7 +11,9 @@ import {
   peekFeedDates,
   reprocessCountryLaunchSkip,
   selectArchiveForAgency,
+  selectByFeedDates,
   type ArchiveObject,
+  type FeedDates,
 } from '../archiveSelection.js';
 
 const obj = (slug: string, name: string, iso: string | null): ArchiveObject => ({
@@ -111,6 +114,74 @@ describe('selectArchiveForAgency', () => {
   });
 });
 
+describe('selectByFeedDates: dates inside each zip when key dates and uploads disagree (#859)', () => {
+  const TODAY = '20261014';
+  const dates = (feedStart: string | null, feedExpiry: string | null, feedVersion: string | null = null): FeedDates => ({ feedStart, feedExpiry, feedVersion });
+  const pickAfterRefusal = (objects: ArchiveObject[], lastFeedExpiry: string, peeked: Record<string, FeedDates>) => {
+    const first = selectArchiveForAgency(objects, { lastFeedExpiry });
+    expect(first.ok).toBe(false);
+    return selectByFeedDates(objects.map(obj => ({ obj, dates: peeked[obj.key.split('/').pop()!] })), TODAY, first.reason);
+  };
+
+  it('grt: an expired feed re-uploaded after the current one does not win', () => {
+    const objects = [
+      obj('grt', '20261220-23b0c600ee92ccab.zip', '2026-08-17T07:10:00Z'),
+      obj('grt', '20260426-071369b92e6aeb7d.zip', '2026-08-27T20:55:00Z'),
+    ];
+    const selection = pickAfterRefusal(objects, '20260426', {
+      '20261220-23b0c600ee92ccab.zip': dates('20260817', '20261220'),
+      '20260426-071369b92e6aeb7d.zip': dates('20260213', '20260426'),
+    });
+    expect(selection).toMatchObject({ ok: true, key: 'gtfs/archive/grt/20261220-23b0c600ee92ccab.zip' });
+  });
+
+  it('seattle-monorail: a legacy key named for an old date, uploaded later, does not win', () => {
+    const objects = [
+      obj('seattle-monorail', '20261130.zip', '2026-08-10T05:01:00Z'),
+      obj('seattle-monorail', '20240501.zip', '2026-08-10T08:08:00Z'),
+    ];
+    const selection = pickAfterRefusal(objects, '20270530', {
+      '20261130.zip': dates('20250902', '20270530', '2026-Apr-A'),
+      '20240501.zip': dates('20230528', '20240501', 'UTC: 28-Nov-2023 22:52'),
+    });
+    expect(selection).toMatchObject({ ok: true, key: 'gtfs/archive/seattle-monorail/20261130.zip' });
+  });
+
+  it.each(['cascades-east', 'las-cruces', 'san-angelo'])('%s: two copies of the same feed under legacy keys resolve to one', slug => {
+    const objects = [
+      obj(slug, '20260908.zip', '2026-08-10T05:01:00Z'),
+      obj(slug, '20260805.zip', '2026-08-10T08:08:00Z'),
+    ];
+    const same = dates('20250101', '20271231', '20250228');
+    const selection = pickAfterRefusal(objects, '20271231', { '20260908.zip': same, '20260805.zip': same });
+    expect(selection).toMatchObject({ ok: true, key: `gtfs/archive/${slug}/20260805.zip` });
+    expect(selection.reason).toContain('2 archived copies of the same feed');
+  });
+
+  it('sacrt: stays refused when no archived zip is in service', () => {
+    const objects = [
+      obj('sacrt', '20250614.zip', '2026-07-29T18:52:00Z'),
+      obj('sacrt', '20250405-165c27e622e7087c.zip', '2026-08-27T21:05:00Z'),
+    ];
+    const selection = pickAfterRefusal(objects, '20270102', {
+      '20250614.zip': dates('20250406', '20250614', 'Spring_2025'),
+      '20250405-165c27e622e7087c.zip': dates('20250105', '20250405', 'January_2025'),
+    });
+    expect(selection).toMatchObject({ ok: false, noArchive: false });
+    expect(selection.reason).toContain('no archived zip is in service by its own dates');
+  });
+
+  it('stays refused when two different feeds run to the same date', () => {
+    const objects = [obj('x', '20270101-a.zip', '2026-08-10T05:00:00Z'), obj('x', '20260101-b.zip', '2026-08-11T05:00:00Z')];
+    const selection = selectByFeedDates([
+      { obj: objects[0], dates: dates('20260801', '20270101', 'v1') },
+      { obj: objects[1], dates: dates('20260901', '20270101', 'v2') },
+    ], TODAY, 'prior');
+    expect(selection).toMatchObject({ ok: false });
+    expect(selection.reason).toContain('2 different feeds run to 20270101');
+  });
+});
+
 describe('feedDateRefusal', () => {
   it('accepts a current feed at least as new as the live one', () => {
     expect(feedDateRefusal('20261128', '20261128', '20261010')).toBeNull();
@@ -150,7 +221,7 @@ describe('peekFeedDates', () => {
     zip.file('calendar.txt', 'service_id,start_date,end_date\nwk,20260101,20261128\n');
     zip.file('calendar_dates.txt', 'service_id,date,exception_type\nwk,20261231,2\n');
     const buf = await zip.generateAsync({ type: 'nodebuffer' });
-    expect(await peekFeedDates(buf)).toEqual({ feedStart: '20260101', feedExpiry: '20261128', feedVersion: 'v7' });
+    expect(await peekFeedDates(buf)).toEqual({ feedStart: '20260101', feedExpiry: '20261128', feedVersion: 'v7', feedInfoEnd: '20261001' });
   });
 
   it('reads a future start from calendar.txt (Breeze/scat starts Oct 19)', async () => {
@@ -162,7 +233,7 @@ describe('peekFeedDates', () => {
   });
 
   it('returns nulls for an unreadable zip', async () => {
-    expect(await peekFeedDates(Buffer.from('not a zip'))).toEqual({ feedStart: null, feedExpiry: null, feedVersion: null });
+    expect(await peekFeedDates(Buffer.from('not a zip'))).toEqual({ feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null });
   });
 });
 
@@ -223,5 +294,31 @@ describe('includeHiddenArgError', () => {
     expect(includeHiddenArgError(true, [])).toMatch(/--only-slug/);
     expect(includeHiddenArgError(true, ['sun-tran'])).toBeNull();
     expect(includeHiddenArgError(false, [])).toBeNull();
+  });
+});
+
+describe('reprocess and publish read one expiry (#875)', () => {
+  const simiZip = async () => {
+    // Simi Valley's only archived zip: feed_info ends 20250601, the calendar is a 20301231 placeholder.
+    const zip = new JSZip();
+    zip.file('feed_info.txt', 'feed_publisher_name,feed_start_date,feed_end_date\nSimi Valley,20230601,20250601\n');
+    zip.file('calendar.txt', 'service_id,monday,start_date,end_date\nwk,1,20230601,20301231\n');
+    return zip.generateAsync({ type: 'nodebuffer' });
+  };
+
+  it('refuses the Simi Valley zip at reprocess on the expiry publish records', async () => {
+    const { feedExpiry: calendarEnd, feedInfoEnd } = await peekFeedDates(await simiZip());
+    expect(calendarEnd).toBe('20301231');
+    const expiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, '20261015');
+    expect(expiry).toBe('20250601');
+    expect(feedDateRefusal(expiry, '20250601', '20261015')).toMatch(/ended 20250601, before today/);
+  });
+
+  it('still accepts a current feed_info under a placeholder calendar', async () => {
+    const zip = new JSZip();
+    zip.file('feed_info.txt', 'feed_publisher_name,feed_end_date\nX,20270331\n');
+    zip.file('calendar.txt', 'service_id,start_date,end_date\nwk,20260101,20500101\n');
+    const { feedExpiry: calendarEnd, feedInfoEnd } = await peekFeedDates(await zip.generateAsync({ type: 'nodebuffer' }));
+    expect(feedDateRefusal(recordedFeedExpiry(feedInfoEnd, calendarEnd, '20261015'), null, '20261015')).toBeNull();
   });
 });

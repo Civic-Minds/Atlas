@@ -6,6 +6,7 @@ Use this page as the documentation index. The root [README](../README.md) explai
 
 - [Data](DATA.md) — coverage, methodology, freshness, and agency procedures.
 - [Architecture](ARCHITECTURE.md) — frontend, pipeline, R2, and live-data flow.
+- [Internal glossary](GLOSSARY.md) — precise meaning, code location and UI wording of internal terms (pipeline, grading, release, Live).
 - [Feature flags](FEATURE_FLAGS.md) — production/beta deployment behavior.
 - [Branch and deployment workflow](engineering/BRANCH_WORKFLOW.md) — the single-`main` source model.
 - [Engineering runbooks](engineering/FIXING_ISSUES.md) — validation and issue-fixing procedures.

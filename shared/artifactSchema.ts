@@ -57,7 +57,10 @@ export function releaseTileRulesVersion(release: { tileRulesVersion?: unknown })
  * silently drop the outgoing version the moment the constant is bumped.
  * Anything else fails closed.
  */
-export const ACCEPTED_TILE_RULES_VERSIONS: readonly number[] = [3];
+// #720 rollout: 4 is accepted ahead of the TILE_RULES_VERSION bump, so the deployed app keeps
+// drawing the live version-3 release and then draws the first version-4 release. Drop 3 after
+// that release is live.
+export const ACCEPTED_TILE_RULES_VERSIONS: readonly number[] = [3, 4];
 
 export function isAcceptedTileRulesVersion(release: { tileRulesVersion?: unknown }): boolean {
   const version = releaseTileRulesVersion(release);

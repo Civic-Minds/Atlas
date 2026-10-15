@@ -18,13 +18,14 @@ describe('accepted tile-rules versions', () => {
 
   const accepted: Array<[string, unknown]> = [
     ['version 3', 3],
+    ['version 4', 4],
   ];
   const rejected: Array<[string, unknown]> = [
     ['version 0', 0],
     ['version 1', 1],
     ['version 2', 2],
     ['no stamp (counts as 1)', undefined],
-    ['version 4', 4],
+    ['version 5', 5],
     ['a string', '2'],
     ['garbage text', 'garbage'],
     ['null', null],
@@ -37,8 +38,8 @@ describe('accepted tile-rules versions', () => {
     expect(ACCEPTED_TILE_RULES_VERSIONS).toContain(TILE_RULES_VERSION);
   });
 
-  it('accepts exactly version 3', () => {
-    expect([...ACCEPTED_TILE_RULES_VERSIONS].sort()).toEqual([3]);
+  it('accepts exactly versions 3 and 4 during the #720 rollout', () => {
+    expect([...ACCEPTED_TILE_RULES_VERSIONS].sort()).toEqual([3, 4]);
   });
 
   it.each(accepted)('accepts %s', (_label, tileRulesVersion) => {

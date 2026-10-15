@@ -302,7 +302,10 @@ describe('Weekday stop groups use one representative weekday (#710)', () => {
 
     expect(weekday.length).toBeGreaterThan(0);
     for (const p of weekday) expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
-    expect([...new Set(weekday.filter(p => p.tier === '30').map(p => p.directionId))].sort()).toEqual([0, 1]);
+    // Both directions are regular service with a headline (CIV-152 grades Van Aken's terminal
+    // stop 60 on an evening gap, so the tier is no longer 30 in both directions).
+    expect([...new Set(weekday.filter(p => p.tier !== 'span' && p.headway != null).map(p => p.directionId))].sort()).toEqual([0, 1]);
+    expect(weekday.filter(p => p.tier === '30').length).toBeGreaterThan(0);
   });
 
   it('a route without direction_id is not part-week when synthesized directions split by weekday', async () => {
