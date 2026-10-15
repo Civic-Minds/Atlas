@@ -18,6 +18,8 @@ import { AgencyCard } from '../components/Interval/AgencyCard';
 import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
+import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
+import { ON_DEMAND_MODE } from '../../shared/modes';
 import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
@@ -183,7 +185,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
   const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
-  const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(() => searchParams.get('ondemand'));
+  // Research views never show on-demand, so a shared link's on-demand mode (or ?ondemand=) is dropped there.
+  const onDemandAllowed = viewAllowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }));
+  const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(() => onDemandAllowed ? searchParams.get('ondemand') : null);
 
   useEffect(() => {
     if (!selectedRoute) return;
@@ -330,7 +334,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       return next;
     });
   }, [agencies]);
-  const [selectedModes, setSelectedModes] = useState<Set<number>>(() => parseModesParam(searchParams));
+  const [selectedModes, setSelectedModes] = useState<Set<number>>(() => {
+    const modes = parseModesParam(searchParams);
+    if (!onDemandAllowed) modes.delete(ON_DEMAND_MODE);
+    return modes;
+  });
   const [period, setPeriod] = useState<TimePeriod>(() => {
     try {
       const p = searchParams.get('p') || searchParams.get('period');
@@ -912,7 +920,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             selectedAgencies={selectedAgencies}
             initialMapCenter={initialMapCenter}
             initialMapBounds={initialMapBounds}
-            initialOnDemandSlug={initialMapCenter ? null : searchParams.get('ondemand')?.split('::', 1)[0] ?? null}
+            initialOnDemandSlug={initialMapCenter || !onDemandAllowed ? null : searchParams.get('ondemand')?.split('::', 1)[0] ?? null}
             onTileLoadingChange={setIsTilesLoading}
             onBasemapLoadingChange={setIsBasemapLoading}
             setQuery={setQuery}
