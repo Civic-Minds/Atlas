@@ -1,0 +1,16 @@
+service_id,date,exception_type
+Mon-Fri,20261111,2
+Mon-Fri,20261126,2
+Mon-Fri,20261127,2
+Mon-Fri,20261222,2
+Mon-Fri,20261223,2
+Mon-Fri,20261225,2
+Mon-Fri,20261229,2
+Mon-Fri,20261230,2
+Mon-Fri,20270101,2
+SunHol,20261126,1
+SunHol,20261127,1
+SunHol,20261225,1
+SunHol,20270101,1
+SunHol,20270102,1
+Sat,20270102,2

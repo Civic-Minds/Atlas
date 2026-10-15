@@ -168,16 +168,28 @@ export function annotateSharedStretches(features: GeoJsonFeature[], ctx: SharedS
     if (new Set(patterns.map(pattern => pattern.memberKey)).size < 2) continue;
     const sharers = computeStopSharers(patterns, ctx.stopsById, ctx.parentOf);
     const headsignsOf = new Map(patterns.map(pattern => [pattern.memberKey, pattern.headsigns.filter(h => headsigns.has(h))]));
+    // A member's route variant: two origins of one destination (TTC 29 "from Dufferin Gate
+    // Loop" and "from Princes' Gates Loop", #879 class) are branches of each other under one
+    // headsign, and their shared trunk is a stretch.
+    const variantOf = new Map(members.map(m => [m.memberKey, ((m.feature.properties.routeVariant as string | null) ?? '').trim()]));
 
     for (const m of members) {
       const own = sharers.get(m.memberKey);
       if (!own) continue;
       // A stretch is shared with another branch: a same-destination variant pools (its stop
       // values read it) but is the same line, not a stretch (TTC 29C's tail is served by a
-      // one-trip 29C variant and by nothing else).
+      // one-trip 29C variant and by nothing else), unless the two carry different route
+      // variants (converging origins), which draw their own rows.
       const ownHeadsign = (m.feature.properties.headsign as string | null) ?? '';
-      const otherBranches = (stopId: string) => [...(own.get(station(stopId)) ?? [])]
-        .filter(key => headsignsOf.get(key)?.some(h => h !== ownHeadsign));
+      const ownVariant = variantOf.get(m.memberKey) ?? '';
+      const isOtherBranch = (key: string) => (headsignsOf.get(key)?.some(h => h !== ownHeadsign) ?? false)
+        || (variantOf.has(key) && variantOf.get(key) !== ownVariant);
+      const branchLabels = (key: string): string[] => {
+        const labels = (headsignsOf.get(key) ?? []).filter(h => h !== ownHeadsign);
+        const variant = variantOf.get(key);
+        return labels.length > 0 ? labels : (variant ? [variant] : []);
+      };
+      const otherBranches = (stopId: string) => [...(own.get(station(stopId)) ?? [])].filter(isOtherBranch);
       // A stop is on a stretch when another branch really has departures there.
       const inStretch = m.stopOrder.map(stopId => otherBranches(stopId)
         .some(key => (ctx.departures.get(`${poolKey}::${key}`)?.get(stopId)?.length ?? 0) > 0));
@@ -188,7 +200,7 @@ export function annotateSharedStretches(features: GeoJsonFeature[], ctx: SharedS
         while (j + 1 < inStretch.length && inStretch[j + 1]) j++;
         const others = new Set<string>();
         for (let k = i; k <= j; k++) {
-          otherBranches(m.stopOrder[k]).forEach(key => headsignsOf.get(key)?.forEach(h => { if (h !== ownHeadsign) others.add(h); }));
+          otherBranches(m.stopOrder[k]).forEach(key => branchLabels(key).forEach(h => others.add(h)));
         }
         stretches.push({ from: i, to: j, with: [...others].sort() });
         i = j;

@@ -11,6 +11,11 @@ const [tree, slugsFile, outDir, zipsRoot] = process.argv.slice(2);
 if (!tree || !slugsFile || !outDir || !zipsRoot) { console.error('usage: npx tsx scan.mts <tree> <slugsFile> <outDir> <zipsRoot>'); process.exit(2); }
 mkdirSync(outDir, { recursive: true });
 const feeds = await import(pathToFileURL(`${tree}/pipeline/agencyFeeds.ts`).href);
+// Section colours (#879): the client's own-direction section runs per line, so a change that
+// moves which stops are graded shows up as a coloured-section change, not only a stopTiers one.
+// Older trees may not have the module or the fourth argument; then the summary has no sections.
+let sectionRuns: ((tiers: Array<string | null>, routeTier: string, headways: Array<number | null>, dropOffOnly: boolean[]) => unknown) | null = null;
+try { sectionRuns = (await import(pathToFileURL(`${tree}/src/utils/sectionColours.ts`).href)).sectionRuns ?? null; } catch { sectionRuns = null; }
 const h = (v: unknown) => createHash('sha1').update(JSON.stringify(v)).digest('hex').slice(0, 12);
 function newestZip(dir: string): string | null {
   if (!existsSync(dir)) return null;
@@ -24,6 +29,13 @@ function summarizeLine(f: any) {
   for (const [k, v] of Object.entries(p)) {
     if (BIG.has(k)) out[k] = Array.isArray(v) ? { n: v.length, first: v[0], last: v[v.length - 1], h: h(v) } : { h: h(v) };
     else out[k] = v;
+  }
+  if (sectionRuns && Array.isArray(p.stopOrder) && p.stopTiers && p.tier != null && p.tier !== 'span') {
+    const order: string[] = p.stopOrder; const drop = new Set<string>(p.dropOffOnlyStops ?? []);
+    try {
+      const runs = sectionRuns(order.map(s => p.stopTiers[s] ?? null), p.tier, order.map(s => p.stopHeadways?.[s] ?? null), order.map(s => drop.has(s)));
+      out.__sections = runs;
+    } catch { /* an older tree's sectionRuns may differ; leave the summary without sections */ }
   }
   const c = f.geometry?.coordinates;
   out.__geom = f.geometry ? { type: f.geometry.type, n: Array.isArray(c) ? c.length : 0, h: h(c), first: Array.isArray(c) ? c[0] : null, last: Array.isArray(c) ? c[c.length - 1] : null } : null;

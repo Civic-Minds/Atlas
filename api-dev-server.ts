@@ -13,8 +13,8 @@ const API_PORT = Number(process.env.ATLAS_API_PORT ?? 5001);
 const handlers: Record<string, (req: Request) => Promise<Response>> = {};
 
 async function loadHandlers() {
-  const { default: liveVehicles } = await import('./api/live-vehicles.js');
-  const { default: historyAdherence } = await import('./api/history-adherence.js');
+  const { default: liveVehicles } = await import('./local-api/live-vehicles.js');
+  const { default: historyAdherence } = await import('./local-api/history-adherence.js');
   const { default: cartoTiles } = await import('./api/carto-tiles.js');
   const { default: liveAdherence } = await import('./local-api/live-adherence.js');
   const { default: liveStop } = await import('./local-api/live-stop.js');

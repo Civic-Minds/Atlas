@@ -109,3 +109,22 @@ describe('explainDedupe names the rule that decided (CIV-208)', () => {
     expect(explainDedupe(pattern({ dedupeHeadway: 15 }), pattern({ dedupeHeadway: 15 }), undefined)).toEqual({ decision: 'keep', reason: 'headway' });
   });
 });
+
+describe('decideDedupe: a rush-hour-only pattern competes unrated against any other (#720)', () => {
+  const line = (lonEnd = -79.876): number[][] => [[-80, 43.6], [-79.94, 43.6], [lonEnd, 43.6]];
+  const allDay = pattern({ dedupeHeadway: 60, headway: 60, departures: 17, line: line() });
+  const peak = (over: Partial<DedupePattern> = {}) => pattern({ dedupeHeadway: 10, headway: 10, departures: 26, runsMidday: false, rushHourOnly: true, line: line(), ...over });
+
+  it('the all-day pattern keeps and takes the slot whichever arrives first', () => {
+    expect(explainDedupe(allDay, peak(), undefined)).toEqual({ decision: 'keep', reason: 'headway' });
+    expect(explainDedupe(peak(), allDay, undefined)).toEqual({ decision: 'replace', reason: 'headway' });
+    // A shorter (short turn) or longer (MBTA 7 City Point) peak pattern does not take it either.
+    expect(decideDedupe(allDay, peak({ line: line(-79.9) }), undefined)).toBe('keep');
+    expect(decideDedupe(allDay, peak({ line: line(-79.7) }), undefined)).toBe('keep');
+  });
+
+  it('two rush-hour-only patterns, or patterns not marked rush-hour-only, keep the headway rule', () => {
+    expect(decideDedupe(peak({ dedupeHeadway: 20, headway: 20 }), peak(), undefined)).toBe('replace');
+    expect(decideDedupe(allDay, peak({ rushHourOnly: false, line: line(-79.9) }), undefined)).toBe('replace');
+  });
+});

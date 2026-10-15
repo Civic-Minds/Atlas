@@ -1,0 +1,179 @@
+route_id,service_id,trip_id,trip_headsign,direction_id,shape_id,wheelchair_accessible,bikes_allowed
+233,AUG26-AlbRMB-Weekday-24,13992740-AUG26-AlbRMB-Weekday-24,Broadway Station to Schodack P&R,0,2330471,1,1
+233,AUG26-AlbRMB-Weekday-24,13992744-AUG26-AlbRMB-Weekday-24,Broadway Station to Schodack P&R,0,2330471,1,1
+233,AUG26-AlbRMB-Weekday-24,13992747-AUG26-AlbRMB-Weekday-24,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-24,13992753-AUG26-AlbRMB-Weekday-24,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,AUG26-AlbRMB-Weekday-24,13992754-AUG26-AlbRMB-Weekday-24,Pearl & Beaver to Schodack,0,2330370,1,1
+233,AUG26-AlbRMB-Weekday-24,13993085-AUG26-AlbRMB-Weekday-24,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Weekday-24,13993086-AUG26-AlbRMB-Weekday-24,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-24,13993087-AUG26-AlbRMB-Weekday-24,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,AUG26-AlbRMB-Weekday-24,13993088-AUG26-AlbRMB-Weekday-24,Broadway Station to Schodack P&R,0,2330471,1,1
+233,AUG26-AlbRMB-Weekday-24,13993089-AUG26-AlbRMB-Weekday-24,Pearl & Beaver to Schodack,0,2330370,1,1
+233,AUG26-AlbRMB-Weekday-24,13993090-AUG26-AlbRMB-Weekday-24,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Weekday-24,13993091-AUG26-AlbRMB-Weekday-24,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-24,13993092-AUG26-AlbRMB-Weekday-24,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-24,13993093-AUG26-AlbRMB-Weekday-24,Schodack to Amazon ESP/Downtown Albany,1,2330368,1,1
+233,AUG26-AlbRMB-Weekday-24,13993094-AUG26-AlbRMB-Weekday-24,Broadway Station to Schodack P&R,0,2330471,1,1
+233,AUG26-AlbRMB-Weekday-24,13993095-AUG26-AlbRMB-Weekday-24,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-24,13993096-AUG26-AlbRMB-Weekday-24,Empire State Plaza Concourse to Amazon - Route 9,0,2330472,1,1
+233,AUG26-AlbRMB-Weekday-24,13993097-AUG26-AlbRMB-Weekday-24,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-24,13993098-AUG26-AlbRMB-Weekday-24,Broadway Station to Schodack P&R,0,2330471,1,1
+233,AUG26-AlbRMB-Weekday-24,13993100-AUG26-AlbRMB-Weekday-24,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Weekday-24,13993101-AUG26-AlbRMB-Weekday-24,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-24,13993102-AUG26-AlbRMB-Weekday-24,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-24,13993177-AUG26-AlbRMB-Weekday-24,Pearl & Beaver to Schodack,0,2330370,1,1
+233,AUG26-AlbRMB-Weekday-25,13995403-AUG26-AlbRMB-Weekday-25,Broadway Station to Schodack P&R,0,2330471,1,1
+233,AUG26-AlbRMB-Weekday-25,13995408-AUG26-AlbRMB-Weekday-25,Broadway Station to Schodack P&R,0,2330471,1,1
+233,AUG26-AlbRMB-Weekday-25,13995413-AUG26-AlbRMB-Weekday-25,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-25,13995417-AUG26-AlbRMB-Weekday-25,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,AUG26-AlbRMB-Weekday-25,13995418-AUG26-AlbRMB-Weekday-25,Pearl & Beaver to Schodack,0,2330370,1,1
+233,AUG26-AlbRMB-Weekday-25,13995701-AUG26-AlbRMB-Weekday-25,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Weekday-25,13995702-AUG26-AlbRMB-Weekday-25,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-25,13995703-AUG26-AlbRMB-Weekday-25,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,AUG26-AlbRMB-Weekday-25,13995704-AUG26-AlbRMB-Weekday-25,Broadway Station to Schodack P&R,0,2330471,1,1
+233,AUG26-AlbRMB-Weekday-25,13995705-AUG26-AlbRMB-Weekday-25,Pearl & Beaver to Schodack,0,2330370,1,1
+233,AUG26-AlbRMB-Weekday-25,13995706-AUG26-AlbRMB-Weekday-25,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Weekday-25,13995707-AUG26-AlbRMB-Weekday-25,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-25,13995708-AUG26-AlbRMB-Weekday-25,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-25,13995709-AUG26-AlbRMB-Weekday-25,Schodack to Amazon ESP/Downtown Albany,1,2330368,1,1
+233,AUG26-AlbRMB-Weekday-25,13995710-AUG26-AlbRMB-Weekday-25,Broadway Station to Schodack P&R,0,2330471,1,1
+233,AUG26-AlbRMB-Weekday-25,13995711-AUG26-AlbRMB-Weekday-25,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-25,13995712-AUG26-AlbRMB-Weekday-25,Empire State Plaza Concourse to Amazon - Route 9,0,2330472,1,1
+233,AUG26-AlbRMB-Weekday-25,13995713-AUG26-AlbRMB-Weekday-25,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-25,13995714-AUG26-AlbRMB-Weekday-25,Broadway Station to Schodack P&R,0,2330471,1,1
+233,AUG26-AlbRMB-Weekday-25,13995716-AUG26-AlbRMB-Weekday-25,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Weekday-25,13995717-AUG26-AlbRMB-Weekday-25,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-25,13995718-AUG26-AlbRMB-Weekday-25,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,AUG26-AlbRMB-Weekday-25,13995789-AUG26-AlbRMB-Weekday-25,Pearl & Beaver to Schodack,0,2330370,1,1
+233,AUG26-AlbRMB-Saturday-20,13766469-AUG26-AlbRMB-Saturday-20,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Saturday-20,13766470-AUG26-AlbRMB-Saturday-20,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Saturday-20,13766471-AUG26-AlbRMB-Saturday-20,,0,2330466,1,1
+233,AUG26-AlbRMB-Saturday-20,13766472-AUG26-AlbRMB-Saturday-20,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Saturday-20,13766473-AUG26-AlbRMB-Saturday-20,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Saturday-20,13766475-AUG26-AlbRMB-Saturday-20,,0,2330466,1,1
+233,AUG26-AlbRMB-Saturday-20,13766476-AUG26-AlbRMB-Saturday-20,,0,2330466,1,1
+233,AUG26-AlbRMB-Saturday-20,13766477-AUG26-AlbRMB-Saturday-20,,0,2330466,1,1
+233,AUG26-AlbRMB-Saturday-21,13779829-AUG26-AlbRMB-Saturday-21,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Saturday-21,13779830-AUG26-AlbRMB-Saturday-21,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Saturday-21,13779831-AUG26-AlbRMB-Saturday-21,,0,2330466,1,1
+233,AUG26-AlbRMB-Saturday-21,13779832-AUG26-AlbRMB-Saturday-21,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Saturday-21,13779833-AUG26-AlbRMB-Saturday-21,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Saturday-21,13779835-AUG26-AlbRMB-Saturday-21,,0,2330466,1,1
+233,AUG26-AlbRMB-Saturday-21,13779836-AUG26-AlbRMB-Saturday-21,,0,2330466,1,1
+233,AUG26-AlbRMB-Saturday-21,13779837-AUG26-AlbRMB-Saturday-21,,0,2330466,1,1
+233,AUG26-AlbRMB-Sunday-30,13768030-AUG26-AlbRMB-Sunday-30,Broadway Station to Schodack Amazon,0,2330470,1,1
+233,AUG26-AlbRMB-Sunday-30,13768031-AUG26-AlbRMB-Sunday-30,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Sunday-30,13768065-AUG26-AlbRMB-Sunday-30,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Sunday-30,13768108-AUG26-AlbRMB-Sunday-30,State St. Station to Schodack,0,2330465,1,1
+233,AUG26-AlbRMB-Sunday-30,13768156-AUG26-AlbRMB-Sunday-30,Broadway Station to Schodack Amazon,0,2330452,1,1
+233,AUG26-AlbRMB-Sunday-30,13768271-AUG26-AlbRMB-Sunday-30,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,AUG26-AlbRMB-Sunday-30,13768385-AUG26-AlbRMB-Sunday-30,Broadway Station to Schodack Amazon,0,2330470,1,1
+233,AUG26-AlbRMB-Sunday-30,13768386-AUG26-AlbRMB-Sunday-30,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-10,13998492-OCT26-AlbRMB-Weekday-10,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-10,13998496-OCT26-AlbRMB-Weekday-10,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-10,13998499-OCT26-AlbRMB-Weekday-10,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-10,13998505-OCT26-AlbRMB-Weekday-10,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,OCT26-AlbRMB-Weekday-10,13998506-OCT26-AlbRMB-Weekday-10,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-10,13998837-OCT26-AlbRMB-Weekday-10,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-10,13998838-OCT26-AlbRMB-Weekday-10,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-10,13998839-OCT26-AlbRMB-Weekday-10,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,OCT26-AlbRMB-Weekday-10,13998840-OCT26-AlbRMB-Weekday-10,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-10,13998841-OCT26-AlbRMB-Weekday-10,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-10,13998842-OCT26-AlbRMB-Weekday-10,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-10,13998843-OCT26-AlbRMB-Weekday-10,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-10,13998844-OCT26-AlbRMB-Weekday-10,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-10,13998845-OCT26-AlbRMB-Weekday-10,Schodack to Amazon ESP/Downtown Albany,1,2330368,1,1
+233,OCT26-AlbRMB-Weekday-10,13998846-OCT26-AlbRMB-Weekday-10,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-10,13998847-OCT26-AlbRMB-Weekday-10,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-10,13998848-OCT26-AlbRMB-Weekday-10,Empire State Plaza Concourse to Amazon - Route 9,0,2330472,1,1
+233,OCT26-AlbRMB-Weekday-10,13998849-OCT26-AlbRMB-Weekday-10,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-10,13998850-OCT26-AlbRMB-Weekday-10,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-10,13998853-OCT26-AlbRMB-Weekday-10,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-10,13998854-OCT26-AlbRMB-Weekday-10,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-10,13998855-OCT26-AlbRMB-Weekday-10,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-10,13998929-OCT26-AlbRMB-Weekday-10,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-11,14001187-OCT26-AlbRMB-Weekday-11,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-11,14001189-OCT26-AlbRMB-Weekday-11,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-11,14001195-OCT26-AlbRMB-Weekday-11,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-11,14001198-OCT26-AlbRMB-Weekday-11,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,OCT26-AlbRMB-Weekday-11,14001202-OCT26-AlbRMB-Weekday-11,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-11,14001483-OCT26-AlbRMB-Weekday-11,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-11,14001486-OCT26-AlbRMB-Weekday-11,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-11,14001487-OCT26-AlbRMB-Weekday-11,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,OCT26-AlbRMB-Weekday-11,14001488-OCT26-AlbRMB-Weekday-11,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-11,14001489-OCT26-AlbRMB-Weekday-11,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-11,14001490-OCT26-AlbRMB-Weekday-11,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-11,14001491-OCT26-AlbRMB-Weekday-11,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-11,14001492-OCT26-AlbRMB-Weekday-11,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-11,14001493-OCT26-AlbRMB-Weekday-11,Schodack to Amazon ESP/Downtown Albany,1,2330368,1,1
+233,OCT26-AlbRMB-Weekday-11,14001494-OCT26-AlbRMB-Weekday-11,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-11,14001495-OCT26-AlbRMB-Weekday-11,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-11,14001496-OCT26-AlbRMB-Weekday-11,Empire State Plaza Concourse to Amazon - Route 9,0,2330472,1,1
+233,OCT26-AlbRMB-Weekday-11,14001497-OCT26-AlbRMB-Weekday-11,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-11,14001499-OCT26-AlbRMB-Weekday-11,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-11,14001500-OCT26-AlbRMB-Weekday-11,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-11,14001501-OCT26-AlbRMB-Weekday-11,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-11,14001502-OCT26-AlbRMB-Weekday-11,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-11,14001576-OCT26-AlbRMB-Weekday-11,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-12,14010464-OCT26-AlbRMB-Weekday-12,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-12,14010466-OCT26-AlbRMB-Weekday-12,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-12,14010472-OCT26-AlbRMB-Weekday-12,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-12,14010476-OCT26-AlbRMB-Weekday-12,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-12,14010479-OCT26-AlbRMB-Weekday-12,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,OCT26-AlbRMB-Weekday-12,14010760-OCT26-AlbRMB-Weekday-12,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-12,14010763-OCT26-AlbRMB-Weekday-12,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-12,14010764-OCT26-AlbRMB-Weekday-12,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-12,14010765-OCT26-AlbRMB-Weekday-12,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,OCT26-AlbRMB-Weekday-12,14010766-OCT26-AlbRMB-Weekday-12,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-12,14010767-OCT26-AlbRMB-Weekday-12,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-12,14010768-OCT26-AlbRMB-Weekday-12,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-12,14010769-OCT26-AlbRMB-Weekday-12,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-12,14010770-OCT26-AlbRMB-Weekday-12,Schodack to Amazon ESP/Downtown Albany,1,2330368,1,1
+233,OCT26-AlbRMB-Weekday-12,14010771-OCT26-AlbRMB-Weekday-12,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-12,14010772-OCT26-AlbRMB-Weekday-12,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-12,14010773-OCT26-AlbRMB-Weekday-12,Empire State Plaza Concourse to Amazon - Route 9,0,2330472,1,1
+233,OCT26-AlbRMB-Weekday-12,14010774-OCT26-AlbRMB-Weekday-12,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-12,14010775-OCT26-AlbRMB-Weekday-12,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-12,14010777-OCT26-AlbRMB-Weekday-12,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-12,14010778-OCT26-AlbRMB-Weekday-12,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-12,14010779-OCT26-AlbRMB-Weekday-12,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-12,14010853-OCT26-AlbRMB-Weekday-12,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-13,14012965-OCT26-AlbRMB-Weekday-13,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-13,14012970-OCT26-AlbRMB-Weekday-13,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-13,14012976-OCT26-AlbRMB-Weekday-13,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-13,14012980-OCT26-AlbRMB-Weekday-13,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-13,14012983-OCT26-AlbRMB-Weekday-13,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,OCT26-AlbRMB-Weekday-13,14013264-OCT26-AlbRMB-Weekday-13,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-13,14013267-OCT26-AlbRMB-Weekday-13,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-13,14013268-OCT26-AlbRMB-Weekday-13,Empire State Plaza Concourse to Schodack P&R,0,2330473,1,1
+233,OCT26-AlbRMB-Weekday-13,14013269-OCT26-AlbRMB-Weekday-13,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-13,14013270-OCT26-AlbRMB-Weekday-13,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Weekday-13,14013271-OCT26-AlbRMB-Weekday-13,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-13,14013272-OCT26-AlbRMB-Weekday-13,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-13,14013273-OCT26-AlbRMB-Weekday-13,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-13,14013274-OCT26-AlbRMB-Weekday-13,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-13,14013275-OCT26-AlbRMB-Weekday-13,Schodack to Amazon ESP/Downtown Albany,1,2330368,1,1
+233,OCT26-AlbRMB-Weekday-13,14013276-OCT26-AlbRMB-Weekday-13,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-13,14013277-OCT26-AlbRMB-Weekday-13,Empire State Plaza Concourse to Amazon - Route 9,0,2330472,1,1
+233,OCT26-AlbRMB-Weekday-13,14013278-OCT26-AlbRMB-Weekday-13,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-13,14013279-OCT26-AlbRMB-Weekday-13,Broadway Station to Schodack P&R,0,2330471,1,1
+233,OCT26-AlbRMB-Weekday-13,14013281-OCT26-AlbRMB-Weekday-13,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Weekday-13,14013282-OCT26-AlbRMB-Weekday-13,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-13,14013283-OCT26-AlbRMB-Weekday-13,Schodack Park & Ride to ESP/Downtown Albany,1,2330434,1,1
+233,OCT26-AlbRMB-Weekday-13,14013358-OCT26-AlbRMB-Weekday-13,Pearl & Beaver to Schodack,0,2330370,1,1
+233,OCT26-AlbRMB-Saturday-20,14006279-OCT26-AlbRMB-Saturday-20,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Saturday-20,14006280-OCT26-AlbRMB-Saturday-20,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Saturday-20,14006281-OCT26-AlbRMB-Saturday-20,,0,2330466,1,1
+233,OCT26-AlbRMB-Saturday-20,14006282-OCT26-AlbRMB-Saturday-20,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Saturday-20,14006283-OCT26-AlbRMB-Saturday-20,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Saturday-20,14006285-OCT26-AlbRMB-Saturday-20,,0,2330466,1,1
+233,OCT26-AlbRMB-Saturday-20,14006286-OCT26-AlbRMB-Saturday-20,,0,2330466,1,1
+233,OCT26-AlbRMB-Saturday-20,14006287-OCT26-AlbRMB-Saturday-20,,0,2330466,1,1
+233,OCT26-AlbRMB-Sunday-30,14007647-OCT26-AlbRMB-Sunday-30,Broadway Station to Schodack Amazon,0,2330470,1,1
+233,OCT26-AlbRMB-Sunday-30,14007648-OCT26-AlbRMB-Sunday-30,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Sunday-30,14007683-OCT26-AlbRMB-Sunday-30,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Sunday-30,14007725-OCT26-AlbRMB-Sunday-30,State St. Station to Schodack,0,2330465,1,1
+233,OCT26-AlbRMB-Sunday-30,14007773-OCT26-AlbRMB-Sunday-30,Broadway Station to Schodack Amazon,0,2330452,1,1
+233,OCT26-AlbRMB-Sunday-30,14007888-OCT26-AlbRMB-Sunday-30,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1
+233,OCT26-AlbRMB-Sunday-30,14008002-OCT26-AlbRMB-Sunday-30,Broadway Station to Schodack Amazon,0,2330470,1,1
+233,OCT26-AlbRMB-Sunday-30,14008003-OCT26-AlbRMB-Sunday-30,Columbia Tpke & Sherwood Ave to Pearl & Hudson,1,2330371,1,1

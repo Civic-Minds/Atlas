@@ -1,0 +1,34 @@
+stop_id,stop_code,stop_name,stop_desc,platform_code,platform_name,stop_lat,stop_lon,zone_id,stop_address,stop_url,level_id,location_type,parent_station,wheelchair_boarding,municipality,on_street,at_street,vehicle_type
+10031,10031,E 1st St @ P St,,,,42.338307,-71.027132,LocalBus,,https://www.mbta.com/stops/10031,,0,,1,Boston,East First Street,P Street,3
+10032,10032,E 1st St opp O St,,,,42.338274,-71.029203,LocalBus,,https://www.mbta.com/stops/10032,,0,,1,Boston,East First Street,O Street,3
+10033,10033,E 1st St @ O St,,,,42.338176,-71.029444,LocalBus,,https://www.mbta.com/stops/10033,,0,,1,Boston,East First Street,O Street,3
+16535,16535,Otis St @ Summer St,,,,42.354243,-71.058557,ExpressBus-Downtown,,https://www.mbta.com/stops/16535,,0,,1,Boston,Otis Street,Summer Street,3
+208,208,Summer St @ Powerhouse St,,,,42.340464,-71.035651,LocalBus,,https://www.mbta.com/stops/208,,0,,1,Boston,Summer Street,Power House Street,3
+210,210,Summer St @ Drydock Ave,,,,42.344381,-71.039016,LocalBus,,https://www.mbta.com/stops/210,,0,,1,Boston,Summer Street,,3
+212,212,Summer St @ D St,,,,42.345781,-71.04118,LocalBus,,https://www.mbta.com/stops/212,,0,,1,Boston,Summer Street,D Street,3
+244,244,Summer St @ E St,,,,42.345049,-71.040496,LocalBus,,https://www.mbta.com/stops/244,,0,,1,Boston,Summer Street,Massport Haul Road,3
+246,246,Summer St @ Pappas Way,,,,42.344167,-71.039113,LocalBus,,https://www.mbta.com/stops/246,,0,,1,Boston,Summer Street,,3
+27,27,E Broadway @ N St,,,,42.335642,-71.031087,LocalBus,,https://www.mbta.com/stops/27,,0,,1,Boston,East Broadway,N Street,3
+28,28,E Broadway @ O St,,,,42.335674,-71.029349,LocalBus,,https://www.mbta.com/stops/28,,0,,1,Boston,East Broadway,O Street,3
+29,29,E Broadway @ P St,,,,42.335716,-71.026898,LocalBus,,https://www.mbta.com/stops/29,,0,,1,Boston,East Broadway,P Street,3
+30,30,E Broadway @ Farragut Rd,,,,42.335738,-71.02519,LocalBus,,https://www.mbta.com/stops/30,,0,,1,Boston,East Broadway,Farragut Road,3
+32,32,Farragut Rd opp E 2nd St,,,,42.337629,-71.025051,LocalBus,,https://www.mbta.com/stops/32,,0,,1,Boston,Farragut Road,East Second Street,3
+33,33,City Point Bus Terminal,,,,42.338537,-71.031181,LocalBus,,https://www.mbta.com/stops/33,,0,,1,Boston,Busway,East First Street,3
+333,333,E 1st St @ City Point Bus Terminal,,,,42.338284,-71.031327,LocalBus,,https://www.mbta.com/stops/333,,0,,1,Boston,East First Street,Busway,3
+34,34,P St @ E 2nd St,,,,42.33733,-71.027298,LocalBus,,https://www.mbta.com/stops/34,,0,,1,Boston,P Street,East Second Street,3
+35,35,P St @ E Broadway,,,,42.335837,-71.027244,LocalBus,,https://www.mbta.com/stops/35,,0,,1,Boston,P Street,East Broadway,3
+6535,6535,Federal St @ Matthews St,,,,42.35479,-71.056314,LocalBus,,https://www.mbta.com/stops/6535,,0,,1,Boston,Federal Street,Matthews Street,3
+6564,6564,Summer St @ South Station - Red Line entrance,,,,42.352253,-71.054774,LocalBus,,https://www.mbta.com/stops/6564,,0,,1,Boston,Summer Street,Atlantic Avenue,3
+879,879,L St @ E 3rd St,,,,42.336114,-71.035539,LocalBus,,https://www.mbta.com/stops/879,,0,,1,Boston,L Street,East Third Street,3
+880,880,L St @ E 2nd St,,,,42.337375,-71.035546,LocalBus,,https://www.mbta.com/stops/880,,0,,1,Boston,Summer Street,East Second Street,3
+884,884,Summer St @ E 1st St,,,,42.33828,-71.035424,LocalBus,,https://www.mbta.com/stops/884,,0,,1,Boston,Summer Street,East First Street,3
+885,885,Summer St @ E 1st St,,,,42.338215,-71.035547,LocalBus,,https://www.mbta.com/stops/885,,0,,1,Boston,Summer Street,East First Street,3
+886,886,L St @ Broadway,,,,42.336037,-71.03534,LocalBus,,https://www.mbta.com/stops/886,,0,,1,Boston,L Street,East Broadway,3
+888,888,Summer St @ Melcher St,,,,42.350208,-71.05039,LocalBus,,https://www.mbta.com/stops/888,,0,,1,Boston,Summer Street,Melcher Street,3
+88801,88801,350 Summer St,,,,42.34886,-71.04753,LocalBus,,https://www.mbta.com/stops/88801,,0,,1,Boston,Summer Street,,3
+889,889,Summer St opp WTC Ave,,,,42.346836,-71.043514,LocalBus,,https://www.mbta.com/stops/889,,0,,1,Boston,Summer Street,,3
+890,890,Summer St @ WTC Ave,,,,42.347405,-71.044125,LocalBus,,https://www.mbta.com/stops/890,,0,,1,Boston,Summer Street,World Trade Center Road,3
+89001,89001,400 Summer St,,,,42.34876,-71.04675,LocalBus,,https://www.mbta.com/stops/89001,,0,,1,Boston,Summer Street,,3
+891,891,Summer St opp Melcher St,,,,42.350545,-71.050865,LocalBus,,https://www.mbta.com/stops/891,,0,,1,Boston,Summer Street,Melcher Street,3
+892,892,Summer St @ Atlantic Ave,,,,42.352649,-71.055136,LocalBus,,https://www.mbta.com/stops/892,,0,,1,Boston,Summer Street,Atlantic Avenue,3
+895,895,E Broadway @ N St,,,,42.335747,-71.031442,LocalBus,,https://www.mbta.com/stops/895,,0,,1,Boston,East Broadway,N Street,3

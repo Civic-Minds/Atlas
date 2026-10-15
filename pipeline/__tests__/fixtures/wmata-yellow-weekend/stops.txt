@@ -1,0 +1,54 @@
+stop_id,stop_name,stop_desc,stop_lat,stop_lon,zone_id,location_type,parent_station,wheelchair_boarding,level_id
+STN_F02,Archives,,38.89322449,-77.02190866,10,1,,1,
+STN_E10,Greenbelt,,39.01109343,-76.91119726,8,1,,1,
+STN_E09,College Park-U of Md,,38.97830324,-76.92834004,8,1,,1,
+STN_E08,Hyattsville Crossing,,38.96529153,-76.95642247,5,1,,1,
+STN_E07,West Hyattsville,,38.95527582,-76.96949977,5,1,,1,
+STN_E05,Georgia Av-Petworth,,38.93736709,-77.02353736,78,1,,1,
+STN_E04,Columbia Heights,,38.92750233,-77.03252102,77,1,,1,
+STN_E03,U St,,38.91700896,-77.02752021,70,1,,1,
+STN_E02,Shaw-Howard U,,38.91351778,-77.02192262,69,1,,1,
+STN_E01,Mt Vernon Sq,,38.90657966,-77.02192049,66,1,,1,
+STN_D03_F03,L'Enfant Plaza,,38.8848935,-77.02191272,10,1,,1,
+STN_C15,Huntington,,38.79382977,-77.07530039,2,1,,1,
+STN_C14,Eisenhower Av,,38.8003537,-77.07115634,1,1,,1,
+STN_C13,King St-Old Town,,38.80660864,-77.0609744,1,1,,1,
+STN_C12,Braddock Rd,,38.81408652,-77.05372176,7,1,,1,
+STN_C10,Ronald Reagan Washington National Airport,,38.85350503,-77.04404792,11,1,,1,
+STN_C09,Crystal City,,38.85784574,-77.05057183,11,1,,1,
+STN_C08,Pentagon City,,38.86185214,-77.05951586,43,1,,1,
+STN_C07,Pentagon,,38.86919464,-77.05411341,42,1,,1,
+STN_B06_E06,Fort Totten,,38.95178626,-77.00229579,10,1,,1,
+STN_B01_F01,Gallery Place,,38.8983797,-77.02280227,10,1,,1,
+PF_F03_2,"L'Enfant Plaza, Green/Yellow Line Track 2 Platform",Green/Yellow Line to Branch Ave/Huntington,38.88511874,-77.02199431,10,0,STN_D03_F03,1,D03_F03_L1
+PF_F03_1,"L'Enfant Plaza, Green/Yellow Line Track 1 Platform",Green/Yellow Line to Greenbelt/Fort Totten,38.88511895,-77.02182773,10,0,STN_D03_F03,1,D03_F03_L1
+PF_F02_C,"Archives, Green/Yellow Line Center Platform",Green/Yellow Line to Fort Totten | to Branch Ave/Huntington,38.89321666,-77.0219064,10,0,STN_F02,1,F02_L2
+PF_F01_C,"Gallery Place, Green/Yellow Line Center Platform",Green/Yellow Line to Greenbelt/Fort Totten | to Branch Ave/Huntington,38.89837678,-77.02190378,10,0,STN_B01_F01,1,B01_F01_L3
+PF_E10_C,"Greenbelt, Green/Yellow Line Center Platform",Green/Yellow Line to Branch Ave/Huntington,39.0110847,-76.91119571,8,0,STN_E10,1,E10_L1
+PF_E09_C,"College Park-U of MD, Green/Yellow Line Center Platform",Green/Yellow Line to Greenbelt | to Branch Ave/Huntington,38.97829539,-76.92833781,8,0,STN_E09,1,E09_L2
+PF_E08_2,"Hyattsville Crossing, Green/Yellow Line Track 2 Platform",Green/Yellow Line to Branch Ave/Huntington,38.96533773,-76.95641827,5,0,STN_E08,1,E08_L1
+PF_E08_1,"Hyattsville Crossing, Green/Yellow Line Track 1 Platform",Green/Yellow Line to Greenbelt,38.96522987,-76.95642218,5,0,STN_E08,1,E08_L1
+PF_E07_2,"West Hyattsville, Green/Yellow Line Track 2 Platform",Green/Yellow Line to Branch Ave/Huntington,38.955288,-76.96956103,5,0,STN_E07,1,E07_L1
+PF_E07_1,"West Hyattsville, Green/Yellow Line Track 1 Platform",Green/Yellow Line to Greenbelt,38.95524734,-76.96943634,5,0,STN_E07,1,E07_L1
+PF_E06_C,"Fort Totten, Green/Yellow Line Center Platform",Green/Yellow Line to Greenbelt/Fort Totten | to Branch Ave/Huntington,38.95172354,-77.00315997,10,0,STN_B06_E06,1,B06_E06_L1
+PF_E05_C,"Georgia Ave-Petworth, Green/Yellow Line Center Platform",Green/Yellow Line to Greenbelt/Fort Totten | to Branch Ave/Huntington,38.93735792,-77.0235358,78,0,STN_E05,1,E05_L2
+PF_E04_C,"Columbia Heights, Green/Yellow Line Center Platform",Green/Yellow Line to Greenbelt/Fort Totten | to Branch Ave/Huntington,38.92749449,-77.03251875,77,0,STN_E04,1,E04_L2
+PF_E03_C,"U St, Green/Yellow Line Center Platform",Green/Yellow Line to Branch Ave/Huntington | to Greenbelt/Fort Totten,38.91700113,-77.02751795,70,0,STN_E03,1,E03_L2
+PF_E02_C,"Shaw-Howard, Green/Yellow Line Center Platform",Green/Yellow Line to Greenbelt/Fort Totten | to Branch Ave/Huntington,38.91350995,-77.02192036,69,0,STN_E02,1,E02_L2
+PF_E01_C,"Mt Vernon Square, Green/Yellow Line Center Platform",Green/Yellow Line to Greenbelt/Fort Totten | to Branch Ave/Huntington,38.90657183,-77.02191823,66,0,STN_E01,1,E01_L2
+PF_C15_C,"Huntington, Yellow Line Center Platform",Yellow Line to Fort Totten,38.79382204,-77.07529833,2,0,STN_C15,1,C15_L2
+PF_C14_2,"Eisenhower Ave, Yellow Line Track 2 Platform",Yellow Line to Huntington,38.80043813,-77.07117784,1,0,STN_C14,1,C14_L1
+PF_C14_1,"Eisenhower Ave, Yellow Line Track 1 Platform",Yellow Line to Fort Totten,38.80029433,-77.07108096,1,0,STN_C14,1,C14_L1
+PF_C13_C,"King St-Old Town, Yellow/Blue Line Center Platform",Blue/Yellow Line to Downtown Largo/Fort Totten | to Franconia-Springfield/Huntington,38.80659727,-77.06096816,1,0,STN_C13,1,C13_L1
+PF_C12_C,"Braddock Road, Yellow/Blue Line Center Platform",Blue/Yellow Line to Downtown Largo/Fort Totten | to Franconia-Springfield/Huntington,38.81407871,-77.0537195,7,0,STN_C12,1,C12_L1
+PF_C10_2,"Ronald Reagan Washington National Airport, Yellow/Blue Line Track 2 Platform-Trains South Toward Alexandria",Blue/Yellow Line to Franconia-Springfield/Huntington,38.85348502,-77.04409364,11,0,STN_C10,1,C10_L1
+PF_C10_1,"Ronald Reagan Washington National Airport, Yellow/Blue Line Track 1 Platform-Trains North Washington DC & Maryland Via Virginia",Blue/Yellow Line to Downtown Largo/Fort Totten,38.85350817,-77.04399623,11,0,STN_C10,1,C10_L1
+PF_C09_2,"Crystal City, Yellow/Blue Line Track 2 Platform",Blue/Yellow Line to Downtown Largo/Fort Totten,38.8577858,-77.05055889,11,0,STN_C09,1,C09_L2
+PF_C09_1,"Crystal City, Yellow/Blue Line Track 1 Platform",Blue/Yellow Line to Franconia-Springfield/Huntington,38.85788934,-77.05058238,11,0,STN_C09,1,C09_L2
+PF_C08_2,"Pentagon City, Yellow/Blue Line Track 2 Platform",Blue/Yellow Line to Franconia-Springfield/Huntington,38.86185233,-77.05958163,43,0,STN_C08,1,C08_L2
+PF_C08_1,"Pentagon City, Yellow/Blue Line Track 1 Platform",Blue/Yellow Line to Downtown Largo/Fort Totten,38.86184163,-77.05944486,43,0,STN_C08,1,C08_L2
+PF_C07_2,"Pentagon, Yellow/Blue Line Track 2 Platform",Blue/Yellow Line to Franconia-Springfield/Huntington,38.86919821,-77.05412775,42,0,STN_C07,1,C07_L2
+PF_C07_1,"Pentagon, Yellow/Blue Line Track 1 Platform",Blue/Yellow Line to Downtown Largo/Fort Totten,38.86916837,-77.05409044,42,0,STN_C07,1,C07_L1
+STN_C11,Potomac Yard,,38.83319218,-77.04641974,98,1,,1,
+PF_C11_2,"Potomac Yard, Yellow/Blue Line Track 2 Platform",Blue/Yellow Line to Franconia-Springfield/Huntington,38.83319118,-77.04649174,98,0,STN_C11,1,C11_L1
+PF_C11_1,"Potomac Yard, Yellow/Blue Line Track 1 Platform",Blue/Yellow Line to Downtown Largo/Fort Totten,38.83318818,-77.04634174,98,0,STN_C11,1,C11_L1

@@ -63,7 +63,7 @@ const worse = (a: string, b: string): string => (rank(a) >= rank(b) ? a : b);
  * no grade) and headways. Interior nulls take the worse neighbour; a null run at an end is
  * limited (infrequent).
  */
-export function sectionRuns(stopTiers: ReadonlyArray<string | null>, routeTier: string, headways: ReadonlyArray<number | null> = []): SectionRun[] {
+export function sectionRuns(stopTiers: ReadonlyArray<string | null>, routeTier: string, headways: ReadonlyArray<number | null> = [], dropOffOnly: ReadonlyArray<boolean> = []): SectionRun[] {
   const n = stopTiers.length;
   const valued = stopTiers.map(t => t != null);
   const firstValued = valued.indexOf(true);
@@ -71,6 +71,10 @@ export function sectionRuns(stopTiers: ReadonlyArray<string | null>, routeTier: 
   if (firstValued < 0) return [];
   const tiers: Array<string | null> = stopTiers.map((t, i) => {
     if (t != null) return t;
+    // A drop-off-only stop (#879: the layover a line starts from, a drop-off platform, the
+    // terminal) is never graded and takes its neighbour's grade at either end, however many
+    // in a row. A stop with no grade for any other reason keeps the old rule.
+    if (dropOffOnly[i]) return null;
     // A single valueless last stop is the terminal, not a tail (its departures are arrivals).
     const outer = i < firstValued || (i > lastValued && lastValued < n - 2);
     return outer ? 'infrequent' : null;
@@ -197,7 +201,8 @@ export function buildSectionColourFeatures(
       if (cache.candidates) group.candidates.set(dir, cache.candidates);
       if (cache.byStop) group.byStop.set(dir, cache.byStop);
       const headways = (p.stopOrder ?? []).map(stopId => p.stopHeadways?.[stopId] ?? null);
-      for (const run of sectionRuns(tiers, p.tier!, headways)) {
+      const dropOffOnly = new Set(p.dropOffOnlyStops ?? []);
+      for (const run of sectionRuns(tiers, p.tier!, headways, (p.stopOrder ?? []).map(stopId => dropOffOnly.has(stopId)))) {
         const [start, end] = runExtent(p.stopPositions!, run.from, run.to);
         const clipped = clipLinestring((feature.geometry as GeoJSON.LineString).coordinates, start, end);
         if (!clipped || clipped.length < 2) continue;

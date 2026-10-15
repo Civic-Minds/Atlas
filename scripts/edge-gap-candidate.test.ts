@@ -53,6 +53,7 @@ describe('applyEdgeGapCandidateCriteria', () => {
 
   it('does not use an edge allowance when only three departures would remain', () => {
     const result = applyEdgeGapCandidateCriteria([raw([420, 440, 450, 460], 'sparse-edge')]);
-    expect(result.find(item => item.route === 'sparse-edge')?.tier).toBe('span');
+    // Four AM-peak trips over 40 minutes stay one-off under the #720 rating bar; no edge allowance.
+    expect(result.find(item => item.route === 'sparse-edge')).toMatchObject({ tier: 'span', edgeGapAllowance: undefined });
   });
 });

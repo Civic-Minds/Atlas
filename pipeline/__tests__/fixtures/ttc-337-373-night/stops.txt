@@ -1,0 +1,255 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+11506,11506,Eighth St at Birmingham St,,43.602795,-79.507259,,,,,,2
+3543,3543,Eighth St at Lake Shore Blvd West North Side,,43.60078,-79.506431,,,,,,1
+526,526,Bloor St West at Islington Ave West Side,,43.64451,-79.524265,,,,,,1
+6991,6991,Royal York Rd at Dixon Rd,,43.699615,-79.533986,,,,,,2
+9901,9901,Islington Ave at Bloor St West North Side,,43.64541,-79.523592,,,,,,1
+13363,13363,Islington Ave at Bloor St West,,43.644497,-79.523193,,,,,,1
+3791,3791,Islington Ave at Finch Ave West,,43.745841,-79.568376,,,,,,1
+2725,2725,Islington Ave at Nordin Ave,,43.626838,-79.516246,,,,,,1
+8285,8285,Steeles Ave West at Islington Ave Loop,,43.764147,-79.576339,,,,,,1
+8698,8698,Weston Rd at Bradstock Rd,,43.738874,-79.539217,,,,,,1
+8723,8723,Weston Rd at Finch Ave West,,43.75179,-79.542165,,,,,,2
+7443,7443,Weston Rd at Oak St North Side,,43.708152,-79.533625,,,,,,1
+14064,14064,Weston Rd at Steeles Ave West,,43.769223,-79.546118,,,,,,1
+8260,8260,Steeles Ave West at Scholes Rd/Barmac Dr,,43.768372,-79.555194,,,,,,1
+6976,6976,Royal York Rd at Bloor St West,,43.647184,-79.511128,,,,,,1
+3794,3794,Islington Ave at Fletcher Place,,43.691428,-79.544286,,,,,,2
+3827,3827,Islington Ave at Princess Margaret Blvd South Side,,43.675429,-79.537136,,,,,,2
+8727,8727,Weston Rd at Gaydon Ave,,43.720275,-79.537346,,,,,,1
+3789,3789,Islington Ave at Fairway Rd,,43.654968,-79.52804,,,,,,1
+3835,3835,Islington Ave at Rowntree Mill Rd South Side,,43.754366,-79.568921,,,,,,1
+8722,8722,Weston Rd at Finch Ave West South Side,,43.751644,-79.542439,,,,,,1
+3809,3809,Islington Ave at The Kingsway,,43.668502,-79.534002,,,,,,1
+3761,3761,Islington Ave at Aylesbury Rd,,43.666523,-79.533099,,,,,,1
+3788,3788,Islington Ave at Fairway Rd North Side,,43.655037,-79.527877,,,,,,1
+3759,3759,Islington Ave at Aviemore Dr,,43.748528,-79.56845,,,,,,1
+7033,7033,Royal York Rd at Trehorne Dr South Side,,43.690038,-79.530124,,,,,,1
+8692,8692,3636 Weston Rd,,43.759232,-79.544263,,,,,,1
+2716,2716,Islington Ave at Beaumonde Heights Dr North Side,,43.742858,-79.567695,,,,,,1
+8729,8729,Weston Rd at Habitant Dr,,43.746053,-79.541212,,,,,,1
+3799,3799,Islington Ave at Gosfield Gate South Side,,43.725271,-79.560044,,,,,,1
+6985,6985,Royal York Rd at Country Club Dr,,43.674485,-79.523222,,,,,,2
+3852,3852,Islington Ave at Westhampton Dr South Side,,43.70418,-79.550141,,,,,,2
+8699,8699,Weston Rd at Bradstock Rd,,43.739191,-79.539595,,,,,,1
+8690,8690,Weston Rd at Burgundy Crt North Side,,43.729288,-79.535903,,,,,,1
+3777,3777,Islington Ave at Dixon Rd,,43.696716,-79.546347,,,,,,1
+7444,7444,Weston Rd at Oak St,,43.707859,-79.533756,,,,,,1
+3803,3803,Islington Ave at Humber Summit Lane,,43.761881,-79.573211,,,,,,1
+3823,3823,Islington Ave at Orrell Ave,,43.656887,-79.528879,,,,,,1
+8738,8738,Weston Rd at Kenhar Dr South Side,,43.761317,-79.544728,,,,,,1
+3850,3850,Islington Ave at Vanhill Ave,,43.757355,-79.570029,,,,,,1
+3754,3754,Islington Ave at Albion Rd,,43.736655,-79.56489,,,,,,1
+8726,8726,Weston Rd at Garyray Dr,,43.767534,-79.545753,,,,,,1
+10701,10701,Weston Rd at Garyray Dr,,43.767795,-79.546118,,,,,,1
+3767,3767,Islington Ave at Bergamot Ave,,43.716748,-79.555736,,,,,,1
+8771,8771,Weston Rd at Sunset Trail,,43.72174,-79.537093,,,,,,2
+3808,3808,Islington Ave at The Kingsway North Side,,43.668756,-79.533874,,,,,,1
+3779,3779,Islington Ave at Duncanwoods Dr North Side,,43.754994,-79.568713,,,,,,1
+1516,1516,Royal York Rd at Kingsgrove Blvd,,43.653862,-79.514294,,,,,,1
+6982,6982,Royal York Rd at Cobble Hills,,43.672692,-79.522574,,,,,,1
+3787,3787,Islington Ave at Evans Ave,,43.618201,-79.510979,,,,,,1
+2734,2734,Islington Ave at Van Dusen Blvd,,43.641604,-79.522221,,,,,,1
+8284,8284,Steeles Ave West at Islington Ave East Side,,43.76433,-79.57411,,,,,,1
+1510,1510,Royal York Rd at Ashley Park Rd (North) North Side,,43.663913,-79.518628,,,,,,1
+1518,1518,Royal York Rd at Strath Humber Crt,,43.661189,-79.517388,,,,,,1
+3814,3814,Islington Ave at Leduc Dr South Side,,43.718169,-79.556712,,,,,,1
+6174,6174,Weston Rd at Coral Gable Dr,,43.735517,-79.538468,,,,,,1
+8702,8702,Opposite 3689 Weston Rd,,43.763041,-79.5451,,,,,,1
+6993,6993,Royal York Rd at Eglinton Ave West,,43.682095,-79.526306,,,,,,1
+7005,7005,Royal York Rd at Lawrence Ave West,,43.696011,-79.532473,,,,,,1
+3760,3760,Islington Ave at Aylesbury Rd,,43.666259,-79.532744,,,,,,1
+8720,8720,Weston Rd at Fenmar Dr North Side,,43.758067,-79.543677,,,,,,1
+1512,1512,Royal York Rd at Dundas St West South Side,,43.657399,-79.516019,,,,,,1
+7018,7018,Royal York Rd at North Dr North Side,,43.677231,-79.524277,,,,,,1
+8273,8273,Steeles Ave West at Walkway to Friuli Crt,,43.765154,-79.571975,,,,,,2
+8721,8721,Weston Rd at Fenmar Dr South Side,,43.756921,-79.543747,,,,,,1
+8277,8277,Steeles Ave West at Gaudaur Rd,,43.767589,-79.560311,,,,,,1
+8298,8298,Steeles Ave West at Pine Valley Dr,,43.766739,-79.564649,,,,,,1
+8736,8736,Weston Rd at Starview Lane,,43.726642,-79.535661,,,,,,1
+8731,8731,Weston Rd at Imogene Ave,,43.742618,-79.540119,,,,,,1
+4332,4332,Kipling Ave at Kidron Valley Dr,,43.756348,-79.588563,,,,,,1
+3841,3841,Islington Ave at St Georges Blvd,,43.703263,-79.54944,,,,,,1
+6975,6975,Royal York Rd at Bloor St West South Side,,43.646969,-79.511292,,,,,,1
+8297,8297,Steeles Ave West at Pearce Rd,,43.769841,-79.54938,,,,,,1
+3807,3807,Islington Ave at Kingsview Blvd,,43.699844,-79.548105,,,,,,1
+7039,7039,Royal York Rd at Weston Wood Rd,,43.69197,-79.531007,,,,,,1
+3813,3813,Islington Ave at Leduc Dr North Side,,43.718689,-79.556614,,,,,,1
+7038,7038,Royal York Rd at Weston Wood Rd North Side,,43.692098,-79.530804,,,,,,1
+4277,4277,Kipling Ave at Annabelle Dr,,43.751045,-79.585973,,,,,,1
+4643,4643,Steeles Ave West at Islington Ave,,43.764154,-79.574983,,,,,,1
+6979,6979,Royal York Rd at Chapman Rd,,43.687475,-79.528699,,,,,,1
+11717,11717,Weston Rd at Mainshep Rd,,43.731765,-79.537755,,,,,,1
+7025,7025,Royal York Rd at Royaleigh Ave South Side,,43.698221,-79.533679,,,,,,2
+3812,3812,Islington Ave at Lake Shore Blvd West,,43.600902,-79.505422,,,,,,1
+3785,3785,Islington Ave at Elmhurst Dr,,43.723031,-79.558639,,,,,,1
+1520,1520,Royal York Rd at Tremayne Ave,,43.651534,-79.513105,,,,,,1
+3855,3855,Islington Ave at Winnipeg Rd,,43.692368,-79.544377,,,,,,1
+9822,9822,Steeles Ave West at Kipling Ave,,43.759773,-79.589707,,,,,,1
+3750,3750,Islington Ave at Gosfield Gate,,43.725737,-79.559925,,,,,,1
+6972,6972,Royal York Rd at Anglesey Blvd,,43.666085,-79.519759,,,,,,1
+3774,3774,1738 Islington Ave - Richview Collegiate,,43.678379,-79.538485,,,,,,1
+3836,3836,Islington Ave at Sandhill Dr North Side,,43.734502,-79.563903,,,,,,1
+8303,8303,Steeles Ave West at Scholes Rd/Barmac Dr,,43.768748,-79.554719,,,,,,1
+3819,3819,Islington Ave at Muir Ave,,43.760111,-79.572001,,,,,,1
+2718,2718,Islington Ave at Bering Ave North Side,,43.639611,-79.521176,,,,,,1
+3839,3839,Islington Ave at St Andrews Blvd,,43.701432,-79.548832,,,,,,1
+7003,7003,Royal York Rd at La Rose Ave,,43.684236,-79.527582,,,,,,1
+8313,8313,Steeles Ave West at Turbine Dr,,43.767809,-79.558204,,,,,,1
+7030,7030,Royal York Rd at Summitcrest Dr,,43.685944,-79.528321,,,,,,1
+3825,3825,Islington Ave at Poplar Heights Dr,,43.675562,-79.536919,,,,,,2
+8761,8761,Weston Rd at Reuben Ave,,43.718805,-79.537817,,,,,,1
+3793,3793,Islington Ave at Finchley Rd,,43.656734,-79.528602,,,,,,1
+7368,7368,St Phillips Rd at Weston Rd,,43.70584,-79.532167,,,,,,2
+3765,3765,Islington Ave at Beaumonde Heights Dr South Side,,43.742225,-79.567734,,,,,,2
+8691,8691,3034 Weston Rd,,43.729812,-79.536524,,,,,,1
+8742,8742,Weston Rd at Lanyard Rd,,43.748355,-79.54178,,,,,,1
+3769,3769,Islington Ave at Birmingham St North Side,,43.603813,-79.506396,,,,,,1
+3848,3848,Islington Ave at Thorold Gate North Side,,43.762953,-79.573647,,,,,,1
+2727,2727,Islington Ave at Norseman St,,43.63431,-79.519306,,,,,,1
+6992,6992,Royal York Rd at Edenvale Cres South Side,,43.677213,-79.52449,,,,,,1
+3758,3758,800 Islington Ave,,43.616817,-79.510532,,,,,,1
+3782,3782,Islington Ave at Eglinton Ave West,,43.67969,-79.538744,,,,,,1
+6999,6999,Royal York Rd at Hartfield Crt South Side,,43.668977,-79.520973,,,,,,2
+6974,6974,Royal York Rd at Ashley Rd,,43.663454,-79.518609,,,,,,1
+6980,6980,Royal York Rd at Chapman Rd,,43.68762,-79.529035,,,,,,2
+7037,7037,Royal York Rd at The Westway,,43.696346,-79.53294,,,,,,1
+3763,3763,Islington Ave at Barker Ave,,43.731993,-79.563174,,,,,,1
+3834,3834,Islington Ave at Riverbank Dr,,43.653404,-79.527358,,,,,,1
+3780,3780,Islington Ave at Dundas St West,,43.651252,-79.526155,,,,,,1
+3837,3837,Islington Ave at Sandhill Dr,,43.734462,-79.564233,,,,,,1
+7445,7445,Weston Rd at Knob Hill Dr,,43.710855,-79.534766,,,,,,2
+7002,7002,Royal York Rd at La Rose Ave,,43.684028,-79.527197,,,,,,1
+3816,3816,Islington Ave at Milady Rd,,43.752168,-79.568109,,,,,,1
+8288,8288,Steeles Ave West at Klondike Dr,,43.76923,-79.552088,,,,,,1
+10866,10866,Steeles Ave West at Markbrook Lane,,43.759988,-79.586385,,,,,,1
+3854,3854,Islington Ave at The Westway,,43.688485,-79.542629,,,,,,1
+3795,3795,Islington Ave at Fordwich Cres,,43.726961,-79.560498,,,,,,1
+3818,3818,Islington Ave at Millwick Dr,,43.759961,-79.571556,,,,,,1
+3771,3771,Islington Ave at Bywood Dr,,43.659278,-79.529924,,,,,,1
+7441,7441,Weston Rd at Cardell Ave,,43.709803,-79.534726,,,,,,1
+8753,8753,Weston Rd at Ormont Dr,,43.764726,-79.545136,,,,,,1
+2713,2713,Islington Ave at Ambleside Ave,,43.629214,-79.51696,,,,,,1
+8773,8773,Weston Rd at Verobeach Blvd,,43.738166,-79.539385,,,,,,1
+3800,3800,Islington Ave at Great Oak Dr,,43.660902,-79.530629,,,,,,1
+3820,3820,Islington Ave at New Toronto St South Side,,43.606413,-79.506705,,,,,,1
+3786,3786,Islington Ave at Evans Ave South Side,,43.617871,-79.511116,,,,,,1
+6969,6969,Royal York Rd at Allanhurst Dr South Side,,43.679033,-79.525302,,,,,,1
+8281,8281,Steeles Ave West at Irondale Dr,,43.769499,-79.549749,,,,,,1
+8710,8710,Weston Rd at Coronado Crt,,43.740369,-79.539904,,,,,,1
+6996,6996,Royal York Rd at Glendarling Rd,,43.671004,-79.521641,,,,,,1
+8312,8312,Steeles Ave West at Turbine Dr West Side,,43.767973,-79.558138,,,,,,1
+2714,2714,Islington Ave at Athol Ave,,43.626717,-79.51594,,,,,,1
+3801,3801,Islington Ave at Hilldowntree Rd,,43.659199,-79.529676,,,,,,1
+4377,4377,Kipling Ave at Stevenson Rd,,43.744609,-79.582868,,,,,,1
+2730,2730,Islington Ave at Saybrook Ave,,43.636325,-79.519856,,,,,,1
+8724,8724,Weston Rd at Flindon Rd,,43.720773,-79.537557,,,,,,1
+8272,8272,Steeles Ave West at Walkway to Plunkett Rd,,43.764965,-79.57122,,,,,,1
+8777,8777,Weston Rd at Wallasey Ave,,43.718479,-79.537597,,,,,,1
+10702,10702,Weston Rd at Ormont Dr,,43.76496,-79.545497,,,,,,1
+3821,3821,Islington Ave at New Toronto St,,43.60655,-79.506452,,,,,,1
+3770,3770,Islington Ave at Birmingham St,,43.603386,-79.506463,,,,,,1
+14262,14262,Weston Rd at Cardell Ave,,43.709503,-79.5343,,,,,,1
+7024,7024,Royal York Rd at Romney Rd,,43.669159,-79.520846,,,,,,2
+3802,3802,Islington Ave at Holgate St,,43.684737,-79.541305,,,,,,1
+7442,7442,Weston Rd at Dee Ave,,43.711287,-79.535271,,,,,,1
+9170,9170,Steeles Ave West Loop at Islington Ave,,43.764093,-79.576584,,,,,,1
+7439,7439,Weston Rd at Albion Rd South Side,,43.717017,-79.537874,,,,,,1
+10700,10700,Weston Rd at Steeles Ave West South Side,,43.769718,-79.546532,,,,,,1
+2723,2723,Islington Ave at Kingsmoor Gate North Side,,43.741105,-79.56691,,,,,,1
+1521,1521,Royal York Rd at Usher Ave,,43.655551,-79.514837,,,,,,1
+6981,6981,Royal York Rd at Bell Royal Crt North Side,,43.672553,-79.5223,,,,,,2
+6986,6986,Royal York Rd at Country Club Dr,,43.67465,-79.523452,,,,,,1
+2724,2724,Islington Ave at Kingsmoor Gate South Side,,43.740391,-79.566904,,,,,,2
+3830,3830,Islington Ave at Resources Rd South Side,,43.707793,-79.551878,,,,,,1
+3840,3840,Islington Ave at St Andrews Blvd,,43.701229,-79.548498,,,,,,1
+3755,3755,Islington Ave at Allenby Ave,,43.711273,-79.553078,,,,,,1
+1162,1162,Islington Ave at Anglesey Blvd,,43.66386,-79.531702,,,,,,1
+6994,6994,Royal York Rd at Eglinton Ave West,,43.682456,-79.52678,,,,,,1
+7369,7369,St Phillips Rd at Dixon Rd,,43.700006,-79.534443,,,,,,1
+8271,8271,Steeles Ave West at Fenmar Dr East Side,,43.766574,-79.563755,,,,,,1
+8693,8693,Weston Rd at Aura Lea Blvd,,43.723246,-79.536833,,,,,,1
+8741,8741,Weston Rd at Lanyard Rd,,43.748184,-79.541419,,,,,,1
+8766,8766,Weston Rd at Sheppard Ave West,,43.733471,-79.538003,,,,,,1
+6970,6970,Royal York Rd at Allanhurst Dr,,43.679236,-79.525162,,,,,,1
+1514,1514,Royal York Rd at King Georges Rd,,43.650225,-79.512691,,,,,,1
+2726,2726,Islington Ave at Norseman St,,43.634118,-79.51889,,,,,,1
+12521,12521,Islington Ave at Finch Ave West South Side,,43.74577,-79.568755,,,,,,1
+8708,8708,Weston Rd at Coral Gable Dr,,43.73566,-79.538805,,,,,,1
+7034,7034,Royal York Rd at Trehorne Dr,,43.690289,-79.529987,,,,,,1
+6988,6988,Royal York Rd at Darlingbrook Cres South Side,,43.670934,-79.521782,,,,,,2
+3817,3817,Islington Ave at Milady Rd,,43.752433,-79.56851,,,,,,1
+8772,8772,Weston Rd at Toryork Dr,,43.753493,-79.542887,,,,,,1
+3806,3806,Islington Ave at Kingsview Blvd,,43.699602,-79.547712,,,,,,1
+7041,7041,Royal York Rd at Yorkleigh Ave,,43.694243,-79.531969,,,,,,1
+3853,3853,Islington Ave at The Westway South Side,,43.68824,-79.542872,,,,,,1
+2728,2728,Islington Ave at The Queensway North Side,,43.624047,-79.514742,,,,,,1
+7029,7029,Royal York Rd at Renault Cres North Side,,43.686157,-79.52813,,,,,,1
+2722,2722,Islington Ave at Jutland Rd,,43.629036,-79.517124,,,,,,1
+3828,3828,Islington Ave at Rathburn Rd South Side,,43.662127,-79.531147,,,,,,1
+8709,8709,Weston Rd at Coronado Crt,,43.740185,-79.539566,,,,,,1
+3829,3829,Islington Ave at Rathburn Rd,,43.662257,-79.530948,,,,,,1
+2733,2733,Islington Ave at Van Dusen Blvd,,43.641412,-79.521938,,,,,,1
+3796,3796,Islington Ave at Fordwich Cres,,43.727108,-79.560919,,,,,,1
+3846,3846,Islington Ave at Summitcrest Dr,,43.683282,-79.540697,,,,,,1
+7040,7040,Royal York Rd at Yorkleigh Ave,,43.694162,-79.531677,,,,,,1
+2712,2712,Islington Ave at Albion Rd,,43.7377,-79.565693,,,,,,1
+3833,3833,Islington Ave at Ridgevalley Cres North Side,,43.67211,-79.535377,,,,,,1
+1517,1517,Royal York Rd at Lynngrove Ave,,43.651466,-79.513239,,,,,,1
+8739,8739,Weston Rd at Kenhar Dr,,43.761598,-79.544474,,,,,,1
+8728,8728,Weston Rd at Habitant Dr,,43.745851,-79.540889,,,,,,1
+3849,3849,Islington Ave at Titan Rd,,43.630726,-79.51757,,,,,,1
+3797,3797,Islington Ave at Golfdown Dr,,43.720786,-79.557601,,,,,,1
+1511,1511,Royal York Rd at Dundas St West,,43.657704,-79.515878,,,,,,1
+3815,3815,Islington Ave at Monogram Pl,,43.70478,-79.550106,,,,,,2
+3805,3805,Islington Ave at Judson St,,43.613907,-79.508663,,,,,,1
+3768,3768,Islington Ave at Bergamot Ave,,43.717119,-79.556195,,,,,,1
+13446,13446,Islington Ave at Bering Ave,,43.639459,-79.521343,,,,,,1
+8701,8701,3689 Weston Rd,,43.762893,-79.544763,,,,,,1
+3778,3778,Islington Ave at Dixon Rd,,43.697254,-79.546973,,,,,,1
+8767,8767,Weston Rd at Sheppard Ave West,,43.733887,-79.53842,,,,,,1
+3845,3845,Islington Ave at Summitcrest Dr,,43.683125,-79.54029,,,,,,1
+3804,3804,Islington Ave at Judson St North Side,,43.614039,-79.508392,,,,,,2
+3790,3790,Islington Ave at Fenley Dr South Side,,43.692803,-79.544904,,,,,,2
+8283,8283,Steeles Ave West at Islington Ave,,43.764537,-79.574602,,,,,,1
+7026,7026,Royal York Rd at Royaleigh Ave,,43.698515,-79.533557,,,,,,2
+3851,3851,Islington Ave at Vanhill Ave,,43.75723,-79.569647,,,,,,1
+8276,8276,Steeles Ave West at Gaudaur Rd East Side,,43.767387,-79.56018,,,,,,1
+7446,7446,Weston Rd at Walsh Ave,,43.716396,-79.537036,,,,,,1
+7365,7365,St Phillips Rd at Riverview Heights North Side,,43.703316,-79.531666,,,,,,1
+2711,2711,Islington Ave at Barkwin Dr,,43.738105,-79.565505,,,,,,1
+8688,8688,3395 Weston Rd,,43.747195,-79.541201,,,,,,1
+8289,8289,Steeles Ave West at Klondike Dr,,43.768972,-79.552407,,,,,,1
+4282,4282,Kipling Ave at Beaconhill Rd,,43.753672,-79.587255,,,,,,1
+8697,8697,Weston Rd at Bradmore Ave,,43.723203,-79.537139,,,,,,2
+9104,9104,Weston Rd at Toryork Dr,,43.753169,-79.542526,,,,,,1
+3798,3798,Islington Ave at Golfdown Dr,,43.721595,-79.55828,,,,,,1
+1515,1515,Royal York Rd at Kingsgrove Blvd,,43.653388,-79.513913,,,,,,1
+7366,7366,St Phillips Rd at Riverview Heights,,43.703313,-79.531934,,,,,,2
+3847,3847,2825 Islington Ave,,43.748941,-79.567999,,,,,,1
+3762,3762,Islington Ave at Barker Ave,,43.73177,-79.562725,,,,,,1
+9509,9509,Islington Ave at Resources Rd North Side,,43.708432,-79.551717,,,,,,1
+3783,3783,Islington Ave at Eglinton Ave West,,43.67994,-79.539209,,,,,,1
+8745,8745,Weston Rd at Mainshep Rd North Side,,43.73191,-79.537535,,,,,,1
+4340,4340,Kipling Ave at Mount Olive Dr,,43.746891,-79.583987,,,,,,1
+2729,2729,Islington Ave at The Queensway,,43.623813,-79.515022,,,,,,1
+3784,3784,Islington Ave at Elmhurst Dr South Side,,43.722846,-79.558942,,,,,,1
+1513,1513,Royal York Rd at King Georges Rd,,43.649956,-79.512407,,,,,,1
+2731,2731,Islington Ave at Titan Rd,,43.630969,-79.517919,,,,,,1
+3775,3775,Islington Ave at Cordova Ave North Side,,43.648767,-79.525097,,,,,,2
+3776,3776,Islington Ave at Deerfoot Rd,,43.685138,-79.541182,,,,,,1
+3826,3826,Islington Ave at Prince George Dr,,43.672344,-79.535738,,,,,,1
+8732,8732,Weston Rd at Imogene Ave,,43.742865,-79.540501,,,,,,1
+14120,14120,Islington Ave at Rexdale Blvd North Side,,43.715356,-79.555092,,,,,,1
+6971,6971,Royal York Rd at Anglesey Blvd North Side,,43.666023,-79.519512,,,,,,2
+2710,2710,Islington Ave at Advance Rd,,43.636079,-79.519985,,,,,,1
+8737,8737,Weston Rd at Jubilee Cres,,43.725848,-79.535589,,,,,,2
+3773,3773,Islington Ave at Chestnut Hills Cres,,43.653052,-79.527003,,,,,,1
+13922,13922,791 Islington Ave,,43.616802,-79.510286,,,,,,1
+14753,14753,Royal York Station,,43.6481,-79.51129,,,,,,1
+15789,15789,Kipling Ave at Steeles Ave West South Side,,43.759079,-79.589794,,,,,,1
+15958,15958,1161 Royal York Rd,,43.661921,-79.517965,,,,,,1
+16052,16052,Weston Rd at St Phillips Rd,,43.706383,-79.532709,,,,,,1
+16190,16190,Islington Ave at Dundas St West South Side,,43.650745,-79.526258,,,,,,1
+6473,6473,Islington Ave at Rexdale Blvd,,43.714779,-79.555145,,,,,,1
+16456,16456,Islington Ave at Central Park Roadway,,43.648488,-79.525232,,,,,,2

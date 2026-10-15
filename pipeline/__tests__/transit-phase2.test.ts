@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyAnalysisCriteria as applyAnalysisCriteriaToDays, determineTier } from '../transit-phase2';
+import { applyAnalysisCriteria as applyAnalysisCriteriaToDays, determineTier, peakBlockHoldsTier } from '../transit-phase2';
 import { DEFAULT_CRITERIA } from '../defaults';
 import { WEEKDAYS, type RawRouteDepartures } from '../../types/gtfs';
 
@@ -72,6 +72,8 @@ describe('applyAnalysisCriteria', () => {
     const results = applyAnalysisCriteria([
       raw({ route: 'sparse-edge', departureTimes: [420, 440, 450, 460] }),
     ]);
+    // Four AM-peak trips over 40 minutes are less than an hour of service, so the pattern stays
+    // one-off rather than rush-hour-only every 20 (#720 rating bar).
     expect(results.find(item => item.route === 'sparse-edge')).toMatchObject({
       tier: 'span',
       serviceClass: 'irregular',
@@ -104,7 +106,7 @@ describe('applyAnalysisCriteria', () => {
     expect(routes.every(x => x.serviceClass === 'time-limited')).toBe(true);
   });
 
-  it('classifies separate AM and PM peak blocks as irregular despite spanning the clock', () => {
+  it('classifies steady separate AM and PM peak blocks as rush-hour-only limited, not irregular (#720)', () => {
     const results = applyAnalysisCriteria([
       raw({
         route: '986',
@@ -115,7 +117,23 @@ describe('applyAnalysisCriteria', () => {
       }),
     ]);
     const r = results.find(x => x.route === '986');
-    expect(r).toMatchObject({ tier: 'span', serviceClass: 'irregular' });
+    expect(r).toMatchObject({ tier: '10', serviceClass: 'time-limited', rushHourOnly: true });
+    // A peak block without a steady cadence keeps the pattern one-off.
+    const ragged = applyAnalysisCriteria([raw({ route: 'r', departureTimes: [362, 368, 470, 906, 912, 1010] })]);
+    expect(ragged.find(x => x.route === 'r')).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
+    // Three trips every 15, or four trips in 30 minutes, are less than the bar for a tier.
+    const short = applyAnalysisCriteria([
+      raw({ route: 'three', departureTimes: [420, 435, 450, 1020, 1035, 1050, 1065, 1080] }),
+      raw({ route: 'four', departureTimes: [420, 430, 440, 450, 1020, 1030, 1040, 1050] }),
+      raw({ route: 'hour', departureTimes: [420, 435, 450, 465, 480, 1020, 1035, 1050, 1065, 1080] }),
+    ]);
+    expect(short.find(x => x.route === 'three')).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
+    expect(short.find(x => x.route === 'four')).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
+    // Five trips every 15 over an hour in each peak hold every 15.
+    expect(short.find(x => x.route === 'hour')).toMatchObject({ serviceClass: 'time-limited', tier: '15', rushHourOnly: true });
+    // School buses at the bell are a burst, not a schedule every 1 (Edmonton 678 Weekday).
+    const school = applyAnalysisCriteria([raw({ route: '678', departureTimes: [433, 434, 436, 941, 942, 943, 953] })]);
+    expect(school.find(x => x.route === '678')).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
   });
 
   it('#313: keeps an entirely overnight route instead of dropping it (TTC Blue Night pattern)', () => {
@@ -140,11 +158,27 @@ describe('applyAnalysisCriteria', () => {
     expect(r!.tier).toBe('10');
   });
 
-  it('still drops a group with fewer than 2 total departures (cannot compute any headway)', () => {
+  it('a one-off route on one or two weekdays stays one-off, not part-time (#720, coast-rta TL-157)', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'TL-157', day: 'Tuesday', departureTimes: [400] }),
+      raw({ route: 'TL-157', day: 'Thursday', departureTimes: [400] }),
+    ]);
+    expect(results.find(x => x.route === 'TL-157' && x.day === 'Weekday')).toMatchObject({ tier: 'span', serviceClass: 'irregular' });
+  });
+
+  it('draws a pattern with one departure a day as one-off, not dropped (#720, TARC 99)', () => {
+    // TARC 99 (UPS West Louisville Shuttle): each of its shapes runs once a day, 04:29 or 22:10.
     const results = applyAnalysisCriteria([
       raw({ route: '888', departureTimes: [1500] }),
+      raw({ route: '99', departureTimes: [269] }),
+      raw({ route: '99', departureTimes: [1330], shapeId: 'evening' }),
+      raw({ route: '99', departureTimes: [600], shapeId: 'midday' }),
     ]);
-    expect(results.find(x => x.route === '888')).toBeUndefined();
+    for (const r of results.filter(x => x.route === '888' || x.route === '99')) {
+      expect(r).toMatchObject({ tier: 'span', serviceClass: 'irregular', tripCount: 1 });
+    }
+    expect(results.filter(x => x.route === '99')).toHaveLength(3);
+    expect(results.find(x => x.route === '888')).toBeDefined();
   });
 
   it('does not falsely promote two stray overnight trips into a real tier (span burst check still applies)', () => {
@@ -310,6 +344,21 @@ describe('partial-weekday decision is per route direction (#710)', () => {
     expect(partial?.partialWeekday).toBe(true);
     expect(full?.partialWeekday).toBeUndefined();
     expect(full?.tier).toBe('15');
+  });
+});
+
+describe('peakBlockHoldsTier: the bar for a rush-hour block to hold a tier (#720)', () => {
+  it('needs an hour and two cycles of the tier', () => {
+    expect(peakBlockHoldsTier('15', [15, 15, 15, 15], 60)).toBe(true);
+    expect(peakBlockHoldsTier('15', [15, 15, 15], 45)).toBe(false);
+    expect(peakBlockHoldsTier('10', [10, 10, 10], 30)).toBe(false);
+    // Every 60 needs two hours, not one.
+    expect(peakBlockHoldsTier('60', [55, 60, 65], 119)).toBe(false);
+    expect(peakBlockHoldsTier('60', [60, 60, 60], 180)).toBe(true);
+    // Infrequent has no cycle of its own: two of the block's median gaps.
+    expect(peakBlockHoldsTier('infrequent', [80, 90, 100], 179)).toBe(false);
+    expect(peakBlockHoldsTier('infrequent', [80, 90, 100], 270)).toBe(true);
+    expect(peakBlockHoldsTier('span', [10, 10, 10], 120)).toBe(false);
   });
 });
 

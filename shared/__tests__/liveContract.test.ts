@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeSnapshot, statusForAge } from '../../api/liveStore.js';
+import { normalizeSnapshot, statusForAge } from '../../local-api/liveStore.js';
 
 describe('Atlas live provider contract', () => {
   it('normalizes legacy vehicle archives into atlas.live.v1 records', () => {

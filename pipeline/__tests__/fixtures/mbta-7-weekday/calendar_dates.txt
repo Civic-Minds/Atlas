@@ -1,0 +1,24 @@
+service_id,date,exception_type,holiday_name
+BUS20264-hba46011-Weekday-02,20261012,2,Indigenous Peoples' Day
+BUS20264-hbc46tp6-Saturday-02,20261012,1,Indigenous Peoples' Day
+BUS20264-hbc46wk1-Weekday-02,20261012,2,Indigenous Peoples' Day
+BUS20264-hbc46f41-Weekday-02,20261016,2,
+BUS20264-sbc46wf1-Weekday-01,20261016,1,
+BUS20264-hbc46046-Saturday-02,20261017,2,
+BUS20264-sbc46w16-Saturday-01,20261017,1,
+BUS20264-hba46011-Weekday-02,20261111,2,Veterans Day
+BUS20264-hba46ns1-Weekday-02,20261111,1,Veterans Day
+BUS20264-hbc46wk1-Weekday-02,20261111,2,Veterans Day
+VeteransDay,20261111,1,Veterans Day
+BUS20264-hbc46f41-Weekday-02,20261120,1,
+BUS20264-hbc46046-Saturday-02,20261121,1,
+BUS20264-hba46011-Weekday-02,20261126,2,Thanksgiving Day
+BUS20264-hbc46wk1-Weekday-02,20261126,2,Thanksgiving Day
+BUS20264-hba46011-Weekday-02,20261127,2,Day after Thanksgiving Day
+BUS20264-hba46ns1-Weekday-02,20261127,1,Day after Thanksgiving Day
+DayafterThanksgivingDay,20261127,1,Day after Thanksgiving Day
+BUS20264-hbc46046-Saturday-02,20261128,1,
+BUS20264-sbc46wf1-Weekday-01,20261204,1,
+BUS20264-sbc46w16-Saturday-01,20261205,1,
+BUS20264-hbc46f41-Weekday-02,20261211,1,
+BUS20264-hbc46046-Saturday-02,20261212,1,

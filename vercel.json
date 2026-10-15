@@ -44,10 +44,6 @@
   ],
   "rewrites": [
     {
-      "source": "/api/history-adherence",
-      "destination": "/api/history-adherence.ts"
-    },
-    {
       "source": "/api/privacy-region",
       "destination": "/api/geo.ts?mode=privacy-region"
     },

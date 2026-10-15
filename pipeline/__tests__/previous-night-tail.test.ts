@@ -87,6 +87,9 @@ describe('a day whose only service is the previous night\'s tail (#718)', () => 
     for (const period of ['evening', 'late', 'overnight'] as const) {
       expect(routePassesHeadwayFilter(features, period, 'Sunday', Infinity), `any ${period}`).toBe(false);
     }
+    // A tail day publishes no stop metrics of its own: the feature stays in partialWeekdayFeatures
+    // (a misbound else in #720 dropped it, and the stop pass then wrote stop coverage for Sunday).
+    expect(sunday[0].stopPeriodCoverageHeadways).toBeUndefined();
     // Saturday has its own evening service and keeps its tier.
     expect(features.find(p => p.day === 'Saturday').tier).toBe('30');
     expect(passes(features, 'Saturday', 'all', 30)).toBe(true);

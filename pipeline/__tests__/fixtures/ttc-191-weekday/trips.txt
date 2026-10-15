@@ -1,0 +1,421 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+191,1,50799977,South - 191 Underhill towards Don Valley Station,,0,2233632,1122204,1,1
+191,1,50799976,South - 191 Underhill towards Don Valley Station,,0,2233635,1122204,1,1
+191,1,50799975,South - 191 Underhill towards Don Valley Station,,0,2233608,1122204,1,1
+191,1,50799974,South - 191 Underhill towards Don Valley Station,,0,2233609,1122204,1,1
+191,1,50799973,South - 191 Underhill towards Don Valley Station,,0,2233632,1122204,1,1
+191,1,50799972,South - 191 Underhill towards Don Valley Station,,0,2233634,1122204,1,1
+191,1,50799971,South - 191 Underhill towards Don Valley Station,,0,2233635,1122204,1,1
+191,1,50799970,South - 191 Underhill towards Don Valley Station,,0,2233608,1122204,1,1
+191,1,50799969,South - 191 Underhill towards Don Valley Station,,0,2233609,1122204,1,1
+191,1,50799989,South - 191 Underhill towards Don Valley Station,,0,2233632,1122204,1,1
+191,1,50799968,South - 191 Underhill towards Don Valley Station,,0,2233634,1122204,1,1
+191,1,50799958,South - 191 Underhill towards Don Valley Station,,0,2233635,1122204,1,1
+191,1,50799957,South - 191 Underhill towards Don Valley Station,,0,2233608,1122204,1,1
+191,1,50799951,South - 191 Underhill towards Don Valley Station,,0,2233609,1122204,1,1
+191,1,50799950,South - 191 Underhill towards Don Valley Station,,0,2233634,1122204,1,1
+191,1,50799949,South - 191 Underhill towards Don Valley Station,,0,2233635,1122204,1,1
+191,1,50799948,South - 191 Underhill towards Don Valley Station,,0,2233608,1122203,1,1
+191,1,50799947,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799946,South - 191 Underhill towards Don Valley Station,,0,2233634,1122203,1,1
+191,1,50799945,South - 191 Underhill towards Don Valley Station,,0,2233635,1122203,1,1
+191,1,50799944,South - 191 Underhill towards Don Valley Station,,0,2233608,1122203,1,1
+191,1,50799943,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799978,South - 191 Underhill towards Don Valley Station,,0,2233634,1122203,1,1
+191,1,50799952,South - 191 Underhill towards Don Valley Station,,0,2233631,1122203,1,1
+191,1,50799962,South - 191 Underhill towards Don Valley Station,,0,2233635,1122203,1,1
+191,1,50799961,South - 191 Underhill towards Don Valley Station,,0,2233608,1122203,1,1
+191,1,50799960,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799959,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799955,South - 191 Underhill towards Don Valley Station,,0,2233634,1122203,1,1
+191,1,50799956,South - 191 Underhill towards Don Valley Station,,0,2233631,1122203,1,1
+191,1,50799939,South - 191 Underhill towards Don Valley Station,,0,2233635,1122203,1,1
+191,1,50799938,South - 191 Underhill towards Don Valley Station,,0,2233608,1122203,1,1
+191,1,50799988,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799987,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799986,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799985,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799984,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799983,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799982,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799981,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799980,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799979,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799967,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799966,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799965,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799964,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799963,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799954,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799953,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799942,South - 191 Underhill towards Don Valley Station,,0,2233609,1122203,1,1
+191,1,50799941,South - 191 Underhill towards Don Valley Station,,0,2233633,1122203,1,1
+191,1,50799940,South - 191S Underhill Short Turn towards Railside,S,0,2233609,1122205,1,1
+191,1,50800040,North - 191 Underhill towards York Mills,,1,2233632,1122208,1,1
+191,1,50800039,North - 191 Underhill towards York Mills,,1,2233635,1122208,1,1
+191,1,50800025,North - 191 Underhill towards York Mills,,1,2233608,1122207,1,1
+191,1,50800024,North - 191 Underhill towards York Mills,,1,2233609,1122207,1,1
+191,1,50800023,North - 191 Underhill towards York Mills,,1,2233632,1122207,1,1
+191,1,50800041,North - 191 Underhill towards York Mills,,1,2233634,1122208,1,1
+191,1,50800022,North - 191 Underhill towards York Mills,,1,2233635,1122207,1,1
+191,1,50800015,North - 191 Underhill towards York Mills,,1,2233608,1122207,1,1
+191,1,50800014,North - 191 Underhill towards York Mills,,1,2233609,1122207,1,1
+191,1,50800013,North - 191 Underhill towards York Mills,,1,2233632,1122207,1,1
+191,1,50800012,North - 191 Underhill towards York Mills,,1,2233634,1122207,1,1
+191,1,50800011,North - 191 Underhill towards York Mills,,1,2233635,1122207,1,1
+191,1,50800010,North - 191 Underhill towards York Mills,,1,2233608,1122207,1,1
+191,1,50800009,North - 191 Underhill towards York Mills,,1,2233609,1122207,1,1
+191,1,50800008,North - 191 Underhill towards York Mills,,1,2233634,1122207,1,1
+191,1,50800007,North - 191 Underhill towards York Mills,,1,2233635,1122207,1,1
+191,1,50800006,North - 191 Underhill towards York Mills,,1,2233608,1122206,1,1
+191,1,50800005,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50800004,North - 191 Underhill towards York Mills,,1,2233634,1122206,1,1
+191,1,50800003,North - 191 Underhill towards York Mills,,1,2233635,1122206,1,1
+191,1,50800002,North - 191 Underhill towards York Mills,,1,2233608,1122206,1,1
+191,1,50800001,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50800000,North - 191 Underhill towards York Mills,,1,2233634,1122206,1,1
+191,1,50799990,North - 191 Underhill towards York Mills,,1,2233631,1122206,1,1
+191,1,50800038,North - 191 Underhill towards York Mills,,1,2233635,1122206,1,1
+191,1,50800037,North - 191 Underhill towards York Mills,,1,2233608,1122206,1,1
+191,1,50800036,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50800035,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50800034,North - 191 Underhill towards York Mills,,1,2233634,1122206,1,1
+191,1,50800033,North - 191 Underhill towards York Mills,,1,2233631,1122206,1,1
+191,1,50800032,North - 191 Underhill towards York Mills,,1,2233635,1122206,1,1
+191,1,50800031,North - 191 Underhill towards York Mills,,1,2233608,1122206,1,1
+191,1,50800030,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50800029,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50800028,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50800027,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50800026,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50800021,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50800020,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50800019,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50800018,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50800017,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50800016,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50799999,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50799998,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50799997,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50799996,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50799995,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50799994,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50799993,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,1,50799992,North - 191 Underhill towards York Mills,,1,2233633,1122206,1,1
+191,1,50799991,North - 191 Underhill towards York Mills,,1,2233609,1122206,1,1
+191,2,50836470,South - 191 Underhill towards Don Valley Station,,0,2235777,1122204,1,1
+191,2,50836469,South - 191 Underhill towards Don Valley Station,,0,2235774,1122204,1,1
+191,2,50836499,South - 191 Underhill towards Don Valley Station,,0,2235777,1122204,1,1
+191,2,50836498,South - 191 Underhill towards Don Valley Station,,0,2235774,1122204,1,1
+191,2,50836497,South - 191 Underhill towards Don Valley Station,,0,2235777,1122204,1,1
+191,2,50836496,South - 191 Underhill towards Don Valley Station,,0,2235774,1122204,1,1
+191,2,50836486,South - 191 Underhill towards Don Valley Station,,0,2235777,1122204,1,1
+191,2,50836514,South - 191 Underhill towards Don Valley Station,,0,2235774,1122204,1,1
+191,2,50836509,South - 191 Underhill towards Don Valley Station,,0,2235777,1122204,1,1
+191,2,50836513,South - 191 Underhill towards Don Valley Station,,0,2235774,1122204,1,1
+191,2,50836512,South - 191 Underhill towards Don Valley Station,,0,2235777,1122204,1,1
+191,2,50836511,South - 191 Underhill towards Don Valley Station,,0,2235774,1122204,1,1
+191,2,50836510,South - 191 Underhill towards Don Valley Station,,0,2235777,1122204,1,1
+191,2,50836495,South - 191 Underhill towards Don Valley Station,,0,2235774,1122204,1,1
+191,2,50836494,South - 191 Underhill towards Don Valley Station,,0,2235777,1122204,1,1
+191,2,50836493,South - 191 Underhill towards Don Valley Station,,0,2235774,1122204,1,1
+191,2,50836492,South - 191 Underhill towards Don Valley Station,,0,2235777,1122204,1,1
+191,2,50836491,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836490,South - 191 Underhill towards Don Valley Station,,0,2235775,1122203,1,1
+191,2,50836489,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836488,South - 191 Underhill towards Don Valley Station,,0,2235775,1122203,1,1
+191,2,50836487,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836474,South - 191 Underhill towards Don Valley Station,,0,2235775,1122203,1,1
+191,2,50836473,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836472,South - 191 Underhill towards Don Valley Station,,0,2235775,1122203,1,1
+191,2,50836471,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836521,South - 191 Underhill towards Don Valley Station,,0,2235775,1122203,1,1
+191,2,50836520,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836519,South - 191 Underhill towards Don Valley Station,,0,2235775,1122203,1,1
+191,2,50836518,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836517,South - 191 Underhill towards Don Valley Station,,0,2235775,1122203,1,1
+191,2,50836516,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836515,South - 191 Underhill towards Don Valley Station,,0,2235776,1122203,1,1
+191,2,50836508,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836507,South - 191 Underhill towards Don Valley Station,,0,2235776,1122203,1,1
+191,2,50836506,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836505,South - 191 Underhill towards Don Valley Station,,0,2235776,1122203,1,1
+191,2,50836504,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836503,South - 191 Underhill towards Don Valley Station,,0,2235776,1122203,1,1
+191,2,50836502,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836501,South - 191 Underhill towards Don Valley Station,,0,2235776,1122203,1,1
+191,2,50836500,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836484,South - 191 Underhill towards Don Valley Station,,0,2235776,1122203,1,1
+191,2,50836483,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836482,South - 191 Underhill towards Don Valley Station,,0,2235776,1122203,1,1
+191,2,50836481,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836480,South - 191 Underhill towards Don Valley Station,,0,2235776,1122203,1,1
+191,2,50836479,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836478,South - 191 Underhill towards Don Valley Station,,0,2235776,1122203,1,1
+191,2,50836477,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836476,South - 191 Underhill towards Don Valley Station,,0,2235776,1122203,1,1
+191,2,50836475,South - 191 Underhill towards Don Valley Station,,0,2235774,1122203,1,1
+191,2,50836485,South - 191S Underhill Short Turn towards Railside,S,0,2235776,1122205,1,1
+191,2,50836528,North - 191 Underhill towards York Mills,,1,2235777,1122208,1,1
+191,2,50836569,North - 191 Underhill towards York Mills,,1,2235774,1122208,1,1
+191,2,50836540,North - 191 Underhill towards York Mills,,1,2235777,1122207,1,1
+191,2,50836526,North - 191 Underhill towards York Mills,,1,2235774,1122207,1,1
+191,2,50836539,North - 191 Underhill towards York Mills,,1,2235777,1122207,1,1
+191,2,50836567,North - 191 Underhill towards York Mills,,1,2235774,1122207,1,1
+191,2,50836566,North - 191 Underhill towards York Mills,,1,2235777,1122207,1,1
+191,2,50836565,North - 191 Underhill towards York Mills,,1,2235774,1122207,1,1
+191,2,50836564,North - 191 Underhill towards York Mills,,1,2235777,1122207,1,1
+191,2,50836563,North - 191 Underhill towards York Mills,,1,2235774,1122207,1,1
+191,2,50836562,North - 191 Underhill towards York Mills,,1,2235777,1122207,1,1
+191,2,50836561,North - 191 Underhill towards York Mills,,1,2235774,1122207,1,1
+191,2,50836560,North - 191 Underhill towards York Mills,,1,2235777,1122207,1,1
+191,2,50836559,North - 191 Underhill towards York Mills,,1,2235774,1122207,1,1
+191,2,50836558,North - 191 Underhill towards York Mills,,1,2235777,1122207,1,1
+191,2,50836557,North - 191 Underhill towards York Mills,,1,2235774,1122207,1,1
+191,2,50836556,North - 191 Underhill towards York Mills,,1,2235777,1122207,1,1
+191,2,50836555,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836554,North - 191 Underhill towards York Mills,,1,2235775,1122206,1,1
+191,2,50836553,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836552,North - 191 Underhill towards York Mills,,1,2235775,1122206,1,1
+191,2,50836551,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836550,North - 191 Underhill towards York Mills,,1,2235775,1122206,1,1
+191,2,50836549,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836548,North - 191 Underhill towards York Mills,,1,2235775,1122206,1,1
+191,2,50836547,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836546,North - 191 Underhill towards York Mills,,1,2235775,1122206,1,1
+191,2,50836545,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836544,North - 191 Underhill towards York Mills,,1,2235775,1122206,1,1
+191,2,50836543,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836542,North - 191 Underhill towards York Mills,,1,2235775,1122206,1,1
+191,2,50836541,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836530,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,2,50836529,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836538,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,2,50836537,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836536,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,2,50836535,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836534,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,2,50836533,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836532,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,2,50836531,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836527,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,2,50836525,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836524,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,2,50836523,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836522,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,2,50836574,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836568,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,2,50836573,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836572,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,2,50836571,North - 191 Underhill towards York Mills,,1,2235774,1122206,1,1
+191,2,50836570,North - 191 Underhill towards York Mills,,1,2235776,1122206,1,1
+191,3,50867886,South - 191 Underhill towards Don Valley Station,,0,2237275,1122204,1,1
+191,3,50867925,South - 191 Underhill towards Don Valley Station,,0,2237274,1122204,1,1
+191,3,50867924,South - 191 Underhill towards Don Valley Station,,0,2237275,1122204,1,1
+191,3,50867923,South - 191 Underhill towards Don Valley Station,,0,2237274,1122204,1,1
+191,3,50867922,South - 191 Underhill towards Don Valley Station,,0,2237275,1122204,1,1
+191,3,50867921,South - 191 Underhill towards Don Valley Station,,0,2237274,1122204,1,1
+191,3,50867920,South - 191 Underhill towards Don Valley Station,,0,2237275,1122204,1,1
+191,3,50867919,South - 191 Underhill towards Don Valley Station,,0,2237274,1122204,1,1
+191,3,50867918,South - 191 Underhill towards Don Valley Station,,0,2237275,1122204,1,1
+191,3,50867917,South - 191 Underhill towards Don Valley Station,,0,2237274,1122204,1,1
+191,3,50867916,South - 191 Underhill towards Don Valley Station,,0,2237275,1122204,1,1
+191,3,50867885,South - 191 Underhill towards Don Valley Station,,0,2237274,1122204,1,1
+191,3,50867915,South - 191 Underhill towards Don Valley Station,,0,2237275,1122204,1,1
+191,3,50867914,South - 191 Underhill towards Don Valley Station,,0,2237274,1122204,1,1
+191,3,50867912,South - 191 Underhill towards Don Valley Station,,0,2237275,1122203,1,1
+191,3,50867911,South - 191 Underhill towards Don Valley Station,,0,2237274,1122203,1,1
+191,3,50867910,South - 191 Underhill towards Don Valley Station,,0,2237275,1122203,1,1
+191,3,50867909,South - 191 Underhill towards Don Valley Station,,0,2237274,1122203,1,1
+191,3,50867908,South - 191 Underhill towards Don Valley Station,,0,2237275,1122203,1,1
+191,3,50867907,South - 191 Underhill towards Don Valley Station,,0,2237274,1122203,1,1
+191,3,50867906,South - 191 Underhill towards Don Valley Station,,0,2237275,1122203,1,1
+191,3,50867905,South - 191 Underhill towards Don Valley Station,,0,2237274,1122203,1,1
+191,3,50867904,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867903,South - 191 Underhill towards Don Valley Station,,0,2237274,1122203,1,1
+191,3,50867902,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867901,South - 191 Underhill towards Don Valley Station,,0,2237274,1122203,1,1
+191,3,50867900,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867899,South - 191 Underhill towards Don Valley Station,,0,2237274,1122203,1,1
+191,3,50867898,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867897,South - 191 Underhill towards Don Valley Station,,0,2237274,1122203,1,1
+191,3,50867896,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867895,South - 191 Underhill towards Don Valley Station,,0,2237276,1122203,1,1
+191,3,50867894,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867893,South - 191 Underhill towards Don Valley Station,,0,2237276,1122203,1,1
+191,3,50867892,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867891,South - 191 Underhill towards Don Valley Station,,0,2237276,1122203,1,1
+191,3,50867890,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867889,South - 191 Underhill towards Don Valley Station,,0,2237276,1122203,1,1
+191,3,50867888,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867887,South - 191 Underhill towards Don Valley Station,,0,2237276,1122203,1,1
+191,3,50867934,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867933,South - 191 Underhill towards Don Valley Station,,0,2237276,1122203,1,1
+191,3,50867932,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867931,South - 191 Underhill towards Don Valley Station,,0,2237276,1122203,1,1
+191,3,50867930,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867929,South - 191 Underhill towards Don Valley Station,,0,2237276,1122203,1,1
+191,3,50867928,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867927,South - 191 Underhill towards Don Valley Station,,0,2237276,1122203,1,1
+191,3,50867913,South - 191 Underhill towards Don Valley Station,,0,2237277,1122203,1,1
+191,3,50867926,South - 191S Underhill Short Turn towards Railside,S,0,2237276,1122205,1,1
+191,3,50867942,North - 191 Underhill towards York Mills,,1,2237275,1122208,1,1
+191,3,50867982,North - 191 Underhill towards York Mills,,1,2237274,1122208,1,1
+191,3,50867943,North - 191 Underhill towards York Mills,,1,2237275,1122207,1,1
+191,3,50867947,North - 191 Underhill towards York Mills,,1,2237274,1122207,1,1
+191,3,50867946,North - 191 Underhill towards York Mills,,1,2237275,1122207,1,1
+191,3,50867945,North - 191 Underhill towards York Mills,,1,2237274,1122207,1,1
+191,3,50867941,North - 191 Underhill towards York Mills,,1,2237275,1122207,1,1
+191,3,50867939,North - 191 Underhill towards York Mills,,1,2237274,1122207,1,1
+191,3,50867938,North - 191 Underhill towards York Mills,,1,2237275,1122207,1,1
+191,3,50867937,North - 191 Underhill towards York Mills,,1,2237274,1122207,1,1
+191,3,50867936,North - 191 Underhill towards York Mills,,1,2237275,1122207,1,1
+191,3,50867944,North - 191 Underhill towards York Mills,,1,2237274,1122207,1,1
+191,3,50867935,North - 191 Underhill towards York Mills,,1,2237275,1122207,1,1
+191,3,50867984,North - 191 Underhill towards York Mills,,1,2237274,1122207,1,1
+191,3,50867983,North - 191 Underhill towards York Mills,,1,2237275,1122206,1,1
+191,3,50867981,North - 191 Underhill towards York Mills,,1,2237274,1122206,1,1
+191,3,50867980,North - 191 Underhill towards York Mills,,1,2237275,1122206,1,1
+191,3,50867979,North - 191 Underhill towards York Mills,,1,2237274,1122206,1,1
+191,3,50867978,North - 191 Underhill towards York Mills,,1,2237275,1122206,1,1
+191,3,50867977,North - 191 Underhill towards York Mills,,1,2237274,1122206,1,1
+191,3,50867976,North - 191 Underhill towards York Mills,,1,2237275,1122206,1,1
+191,3,50867975,North - 191 Underhill towards York Mills,,1,2237274,1122206,1,1
+191,3,50867940,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867974,North - 191 Underhill towards York Mills,,1,2237274,1122206,1,1
+191,3,50867973,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867972,North - 191 Underhill towards York Mills,,1,2237274,1122206,1,1
+191,3,50867971,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867970,North - 191 Underhill towards York Mills,,1,2237274,1122206,1,1
+191,3,50867969,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867968,North - 191 Underhill towards York Mills,,1,2237274,1122206,1,1
+191,3,50867967,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867966,North - 191 Underhill towards York Mills,,1,2237276,1122206,1,1
+191,3,50867965,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867964,North - 191 Underhill towards York Mills,,1,2237276,1122206,1,1
+191,3,50867963,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867962,North - 191 Underhill towards York Mills,,1,2237276,1122206,1,1
+191,3,50867961,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867960,North - 191 Underhill towards York Mills,,1,2237276,1122206,1,1
+191,3,50867959,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867958,North - 191 Underhill towards York Mills,,1,2237276,1122206,1,1
+191,3,50867957,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867956,North - 191 Underhill towards York Mills,,1,2237276,1122206,1,1
+191,3,50867955,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867954,North - 191 Underhill towards York Mills,,1,2237276,1122206,1,1
+191,3,50867953,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867952,North - 191 Underhill towards York Mills,,1,2237276,1122206,1,1
+191,3,50867951,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867950,North - 191 Underhill towards York Mills,,1,2237276,1122206,1,1
+191,3,50867949,North - 191 Underhill towards York Mills,,1,2237277,1122206,1,1
+191,3,50867948,North - 191 Underhill towards York Mills,,1,2237276,1122206,1,1
+191,4,50897676,South - 191 Underhill towards Don Valley Station,,0,2238582,1122204,1,1
+191,4,50897675,South - 191 Underhill towards Don Valley Station,,0,2238581,1122204,1,1
+191,4,50897674,South - 191 Underhill towards Don Valley Station,,0,2238582,1122204,1,1
+191,4,50897673,South - 191 Underhill towards Don Valley Station,,0,2238581,1122204,1,1
+191,4,50897672,South - 191 Underhill towards Don Valley Station,,0,2238582,1122204,1,1
+191,4,50897671,South - 191 Underhill towards Don Valley Station,,0,2238581,1122204,1,1
+191,4,50897670,South - 191 Underhill towards Don Valley Station,,0,2238582,1122204,1,1
+191,4,50897632,South - 191 Underhill towards Don Valley Station,,0,2238581,1122204,1,1
+191,4,50897633,South - 191 Underhill towards Don Valley Station,,0,2238582,1122204,1,1
+191,4,50897634,South - 191 Underhill towards Don Valley Station,,0,2238581,1122204,1,1
+191,4,50897635,South - 191 Underhill towards Don Valley Station,,0,2238582,1122204,1,1
+191,4,50897636,South - 191 Underhill towards Don Valley Station,,0,2238581,1122204,1,1
+191,4,50897637,South - 191 Underhill towards Don Valley Station,,0,2238582,1122204,1,1
+191,4,50897638,South - 191 Underhill towards Don Valley Station,,0,2238581,1122204,1,1
+191,4,50897639,South - 191 Underhill towards Don Valley Station,,0,2238582,1122204,1,1
+191,4,50897640,South - 191 Underhill towards Don Valley Station,,0,2238581,1122204,1,1
+191,4,50897641,South - 191 Underhill towards Don Valley Station,,0,2238582,1122204,1,1
+191,4,50897642,South - 191 Underhill towards Don Valley Station,,0,2238581,1122204,1,1
+191,4,50897643,South - 191 Underhill towards Don Valley Station,,0,2238582,1122204,1,1
+191,4,50897645,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897646,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897647,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897648,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897649,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897650,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897651,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897652,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897631,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897653,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897654,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897655,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897656,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897657,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897658,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897659,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897660,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897661,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897662,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897663,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897664,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897665,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897666,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897667,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897668,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897669,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897677,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897678,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897679,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897680,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897681,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897682,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897683,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897684,South - 191 Underhill towards Don Valley Station,,0,2238582,1122203,1,1
+191,4,50897644,South - 191 Underhill towards Don Valley Station,,0,2238581,1122203,1,1
+191,4,50897685,South - 191S Underhill Short Turn towards Railside,S,0,2238582,1122205,1,1
+191,4,50897688,North - 191 Underhill towards York Mills,,1,2238582,1122208,1,1
+191,4,50897686,North - 191 Underhill towards York Mills,,1,2238581,1122208,1,1
+191,4,50897687,North - 191 Underhill towards York Mills,,1,2238582,1122207,1,1
+191,4,50897694,North - 191 Underhill towards York Mills,,1,2238581,1122207,1,1
+191,4,50897693,North - 191 Underhill towards York Mills,,1,2238582,1122207,1,1
+191,4,50897692,North - 191 Underhill towards York Mills,,1,2238581,1122207,1,1
+191,4,50897691,North - 191 Underhill towards York Mills,,1,2238582,1122207,1,1
+191,4,50897690,North - 191 Underhill towards York Mills,,1,2238581,1122207,1,1
+191,4,50897689,North - 191 Underhill towards York Mills,,1,2238582,1122207,1,1
+191,4,50897738,North - 191 Underhill towards York Mills,,1,2238581,1122207,1,1
+191,4,50897739,North - 191 Underhill towards York Mills,,1,2238582,1122207,1,1
+191,4,50897740,North - 191 Underhill towards York Mills,,1,2238581,1122207,1,1
+191,4,50897695,North - 191 Underhill towards York Mills,,1,2238582,1122207,1,1
+191,4,50897697,North - 191 Underhill towards York Mills,,1,2238581,1122207,1,1
+191,4,50897698,North - 191 Underhill towards York Mills,,1,2238582,1122207,1,1
+191,4,50897699,North - 191 Underhill towards York Mills,,1,2238581,1122207,1,1
+191,4,50897700,North - 191 Underhill towards York Mills,,1,2238582,1122207,1,1
+191,4,50897701,North - 191 Underhill towards York Mills,,1,2238581,1122207,1,1
+191,4,50897702,North - 191 Underhill towards York Mills,,1,2238582,1122207,1,1
+191,4,50897703,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897704,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897705,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897706,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897707,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897708,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897709,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897710,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897696,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897711,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897712,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897713,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897714,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897715,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897716,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897717,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897718,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897719,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897720,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897721,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897722,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897723,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897724,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897725,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897726,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897727,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897728,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897729,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897730,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897731,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897732,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897733,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897734,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897735,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1
+191,4,50897736,North - 191 Underhill towards York Mills,,1,2238581,1122206,1,1
+191,4,50897737,North - 191 Underhill towards York Mills,,1,2238582,1122206,1,1

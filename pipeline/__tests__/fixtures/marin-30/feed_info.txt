@@ -1,0 +1,2 @@
+feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_contact_email,feed_contact_url,feed_version
+Optibus Ltd.,https://www.optibus.com,en,20260412,20270109,gtfs@marintransit.gov,https://marintransit.gov/developers,UTC: 04-Feb-2026 00:08

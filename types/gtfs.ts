@@ -298,6 +298,8 @@ export interface AnalysisResult {
     weekdayTierVariation?: boolean;
     /** Runs on some weekdays but not on the representative weekday: Weekday tier is infrequent, no headway (#710). */
     partialWeekday?: boolean;
+    /** Rush-hour-only limited service (#720): steady AM and/or PM peak blocks, nothing at midday. Dedupe never lets it take an all-day pattern's slot. */
+    rushHourOnly?: boolean;
     /** For a partial-weekday rollup: periods with departures on the weekdays it does run. */
     partialWeekdayPeriods?: Array<'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'late' | 'overnight'>;
     /** Per-day: this day's only service is the previous night's after-midnight tail (#718). */

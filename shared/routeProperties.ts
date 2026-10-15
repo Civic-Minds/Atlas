@@ -44,12 +44,16 @@ export interface RouteProperties {
   stopPeriodCoverageHeadways?: Record<string, HeadwayByPeriod>;
   routeHasIrregularDirection?: boolean;
   routeHasLimitedDirection?: boolean;
+  /** #899: the all-day filter cap from a direction with little or no midday service (worstDirection.ts). */
+  worstDirectionMiddayCap?: number;
   minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
   stopHeadways?: Record<string, number | null>;
   /** CIV-152: each drawn stop's every-gap tier on its pooled list (the route tier's method); stops with no all-day reading are absent. */
   stopTiers?: Record<string, string>;
+  /** #879: drawn stops with no boardable stop time (pickup_type 1 on every visit); never graded, coloured from their neighbours. */
+  dropOffOnlyStops?: string[];
   stopPeriodHeadways?: Record<string, HeadwayByPeriod>;
   stopOrder?: string[];
   stopPositions?: number[];

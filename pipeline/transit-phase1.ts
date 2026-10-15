@@ -206,7 +206,8 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
         for (const [, group] of grouped) {
             const { routeId, dirId, headsign, shapeId, routeVariant } = group;
             const departureTimes = deduplicateDepartures(group.times);
-            if (departureTimes.length < 2) continue;
+            // #720: one departure is kept; phase 2 draws it as one-off (TARC 99).
+            if (departureTimes.length === 0) continue;
 
             const gaps: number[] = [];
             for (let i = 1; i < departureTimes.length; i++) {
@@ -249,5 +250,10 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
         }
     }
 
-    return results;
+    // #720: a group with one departure is kept only when its route direction has no group with
+    // two or more on any day, so a route whose every pattern runs once a day (TARC 99, coast-rta's
+    // TL-1xx trippers) is drawn as one-off, while a stray single trip of a route with a timetable
+    // (a short-turn train, a Monday-only template trip) stays out of that route's numbers.
+    const timetabled = new Set(results.filter(r => r.departureTimes.length >= 2).map(r => `${r.route}::${r.dir}`));
+    return results.filter(r => r.departureTimes.length >= 2 || !timetabled.has(`${r.route}::${r.dir}`));
 }

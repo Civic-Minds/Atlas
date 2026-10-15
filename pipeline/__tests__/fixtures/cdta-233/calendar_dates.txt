@@ -1,0 +1,5 @@
+service_id,date,exception_type
+AUG26-AlbRMB-Weekday-24,20261012,2
+OCT26-AlbRMB-Sunday-30,20261126,1
+OCT26-AlbRMB-Weekday-10,20261103,2
+OCT26-AlbRMB-Weekday-10,20261111,2
