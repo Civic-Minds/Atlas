@@ -27,6 +27,8 @@ export type TierDeterminerContext = {
      * span stay those of the window's own departures.
      */
     edgeGaps?: readonly number[];
+    /** #773: the route direction's departures that day under other headsigns (serviceContinuesAfter). */
+    otherHeadsignTimes?: readonly number[];
     day: DayName;
     routeType: string;
     railLike: boolean;
@@ -56,16 +58,42 @@ export type TierDeterminer = (
 export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
 
 /**
- * Whether a stop's service continues after `last` on the same service day (#773), the one
+ * Whether a line's service continues after `last` on the same service day (#773), the one
  * boundary both the route-tier closing edge here and the stop grade's closing edge wait
- * (scopedTerminalHeadline) use. Any later departure continues it, 24:00+ included: a 24:00+
- * departure is the same GTFS service day, so a rider after a 21:13 last bus waits whether the
- * next runs at 23:59 or 24:01. A platform whose line moves to a neighbouring bay for the
- * afternoon and returns after midnight (REM A3-A1 to Anse-a-l'Orme, #842) is one terminal once
- * #754 joins the bays, so it needs no clause here.
+ * (scopedTerminalHeadline) use. A later departure before 24:00 always continues it. A 24:00+
+ * departure is the same GTFS service day, so it continues it too (a rider after a 21:13 last
+ * bus waits whether the next runs at 23:59 or 24:01), unless the route direction ran other
+ * headsigns in between: then the line's service moved to another destination for the evening
+ * and its return after midnight is a separate block, so the line closes at `last`. TransLink 408
+ * runs to Ironwood every 15 until 18:21, to Riverport until 23:45, and to Ironwood again at
+ * 24:45; without this the Ironwood line read infrequent. `otherHeadsignTimes` are the route
+ * direction's departures on that day under other headsigns (otherHeadsignDepartureTimes); when
+ * omitted, every later departure continues the service.
  */
-export function serviceContinuesAfter(times: readonly number[], last: number): boolean {
-    return times.some(time => time > last);
+export function serviceContinuesAfter(times: readonly number[], last: number, otherHeadsignTimes?: readonly number[]): boolean {
+    let next = Infinity;
+    for (const time of times) if (time > last && time < next) next = time;
+    if (next === Infinity) return false;
+    if (next < 1440 || !otherHeadsignTimes) return true;
+    return !otherHeadsignTimes.some(time => time > last && time < next);
+}
+
+/**
+ * The departures on `day` under every headsign but `headsign` among one route direction's phase-1
+ * patterns `routeDirRaws` (#773): what serviceContinuesAfter checks a line's return after
+ * midnight against.
+ */
+export function otherHeadsignDepartureTimes(
+    routeDirRaws: readonly RawRouteDepartures[],
+    day: DayName,
+    headsign: string | null | undefined,
+): number[] {
+    const times = new Set<number>();
+    for (const raw of routeDirRaws) {
+        if (raw.day !== day || (raw.headsign ?? '') === (headsign ?? '')) continue;
+        for (const time of raw.departureTimes) times.add(time);
+    }
+    return [...times].sort((x, y) => x - y);
 }
 
 /** Whether a stop's service runs before `first` on the same service day (#773). */
@@ -172,7 +200,7 @@ const determineTierWithEdgeGapAllowanceDetail = (
     void headways;
     void tripCount;
     void spanMinutes;
-    const baseline = determineTierWithEdgeGapAllowanceBase(analysisTimes, rawTimes, tiers, graceMinutes, maxGraceViolations, gracePercent, violationPercent, violationPercentByTier);
+    const baseline = determineTierWithEdgeGapAllowanceBase(analysisTimes, rawTimes, context.otherHeadsignTimes, tiers, graceMinutes, maxGraceViolations, gracePercent, violationPercent, violationPercentByTier);
     // #773: a wait at the window's edge that a departure outside it makes a gap in service can
     // only lower the tier, and never spends the ordinary violation allowance: the first tier at
     // or past the baseline that each edge wait fits with the edge allowance (the same ten
@@ -189,6 +217,7 @@ const determineTierWithEdgeGapAllowanceDetail = (
 const determineTierWithEdgeGapAllowanceBase = (
     analysisTimes: number[],
     rawTimes: readonly number[],
+    otherHeadsignTimes: readonly number[] | undefined,
     tiers: number[],
     graceMinutes: number,
     maxGraceViolations: number,
@@ -197,7 +226,7 @@ const determineTierWithEdgeGapAllowanceBase = (
     violationPercentByTier?: Record<number, number>,
 ): EdgeGapAllowanceResult => {
     const actualOpening = !serviceContinuesBefore(rawTimes, analysisTimes[0]);
-    const actualClosing = !serviceContinuesAfter(rawTimes, analysisTimes[analysisTimes.length - 1]);
+    const actualClosing = !serviceContinuesAfter(rawTimes, analysisTimes[analysisTimes.length - 1], otherHeadsignTimes);
     for (const tier of tiers) {
         const gaps = analysisTimes.slice(1).map((time, index) => time - analysisTimes[index]);
         const existingGrace = Math.max(graceMinutes, Math.round(tier * gracePercent));
@@ -488,10 +517,17 @@ export function applyAnalysisCriteria(
     const routeDaysWithRegularService = new Map<string, string[]>();
     const fallbackStrays: { key: string; result: AnalysisResult }[] = [];
 
+    const rawsByRouteDirDay = new Map<string, RawRouteDepartures[]>();
+    for (const raw of rawData) {
+        const key = `${raw.route}::${raw.dir}::${raw.day}`;
+        const list = rawsByRouteDirDay.get(key);
+        if (list) list.push(raw); else rawsByRouteDirDay.set(key, [raw]);
+    }
     for (const raw of rawData) {
         const dayType = DAY_TO_TYPE[raw.day];
         const dayConfig = criteria.dayTypes[dayType];
         if (!dayConfig) continue;
+        const otherHeadsignTimes = otherHeadsignDepartureTimes(rawsByRouteDirDay.get(`${raw.route}::${raw.dir}::${raw.day}`) ?? [], raw.day, raw.headsign);
 
         const { start, end } = dayConfig.timeWindow;
         let windowedTimes = raw.departureTimes.filter(t => t >= start && t <= end);
@@ -573,6 +609,7 @@ export function applyAnalysisCriteria(
                 criteria.violationPercent,
                 {
                     rawDepartureTimes: raw.departureTimes,
+                    otherHeadsignTimes,
                     analysisTimes: analysisWindow,
                     day: raw.day,
                     routeType: raw.routeType,
@@ -592,6 +629,7 @@ export function applyAnalysisCriteria(
             criteria.violationPercent,
             {
                 rawDepartureTimes: raw.departureTimes,
+                    otherHeadsignTimes,
                 analysisTimes: analysisWindow,
                 day: raw.day,
                 routeType: raw.routeType,
