@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **A shared map link opens where it points again**: the map zoomed out to all of North America a few seconds after loading any link with a position
 - A feed whose calendar runs to a far-off placeholder date now expires on its feed_info end date, and the reprocess and publish steps agree on it: Simi Valley's 2023 feed passed reprocess as current while the publish step blocked it as expired ([#875](https://github.com/Civic-Minds/Atlas/issues/875)).
 - **Shared links now keep History and full-day chart views**: a History link opens on the same agency, route, year, region filter and route search, and a route card link reopens the full-day chart on the same direction; defaults stay out of the URL so links stay short ([#882](https://github.com/Civic-Minds/Atlas/issues/882)).
 - Scrolling past the top or bottom of a side panel on the map no longer drags the whole page and leaves a blank bar above the map; the info panel footer also loses its stray trailing dot ([#883](https://github.com/Civic-Minds/Atlas/issues/883)).
