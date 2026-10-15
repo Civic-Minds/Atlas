@@ -2184,6 +2184,12 @@ export async function processGtfsBuffer(
           if (!times || times.length === 0 || !stopHasReading(stopId)) continue;
           const headway = allStopHw[stopId];
           if (headway == null) continue;
+          // Rail (#756): no every-gap grade, so each drawn stop's grade is its pooled headway on
+          // the rail tier scale, the midday-window reading rail's own tier rule uses. A short-turn
+          // pattern that runs entirely on a shared trunk (WMATA Yellow to Mount Vernon Square on
+          // weekends, every 16 under a trunk every 8 with the Greenbelt trains) then colours that
+          // trunk at the trunk's service, as a bus trunk does, instead of the row's own tier.
+          if (railFeature) { stopTiers[stopId] = headwayToTierOn(headway, routeTierScale()); continue; }
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
           // More service never lowers a grade: the own pattern's list is graded too and the
           // better grade stands. Own every 15 from 07:00 to 19:00 plus a sibling every 15 from
