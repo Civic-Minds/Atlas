@@ -113,7 +113,7 @@ Triggered by: the `refresh-feeds.yml` GitHub Actions workflow (Mondays 06:00 UTC
 ## Vercel API routes
 
 Every file in `api/` is deployed as a Vercel function at `/api/{name}`; they do not run in the Vite dev server.
-Local: `npm run dev:api` (custom tsx server on port 5001; only registers `live-vehicles`, `history-adherence`, `carto-tiles`, and `privacy-region`).
+Local: `npm run dev:api` (custom tsx server on port 5001; registers `live-vehicles`, `live-segments`, `live-recent`, `live-stop`, `history-adherence`, `carto-tiles`, and `privacy-region`). To run Live, use `npm run live` (starts this server and Vite together).
 Production-like: `vercel dev` if preferred.
 
 Used by the deployed app:
