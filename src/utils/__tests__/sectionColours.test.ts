@@ -32,6 +32,16 @@ describe('sectionRuns', () => {
     expect(sectionRuns(['10', '10', '10', null, null], '10')).toEqual([{ from: 3, to: 4, tier: 'infrequent', headway: null }]);
     // A single gradeless last stop is the terminal, not a tail.
     expect(sectionRuns(['10', '10', '10', null], '10')).toEqual([]);
+    // A gradeless first stop with a reading problem is still a limited head.
+    expect(sectionRuns([null, '10', '10', '10'], '10')).toEqual([{ from: 0, to: 0, tier: 'infrequent', headway: null }]);
+    // Drop-off-only stops (#879) take the neighbour's grade at either end, however many in a row.
+    expect(sectionRuns([null, '10', '10', '10'], '10', [], [true, false, false, false])).toEqual([]);
+    expect(sectionRuns([null, null, '10', '10'], '10', [], [true, true, false, false])).toEqual([]);
+    expect(sectionRuns(['10', '10', null, null], '10', [], [false, false, true, true])).toEqual([]);
+    // A drop-off-only stop beside a graded run inside the line joins the worse neighbour, as any interior stop does.
+    expect(sectionRuns(['10', null, '20', '20'], '10', [], [false, true, false, false])).toEqual([{ from: 1, to: 3, tier: '20', headway: null }]);
+    // Only the flagged stops change: a flagged terminal next to an unflagged gradeless tail keeps the tail limited.
+    expect(sectionRuns(['10', '10', null, null], '10', [], [false, false, false, true])).toEqual([{ from: 2, to: 3, tier: 'infrequent', headway: null }]);
     expect(sectionRuns([null, null], '10')).toEqual([]);
   });
 });

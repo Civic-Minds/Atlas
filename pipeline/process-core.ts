@@ -907,6 +907,17 @@ export async function processGtfsBuffer(
   // headsign alone doesn't separate them. Keying by the feature's own display shape_id
   // catches this — two trips only pool together here if they trace the same physical path.
   const stopDepsByShapeGroup = new Map<string, Map<string, number[]>>();
+  // The stops of each shape and day where a rider can board: at least one stop time whose
+  // pickup_type is not 1. A stop the shape only drops off at (a layover it starts from, a
+  // terminal it ends at: LA Metro 28's Division 13 layover and Century City, RFTA L's last stop)
+  // has no departure a rider can take, so it gets no stop grade and never settles the tier
+  // (#879). Keyed like stopDepsByShapeGroup.
+  const boardableStopsByShape = new Map<string, Set<string>>();
+  const markBoardable = (shKey: string, stopId: string) => {
+    let set = boardableStopsByShape.get(shKey);
+    if (!set) { set = new Set(); boardableStopsByShape.set(shKey, set); }
+    set.add(stopId);
+  };
   // Night-service-only mirrors of stopDepsByGroup/stopDepsByHeadsignGroup (#297): an early
   // (pre-6am) departure on a genuinely overnight-only service_id (see serviceIdMaxMinute above)
   // is shifted +1440 and pushed here instead, so it lands inside hasSustainedNightService's
@@ -1329,6 +1340,12 @@ export async function processGtfsBuffer(
               if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroupNight, hsKey, stopId, mins + 1440);
             }
           };
+          // Every visit marks the stop boardable, not only the first counted one: a loop
+          // terminal whose first-listed visit is drop-off only still boards on the other.
+          if (shKey && grp.inShape && st.pickup_type?.trim() !== '1') {
+            markBoardable(shKey, st.stop_id);
+            if (parentId) markBoardable(shKey, parentId);
+          }
           // Only count first visit per (trip, stop) — loop routes visit the terminus
           // at both the start and end of each trip, which would otherwise interleave
           // outbound and inbound times to produce a falsely short headway (AI-121).
@@ -1483,6 +1500,7 @@ export async function processGtfsBuffer(
     if (grp.inGroup) pushUnique(stopDepsByGroup, groupKey, stopId, mins);
     if (grp.headsign && grp.inHeadsign) pushUnique(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, mins);
     if (grp.shapeId && grp.inShape) pushUnique(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`, stopId, mins);
+    if (grp.shapeId && grp.inShape && pickupAllowed) markBoardable(`${grp.shapeId}::${grp.dayType}`, stopId);
     const smKey = sharedMemberKey(grp);
     if (smKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsBySharedMember, smKey, stopId, mins);
     if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
@@ -1584,6 +1602,7 @@ export async function processGtfsBuffer(
             const pickupAllowed = st.pickup_type?.trim() !== '1';
             addFrequencyDeparture(grp, st.stop_id, mins, pickupAllowed);
             if (countParent) addFrequencyDeparture(grp, parentId!, mins, pickupAllowed);
+            else if (parentId && pickupAllowed && grp.shapeId && grp.inShape) markBoardable(`${grp.shapeId}::${grp.dayType}`, parentId);
           }
         }
       }
@@ -1818,6 +1837,11 @@ export async function processGtfsBuffer(
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
       : null;
     const stopMetricMap: Map<string, number[]> = pooled?.map ?? metricStopMap;
+    // Drop-off-only stops of the drawn shape (#879): own stop times all pickup_type 1. Only
+    // when the feature reads its own shape map; a headsign or group fallback already pools.
+    const dropOffOnlyStops: ReadonlySet<string> = !railFeature && featureShape && shapeMap != null && metricStopMap === shapeMap
+      ? new Set([...shapeMap.keys()].filter(stopId => !(boardableStopsByShape.get(`${featureShape}::${day}`)?.has(stopId))))
+      : new Set();
 
     // Night Service must be evaluated before the daytime stop-headway bail-outs below: a
     // genuinely overnight-only route has no 9am–7pm data, so allStopHw would otherwise be empty
@@ -2180,6 +2204,10 @@ export async function processGtfsBuffer(
         const stopTiers: Record<string, string> = {};
         publishedStopTiers = stopTiers;
         for (const { stopId } of drawnPatternStops()) {
+          // A drop-off-only stop has arrivals, not departures: its value stays on the stop
+          // card, but it is not graded (#879: RFTA L's terminal read the drawn shape's hourly
+          // arrivals while all 37 trips of the destination end there every 30).
+          if (dropOffOnlyStops.has(stopId)) continue;
           const times = stopMetricMap.get(stopId);
           if (!times || times.length === 0 || !stopHasReading(stopId)) continue;
           const headway = allStopHw[stopId];
@@ -2204,6 +2232,10 @@ export async function processGtfsBuffer(
           stopTiers[stopId] = (TIER_RANK[best] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? best : byHeadway;
         }
         if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
+        // The drawn stops with no boardable stop time (#879): the client colours them from
+        // their neighbours instead of reading their missing grade as limited service.
+        const dropOffOnlyDrawn = drawnPatternStops().map(p => p.stopId).filter(stopId => dropOffOnlyStops.has(stopId));
+        if (dropOffOnlyDrawn.length > 0) feature.properties.dropOffOnlyStops = dropOffOnlyDrawn;
       }
       return { onShape, stopHeadways };
     };
@@ -2262,7 +2294,7 @@ export async function processGtfsBuffer(
         // Stops with a reading but no published value (saint-john 12: six trips whose all-day
         // sample rejects its 4-hour holes) keep phase 2's own headline.
       }
-      settleTierOnStops(coverageStops.map(p => p.stopId));
+      settleTierOnStops(coverageStops.map(p => p.stopId).filter(stopId => !dropOffOnlyStops.has(stopId)));
       continue;
     }
 
@@ -2434,7 +2466,9 @@ export async function processGtfsBuffer(
           });
         }
       }
-      settleTierOnStops(coverageStops.map(p => p.stopId), featureHeadsign && coverageStops.length > 1 ? (() => {
+      // An ungraded drawn stop refuses the lift, so drop-off-only stops (ungraded by design,
+      // #879) are left out of the list the lift walks; the pool's stop scope keeps them.
+      settleTierOnStops(coverageStops.map(p => p.stopId).filter(stopId => !dropOffOnlyStops.has(stopId)), featureHeadsign && coverageStops.length > 1 ? (() => {
         const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
         const drawnIds = coverageStops.map(p => p.stopId);
         return {

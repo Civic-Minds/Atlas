@@ -50,6 +50,8 @@ export interface RouteProperties {
   stopHeadways?: Record<string, number | null>;
   /** CIV-152: each drawn stop's every-gap tier on its pooled list (the route tier's method); stops with no all-day reading are absent. */
   stopTiers?: Record<string, string>;
+  /** #879: drawn stops with no boardable stop time (pickup_type 1 on every visit); never graded, coloured from their neighbours. */
+  dropOffOnlyStops?: string[];
   stopPeriodHeadways?: Record<string, HeadwayByPeriod>;
   stopOrder?: string[];
   stopPositions?: number[];
