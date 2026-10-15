@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown } from 'lucide-react';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
@@ -520,6 +520,13 @@ export default function App() {
     localStorage.setItem('theme', lightMode ? 'light' : 'dark');
   }, [lightMode]);
 
+  // The map page must never scroll as a document (see .map-page in index.css); doc pages are unaffected.
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.classList.add('map-page');
+    return () => root.classList.remove('map-page');
+  }, []);
+
   return (
     <ViewportProvider>
     <OnDemandStatusProvider data={onDemandData}>
@@ -534,7 +541,7 @@ export default function App() {
           type="button"
           onClick={() => {
             if (inFrequentServiceStory) {
-              navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`);
+              navigate(FEATURE_ROUTES.frequentService.map);
             } else if (inFrequentService || activeApp !== 'frequency') {
               navigate('/');
             } else {
@@ -714,7 +721,7 @@ export default function App() {
           {inResearch ? (
             <ResearchPage />
           ) : inFrequentServiceStory ? (
-            <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`)} />
+            <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(FEATURE_ROUTES.frequentService.map)} />
           ) : <>
             <Interval
               agencies={intervalAgencies}
