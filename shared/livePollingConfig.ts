@@ -444,6 +444,12 @@ export function getLiveRouteConfig(
   );
 }
 
+/** Any polled route, including vehicles-only ones (archive-based views don't need anchor stops). */
+export function getPolledRoute(slug: string, routeShortName: string | null | undefined): LiveRouteConfig | undefined {
+  if (!routeShortName) return undefined;
+  return LIVE_POLLING_ROUTES.find(c => c.slug === slug && c.displayRouteShortName === routeShortName);
+}
+
 export function isLivePollingRoute(agencySlug?: string, routeShortName?: string | null): boolean {
   if (!agencySlug || !routeShortName) return false;
   return !!getLiveRouteConfig(agencySlug, routeShortName);
@@ -498,3 +504,18 @@ export const LIVE_VEHICLE_POSITIONS_FEEDS: Record<string, string> = Object.fromE
     LIVE_POLLING_ROUTES.find(c => c.slug === slug)!.vehiclePositionsUrl,
   ]),
 );
+
+/**
+ * Routes whose Live route analysis has been checked (local proof of concept). In Live mode only
+ * these routes' lines are drawn, and only they get the route performance card.
+ * 503 and 507 run entirely as replacement buses; the card says so (their close gaps are real
+ * buses running together, not duplicates). Left out on purpose (2026-10-15): 501 (a quarter of
+ * positions are unscheduled buses on Queen West with no timetable trips, so streetcar-only gaps
+ * would overstate waits), and 506 and 512 (the timetable mixes the streetcar with a replacement
+ * bus under one route, so the line and gaps blend both).
+ */
+export const LIVE_ANALYSIS_ROUTES: readonly string[] = ['ttc::503', 'ttc::504', 'ttc::505', 'ttc::507', 'ttc::509', 'ttc::510', 'ttc::511'];
+
+export function hasLiveAnalysis(slug: string | null | undefined, routeShortName: string | null | undefined): boolean {
+  return !!slug && !!routeShortName && LIVE_ANALYSIS_ROUTES.includes(`${slug}::${routeShortName}`);
+}

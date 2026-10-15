@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown } from 'lucide-react';
+import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
+import { CompareTab } from './components/Interval/CompareControl';
+import { useUrlPathname } from './hooks/useUrlPathname';
+import ModeTab from './components/ModeTab';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasBrand from './components/AtlasBrand';
@@ -15,7 +18,7 @@ const NightService = React.lazy(() => import('./apps/NightService'));
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 import { isAppGated, type AppId } from './utils/appGate';
-import { ModeTabLabel, modeTabCollapsed, modeTabSpacing } from './components/ModeTabLabel';
+import { modeTabCollapsed } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
@@ -142,7 +145,7 @@ function withArtifactUrls(a: Agency): Agency {
   return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
 }
 
-export default function App() {
+export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     markAtlasOnce('app-ready');
   }, []);
@@ -165,6 +168,10 @@ export default function App() {
   const gated = isAppGated(routedApp, FEATURES)
     || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
+  // The router's view of the address lags the address bar while the next mode renders (a
+  // transition). Follow the bar urgently so a mode never stays on screen after its URL is gone.
+  const urlApp: AppId = PATH_TO_APP[useUrlPathname()] ?? 'frequency';
+  const modeCatchingUp = urlApp !== routedApp;
 
   useEffect(() => {
     if (gated) navigate('/', { replace: true });
@@ -191,7 +198,6 @@ export default function App() {
   // Search scans / map filters / prefetch run from this so keystrokes can
   // paint first. See useDebouncedValue for why this isn't useDeferredValue.
   const deferredQuery = useDebouncedValue(query);
-  const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
   const [appLinksOpen, setAppLinksOpen] = useState(false);
   const [infoTab, setInfoTab] = useState<Tab>('about');
@@ -246,6 +252,8 @@ export default function App() {
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
   // Interval renders its Compare view tab here, beside History and Live.
   const [viewTabsPortalEl, setViewTabsPortalEl] = useState<Element | null>(null);
+  // Compare picked from Live or History: back to the map, then start comparing.
+  const [compareStartRequest, setCompareStartRequest] = useState<number | null>(null);
   const viewTabsPortalRef = useCallback((el: HTMLDivElement | null) => { setViewTabsPortalEl(el); }, []);
 
   // Phones: Compare sits in the More menu beside History and Live (the menu mounts only while open).
@@ -272,6 +280,9 @@ export default function App() {
     setSelectedAgencySlug(slug);
     closeInfo();
   }, [activeApp, closeInfo]);
+  // In Live mode a route picked on the map (or deep-linked) opens Live's own card.
+  const [liveRouteRequest, setLiveRouteRequest] = useState<{ slug: string; routeShortName: string; ts: number } | null>(null);
+  const handleLiveRouteSelected = useCallback((slug: string, routeShortName: string) => setLiveRouteRequest({ slug, routeShortName, ts: Date.now() }), []);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
   const handleNightRouteClick = useCallback((slug: string, routeId: string) => { setPendingNightRoute({ slug, routeId, frequency: nightServiceFrequency }); closeInfo(); }, [closeInfo, nightServiceFrequency]);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
@@ -378,11 +389,18 @@ export default function App() {
 
   // Interval reloads all its agency data whenever this list's identity changes, so it must stay the same
   // array until its contents change (a fresh filter() every render looped History at phone width).
-  const intervalAgencies = useMemo(
-    () => inHistory && historyAgencySlugs ? visibleAgencies.filter(a => historyAgencySlugs.has(a.slug)) : visibleAgencies,
-    [inHistory, historyAgencySlugs, visibleAgencies],
+  // The map's agency list stays the same object across modes, so switching to History doesn't
+  // reload the map's data (#888). History narrows what's drawn with a filter instead.
+  const intervalAgencies = visibleAgencies;
+  const historyFilterSlugs = useMemo(
+    () => (historyAgencySlugs ? [...historyAgencySlugs] : null),
+    [historyAgencySlugs],
   );
   const inLive = activeApp === 'live';
+  // Live's own UI switches off the moment the address leaves /apps/live (CIV-214).
+  const liveShown = inLive && urlApp === 'live';
+  // The Live tab follows the address straight away, in both directions.
+  const liveTabOn = urlApp === 'live';
   const inNight = activeApp === 'night';
   const loadedAgencySlugs = useMemo(
     () => new Set([
@@ -537,24 +555,26 @@ export default function App() {
       {/* Unified header row — left and right sections share one flex container so they can never overlap */}
       <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
       <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
+        {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
         <button
           type="button"
           onClick={() => {
             if (inFrequentServiceStory) {
               navigate(FEATURE_ROUTES.frequentService.map);
-            } else if (inFrequentService || activeApp !== 'frequency') {
-              navigate('/');
+            } else if (onGoHome) {
+              onGoHome();
             } else {
-              setResetViewKey(k => k + 1);
+              navigate('/');
             }
           }}
-          aria-label={inFrequentServiceStory || inFrequentService || activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
-          className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
+          aria-label={inFrequentServiceStory ? 'Back to frequency map' : 'Atlas home'}
+          className="group flex items-center gap-2 shrink-0"
         >
-          <MapIcon className="w-3.5 h-3.5 text-white" />
+          <span className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl group-hover:opacity-80 transition-opacity">
+            <MapIcon className="w-3.5 h-3.5 text-white" />
+          </span>
+          {!phoneSearchExpanded && <AtlasBrand hideByline />}
         </button>
-
-        {!phoneSearchExpanded && <AtlasBrand hideByline />}
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
@@ -613,39 +633,35 @@ export default function App() {
         </div>
 
         {showLiveControl && (
-          <button
-            onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
-            aria-label="Live vehicles"
-            aria-pressed={inLive}
-            title={liveTabCollapsed ? 'Live vehicles' : undefined}
-            className={`hidden sm:flex h-8 ${modeTabSpacing(liveTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-          >
-            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--control-active-fg)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
-            <ModeTabLabel collapsed={liveTabCollapsed}>
-              <span>Live</span>
-              <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
-            </ModeTabLabel>
-          </button>
+          <ModeTab
+            icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
+            label="Live" extra={liveAgencyCount} ariaLabel="Live vehicles"
+            active={liveTabOn} collapsed={liveTabCollapsed}
+            onClick={() => setActiveApp(liveTabOn ? 'frequency' : 'live')}
+          />
         )}
 
         {showHistoryControl && (
-          <a
-            href={inHistory ? '/' : '/apps/history'}
-            aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
-            aria-current={inHistory ? 'page' : undefined}
-            title={historyTabCollapsed ? 'Historical service' : undefined}
-            className={`hidden sm:flex h-8 ${modeTabSpacing(historyTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-          >
-            <HistoryIcon className="w-3.5 h-3.5 shrink-0" />
-            <ModeTabLabel collapsed={historyTabCollapsed}>
-              <span>History</span>
-              {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
-            </ModeTabLabel>
-          </a>
+          <ModeTab
+            icon={<HistoryIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
+            label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
+            ariaLabel={inHistory ? 'Back to frequency map' : 'Historical service'}
+            active={inHistory} collapsed={historyTabCollapsed}
+            onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
+          />
         )}
 
         {/* Compare (beta) portals in here from Interval. Phones reach it from the filter panel. */}
         <div ref={viewTabsPortalRef} className="hidden sm:contents" />
+        {/* Live and History have no compare view: keep the tab (as an icon) and take it back to the map to compare. */}
+        {FEATURES.compareMode && (inLive || inHistory) && (
+          <CompareTab
+            active={false}
+            collapsed={modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'compare')}
+            onStart={() => { setCompareStartRequest(Date.now()); setActiveApp('frequency'); }}
+            onExit={() => {}}
+          />
+        )}
 
         {/* Phones fold Live and History into one menu. Research is reached from the About page,
             not the map's top bar (#651). */}
@@ -661,34 +677,25 @@ export default function App() {
                 aria-expanded={appLinksOpen}
                 className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
-                <span>More</span>
+                <span>{liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
               </button>
               {appLinksOpen && (
                 <div className={`absolute top-10 right-0 ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
                   {showLiveControl && (
-                    <button
-                      type="button"
-                      onClick={() => { setActiveApp(inLive ? 'frequency' : 'live'); setAppLinksOpen(false); }}
-                      aria-pressed={inLive}
-                      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-                    >
-                      <span className={`w-1.5 h-1.5 rounded-full ${inLive ? 'bg-[var(--control-active-fg)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
-                      <span>Live</span>
-                      <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
-                    </button>
+                    <ModeTab
+                      variant="menu" icon={<Radio className="w-3.5 h-3.5" aria-hidden="true" />}
+                      label="Live" extra={liveAgencyCount} active={liveTabOn}
+                      onClick={() => { setActiveApp(liveTabOn ? 'frequency' : 'live'); setAppLinksOpen(false); }}
+                    />
                   )}
                   {showHistoryControl && (
-                    <a
-                      href={inHistory ? '/' : '/apps/history'}
-                      onClick={() => setAppLinksOpen(false)}
-                      aria-current={inHistory ? 'page' : undefined}
-                      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-                    >
-                      <HistoryIcon className="w-3.5 h-3.5" />
-                      <span>History</span>
-                      {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
-                    </a>
+                    <ModeTab
+                      variant="menu" icon={<HistoryIcon className="w-3.5 h-3.5" aria-hidden="true" />}
+                      label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
+                      active={inHistory}
+                      onClick={() => { setActiveApp(inHistory ? 'frequency' : 'history'); setAppLinksOpen(false); }}
+                    />
                   )}
                   <div ref={moreMenuPortalRef} className="contents" />
                 </div>
@@ -730,7 +737,6 @@ export default function App() {
               setLightMode={setLightMode}
               query={deferredQuery}
               setQuery={setQuery}
-              resetViewKey={resetViewKey}
               showUi={inFrequency || inFrequentService}
               showSelectionUi={inLive || inNight}
               showRouteLayers={inFrequency || inLive || inHistory || inNight || inFrequentService}
@@ -750,6 +756,7 @@ export default function App() {
               showMapContext={FEATURES.beta}
               showMatchPercentage={FEATURES.beta}
               filterToAgencies={inHistory}
+              agencyFilterSlugs={inHistory ? historyFilterSlugs : null}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               hideFilterPanel={inLive || inHistory || inNight || inFrequentService}
               onInfoOpen={openInfo}
@@ -768,9 +775,11 @@ export default function App() {
               onViewportAgencySlugsChange={setViewportAgencySlugs}
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
+              onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
               onCompareActiveChange={setCompareActive}
               headerPortalContainer={headerPortalEl}
               viewTabsPortalContainer={viewTabsPortalEl}
+              compareStartRequest={compareStartRequest}
               moreMenuPortalContainer={moreMenuPortalEl}
               onMoreMenuDone={() => setAppLinksOpen(false)}
               sidebarLeft={sidebarLeft}
@@ -787,7 +796,7 @@ export default function App() {
             />
             {FEATURES.history && (
               <React.Suspense fallback={null}>
-                <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+                <History active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (
@@ -796,18 +805,19 @@ export default function App() {
               </React.Suspense>
             )}
             {FEATURES.live && liveMounted && (
-              <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${liveShown ? 'opacity-100' : 'opacity-0'}`}>
                 <React.Suspense fallback={null}>
                   <LiveVehicles
                   agencies={visibleAgencies}
                     lightMode={lightMode}
                     setLightMode={setLightMode}
-                    active={inLive}
+                    active={liveShown}
                     onInfoOpen={openInfo}
                     query={deferredQuery}
                     layers={layers}
                     sidebarLeft={sidebarLeft}
                     selectionActive={intervalSelectionActive}
+                    routeRequest={liveRouteRequest}
                   />
                 </React.Suspense>
               </div>
@@ -815,9 +825,9 @@ export default function App() {
           </>}
           </React.Suspense>
           </ErrorBoundary>
-        {agenciesLoadState === 'loading' && (
+        {(agenciesLoadState === 'loading' || modeCatchingUp) && (
           <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">
-            Loading agency data…
+            {agenciesLoadState === 'loading' ? 'Loading agency data…' : 'Loading map…'}
           </div>
         )}
         {agenciesLoadState === 'error' && (

@@ -1,5 +1,6 @@
 /**
- * Local dev API server — proxied by Vite at /api/* → localhost:5001
+ * Local dev API server — proxied by Vite at /api/* → localhost:5001.
+ * The Live endpoints live in local-api/, outside api/, so they never deploy as Vercel functions.
  * Run alongside `npm run dev` via `npm run dev:api`
  */
 import { createServer } from 'http';
@@ -7,7 +8,7 @@ import { config } from 'dotenv';
 import { resolve } from 'path';
 config({ path: resolve('.env.local') });
 
-const API_PORT = 5001;
+const API_PORT = Number(process.env.ATLAS_API_PORT ?? 5001);
 
 const handlers: Record<string, (req: Request) => Promise<Response>> = {};
 
@@ -15,10 +16,18 @@ async function loadHandlers() {
   const { default: liveVehicles } = await import('./api/live-vehicles.js');
   const { default: historyAdherence } = await import('./api/history-adherence.js');
   const { default: cartoTiles } = await import('./api/carto-tiles.js');
+  const { default: liveAdherence } = await import('./local-api/live-adherence.js');
+  const { default: liveStop } = await import('./local-api/live-stop.js');
   const { privacyRegionResponse } = await import('./shared/privacyRegion.js');
+  const { default: liveSegments } = await import('./local-api/live-segments.js');
+  const { default: liveRecent } = await import('./local-api/live-recent.js');
+  handlers['/api/live-segments'] = liveSegments.fetch;
+  handlers['/api/live-recent'] = liveRecent.fetch;
   handlers['/api/live-vehicles'] = liveVehicles.fetch;
   handlers['/api/history-adherence'] = historyAdherence.fetch;
   handlers['/api/carto-tiles'] = cartoTiles.fetch;
+  handlers['/api/live-adherence'] = liveAdherence.fetch;
+  handlers['/api/live-stop'] = liveStop.fetch;
   handlers['/api/privacy-region'] = privacyRegionResponse;
 }
 
@@ -57,5 +66,5 @@ createServer(async (req, res) => {
   }
 }).listen(API_PORT, () => {
   console.log(`API dev server listening on http://localhost:${API_PORT}`);
-  console.log('Routes: /api/live-vehicles, /api/history-adherence, /api/carto-tiles, /api/privacy-region');
+  console.log('Routes: /api/live-vehicles, /api/live-segments, /api/live-recent, /api/history-adherence, /api/live-adherence, /api/live-stop, /api/carto-tiles, /api/privacy-region');
 });

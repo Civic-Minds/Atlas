@@ -99,13 +99,16 @@ describe('stampFeedMeta', () => {
     expect(recordedFeedExpiry(null, null, '2026-10-07')).toBeNull();
   });
 
-  it('caps a placeholder calendar end at today + 2 years', () => {
+  it('reads feed_info end over a placeholder calendar end (#875)', () => {
     // bc-ferries style: feed_info ends 20270331, calendar runs to 20500101.
-    expect(recordedFeedExpiry('20270331', '20500101', '2026-10-07')).toBe('20281007');
+    expect(recordedFeedExpiry('20270331', '20500101', '2026-10-07')).toBe('20270331');
+    // Simi Valley's 20230601 zip: feed_info ends 20250601 under a 20301231 calendar, so the feed
+    // is expired; it used to read current to 20270601 (feed_info end + 2 years).
+    expect(recordedFeedExpiry('20250601', '20301231', '20261015')).toBe('20250601');
   });
 
-  it('caps at feed_info end + 2 years when that is sooner', () => {
-    expect(recordedFeedExpiry('20251001', '20500101', '20261007')).toBe('20271001');
+  it('caps a calendar end at feed_info end + 2 years when the calendar is not a placeholder', () => {
+    expect(recordedFeedExpiry('20251001', '20281001', '20261007')).toBe('20271001');
   });
 
   it('leaves a real calendar extension within the cap unaffected', () => {
@@ -245,11 +248,11 @@ describe('stampReprocessedFeedExpiry (#837)', () => {
     expect(agency).toEqual({ lastFeedExpiry: '20261205', lastPeekedExpiry: '20261205', lastFeedVersion: 'v1', lastRefreshedAt: '2026-09-01' });
   });
 
-  it('caps a placeholder calendar end like a refresh does', () => {
+  it('reads a placeholder calendar end like a refresh does', () => {
     const agency = { lastFeedExpiry: '20261001' };
     stampReprocessedFeedExpiry(agency, { feedExpiry: '20270101', calendarExpiry: '20991231', todayYmd });
     expect(agency).toEqual({ lastFeedExpiry: recordedFeedExpiry('20270101', '20991231', todayYmd), lastPeekedExpiry: '20991231' });
-    expect(agency.lastFeedExpiry).toBe('20281013');
+    expect(agency.lastFeedExpiry).toBe('20270101');
   });
 
   it('keeps a later feed_info end over an earlier calendar end', () => {

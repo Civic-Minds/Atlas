@@ -25,8 +25,10 @@ import { compareOtherPhrase } from '../utils/compareSides';
 import { buildCompareRow } from '../utils/compareRows';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
+import { getPolledRoute } from '../../shared/livePollingConfig';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
+import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
 import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
@@ -66,6 +68,8 @@ interface Props {
   setSearchFocused?: (focused: boolean) => void;
   hideFilterPanel?: boolean;
   filterToAgencies?: boolean;
+  /** With filterToAgencies: the agencies to draw (History), so the agencies prop can stay the same list. */
+  agencyFilterSlugs?: string[] | null;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   onOnDemandZoneClick?: (selection: { slug: string; zoneId: string }) => void;
   day: DayType;
@@ -75,6 +79,10 @@ interface Props {
   onViewportAgencySlugsChange?: (slugs: string[]) => void;
   onSelectedMapAgencyChange?: (slug: string | null) => void;
   onSelectionActiveChange?: (active: boolean) => void;
+  /** Live mode: a live route picked here opens in Live's card instead of this one. */
+  onLiveRouteSelected?: (slug: string, routeShortName: string) => void;
+  /** Start comparing once compare is available (Compare picked from Live or History). */
+  compareStartRequest?: number | null;
   /** Tells the top bar when compare is on, so the other mode tabs can shrink to icons. */
   onCompareActiveChange?: (active: boolean) => void;
   headerPortalContainer?: Element | null;
@@ -138,7 +146,7 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onSelectedMapAgencyChange, onSelectionActiveChange, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -582,6 +590,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   const startCompare = useCallback(() => setCompareSide(defaultCompareSide(compareA)), [compareA]);
   const exitCompare = useCallback(() => setCompareSide(null), []);
+  const handledCompareStart = useRef<number | null>(null);
+  useEffect(() => {
+    if (!compareStartRequest || !compareAvailable || handledCompareStart.current === compareStartRequest) return;
+    handledCompareStart.current = compareStartRequest;
+    startCompare();
+  }, [compareStartRequest, compareAvailable, startCompare]);
 
   // Side labels: how many routes each map draws in view, and how many of those the other map does
   // not draw. Counted from what is on screen, the same way as the route-count badge.
@@ -643,14 +657,25 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }, routesForStop);
   }, [day, frequentServiceView, hideLimitedService, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute]);
 
-  useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
-  useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
+  // Filters a shared link set when the page opened apply to this visit only; they become the
+  // saved preference once the viewer changes them (#891). Mirrors each initializer's URL read.
+  const [filtersFromUrl] = useState(() => {
+    const sp = new URLSearchParams(window.location.search);
+    return {
+      headway: !!(sp.get('h') || sp.get('headway') || sp.get('max')),
+      day: !!(sp.get('day') || sp.get('d')),
+      span: sp.get('span') != null,
+      limited: sp.get('limited') != null,
+    };
+  });
+  usePersistedFilterPref('atlas_pref_headway', String(maxHeadway), filtersFromUrl.headway);
+  usePersistedFilterPref('atlas_pref_day', day, filtersFromUrl.day);
+  usePersistedFilterPref('atlas_pref_hide_span', String(hideSpan), filtersFromUrl.span);
+  usePersistedFilterPref('atlas_pref_hide_limited', String(hideLimitedService), filtersFromUrl.limited);
   useEffect(() => {
-    try { localStorage.setItem('atlas_pref_hide_span', String(hideSpan)); } catch {}
     syncUrlParams({ span: hideSpan ? null : '0' });
   }, [hideSpan]);
   useEffect(() => {
-    try { localStorage.setItem('atlas_pref_hide_limited', String(hideLimitedService)); } catch {}
     syncUrlParams({ limited: hideLimitedService ? null : '0' });
   }, [hideLimitedService]);
   useEffect(() => {
@@ -778,9 +803,25 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [selectedRoute, selectedStop, disambiguationRoutes, selectedAgencySlug, onDemandStopAgencySlug, clearMapSelection]);
 
+  // Live mode: hand a live route to Live's card. Live then owns the route param.
+  const handedToLiveRef = useRef(false);
+  useEffect(() => {
+    if (!onLiveRouteSelected || !selectedRoute) return;
+    const { agencySlug } = splitRouteKey(selectedRoute);
+    const fc = layers[agencySlug];
+    if (!fc) return;
+    const feature = fc.features.find(f => routeKey(f.properties as ShapeProperties) === selectedRoute);
+    const rsn = (feature?.properties as ShapeProperties | undefined)?.routeShortName;
+    if (!rsn || !getPolledRoute(agencySlug, rsn)) return;
+    handedToLiveRef.current = true;
+    onLiveRouteSelected(agencySlug, rsn);
+    setSelectedRoute(null);
+  }, [onLiveRouteSelected, selectedRoute, layers]);
+
   // Sync selected route and stop to URL — replaceState via shared merge so
   // concurrent writers (day, map center, filters) don't clobber each other.
   useEffect(() => {
+    if (!selectedRoute && handedToLiveRef.current) { handedToLiveRef.current = false; return; }
     syncUrlParams({ route: selectedRoute || null });
   }, [selectedRoute]);
 
@@ -848,6 +889,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             liveRoutesOnly={liveRoutesOnly}
             hideSpan={hideSpan}
             filterToAgencies={filterToAgencies}
+            agencyFilterSlugs={agencyFilterSlugs}
             onHistoryRouteClick={onHistoryRouteClick}
             tileFilter={tileFilter}
             selectedAgencySlug={selectedAgencySlug}
@@ -926,6 +968,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 liveRoutesOnly={liveRoutesOnly}
                 hideSpan={hideSpan}
                 filterToAgencies={filterToAgencies}
+                agencyFilterSlugs={agencyFilterSlugs}
                 onHistoryRouteClick={onHistoryRouteClick}
                 tileFilter={compareStats.tileFilter}
                 selectedAgencySlug={selectedAgencySlug}
@@ -1243,14 +1286,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         searchMatchResults={searchMatchResults}
         searchStopMatchResults={searchStopMatchResults}
         maxHeadway={maxHeadway}
-        setMaxHeadway={setMaxHeadway}
         agencies={agencies}
-        selectedAgencies={selectedAgencies}
-        setSelectedAgencies={setSelectedAgenciesByUser}
-        selectedModes={selectedModes}
-        setSelectedModes={setSelectedModes}
-        day={day}
-        setDay={setDay}
         period={period}
         setPeriod={setPeriod}
         selectedStop={selectedStop}
@@ -1262,9 +1298,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         layers={layers}
         currentDay={day}
         hideSpan={hideSpan}
-        setHideSpan={setHideSpan}
-        livePollingOnly={livePollingOnly}
-        setLivePollingOnly={setLivePollingOnly}
         setSelectedAgencySlug={setSelectedAgencySlug}
         onSelectArea={handleSelectArea}
         nightServiceView={nightServiceView}

@@ -16,6 +16,7 @@ import { ColorVisionProvider } from './context/ColorVisionContext';
 import { RETIRED_APP_PATHS } from './utils/appGate';
 import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
+import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
 import { findSeoRoute } from '../shared/seo';
 
@@ -35,7 +36,9 @@ function NightServiceRedirect() {
 /** The map answers only the addresses the site knows; anything else gets the not-found page. */
 function MapOrNotFound() {
   const { pathname } = useLocation();
-  return findSeoRoute(pathname) ? <App /> : <NotFoundPage />;
+  return findSeoRoute(pathname)
+    ? <HomeRemount>{goHome => <App onGoHome={goHome} />}</HomeRemount>
+    : <NotFoundPage />;
 }
 
 /** /docs is the short address for the Docs page at /about/docs. */

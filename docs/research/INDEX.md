@@ -28,6 +28,9 @@ outputs remain supporting artifacts rather than competing summaries.
 - [Fare discounts](fare-discounts-2026-10/README.md): reduced-fare programs,
   focused on low-income fares, for 549 agencies. Verified with exceptions:
   every row checked; 12 rows on bot-protected sites not re-verified (CIV-48).
+- [Where routes fall behind](live-route-performance-2026-10/INDEX.md): methods
+  for the Live proof of concept's running-time, spacing and missed-trip
+  measures from archived vehicle positions (TTC 504 and 511, 2026-10-14).
 - [Free child fares](free-child-fares-2026-10-11/README.md): the age up to
   which each Atlas agency lets children ride free, classified by policy type.
 

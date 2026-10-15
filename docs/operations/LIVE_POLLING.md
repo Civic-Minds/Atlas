@@ -64,6 +64,8 @@ Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues
 
 ## History archiving (paused; legacy design)
 
+2026-10-14: cron triggers removed from atlas-gtfs-rt-archiver-hamilton, -stm, -burlington-halifax and -ttc-trips (scripts kept; restore with `* * * * *`). Only TTC positions still run every minute. Retention on atlas-live is already a bucket-wide 30-day delete rule, plus a 90-day rule.
+
 The previous Cloudflare Worker setup wrote to private R2 bucket `atlas-live`. Five
 small Workers covered TTC positions, TTC trips, Hamilton, STM, and Burlington plus
 Halifax. Each shard ran every minute; trip-update archives ran every 5 minutes,

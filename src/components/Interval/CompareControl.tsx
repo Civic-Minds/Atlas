@@ -1,9 +1,8 @@
-import React from 'react';
+import ModeTab from '../ModeTab';
 import { Columns2 } from 'lucide-react';
-import { APP_TAB_ACTIVE, APP_TAB_INACTIVE, MAP_BADGE } from '../../styles';
+import { MAP_BADGE } from '../../styles';
 import Pill from '../ui/Pill';
 import { FilterChips } from './FilterChips';
-import { ModeTabLabel, modeTabSpacing } from '../ModeTabLabel';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
@@ -68,33 +67,23 @@ export function CompareSidePicker({ side, onChange }: { side: CompareSide; onCha
  */
 export function CompareTab({ active, onStart, onExit, collapsed = false }: { active: boolean; onStart: () => void; onExit: () => void; /** Another mode is active: show the icon only. */ collapsed?: boolean }) {
   return (
-    <button
-      type="button"
+    <ModeTab
+      icon={<Columns2 className="h-3.5 w-3.5" aria-hidden="true" />}
+      label="Compare" ariaLabel="Compare two maps"
+      active={active} collapsed={collapsed}
       onClick={active ? onExit : onStart}
-      aria-pressed={active}
-      aria-label="Compare two maps"
-      title={collapsed ? 'Compare' : undefined}
-      className={`hidden sm:flex h-8 ${modeTabSpacing(collapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${active ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-    >
-      <Columns2 className="h-3.5 w-3.5" aria-hidden="true" />
-      <ModeTabLabel collapsed={collapsed}>Compare</ModeTabLabel>
-    </button>
+    />
   );
 }
 
 /** Phone version of the Compare tab: an item in the top bar's More menu, beside History and Live. */
 export function CompareMenuItem({ active, onStart, onExit, onDone }: { active: boolean; onStart: () => void; onExit: () => void; onDone: () => void }) {
   return (
-    <button
-      type="button"
+    <ModeTab
+      variant="menu" icon={<Columns2 className="h-3.5 w-3.5" aria-hidden="true" />}
+      label="Compare" ariaLabel="Compare two maps" active={active}
       onClick={() => { (active ? onExit : onStart)(); onDone(); }}
-      aria-pressed={active}
-      aria-label="Compare two maps"
-      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${active ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-    >
-      <Columns2 className="h-3.5 w-3.5" aria-hidden="true" />
-      <span>Compare</span>
-    </button>
+    />
   );
 }
 

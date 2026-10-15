@@ -1,4 +1,6 @@
 import React from 'react';
+import { useInRouterContext, useNavigate } from 'react-router';
+import { useSegmentDelay } from '../../../hooks/useSegmentDelay';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
@@ -199,6 +201,14 @@ export interface RouteCardHeadwayProps {
   onInfoOpen?: OpenInfoFn;
 }
 
+/** Router navigation when the card is inside a router (the app); null in isolated renders (tests). */
+function useOptionalNavigate() {
+  const inRouter = useInRouterContext();
+  // The router context never appears or disappears for a mounted card, so the hook order is stable.
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return inRouter ? useNavigate() : null;
+}
+
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   currentRoute,
   agencyFeatures,
@@ -223,6 +233,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   onInfoOpen,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
+  // Routes with Live analysis link to it; the analysis itself lives only in Live mode.
+  const hasLiveAnalysis = useSegmentDelay(routeSlug, currentRoute.routeShortName) != null;
+  const navigate = useOptionalNavigate();
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
   const routeOverrideNote = routeAgency?.overrideNote
@@ -339,6 +352,24 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       : [];
     return [...section, ...sharedLines, ...branchLines, ...limitedLines];
   });
+  // The folded timetable line states what the expanded rows show for this period:
+  // each direction's shared-stretch (or combined) cadence, as in the direction
+  // rows below; the slower direction decides, as everywhere else on the card.
+  const scheduleHeadline = (() => {
+    const cores = displayGroups.map(group => {
+      const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
+      const hasCore = shared != null || shouldShowTrunkSummary(group.realTier, period);
+      const core = shared?.headway ?? (hasCore ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period) : null);
+      if (core != null) return { headway: core, label: shared ? 'Shared stretch' : 'Combined' };
+      const branch = group.realTier
+        .map(direction => routeCardDisplayHeadway(direction, period))
+        .filter((v): v is number => v != null);
+      return branch.length ? { headway: Math.min(...branch), label: 'Scheduled' } : null;
+    }).filter((c): c is { headway: number; label: string } => c != null);
+    if (cores.length === 0) return null;
+    const slower = cores.reduce((a, c) => (c.headway > a.headway ? c : a));
+    return `${slower.label}: ${headwayAbout(slower.headway)}`;
+  })();
   const reportRawMetrics = currentRoute.directions.map((direction, index) => {
     const selectedPeriodHourlyHeadways = selectedPeriod
       ? Object.fromEntries(
@@ -419,6 +450,19 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           />
         </div>
       </SidebarCardHeaderBlock>
+      {hasLiveAnalysis && (
+        <button
+          type="button"
+          onClick={() => {
+            const to = `/apps/live?route=${encodeURIComponent(`${routeSlug}::${currentRoute.routeShortName}`)}`;
+            if (navigate) navigate(to); else window.location.assign(to);
+          }}
+          className="mb-3 w-full text-left text-xs font-bold text-[var(--accent)] hover:underline"
+        >
+          See how the {currentRoute.routeShortName} is doing in Live →
+        </button>
+      )}
+      {(<>
       {compareRows && (() => {
         const { headline, lines } = compareCardSummary(compareRows);
         return (
@@ -776,6 +820,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         )}
       </SidebarCardList>
+      </>)}
     </SidebarCardShell>
   );
 };
