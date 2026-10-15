@@ -4,8 +4,6 @@ import { getTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
-import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
-import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { findVariantFamily } from '../../utils/routeVariants';
 import { getRouteLabel, shortenAgencyName, searchOverlayHidesPanel, titleCase } from '../../utils/format';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
@@ -30,8 +28,6 @@ import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
 import type { StopRoute, NearbyConnection } from './panels/StopCard';
 import { RouteCardHeadway } from './panels/RouteCardHeadway';
-import { LiveAdherenceCard } from './panels/LiveAdherenceCard';
-import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
@@ -426,16 +422,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return findVariantFamily(feats, currentRoute.routeShortName ?? null, period, slug);
   }, [currentRoute, nonCorridorLayers, currentDay, period]);
 
-  const liveAgencySlug = useMemo(() => {
-    if (!FEATURES.live || !currentRoute) return null;
-    const slug = (currentRoute as any).agencySlug as string | null ?? null;
-    if (!slug || !isLivePollingRoute(slug, currentRoute.routeShortName)) return null;
-    return slug;
-  }, [currentRoute]);
-
-  const liveRouteShortName = liveAgencySlug ? currentRoute?.routeShortName ?? null : null;
-  const { data: liveData, status: liveStatus } = useLiveAdherence(liveAgencySlug, liveRouteShortName);
-
   const directionLabelOverrides = useMemo(() => {
     if (!currentRoute) return undefined;
     const slug = (currentRoute as any).agencySlug as string | undefined;
@@ -510,33 +496,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     }
     return groups;
   }, [currentRoute, directionLabelOverrides, period]);
-
-  const liveRouteInfo = useMemo(() => {
-    if (!currentRoute) return null;
-    const agencySlug = (currentRoute as any).agencySlug as string | null ?? null;
-    if (!agencySlug || !isLivePollingRoute(agencySlug, currentRoute.routeShortName)) return null;
-    const cfg = getLiveRouteConfig(agencySlug, currentRoute.routeShortName);
-    const stopOrder = new Map(Object.keys(cfg?.targetStops ?? {}).map((stopId, index) => [stopId, index]));
-    const stopRows = cfg && liveData
-      ? liveData.arrivals
-          .map(a => ({
-            stopId: a.stopId,
-            name: cfg.targetStops[a.stopId] ?? a.stopId,
-            avgGap: a.avgGap,
-            delta: a.headwayDeltaMin,
-          }))
-          .sort((a, b) => {
-            return (stopOrder.get(a.stopId) ?? Infinity) - (stopOrder.get(b.stopId) ?? Infinity);
-          })
-      : [];
-    return {
-      agencySlug,
-      scheduledMin: cfg?.scheduledHeadwayMin ?? null,
-      stopRows,
-      delta: agencyHeadwayDelta(liveData, agencySlug),
-      trips: agencyTripSummary(liveData, agencySlug),
-    };
-  }, [currentRoute, liveData]);
 
   const currentStop = useMemo(() => {
     if (!selectedStop) return null;
@@ -1080,8 +1039,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   currentRoute={currentRoute}
                   agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
                   variantFamily={variantFamily}
-                  liveRouteInfo={liveRouteInfo}
-                  liveStatus={liveStatus}
+                  liveRouteInfo={null}
+                  liveStatus="noData"
                   routeSlug={routeSlug}
                   routeAgency={routeAgency}
                   setSelectedAgencySlug={setSelectedAgencySlug}
@@ -1138,14 +1097,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         )}
       </div>}
 
-      {liveRouteInfo && liveStatus !== 'noData' && !searchOverlayHidesPanel(searchFocused, query) && (
-        <LiveAdherenceCard
-          liveRouteInfo={liveRouteInfo as LiveRouteInfoData}
-          liveStatus={liveStatus}
-          setSelectedRoute={setSelectedRoute}
-          setSelectedStop={setSelectedStop}
-        />
-      )}
     </div>
   );
 };

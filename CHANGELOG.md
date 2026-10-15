@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Live route lateness no longer reads "on time" for every TTC trip: a feed that gives no delay now counts as unknown, not zero, and the old live lateness card on route cards is gone, replaced by Live's route card ([#866](https://github.com/Civic-Minds/Atlas/issues/866)).
 - Switching between the map, Live, History and Compare no longer reloads the page: History's tab was a plain link, so opening or leaving History reloaded the whole app and refetched the map's data ([#888](https://github.com/Civic-Minds/Atlas/issues/888)).
 - Leaving Live (by its tab, the logo or the back button) now hides Live at once and shows "Loading map…" while the frequency map draws, instead of leaving Live on screen for several seconds with the address already back at the map (CIV-214).
 - Opening a shared link no longer replaces your saved frequency, day, one-off and part-time route settings with the link's; the link's settings apply to that visit, and your own are saved again once you change them ([#891](https://github.com/Civic-Minds/Atlas/issues/891)).

@@ -121,11 +121,15 @@ export async function computeLiveAdherence(
       if (!arrival?.time) continue;
 
       const predictedTime = parseInt(String(arrival.time));
-      const delay = arrival.delay ? parseInt(String(arrival.delay)) : 0;
-      const scheduledTime = predictedTime - delay;
-
       if (!stopPredictions[stopId]) stopPredictions[stopId] = [];
       stopPredictions[stopId].push({ predictedTime });
+
+      // No delay in the feed means the delay is unknown, not zero: TTC sends none, and reading it
+      // as 0 made every trip "on time" (#866). Such stops don't count toward a trip's drift.
+      if (arrival.delay == null) continue;
+      const delay = parseInt(String(arrival.delay));
+      if (!Number.isFinite(delay)) continue;
+      const scheduledTime = predictedTime - delay;
 
       if (tripId) {
         if (!tripPredictions[tripId]) tripPredictions[tripId] = [];
