@@ -17,6 +17,50 @@ function LevenshteinDistance(a: string, b: string): number {
   return tmp[a.length][b.length];
 }
 
+/**
+ * A route that labels some trips' direction_id and leaves others blank (#730: Coast NH route 40
+ * labels most weekday trips but none of its Saturday ones). The blank trips used to fall into
+ * direction 0 wholesale, so Saturday's inbound trips were drawn as part of the outbound line and the
+ * inbound direction vanished. A blank trip takes the direction the route's labelled trips use on the
+ * same shape, else on the same headsign (or last stop), and only when that is one direction; any
+ * other blank trip is left as it was. The route is not marked synthesized: its labels are the feed's.
+ */
+function fillBlankDirections(
+  trips: NonNullable<GtfsData['trips']>,
+  hasDir: (t: NonNullable<GtfsData['trips']>[number]) => boolean,
+  lastStopByTrip: Map<string, string>,
+  stopNameById: Map<string, string>,
+): number {
+  const destination = (t: NonNullable<GtfsData['trips']>[number]) => {
+    const headsign = t.trip_headsign?.trim();
+    if (headsign) return headsign;
+    const last = lastStopByTrip.get(t.trip_id);
+    return last ? stopNameById.get(last) : undefined;
+  };
+  const byShape = new Map<string, Set<string>>();
+  const byDestination = new Map<string, Set<string>>();
+  for (const t of trips) {
+    if (!hasDir(t)) continue;
+    const dir = String(t.direction_id).trim();
+    if (t.shape_id) byShape.set(t.shape_id, (byShape.get(t.shape_id) ?? new Set()).add(dir));
+    const dest = destination(t);
+    if (dest) byDestination.set(dest, (byDestination.get(dest) ?? new Set()).add(dir));
+  }
+  const only = (dirs: Set<string> | undefined) => (dirs && dirs.size === 1 ? [...dirs][0] : null);
+  let filled = 0;
+  for (const t of trips) {
+    if (hasDir(t)) continue;
+    const shapeDirs = t.shape_id ? byShape.get(t.shape_id) : undefined;
+    // The shape decides when labelled trips use it one way only; otherwise the destination does.
+    const dest = destination(t);
+    const dir = only(shapeDirs) ?? only(dest ? byDestination.get(dest) : undefined);
+    if (dir == null) continue;
+    t.direction_id = dir;
+    filled++;
+  }
+  return filled;
+}
+
 export function synthesizeMissingDirections(gtfs: GtfsData): GtfsData {
   if (!gtfs.trips || gtfs.trips.length === 0) return gtfs;
 
@@ -40,9 +84,14 @@ export function synthesizeMissingDirections(gtfs: GtfsData): GtfsData {
   const stopNameById = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s.stop_name]));
 
   let synthesizedCount = 0;
+  let filledCount = 0;
   for (const [, rTrips] of tripsByRoute.entries()) {
-    const hasAnyDir = rTrips.some(t => t.direction_id != null && String(t.direction_id).trim() !== '');
-    if (hasAnyDir) continue;
+    const hasDir = (t: (typeof rTrips)[number]) => t.direction_id != null && String(t.direction_id).trim() !== '';
+    const hasAnyDir = rTrips.some(hasDir);
+    if (hasAnyDir) {
+      filledCount += fillBlankDirections(rTrips, hasDir, lastStopByTrip, stopNameById);
+      continue;
+    }
 
     const groups = new Map<string, typeof gtfs.trips>();
     for (const t of rTrips) {
@@ -88,6 +137,9 @@ export function synthesizeMissingDirections(gtfs: GtfsData): GtfsData {
 
   if (synthesizedCount > 0) {
     console.log(`Synthesized direction_id for ${synthesizedCount} trips across routes lacking direction_id.`);
+  }
+  if (filledCount > 0) {
+    console.log(`Filled direction_id for ${filledCount} unlabelled trips from labelled trips on the same shape or headsign.`);
   }
 
   return gtfs;

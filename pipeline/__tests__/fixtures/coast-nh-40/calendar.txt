@@ -1,0 +1,4 @@
+service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
+42993,1,1,1,1,1,1,1,20250101,20271231
+31581.84444,1,1,1,1,1,0,0,20250101,20271231
+31581.107595,0,0,0,0,0,1,0,20250101,20271231
