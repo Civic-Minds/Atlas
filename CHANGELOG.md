@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Frequency bar legend is keyboard-reachable**: legend items and bar segments show the pointer cursor (not the text cursor), and Tab now highlights a legend item the same way hover does.
 - **"And N others" now says what the others are**: agency pages read "and 3 other agencies" (and "1 other agency") instead of a bare "and 3 others", and the live vehicle list reads "and 2 other vehicles" instead of "+2 more"; one shared helper builds all of them.
 - **Night and Frequent Service explain themselves the same way**: both show the rule in one identical card above their content, in plain one-line wording with the times and days you picked. What's new now keeps only the version line bold.
 - **Night page: the Atlas wordmark lines up with the header buttons**: the taller 30/60 toggle was pushing the logo and search 1px off the line they sit on in the other views; the header row now has one fixed height everywhere ([#908](https://github.com/Civic-Minds/Atlas/issues/908)).

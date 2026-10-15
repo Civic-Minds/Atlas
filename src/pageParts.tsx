@@ -40,7 +40,7 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
           {shown.map(x => (
             <li key={x.i} data-active={active === x.i ? 'true' : undefined}
               tabIndex={0} aria-label={sentence(x)}
-              className="-mx-1.5 flex cursor-pointer select-none items-center gap-1.5 whitespace-nowrap rounded-md px-1.5 py-0.5 outline-offset-2 transition-colors"
+              className="-mx-1.5 flex cursor-pointer select-none items-center gap-1.5 whitespace-nowrap rounded-md px-1.5 py-0.5 outline-offset-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
               style={active === x.i ? { background: 'var(--bg-btn-hover)' } : undefined}
               onMouseEnter={() => setActive(x.i)} onMouseLeave={() => setActive(null)} onFocus={() => setActive(x.i)} onBlur={() => setActive(null)} onClick={() => setActive(a => (a === x.i ? null : x.i))}>
               <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: BAND_FILLS[x.i] }} />
