@@ -652,9 +652,16 @@ export const MIN_POOLED_TIER_DEPARTURES = 8;
  * past phase 2's burst span. The test behind "limited" for a variant of a line with midday
  * service elsewhere (CIV-150, decision of 2026-10-14).
  */
+/**
+ * A midday reading must spread over at least half of the 9-15h window: four departures inside
+ * 90 minutes are a burst, but four inside two hours (a school-time shuttle 11:00-12:50) are not
+ * midday service either. Phase 2's burst span was written for a whole day's sample.
+ */
+export const MIDDAY_READING_MIN_SPAN_MINUTES = 180;
+
 export function hasMiddayReading(times: readonly number[] | undefined): boolean {
   const midday = [...new Set(times ?? [])].filter(t => t >= 540 && t <= 900).sort((a, b) => a - b);
-  return midday.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES && midday[midday.length - 1] - midday[0] > BURST_MAX_SPAN_MINUTES;
+  return midday.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES && midday[midday.length - 1] - midday[0] >= MIDDAY_READING_MIN_SPAN_MINUTES;
 }
 
 export async function processGtfsBuffer(
@@ -943,12 +950,16 @@ export async function processGtfsBuffer(
   // only when it draws: communitytransit 130 Saturday to Edmonds runs hourly all day on two
   // shapes with different last stops, the drawn shape has no midday trips and the midday shape
   // lost dedupe to it, so the whole direction went dark as a "variant" of a line nobody drew.
+  const keepsHeadline = (feature: GeoJsonFeature): boolean => feature.properties.tier !== 'span' && feature.properties.serviceClass !== 'irregular';
   let drawnMembersByPool: Map<string, Set<string>> | null = null;
   const drawnMembers = (poolKey: string): ReadonlySet<string> => {
     if (!drawnMembersByPool) {
       drawnMembersByPool = new Map();
       for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
-        if (feature.geometry.type !== 'LineString' || partialWeekdayFeatures.has(feature)) continue;
+        // A sibling keeps a headline only when phase 2 gave it a tier and a regular class: a
+        // span or irregular pattern never does (capmetro 550 NB: the midday short turns to
+        // Lakeline are span, so the Leander line is not their variant).
+        if (feature.geometry.type !== 'LineString' || partialWeekdayFeatures.has(feature) || !keepsHeadline(feature)) continue;
         const member = sharedPatternKey(feature.properties.routeId as string, feature.properties.headsign as string | null, featureShapeId.get(feature));
         if (!member) continue;
         const pool = `${shortName}::${dirId}::${day}`;
@@ -958,6 +969,24 @@ export async function processGtfsBuffer(
       }
     }
     return drawnMembersByPool.get(poolKey) ?? new Set();
+  };
+  // The headsigns each route direction and day draws, `${routeId}|${headsign}`. A sibling under a
+  // headsign that never became a shared member (its headsign was not shared-eligible, so it is
+  // in no stopDepsBySharedMember entry) still counts as the line's midday service when its
+  // headsign group has a midday reading: middayMembers alone could not see it.
+  let drawnHeadsignsByPool: Map<string, Set<string>> | null = null;
+  const drawnHeadsigns = (poolKey: string): ReadonlySet<string> => {
+    if (!drawnHeadsignsByPool) {
+      drawnHeadsignsByPool = new Map();
+      for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
+        if (feature.geometry.type !== 'LineString' || partialWeekdayFeatures.has(feature) || !feature.properties.headsign || !keepsHeadline(feature)) continue;
+        const pool = `${shortName}::${dirId}::${day}`;
+        let set = drawnHeadsignsByPool.get(pool);
+        if (!set) { set = new Set(); drawnHeadsignsByPool.set(pool, set); }
+        set.add(`${feature.properties.routeId}|${feature.properties.headsign}`);
+      }
+    }
+    return drawnHeadsignsByPool.get(poolKey) ?? new Set();
   };
   const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailLikeRoute({
     routeType: route.route_type,
@@ -2033,7 +2062,18 @@ export async function processGtfsBuffer(
       // Siblings are keyed by short name; only members of this route id count (two routes can
       // share a short name).
       const ownRouteId = feature.properties.routeId as string;
-      return [...siblings].some(member => member !== ownMember && drawn.has(member) && member.startsWith(`${ownRouteId}|`));
+      if ([...siblings].some(member => member !== ownMember && drawn.has(member) && member.startsWith(`${ownRouteId}|`))) return true;
+      // A drawn sibling under another headsign whose headsign group has a midday reading, judged
+      // the same way on the own side: the own headsign's group with a reading at any stop is the
+      // line itself (capmetro 550 NB: per-trip shapes, every 34 as a group).
+      const ownGroup = featureHeadsign ? stopDepsByHeadsignGroup.get(`${poolKey}::${featureHeadsign}`) : undefined;
+      if (ownGroup && [...ownGroup.values()].some(times => hasMiddayReading(times))) return false;
+      return [...drawnHeadsigns(poolKey)].some(key => {
+        const [routeId, headsign] = [key.slice(0, key.indexOf('|')), key.slice(key.indexOf('|') + 1)];
+        if (routeId !== ownRouteId || headsign === featureHeadsign) return false;
+        const group = stopDepsByHeadsignGroup.get(`${poolKey}::${headsign}`);
+        return !!group && [...group.values()].some(times => hasMiddayReading(times));
+      });
     };
     // A drawn stop has a real all-day reading when its list has at least
     // MIN_ALL_DAY_TERMINAL_DEPARTURES unique departures over 6-22h: the thin-shape rescue's
