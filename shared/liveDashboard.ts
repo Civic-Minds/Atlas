@@ -22,11 +22,26 @@ export interface DashboardStop {
 }
 export interface DashboardStretch {
   fromStopId: string; toStopId: string; fromName: string; toName: string;
-  n: number; medianAddedMin: number; addedShare: number; medianDelayMin: number; p10DelayMin: number; p90DelayMin: number;
+  n: number; medianAddedMin: number; addedShare: number;
+  /** Share of trips where delay grew by 30+ seconds across this stretch: how consistent the build-up is. */
+  growShare: number;
+  medianDelayMin: number; p10DelayMin: number; p90DelayMin: number;
 }
 export interface DashboardBuildup {
   directionId: number; startingDelayMin: number | null;
+  kind: 'forms' | 'gradual' | 'none' | null;
+  /** The stretch with the largest added delay that stays up for the next 3 stops / 1 km. */
+  forms: DashboardStretch | null;
+  /** Median delay at the end of the route minus at its start, minutes. */
+  climbMin: number | null;
   start: DashboardStretch | null; biggest: DashboardStretch | null; stretches: DashboardStretch[];
+}
+/** Time-of-day keys: the whole day, then the map's periods. */
+export type DashboardBand = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
+export interface DashboardBandData {
+  stops: DashboardStop[];
+  buildup: DashboardBuildup[];
+  adherence: LiveV3['adherence'];
 }
 export type BunchingLinkKind = 'terminal_departures' | 'stood_still' | 'slow_stretch' | 'short_turns';
 export interface DashboardBunchingStretch {
@@ -57,12 +72,14 @@ export interface LiveV3 {
   };
   stops: DashboardStop[];
   buildup: DashboardBuildup[];
+  /** Stops, build-up and adherence for each time of day. The top-level `adherence`, `stops` and `buildup` are the 'all' entry. */
+  bands: Record<DashboardBand, DashboardBandData>;
   bunching: Array<{ directionId: number; bands: Record<string, DashboardBunchingBand> }>;
 }
 
 /** What /api/live-dashboard answers. `reason` is always a plain sentence that says what to do or when it will exist. */
 export type LiveDashboardResponse =
-  | { status: 'ready'; agency: string; route: string; generatedAt: string; replacementBuses: boolean; v3: LiveV3; note: string | null; /** Directions whose first stops are measured poorly (see `note`). */ uncertainStart: number[] }
+  | { status: 'ready'; agency: string; route: string; generatedAt: string; replacementBuses: boolean; v3: LiveV3; note: string | null; /** Directions whose first stops are measured poorly (see `note`), and how many stops are affected. */ uncertainStart: UncertainStart[] }
   | { status: 'held' | 'no_analysis' | 'unknown_route'; reason: string };
 
 /** Routes whose analysis is built but not shown until a known problem is fixed. */
@@ -77,8 +94,9 @@ export const LIVE_DASHBOARD_NOTES: Readonly<Record<string, string>> = {
   'ttc::510': 'Delay at the first few stops is less exact (about 2–3 min late), because streetcars report their location less often in the Union Station tunnel.',
 };
 
-/** Directions whose delay at the first stops is uncertain, so the page says "about +2 to +3 min" instead of a single figure. */
-export const LIVE_DASHBOARD_UNCERTAIN_START: Readonly<Record<string, readonly number[]>> = { 'ttc::510': [1] };
+export interface UncertainStart { directionId: number; stops: number }
+/** Directions whose delay at the first few stops is less exact: the page notes it and leaves those stops out of the ranking. */
+export const LIVE_DASHBOARD_UNCERTAIN_START: Readonly<Record<string, readonly UncertainStart[]>> = { 'ttc::510': [{ directionId: 1, stops: 4 }] };
 
 export function dashboardHold(agency: string, route: string): string | null {
   return LIVE_DASHBOARD_HOLD[`${agency}::${route}`] ?? null;
@@ -98,12 +116,15 @@ const pct = (x: number) => `${Math.round(x * 100)}%`;
 const min = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`;
 
 /** B3: one sentence per direction. */
-export function buildupSentence(label: string, b: DashboardBuildup, uncertainStart = false): string {
-  if (b.start) return `${label}: delays start between ${b.start.fromName} and ${b.start.toName}: ${min(b.start.medianAddedMin)} added in ${pct(b.start.addedShare)} of ${b.start.n} runs.`;
-  const first = b.startingDelayMin == null ? ''
-    : uncertainStart ? ' Delay at the first few stops is less exact, about 2–3 min late (see the note above).'
-    : ` Median delay at the first stop is ${min(b.startingDelayMin)}.`;
-  return `${label}: no single stretch adds more than a minute in half the runs.${first}`;
+export function buildupSentence(label: string, b: DashboardBuildup): string {
+  if (b.kind === 'forms' && b.forms) {
+    return `${label}: delay builds up between ${b.forms.fromName} and ${b.forms.toName}: ${min(b.forms.medianAddedMin)} added there, and it stays up for the next few stops. Delay grows by 30+ seconds on ${pct(b.forms.growShare)} of ${b.forms.n.toLocaleString()} trips.`;
+  }
+  if (b.kind === 'gradual') {
+    return `${label}: delay builds gradually along the route${b.climbMin != null ? ` (${min(b.climbMin)} from start to end)` : ''}. No single stretch stands out.`;
+  }
+  if (b.kind === 'none') return `${label}: delay does not build up along the route.`;
+  return `${label}: too few trips to say where delay builds up.`;
 }
 
 /** B4: one sentence per direction and period. "Linked to", never "caused by". */
@@ -136,15 +157,16 @@ export function linkValueText(kind: BunchingLinkKind, value: number | null): str
 }
 
 /** B2: stops ranked by late share among those with enough departures, for the chosen direction (null = both). */
-export function rankStops(stops: readonly DashboardStop[], directionId: number | null): DashboardStop[] {
+export function rankStops(stops: readonly DashboardStop[], directionId: number | null, uncertain: readonly UncertainStart[] = []): DashboardStop[] {
+  const lessExact = (s: DashboardStop) => uncertain.some(u => u.directionId === s.directionId && s.order >= 0 && s.order < u.stops);
   return stops
-    .filter(s => s.ranked && (directionId == null || s.directionId === directionId))
+    .filter(s => s.ranked && !lessExact(s) && (directionId == null || s.directionId === directionId))
     .sort((a, b) => b.lateShare - a.lateShare || b.n - a.n);
 }
 
 export interface CardSummary {
-  /** Share of timepoint departures that are not late, with the count it is out of. */
-  notLate: { share: number; n: number } | null;
+  /** Share of timepoint departures that are late (5.5+ min), with the count it is out of. */
+  late: { share: number; n: number } | null;
   /** The stop where the most cars leave late (ranked stops only). */
   worstStop: { name: string; lateShare: number; n: number } | null;
   /** Where delays start, as one sentence, or null when no stretch adds more than a minute in half the runs. */
@@ -152,14 +174,15 @@ export interface CardSummary {
 }
 
 /** The three short facts on the route card (one direction), from the same file the page reads. */
-export function cardSummary(v3: LiveV3, directionId: number): CardSummary {
+export function cardSummary(v3: LiveV3, directionId: number, uncertain: readonly UncertainStart[] = []): CardSummary {
   const counts = v3.adherence.timepoints.all.byDirection[String(directionId)];
-  const worst = rankStops(v3.stops, directionId)[0];
-  const start = v3.buildup.find(b => b.directionId === directionId)?.start;
+  const worst = rankStops(v3.stops, directionId, uncertain)[0];
+  const build = v3.buildup.find(b => b.directionId === directionId);
+  const start = build?.kind === 'forms' ? build.forms : null;
   return {
-    notLate: counts && counts.n > 0 ? { share: counts.notLateShare, n: counts.n } : null,
+    late: counts && counts.n > 0 ? { share: counts.lateShare, n: counts.n } : null,
     worstStop: worst ? { name: worst.name, lateShare: worst.lateShare, n: worst.n } : null,
-    startsText: start ? `${start.fromName} to ${start.toName} (${min(start.medianAddedMin)} in ${pct(start.addedShare)} of runs)` : null,
+    startsText: start ? `${start.fromName} to ${start.toName} (${min(start.medianAddedMin)}, on ${pct(start.growShare)} of trips)` : null,
   };
 }
 
@@ -197,4 +220,15 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
       ? `Data up to ${upTo}, ${daysOld} days ago. Rebuild it with "npm run live:analyze -- ${route}" (needs fresh saved vehicle locations).`
       : `Data up to ${upTo}.`,
   };
+}
+
+/** One CSV cell: quoted when it holds a comma, quote or line break. */
+const cell = (v: string | number | null) => {
+  const t = v == null ? '' : String(v);
+  return /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+};
+
+/** Rows as CSV text (for the table downloads): a header line, then one line per row. */
+export function toCsv(header: readonly string[], rows: ReadonlyArray<ReadonlyArray<string | number | null>>): string {
+  return [header, ...rows].map(r => r.map(cell).join(',')).join('\n') + '\n';
 }

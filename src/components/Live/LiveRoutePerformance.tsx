@@ -365,11 +365,11 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
       {dashData ? (
         <Section title={`Last ${dashData.v3.window.days} days · ${directions.find(d => d.id === directionId)?.label ?? ''}`}>
           {(() => {
-            const f = cardSummary(dashData.v3, directionId);
+            const f = cardSummary(dashData.v3, directionId, dashData.uncertainStart ?? []);
             return (
               <>
                 {([
-                  ['Not late', f.notLate ? `${Math.round(f.notLate.share * 100)}% of ${f.notLate.n.toLocaleString()} departures` : '–'],
+                  ['Late', f.late ? `${Math.round(f.late.share * 100)}% of ${f.late.n.toLocaleString()} departures` : '–'],
                   ['Worst stop', f.worstStop ? `${stopLabel(f.worstStop.name)}, ${Math.round(f.worstStop.lateShare * 100)}% late` : '–'],
                   ['Delays start', f.startsText ?? 'No single stretch'],
                 ] as [string, string][]).map(([label, value]) => (

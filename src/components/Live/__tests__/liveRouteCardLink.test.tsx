@@ -44,7 +44,7 @@ describe('route card: "Full analysis" appears only when the page has data (U6)',
     card();
     const link = await screen.findByRole('link', { name: /Full analysis/ });
     expect(link.getAttribute('href')).toBe('/apps/live/ttc/505');
-    expect(screen.getByText('90% of 1,000 departures')).toBeTruthy();
+    expect(screen.getByText('10% of 1,000 departures')).toBeTruthy();
     expect(screen.getByText(/Stop 2, 30% late/)).toBeTruthy();
     expect(screen.getByText('No single stretch')).toBeTruthy();
   });

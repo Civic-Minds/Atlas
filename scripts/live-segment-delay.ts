@@ -720,25 +720,50 @@ const swapsReassigned = swapsInWindow.filter(x => x.outcome === 'reassigned').le
 const swapsDropped = swapsInWindow.length - swapsReassigned;
 const tpMinutes = windowRuns.flatMap(r => r.stops.filter(s => s.timepoint).map(s => s.delaySec / 60));
 const nearCutoffShare = tpMinutes.length ? tpMinutes.filter(m => Math.abs(m - EARLY_AT_OR_BELOW_MIN) < 0.75 || Math.abs(m - LATE_AT_OR_ABOVE_MIN) < 0.75).length / tpMinutes.length : 0;
-const stopStatsV3 = stopDelayStats(windowRuns).map(s => ({
-  ...stopInfo(s.stopId), directionId: s.directionId, order: orderIndex(s.directionId, s.stopId), n: s.n,
-  medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare), ranked: s.ranked,
-})).sort((a, b) => a.directionId - b.directionId || a.order - b.order);
-// B2 ranks by late share (5.5+ min late) among stops with enough passages; median and p90 sit beside it.
-for (const dir of new Set(stopStatsV3.map(x => x.directionId))) {
-  stopStatsV3.filter(x => x.directionId === dir && x.ranked).sort((a, b) => (b.lateShare ?? 0) - (a.lateShare ?? 0) || b.n - a.n).forEach((x, i) => { (x as typeof x & { lateRank?: number }).lateRank = i + 1; });
+const BANDS: (TimeBand | 'all')[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
+/** Stops (B2) and delay build-up (B3) for a set of runs. */
+function stopsAndBuildup(rs: readonly RunDelays[]) {
+  const stops = stopDelayStats(rs).map(s => ({
+    ...stopInfo(s.stopId), directionId: s.directionId, order: orderIndex(s.directionId, s.stopId), n: s.n,
+    medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare), ranked: s.ranked,
+  })).sort((a, b) => a.directionId - b.directionId || a.order - b.order);
+  // B2 ranks by late share (5.5+ min late) among stops with enough departures; median and p90 sit beside it.
+  for (const dir of new Set(stops.map(x => x.directionId))) {
+    stops.filter(x => x.directionId === dir && x.ranked).sort((a, b) => (b.lateShare ?? 0) - (a.lateShare ?? 0) || b.n - a.n).forEach((x, i) => { (x as typeof x & { lateRank?: number }).lateRank = i + 1; });
+  }
+  const buildup = delayBuildup(rs, stopOrder, alongOf).map(d => {
+    const named = (s: typeof d.start) => s && { ...s, fromName: stopInfo(s.fromStopId).name, toName: stopInfo(s.toStopId).name, medianAddedMin: r1(s.medianAddedMin), addedShare: r3(s.addedShare), growShare: r3(s.growShare), medianDelayMin: r1(s.medianDelayMin), p10DelayMin: r1(s.p10DelayMin), p90DelayMin: r1(s.p90DelayMin) };
+    return { directionId: d.directionId, startingDelayMin: r1(d.startingDelayMin), kind: d.kind, climbMin: r1(d.climbMin), forms: named(d.forms), start: named(d.start), biggest: named(d.biggest), stretches: d.stretches.map(s => named(s)) };
+  });
+  return { stops, buildup };
 }
-const buildupV3 = delayBuildup(windowRuns, stopOrder).map(d => {
-  const named = (s: typeof d.start) => s && { ...s, fromName: stopInfo(s.fromStopId).name, toName: stopInfo(s.toStopId).name, medianAddedMin: r1(s.medianAddedMin), addedShare: r3(s.addedShare), medianDelayMin: r1(s.medianDelayMin), p10DelayMin: r1(s.p10DelayMin), p90DelayMin: r1(s.p90DelayMin) };
-  return { directionId: d.directionId, startingDelayMin: r1(d.startingDelayMin), start: named(d.start), biggest: named(d.biggest), stretches: d.stretches.map(s => named(s)) };
+const adherenceFor = (rs: readonly RunDelays[]) => ({
+  timepoints: {
+    all: adherenceReport(rs, { timepointsOnly: true }),
+    weekday: adherenceReport(rs.filter(r => !isWeekend(r.date)), { timepointsOnly: true }),
+    weekend: adherenceReport(rs.filter(r => isWeekend(r.date)), { timepointsOnly: true }),
+  },
+  allStops: {
+    all: adherenceReport(rs),
+    weekday: adherenceReport(rs.filter(r => !isWeekend(r.date))),
+    weekend: adherenceReport(rs.filter(r => isWeekend(r.date))),
+  },
 });
+// Every section can be filtered by time of day: the same analysis on the departures that fall in each period.
+const bandRuns = (band: TimeBand | 'all') => (band === 'all' ? windowRuns
+  : windowRuns.map(r => ({ ...r, stops: r.stops.filter(x => bandForHour(x.hour) === band) })).filter(r => r.stops.length > 0));
+const bandsV3 = Object.fromEntries(BANDS.map(band => {
+  const rs = bandRuns(band);
+  return [band, { ...stopsAndBuildup(rs), adherence: adherenceFor(rs) }];
+}));
+const stopStatsV3 = bandsV3.all.stops;
+const buildupV3 = bandsV3.all.buildup;
 
 // Bunching (B4): gaps between consecutive vehicles at each stop, per direction and band, then what lines up with it.
 const windowHolds = holds.filter(h => inWindow.has(serviceDateOf(h.start)) && !feedDown(h.start) && !feedDown(h.end) && !feedDown((h.start + h.end) / 2));
 const windowShortTurns = shortTurnEvents.filter(e => inWindow.has(e.date));
 const windowSegments = aggregateSegments(observations.filter(o => inWindow.has(o.date)), scheduled, scheduleKeyForDate, hourOf);
 const perDay = (n: number) => (windowDates.length ? n / windowDates.length : 0);
-const BANDS: (TimeBand | 'all')[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
 const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
   directionId: dir,
   bands: Object.fromEntries(BANDS.map(band => {
@@ -787,18 +812,9 @@ const v3 = {
   totals: { runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded },
   directionLabels,
   // The headline adherence counts timepoints only (where the timetable really schedules a time); allStops counts every stop.
-  adherence: {
-    timepoints: {
-      all: adherenceReport(windowRuns, { timepointsOnly: true }),
-      weekday: adherenceReport(windowRuns.filter(r => !isWeekend(r.date)), { timepointsOnly: true }),
-      weekend: adherenceReport(windowRuns.filter(r => isWeekend(r.date)), { timepointsOnly: true }),
-    },
-    allStops: {
-      all: adherenceReport(windowRuns),
-      weekday: adherenceReport(windowRuns.filter(r => !isWeekend(r.date))),
-      weekend: adherenceReport(windowRuns.filter(r => isWeekend(r.date))),
-    },
-  },
+  adherence: bandsV3.all.adherence,
+  // Everything above filtered to one time of day (keys: all, amPeak, midday, pmPeak, evening); `adherence`, `stops` and `buildup` are the 'all' entry.
+  bands: bandsV3,
   stops: stopStatsV3,
   buildup: buildupV3,
   bunching: bunchingV3,

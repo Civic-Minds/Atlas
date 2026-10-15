@@ -1,41 +1,60 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { FEATURES } from '../shared/config';
 import {
-  LINK_LABELS, bunchingSentence, dateRangeText, freshness, buildupSentence, linkValueText, rankStops,
-  type AdherenceBlock, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3,
+  LINK_LABELS, bunchingSentence, dateRangeText, freshness, buildupSentence, linkValueText, rankStops, toCsv,
+  type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
+import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
 import Pill from './components/ui/Pill';
 import LiveOffNotice from './components/LiveOffNotice';
-import ProfileBars from './components/charts/ProfileBars';
-import BarChart from './components/charts/BarChart';
+import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts/ProfileBars';
 import HourBars from './components/charts/HourBars';
 import { PAGE_ACTION, TILE } from './pageStyles';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
-const BANDS: [string, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
+const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
+const MINUS = '−';
+
 /** Stop names come upper-case or mixed from the feed; show them the way the map does. */
 function withNiceNames(v3: LiveV3): LiveV3 {
   const t = titleCase;
   const stretch = <S extends { fromName: string; toName: string }>(x: S | null): S | null => (x ? { ...x, fromName: t(x.fromName), toName: t(x.toName) } : x);
+  const bandData = (b: DashboardBandData): DashboardBandData => ({
+    ...b,
+    stops: b.stops.map(x => ({ ...x, name: t(x.name) })),
+    buildup: b.buildup.map(d => ({ ...d, forms: stretch(d.forms), start: stretch(d.start), biggest: stretch(d.biggest), stretches: d.stretches.map(x => stretch(x)!) })),
+  });
   return {
     ...v3,
     stops: v3.stops.map(x => ({ ...x, name: t(x.name) })),
-    buildup: v3.buildup.map(b => ({ ...b, start: stretch(b.start), biggest: stretch(b.biggest), stretches: b.stretches.map(x => stretch(x)!) })),
+    buildup: bandData({ stops: [], adherence: v3.adherence, buildup: v3.buildup }).buildup,
+    bands: Object.fromEntries(Object.entries(v3.bands).map(([k, b]) => [k, bandData(b)])) as LiveV3['bands'],
     bunching: v3.bunching.map(d => ({ ...d, bands: Object.fromEntries(Object.entries(d.bands).map(([k, band]) => [k, { ...band, forms: stretch(band.forms), biggestRise: stretch(band.biggestRise), stops: band.stops.map(x => ({ ...x, name: t(x.name) })) }])) })),
   };
 }
 const pct = (x: number) => `${Math.round(x * 100)}%`;
-const mins = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`;
+const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', MINUS);
+const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
+/** Axis value with its unit, with a real minus sign. */
+const axisMin = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 
 type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
+
+function downloadCsv(filename: string, text: string) {
+  const url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
@@ -56,43 +75,48 @@ function Tile({ label, value, sub }: { label: string; value: string; sub: string
   );
 }
 
-function Filters({ v3, day, setDay, dir, setDir }: { v3: LiveV3; day: Day; setDay: (d: Day) => void; dir: number | null; setDir: (d: number | null) => void }) {
+function Filters({ v3, band, setBand, dir, setDir }: { v3: LiveV3; band: DashboardBand; setBand: (b: DashboardBand) => void; dir: number | null; setDir: (d: number | null) => void }) {
   const dirs = Object.keys(v3.directionLabels).map(Number).sort();
   return (
     <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3" role="group" aria-label="Filters">
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Days">
-        {DAYS.map(([k, label]) => <Pill key={k} size="segment" selected={day === k} onClick={() => setDay(k)}>{label}</Pill>)}
-      </div>
       <div className="flex flex-wrap gap-1.5" role="group" aria-label="Direction">
         <Pill size="segment" selected={dir == null} onClick={() => setDir(null)}>Both directions</Pill>
         {dirs.map(d => <Pill key={d} size="segment" selected={dir === d} onClick={() => setDir(d)}>{v3.directionLabels[String(d)]}</Pill>)}
+      </div>
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Time of day">
+        {BANDS.map(([k, label]) => <Pill key={k} size="segment" selected={band === k} onClick={() => setBand(k)}>{label}</Pill>)}
       </div>
     </div>
   );
 }
 
 /** B1: how well the route keeps to its timetable, at timepoints (where the timetable really schedules a time). */
-function Adherence({ v3, day, dir }: { v3: LiveV3; day: Day; dir: number | null }) {
-  const block: AdherenceBlock = v3.adherence.timepoints[day];
+function Adherence({ data, band, dir, lateMin }: { data: DashboardBandData; band: DashboardBand; dir: number | null; lateMin: number }) {
+  const v3Late = lateMin;
+  const [day, setDay] = useState<Day>(() => { const d = new URLSearchParams(window.location.search).get('day'); return d === 'weekday' || d === 'weekend' ? d : 'all'; });
+  useEffect(() => { syncUrlParams({ day: day === 'all' ? null : day }); }, [day]);
+  const block = data.adherence.timepoints[day];
   const counts = dir == null ? block.overall : block.byDirection[String(dir)];
-  const all = v3.adherence.allStops[day];
+  const all = data.adherence.allStops[day];
+  // Hours are only drawn for the chosen time of day: the others have no departures in this view.
   return (
     <Section id="b1" title="How well it keeps to its timetable">
+      <div className="mt-3 flex flex-wrap gap-1.5" role="group" aria-label="Days">
+        {DAYS.map(([k, label]) => <Pill key={k} size="segment" selected={day === k} onClick={() => setDay(k)}>{label}</Pill>)}
+      </div>
       {counts && counts.n > 0 ? (
         <>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <Tile label="Not late" value={pct(counts.notLateShare)} sub={`${counts.n.toLocaleString()} departures at stops with a scheduled time`} />
-            <Tile label={`Late (${v3.thresholds.lateAtOrAboveMin}+ min)`} value={pct(counts.lateShare)} sub={`${counts.late.toLocaleString()} of ${counts.n.toLocaleString()}`} />
-            <Tile label="Left ahead of the timetable" value={pct(counts.earlyShare)} sub={`${Math.abs(v3.thresholds.earlyAtOrBelowMin)}+ min early; cars often wait to leave on time`} />
+          <div className="mt-4 max-w-sm">
+            <Tile label="Late" value={pct(counts.lateShare)} sub={`${counts.late.toLocaleString()} of ${counts.n.toLocaleString()} departures were ${v3Late}+ minutes late`} />
           </div>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-            Counted at the stops where the timetable gives a time. Counting every stop, {pct(all.overall.lateShare)} of {all.overall.n.toLocaleString()} departures are late, but the times between those stops are only estimated.
+            {pct(counts.earlyShare)} left 1.5+ minutes ahead of the timetable. Counted at the stops where the timetable gives a time. Counting every stop, {pct(all.overall.lateShare)} of {all.overall.n.toLocaleString()} departures are late, but the times between those stops are only estimated.
           </p>
           <h3 className="mt-6 text-base font-black">By hour of the day</h3>
           <HourBars
-            ariaLabel="Share of departures ahead of the timetable, on time and late, by hour of the day"
-            parts={[{ name: 'Ahead', color: 'var(--status-caution)' }, { name: 'On time', color: 'var(--status-positive)' }, { name: 'Late', color: 'var(--status-negative)' }]}
-            columns={block.byHour.map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
+            ariaLabel={`Share of departures ahead of the timetable, on time and late, by hour of the day. ${pct(counts.lateShare)} late overall.`}
+            parts={[{ name: 'Ahead', color: 'var(--status-caution-text)' }, { name: 'On time', color: 'var(--status-positive-text)' }, { name: 'Late', color: 'var(--status-negative-text)' }]}
+            columns={block.byHour.filter(h => band === 'all' || h.n > 0).map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
           />
         </>
       ) : <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time for this choice.</p>}
@@ -100,44 +124,49 @@ function Adherence({ v3, day, dir }: { v3: LiveV3; day: Day; dir: number | null 
   );
 }
 
-/** B3: where delays start. One chart per direction. */
-function Buildup({ v3, dir, uncertainStart }: { v3: LiveV3; dir: number | null; uncertainStart: number[] }) {
-  const rows = v3.buildup.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
+/** B3: where delays build up. One chart per direction, on a shared scale. */
+function Buildup({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: number | null }) {
+  const rows = data.buildup.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
+  const pointsOf = (b: (typeof rows)[number]): ProfilePoint[] => b.stretches.filter(s => s.n >= 10).map(s => ({ label: s.toName, y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n }));
+  const scale = sharedScale(rows.map(pointsOf));
+  const csvRows = rows.flatMap(b => b.stretches.map(s => [v3.directionLabels[String(b.directionId)], s.fromName, s.toName, s.medianAddedMin, s.growShare, s.medianDelayMin, s.n]));
   return (
-    <Section id="b3" title="Where delays start">
+    <Section id="b3" title="Where delays build up">
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-        Delay at each stop is how late the car left it compared with the timetable. A stretch where the delay grows by more than a minute in at least half of the runs is where delays start.
+        Delay at each stop is how late the vehicle left it compared with the timetable. Delay builds up where the biggest jump in delay holds for the next few stops (3 stops or about 1 km).
       </p>
       <div className={`mt-4 grid gap-6 ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {rows.map(b => {
           const label = v3.directionLabels[String(b.directionId)];
-          const stretches = b.stretches;
-          const startIdx = b.start ? stretches.findIndex(s => s.fromStopId === b.start!.fromStopId && s.toStopId === b.start!.toStopId) : -1;
-          const worst = [...stretches].sort((a, c) => c.medianAddedMin - a.medianAddedMin).slice(0, 5);
+          const points = pointsOf(b);
+          const marked = b.forms ? points.findIndex(p => p.label === b.forms!.toName) : -1;
+          const worst = [...b.stretches].filter(s => s.n >= 30).sort((a, c) => c.medianAddedMin - a.medianAddedMin).slice(0, 5);
           return (
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
-              <p className="mt-1 text-sm leading-6">{buildupSentence(label, b, uncertainStart.includes(b.directionId))}</p>
+              <p className="mt-1 text-sm leading-6">{buildupSentence(label, b)}</p>
               <ProfileBars
-                ariaLabel={`${label}: median delay along the route, with the range that 8 in 10 cars fall in`}
-                points={stretches.map(s => ({ label: s.toName, y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n }))}
-                formatY={y => `${Math.round(y * 10) / 10}`}
-                unit="runs"
+                ariaLabel={`${label}: typical delay at each stop along the route. ${buildupSentence(label, b)}`}
+                points={points}
+                formatY={axisMin}
+                unit="trips"
+                valueHeader="Typical delay"
+                caption="Each bar is the typical delay at a stop; the thin line shows where most trips fall (all but the earliest and latest 1 in 10)."
                 zero
-                marks={startIdx >= 0 ? [{ index: startIdx, label: 'Delays start' }] : []}
-                startLabel="Start of route"
-                endLabel="End of route"
+                scale={scale}
+                marks={marked >= 0 ? [{ index: marked, label: 'Delay builds up' }] : []}
+                startLabel={b.stretches[0]?.fromName}
+                endLabel={b.stretches[b.stretches.length - 1]?.toName}
               />
-              <p className="text-xs text-[var(--text-dim)]">Minutes late: the bar is the typical delay, the thin line is where 8 in 10 cars fall.</p>
               <div className="mt-3 overflow-x-auto">
                 <DataTable
-                  caption={`${label}: the five stretches that add the most delay`}
+                  caption={`${label}: the stretches that add the most delay`}
                   rows={worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={[
                     { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => `${s.fromName} to ${s.toName}` },
-                    { key: 'added', header: 'Added', cell: s => mins(s.medianAddedMin) },
-                    { key: 'share', header: 'Runs', cell: s => `${pct(s.addedShare)} of ${s.n}` },
+                    { key: 'added', header: 'Typical added', className: 'whitespace-nowrap', cell: s => mins(s.medianAddedMin) },
+                    { key: 'grows', header: 'Trips where it grows', className: 'whitespace-nowrap', cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ]}
                 />
               </div>
@@ -145,95 +174,108 @@ function Buildup({ v3, dir, uncertainStart }: { v3: LiveV3; dir: number | null; 
           );
         })}
       </div>
+      {csvRows.length > 0 && (
+        <p className="mt-3"><Pill tone="outline" onClick={() => downloadCsv('delay-by-stretch.csv', toCsv(['Direction', 'From', 'To', 'Typical added delay (min)', 'Share of trips where delay grows 30+ s', 'Typical delay at the end of the stretch (min)', 'Trips'], csvRows))}>Download the stretches as CSV</Pill></p>
+      )}
     </Section>
   );
 }
 
-/** B2: stops with the most delay, ranked by how often cars leave 5.5+ min late. */
-function WorstStops({ v3, dir }: { v3: LiveV3; dir: number | null }) {
-  const ranked = useMemo(() => rankStops(v3.stops, dir), [v3, dir]);
+/** B2: stops with the most delay, ranked by how often vehicles leave 5.5+ min late. One table with a small bar in each row. */
+function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[] }) {
+  const ranked = useMemo(() => rankStops(data.stops, dir, uncertain), [data, dir, uncertain]);
   const top = ranked.slice(0, 10);
-  const name = (s: { name: string; directionId: number }) => (dir == null ? `${s.name} (${v3.directionLabels[String(s.directionId)]})` : s.name);
+  const both = dir == null;
+  const hidden = uncertain.filter(u => dir == null || u.directionId === dir);
   return (
     <Section id="b2" title="Stops with the most delay">
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-        Stops ranked by the share of cars leaving {v3.thresholds.lateAtOrAboveMin}+ minutes late. Only stops with at least 30 departures are ranked; the typical delay and the delay that 1 in 10 cars exceed sit beside it.
+        Stops ranked by the share of departures {v3.thresholds.lateAtOrAboveMin}+ minutes late. Only stops with at least 30 departures are ranked; the typical delay and the delay that 1 in 10 departures exceed sit beside it.
       </p>
       {top.length ? (
-        <>
-          <div className="mt-4">
-            <BarChart
-              ariaLabel="The ten stops where the most cars leave late"
-              bars={top.map(s => ({ label: name(s), value: s.lateShare, valueText: `${pct(s.lateShare)} late of ${s.n.toLocaleString()}` }))}
-            />
-          </div>
-          <div className="mt-5 overflow-x-auto">
-            <DataTable
-              caption="Stops ranked by late share"
-              rows={top}
-              rowKey={s => `${s.stopId}-${s.directionId}`}
-              columns={[
-                { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => name(s) },
-                { key: 'late', header: 'Late', cell: s => pct(s.lateShare) },
-                { key: 'median', header: 'Typical', cell: s => mins(s.medianMin) },
-                { key: 'p90', header: '1 in 10 later than', cell: s => mins(s.p90Min) },
-                { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
-              ]}
-            />
-          </div>
-        </>
+        <div className="mt-4 overflow-x-auto">
+          <DataTable
+            caption="Stops ranked by the share of late departures"
+            rows={top}
+            rowKey={s => `${s.stopId}-${s.directionId}`}
+            columns={[
+              { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
+              ...(both ? [{ key: 'dir', header: 'Direction', className: 'whitespace-nowrap', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
+              { key: 'late', header: 'Late', className: 'whitespace-nowrap', cell: s => (
+                <span className="inline-flex items-center gap-2">
+                  <span className="block h-2 w-20 rounded-sm bg-[var(--control-inactive-bg)]" aria-hidden="true"><span className="block h-full rounded-sm bg-[var(--accent)] opacity-90" style={{ width: `${Math.max(2, s.lateShare * 100)}%` }} /></span>
+                  {pct(s.lateShare)}
+                </span>
+              ) },
+              { key: 'median', header: 'Typical delay', className: 'whitespace-nowrap', cell: s => mins(s.medianMin) },
+              { key: 'p90', header: '1 in 10 later than', className: 'whitespace-nowrap', cell: s => mins(s.p90Min) },
+              { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
+            ]}
+          />
+        </div>
       ) : <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank.</p>}
+      {hidden.length > 0 && (
+        <p className="mt-2 max-w-2xl text-xs text-[var(--text-dim)]">
+          Not ranked: the first {hidden[0].stops} stops {hidden.length === 1 ? v3.directionLabels[String(hidden[0].directionId)].toLowerCase() : 'in some directions'}, where delay is less exact (see the note above).
+        </p>
+      )}
+      {top.length > 0 && (
+        <p className="mt-3"><Pill tone="outline" onClick={() => downloadCsv('stops-by-late-share.csv', toCsv(['Stop', 'Direction', 'Share of departures late', 'Typical delay (min)', 'Delay 1 in 10 exceed (min)', 'Departures'], ranked.map(s => [s.name, v3.directionLabels[String(s.directionId)], s.lateShare, s.medianMin, s.p90Min, s.n])))}>Download the stops as CSV</Pill></p>
+      )}
     </Section>
   );
 }
 
-/** B4: where and why bunching forms. "Linked to", never "caused by". */
-function Bunching({ v3, dir }: { v3: LiveV3; dir: number | null }) {
-  const [band, setBand] = useState('all');
+/** B4: where and why bunching forms. "Linked to", never "caused by". Too-close and too-far gaps are shown separately. */
+function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: DashboardBand }) {
   const rows = v3.bunching.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
+  const pointsOf = (data: DashboardBunchingBand): ProfilePoint[] => data.stops.filter(s => s.n >= 10).map(s => ({ label: s.name, y: s.bunchedShare, y2: s.gappedShare, n: s.n }));
+  const scale = sharedScale(rows.flatMap(b => (b.bands[band] ? [pointsOf(b.bands[band])] : [])));
   return (
     <Section id="b4" title="Where bunching forms">
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-        Bunching is cars arriving too close together (gaps under {Math.round(v3.thresholds.bunchedGapSec / 60)} minutes) or too far apart (more than twice the timetable's gap). The chart shows that share at each stop along the route; it forms where the share steps up and stays up.
+        Bunching is vehicles arriving too close together (gaps under {Math.round(v3.thresholds.bunchedGapSec / 60)} minutes) or too far apart (more than twice the timetable's gap). The chart shows both at each stop along the route; it forms where the share steps up and stays up.
       </p>
-      <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="Time of day">
-        {BANDS.map(([k, label]) => <Pill key={k} size="segment" selected={band === k} onClick={() => setBand(k)}>{label}</Pill>)}
-      </div>
       <div className={`mt-4 grid gap-6 ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {rows.map(b => {
           const label = v3.directionLabels[String(b.directionId)];
           const data: DashboardBunchingBand | undefined = b.bands[band];
           if (!data) return null;
-          const measured = data.stops.filter(s => s.n >= 10); // stops with fewer than 30 gaps are drawn faded
+          const points = pointsOf(data);
           const stretch = data.forms ?? data.biggestRise;
-          const markIdx = stretch ? measured.findIndex(s => s.stopId === stretch.toStopId) : -1;
+          const markIdx = stretch ? points.findIndex(p => p.label === data.stops.find(s => s.stopId === stretch.toStopId)?.name) : -1;
+          const linked = stretch?.links.filter(l => l.linked) ?? [];
           return (
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
               <p className="mt-1 text-sm leading-6">{bunchingSentence(label, data)}</p>
-              {measured.length > 1 && (
+              {points.length > 1 && (
                 <ProfileBars
-                  ariaLabel={`${label}: share of gaps that are too short or too long, stop by stop`}
-                  points={measured.map(s => ({ label: s.name, y: s.badShare, n: s.n }))}
+                  ariaLabel={`${label}: share of gaps that are too close together or too far apart, stop by stop. ${bunchingSentence(label, data)}`}
+                  points={points}
                   formatY={y => pct(y)}
                   unit="gaps"
+                  valueHeader="Gaps off the timetable"
+                  caption="Share of gaps that are too close together or too far apart, stop by stop."
+                  scale={scale}
+                  series={[{ name: 'Too close together', color: 'var(--status-negative-text)' }, { name: 'Too far apart', color: 'var(--status-caution-text)' }]}
                   marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? 'Forms here' : 'Biggest rise' }] : []}
-                  startLabel="Start of route"
-                  endLabel="End of route"
+                  startLabel={points[0]?.label}
+                  endLabel={points[points.length - 1]?.label}
                 />
               )}
-              <p className="text-xs text-[var(--text-dim)]">Share of gaps that are too short or too long, stop by stop.</p>
               {stretch && (
                 <>
-                  <h4 className="mt-3 text-sm font-black">{data.kind === 'forms' ? 'Linked to, between' : 'Its biggest rise is between'} {stretch.fromName} and {stretch.toName}{data.kind === 'forms' ? '' : '. Linked to'}</h4>
+                  <p className="mt-3 text-sm">{data.kind === 'forms' ? 'It forms' : 'Its biggest rise is'} between {stretch.fromName} and {stretch.toName}.</p>
+                  <h4 className="mt-1 text-sm font-black">{linked.length ? 'Linked to' : 'Nothing measured here is linked to it'}</h4>
                   <ul className="mt-1 space-y-1 text-sm">
                     {stretch.links.map(l => (
                       <li key={l.kind} className={l.linked ? '' : 'text-[var(--text-dim)]'}>
-                        {l.linked ? 'Linked: ' : 'Not linked: '}{LINK_LABELS[l.kind]} ({linkValueText(l.kind, l.value)})
+                        {l.value == null ? 'Not measured' : l.linked ? 'Linked' : 'Not linked'}: {LINK_LABELS[l.kind]} ({linkValueText(l.kind, l.value)})
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-1 text-xs text-[var(--text-dim)]">Linked means it was measured near this stretch, not that it is the cause.</p>
+                  <p className="mt-1 text-xs text-[var(--text-dim)]">Linked means it was measured in this stretch, not that it is the cause.</p>
                 </>
               )}
             </div>
@@ -262,11 +304,15 @@ function Method({ data }: { data: Ready }) {
   );
 }
 
+const BOUNDARY = (what: string) => `${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`;
+
 export default function LiveRoutePage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(agency, route);
-  const [day, setDay] = useState<Day>('all');
-  const [dir, setDir] = useState<number | null>(null);
+  const [band, setBand] = useState<DashboardBand>(() => { const b = new URLSearchParams(window.location.search).get('band'); return BANDS.some(x => x[0] === b) ? (b as DashboardBand) : 'all'; });
+  const [dir, setDir] = useState<number | null>(() => { const d = new URLSearchParams(window.location.search).get('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
+  // The filters live in the address, so a link reopens the same view.
+  useEffect(() => { syncUrlParams({ band: band === 'all' ? null : band, dir: dir == null ? null : String(dir) }); }, [band, dir]);
   if (!FEATURES.live) return <LiveOffNotice />;
   const title = `${agency.toUpperCase()} ${route}`;
   const back = <a href="/apps/live" className={`${PAGE_ACTION} mt-6`}>Open Live <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>;
@@ -284,6 +330,8 @@ export default function LiveRoutePage() {
   }
   // A malformed file must not blank the page: fall back to the raw names and let each section's boundary report its own problem.
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
+  const bandData = v3.bands?.[band] as DashboardBandData;
+  const uncertain = data.uncertainStart ?? [];
   return (
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
@@ -291,7 +339,7 @@ export default function LiveRoutePage() {
           <div className="min-w-0">
             <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{title}: how it is running</h1>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {v3.window.dates.length ? `${dateRangeText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} runs · estimated from where vehicles were, not reported by {agency.toUpperCase()}
+              {v3.window.dates.length ? `${dateRangeText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} trips · estimated from where vehicles were, not reported by {agency.toUpperCase()}
             </p>
           </div>
           <a href="/apps/live" className={PAGE_ACTION}>View on Live map <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>
@@ -301,11 +349,11 @@ export default function LiveRoutePage() {
           return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{f.text}</p> : null;
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
-        <Filters v3={v3} day={day} setDay={setDay} dir={dir} setDir={setDir} />
-        <ErrorBoundary label="How well it keeps to its timetable could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze."><Adherence v3={v3} day={day} dir={dir} /></ErrorBoundary>
-        <ErrorBoundary label="Where delays start could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze."><Buildup v3={v3} dir={dir} uncertainStart={data.uncertainStart ?? []} /></ErrorBoundary>
-        <ErrorBoundary label="Stops with the most delay could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze."><WorstStops v3={v3} dir={dir} /></ErrorBoundary>
-        <ErrorBoundary label="Where bunching forms could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze."><Bunching v3={v3} dir={dir} /></ErrorBoundary>
+        <Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} />
+        <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} band={band} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} /></ErrorBoundary>
         <ErrorBoundary label="How this is measured could not be drawn."><Method data={data} /></ErrorBoundary>
       </article>
     </PageShell>

@@ -34,6 +34,15 @@ export const MIN_SAMPLES = 30;
 export const ADDED_DELAY_MIN = 1;
 /** ...and it is where delays start when that happens in at least this share of runs. */
 export const ADDED_DELAY_SHARE = 0.5;
+/** A stretch "grows" delay in a run when it adds at least this many minutes (30 seconds). */
+export const GROW_MIN = 0.5;
+/** A stretch stands out when its median added delay is at least this many minutes... */
+export const STEP_MIN = 0.5;
+/** ...and the delay stays up for the next 3 stops or about 1 km, whichever is longer. */
+export const HOLDS_STOPS = 3;
+export const HOLDS_M = 1000;
+/** With no stretch standing out, delay that still builds by this many minutes along the route is called gradual. */
+export const GRADUAL_MIN = 1;
 
 export interface Adherence {
   n: number;
@@ -129,6 +138,8 @@ export interface Stretch {
   medianAddedMin: number;
   /** Share of those runs that added more than ADDED_DELAY_MIN. */
   addedShare: number;
+  /** Share of those runs where delay grew by GROW_MIN or more here: how consistent the build-up is. */
+  growShare: number;
   /** Median delay at the second stop and its 10th-90th percentile range, minutes. */
   medianDelayMin: number;
   p10DelayMin: number;
@@ -144,13 +155,22 @@ export interface DelayBuildup {
   start: Stretch | null;
   /** The stretch with the largest median added delay (among those with enough runs). */
   biggest: Stretch | null;
+  /**
+   * 'forms': the stretch with the largest median added delay (at least STEP_MIN) whose delay stays up for the next
+   * HOLDS_STOPS stops / HOLDS_M metres. 'gradual': none stands out, but delay still builds by GRADUAL_MIN along the route.
+   * 'none': flat. Null when there is nothing to judge.
+   */
+  kind: 'forms' | 'gradual' | 'none' | null;
+  forms: Stretch | null;
+  /** Median delay at the end of the route minus at its start, minutes. */
+  climbMin: number | null;
 }
 
 /**
  * B3: where delays start. `order` is each direction's stop order (its busiest pattern). A stretch is a pair of consecutive
  * stops; only runs seen at both count. Delay starts at the first stretch that adds more than a minute in half the runs.
  */
-export function delayBuildup(runs: readonly RunDelays[], order: ReadonlyMap<number, readonly string[]>): DelayBuildup[] {
+export function delayBuildup(runs: readonly RunDelays[], order: ReadonlyMap<number, readonly string[]>, alongM?: ReadonlyMap<string, number>): DelayBuildup[] {
   const out: DelayBuildup[] = [];
   for (const [directionId, stopIds] of order) {
     const perRun = runs.filter(r => r.directionId === directionId).map(r => new Map(r.stops.map(s => [s.stopId, s.delaySec / 60])));
@@ -170,11 +190,29 @@ export function delayBuildup(runs: readonly RunDelays[], order: ReadonlyMap<numb
       stretches.push({
         fromStopId: a, toStopId: b, n: added.length,
         medianAddedMin: median(added)!, addedShare: added.filter(x => x > ADDED_DELAY_MIN).length / added.length,
+        growShare: added.filter(x => x >= GROW_MIN).length / added.length,
         medianDelayMin: median(atB)!, p10DelayMin: percentile(atB, 0.1)!, p90DelayMin: percentile(atB, 0.9)!,
       });
     }
     const enough = stretches.filter(s => s.n >= MIN_SAMPLES);
+    // The delay before each stretch is what the previous stretch left it at (or the route's starting delay).
+    let forms: Stretch | null = null;
+    for (const s of enough) {
+      if (s.medianAddedMin < STEP_MIN) continue;
+      const i = stretches.indexOf(s);
+      const before = s.medianDelayMin - s.medianAddedMin;
+      let end = Math.min(stretches.length, i + 1 + HOLDS_STOPS);
+      const a0 = alongM?.get(`${directionId}|${s.toStopId}`);
+      if (a0 != null) while (end < stretches.length && (alongM!.get(`${directionId}|${stretches[end - 1].toStopId}`) ?? a0) < a0 + HOLDS_M) end++;
+      const after = stretches.slice(i + 1, end);
+      if (after.every(f => f.n < MIN_SAMPLES || f.medianDelayMin >= before + 0.5 * s.medianAddedMin) && (!forms || s.medianAddedMin > forms.medianAddedMin)) forms = s;
+    }
+    const startDelay = first.length >= MIN_SAMPLES ? median(first)! : enough.length ? enough[0].medianDelayMin - enough[0].medianAddedMin : null;
+    const lastStretch = enough.length ? enough[enough.length - 1] : null;
+    const climbMin = startDelay != null && lastStretch ? lastStretch.medianDelayMin - startDelay : null;
     out.push({
+      kind: climbMin == null && !forms ? null : forms ? 'forms' : (climbMin ?? 0) >= GRADUAL_MIN ? 'gradual' : 'none',
+      forms, climbMin,
       directionId,
       startingDelayMin: first.length >= MIN_SAMPLES ? median(first) : null,
       stretches,

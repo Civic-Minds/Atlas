@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dateRangeText, freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, buildupSentence, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardStop, type LiveV3 } from '../liveDashboard';
+import { toCsv, dateRangeText, freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, buildupSentence, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardBuildup, type DashboardStop, type LiveV3 } from '../liveDashboard';
 
 const stop = (id: string, dir: number, late: number, n = 100, ranked = true): DashboardStop => ({ stopId: id, name: id, directionId: dir, order: 0, n, medianMin: 0, p90Min: 5, lateShare: late, earlyShare: 0, ranked });
 
@@ -20,13 +20,19 @@ describe('rankStops (B2)', () => {
     expect(rankStops(stops, null).map(s => s.stopId)).toEqual(['b', 'c', 'a']);
     expect(rankStops(stops, 0).map(s => s.stopId)).toEqual(['b', 'a']);
   });
+  it('leaves out the first stops of a direction whose start is less exact', () => {
+    const stops = [{ ...stop('a', 1, 0.5), order: 0 }, { ...stop('b', 1, 0.4), order: 4 }, { ...stop('c', 0, 0.3), order: 0 }];
+    expect(rankStops(stops, null, [{ directionId: 1, stops: 4 }]).map(s => s.stopId)).toEqual(['b', 'c']);
+  });
 });
 
 describe('sentences', () => {
-  const stretch = { fromStopId: 'a', toStopId: 'b', fromName: 'Dufferin', toName: 'Bathurst', n: 200, medianAddedMin: 2.4, addedShare: 0.71, medianDelayMin: 3, p10DelayMin: 0, p90DelayMin: 6 };
-  it('says where delays start, or that no stretch does', () => {
-    expect(buildupSentence('East', { directionId: 0, startingDelayMin: 0, start: stretch, biggest: stretch, stretches: [] })).toBe('East: delays start between Dufferin and Bathurst: +2.4 min added in 71% of 200 runs.');
-    expect(buildupSentence('East', { directionId: 0, startingDelayMin: 0.6, start: null, biggest: null, stretches: [] })).toMatch(/no single stretch adds more than a minute.*\+0\.6 min/);
+  const stretch = { fromStopId: 'a', toStopId: 'b', fromName: 'Dufferin', toName: 'Bathurst', n: 200, medianAddedMin: 2.4, addedShare: 0.71, growShare: 0.75, medianDelayMin: 3, p10DelayMin: 0, p90DelayMin: 6 };
+  const build = (over: object) => ({ directionId: 0, startingDelayMin: 0, kind: null, forms: null, climbMin: null, start: null, biggest: null, stretches: [], ...over }) as unknown as DashboardBuildup;
+  it('names the stretch where delay builds up and how consistent it is, calls a slow climb gradual, and says when it does not build', () => {
+    expect(buildupSentence('East', build({ kind: 'forms', forms: stretch }))).toBe('East: delay builds up between Dufferin and Bathurst: +2.4 min added there, and it stays up for the next few stops. Delay grows by 30+ seconds on 75% of 200 trips.');
+    expect(buildupSentence('East', build({ kind: 'gradual', climbMin: 2.1 }))).toBe('East: delay builds gradually along the route (+2.1 min from start to end). No single stretch stands out.');
+    expect(buildupSentence('East', build({ kind: 'none' }))).toBe('East: delay does not build up along the route.');
   });
   it('names a stretch when bunching forms, calls a slow climb gradual, and never says "caused by"', () => {
     const stops = [0.05, 0.2, 0.4].map((b, i) => ({ stopId: `s${i}`, name: `S${i}`, order: i, n: 50, badShare: b, bunchedShare: b, gappedShare: 0, medianGapSec: 300 }));
@@ -63,5 +69,11 @@ describe('dateRangeText', () => {
     expect(dateRangeText('2026-10-08', '2026-10-14')).toBe('Oct 8–14');
     expect(dateRangeText('2026-09-30', '2026-10-14')).toBe('Sep 30–Oct 14');
     expect(dateRangeText('2026-10-08', '2026-10-08')).toBe('Oct 8');
+  });
+});
+
+describe('toCsv', () => {
+  it('quotes cells with commas, quotes or line breaks', () => {
+    expect(toCsv(['Stop', 'Late'], [['King, at "Bay"', 0.12], ['Plain', null]])).toBe('Stop,Late\n"King, at ""Bay""",0.12\nPlain,\n');
   });
 });
