@@ -16,6 +16,7 @@ import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shorten
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { inferLiveDirection } from '../utils/liveDirection';
+import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../utils/liveGrouping';
 import { CHIP } from '../pageStyles';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
@@ -68,21 +69,6 @@ function delayLabel(v: LiveVehicle): string {
   if (v.delayMin <= -1.5) return `${delayAmount(Math.round(Math.abs(v.delayMin)))} early`;
   if (v.delayMin >= 5.5) return `${delayAmount(Math.round(v.delayMin))} late`;
   return 'On time';
-}
-
-/** Rough length of a route shape (first to last point of its longest part), to tell a full route from a short turn. */
-function featureSpan(f: GeoJSON.Feature): number {
-  const g = f.geometry;
-  if (!g || (g.type !== 'LineString' && g.type !== 'MultiLineString')) return 0;
-  const parts = g.type === 'LineString' ? [g.coordinates] : g.coordinates;
-  let best = 0;
-  for (const part of parts) {
-    if (part.length < 2) continue;
-    const [x1, y1] = part[0];
-    const [x2, y2] = part[part.length - 1];
-    best = Math.max(best, Math.hypot(x2 - x1, y2 - y1));
-  }
-  return best;
 }
 
 function pluralModeWord(modeWord: string): string {
@@ -535,18 +521,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const directionLabels = useMemo(() => {
     if (!selectedGroup) return new Map<number, string>();
     const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
-    if (!fc) return new Map<number, string>();
-    const map = new Map<number, string>();
-    const span = new Map<number, number>();
-    for (const f of fc.features) {
-      const p = f.properties as any;
-      if (!p || p.routeShortName !== selectedGroup.routeShortName) continue;
-      if (p.directionId == null || !p.headsign) continue;
-      const dir = Number(p.directionId);
-      const len = featureSpan(f);
-      if (len > (span.get(dir) ?? -1)) { span.set(dir, len); map.set(dir, String(p.headsign)); }
-    }
-    return map;
+    return fc ? routeDirectionLabels(fc.features, selectedGroup.routeShortName) : new Map<number, string>();
   }, [selectedGroup, layers, localLayers]);
 
   // Direction drill-down within a route
@@ -560,21 +535,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     },
   });
 
-  // Group vehicles by destination. A vehicle's own headsign wins; otherwise its direction is named by the
-  // route's main destination for that direction, so every vehicle with a known direction lands in a group.
-  const vehiclesByDirection = useMemo(() => {
-    if (!selectedGroup) return null;
-    const map = new Map<string, LiveVehicle[]>();
-    for (const v of selectedGroup.vehicles) {
-      // A car whose direction can't be told is left out of the groups (no "Unknown" group).
-      const key = v.headsign
-        ?? (v.directionId != null ? (directionLabels.get(v.directionId) ?? (v.directionId === 0 ? 'Outbound' : 'Inbound')) : null);
-      if (!key) continue;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(v);
-    }
-    return map;
-  }, [selectedGroup, directionLabels]);
+  // Group vehicles by destination; every vehicle lands in a group (see groupVehiclesByDirection).
+  const vehiclesByDirection = useMemo(
+    () => (selectedGroup ? groupVehiclesByDirection(selectedGroup.vehicles, directionLabels) : null),
+    [selectedGroup, directionLabels],
+  );
 
   // Worth showing groups when there is more than one, or the one group has a real destination name.
   const canGroupByDirection = useMemo(() => {
@@ -714,7 +679,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                         <div key={dirKey} className="relative pr-4">
                           <CardDirectionRow
                             label={dirKey}
-                            subLabel={directionSummary(vehicles, selectedRouteModeWord)}
+                            subLabel={dirKey === DIRECTION_UNCLEAR ? `${directionSummary(vehicles, selectedRouteModeWord)} · on track both directions share` : directionSummary(vehicles, selectedRouteModeWord)}
                             onClick={() => setSelectedDirection(dirKey)}
                           />
                           <ChevronRight className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--text-dim)]" />
