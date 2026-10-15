@@ -237,6 +237,19 @@ export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>
   return counts;
 }
 
+/**
+ * The map link under the frequency bar: the page's own map link (agency or area framing) with Weekday, Midday and
+ * no speed filter (every route), using the same `h`, `p` and `day` parameters the map reads.
+ */
+export function allRoutesMapHref(mapHref: string): string {
+  const [path, query = ''] = mapHref.split('?');
+  const params = new URLSearchParams(query);
+  params.set('h', 'all');
+  params.set('p', 'midday');
+  params.set('day', 'Weekday');
+  return `${path}?${params.toString()}`;
+}
+
 export interface AgencyPageStats {
   /** Distinct weekday routes in the release. */
   totalRoutes: number;

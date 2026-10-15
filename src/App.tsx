@@ -504,9 +504,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   // Sync day filter to URL (for refresh/share of active view). URL wins on load if present
   // (see initializer); effects ensure current value (from LS/default/URL) is reflected.
-  // 'Weekday' (common default) omitted for short URLs.
+  // Always written, never omitted as a "default": the default is today's day, so a link copied on a Wednesday
+  // would open on Saturday for a friend (#909).
   useEffect(() => {
-    syncUrlParams({ day: day !== 'Weekday' ? day : null });
+    syncUrlParams({ day });
   }, [day]);
 
   useEffect(() => {
