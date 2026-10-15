@@ -15,6 +15,7 @@ import { useColorVision } from '../context/ColorVisionContext';
 import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
+import { andOthers } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { CHIP } from '../pageStyles';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
@@ -705,7 +706,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                           <CardDirectionRow
                             label={label}
                             subLabel={preview.some(v => delayLabel(v))
-                              ? `${preview.map(delayLabel).filter(Boolean).join(' · ')}${extra > 0 ? ` · +${extra} more` : ''}`
+                              ? `${preview.map(delayLabel).filter(Boolean).join(' · ')}${extra > 0 ? ` · ${andOthers(extra, 'vehicle')}` : ''}`
                               : `${vehicles.length} ${vehicles.length === 1 ? 'vehicle' : 'vehicles'}`}
                             onClick={() => setSelectedDirection(dirKey)}
                           />

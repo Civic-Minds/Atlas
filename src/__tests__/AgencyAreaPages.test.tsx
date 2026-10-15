@@ -71,7 +71,7 @@ describe('AgencyPage intro', () => {
 
   it('says it once under the title, linking connecting agencies that have a page and counting the rest', () => {
     const d = agencyPageData(withConns, [withConns, HSR], null);
-    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway/metro, 3 bus) in Toronto with 7,566 stops and connects with Hamilton Street Railway, Tiny Transit, C and 1 other.');
+    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway/metro, 3 bus) in Toronto with 7,566 stops and connects with Hamilton Street Railway, Tiny Transit, C and 1 other agency.');
     view(<AgencyPage data={d} />);
     const p = screen.getByText(/operates 5 routes \(2 subway\/metro, 3 bus\) in Toronto with 7,566 stops/);
     expect(p.textContent).toBe(d.intro);

@@ -18,6 +18,7 @@ import {
   type AgencyPageRoute,
 } from '../shared/agencyPages';
 import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
+import { andOthers } from '../shared/overflowText';
 import { routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE } from '../shared/config';
 import PageShell from './components/ui/PageShell';
@@ -72,7 +73,7 @@ function Intro({ data }: { data: AgencyPageData }) {
               {c.page ? <a className={link} href={agencyPagePath(c.slug)}>{c.name}</a> : c.name}
             </span>
           ))}
-          {others > 0 ? ` and ${others} ${others === 1 ? 'other' : 'others'}` : ''}
+          {others > 0 ? ` ${andOthers(others, 'agency', 'agencies')}` : ''}
         </>
       )}
       .
