@@ -218,8 +218,8 @@ export default function AboutDocsPage() {
               <div><dt className="font-bold text-[var(--text-primary)]">Time-limited</dt><dd>Predictable service operates during part of the day and has enough repeated departures for a meaningful frequency estimate.</dd></div>
               <div><dt className="font-bold text-[var(--text-primary)]">Irregular</dt><dd>Exceptional, very short, one-sided, peak-only, or otherwise unsustained service that should not be presented as a normal route cadence.</dd></div>
             </dl>
-            <p>The default irregular-service filter hides irregular patterns while keeping predictable time-limited service visible. Periods outside a time-limited route’s operation remain empty rather than inheriting an all-day value.</p>
-            <p>Routes with only a few trips a day are labelled “limited” instead of given a frequency.{showBetaFeatures ? ' Outside the public build, a Hide limited-service routes option and a limited-routes list let you hide or review them.' : ''}</p>
+            <p>Two filters, both on by default, decide which of these routes the map shows. Hide one-off routes hides irregular service: school runs, routes with only a few trips a day, and on-demand shuttles. Hide part-time routes hides time-limited service: routes that only run at rush hour, in the evening, or on some days. A part-time route you choose to show is still judged by the frequency filter, on the selected period’s frequency. Periods outside its operation remain empty rather than inheriting an all-day value.</p>
+            <p>Routes with only a few trips a day are labelled “limited” instead of given a frequency, and route cards name each pattern, such as “Rush hour only”. Each filter links to a list of the routes it hides.</p>
           </Section>
 
           <Section id="map-architecture" title="Mapping">
