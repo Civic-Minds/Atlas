@@ -1,5 +1,6 @@
 /**
- * Local dev API server — proxied by Vite at /api/* → localhost:5001
+ * Local dev API server — proxied by Vite at /api/* → localhost:5001.
+ * The Live endpoints live in local-api/, outside api/, so they never deploy as Vercel functions.
  * Run alongside `npm run dev` via `npm run dev:api`
  */
 import { createServer } from 'http';
@@ -15,11 +16,11 @@ async function loadHandlers() {
   const { default: liveVehicles } = await import('./api/live-vehicles.js');
   const { default: historyAdherence } = await import('./api/history-adherence.js');
   const { default: cartoTiles } = await import('./api/carto-tiles.js');
-  const { default: liveAdherence } = await import('./api/live-adherence.js');
-  const { default: liveStop } = await import('./api/live-stop.js');
+  const { default: liveAdherence } = await import('./local-api/live-adherence.js');
+  const { default: liveStop } = await import('./local-api/live-stop.js');
   const { privacyRegionResponse } = await import('./shared/privacyRegion.js');
-  const { default: liveSegments } = await import('./api/live-segments.js');
-  const { default: liveRecent } = await import('./api/live-recent.js');
+  const { default: liveSegments } = await import('./local-api/live-segments.js');
+  const { default: liveRecent } = await import('./local-api/live-recent.js');
   handlers['/api/live-segments'] = liveSegments.fetch;
   handlers['/api/live-recent'] = liveRecent.fetch;
   handlers['/api/live-vehicles'] = liveVehicles.fetch;

@@ -27,6 +27,7 @@ export default defineConfig({
                         'shared/**/*.test.ts',
                         'scripts/**/*.test.ts',
                         'api/**/*.test.ts',
+                        'local-api/**/*.test.ts',
                         'workers/**/*.test.ts',
                     ],
                 },
