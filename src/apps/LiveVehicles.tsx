@@ -757,12 +757,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     name={p.agencyName}
                     variant="spaced"
                     onClick={() => handlePlaceClick(p.slug)}
-                    right={(
-                      <span className="flex items-center gap-2 shrink-0">
-                        <span className={`${CHIP} whitespace-nowrap`}>{p.withPerformance ? 'Vehicles + performance' : 'Vehicles'}</span>
-                        <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-                      </span>
+                    subtitle={(
+                      <span className={`${CHIP} inline-block mt-1.5 whitespace-nowrap`}>{p.withPerformance ? 'Vehicles + performance' : 'Vehicles'}</span>
                     )}
+                    right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
                   />
                 ))}
                 <BrowseLiveAgenciesLink onInfoOpen={onInfoOpen} />
