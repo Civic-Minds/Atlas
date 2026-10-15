@@ -48,8 +48,24 @@ describe('AgencyPage', () => {
     expect(screen.getByRole('button', { name: /1 route every 10 min or better/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: /route every 16–20 min/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: /with no regular midday service/ })).toBeTruthy();
-    fireEvent.focus(screen.getByRole('button', { name: /route every 16–20 min/ }));
-    expect(screen.getByRole('tooltip').textContent).toMatch(/route every 16–20 min/);
+    expect(screen.queryByRole('tooltip')).toBeNull(); // no tooltip: the legend item is highlighted instead
+    const segment = screen.getByRole('button', { name: /route every 16–20 min/ });
+    const other = screen.getByRole('button', { name: /1 route every 10 min or better/ });
+    fireEvent.focus(segment);
+    const legend16 = document.querySelector('li[data-active="true"]')!;
+    expect(legend16.textContent).toContain('16–20');
+    expect((other as HTMLElement).style.opacity).toBe('0.35');
+    expect((segment as HTMLElement).style.opacity).toBe('1');
+    fireEvent.blur(segment);
+    expect(document.querySelector('li[data-active="true"]')).toBeNull();
+    expect((other as HTMLElement).style.opacity).toBe('1');
+    // and the other way round: hovering a legend item highlights it and fades the other segments
+    const item = [...document.querySelectorAll('li')].find(li => li.textContent!.includes('16–20'))!;
+    fireEvent.mouseEnter(item);
+    expect(item.getAttribute('data-active')).toBe('true');
+    expect((other as HTMLElement).style.opacity).toBe('0.35');
+    fireEvent.mouseLeave(item);
+    expect((other as HTMLElement).style.opacity).toBe('1');
     expect(screen.queryByText(/pick a standard/i)).toBeNull();
   });
 

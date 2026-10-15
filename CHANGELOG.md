@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Frequency bar highlights instead of a tooltip**: hovering, focusing or tapping a bar segment highlights its legend item and fades the other segments; hovering a legend item does the same the other way round.
 - **Agency and area pages: route tables line up**: every table on the page now uses the same column layout, so AM peak, Midday, PM peak and the rest sit in the same place from the first table to the last.
 - **The map's address always carries the day**: reloads and shared links open on the day you chose, not on whatever day it is when the link is opened ([#909](https://github.com/Civic-Minds/Atlas/issues/909)).
 - **Agency and area pages: a "See these routes on the map" link under the frequency bar** opens the map framed on that agency or area, set to weekday midday.
