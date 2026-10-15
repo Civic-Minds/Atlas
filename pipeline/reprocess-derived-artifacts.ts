@@ -65,6 +65,7 @@ import {
   peekFeedDates,
   reprocessCountryLaunchSkip,
   selectArchiveForAgency,
+  selectByFeedDates,
   type ArtifactCounts,
 } from './archiveSelection.js';
 import {
@@ -156,10 +157,19 @@ function shouldProcess(agency: Agency): boolean {
 }
 
 async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: string } | null> {
-  const selection = selectArchiveForAgency(await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`), agency);
+  const objects = await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`);
+  const selection = selectArchiveForAgency(objects, agency);
   if (selection.ok) return { key: selection.key, reason: selection.reason };
   if (selection.noArchive) return null;
-  throw new Refusal(selection.reason);
+  // Key dates and upload order disagree: read each zip's own service dates instead (#859).
+  const prior = selection.reason.replace(/^cannot tell which archived zip is newest: /, '');
+  const peeked = await Promise.all(objects.filter(obj => obj.key.endsWith('.zip')).map(async obj => {
+    const buf = await r2GetArchiveBuffer(obj.key);
+    return { obj, dates: buf ? await peekFeedDates(buf) : { feedStart: null, feedExpiry: null, feedVersion: null } };
+  }));
+  const byDates = selectByFeedDates(peeked, todayYmd, prior);
+  if (byDates.ok) return { key: byDates.key, reason: byDates.reason };
+  throw new Refusal(byDates.reason);
 }
 
 function localArchivePath(fileStem: string): string | null {
