@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Opening any map view no longer downloads History's multi-megabyte data file up front (it was fetched up to four times on every load, even in Live); it loads the first time History is opened. The History tab now appears as soon as an eligible agency is in view, and the map shows one "Loading map…" message instead of two different ones (CIV-218, part).
 - Live's "Live in these places" list now tags each agency "Vehicles" (positions only) or "Vehicles + performance" (also has route lateness and gaps), so it's clear what to expect before opening one (CIV-219).
 - Live route lateness no longer reads "on time" for every TTC trip: a feed that gives no delay now counts as unknown, not zero, and the old live lateness card on route cards is gone, replaced by Live's route card ([#866](https://github.com/Civic-Minds/Atlas/issues/866)).
 - Switching between the map, Live, History and Compare no longer reloads the page: History's tab was a plain link, so opening or leaving History reloaded the whole app and refetched the map's data ([#888](https://github.com/Civic-Minds/Atlas/issues/888)).

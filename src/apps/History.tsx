@@ -533,9 +533,14 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
       });
   }, []);
 
+  // History stays mounted so mode switches don't remount it, but its multi-megabyte config is only fetched
+  // the first time History is actually opened.
+  const historyConfigRequested = useRef(false);
   useEffect(() => {
+    if (!active || historyConfigRequested.current) return;
+    historyConfigRequested.current = true;
     loadHistoryConfig();
-  }, [loadHistoryConfig]);
+  }, [active, loadHistoryConfig]);
 
   useEffect(() => {
     if (active) {

@@ -26,7 +26,8 @@ const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
 import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './components/InfoPanel';
 import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
-import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
+import type { HistoryAgencyList } from '../shared/historyEligibility';
+import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
@@ -192,8 +193,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     [catalogAgencies, onDemandData.index, onDemandData.geometries],
   );
   const [agenciesLoadState, setAgenciesLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
-  const [historyExploreAgencyCount, setHistoryExploreAgencyCount] = useState<number | null>(null);
+  // History-eligible agencies come from the small committed list build-history writes, so the History tab
+  // doesn't wait on (or download) the multi-megabyte history-config.json.
+  const historyAgencySlugs = useMemo<Set<string> | null>(
+    () => (FEATURES.history ? new Set((historyAgencyList as HistoryAgencyList).slugs) : null),
+    [],
+  );
+  const historyExploreAgencyCount = historyAgencySlugs ? historyAgencySlugs.size : null;
   const [query, setQuery] = useState('');
   // Search scans / map filters / prefetch run from this so keystrokes can
   // paint first. See useDebouncedValue for why this isn't useDeferredValue.
@@ -499,22 +505,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       .catch(() => setAgenciesLoadState('error'));
   }, []);
 
-  // These are only needed by optional UI. Keep them out of the public first load:
-  // public has no History control, and refresh details are shown only in the Info panel.
-  useEffect(() => {
-    if (!FEATURES.history) return;
-    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
-      .then(r => r.json())
-      .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) => {
-        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistory).map(a => a.slug)));
-        setHistoryExploreAgencyCount(data.filter(agencyQualifiesForHistoryExplore).length);
-      })
-      .catch(() => {
-        setHistoryAgencySlugs(new Set());
-        setHistoryExploreAgencyCount(0);
-      });
-  }, []);
-
+  // Refresh details are shown only in the Info panel, so keep them out of the first load.
   useEffect(() => {
     if (!infoOpen || feedRefreshMeta) return;
     Promise.all([
@@ -827,7 +818,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </ErrorBoundary>
         {(agenciesLoadState === 'loading' || modeCatchingUp) && (
           <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">
-            {agenciesLoadState === 'loading' ? 'Loading agency data…' : 'Loading map…'}
+            Loading map…
           </div>
         )}
         {agenciesLoadState === 'error' && (
