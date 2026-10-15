@@ -12,7 +12,7 @@ import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directi
 import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
-import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT, type AgencySearchGroup } from '../../utils/agencySearch';
+import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT } from '../../utils/agencySearch';
 import {
   splitAgencyGroups,
   splitRouteResults,
@@ -25,8 +25,7 @@ import {
   type RouteSearchResult,
   type StopSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_SIDEBAR, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, SIDEBAR_PANEL_WIDTH } from '../../styles';
-import RouteListRow from '../RouteListRow';
+import { FLOATING_CARD, TRANSITION_BASE, PANEL_SIDEBAR, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
 import type { StopRoute, NearbyConnection } from './panels/StopCard';
@@ -56,14 +55,7 @@ interface SidebarControlsProps {
   searchMatchResults: RouteSearchResult[] | null;
   searchStopMatchResults: StopSearchResult[] | null;
   maxHeadway: number;
-  setMaxHeadway: (h: number) => void;
   agencies: Agency[];
-  selectedAgencies: Set<string>;
-  setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
-  selectedModes: Set<number>;
-  setSelectedModes: React.Dispatch<React.SetStateAction<Set<number>>>;
-  day: DayType;
-  setDay: (d: DayType) => void;
   period: TimePeriod;
   setPeriod: (p: TimePeriod) => void;
   selectedStop: string | null;
@@ -75,9 +67,6 @@ interface SidebarControlsProps {
   layers: Record<string, GeoJSON.FeatureCollection>;
   currentDay: DayType;
   hideSpan: boolean;
-  setHideSpan: (v: boolean | ((prev: boolean) => boolean)) => void;
-  livePollingOnly: boolean;
-  setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   setSelectedAgencySlug?: (slug: string | null) => void;
   /** Zoom the map to a metro area chosen in search. */
   onSelectArea?: (area: AreaSearchResult) => void;
@@ -119,14 +108,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   searchMatchResults,
   searchStopMatchResults,
   maxHeadway,
-  setMaxHeadway,
   agencies,
-  selectedAgencies,
-  setSelectedAgencies,
-  selectedModes,
-  setSelectedModes,
-  day,
-  setDay,
   period,
   setPeriod,
   selectedStop,
@@ -138,9 +120,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   layers,
   currentDay,
   hideSpan,
-  setHideSpan,
-  livePollingOnly,
-  setLivePollingOnly,
   setSelectedAgencySlug,
   onSelectArea,
   nightServiceView = false,

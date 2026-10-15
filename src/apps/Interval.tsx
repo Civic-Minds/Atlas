@@ -1243,14 +1243,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         searchMatchResults={searchMatchResults}
         searchStopMatchResults={searchStopMatchResults}
         maxHeadway={maxHeadway}
-        setMaxHeadway={setMaxHeadway}
         agencies={agencies}
-        selectedAgencies={selectedAgencies}
-        setSelectedAgencies={setSelectedAgenciesByUser}
-        selectedModes={selectedModes}
-        setSelectedModes={setSelectedModes}
-        day={day}
-        setDay={setDay}
         period={period}
         setPeriod={setPeriod}
         selectedStop={selectedStop}
@@ -1262,9 +1255,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         layers={layers}
         currentDay={day}
         hideSpan={hideSpan}
-        setHideSpan={setHideSpan}
-        livePollingOnly={livePollingOnly}
-        setLivePollingOnly={setLivePollingOnly}
         setSelectedAgencySlug={setSelectedAgencySlug}
         onSelectArea={handleSelectArea}
         nightServiceView={nightServiceView}

@@ -74,14 +74,7 @@ function renderSidebar(overrides: { period?: TimePeriod; selectedStop?: string |
       searchMatchResults={null}
       searchStopMatchResults={null}
       maxHeadway={Infinity}
-      setMaxHeadway={noop}
       agencies={[]}
-      selectedAgencies={new Set()}
-      setSelectedAgencies={noop}
-      selectedModes={new Set()}
-      setSelectedModes={noop}
-      day="Weekday"
-      setDay={noop}
       period={overrides.period ?? 'midday'}
       setPeriod={noop}
       selectedStop={overrides.selectedStop ?? null}
@@ -93,9 +86,6 @@ function renderSidebar(overrides: { period?: TimePeriod; selectedStop?: string |
       layers={layers}
       currentDay="Weekday"
       hideSpan={false}
-      setHideSpan={noop}
-      livePollingOnly={false}
-      setLivePollingOnly={noop}
       hoveredBranch={null}
       setHoveredBranch={noop}
     />
