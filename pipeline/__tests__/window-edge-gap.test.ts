@@ -94,7 +94,7 @@ describe('scopedTerminalHeadline at the window edge (#773)', () => {
     expect(scopedTerminalHeadline([...early, hm(24, 1)], 'Weekday', '3', false)?.tier).toBe('infrequent');
     expect(scopedTerminalHeadline(early, 'Weekday', '3', false)?.tier).toBe('15');
   });
-  it('a line whose route runs another headsign for the evening closes at its last daytime bus, before or after the 24:00+ return', () => {
+  it('a line whose route runs another headsign for the evening closes at its last daytime bus, whenever it returns', () => {
     // TransLink 408 Weekday: to Ironwood every 15 until 18:21, to Riverport until 23:45, then
     // Ironwood again at 24:45 and 25:45. The Ironwood line closes at 18:21 and keeps its grade.
     const ironwood = every(hm(6, 6), hm(18, 21), 15);
@@ -106,8 +106,9 @@ describe('scopedTerminalHeadline at the window edge (#773)', () => {
     expect(graded([hm(24, 45), hm(25, 45)])).toBe('infrequent');
     expect(graded([hm(24, 45), hm(25, 45)], [])).toBe('infrequent');
     expect(graded([hm(24, 45), hm(25, 45)], every(hm(5, 0), hm(6, 0), 15))).toBe('infrequent');
-    // A return before midnight still continues it, whatever ran in between.
-    expect(graded([hm(23, 50)], riverport)).toBe('infrequent');
+    // The clock time of the return does not matter: a return at 23:50 after Riverport closes it too.
+    expect(graded([hm(23, 50)], riverport)).toBe('15');
+    expect(graded([hm(23, 50)])).toBe('infrequent');
   });
 });
 

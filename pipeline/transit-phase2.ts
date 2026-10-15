@@ -60,28 +60,25 @@ export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
 /**
  * Whether a line's service continues after `last` on the same service day (#773), the one
  * boundary both the route-tier closing edge here and the stop grade's closing edge wait
- * (scopedTerminalHeadline) use. A later departure before 24:00 always continues it. A 24:00+
- * departure is the same GTFS service day, so it continues it too (a rider after a 21:13 last
- * bus waits whether the next runs at 23:59 or 24:01), unless the route direction ran other
- * headsigns in between: then the line's service moved to another destination for the evening
- * and its return after midnight is a separate block, so the line closes at `last`. TransLink 408
- * runs to Ironwood every 15 until 18:21, to Riverport until 23:45, and to Ironwood again at
- * 24:45; without this the Ironwood line read infrequent. `otherHeadsignTimes` are the route
- * direction's departures on that day under other headsigns (otherHeadsignDepartureTimes); when
- * omitted, every later departure continues the service.
+ * (scopedTerminalHeadline) use. A later departure of the line continues it, whatever the clock
+ * time, 24:00+ included (a rider after a 21:13 last bus waits whether the next runs at 23:59 or
+ * 24:01), unless the same route direction ran other headsigns in between: then the line's
+ * service moved to another destination and its return is a separate block, so the line closes
+ * at `last`. TransLink 408 runs to Ironwood every 15 until 18:21, to Riverport until 23:45, and
+ * to Ironwood again at 24:45; without this the Ironwood line read infrequent. `otherHeadsignTimes`
+ * are the route direction's departures that day under other headsigns
+ * (otherHeadsignDepartureTimes); when omitted, every later departure continues the service.
  */
 export function serviceContinuesAfter(times: readonly number[], last: number, otherHeadsignTimes?: readonly number[]): boolean {
     let next = Infinity;
     for (const time of times) if (time > last && time < next) next = time;
     if (next === Infinity) return false;
-    if (next < 1440 || !otherHeadsignTimes) return true;
-    return !otherHeadsignTimes.some(time => time > last && time < next);
+    return !otherHeadsignTimes?.some(time => time > last && time < next);
 }
 
 /**
  * The departures on `day` under every headsign but `headsign` among one route direction's phase-1
- * patterns `routeDirRaws` (#773): what serviceContinuesAfter checks a line's return after
- * midnight against.
+ * patterns `routeDirRaws` (#773): what serviceContinuesAfter checks a line's return against.
  */
 export function otherHeadsignDepartureTimes(
     routeDirRaws: readonly RawRouteDepartures[],

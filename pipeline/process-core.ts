@@ -788,13 +788,19 @@ export async function processGtfsBuffer(
     if (!existing || r.departureTimes.length > existing.length) rawByDayType.set(k, r.departureTimes);
   }
 
-  // Each route group and direction's phase-1 patterns, for a line's other-headsign departures
-  // (#773, serviceContinuesAfter). A Weekday line reads the weekday with the median count.
+  // Each route group and direction's phase-1 patterns with display headsigns, for a line's
+  // other-headsign departures (#773, serviceContinuesAfter). A Weekday line reads the weekday
+  // with the median count.
   const rawsByGroupDir = new Map<string, RawRouteDepartures[]>();
   for (const r of raw) {
-    const key = `${routeById.get(r.route)?.route_short_name ?? r.route}::${r.dir}`;
+    const route = routeById.get(r.route);
+    const shortName = route?.route_short_name ?? r.route;
+    const key = `${routeGroupName(route, r.route)}::${r.dir}`;
+    // Compared with the feature's headsign, so the display form ("7 KENNEDY SOUTH" reads
+    // "KENNEDY SOUTH"): otherwise a line's own trips would count as another headsign.
+    const display = { ...r, headsign: resolveDisplayHeadsign(r.headsign, shortName, route?.route_long_name) ?? undefined };
     const list = rawsByGroupDir.get(key);
-    if (list) list.push(r); else rawsByGroupDir.set(key, [r]);
+    if (list) list.push(display); else rawsByGroupDir.set(key, [display]);
   }
   const otherHeadsignTimesFor = (shortName: string, dirId: string, day: DayType, headsign: string | null): number[] => {
     const raws = rawsByGroupDir.get(`${shortName}::${dirId}`) ?? [];
