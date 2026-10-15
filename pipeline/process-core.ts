@@ -403,8 +403,8 @@ export function scopedTerminalHeadline(
   // side, 24:00+ departures included (serviceContinuesBefore/After, the same boundary phase 2's
   // closing edge uses): a line whose first bus is the first of the day still opens with it, a
   // line whose last bus is the last of the day still closes with it, and a platform whose
-  // service moves to another platform for the afternoon and returns after midnight (REM A3-A1 to
-  // Anse-a-l'Orme, #842) still closes at its last afternoon departure. Whether the outside
+  // service moves to another bay for the afternoon and returns after midnight (REM A3-A1 to
+  // Anse-a-l'Orme, #842) is one terminal once #754 joins the bays. Whether the outside
   // departure is near or far does not matter, so an extra departure outside the window never
   // changes the grade; the closed line stays the one case graded on its window alone. Graded as
   // gaps, not as departures, so the trip count, span and allowance stay the window's own.

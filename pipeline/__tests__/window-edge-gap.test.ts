@@ -84,16 +84,15 @@ describe('scopedTerminalHeadline at the window edge (#773)', () => {
     expect(open).toEqual(['30', '30', '30']);
   });
 
-  it('service that stops before the evening and returns only after midnight closes at its last daytime departure (#842)', () => {
-    // REM A3-A1 to Anse-a-l'Orme: the line runs from this platform until mid-afternoon, then from
-    // the neighbouring platform, and comes back here after midnight. It closes at 15:00.
-    const platform = [hm(5, 30), ...every(hm(7, 0), hm(15, 0), 15), hm(24, 51), hm(25, 6)];
-    expect(scopedTerminalHeadline(platform, 'Weekday', '3', false)?.tier).toBe('15');
-    // The deliberate cost of that rule: a line that stops at 18:13 reads open with one more bus
-    // at 23:59 (the 3h47 wait to 22:00 grades it infrequent) and closed with it at 24:01.
+  it('a line that stops before the evening is open whether its next bus runs at 23:59 or 24:01', () => {
+    // No evening clause: a 24:00+ departure is the same service day, so an 18:13 last bus
+    // followed by one at 23:59 or 24:01 grades the same (the 3h47 wait to 22:00 is infrequent).
+    // REM A3-A1 to Anse-a-l'Orme (#842), which returns to this platform after midnight, is one
+    // terminal with its neighbouring bay through #754's bay merge, not a case for this rule.
     const early = every(hm(7, 13), hm(18, 13), 15);
     expect(scopedTerminalHeadline([...early, hm(23, 59)], 'Weekday', '3', false)?.tier).toBe('infrequent');
-    expect(scopedTerminalHeadline([...early, hm(24, 1)], 'Weekday', '3', false)?.tier).toBe('15');
+    expect(scopedTerminalHeadline([...early, hm(24, 1)], 'Weekday', '3', false)?.tier).toBe('infrequent');
+    expect(scopedTerminalHeadline(early, 'Weekday', '3', false)?.tier).toBe('15');
   });
 });
 
@@ -176,8 +175,11 @@ describe('phase 2 closing edge: one service-day boundary (#773)', () => {
     // 20: the 25-minute 21:00 to 21:25 gap is past the 15 grade's grace once it is not the last.
     expect([hm(22, 30), hm(23, 59), hm(24, 30)].map(later => tierOf([...base, later]))).toEqual(['20', '20', '20']);
   });
-  it('service that stops before the evening is not reopened by a 24:00+ departure (#842)', () => {
+  it('service that stops before the evening is reopened the same by a 23:59 or a 24:21 departure', () => {
+    // 15 when closed (the 25-minute last gap keeps the edge allowance); any later bus, before or
+    // after midnight, makes that gap an ordinary one.
     const daytime = [hm(5, 30), ...every(hm(7, 0), hm(14, 30), 15), hm(14, 55)];
-    expect(tierOf([...daytime, hm(24, 21)])).toBe(tierOf(daytime));
+    expect(tierOf(daytime)).toBe('15');
+    expect([hm(23, 59), hm(24, 21)].map(later => tierOf([...daytime, later]))).toEqual(['20', '20']);
   });
 });
