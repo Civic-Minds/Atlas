@@ -28,7 +28,7 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
-import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
+import { DAY_TYPES, dayUrlParam, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
@@ -476,9 +476,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   // Sync day filter to URL (for refresh/share of active view). URL wins on load if present
   // (see initializer); effects ensure current value (from LS/default/URL) is reflected.
-  // 'Weekday' (common default) omitted for short URLs.
+  // Today's default day is omitted for short URLs; any other day is kept (#909).
   useEffect(() => {
-    syncUrlParams({ day: day !== 'Weekday' ? day : null });
+    syncUrlParams({ day: dayUrlParam(day) });
   }, [day]);
 
   useEffect(() => {
