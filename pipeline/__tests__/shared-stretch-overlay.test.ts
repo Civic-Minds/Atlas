@@ -271,3 +271,16 @@ describe('route card shared stretch matches the map', () => {
     expect(sharedStretchHeadway(fc.features, north, 'all', 15)).toBeNull();
   });
 });
+
+describe('#899: a route with a direction that has no midday service draws no all-day stretch', () => {
+  it('TTC 29 flagged draws nothing all day, its AM peak stretch and the card value are unchanged', async () => {
+    const fc = weekday(await ttc29());
+    for (const f of fc.features) if (f.geometry.type === 'LineString') (f.properties as any).routeHasNoMiddayDirection = true;
+    expect(failingRouteSharedRanges(fc.features, fc.features, 'all', 15)).toEqual([]);
+    expect(failingRouteSharedRanges(fc.features, fc.features, 'all', 120)).toEqual([]);
+    expect(failingRouteSharedRanges(fc.features, fc.features, 'amPeak', 15).length).toBeGreaterThan(0);
+    const copies = lineProps(fc).filter(p => p.directionId === 1);
+    expect(sharedStretchHeadway(fc.features, copies, 'all', 15)).toBeNull();
+  });
+});
+

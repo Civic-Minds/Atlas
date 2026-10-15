@@ -113,11 +113,11 @@ describe('tile rules fingerprint', () => {
   // changes which routes the class filters show from the tiles: version 4, after the app accepted 4.
   // #899 adds the routeHasNoMiddayDirection key and an all-day filter clause that reads it. No
   // version bump, as for #710's pws keys: older tiles lack the key and evaluate exactly as before,
-  // and older apps ignore it. Hash only.
+  // and older apps ignore it; the overview tiles keep it too. Hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 4,
-      fingerprint: '2bdff07f448fd9729bafea1da5702cdd8314dd6a039f08fac6f3ea02655f8714',
+      fingerprint: 'c35de7fa186f0541e1c3374d23d2b28d973cfce91a5165489f089fe855ea08e6',
     });
   });
 });
