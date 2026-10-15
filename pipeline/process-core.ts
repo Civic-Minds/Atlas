@@ -371,6 +371,30 @@ function pooledTerminalHeadway(times: readonly number[] | undefined): number | n
     ?? sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true);
 }
 
+/**
+ * Phase 2's rail tier rule on a departure list (#898): the every-gap grade of the midday window
+ * (09:30 to 14:30) on the route's own tier scale, or null when the window has under three
+ * departures, they are limited service by phase 2's test (packed into BURST_MAX_SPAN_MINUTES or
+ * covering under 40% of the window), or they grade as span. Without the limited test the gaps
+ * read only run from the first to the last departure in the window, so three trains every 30
+ * from 09:30 to 10:30 and none until 15:00 graded 30 (a 4.5-hour hole).
+ */
+export function railMiddayTier(times: readonly number[], day: DayType, routeType: string, tiers: readonly number[]): string | null {
+  const sorted = [...new Set(times)].sort((a, b) => a - b);
+  const windowed = sorted.filter(t => t >= 570 && t <= 870);
+  if (windowed.length < 3) return null;
+  const span = windowed[windowed.length - 1] - windowed[0];
+  if (span <= BURST_MAX_SPAN_MINUTES || span / (870 - 570) < 0.4) return null;
+  const gaps = windowed.slice(1).map((t, i) => t - windowed[i]);
+  const tier = determineTierWithEdgeGapAllowance(
+    gaps, windowed.length, windowed[windowed.length - 1] - windowed[0], [...tiers],
+    DEFAULT_CRITERIA.graceMinutes, DEFAULT_CRITERIA.maxGraceViolations, DEFAULT_CRITERIA.gracePercent, DEFAULT_CRITERIA.violationPercent,
+    { rawDepartureTimes: sorted, analysisTimes: windowed, day: (day === 'Weekday' ? 'Wednesday' : day) as DayName, routeType, railLike: true },
+    DEFAULT_CRITERIA.violationPercentByTier,
+  );
+  return tier === 'span' ? null : tier;
+}
+
 export function scopedTerminalHeadline(
   times: readonly number[] | undefined,
   day: DayType,
@@ -2292,6 +2316,23 @@ export async function processGtfsBuffer(
           if (!times || times.length === 0 || !stopHasReading(stopId)) continue;
           const headway = allStopHw[stopId];
           if (headway == null) continue;
+          // Rail (#756): no every-gap grade, so each drawn stop's grade is its pooled headway on
+          // the rail tier scale, the midday-window reading rail's own tier rule uses. A short-turn
+          // pattern that runs entirely on a shared trunk (WMATA Yellow to Mount Vernon Square on
+          // weekends, every 16 under a trunk every 8 with the Greenbelt trains) then colours that
+          // trunk at the trunk's service, as a bus trunk does, instead of the row's own tier.
+          // Graded like the route tier (#756 review): the rail rule's every-gap grade of the stop's
+          // list in the midday window, never better than its headway's tier, and no grade where the
+          // rule gives none (under three midday departures, limited service, span). The typical
+          // wait alone read an hourly stop with a multi-hour hole as 60 and a peak-only commuter
+          // station at its peak wait; the client then fills an ungraded stop from its neighbours.
+          if (railFeature) {
+            const railGraded = railMiddayTier(times, day as DayType, featureRoute?.route_type ?? '', routeTierScale());
+            if (railGraded == null) continue;
+            const byHeadway = headwayToTierOn(headway, routeTierScale());
+            stopTiers[stopId] = (TIER_RANK[railGraded] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? railGraded : byHeadway;
+            continue;
+          }
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
           // More service never lowers a grade: the own pattern's list is graded too and the
           // better grade stands. Own every 15 from 07:00 to 19:00 plus a sibling every 15 from
@@ -2573,6 +2614,37 @@ export async function processGtfsBuffer(
       });
       feature.properties.headway = headway;
       feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped, routeTierScale());
+      // #898: a rail row's tier is phase 2's grade of the drawn pattern's own midday departures,
+      // while its headline reads the headsign's pooled terminal sample. Where that sample has
+      // more departures than the pattern's own (two origins to one destination: WMATA Yellow to
+      // Huntington on weekends, every 16 each, every 8 together), the tier is graded on the same
+      // pool with the rail rule at every drawn stop, never better than the headline's tier, so
+      // the card's "every 8" and its colour agree.
+      if (railFeature && headway != null && terminalId && headsignMap && featureHeadsign && coverageStops.length > 1
+        && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
+        const own = new Set(shapeMap?.get(terminalId) ?? []).size;
+        const pooledDepartures = new Set(headsignMap.get(terminalId) ?? []).size;
+        if (pooledDepartures > own && pooledDepartures >= MIN_POOLED_TIER_DEPARTURES) {
+          // Step 4.4 (routeGrading.ts), the bus lift of #728 on the rail rule: the pool is graded
+          // at every drawn stop and, for Weekday, on every weekday whose trips differ, and the
+          // worst grade counts. A branch the pool's other origin never serves keeps its own wait
+          // (TTC Line 1 to Finch on weekends: every 5 at Finch with the Wilson short turns, every
+          // 8 to 10 north of Wilson where only the Vaughan trains run), a drawn stop the pool
+          // serves too thinly to grade refuses the lift, and the tier is never past the
+          // headline's. Irregular and span lines are left alone, as on the bus side.
+          const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
+          const drawnIds = coverageStops.map(p => p.stopId);
+          feature.properties.tier = liftTierOnDestinationPool({
+            currentTier: feature.properties.tier as string,
+            headway,
+            day: day as DayType,
+            drawnStopIds: drawnIds,
+            gradeAt: (stopId, weekday) => railMiddayTier(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', routeTierScale()),
+            otherWeekdays: () => otherWeekdayPools(hsKey),
+            tiers: routeTierScale(),
+          });
+        }
+      }
       // #728: the tier is phase 2's every-gap grade of the one shape that won dedupe, while the
       // period values below read the whole destination at the terminal. A shape that covers part
       // of the day or has one hole is graded 60 or infrequent beside periods of 8-20 (Brampton 7

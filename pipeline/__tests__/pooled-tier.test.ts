@@ -199,9 +199,38 @@ describe('tier regraded on the destination pool along the drawn line (#728)', ()
     expect(['60', 'infrequent']).toContain(long.tier);
   });
 
-  it('rail lines are left to their own grade', async () => {
+  it('rail lines are left to their own grade by this lift; #898 grades them on the pooled headsign sample their headline reads', async () => {
+    // Two hourly patterns offset by 30 under one headsign: the headline reads the pooled 30 and,
+    // since #898, so does the tier (the #728 lift itself stays bus only).
     const a = every(360, 1320, 60); const b = a.map(t => t + 30);
     const lines = await weekdayLines(await feed({ a, b, bStops: 9, routeType: '2' }));
-    expect(lines[0].tier).not.toBe('30');
+    expect(lines[0].headway).toBe(30);
+    expect(lines[0].tier).toBe('30');
+  });
+
+  it('rail (#898 review): the Weekday lift is graded on every weekday whose trips differ', async () => {
+    // A runs every 30 with one midday departure missing (12:00: a 60-minute gap, rail tier 60);
+    // B, the same road and terminal, runs that one departure. Pooled every weekday, the line
+    // lifts to 30; when B runs on Monday only or Tuesday to Friday only, the weekdays without it
+    // keep A's 60 and the lift is refused (the bus lift's septa T2 check).
+    const a = every(360, 1320, 30).filter(t => t !== 720);
+    const b = [720];
+    const tierFor = async (bService?: 'mon' | 'tue-fri') => (await weekdayLines(await feed({ a, b, bStops: 9, routeType: '1', bService })))
+      .find((p: any) => p.stopOrder?.length === 9).tier;
+    expect(await tierFor()).toBe('30');
+    expect(await tierFor('mon')).toBe('60');
+    expect(await tierFor('tue-fri')).toBe('60');
+  });
+
+  it('rail (#898 review): a pool better at the terminal than at an outer drawn stop keeps the outer stop\'s grade', async () => {
+    // The TTC Line 1 case: A runs s0-s8 every 10; B is a short turn s3-s8 every 10, interleaved
+    // with A from s3 on (6 of 9 drawn stops, every stop of the last third), so the destination
+    // pool reads every 5 at the terminal while s0-s2 see only A's every 10. The headline reads the
+    // pooled 5, the tier stays at the outer stops' 10.
+    const a = every(360, 1320, 10); const b = a.map(t => t + 17);
+    const lines = await weekdayLines(await feed({ a, b, bSeq: ['s3', 's4', 's5', 's6', 's7', 's8'], routeType: '1' }));
+    const long = lines.find((p: any) => p.stopOrder?.length === 9);
+    expect(long.headway).toBe(5);
+    expect(long.tier).toBe('10');
   });
 });
