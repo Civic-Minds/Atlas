@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Night page: the route list no longer runs over the footer links**: the panel now stops above the About / What's new / Feedback row ([#905](https://github.com/Civic-Minds/Atlas/issues/905)).
 - **Night Service now needs every direction to qualify**: a route is listed only if all its directions run through the night, like the main frequency filter; before, one good direction was enough. The count above the list now counts whole routes. Takes effect after the next data refresh and map rebuild.
 - **Night page: the Atlas logo no longer blanks the map**: clicking it from Night (or Live/History) now switches back to the map in place instead of rebuilding it ([#904](https://github.com/Civic-Minds/Atlas/issues/904)).
 - **Night Service list matches the rest of Atlas**: agency headings, route names and destination lines now use the same shared list styles as the other panels, with the same wording. The intro box above the list now reads in a clearer order: bold heading, lighter explanation, quiet count (CIV-231, CIV-235).
