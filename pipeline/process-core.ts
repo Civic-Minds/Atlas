@@ -43,6 +43,7 @@ import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
+import { directionStretches, periodSustainedMid, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
@@ -483,6 +484,8 @@ export interface ProcessOptions extends GtfsTransformOptions {
   analysisCriteriaFn?: (raw: RawRouteDepartures[]) => AnalysisResult[];
   /** Read-only view of the phase 2 results, for tests and audits. Does not change the output. */
   onAnalysisResults?: (results: readonly AnalysisResult[]) => void;
+  /** Tests only (frequency focus step 3): the stretch selector's output beside stopDepsByGroup, for the trip-membership check. */
+  onStretches?: (input: { stretches: ReadonlyMap<string, DirectionStretches>; stopDepsByGroup: ReadonlyMap<string, ReadonlyMap<string, readonly number[]>> }) => void;
 }
 
 /** Thrown when validateGtfs reports errors and options.force is not set. */
@@ -955,6 +958,18 @@ export async function processGtfsBuffer(
   // shape-scoped mirror -- the Step 5 terminalRawTimes fallback bottoms out at stopDepsByGroup
   // regardless, so this still covers every route that reaches the night-service check.
   const stopDepsByGroupNight = new Map<string, Map<string, number[]>>();
+  // Frequency focus step 3 (shadow): every trip of each route direction day that feeds
+  // stopDepsByGroup, with its first visit of each stop, for the stretch selector (tripSets.ts).
+  // The same membership as stopDepsByGroup (inGroup, chained ends, frequency expansion); parent
+  // stations left out, as patterns are read on the stops the trips list.
+  const stretchVisitsByGroup = new Map<string, Map<string, Array<TripVisit & { seq: number }>>>();
+  const addStretchVisit = (gKey: string, tripKey: string, visit: TripVisit & { seq: number }) => {
+    let trips = stretchVisitsByGroup.get(gKey);
+    if (!trips) { trips = new Map(); stretchVisitsByGroup.set(gKey, trips); }
+    let visits = trips.get(tripKey);
+    if (!visits) { visits = []; trips.set(tripKey, visits); }
+    visits.push(visit);
+  };
   const stopDepsByHeadsignGroupNight = new Map<string, Map<string, number[]>>();
   // Shared-stretch pooling (CIV-82): each pattern's departures inside its route group,
   // direction and day, all on the GROUP's representative weekday (inGroup), so patterns
@@ -1230,6 +1245,8 @@ export async function processGtfsBuffer(
         headwayRangeByPeriod: computePeriodHeadwayRanges(result.times),
         maxGapByPeriod: computePeriodMaxGaps(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
+        // D8 shadow (frequency focus step 3): nothing reads it.
+        headwayByPeriodSustainedMid: periodSustainedMid(result.times),
         partialWeekdayServiceByPeriod: result.partialWeekday
           ? Object.fromEntries(PERIOD_KEYS.map(key => [key, result.partialWeekdayPeriods?.includes(key) ?? false]))
           : undefined,
@@ -1391,6 +1408,9 @@ export async function processGtfsBuffer(
           if (!visitSet.has(visitKey)) {
             visitSet.add(visitKey);
             pushAll(st.stop_id);
+            if (grp.inGroup && chainedEnd === undefined) {
+              addStretchVisit(gKey, st.trip_id, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined });
+            }
             // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
             const parentVisitKey = parentId ? `${grp.dayType}:${parentId}` : null;
             if (parentId && parentVisitKey && !visitSet.has(parentVisitKey)) {
@@ -1637,6 +1657,10 @@ export async function processGtfsBuffer(
           for (const grp of groups) {
             const pickupAllowed = st.pickup_type?.trim() !== '1';
             addFrequencyDeparture(grp, st.stop_id, mins, pickupAllowed);
+            if (grp.inGroup) {
+              const night = mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF;
+              addStretchVisit(`${grp.shortName}::${grp.dirId}::${grp.dayType}`, `${tripId}@${offset}`, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined });
+            }
             if (countParent) addFrequencyDeparture(grp, parentId!, mins, pickupAllowed);
             else if (parentId && pickupAllowed && grp.shapeId && grp.inShape) markBoardable(`${grp.shapeId}::${grp.dayType}`, parentId);
           }
@@ -2963,6 +2987,33 @@ export async function processGtfsBuffer(
   annotateShortTurnVariants(features, shapes);
   stampWorstDirectionHeadways(features);
   stampRouteIrregularDirection(features);
+
+  // Frequency focus step 3, shadow only: the stretch selector's values beside today's, for the
+  // report. Nothing reads them, and tiles leave them out. Routes with no direction_id in the feed
+  // get no stretch data, as the midday cap does.
+  {
+    const synthesizedGroups = new Set<string>();
+    for (const [feature, { shortName }] of featureStopHeadwaySlots) {
+      if (gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) synthesizedGroups.add(shortName);
+    }
+    const stretchesByKey = new Map<string, DirectionStretches>();
+    for (const [gKey, trips] of stretchVisitsByGroup) {
+      if (synthesizedGroups.has(gKey.slice(0, gKey.indexOf('::')))) continue;
+      const directionTrips = [...trips].map(([tripId, visits]) => ({
+        tripId,
+        visits: [...visits].sort((a, b) => a.seq - b.seq).map(({ stopId, minutes, overnightOnly }) => ({ stopId, minutes, overnightOnly })),
+      }));
+      stretchesByKey.set(gKey, directionStretches(gKey, directionTrips, stopId => {
+        const stop = stopsById.get(stopId);
+        return stop ? [stop.lat, stop.lon] : undefined;
+      }));
+    }
+    options?.onStretches?.({ stretches: stretchesByKey, stopDepsByGroup });
+    stampStretchShadow(features, stretchesByKey, feature => {
+      const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
+      return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
+    });
+  }
 
   annotateSharedStretches(features, {
     memberOf: feature => {

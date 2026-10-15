@@ -1,0 +1,49 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+8038,8038,Queen's Park Cres West at Hoskin Ave,,43.665601,-79.393747,,,,,,1
+7818,7818,Harbord St at Spadina Ave,,43.663187,-79.401875,,,,,,1
+7805,7805,Harbord St at Brunswick Ave,,43.662347,-79.405879,,,,,,1
+5974,5974,Ossington Ave at Hepbourne St,,43.659829,-79.424863,,,,,,1
+7814,7814,Harbord St at Ossington Ave,,43.65868,-79.42399,,,,,,1
+758,758,Carlton St at Sherbourne St,,43.66307,-79.373237,,,,,,2
+6651,6651,Parliament St at Wellesley St East North Side,,43.668507,-79.369582,,,,,,1
+8626,8626,Wellesley St East at Church St,,43.66561,-79.381083,,,,,,1
+8629,8629,Wellesley St East at Jarvis St,,43.666368,-79.378188,,,,,,1
+6653,6653,Parliament St at Winchester St,,43.665766,-79.368485,,,,,,1
+7803,7803,Harbord St at Bathurst St,,43.661421,-79.409894,,,,,,1
+8639,8639,Wellesley St West at Yonge St,,43.664814,-79.384802,,,,,,1
+7850,7850,Hoskin Ave at Tower Rd - Trinity College,,43.664784,-79.395638,,,,,,1
+8632,8632,Wellesley St East at Parliament St West Side,,43.668122,-79.370103,,,,,,1
+8631,8631,Wellesley St East at Ontario St,,43.667701,-79.372048,,,,,,1
+8640,8640,Wellesley St East at Yonge St,,43.665025,-79.384478,,,,,,1
+5973,5973,Ossington Ave at Hepbourne St North Side,,43.660046,-79.424765,,,,,,2
+7849,7849,Hoskin Ave at St George St,,43.664221,-79.398202,,,,,,1
+8627,8627,Wellesley St East at Church St,,43.665787,-79.380783,,,,,,1
+7802,7802,Harbord St at Bathurst St,,43.661613,-79.409541,,,,,,1
+6638,6638,Parliament St at Howard St South Side,,43.671114,-79.37085,,,,,,1
+8634,8634,Wellesley St West at Queen's Park Cres East,,43.663712,-79.390476,,,,,,1
+8628,8628,Wellesley St East at Jarvis St,,43.666175,-79.378501,,,,,,1
+8624,8624,Wellesley St West at Bay St,,43.664477,-79.386908,,,,,,1
+8637,8637,Wellesley St East at Sherbourne St,,43.667166,-79.374485,,,,,,1
+7851,7851,Hoskin Ave at Tower Rd - Wycliffe College,,43.664544,-79.395953,,,,,,1
+6649,6649,Parliament St at St James Ave South Side,,43.66965,-79.370267,,,,,,1
+6633,6633,Parliament St at Bloor St East,,43.671579,-79.37081,,,,,,1
+755,755,Carlton St at Ontario St,,43.663621,-79.37064,,,,,,2
+7819,7819,Harbord St at St George St,,43.663843,-79.398673,,,,,,1
+8635,8635,Wellesley St West at Queen's Park Cres East East Side,,43.663633,-79.390156,,,,,,1
+7804,7804,Harbord St at Brunswick Ave,,43.662181,-79.406126,,,,,,1
+8625,8625,Wellesley St West at Bay St,,43.664214,-79.387412,,,,,,1
+8633,8633,Wellesley St West at Parliament Building,,43.663208,-79.391858,,,,,,1
+6648,6648,Parliament St at St James Ave,,43.669711,-79.370053,,,,,,1
+7817,7817,Harbord St at Spadina Ave,,43.662955,-79.402355,,,,,,1
+7815,7815,Harbord St at Ossington Ave East Side,,43.658579,-79.4238,,,,,,1
+14642,14642,Castle Frank Station,,43.673628,-79.36885,,,,,,1
+14745,14745,Ossington Station,,43.662338,-79.426607,,,,,,1
+14797,14797,Wellesley Station,,43.665358,-79.383941,,,,,,1
+14798,14798,Wellesley Station,,43.665306,-79.383605,,,,,,1
+16790,16790,Harbord St at Clinton St,,43.66018,-79.415965,,,,,,1
+16791,16791,Harbord St at Palmerston Blvd,,43.660889,-79.412405,,,,,,1
+16792,16792,Harbord St at Palmerston Blvd,,43.661149,-79.412006,,,,,,1
+16793,16793,Harbord St at Clinton St,,43.660404,-79.415704,,,,,,1
+16828,16828,Harbord St at Montrose Ave,,43.659641,-79.419451,,,,,,1
+16829,16829,Harbord St at Montrose Ave,,43.659426,-79.419638,,,,,,1
+16891,16891,Carlton St at Jarvis St East Side,,43.662426,-79.376247,,,,,,1

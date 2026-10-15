@@ -117,10 +117,12 @@ describe('tile rules fingerprint', () => {
   // Frequency focus step 2a: a pool member without a coverage value no longer opens the route's
   // full-window wait to every sibling, which changes worstDirectionPeriodCoverageHeadway in tiles:
   // version 5, bumped once for the whole focus branch.
+  // Step 3 strips its shadow stretch keys in prepareAgencyRoutesForTiles; the tile allowlist already
+  // left them out, so no tile value changes: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '956a9b21f660c8ceca6ba361f5848130db60f87b6e2c4e2f0329409c627f810f',
+      fingerprint: 'e6b7dfc2c6dc0bc661820e78b94ee0780bdc7d41fa30f0677022c9d2628c0475',
     });
   });
 });
