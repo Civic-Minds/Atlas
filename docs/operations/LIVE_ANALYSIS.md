@@ -25,7 +25,7 @@ vehicle positions and the timetable.
   at least 30 passages, `lateRank`), with the median and 90th percentile beside it. **B3 where delays start**: the first stretch that adds more than a minute of
   delay in at least half of the runs, and the delay already there at the first stop.
 - **B4 bunching**: the gaps between consecutive cars at each stop. Bunched = gap under 2 minutes, gapped = more than twice the
-  scheduled gap. Bunching "forms" at the largest step of 10+ points that stays up to the end of the route; a slower climb is
+  scheduled gap. Bunching "forms" at the largest step of 10+ points that stays up for the next 3 stops or about 1 km (recovering later does not undo where it formed); a slower climb is
   called gradual (`kind`), and the whole per-stop profile is stored. What lines up with it is
   listed as "linked to": uneven departures at the terminal, stood-still time, running time over the timetable, short turns.
 
@@ -37,3 +37,9 @@ constants are in `shared/stopDelay.ts` and `shared/bunching.ts`.
 `python3 scripts/handcheck/live-arrival-check.py --route 505 --obs <obs.json> --gtfs ../_live-data/gtfs/candidates/surface --archive ../_live-data/archive`
 recomputes random stop departures (25 m past the stop) from the raw archive and the timetable with separate code and prints both numbers
 (`--obs-out` on `scripts/live-segment-delay.ts` writes the passages it used).
+
+## The page
+
+`/apps/live/<agency>/<route>` (local only, same switch as Live) shows B1 to B4 and the method from the `v3` block, through
+`/api/live-dashboard?agency=ttc&route=505`. The answer always has a status (`ready`, `held`, `no_analysis`, `unknown_route`) and a plain
+reason. Routes held back until a known problem is fixed are listed in `shared/liveDashboard.ts` (`LIVE_DASHBOARD_HOLD`: 501, 506, 512).

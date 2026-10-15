@@ -32,11 +32,22 @@ describe('bunchingProfile', () => {
     expect(p.biggestRise).toMatchObject({ fromStopId: 'C', toStopId: 'D' });
   });
 
-  it('ignores a blip that does not stay up, and says nothing when the route stays even', () => {
+  it('ignores a blip that does not stay up for the next few stops, and says nothing when the route stays even', () => {
     const blip = [stop('T', 0.05), stop('A', 0.05), stop('B', 0.05), stop('C', 0.05), stop('D', 0.2), stop('E', 0.05), stop('F', 0.05)];
     expect(bunchingProfile(blip).forms).toBeNull();
     const even = [stop('T', 0.05), stop('A', 0.06), stop('B', 0.05), stop('C', 0.06), stop('D', 0.07)];
     expect(bunchingProfile(even).forms).toBeNull();
+  });
+
+  it('still names a step that later recovers, if it stays up for the next 3 stops', () => {
+    const rec = [stop('T', 0.05), stop('A', 0.05), stop('B', 0.05), stop('C', 0.05), stop('D', 0.25), stop('E', 0.25), stop('F', 0.24), stop('G', 0.05), stop('H', 0.05)];
+    expect(bunchingProfile(rec).forms).toMatchObject({ fromStopId: 'C', toStopId: 'D' });
+  });
+
+  it('looks 1 km ahead when stops are close together', () => {
+    const near = (id: string, bad: number, m: number) => ({ ...stop(id, bad), alongM: m });
+    const close = [near('T', 0.05, 0), near('A', 0.05, 100), near('B', 0.05, 200), near('C', 0.05, 300), near('D', 0.25, 400), near('E', 0.25, 500), near('F', 0.25, 600), near('G', 0.05, 800)];
+    expect(bunchingProfile(close).forms).toBeNull();
   });
 
   it('calls a slow climb with no single step gradual, and keeps the biggest rise', () => {

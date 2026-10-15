@@ -708,7 +708,8 @@ const inWindow = new Set(windowDates);
 const windowRuns = runDelays.filter(r => inWindow.has(r.date));
 const isWeekend = (d: string) => { const g = new Date(`${d}T12:00:00Z`).getUTCDay(); return g === 0 || g === 6; };
 const stopOrder = new Map<number, string[]>();
-for (const p of busiest) if (!stopOrder.has(p.directionId)) stopOrder.set(p.directionId, p.stops.map(s => s.stopId));
+const alongOf = new Map<string, number>(); // `${direction}|${stop}` -> metres along the busiest pattern
+for (const p of busiest) if (!stopOrder.has(p.directionId)) { stopOrder.set(p.directionId, p.stops.map(s => s.stopId)); for (const st of p.stops) alongOf.set(`${p.directionId}|${st.stopId}`, st.along); }
 const stopInfo = (stopId: string) => ({ stopId, name: stopsById.get(stopId)?.stop_name ?? stopId, lonLat: [Number(stopsById.get(stopId)?.stop_lon), Number(stopsById.get(stopId)?.stop_lat)] as [number, number] });
 const orderIndex = (dir: number, stopId: string) => stopOrder.get(dir)?.indexOf(stopId) ?? -1;
 const r1 = (x: number | null) => (x == null ? null : Math.round(x * 10) / 10);
@@ -743,7 +744,7 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
   bands: Object.fromEntries(BANDS.map(band => {
     const stops = order.map(stopId => {
       const wins: GapWindow[] = (headwayByStop.get(`${stopId}|${dir}`)?.get(band) ?? []).filter(w => inWindow.has(w.date));
-      return stopBunching(stopId, wins);
+      return { ...stopBunching(stopId, wins), alongM: alongOf.get(`${dir}|${stopId}`) };
     });
     const profile = bunchingProfile(stops);
     const evidenceFor = (fromId: string, toId: string) => {

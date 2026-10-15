@@ -1,7 +1,7 @@
 /**
  * B4: where and why bunching forms along a route, from the gaps between consecutive vehicles at each stop.
  * Where: the share of gaps under two minutes (bunched) plus gaps over twice the scheduled gap (gapped), stop by stop;
- * bunching forms at the largest step up in that share that stays up to the end of the route (a slow climb with no such step is gradual). Why: which measured things sit at that stretch
+ * bunching forms at the largest step up in that share that stays up for the next few stops (a slow climb with no such step is gradual). Why: which measured things sit at that stretch
  * ("linked to", never "caused by"): uneven departures at the terminal, vehicles standing still, slow running vs the
  * timetable, short turns. Pure functions; scripts/live-segment-delay.ts feeds them.
  */
@@ -13,8 +13,11 @@ export const GAPPED_FACTOR = 2;
 export const MIN_GAPS = 30;
 /** A rise counts as a step (bunching "forms" there) when the bad share jumps by at least this much (0.10 = 10 points)... */
 export const RISE = 0.1;
-/** ...and the later stops stay up: each is at least half the rise above where it started, to the end of the route. */
+/** ...and the stops after it stay up: each is at least half the rise above where it started... */
 export const STAYS_UP_SHARE = 0.5;
+/** ...for at least the next 3 stops or about 1 km, whichever is longer. Recovering later (terminal regulation, short turns) does not undo where it formed. */
+export const STAYS_UP_STOPS = 3;
+export const STAYS_UP_M = 1000;
 /** The baseline is the mean bad share over this many first stops with enough gaps. */
 export const BASELINE_STOPS = 3;
 /** Smaller climbs than RISE that add up to at least this much over the route are called gradual. */
@@ -35,6 +38,8 @@ export interface StopBunching {
   /** bunchedShare + gappedShare: gaps that are not near the timetable's. */
   badShare: number;
   medianGapSec: number | null;
+  /** Metres along the route (optional): lets "stays up" look about 1 km ahead as well as 3 stops. */
+  alongM?: number;
   /** 90th over 10th percentile of the gaps: how spread out they are. */
   spread: number | null;
 }
@@ -71,12 +76,12 @@ export interface BunchingProfile {
   /** Mean bad share over the first stops with enough gaps (the terminal end). */
   baselineBadShare: number | null;
   /**
-   * 'forms': one stretch where the bad share steps up by RISE or more and stays up to the end of the route.
+   * 'forms': one stretch where the bad share steps up by RISE or more and stays up for the next 3 stops or 1 km.
    * 'gradual': no such step, but the bad share still climbs by GRADUAL_CLIMB or more along the route.
    * 'none': flat. Null when there are too few stops with enough gaps.
    */
   kind: 'forms' | 'gradual' | 'none' | null;
-  /** The largest rise that stays up to the end (kind 'forms'), or null. */
+  /** The largest rise that stays up (kind 'forms'), or null. */
   forms: BunchingStretch | null;
   /** The stretch with the largest single rise, whether or not it stays up. */
   biggestRise: BunchingStretch | null;
@@ -99,7 +104,10 @@ export function bunchingProfile(stops: readonly StopBunching[]): BunchingProfile
     const s = stretchAt(i);
     if (!biggest || s.rise > biggest.rise) biggest = s;
     if (s.rise < RISE) continue;
-    const staysUp = usable.slice(i).every(f => f.badShare >= s.fromBadShare + STAYS_UP_SHARE * s.rise);
+    let end = Math.min(usable.length, i + STAYS_UP_STOPS);
+    const a0 = usable[i].alongM;
+    if (a0 != null) while (end < usable.length && (usable[end - 1].alongM ?? a0) < a0 + STAYS_UP_M) end++;
+    const staysUp = usable.slice(i, end).every(f => f.badShare >= s.fromBadShare + STAYS_UP_SHARE * s.rise);
     if (staysUp && (!forms || s.rise > forms.rise)) forms = s;
   }
   const climb = Math.max(...usable.slice(BASELINE_STOPS).map(s => s.badShare)) - baseline;
