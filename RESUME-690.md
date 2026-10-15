@@ -378,6 +378,15 @@ weekday 8 -> 10 at both ends; TTC 504 Dufferin Gate 8 -> 15 with 16 stops graded
 Sunday 15 -> 10; detroit-people-mover, Metromover and SKYT keep 5. Main today shows every subway
 at tier 10 because settleTier degraded 5 to the surface scale's 10.
 
+MIDDAY NITS, FINAL (fix/690-midday-nits 0b2bcace vs main 45de8f13, out/nits877b, report-nits877b.txt):
+the three-hour span rule was dropped after GTFS checks (it limited the patterns of lines that
+alternate two full-length variants: SEPTA 40 Lombard and via Pine St, CTA 26, 20, 9, TTC 134);
+the drawn-headsign sibling rule stays. Catalog: 38 lines go limited (njt-bus 8, dayton 7,
+cttransit 4, beeline 3; all tier infrequent on main, four with a main headline of 30 or better:
+cttransit 16224 Long Wharf 30, kingston 22 Saturday 30, njt-bus 74 New York Express 20, pace
+221 Cumberland Metra 30), 6 tiers up, nothing else moves. Honest by GTFS check: CTA 65 Grand &
+Chicago, 73, 76, 8, SEPTA T3 Darby, TTC 927, the five random samples.
+
 ## What is left
 
 1. Done: 16 hand checks (ttc 41, 506, 129 wkd, 38, 63, 17, 54, 129 Sun; septa 14, 52, 58, 93,
