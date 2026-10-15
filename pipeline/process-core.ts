@@ -1974,9 +1974,13 @@ export async function processGtfsBuffer(
     const shapePts: [number, number][] = feature.geometry.type === 'LineString'
       ? feature.geometry.coordinates.map(([lon, lat]) => [lat, lon])
       : [];
+    // The row's own end stops: stops with departures in its own metric map, projected onto its
+    // shape. Projecting every stop the direction serves picked stops of other patterns that have
+    // no times in this map, so the check failed automatically (TTC 301 westbound to Long Branch
+    // ended on stop 13944, never on its own 6523).
     const nightShapeStops = isMapless
       ? maplessStopProjection
-      : projectStopsOntoShape([...stopMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
+      : projectStopsOntoShape([...metricStopMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
     const nightEndpointStopIds = [...new Set([
       nightShapeStops[0]?.stopId,
       nightShapeStops.at(-1)?.stopId,

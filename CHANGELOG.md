@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- A night route is no longer marked as having no night service because its check read a stop of another pattern: TTC 301 westbound to Long Branch runs every 15 overnight but failed, as its end stop was taken from a different branch with no night trips.
 - A route no longer drops out of a frequency filter because of a rare variant's long wait: TTC 123 on weekdays read a 336-minute midday wait from a 2-trip West Mall pattern and was hidden at "every 30 midday", though its main service runs every 23.
 - A stop a route only drops off at (the layover it starts from, the terminal it ends at) no longer grades the route or colours its first section limited: RFTA L on Sunday and LA Metro 28 read a tier lower than riders get because one shape's arrivals at such a stop were graded on their own ([#879](https://github.com/Civic-Minds/Atlas/issues/879)).
 - A route card's hourly chart now reads the same stops as its rows: it used to show the pooled trunk's bars (every 8) under a row that says every 16, because the chart skipped the worst-drawn-stop floor the rows already had ([#771](https://github.com/Civic-Minds/Atlas/issues/771)).
