@@ -16,7 +16,7 @@ export default function NotFoundPage() {
     robots.content = 'noindex';
   }, []);
   return (
-    <PageShell>
+    <PageShell footer={false}>
       <h1 className="mt-16 max-w-3xl text-4xl font-black tracking-[-0.045em] sm:text-6xl">This page took the wrong route</h1>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">We couldn't find that page.</p>
       <p className="mt-6"><Link to="/" className={PAGE_ACTION}>Back to the map</Link></p>

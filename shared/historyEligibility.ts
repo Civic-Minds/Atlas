@@ -33,3 +33,18 @@ export function agencyQualifiesForHistoryExplore(agency: HistoryAgencyLike): boo
 export function agencyQualifiesForHistory(agency: HistoryAgencyLike): boolean {
   return agencyQualifiesForHistoryExplore(agency);
 }
+
+/** Committed list of History-eligible agency slugs (shared/data/history-agencies.json). */
+export interface HistoryAgencyList {
+  /** Distinct-year bar the list was built with (MIN_HISTORY_DISTINCT_YEARS). */
+  minYears: number;
+  slugs: string[];
+}
+
+/** The small committed list the UI reads instead of the full history-config.json. */
+export function buildHistoryAgencyList(rows: ReadonlyArray<HistoryAgencyLike & { slug: string }>): HistoryAgencyList {
+  return {
+    minYears: MIN_HISTORY_DISTINCT_YEARS,
+    slugs: rows.filter(agencyQualifiesForHistory).map(a => a.slug).sort(),
+  };
+}

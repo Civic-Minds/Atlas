@@ -1,7 +1,6 @@
 import { Moon, Zap } from 'lucide-react';
 import { FEATURE_ROUTES } from '../../shared/config';
 import PageShell from '../components/ui/PageShell';
-import SiteFooter from '../components/SiteFooter';
 import { SURFACE } from '../styles';
 
 const CARDS = [
@@ -38,7 +37,6 @@ export default function ResearchPage() {
                 </a>
               ))}
             </div>
-            <SiteFooter />
           </article>
         </div>
     </PageShell>
