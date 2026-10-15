@@ -1,0 +1,115 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+98,28,842536,Blue Bell,,0,6122,315665,1,1
+98,28,842535,Blue Bell,,0,6121,315665,1,1
+98,28,842531,Blue Bell,,0,6123,315665,1,1
+98,28,842532,Blue Bell,,0,6122,315665,1,1
+98,28,842530,Blue Bell,,0,6121,315665,1,1
+98,28,842529,Blue Bell,,0,6123,315665,1,1
+98,28,842528,Blue Bell,,0,6122,315665,1,1
+98,28,842527,Blue Bell,,0,6121,315665,1,1
+98,28,842526,Blue Bell,,0,6123,315665,1,1
+98,28,842525,Blue Bell,,0,6122,315665,1,1
+98,28,842524,Blue Bell,,0,6121,315665,1,1
+98,28,842552,Blue Bell,,0,6123,315665,1,1
+98,28,842551,Blue Bell,,0,6122,315665,1,1
+98,28,842550,Blue Bell,,0,6121,315665,1,1
+98,28,842549,Blue Bell,,0,6123,315665,1,1
+98,28,842548,Blue Bell,,0,6122,315665,1,1
+98,28,842547,Blue Bell,,0,6121,315665,1,1
+98,28,842546,Blue Bell,,0,6123,315665,1,1
+98,28,842545,Blue Bell,,0,6124,315665,1,1
+98,28,842544,Blue Bell,,0,6121,315665,1,1
+98,28,842543,Blue Bell,,0,6123,315665,1,1
+98,28,842542,Blue Bell,,0,6124,315665,1,1
+98,28,842541,Blue Bell,,0,6045,315665,1,1
+98,28,842540,Blue Bell,,0,6123,315665,1,1
+98,28,842539,Blue Bell,,0,6124,315665,1,1
+98,28,842538,Blue Bell,,0,6124,315665,1,1
+98,28,842537,Blue Bell,,0,6124,315665,1,1
+98,28,842534,Plymouth Meeting Mall,,0,6124,315664,1,1
+98,28,842533,Plymouth Meeting Mall,,0,6124,315664,1,1
+98,28,842582,Norristown Transit Center,,1,6121,315666,1,1
+98,28,842583,Norristown Transit Center,,1,6123,315666,1,1
+98,28,842581,Norristown Transit Center,,1,6122,315667,1,1
+98,28,842580,Norristown Transit Center,,1,6121,315667,1,1
+98,28,842579,Norristown Transit Center,,1,6123,315667,1,1
+98,28,842578,Norristown Transit Center,,1,6122,315667,1,1
+98,28,842577,Norristown Transit Center,,1,6121,315667,1,1
+98,28,842576,Norristown Transit Center,,1,6123,315667,1,1
+98,28,842575,Norristown Transit Center,,1,6122,315667,1,1
+98,28,842574,Norristown Transit Center,,1,6121,315667,1,1
+98,28,842573,Norristown Transit Center,,1,6123,315667,1,1
+98,28,842572,Norristown Transit Center,,1,6122,315667,1,1
+98,28,842571,Norristown Transit Center,,1,6121,315667,1,1
+98,28,842570,Norristown Transit Center,,1,6123,315667,1,1
+98,28,842569,Norristown Transit Center,,1,6122,315667,1,1
+98,28,842568,Norristown Transit Center,,1,6121,315667,1,1
+98,28,842567,Norristown Transit Center,,1,6123,315667,1,1
+98,28,842566,Norristown Transit Center,,1,6122,315667,1,1
+98,28,842565,Norristown Transit Center,,1,6121,315667,1,1
+98,28,842564,Norristown Transit Center,,1,6123,315667,1,1
+98,28,842554,Norristown Transit Center,,1,6124,315667,1,1
+98,28,842563,Norristown Transit Center,,1,6121,315667,1,1
+98,28,842562,Norristown Transit Center,,1,6123,315667,1,1
+98,28,842561,Norristown Transit Center,,1,6124,315667,1,1
+98,28,842560,Norristown Transit Center,,1,6045,315667,1,1
+98,28,842553,Norristown Transit Center,,1,6123,315667,1,1
+98,28,842559,Norristown Transit Center,,1,6124,315667,1,1
+98,28,842558,Norristown Transit Center,,1,6124,315667,1,1
+98,28,842557,Norristown Transit Center,,1,6124,315667,1,1
+98,28,842556,Norristown Transit Center,,1,6124,315666,1,1
+98,28,842555,Norristown Transit Center,,1,6124,315666,1,1
+98,30,842604,Plymouth Meeting Mall,,0,6121,315664,1,1
+98,30,842613,Plymouth Meeting Mall,,0,6122,315664,1,1
+98,30,842614,Plymouth Meeting Mall,,0,6702,315664,1,1
+98,30,842615,Plymouth Meeting Mall,,0,6122,315664,1,1
+98,30,842616,Plymouth Meeting Mall,,0,6261,315664,1,1
+98,30,842617,Plymouth Meeting Mall,,0,6701,315664,1,1
+98,30,842618,Plymouth Meeting Mall,,0,6702,315664,1,1
+98,30,842619,Plymouth Meeting Mall,,0,6122,315664,1,1
+98,30,842620,Plymouth Meeting Mall,,0,6261,315664,1,1
+98,30,842606,Plymouth Meeting Mall,,0,6123,315664,1,1
+98,30,842607,Plymouth Meeting Mall,,0,6032,315664,1,1
+98,30,842608,Plymouth Meeting Mall,,0,6122,315664,1,1
+98,30,842609,Plymouth Meeting Mall,,0,6702,315664,1,1
+98,30,842610,Plymouth Meeting Mall,,0,6123,315664,1,1
+98,30,842612,Plymouth Meeting Mall,,0,6032,315664,1,1
+98,30,842605,Plymouth Meeting Mall,,0,6123,315664,1,1
+98,30,842611,Plymouth Meeting Mall,,0,6123,315664,1,1
+98,30,842634,Norristown Transit Center,,1,6122,315666,1,1
+98,30,842635,Norristown Transit Center,,1,6702,315666,1,1
+98,30,842636,Norristown Transit Center,,1,6701,315666,1,1
+98,30,842637,Norristown Transit Center,,1,6261,315666,1,1
+98,30,842621,Norristown Transit Center,,1,6262,315666,1,1
+98,30,842622,Norristown Transit Center,,1,6121,315666,1,1
+98,30,842623,Norristown Transit Center,,1,6122,315666,1,1
+98,30,842624,Norristown Transit Center,,1,6261,315666,1,1
+98,30,842625,Norristown Transit Center,,1,6262,315666,1,1
+98,30,842626,Norristown Transit Center,,1,6032,315666,1,1
+98,30,842627,Norristown Transit Center,,1,6122,315666,1,1
+98,30,842628,Norristown Transit Center,,1,6702,315666,1,1
+98,30,842629,Norristown Transit Center,,1,6262,315666,1,1
+98,30,842630,Norristown Transit Center,,1,6032,315666,1,1
+98,30,842631,Norristown Transit Center,,1,6122,315666,1,1
+98,30,842632,Norristown Transit Center,,1,6123,315666,1,1
+98,30,842633,Norristown Transit Center,,1,6123,315666,1,1
+98,31,842647,Plymouth Meeting Mall,,0,6262,315664,1,1
+98,31,842642,Plymouth Meeting Mall,,0,6263,315664,1,1
+98,31,842643,Plymouth Meeting Mall,,0,6264,315664,1,1
+98,31,842646,Plymouth Meeting Mall,,0,6262,315664,1,1
+98,31,842644,Plymouth Meeting Mall,,0,6032,315664,1,1
+98,31,842645,Plymouth Meeting Mall,,0,6121,315664,1,1
+98,31,842638,Plymouth Meeting Mall,,0,6083,315664,1,1
+98,31,842639,Plymouth Meeting Mall,,0,6032,315664,1,1
+98,31,842640,Plymouth Meeting Mall,,0,6121,315664,1,1
+98,31,842641,Plymouth Meeting Mall,,0,6083,315664,1,1
+98,31,842648,Norristown Transit Center,,1,6262,315666,1,1
+98,31,842649,Norristown Transit Center,,1,6263,315666,1,1
+98,31,842650,Norristown Transit Center,,1,6264,315666,1,1
+98,31,842651,Norristown Transit Center,,1,6262,315666,1,1
+98,31,842657,Norristown Transit Center,,1,6032,315666,1,1
+98,31,842653,Norristown Transit Center,,1,6121,315666,1,1
+98,31,842654,Norristown Transit Center,,1,6083,315666,1,1
+98,31,842655,Norristown Transit Center,,1,6032,315666,1,1
+98,31,842656,Norristown Transit Center,,1,6121,315666,1,1
+98,31,842652,Norristown Transit Center,,1,6083,315666,1,1

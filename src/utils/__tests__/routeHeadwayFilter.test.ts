@@ -161,3 +161,94 @@ describe('the one frequency-filter rule: worst direction decides', () => {
     expect(featurePassesHeadwayFilter({ routeId: 'a' }, 'all', Infinity)).toBe(true);
   });
 });
+
+describe('a rush-hour-only direction beside an all-day one (#720)', () => {
+  const line = (p: Record<string, unknown>) => ({
+    type: 'Feature' as const,
+    geometry: { type: 'LineString' as const, coordinates: [[0, 0], [1, 1]] },
+    properties: { agencySlug: 'x', routeId: '1', routeShortName: '1', day: 'Weekday', ...p },
+  });
+  const features = () => {
+    const fc = [
+      line({ directionId: 0, headsign: 'A', tier: '20', serviceClass: 'regular', headway: 20, headwayByPeriod: { amPeak: 20, midday: 20, pmPeak: 20, evening: 30, late: null, overnight: null } }),
+      // Rush-hour-only, alone in its direction: every 10 at the peaks, nothing at midday.
+      line({ directionId: 1, headsign: 'B', tier: '10', serviceClass: 'time-limited', headway: 10, headwayByPeriod: { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null } }),
+    ];
+    normalizeRouteFilterFeatures(fc as any);
+    return fc.map(f => f.properties as any);
+  };
+
+  it('never makes the route read better than its all-day direction', () => {
+    const props = features();
+    expect(props.map(p => p.worstDirectionHeadway)).toEqual([20, 20]);
+    expect(props[0].worstDirectionHeadwayByPeriod).toMatchObject({ amPeak: 20, pmPeak: 20 });
+    expect(routePassesHeadwayFilter(props, 'all', 'Weekday', 15)).toBe(false);
+    expect(routePassesHeadwayFilter(props, 'amPeak', 'Weekday', 10)).toBe(false);
+    expect(routePassesHeadwayFilter(props, 'amPeak', 'Weekday', 20)).toBe(true);
+  });
+});
+
+describe('#899: all-day thresholds and a direction with no midday service', () => {
+  const line = (p: Record<string, unknown>) => ({
+    type: 'Feature' as const,
+    geometry: { type: 'LineString' as const, coordinates: [[0, 0], [1, 1]] },
+    properties: { agencySlug: 'x', routeId: '1', routeShortName: '1', day: 'Weekday', ...p },
+  });
+  const allDay = { amPeak: 20, midday: 20, pmPeak: 20, evening: 30, late: null, overnight: null };
+  const peak = { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null };
+  const props = (other: Record<string, unknown>) => {
+    const fc = [
+      line({ directionId: 0, headsign: 'A', tier: '20', serviceClass: 'regular', headway: 20, headwayByPeriod: allDay, periodCoverageHeadway: allDay, directionMiddayWait: 20 }),
+      line({ directionId: 1, headsign: 'B', headwayByPeriod: peak, periodCoverageHeadway: peak, directionMiddayWait: null, ...other }),
+    ];
+    normalizeRouteFilterFeatures(fc as any);
+    return fc.map(f => f.properties as any);
+  };
+
+  for (const [label, other] of [
+    ['rush-hour-only', { tier: '10', serviceClass: 'time-limited', headway: 10 }],
+    ['one-off', { tier: 'span', serviceClass: 'irregular', headway: null }],
+  ] as const) {
+    it(`a ${label} direction fails every all-day threshold; period filters are unchanged`, () => {
+      const p = props(other);
+      for (const max of [10, 20, 30, 60, 120]) expect(routePassesHeadwayFilter(p, 'all', 'Weekday', max), `all ${max}`).toBe(false);
+      // "All frequencies" applies no filter, and the line colour value is unchanged.
+      expect(routePassesHeadwayFilter(p, 'all', 'Weekday', Infinity)).toBe(true);
+      expect(routeFilterHeadway(p[0], 'all')).toBe(20);
+      // Midday still fails on coverage; the AM peak passes where both directions run.
+      expect(routePassesHeadwayFilter(p, 'midday', 'Weekday', 30)).toBe(false);
+      expect(routePassesHeadwayFilter(p, 'amPeak', 'Weekday', 20)).toBe(true);
+    });
+  }
+
+  it('an old tile without the flag behaves as before', () => {
+    const p = props({ tier: '10', serviceClass: 'time-limited', headway: 10 }).map(x => ({ ...x, worstDirectionMiddayCap: undefined }));
+    expect(featurePassesHeadwayFilter(p[0], 'all', 20)).toBe(true);
+  });
+});
+
+describe('#899: a direction with some midday service but no steady midday pattern caps the route', () => {
+  const line = (p: Record<string, unknown>) => ({
+    type: 'Feature' as const,
+    geometry: { type: 'LineString' as const, coordinates: [[0, 0], [1, 1]] },
+    properties: { agencySlug: 'x', routeId: '7', routeShortName: '7', day: 'Weekday', ...p },
+  });
+  it('every 15 all day one way, rush-hour-heavy the other (midday wait 100): fails every 30, passes every 120', () => {
+    const every15 = { amPeak: 15, midday: 15, pmPeak: 15, evening: 15, late: null, overnight: null };
+    const fc = [
+      line({ directionId: 0, headsign: 'A', tier: '15', serviceClass: 'regular', headway: 15, headwayByPeriod: every15, periodCoverageHeadway: every15, directionMiddayWait: 15 }),
+      line({ directionId: 1, headsign: 'B', tier: '10', serviceClass: 'time-limited', headway: 10,
+        headwayByPeriod: { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null },
+        periodCoverageHeadway: { amPeak: 10, midday: 100, pmPeak: 10, evening: null, late: null, overnight: null }, directionMiddayWait: 100 }),
+    ];
+    normalizeRouteFilterFeatures(fc as any);
+    const p = fc.map(f => f.properties as any);
+    expect(p[0].worstDirectionMiddayCap).toBe(100);
+    expect(routePassesHeadwayFilter(p, 'all', 'Weekday', 30)).toBe(false);
+    expect(routePassesHeadwayFilter(p, 'all', 'Weekday', 90)).toBe(false);
+    expect(routePassesHeadwayFilter(p, 'all', 'Weekday', 120)).toBe(true);
+    // The colour value is unchanged.
+    expect(routeFilterHeadway(p[0], 'all')).toBe(15);
+  });
+});
+

@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,as_route,network_id,route_text_color
+YELLOW,1,Y,Yellow,1,,FFD100,1,Metrorail,000000

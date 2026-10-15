@@ -136,6 +136,7 @@ describe('failing routes draw only their passing shared stretches', () => {
   // already counts every trip. The single-pattern direction draws along the paired stops too.
   // Cut from the 2026-10 feeds: one weekday, trips starting 7 AM to noon, every stop, so the
   // all-day value (the midday median) is the one these fixtures can judge.
+  // Rail stays one row per headsign (converging origins are labelled on surface routes only).
   for (const [fixture, slug, single, branches, max] of [
     ['nyct-b-subway', 'nyct-subway', 'Beach', ['Park Blvd', '145 St'], 15],
     ['cta-green-line', 'cta', 'Harlem-Green', ['East 63rd-Cottage Grove', 'Ashland/63rd'], 15],
@@ -271,3 +272,27 @@ describe('route card shared stretch matches the map', () => {
     expect(sharedStretchHeadway(fc.features, north, 'all', 15)).toBeNull();
   });
 });
+
+describe('#899: a route with a direction that has no midday service draws no all-day stretch', () => {
+  it('TTC 29 flagged draws nothing all day, its AM peak stretch and the card value are unchanged', async () => {
+    const fc = weekday(await ttc29());
+    for (const f of fc.features) if (f.geometry.type === 'LineString') (f.properties as any).worstDirectionMiddayCap = 999999;
+    expect(failingRouteSharedRanges(fc.features, fc.features, 'all', 15)).toEqual([]);
+    expect(failingRouteSharedRanges(fc.features, fc.features, 'all', 120)).toEqual([]);
+    expect(failingRouteSharedRanges(fc.features, fc.features, 'amPeak', 15).length).toBeGreaterThan(0);
+    const copies = lineProps(fc).filter(p => p.directionId === 0).map(p => ({ ...p }));
+    expect(sharedStretchHeadway(fc.features, copies, 'all', 15)).toBeNull();
+    // With no filter the card's "Shared stretch" row is unchanged (the cap only decides pass/fail).
+    expect(sharedStretchHeadway(fc.features, copies, 'all', Infinity)?.headway).toBe(8);
+  });
+
+  it('a midday cap of 100 fails the stretch at 15 and 60 but never shows as its value', async () => {
+    const fc = weekday(await ttc29());
+    for (const f of fc.features) if (f.geometry.type === 'LineString') (f.properties as any).worstDirectionMiddayCap = 100;
+    const copies = lineProps(fc).filter(p => p.directionId === 0).map(p => ({ ...p }));
+    expect(sharedStretchHeadway(fc.features, copies, 'all', 60)).toBeNull();
+    expect(sharedStretchHeadway(fc.features, copies, 'all', 120)?.headway).toBe(8);
+    expect(sharedStretchHeadway(fc.features, copies, 'all', Infinity)?.headway).toBe(8);
+  });
+});
+

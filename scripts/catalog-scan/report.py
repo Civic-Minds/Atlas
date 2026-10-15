@@ -36,12 +36,32 @@ for s in sorted(set(A)&set(B)):
             if RANK.get(qt,8)>RANK.get(pt,8): per[s]['tier down']+=1; down.append(rec)
             else: per[s]['tier up']+=1; up.append(rec)
         if q.get('stopTiers') is not None: per[s]['has stopTiers']+=1
+# Origin rows (CIV-221): a slot (route, direction, day, headsign) that has 'from <origin>' rows
+# must have two or more of them and no plain row beside them, or one of its rows understates
+# the service. Counted on the branch after the pipeline's own clearing.
+origin_slots=0; lone_origin=[]; plain_beside=[]
+for s in sorted(B):
+    y=B[s]
+    if not y.get('ok'): continue
+    slots=collections.defaultdict(lambda: {'labels':set(),'plain':0})
+    for k,q in y['lines'].items():
+        parts=k.split('|'); r,d,day,hs,var=parts[0],parts[1],parts[2],parts[3],parts[4]
+        if var.startswith('from '): slots[(r,d,day,hs)]['labels'].add(var)
+        elif var=='': slots[(r,d,day,hs)]['plain']+=1
+    for key,v in slots.items():
+        if not v['labels']: continue
+        origin_slots+=1
+        if len(v['labels'])<2: lone_origin.append((s,)+key+(sorted(v['labels'])[0],))
+        if v['plain']: plain_beside.append((s,)+key)
 tot=collections.Counter()
 for s,c in per.items(): tot.update(c)
 print('TOTAL', dict(tot), 'agencies', len(per), '| compare', A_DIR, 'vs', B_DIR)
 print('\nBY AGENCY (lines, headway, tier up, tier down) for agencies with any change:')
 for s,c in sorted(per.items(), key=lambda x:-(x[1]['headway']+x[1]['tier'])):
     if c['headway'] or c['tier'] or c['not ok']: print(f"  {s:24} lines {c['lines']:5} headway {c['headway']:4} tier up {c['tier up']:3} down {c['tier down']:3} {'NOT OK' if c['not ok'] else ''}")
+print('\nORIGIN ROWS: slots', origin_slots, '| single-origin rows', len(lone_origin), '| slots with a plain row beside origin rows', len(plain_beside))
+for n in lone_origin[:20]: print('   lone', n)
+for n in plain_beside[:20]: print('   plain beside', n)
 print('\nHEADLINE None on branch but not on base:', len(nones))
 cnt=collections.Counter(n[0] for n in nones); print('  by agency:', dict(cnt.most_common(25)))
 for n in nones[:30]: print('  ',n)
