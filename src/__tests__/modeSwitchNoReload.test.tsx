@@ -87,4 +87,25 @@ describe('switching modes (#888)', () => {
     expect(mapMounts).toBe(1);
     expect(agencyLists.size).toBe(1);
   });
+
+  it('the Atlas logo leaves Live and History in place, without remounting the map', async () => {
+    const onGoHome = vi.fn();
+    render(<BrowserRouter><App onGoHome={onGoHome} /></BrowserRouter>);
+    await screen.findByTestId('map', undefined, { timeout: 5000 });
+    const historyTab = () => screen.getByRole('button', { name: /Historical service|Back to frequency map/ });
+    await waitFor(() => historyTab());
+
+    for (const open of [() => screen.getByRole('button', { name: 'Live vehicles' }), historyTab]) {
+      await act(async () => { fireEvent.click(open()); });
+      await waitFor(() => expect(window.location.pathname).not.toBe('/'));
+      await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Atlas home' })); });
+      await waitFor(() => expect(window.location.pathname).toBe('/'));
+    }
+    expect(onGoHome).not.toHaveBeenCalled();
+    expect(mapMounts).toBe(1);
+
+    // On the plain map the logo still resets everything, as before.
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Atlas home' })); });
+    expect(onGoHome).toHaveBeenCalledTimes(1);
+  });
 });

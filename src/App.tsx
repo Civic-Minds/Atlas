@@ -27,6 +27,7 @@ import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './com
 import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
+import { preloadHistory } from './utils/historyConfig';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
@@ -440,6 +441,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
     [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
   )));
+  // On the plain map (not in Live, where the extra download isn't worth it), warm History in idle time once its
+  // tab is on offer, so the first open doesn't wait on the code or the multi-megabyte config.
+  const warmHistory = showHistoryControl && inFrequency && agenciesLoadState === 'ready';
+  useEffect(() => {
+    if (!warmHistory) return;
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(preloadHistory, { timeout: 5000 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = window.setTimeout(preloadHistory, 3000);
+    return () => window.clearTimeout(id);
+  }, [warmHistory]);
   // Always open History on the agency chooser rather than guessing one from
   // whatever the map happens to be showing -- auto-jumping straight to an
   // agency (e.g. TTC, just because the map defaults to Toronto) surprised
@@ -558,6 +572,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           onClick={() => {
             if (inFrequentServiceStory) {
               navigate(FEATURE_ROUTES.frequentService.map);
+            } else if (inLive || inHistory || inNight) {
+              // Leaving a mode: switch in place like the mode's own tab, so the map isn't torn down and rebuilt.
+              setActiveApp('frequency');
             } else if (onGoHome) {
               onGoHome();
             } else {
@@ -645,6 +662,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             ariaLabel={inHistory ? 'Back to frequency map' : 'Historical service'}
             active={inHistory} collapsed={historyTabCollapsed}
             onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
+            onWarm={preloadHistory}
           />
         )}
 
@@ -688,6 +706,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   )}
                   {showHistoryControl && (
                     <ModeTab
+                      onWarm={preloadHistory}
                       variant="menu" icon={<HistoryIcon className="w-3.5 h-3.5" aria-hidden="true" />}
                       label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
                       active={inHistory}
@@ -792,7 +811,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setDataSaver={setDataSaver}
             />
             {FEATURES.history && (historyOpened || inHistory) && (
-              <React.Suspense fallback={null}>
+              <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
                 <History active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}

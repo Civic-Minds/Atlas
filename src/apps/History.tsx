@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
+import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp, History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
-import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
+import { type HeadwayByPeriod } from '../../shared/config';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { FLOATING_CARD, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, AGENCY_LIST_PRIMARY, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
@@ -515,15 +516,8 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
 
   const loadHistoryConfig = useCallback(() => {
     setHistoryLoadFailed(false);
-    const fetchUrl = `${R2_PUBLIC_URL}/atlas/history-config.json`;
-    fetch(fetchUrl)
-      .then(r => {
-        if (!r.ok) {
-          throw new Error(`HTTP error! status: ${r.status}`);
-        }
-        return r.json();
-      })
-      .then((data: AgencyHistory[]) => {
+    loadHistoryConfigShared()
+      .then(data => {
         setHistoryData(data);
       })
       .catch((err) => {

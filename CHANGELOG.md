@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Clicking the Atlas logo while in Live, History or Night Service now leaves that mode in place, like its own tab, instead of rebuilding the whole map (which flashed). On the plain map the logo still resets everything.
+- History opens faster the first time: its code and data are fetched in idle time once the map has loaded (or as soon as you point at the tab), and the tab shows "Loading history…" straight away if it isn't ready (CIV-218, part).
 - **Maps open and pan faster**: History's large data file and unused screens now load only when opened, and panning no longer stalls while tiles load (CIV-218).
 - **Live shows what each agency offers**: the "Live in these places" list tags each agency "Vehicles" or "Vehicles + performance" so you know what to expect (CIV-219).
 - **Live route lateness no longer reads "on time" for every TTC trip**: a feed with no delay now counts as unknown, not zero ([#866](https://github.com/Civic-Minds/Atlas/issues/866)).

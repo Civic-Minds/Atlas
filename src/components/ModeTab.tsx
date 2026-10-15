@@ -10,7 +10,7 @@ const FOCUS = 'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(-
  * none of them is a link.
  */
 export default function ModeTab({
-  icon, label, extra, active, collapsed = false, onClick, ariaLabel, variant = 'bar',
+  icon, label, extra, active, collapsed = false, onClick, onWarm, ariaLabel, variant = 'bar',
 }: {
   icon: React.ReactNode;
   label: string;
@@ -20,6 +20,8 @@ export default function ModeTab({
   /** Another mode is active: the bar tab shrinks to its icon. */
   collapsed?: boolean;
   onClick: () => void;
+  /** Hover, focus or touch: the user is about to open this mode, so start loading what it needs. */
+  onWarm?: () => void;
   ariaLabel?: string;
   variant?: 'bar' | 'menu';
 }) {
@@ -30,6 +32,9 @@ export default function ModeTab({
       <button
         type="button"
         onClick={onClick}
+        onPointerEnter={onWarm}
+        onFocus={onWarm}
+        onTouchStart={onWarm}
         aria-pressed={active}
         aria-label={ariaLabel}
         className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${FOCUS} ${state}`}
@@ -44,6 +49,9 @@ export default function ModeTab({
     <button
       type="button"
       onClick={onClick}
+      onPointerEnter={onWarm}
+      onFocus={onWarm}
+      onTouchStart={onWarm}
       aria-pressed={active}
       aria-label={ariaLabel}
       title={collapsed ? label : undefined}
