@@ -12,12 +12,30 @@ import {
   type LineModel, type LineStop, type Stretch,
 } from '../../utils/livePerformance';
 
-/** "3½", "10", "½" — minutes to the nearest ½. */
-export function mins(sec: number): string {
-  const m = halfMinutes(sec);
+function halfText(m: number): string {
   const whole = Math.floor(Math.abs(m));
   const half = Math.abs(m) - whole >= 0.5;
   return `${m < 0 ? '−' : ''}${whole === 0 && half ? '' : whole}${half ? '½' : ''}`;
+}
+
+/** "3½", "10", "½" — minutes to the nearest ½. */
+export function mins(sec: number): string {
+  return halfText(halfMinutes(sec));
+}
+
+/**
+ * A range of gaps in ½ min steps, widened outward (low end down, high end up) so the
+ * shown range never looks tighter than the data: 1.3–9.1 min reads "1–9½".
+ */
+export function minsRange(lowSec: number, highSec: number): string {
+  return `${halfText(Math.floor(lowSec / 30) / 2)}–${halfText(Math.ceil(highSec / 30) / 2)}`;
+}
+
+/** The timetable's gap: one value, or a range when the period mixes headways ("8–14"). */
+export function schedText(st: { scheduledMedianGapSec: number; scheduledP10Sec?: number; scheduledP90Sec?: number }): string {
+  const lo = st.scheduledP10Sec, hi = st.scheduledP90Sec;
+  if (lo == null || hi == null || mins(lo) === mins(hi)) return mins(st.scheduledMedianGapSec);
+  return `${mins(lo)}–${mins(hi)}`;
 }
 
 const HEAD = 'text-xs font-black text-[var(--text-dim)]';
@@ -124,7 +142,7 @@ function GapStrip({ stops, onRow, activeIndex }: { stops: LineStop[]; onRow?: (i
         >
           <span className={`${ROW_LABEL} w-[30%] shrink-0`} title={stopLabel(s.name)}>{s.label}</span>
           <GapBar stop={s} scaleSec={scale} />
-          <span className={`${NUM} w-[3.75rem] shrink-0 text-right`}>{mins(s.stat!.gapP10Sec)}–{mins(s.stat!.gapP90Sec)}</span>
+          <span className={`${NUM} w-[3.75rem] shrink-0 text-right`}>{minsRange(s.stat!.gapP10Sec, s.stat!.gapP90Sec)}</span>
         </button>
       ))}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pt-1 text-[10px] font-bold text-[var(--text-dim)]">
@@ -328,10 +346,11 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
     );
   }
 
-  const summary = sharedSummary(line, stops);
+  const summary = sharedSummary(data, line, band);
   const ewt = extraWaitRun(stops);
   const tally = runningTimeTally(line.segments, band);
   const liveBand = livePeriod(data);
+  const liveSched = sharedSummary(data, line, liveBand);
   const live = feedDegraded || !recent ? null : liveGaps(data, line, liveBand === band ? stops : withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000));
 
   return (
@@ -341,7 +360,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
       <Section title={`Right now · ${torontoTime(new Date(now))}`}>
         {live && !live.incomplete ? (
           <>
-            <Figures items={[`${live.cars} cars on ${line.sharedStreet ?? 'the line'}`, live.scheduledSec ? `scheduled every ${mins(live.scheduledSec)}` : null]} />
+            <Figures items={[`${live.cars} cars on ${line.sharedStreet ?? 'the line'}`, liveSched ? `scheduled every ${schedText(liveSched)}` : live.scheduledSec ? `scheduled every ${mins(live.scheduledSec)}` : null]} />
             <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-xs font-bold tabular-nums">
               <span className="text-[var(--text-dim)]">Gaps, front to back (min)</span>
               {live.gapsMin.map((g, i) => (
@@ -356,12 +375,12 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
         )}
       </Section>
 
-      <Section title={`${bandLabel} · ${directions.find(d => d.id === directionId)?.label ?? ''}${summary ? ` · ${summary.street}` : ''}`}>
+      <Section title={`${bandLabel} · ${directions.find(d => d.id === directionId)?.label ?? ''}${summary ? ` · ${line.sharedStreet}` : ''}`}>
         {summary && (
           <Stats items={[
-            ['Scheduled', `every ${mins(summary.scheduledSec)}`],
-            ['Typical gap', `${mins(summary.typicalSec)} min`],
-            ['8 in 10 gaps', `${mins(summary.p10Sec)}–${mins(summary.p90Sec)} min`],
+            ['Scheduled', `every ${schedText(summary)}`],
+            ['Typical gap', `${mins(summary.actualMedianGapSec)} min`],
+            ['8 in 10 gaps', `${minsRange(summary.gapP10Sec, summary.gapP90Sec)} min`],
           ]} />
         )}
         {ewt && ewt.peak.stat!.excessWaitSec! >= 30 && (
@@ -422,7 +441,7 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
           <div key={s.stopId} className="flex flex-col">
             <span className={ROW_LABEL}>{s.label}</span>
             <span className={DETAIL}>
-              Scheduled every {mins(s.stat!.scheduledMedianGapSec)} · typical {mins(s.stat!.actualMedianGapSec)} · 8 in 10: {mins(s.stat!.gapP10Sec)}–{mins(s.stat!.gapP90Sec)} min
+              Scheduled every {schedText(s.stat!)} · typical {mins(s.stat!.actualMedianGapSec)} · 8 in 10: {minsRange(s.stat!.gapP10Sec, s.stat!.gapP90Sec)} min
               {s.stat!.excessWaitSec != null && <> · extra wait {mins(s.stat!.excessWaitSec)} min</>} · {s.stat!.gaps} gaps, {s.stat!.days} days
             </span>
           </div>
@@ -453,7 +472,7 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
         <ul className="list-disc pl-4 text-xs text-[var(--text-muted)] leading-snug flex flex-col gap-1">
           <li>Vehicle positions recorded about once a minute, {totalDays} days ({range}; last day partial). Each stop's passing time is interpolated between positions.</li>
           <li>Gaps are measured only where every scheduled trip in a row was seen at the stop, so a missing car never shows as one long gap. Trips not seen are left out, so real waits can be longer.</li>
-          <li>"8 in 10 gaps" is the 10th to 90th percentile of actual gaps. Typical is the median. Extra wait is the average wait for a rider arriving at random, minus the same for the timetable.</li>
+          <li>"8 in 10 gaps" is the 10th to 90th percentile of actual gaps, widened to the next ½ min at each end; for the shared section, every gap at its stops is pooled. Typical is the median. A scheduled range means the timetable mixes headways in that period. Extra wait is the average wait for a rider arriving at random, minus the same for the timetable.</li>
           <li>Time between stops compares every car's time for each stop pair with the timetable for that time of day. Line ends and the stop next to them are left out (layover and loop time).</li>
           <li>Stood still: moved 25 m or less for 2+ min within 60 m of a stop. Could be holding for time, a signal or a blockage; the data can't tell which. Terminals, turn-back points and carhouses are left out; a stop needs 10 times on 5 days.</li>
           <li>Right now: from the last 30 min of recorded positions, a gap is how long ago the car ahead passed the spot where the car behind is now. "–" means that passing wasn't seen. Cars on trips the timetable doesn't list (e.g. added buses) count once their own track shows which way they're going; ones that haven't moved 200 m in 10 min are treated as parked. Hidden when the feed is behind, a moving car's direction can't be told, or fewer than half the scheduled cars are reporting.</li>

@@ -121,7 +121,15 @@ describe('headway adherence', () => {
     ])!;
     expect(stat.gapP10Sec).toBe(120); // 2nd of 20
     expect(stat.gapP90Sec).toBe(1080); // 18th of 20
+    expect(stat.scheduledP10Sec).toBe(300);
+    expect(stat.scheduledP90Sec).toBe(300);
     expect(stat.days).toBe(2);
+  });
+
+  it('reports the timetable\'s own range when a period mixes headways', () => {
+    const stat = headwayBandStat([{ date: 'd', actualGaps: [500, 600, 800], scheduledGaps: [480, 600, 600, 840, 840] }])!;
+    expect(stat.scheduledP10Sec).toBe(480);
+    expect(stat.scheduledP90Sec).toBe(840);
   });
 
   it('keeps an even service\'s range tight around the scheduled gap', () => {

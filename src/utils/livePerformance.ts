@@ -14,7 +14,7 @@ const MAX_PLACE_M = 60;
 /** Positions older than this aren't used for "Right now". */
 export const LIVE_STALE_SEC = 180;
 
-export type GapStat = HeadwayBandStat & { gapP10Sec: number; gapP90Sec: number };
+export type GapStat = HeadwayBandStat & { gapP10Sec: number; gapP90Sec: number; scheduledP10Sec?: number; scheduledP90Sec?: number };
 
 export interface LineStop {
   stopId: string;
@@ -154,25 +154,11 @@ const med = (xs: number[]) => {
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
 };
 
-export interface SharedSummary {
-  street: string;
-  scheduledSec: number;
-  typicalSec: number;
-  p10Sec: number;
-  p90Sec: number;
-}
-
-/** Header figures for the shared section: medians over its measured stops. */
-export function sharedSummary(line: LineModel, stops: LineStop[]): SharedSummary | null {
-  const shared = stops.filter(s => s.shared && s.stat);
-  if (shared.length === 0 || !line.sharedStreet) return null;
-  return {
-    street: line.sharedStreet,
-    scheduledSec: med(shared.map(s => s.stat!.scheduledMedianGapSec))!,
-    typicalSec: med(shared.map(s => s.stat!.actualMedianGapSec))!,
-    p10Sec: med(shared.map(s => s.stat!.gapP10Sec))!,
-    p90Sec: med(shared.map(s => s.stat!.gapP90Sec))!,
-  };
+/** Header figures for the shared section: the analysis pools every gap at its stops (not a median of stop ranges). */
+export function sharedSummary(data: SegmentDelayData & { sharedSection?: Record<string, { bands: Record<string, GapStat | null> }> }, line: LineModel, band: SegmentBand): GapStat | null {
+  const st = data.sharedSection?.[String(line.directionId)]?.bands?.[band] ?? null;
+  if (!st || !line.sharedStreet || st.gaps < MIN_STRIP_GAPS || st.days < MIN_DAYS) return null;
+  return st;
 }
 
 /** Extra wait at the first measured stop and where it peaks. */

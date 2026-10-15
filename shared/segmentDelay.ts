@@ -265,6 +265,9 @@ export interface HeadwayBandStat {
   /** Nearest-rank 10th and 90th percentiles of the actual gaps: 8 in 10 gaps fall between them. */
   gapP10Sec: number;
   gapP90Sec: number;
+  /** Nearest-rank 10th and 90th percentiles of the timetable's gaps, so a period that mixes headways reads as a range. */
+  scheduledP10Sec: number;
+  scheduledP90Sec: number;
 }
 
 export interface HeadwayStopStat {
@@ -339,6 +342,8 @@ export function headwayBandStat(
     actualMedianGapSec: Math.round(median(usable.flatMap(w => w.actualGaps))!),
     gapP10Sec: Math.round(percentile(usable.flatMap(w => w.actualGaps), 0.1)!),
     gapP90Sec: Math.round(percentile(usable.flatMap(w => w.actualGaps), 0.9)!),
+    scheduledP10Sec: Math.round(percentile(usable.flatMap(w => w.scheduledGaps), 0.1)!),
+    scheduledP90Sec: Math.round(percentile(usable.flatMap(w => w.scheduledGaps), 0.9)!),
     withinShare: Math.round((within / gaps) * 100) / 100,
     excessWaitSec: weight ? Math.round(ewtSum / weight) : null,
   };

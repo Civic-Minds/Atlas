@@ -340,6 +340,24 @@ const headways = [...headwayByStop].map(([k, m]) => {
   };
 });
 
+// --- the section every branch shares, per direction: gaps pooled across its stops ---
+// A stop is on it when its passes are at least 3/4 of the busiest stop's in that direction
+// (the same rule the card uses on stop pairs); line ends are left out below.
+function sharedSectionStats(terminal: Set<string>) {
+  const out: Record<string, { stops: string[]; bands: Record<string, ReturnType<typeof headwayBandStat>> }> = {};
+  for (const dir of new Set(headways.map(h => h.directionId))) {
+    const counts = headways.filter(h => h.directionId === dir).map(h => ({ id: h.stopId, n: (passagesAt.get(`${h.stopId}|${dir}`) ?? []).length }));
+    const max = Math.max(...counts.map(c => c.n));
+    const stops = counts.filter(c => c.n >= 0.75 * max && !terminal.has(c.id)).map(c => c.id);
+    const pooled = new Map<string, Win[]>();
+    for (const id of stops) {
+      for (const [b, wins] of headwayByStop.get(`${id}|${dir}`) ?? []) pooled.set(b, [...(pooled.get(b) ?? []), ...wins]);
+    }
+    out[dir] = { stops, bands: Object.fromEntries([...pooled].map(([b, wins]) => [b, headwayBandStat(wins)]).filter(([, v]) => v)) };
+  }
+  return out;
+}
+
 // --- geometry and terminal flags ---
 function slice(shape: Shape, a: number, b: number): [number, number][] {
   const at = (d: number): [number, number] => {
@@ -641,6 +659,7 @@ const result = {
     standingStillLabel: 'Stood still 2+ min near this stop (terminals, turn-back points, carhouses, layovers and operator changes left out)',
     missed, shortTurns, standingStill: holdStats,
   },
+  sharedSection: sharedSectionStats(terminalStops),
   headways: headways.map(h => {
     const to = nextStop.get(`${h.stopId}|${h.directionId}`);
     return { ...h, terminal: terminalStops.has(h.stopId), coordinates: to ? segGeom.get(segmentKey(h.stopId, to)) ?? [] : [] };
