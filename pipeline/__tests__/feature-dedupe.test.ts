@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideDedupe, isSameLine, isThinNoDaytime, MIN_THIN_REPLACING_DEPARTURES, type DedupePattern } from '../featureDedupe';
+import { decideDedupe, explainDedupe, isSameLine, isThinNoDaytime, MIN_THIN_REPLACING_DEPARTURES, type DedupePattern } from '../featureDedupe';
 import { MIN_ALL_DAY_TERMINAL_DEPARTURES } from '../headway-utils';
 
 // The dedupe rules in order (#596, #716, #740, #772), each on the case that introduced it.
@@ -93,5 +93,19 @@ describe('a pattern with no departure 09:00-19:00 never holds the slot against a
   it('still lets a midday pattern of a thin block lose on headway (CapMetro per-trip shapes)', () => {
     const thinMidday = { ...allDay, departures: 5 };
     expect(decideDedupe(morningEvening, thinMidday, undefined)).toBe('keep');
+  });
+});
+
+describe('explainDedupe names the rule that decided (CIV-208)', () => {
+  it('names the step under which the incumbent held, else the step the candidate won, else headway', () => {
+    expect(explainDedupe(undefined, pattern(), undefined)).toEqual({ decision: 'replace', reason: 'empty-slot' });
+    expect(explainDedupe(pattern(), pattern({ hasShape: false, dedupeHeadway: 5 }), undefined)).toEqual({ decision: 'keep', reason: 'drawn-over-mapless' });
+    // TTC 86 Saturday to Kennedy (#877): the all-day shape takes the slot from the morning-and-evening one.
+    const morningEvening = pattern({ dedupeHeadway: 8, headway: 8, departures: 25, hasDaytime: false, runsMidday: false });
+    const allDay = pattern({ dedupeHeadway: 10, headway: 10, departures: 69 });
+    expect(explainDedupe(morningEvening, allDay, undefined)).toEqual({ decision: 'replace', reason: 'midday-over-no-daytime' });
+    expect(explainDedupe(allDay, morningEvening, undefined)).toEqual({ decision: 'keep', reason: 'midday-over-no-daytime' });
+    expect(explainDedupe(pattern({ dedupeHeadway: 20 }), pattern({ dedupeHeadway: 15 }), undefined)).toEqual({ decision: 'replace', reason: 'headway' });
+    expect(explainDedupe(pattern({ dedupeHeadway: 15 }), pattern({ dedupeHeadway: 15 }), undefined)).toEqual({ decision: 'keep', reason: 'headway' });
   });
 });

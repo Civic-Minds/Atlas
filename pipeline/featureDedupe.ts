@@ -94,6 +94,23 @@ export function isThinNoDaytime(pattern: Pick<DedupePattern, 'hasDaytime' | 'dep
 
 export type DedupeDecision = 'keep' | 'replace';
 
+/** Whether `winner` beats `loser` under one dedupe step. */
+type DedupeTest = (winner: DedupePattern, loser: DedupePattern) => boolean;
+/** The rule that decided a dedupe, named for traces and dry-run output. */
+export type DedupeReason =
+  | 'empty-slot'
+  | 'drawn-over-mapless'
+  | 'representative-weekday'
+  | 'midday-over-no-daytime'
+  | 'midday-on-same-line'
+  | 'daytime-over-thin'
+  | 'headway';
+export interface DedupeExplanation { decision: DedupeDecision; reason: DedupeReason }
+/** One step: whether the incumbent holds the slot, and whether the candidate would take it. */
+interface DedupeStep { reason: DedupeReason; holds: DedupeTest; takes: DedupeTest }
+/** A step whose hold and take are the same test, read from either side. */
+const mirrored = (reason: DedupeReason, test: DedupeTest): DedupeStep => ({ reason, holds: test, takes: test });
+
 /**
  * Whether `candidate` takes the slot from `incumbent` (undefined: the slot is empty).
  * `repWeekday` is the slot's representative weekday for Weekday slots, undefined otherwise.
@@ -103,72 +120,96 @@ export function decideDedupe(
   candidate: DedupePattern,
   repWeekday: DayName | undefined,
 ): DedupeDecision {
-  if (!incumbent) return 'replace';
+  return explainDedupe(incumbent, candidate, repWeekday).decision;
+}
 
-  // Step 1 (#596): a drawn line always beats a mapless point for the same slot, whichever is
-  // more frequent and whichever arrives first, so reprocessing never turns a line into a point.
-  if (incumbent.hasShape && !candidate.hasShape) return 'keep';
+/**
+ * decideDedupe with the rule that decided it: the step under which the incumbent held, else the
+ * first step the candidate won, else 'headway' (Step 5), so a dedupe reads in one line.
+ */
+export function explainDedupe(
+  incumbent: DedupePattern | undefined,
+  candidate: DedupePattern,
+  repWeekday: DayName | undefined,
+): DedupeExplanation {
+  if (!incumbent) return { decision: 'replace', reason: 'empty-slot' };
+  // Conditions on the pair, the same whichever side holds the slot.
   const replacesMaplessWithShape = !incumbent.hasShape && candidate.hasShape;
-
-  // Step 2 (#716): between two drawn lines on a Weekday slot, the one that carries the
-  // representative weekday holds against one that does not run on it, and a pattern carrying
-  // that day takes the slot from one that does not run on it (cata-state-college VE Campus
-  // drew the Friday-only shape although the route's typical weekday is Mon-Thu). Every other
-  // case falls through to the headway rule.
   const bothDrawn = incumbent.hasShape && candidate.hasShape && repWeekday != null;
-  if (bothDrawn && incumbent.carriesRepDay && !candidate.runsOnRepDay) return 'keep';
-  const prefersRepDayShape = bothDrawn && !incumbent.runsOnRepDay && candidate.carriesRepDay;
-
-  // Step 3 (#746): a pattern that runs only late at night or before dawn never wins the slot
-  // from one that runs through the midday, whatever its headway: YRT Viva Blue's 11 pre-dawn
-  // Richmond Hill-Newmarket trips (median 11) took the Newmarket slot from the 85 all-day Finch
-  // trips. Only that pair: a pattern with some daytime service but none at midday (a night
-  // route's first Sunday-morning trips, TTC 304 and 320) keeps the headway rule. Only between
-  // two rated patterns, and the midday side must be a real sample (MIN_THIN_REPLACING_DEPARTURES,
-  // the same floor as Step 4): in a feed that gives every 3-5 trip block its own shape (CapMetro,
-  // #737) a midday block reads its own few trips (320 Springdale Sunday 110 -> 153).
-  // #877: the same for a pattern with no departure at all between 09:00 and 19:00, even when
-  // its early-morning or evening trips give it a period value: TTC 86 Saturday's 58-trip
-  // morning-and-evening shape (every 8 at its terminal, nothing 9-19h) held the Kennedy slot
-  // against the 69-trip all-day shape, and the direction read limited with no midday value.
-  // Unlike Step 3b this has no same-line guard, so a longer peak-only line to the same
-  // destination (#728, #865) also gives up the slot to a midday pattern; the catalog scan of
-  // the change lost or gained no headline, so it stays unguarded until a case needs one.
   const bothTimed = !replacesMaplessWithShape && candidate.headway != null && incumbent.headway != null;
-  if (bothTimed && incumbent.runsMidday && incumbent.departures >= MIN_THIN_REPLACING_DEPARTURES && (!candidate.runsInDay || !candidate.hasDaytime)) return 'keep';
-  const replacesNightOnly = bothTimed && candidate.runsMidday && candidate.departures >= MIN_THIN_REPLACING_DEPARTURES
-    && (!incumbent.runsInDay || !incumbent.hasDaytime);
-
-  // Step 3b (#844, #842): between two drawings of the same line whose headways read as one
-  // service, a pattern with no midday trips never takes or keeps the slot from one that runs
-  // through the midday. Lethbridge 4 Saturday's morning-and-evening shape scored its all-day
-  // median (33) against the midday shape's midday headway (35), won, and drew a 339 minute
-  // midday gap; REM A3's afternoon pattern to one platform beat the morning pattern to the other.
-  // Same line only: a longer peak-only line keeps its own geometry (#728) and a variant to
-  // another terminal keeps its slot (#865). The midday side must be a real sample, as in Step 3.
   const sameLine = bothTimed && incumbent.hasShape && candidate.hasShape && isSameLine(incumbent.line, candidate.line);
-  if (sameLine && incumbent.runsMidday && incumbent.departures >= MIN_THIN_REPLACING_DEPARTURES && !candidate.runsMidday
-    && readsAsSameService(incumbent.dedupeHeadway, candidate.dedupeHeadway)) return 'keep';
-  const middayReplacesNoMidday = sameLine && candidate.runsMidday && candidate.departures >= MIN_THIN_REPLACING_DEPARTURES
-    && !incumbent.runsMidday && readsAsSameService(candidate.dedupeHeadway, incumbent.dedupeHeadway);
 
-  // Step 4 (#740): a thin result with no daytime service never holds the drawn line against a
-  // sibling with daytime service under the same destination (TTC 100 via Linkwood's 3 trips
-  // before 06:30 scored their own median, 15, against the 31-trip peak shape's 18). The daytime
-  // sibling must be a real sample (MIN_THIN_REPLACING_DEPARTURES): in a feed that gives every
-  // 3-5 trip block its own shape (CapMetro, #737) every block is thin-sized and the thin-shape
-  // rescue's pooled headline is the right one, so those feeds keep the headway rule.
-  const candidateIsThin = isThinNoDaytime(candidate);
-  const incumbentIsSample = incumbent.departures >= MIN_THIN_REPLACING_DEPARTURES;
-  if (incumbent.hasShape && candidate.hasShape && candidateIsThin && incumbent.hasDaytime && incumbentIsSample) return 'keep';
-  const daytimeReplacesThin = isThinNoDaytime(incumbent) && candidate.hasDaytime && candidate.headway != null
-    && candidate.departures >= MIN_THIN_REPLACING_DEPARTURES;
+  // Each step reads one pattern against the other. In order, the first step under which the
+  // incumbent holds keeps the slot; if none does, the candidate takes it when it wins any step,
+  // and otherwise the headway rule (Step 5) decides. Most steps are one test read both ways
+  // (mirrored), so a change to a rule moves the keep and the take together (#877 had to edit
+  // both lines by hand); Step 4 holds and takes on different terms.
+  const steps: DedupeStep[] = [
+    // Step 1 (#596): a drawn line always beats a mapless point for the same slot, whichever is
+    // more frequent and whichever arrives first, so reprocessing never turns a line into a point.
+    mirrored('drawn-over-mapless', (winner, loser) => winner.hasShape && !loser.hasShape),
+
+    // Step 2 (#716): between two drawn lines on a Weekday slot, the one that carries the
+    // representative weekday holds against one that does not run on it, and a pattern carrying
+    // that day takes the slot from one that does not run on it (cata-state-college VE Campus
+    // drew the Friday-only shape although the route's typical weekday is Mon-Thu). Every other
+    // case falls through to the headway rule.
+    mirrored('representative-weekday', (winner, loser) => bothDrawn && winner.carriesRepDay && !loser.runsOnRepDay),
+
+    // Step 3 (#746): a pattern that runs only late at night or before dawn never wins the slot
+    // from one that runs through the midday, whatever its headway: YRT Viva Blue's 11 pre-dawn
+    // Richmond Hill-Newmarket trips (median 11) took the Newmarket slot from the 85 all-day Finch
+    // trips. Only that pair: a pattern with some daytime service but none at midday (a night
+    // route's first Sunday-morning trips, TTC 304 and 320) keeps the headway rule. Only between
+    // two rated patterns, and the midday side must be a real sample (MIN_THIN_REPLACING_DEPARTURES,
+    // the same floor as Step 4): in a feed that gives every 3-5 trip block its own shape (CapMetro,
+    // #737) a midday block reads its own few trips (320 Springdale Sunday 110 -> 153).
+    // #877: the same for a pattern with no departure at all between 09:00 and 19:00, even when
+    // its early-morning or evening trips give it a period value: TTC 86 Saturday's 58-trip
+    // morning-and-evening shape (every 8 at its terminal, nothing 9-19h) held the Kennedy slot
+    // against the 69-trip all-day shape, and the direction read limited with no midday value.
+    // Unlike Step 3b this has no same-line guard, so a longer peak-only line to the same
+    // destination (#728, #865) also gives up the slot to a midday pattern; the catalog scan of
+    // the change lost or gained no headline, so it stays unguarded until a case needs one.
+    mirrored('midday-over-no-daytime', (winner, loser) => bothTimed && winner.runsMidday && winner.departures >= MIN_THIN_REPLACING_DEPARTURES
+      && (!loser.runsInDay || !loser.hasDaytime)),
+
+    // Step 3b (#844, #842): between two drawings of the same line whose headways read as one
+    // service, a pattern with no midday trips never takes or keeps the slot from one that runs
+    // through the midday. Lethbridge 4 Saturday's morning-and-evening shape scored its all-day
+    // median (33) against the midday shape's midday headway (35), won, and drew a 339 minute
+    // midday gap; REM A3's afternoon pattern to one platform beat the morning pattern to the other.
+    // Same line only: a longer peak-only line keeps its own geometry (#728) and a variant to
+    // another terminal keeps its slot (#865). The midday side must be a real sample, as in Step 3.
+    mirrored('midday-on-same-line', (winner, loser) => sameLine && winner.runsMidday && winner.departures >= MIN_THIN_REPLACING_DEPARTURES
+      && !loser.runsMidday && readsAsSameService(winner.dedupeHeadway, loser.dedupeHeadway)),
+
+    // Step 4 (#740): a thin result with no daytime service never holds the drawn line against a
+    // sibling with daytime service under the same destination (TTC 100 via Linkwood's 3 trips
+    // before 06:30 scored their own median, 15, against the 31-trip peak shape's 18). The daytime
+    // sibling must be a real sample (MIN_THIN_REPLACING_DEPARTURES): in a feed that gives every
+    // 3-5 trip block its own shape (CapMetro, #737) every block is thin-sized and the thin-shape
+    // rescue's pooled headline is the right one, so those feeds keep the headway rule.
+    // Not mirrored: the hold needs both patterns drawn, the take needs a rated candidate instead.
+    {
+      reason: 'daytime-over-thin',
+      holds: (incumbent, candidate) => incumbent.hasShape && candidate.hasShape && isThinNoDaytime(candidate)
+        && incumbent.hasDaytime && incumbent.departures >= MIN_THIN_REPLACING_DEPARTURES,
+      takes: (candidate, incumbent) => isThinNoDaytime(incumbent) && candidate.hasDaytime && candidate.headway != null
+        && candidate.departures >= MIN_THIN_REPLACING_DEPARTURES,
+    },
+  ];
+  let candidateWon: DedupeReason | null = null;
+  for (const step of steps) {
+    if (step.holds(incumbent, candidate)) return { decision: 'keep', reason: step.reason };
+    if (candidateWon == null && step.takes(candidate, incumbent)) candidateWon = step.reason;
+  }
+  if (candidateWon != null) return { decision: 'replace', reason: candidateWon };
 
   // Step 5 (#772): otherwise the slot goes to the better plain-median headway. A span result
   // (null) never beats a rated one, and the incumbent keeps an equal headway; the plain median
   // decides so that reading alternating gaps honestly never swaps which shape is drawn.
-  if (!replacesMaplessWithShape && !prefersRepDayShape && !replacesNightOnly && !middayReplacesNoMidday && !daytimeReplacesThin
-    && (candidate.dedupeHeadway == null
-      || (incumbent.dedupeHeadway != null && incumbent.dedupeHeadway <= candidate.dedupeHeadway))) return 'keep';
-  return 'replace';
+  const keepsOnHeadway = candidate.dedupeHeadway == null
+    || (incumbent.dedupeHeadway != null && incumbent.dedupeHeadway <= candidate.dedupeHeadway);
+  return { decision: keepsOnHeadway ? 'keep' : 'replace', reason: 'headway' };
 }
