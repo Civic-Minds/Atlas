@@ -116,7 +116,22 @@ function firstAvailableByPeriod(
  * Select all route-service metrics once. Consumers should use these named
  * projections instead of independently choosing among raw GeoJSON fields.
  */
+// Route facts are pure functions of a feature's (never-mutated) properties, and the route list
+// rebuilds them for every route in view whenever the sidebar mounts, e.g. on leaving Live, where
+// it took several seconds. Cache them per properties object; new data means new objects.
+const serviceSummaryCache = new WeakMap<object, RouteServiceSummary>();
+const routeFactsCache = new WeakMap<object, Map<string, RouteFacts>>();
+
 export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummary {
+  let cached = serviceSummaryCache.get(p);
+  if (!cached) {
+    cached = computeRouteServiceSummary(p);
+    serviceSummaryCache.set(p, cached);
+  }
+  return cached;
+}
+
+function computeRouteServiceSummary(p: ShapeProperties): RouteServiceSummary {
   // Older published artifacts do not have the derived coverage field, but regular
   // routes retain the maximum period gap. Treat that gap as the full-window bound
   // so an unsustained median cannot pass an active-period frequency filter (#524).
@@ -275,6 +290,15 @@ export interface RouteFacts {
 }
 
 export function buildRouteFacts(p: ShapeProperties, agencySlug?: string): RouteFacts {
+  let bySlug = routeFactsCache.get(p);
+  if (!bySlug) { bySlug = new Map(); routeFactsCache.set(p, bySlug); }
+  const k = agencySlug ?? '';
+  let facts = bySlug.get(k);
+  if (!facts) { facts = computeRouteFacts(p, agencySlug); bySlug.set(k, facts); }
+  return facts;
+}
+
+function computeRouteFacts(p: ShapeProperties, agencySlug?: string): RouteFacts {
   const resolvedAgencySlug = agencySlug ?? (p as ShapeProperties & { agencySlug?: string }).agencySlug ?? p.agencyName ?? '';
   const routeId = p.routeId;
 
