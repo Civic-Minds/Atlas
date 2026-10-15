@@ -145,45 +145,47 @@ describe('detectHolds', () => {
 });
 
 describe('classifyTripStops', () => {
-  const base = { stopIds: ['A', 'B', 'C', 'D', 'E'], scheduledT: [0, 100, 200, 300, 400], feedDown: () => false };
+  // Five stops 1 km apart, 2 min apart in the timetable.
+  const base = {
+    stopIds: ['A', 'B', 'C', 'D', 'E'], stopAlong: [0, 1000, 2000, 3000, 4000],
+    scheduledT: [0, 120, 240, 360, 480], feedDown: () => false,
+  };
   const pass = (entries: [string, number][]) => new Map(entries);
+  const ping = (t: number, along: number | null) => ({ t, along });
 
-  it('a trip nobody reported is "not seen" only if the feed was healthy for the whole trip', () => {
+  it('a trip nobody reported is "not seen" only with a healthy feed and no unlisted cars about', () => {
     expect(classifyTripStops({ ...base, passT: pass([]), pings: [] })).toEqual(Array(5).fill('not_seen'));
-    // Blocker 1: one degraded minute anywhere in the trip makes the whole unseen trip unknown.
-    expect(classifyTripStops({ ...base, passT: pass([]), pings: [], feedDown: t => t === 300 }))
-      .toEqual(Array(5).fill('feed_gap'));
+    expect(classifyTripStops({ ...base, passT: pass([]), pings: [], feedDown: t => t === 360 })).toEqual(Array(5).fill('feed_gap'));
+    expect(classifyTripStops({ ...base, passT: pass([]), pings: [], unlistedCover: true })).toEqual(Array(5).fill('unlisted_cover'));
   });
 
-  it('a vehicle reporting before its first stop is a timing gap there, not "joined late"', () => {
-    // Blocker 2: pinged from t=-30 at the terminal; first timed pass at B.
-    expect(classifyTripStops({ ...base, passT: pass([['B', 100], ['C', 200], ['D', 300], ['E', 400]]), pings: [-30, 30, 90, 150, 400] })[0])
-      .toBe('timing_gap');
-    expect(classifyTripStops({ ...base, passT: pass([['D', 300], ['E', 400]]), pings: [290, 350, 400] }).slice(0, 3))
-      .toEqual(['joined_late', 'joined_late', 'joined_late']);
+  it('judges a late join by where the car first appears on the route, not by timetable times', () => {
+    // First seen 2.5 km along: A and B were never served by this car (a short turn elsewhere).
+    const args = { ...base, passT: pass([['C', 300], ['D', 420], ['E', 540]]), pings: [ping(250, 2500), ping(310, 2100), ping(540, 4000)] };
+    expect(classifyTripStops(args).slice(0, 2)).toEqual(['joined_late', 'joined_late']);
+    // Only when the car finished its previous trip right by stop A did it start at the start.
+    expect(classifyTripStops({ ...args, startedAtFirstStop: true }).slice(0, 2)).toEqual(['timing_gap', 'timing_gap']);
   });
 
-  it('stops after the vehicle went quiet are "stopped reporting", not timing gaps', () => {
-    // Blocker 5, including a quiet stretch in the middle of the trip.
-    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['B', 100]]), pings: [0, 60, 110] }))
-      .toEqual(['ran', 'ran', 'stopped_reporting', 'stopped_reporting', 'stopped_reporting']);
-    // A quiet spell the car came back from is a reporting gap, not "stopped reporting".
-    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['E', 400]]), pings: [0, 30, 60, 400] }))
-      .toEqual(['ran', 'timing_gap', 'timing_gap', 'timing_gap', 'ran']);
+  it('ignores early reports from a car still running the other way on its previous trip', () => {
+    // Took this trip number at 3.5 km while heading back towards A, then ran A -> E.
+    const pings = [ping(-300, 3500), ping(-200, 2000), ping(-100, 500), ping(0, 0), ping(130, 1100), ping(480, 4000)];
+    const res = classifyTripStops({ ...base, passT: pass([['B', 120], ['E', 480]]), pings });
+    expect(res[0]).toBe('timing_gap');
   });
 
-  it('a car that just finished its previous trip and switched number after leaving is not a late join', () => {
-    const args = { ...base, passT: pass([['B', 100], ['C', 200], ['D', 300], ['E', 400]]), pings: [90, 150, 400] };
-    expect(classifyTripStops(args)[0]).toBe('joined_late');
-    expect(classifyTripStops({ ...args, reportingFrom: -120 })[0]).toBe('timing_gap');
-    // Even when the car left later than the estimate implies (it ran fast afterwards).
-    expect(classifyTripStops({ ...args, reportingFrom: 80 }).slice(0, 2)).toEqual(['timing_gap', 'ran']);
+  it('stops beyond the car\'s last position on the route are "stopped reporting"; a quiet spell it came back from is not', () => {
+    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['B', 120]]), pings: [ping(0, 0), ping(60, 500), ping(170, 1700)] }))
+      .toEqual(['ran', 'ran', 'timing_gap', 'stopped_reporting', 'stopped_reporting']);
+    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['E', 480]]), pings: [ping(0, 0), ping(60, 500), ping(480, 4000)] }))
+      .toEqual(['ran', 'timing_gap', 'quiet_spell', 'quiet_spell', 'ran']);
   });
 
   it('labels untimed stops during a detour as off route, and stops after a turn-back separately', () => {
-    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['E', 400]]), pings: [0, 60, 120, 180, 240, 300, 360, 400], offRoute: [[180, 260]] }))
-      .toEqual(['ran', 'timing_gap', 'off_route', 'off_route', 'ran']);
-    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['B', 100]]), pings: [0, 100], startedOtherTripAfterIndex: 1 }).slice(2))
+    const pings = [0, 60, 120, 180, 240, 300, 360, 420, 480].map(t => ping(t, t * 8.3));
+    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['B', 120], ['E', 480]]), pings, offRoute: [[200, 380]] }).slice(2, 4))
+      .toEqual(['off_route', 'off_route']);
+    expect(classifyTripStops({ ...base, passT: pass([['A', 0], ['B', 120]]), pings: pings.slice(0, 3), startedOtherTripAfterIndex: 1 }).slice(2))
       .toEqual(['started_other_trip', 'started_other_trip', 'started_other_trip']);
   });
 });
@@ -191,14 +193,18 @@ describe('classifyTripStops', () => {
 describe('isTurnBack', () => {
   const ok = {
     metresFromRouteEnd: 3000, nextTripSameDirection: false, gapSec: 300, distanceM: 100,
-    stoppedBeforeScheduledEndSec: 900, reversedM: 600, overlappingCars: false,
+    reversedM: 600, overlappingCars: false, offRouteBeforeEnd: false,
   };
   it('needs the opposite direction, distance from the route end, and an actual reversal', () => {
     expect(isTurnBack(ok)).toBe(true);
     expect(isTurnBack({ ...ok, nextTripSameDirection: true })).toBe(false); // trip-number change
-    expect(isTurnBack({ ...ok, metresFromRouteEnd: 400 })).toBe(false); // terminal loop (from the last ping)
-    expect(isTurnBack({ ...ok, reversedM: 0 })).toBe(false); // took the next trip number early but kept going
+    expect(isTurnBack({ ...ok, metresFromRouteEnd: 400 })).toBe(false); // terminal loop
+    expect(isTurnBack({ ...ok, reversedM: 0 })).toBe(false); // took the next trip number but didn't head back
     expect(isTurnBack({ ...ok, overlappingCars: true })).toBe(false); // two cars on one trip number
+    expect(isTurnBack({ ...ok, offRouteBeforeEnd: true })).toBe(false); // a detour, not a turn-back
+  });
+  it('counts late cars too (no "stopped before its scheduled end" rule)', () => {
+    expect(isTurnBack(ok)).toBe(true);
   });
 });
 

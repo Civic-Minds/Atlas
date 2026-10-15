@@ -73,9 +73,60 @@ export interface SegmentDelayData {
   observations: number;
   segments: SegmentDelaySegment[];
   headways?: HeadwayStop[];
+  v2?: { standingStill?: StandingStillStop[] };
 }
 
-export type SegmentView = 'time' | 'spacing';
+export type SegmentView = 'time' | 'spacing' | 'still';
+
+export interface StandingStillStop {
+  stopId: string;
+  stopName: string;
+  directionId: number;
+  terminal?: boolean;
+  scheduledTurnback?: boolean;
+  nearCarhouse?: boolean;
+  coordinates: [number, number][];
+  bands: Partial<Record<string, { events: number; days: number; medianSec: number; totalMin: number }>>;
+}
+
+/** A stop needs this many stood-still events, on at least MIN_DAYS days, to be shown. */
+export const MIN_STILL_EVENTS = 10;
+
+export interface RankedStill {
+  stop: StandingStillStop;
+  events: number;
+  days: number;
+}
+
+/** Stops where vehicles stood still 2+ min; planned turn-backs, terminals and carhouses left out. */
+export function usableStandingStill(data: SegmentDelayData | null, band: SegmentBand): RankedStill[] {
+  const out: RankedStill[] = [];
+  for (const stop of data?.v2?.standingStill ?? []) {
+    if (stop.terminal || stop.scheduledTurnback || stop.nearCarhouse) continue;
+    const b = stop.bands[band];
+    if (!b || b.events < MIN_STILL_EVENTS || b.days < MIN_DAYS) continue;
+    out.push({ stop, events: b.events, days: b.days });
+  }
+  return out.sort((a, b) => b.events - a.events);
+}
+
+/** Amber where it happens, red where it happens on most days. */
+export function stillColor(item: RankedStill, totalDays: number, mode: ColorVisionMode = 'default'): string {
+  const palette = mode === 'friendly' ? COLOR_VISION_STATUS_COLORS : STATUS_COLORS;
+  if (item.events >= 2 * totalDays) return palette.late.bg;
+  return mode === 'friendly' ? '#b07a00' : '#f59e0b';
+}
+
+export function standingStillFeatures(data: SegmentDelayData | null, band: SegmentBand, mode: ColorVisionMode = 'default'): GeoJSON.Feature[] {
+  const totalDays = data?.dates.length ?? 0;
+  return usableStandingStill(data, band)
+    .filter(item => item.stop.coordinates.length >= 2)
+    .map(item => ({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: item.stop.coordinates },
+      properties: { color: stillColor(item, totalDays, mode), directionId: item.stop.directionId },
+    }));
+}
 
 /** Nearest half minute: positions arrive about once a minute, so finer is false precision. */
 export function halfMinutes(sec: number): number {

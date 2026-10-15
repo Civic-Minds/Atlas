@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatMinutes, halfMinutes, halfMinutesDown, plural, rankSegments, segmentColor, tidyStopName, type SegmentDelayData } from '../segmentDelayView';
+import { formatMinutes, halfMinutes, halfMinutesDown, plural, rankSegments, segmentColor, tidyStopName, usableStandingStill, type SegmentDelayData } from '../segmentDelayView';
 
 const stat = (gained: number, trips = 100, p90 = gained + 60) => ({
   trips, days: 10, firstDate: '2026-10-01', lastDate: '2026-10-10',
@@ -49,5 +49,20 @@ describe('segmentDelayView', () => {
   it('title-cases all-caps stop names', () => {
     expect(tidyStopName('RONCESVALLES AVE AT QUEEN ST WEST')).toBe('Roncesvalles Ave at Queen St West');
     expect(tidyStopName('King St West at Bay St')).toBe('King St West at Bay St');
+  });
+
+  it('shows stood-still stops only with enough events and days, never at planned turn-backs, terminals or carhouses', () => {
+    const still = (id: string, events: number, days: number, extra: object = {}) => ({
+      stopId: id, stopName: id, directionId: 0, coordinates: [] as [number, number][], bands: { all: { events, days, medianSec: 150, totalMin: 40 } }, ...extra,
+    });
+    const data: SegmentDelayData = {
+      agency: 'ttc', route: '504', generatedAt: '', dates: Array(15).fill('d'), observations: 0, segments: [],
+      v2: { standingStill: [
+        still('sumach', 54, 15), still('few', 9, 9), still('fewdays', 30, 4),
+        still('broadview-queen', 40, 12, { scheduledTurnback: true }), still('loop', 99, 15, { terminal: true }),
+        still('carhouse', 60, 14, { nearCarhouse: true }),
+      ] },
+    };
+    expect(usableStandingStill(data, 'all').map(x => x.stop.stopId)).toEqual(['sumach']);
   });
 });

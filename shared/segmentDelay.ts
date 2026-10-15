@@ -390,50 +390,68 @@ export function detectHolds(
 
 export type TripStopStatus =
   | 'ran' // a pass was timed at this stop
-  | 'timing_gap' // the vehicle was reporting around then, but this stop wasn't timed
-  | 'off_route' // the vehicle was reporting but off the route shape (detour) around then
-  | 'not_seen' // no vehicle reported this trip, while the feed was healthy for the whole trip
+  | 'timing_gap' // the vehicle was reporting around here, but this stop wasn't timed
+  | 'quiet_spell' // the vehicle went quiet around here and came back later
+  | 'off_route' // the vehicle was off this trip's route around here
+  | 'not_seen' // no vehicle reported under this trip's number, feed healthy, no unlisted cars about
+  | 'unlisted_cover' // nobody reported this trip number, but cars on unlisted trip numbers were running
   | 'started_other_trip' // the vehicle turned back and started another trip before this stop
-  | 'joined_late' // the vehicle first reported this trip after it would have passed here
-  | 'stopped_reporting' // the vehicle stopped reporting this trip before it would have passed here
+  | 'joined_late' // the vehicle first appeared on the route beyond this stop
+  | 'stopped_reporting' // the vehicle's last position on the route was before this stop
   | 'feed_gap'; // the feed was down or degraded: unknown, excluded
 
 /** Plain-language labels for the statuses (for the card, after review). */
 export const TRIP_STOP_STATUS_LABELS: Record<TripStopStatus, string> = {
   ran: 'Timed here',
-  timing_gap: 'Reporting, but not timed at this stop',
-  off_route: "Off this trip's route here (detour, or running another branch)",
-  not_seen: 'No vehicle reported this trip. It may have been cancelled, run under another trip number, or had its tracker off.',
+  timing_gap: 'Vehicle reporting nearby, but this stop wasn\'t timed',
+  quiet_spell: 'Vehicle went quiet here and reported again later',
+  off_route: "Off this trip's route here",
+  not_seen: 'No vehicle reported under this trip\'s number. Not a count of cancellations; trips cut short aren\'t included.',
+  unlisted_cover: 'No vehicle reported this trip number, but cars on unlisted trip numbers were running; not counted',
   started_other_trip: 'Vehicle started another trip partway along',
-  joined_late: 'Vehicle started reporting this trip after this stop',
-  stopped_reporting: 'Vehicle stopped reporting this trip before this stop',
+  joined_late: 'Vehicle first appeared on the route after this stop',
+  stopped_reporting: 'Vehicle\'s last report on the route was before this stop',
   feed_gap: 'Live feed was down or incomplete; not counted',
 };
 
+export interface TripPing {
+  t: number;
+  /** Metres along this trip's route shape, or null when the ping is off the shape. */
+  along: number | null;
+}
+
 /**
- * Status of each scheduled stop of one trip on one service day, from what the
- * live feed showed. Untimed stops are placed in time by offsetting the nearest
- * timed pass by the timetable's running time, then compared with when the
- * vehicle was reporting this trip.
+ * Status of each scheduled stop of one trip on one service day. Whether the
+ * vehicle had joined or stopped reporting is judged by *where* it was on the
+ * route (its first and last on-route positions), not by timetable times, so
+ * late or early running can't mislabel stops. Untimed stops in between are
+ * placed in time from the nearest timed pass to tell quiet spells, detours
+ * and feed trouble apart.
  */
 export function classifyTripStops(input: {
   stopIds: string[]; // the trip's stops, in order
+  stopAlong: number[]; // metres along the trip's shape for each stop
   scheduledT: number[]; // timetable time at each stop
   passT: Map<string, number>; // timed pass per stop
-  pings: number[]; // times this trip's vehicle reported (empty: never seen)
+  pings: TripPing[]; // this trip's reports (empty: never seen)
   offRoute?: [number, number][]; // intervals the vehicle was off the shape
-  reportingFrom?: number | null; // the car was already reporting (under its previous trip) from this time
+  startedAtFirstStop?: boolean; // the car finished its previous trip right by this trip's first stop
+  unlistedCover?: boolean; // cars on trip numbers missing from the timetable were running meanwhile
   startedOtherTripAfterIndex?: number | null; // confirmed turn-back after this stop index
   feedDown: (t: number) => boolean; // feed down or degraded around t
   slackSec?: number;
+  slackM?: number;
 }): TripStopStatus[] {
-  const { stopIds, scheduledT, passT, feedDown } = input;
+  const { stopIds, stopAlong, scheduledT, passT, feedDown } = input;
   const slack = input.slackSec ?? 60;
+  // One report a minute: the car could be up to ~400 m past its last report (or
+  // before its first) without us seeing it, so stops that close are timing gaps.
+  const slackM = input.slackM ?? 400;
   const n = stopIds.length;
-  // A trip nobody reported, overlapping any feed trouble, is unknown rather than missing.
   if (input.pings.length === 0) {
+    // A trip nobody reported, overlapping any feed trouble, is unknown rather than missing.
     const troubled = scheduledT.some(t => feedDown(t)) || feedDown(scheduledT[0] - 600) || feedDown(scheduledT[n - 1] + 600);
-    return stopIds.map(() => (troubled ? 'feed_gap' : 'not_seen'));
+    return stopIds.map(() => (troubled ? 'feed_gap' : input.unlistedCover ? 'unlisted_cover' : 'not_seen'));
   }
   const timed = stopIds.map((s, i) => (passT.has(s) ? i : -1)).filter(i => i >= 0);
   const estimate = (i: number): number => {
@@ -442,30 +460,39 @@ export function classifyTripStops(input: {
     for (const j of timed) if (Math.abs(j - i) < Math.abs(k - i)) k = j;
     return passT.get(stopIds[k])! + (scheduledT[i] - scheduledT[k]);
   };
-  // Reporting stretches: pings more than 5 min apart mean the vehicle wasn't reporting in between.
-  const sorted = [...input.pings].sort((a, b) => a - b);
+  const sorted = [...input.pings].sort((a, b) => a.t - b.t);
+  // On-route reports from where the car starts heading the trip's way: a car that
+  // takes the trip number early (still on its previous, opposite-direction trip)
+  // moves backwards along this route, so those reports don't count as joining.
+  const allOn = sorted.filter(p => p.along != null);
+  const startIdx = allOn.findIndex((p, i) => allOn.slice(i + 1).every(q => q.along! >= p.along! - 100));
+  const onRoute = startIdx >= 0 ? allOn.slice(startIdx) : [];
+  // Where on the route the car first and last appeared (timed passes count too).
+  const alongs = [...onRoute.map(p => p.along!), ...timed.map(i => stopAlong[i])];
+  const firstAlong = input.startedAtFirstStop ? -Infinity
+    : onRoute.length || timed.length ? Math.min(onRoute.length ? onRoute[0].along! : Infinity, timed.length ? stopAlong[timed[0]] : Infinity) : null;
+  const lastAlong = alongs.length ? Math.max(onRoute.length ? Math.max(...onRoute.map(p => p.along!)) : -Infinity, timed.length ? stopAlong[timed[timed.length - 1]] : -Infinity) : null;
+  // Reporting stretches: reports more than 5 min apart mean the car went quiet in between.
   const stretches: [number, number][] = [];
-  for (const t of sorted) {
+  for (const p of sorted) {
     const last = stretches[stretches.length - 1];
-    if (last && t - last[1] <= 300) last[1] = t; else stretches.push([t, t]);
+    if (last && p.t - last[1] <= 300) last[1] = p.t; else stretches.push([p.t, p.t]);
   }
-  // A car that finished its previous trip just before, turned at the terminal and
-  // only then switched trip number was there all along: not a late join.
-  const firstPing = input.reportingFrom != null ? Math.min(sorted[0], input.reportingFrom) : sorted[0];
-  if (input.reportingFrom != null && input.reportingFrom < sorted[0]) stretches.unshift([input.reportingFrom, sorted[0]]);
-  const lastPing = sorted[sorted.length - 1];
   return stopIds.map((s, i) => {
     if (passT.has(s)) return 'ran';
     if (input.startedOtherTripAfterIndex != null && i > input.startedOtherTripAfterIndex) return 'started_other_trip';
     const t = estimate(i);
     if (feedDown(t)) return 'feed_gap';
-    // The car was already there under its previous trip, so it passed every stop
-    // before its first timed one, whatever the estimate says.
-    if (input.reportingFrom != null && timed.length && i < timed[0]) return 'timing_gap';
-    if (t < firstPing - slack) return 'joined_late';
-    if (t > lastPing + slack) return 'stopped_reporting';
+    if (firstAlong == null || lastAlong == null) return 'off_route'; // reported, but never on this trip's route
+    if (stopAlong[i] < firstAlong - slackM) return 'joined_late';
+    // It finished its previous trip right by the first stop, so it passed the stops
+    // before its first timed one, even if it went quiet while laying over.
+    if (input.startedAtFirstStop && timed.length && i < timed[0]) return 'timing_gap';
+    if (stopAlong[i] > lastAlong + slackM) return 'stopped_reporting';
     if ((input.offRoute ?? []).some(([a, b]) => t >= a - slack && t <= b + slack)) return 'off_route';
-    // A quiet spell the car came back from is a gap in reporting, not the end of it.
+    // Quiet spell: between two reporting stretches (the car came back afterwards).
+    const inGap = t > stretches[0][1] + slack && t < stretches[stretches.length - 1][0] - slack;
+    if (inGap && !stretches.some(([a, b]) => t >= a - slack && t <= b + slack)) return 'quiet_spell';
     return 'timing_gap';
   });
 }
@@ -481,19 +508,20 @@ export function isTurnBack(input: {
   nextTripSameDirection: boolean;
   gapSec: number;
   distanceM: number;
-  stoppedBeforeScheduledEndSec: number;
-  /** How far the car actually moved back along this trip's route in its next pings. */
+  /** How far the car moved forward on its next (opposite-direction) trip's route, on-route pings only. */
   reversedM: number;
   /** Another car reported this trip at the same time (shared trip number): ambiguous. */
   overlappingCars: boolean;
+  /** The car was off route just before it stopped: a detour, not a turn-back. */
+  offRouteBeforeEnd: boolean;
 }): boolean {
   return !input.overlappingCars
+    && !input.offRouteBeforeEnd
     && input.reversedM >= 200
     && input.metresFromRouteEnd >= 1000
     && !input.nextTripSameDirection
     && input.gapSec <= 1200
-    && input.distanceM <= 500
-    && input.stoppedBeforeScheduledEndSec >= 180;
+    && input.distanceM <= 500;
 }
 
 /**

@@ -18,7 +18,7 @@ import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { useSegmentBand, useSegmentDelay, useSegmentView } from '../../hooks/useSegmentDelay';
-import { headwayFeatures, segmentFeatures } from '../../utils/segmentDelayView';
+import { headwayFeatures, segmentFeatures, standingStillFeatures } from '../../utils/segmentDelayView';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { syncUrlParams } from '../../utils/syncUrlParams';
@@ -1050,7 +1050,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const segmentBand = useSegmentBand();
   const segmentView = useSegmentView();
   const segmentDelayFeatures = useMemo(
-    () => (segmentView === 'spacing' ? headwayFeatures : segmentFeatures)(segmentDelayData, segmentBand, colorMode),
+    () => (segmentView === 'spacing' ? headwayFeatures : segmentView === 'still' ? standingStillFeatures : segmentFeatures)(segmentDelayData, segmentBand, colorMode),
     [segmentDelayData, segmentBand, segmentView, colorMode],
   );
 
