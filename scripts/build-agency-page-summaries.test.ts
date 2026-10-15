@@ -51,10 +51,10 @@ describe('night routes and weekend service', () => {
     expect(s.routes.find(r => r.name === '301')).toMatchObject({ midday: null, am: null, pm: null, evening: null, overnight: 30 });
   });
 
-  it('shows an unsustained daytime cadence like the card, and also records the overnight cadence', () => {
+  it('shows the map\'s number for unsustained daytime periods (CIV-237), and also records the overnight cadence', () => {
     const l = line('46', 0, 19, { headwayByPeriodSustained: { midday: false, amPeak: false, pmPeak: false }, headwayByPeriod: { midday: 19, amPeak: 13, pmPeak: 13, overnight: 17 } });
     const r = summarize([l], 'x', null).routes[0];
-    expect([r.midday, r.am, r.pm, r.overnight]).toEqual([19, 13, 13, 17]);
+    expect([r.midday, r.am, r.pm, r.overnight]).toEqual([19, 19, 19, 17]);
   });
 
   it('leaves every period empty for a route with no service at all', () => {

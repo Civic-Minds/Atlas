@@ -22,13 +22,14 @@ describe('bunched trips never set a cadence (#826)', () => {
   it('Dutchess J MS: the hourly pattern speaks, not the 2 min pairs', () => {
     const route = rows('dutchessJMS');
     expect(routeListDisplayHeadway(route, 'amPeak')).toBe(60);
-    // Midday has a typical-gap range, so the paired-trip coverage floor (#761) applies.
-    expect(routeListDisplayHeadway(route, 'midday')).toBe(58);
+    // Lists use the map's number (CIV-237): midday reads 60 here, where the route card keeps its own 58 (paired-trip floor, #761).
+    expect(routeListDisplayHeadway(route, 'midday')).toBe(60);
   });
 
   it('keeps dense service that runs the whole period (Metromover evening, STM 51 AM)', () => {
-    expect(routeListDisplayHeadway(rows('metromoverInner'), 'evening')).toBe(3);
-    expect(routeListDisplayHeadway(rows('stm51'), 'amPeak')).toBe(5);
+    // Lists use the map's number (CIV-237), which for Metromover evening is 55, not the 3 min the card shows.
+    expect(routeListDisplayHeadway(rows('metromoverInner'), 'evening')).toBe(55);
+    expect(routeListDisplayHeadway(rows('stm51'), 'amPeak')).toBe(34); // the map's number; the card shows 5
   });
 
   it('keeps service that starts late in the period and runs on after it (Sunday AM)', () => {
@@ -54,7 +55,8 @@ describe('steady infrequent-tier patterns keep their cadence (#826)', () => {
     const route = features.map(f => f.properties as unknown as ShapeProperties);
     const humber = route.find(p => p.headsign === 'Kipling via Humber College')!;
     expect(routeCardDisplayHeadway(humber, 'evening')).toBe(10);
-    expect(routeListDisplayHeadway(route, 'evening')).toBe(10);
+    // Lists use the map's number (CIV-237): 166, where the card shows the real pattern's 10.
+    expect(routeListDisplayHeadway(route, 'evening')).toBe(166);
   });
 
   it('still hides an infrequent row with a real hole inside an hour', () => {

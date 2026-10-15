@@ -1,6 +1,7 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { isHourInPeriod, PERIOD_KEYS, TIME_PERIODS } from '../../shared/config';
 import { hasNoPeriodService } from '../../shared/periodEligibility';
+import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange } from './headwayText';
@@ -230,7 +231,7 @@ function directionSharedHeadway(rows: readonly ShapeProperties[], period: TimePe
 }
 
 interface RouteListCadence {
-  /** The slower direction's per-branch cadence: what lists sort, filter and colour by. */
+  /** The slower direction's number, on the map's own rule (routeFilterHeadway): what lists sort and colour by. */
   headway: number | null;
   /** The slower direction's cadence with shared stretches combined, only when lower than headway. */
   shared: number | null;
@@ -251,6 +252,7 @@ function routeListCadence(features: readonly ShapeProperties[], period: TimePeri
   }
   let slowest: number | null = null;
   let slowestShared: number | null = null;
+  let sawPooled = false;
   for (const rows of byDirection.values()) {
     const values = rows
       .map(feature => routeListRowHeadway(feature, period))
@@ -259,19 +261,31 @@ function routeListCadence(features: readonly ShapeProperties[], period: TimePeri
       if (rows.some(feature => rowRunsInPeriod(feature, period))) return { headway: null, shared: null };
       continue;
     }
-    const best = Math.min(...values);
+    // Whether the direction has a number to show is decided above (the row rules, #708/#821). The
+    // number itself is the map's: the same value the frequency filter compares (routeFilterHeadway,
+    // stamped worst direction), falling back to the best row's cadence when the map has none.
+    // The shared-stretch range is display only: it appears only where a direction's branches alternate
+    // on a shared stretch (a pooled value), so the map's number alone never invents one.
+    const bestRow = Math.min(...values);
+    const filterValues = rows
+      .map(feature => routeFilterHeadway(feature, period))
+      .filter((value): value is number => value != null);
+    const best = filterValues.length > 0 ? Math.min(...filterValues) : bestRow;
     const pooled = directionSharedHeadway(rows, period);
-    const combined = pooled != null && pooled < best ? pooled : best;
+    if (pooled != null) sawPooled = true;
+    const combined = pooled != null ? Math.min(pooled, bestRow) : bestRow;
     slowest = slowest == null ? best : Math.max(slowest, best);
     slowestShared = slowestShared == null ? combined : Math.max(slowestShared, combined);
   }
-  return { headway: slowest, shared: slowest != null && slowestShared != null && slowestShared < slowest ? slowestShared : null };
+  return { headway: slowest, shared: sawPooled && slowest != null && slowestShared != null && slowestShared < slowest ? slowestShared : null };
 }
 
 /**
- * The route list cadence, judged by the slower direction (#821). Within a direction the best
- * branch's cadence speaks for it, so an infrequent short-turn never hides the main pattern (#708).
- * Across directions the slower one wins. A direction that runs in the period but has no
+ * The route list number: the map's own value (routeFilterHeadway, the stamped worst-direction
+ * number), so a list, an agency page and a map colour never disagree about one route. The
+ * per-branch number belongs to the route card only. Whether a route shows a number at all still
+ * follows the row rules: within a direction any branch with a real cadence counts, so an
+ * infrequent short-turn never hides the main pattern (#708). Across directions the slower one wins. A direction that runs in the period but has no
  * trustworthy cadence (one AM trip against a peak-direction cluster) leaves the route with no
  * number, so lists show "limited". A direction with no trips in the period, or only span-pattern
  * trips, is skipped, so a one-way peak service still shows its own cadence.
@@ -282,8 +296,8 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
 
 /**
  * The lower end of a route list range: the slower direction's cadence with alternating branches
- * combined on their shared stretch. Display text only ("every 30–60 min"); sorting,
- * filtering and colour use routeListDisplayHeadway. Null when it is not lower, or the route is limited.
+ * combined on their shared stretch. Display text only ("every 30–60 min"); sorting
+ * and colour use routeListDisplayHeadway. Null when it is not lower, or the route is limited.
  */
 export function routeListSharedHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
   return routeListCadence(features, period).shared;
