@@ -706,7 +706,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
           .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, directionId: b.directionId })),
       }));
-  }, [currentStop, nonCorridorLayers, currentDay]);
+  }, [currentStop, nonCorridorLayers, currentDay, period]);
 
   const stopAgencies = useMemo(() => {
     const seen = new Set<string>();
@@ -841,7 +841,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         return a.shortName.localeCompare(b.shortName, undefined, { numeric: true });
       });
     return details;
-  }, [disambiguationRoutes, nonCorridorLayers]);
+  }, [disambiguationRoutes, nonCorridorLayers, colorMode]);
 
   const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0;
 
