@@ -113,8 +113,18 @@ function patternFor(shapeId: string): Pattern | null {
 }
 
 // Direction labels from headsigns ("East - 504A King towards ...").
+// The most common headsign word per direction: a few short turns are signed the other way.
 const directionLabels: Record<string, string> = {};
-for (const t of trips) directionLabels[t.direction_id] ??= `${t.trip_headsign.split(' ')[0]}bound`;
+{
+  const words = new Map<string, Map<string, number>>();
+  for (const t of trips) {
+    const m = words.get(t.direction_id) ?? new Map<string, number>();
+    const w = t.trip_headsign.split(' ')[0];
+    m.set(w, (m.get(w) ?? 0) + 1);
+    words.set(t.direction_id, m);
+  }
+  for (const [dir, m] of words) directionLabels[dir] = `${[...m].sort((a, b) => b[1] - a[1])[0][0]}bound`;
+}
 
 // --- calendar ---
 const calendar = readCsv(join(GTFS, 'calendar.txt'));

@@ -16,6 +16,8 @@ describe('segmentDelayView', () => {
     expect(stopNameParts('RONCESVALLES AVE AT QUEEN ST WEST')).toEqual({ street: 'Roncesvalles Ave', cross: 'Queen', short: 'Roncesvalles & Queen' });
     expect(stopNameParts('King St West at Simcoe St - St. Andrew Stn').cross).toBe('Simcoe');
     expect(stopNameParts('Distillery Loop').short).toBe('Distillery Loop');
+    expect(stopNameParts('Bathurst St at Dundas St West  - Toronto Western Hospital').cross).toBe('Dundas');
+    expect(stopNameParts('Queens Quay West at Bathurst St East Side Billy Bishop Airpo').cross).toBe('Bathurst');
     expect(stopNameParts('Broadview Ave at Langley Ave-Bridgepoint Health Ctr').cross).toBe('Langley');
     expect(stopNameParts('King St West at University Ave East Side - St Andrew Stn').cross).toBe('University');
   });

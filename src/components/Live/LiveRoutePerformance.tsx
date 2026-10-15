@@ -113,7 +113,7 @@ function GapStrip({ stops, onRow, activeIndex }: { stops: LineStop[]; onRow?: (i
   return (
     <div className="flex flex-col">
       <div className="flex items-center gap-2 pb-0.5">
-        <span className="w-[30%] shrink-0" />
+        <span className="w-[33%] shrink-0" />
         <div className="relative flex-1 h-3 text-2xs font-bold text-[var(--text-dim)] tabular-nums">
           <span className="absolute left-0">0</span>
           <span className="absolute right-0">{Math.round(scale / 60)} min</span>
@@ -128,7 +128,7 @@ function GapStrip({ stops, onRow, activeIndex }: { stops: LineStop[]; onRow?: (i
           disabled={!onRow}
           className={`flex items-center gap-2 py-1 -mx-1 px-1 rounded text-left ${onRow ? 'hover:bg-[var(--bg-secondary)]' : 'cursor-default'} ${activeIndex === i ? 'bg-[var(--bg-secondary)]' : ''}`}
         >
-          <span className={`${ROW_LABEL} w-[30%] shrink-0`} title={stopLabel(s.name)}>{s.label}</span>
+          <span className={`${ROW_LABEL} w-[33%] shrink-0`} title={stopLabel(s.name)}>{s.label}</span>
           <GapBar stop={s} scaleSec={scale} />
           <span className={`${NUM} w-[3.75rem] shrink-0 text-right`}>{minsRange(s.stat!.gapP10Sec, s.stat!.gapP90Sec)}</span>
         </button>
@@ -142,15 +142,6 @@ function GapStrip({ stops, onRow, activeIndex }: { stops: LineStop[]; onRow?: (i
   );
 }
 
-function Figures({ items }: { items: (string | null)[] }) {
-  return (
-    <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-xs font-bold text-[var(--text-primary)] tabular-nums">
-      {items.filter(Boolean).map((t, i, arr) => (
-        <span key={i} className="whitespace-nowrap">{t}{i < arr.length - 1 && <span className="text-[var(--text-dim)] ml-2">·</span>}</span>
-      ))}
-    </div>
-  );
-}
 
 /** A row of small labelled figures. */
 function Stats({ items }: { items: [string, string][] }) {
@@ -345,7 +336,10 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
       <Section title={`Right now · ${torontoTime(new Date(now))}`}>
         {live && !live.incomplete ? (
           <>
-            <Figures items={[`${live.cars} cars on ${line.sharedStreet ?? 'the line'}`, liveSched ? `scheduled every ${schedText(liveSched)}` : live.scheduledSec ? `scheduled every ${mins(live.scheduledSec)}` : null]} />
+            <Stats items={[
+              [`Cars${line.sharedStreet ? ` (${line.sharedStreet.replace(/\s+(St|Ave|Rd|Blvd)$/i, '')})` : ''}`, String(live.cars)],
+              ['Scheduled', `every ${liveSched ? schedText(liveSched) : live.scheduledSec ? mins(live.scheduledSec) : '–'}`],
+            ]} />
             <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-xs font-bold tabular-nums">
               <span className="text-[var(--text-dim)]">Gaps, front to back (min)</span>
               {live.gapsMin.map((g, i) => (

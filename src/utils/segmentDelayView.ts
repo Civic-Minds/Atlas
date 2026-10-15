@@ -124,7 +124,8 @@ export function tidyStopName(name: string): string {
   return name.toLowerCase().replace(/\b([a-z])/g, c => c.toUpperCase()).replace(/\bAt\b/g, 'at');
 }
 
-const SIDE = /\s+(East|West|North|South) Side$/i;
+// "... East Side", and anything TTC appends after it ("East Side Billy Bishop Airpo").
+const SIDE = /\s+(East|West|North|South) Side\b.*$/i;
 const SUFFIX = /\s+(St|Ave|Rd|Blvd|Cres|Way)(\s+(East|West|North|South))?$/i;
 
 /**
@@ -135,7 +136,7 @@ export function stopNameParts(name: string): { street: string; cross: string; sh
   const [rawStreet, rawCross] = tidyStopName(name).split(' at ');
   const street = rawStreet.replace(/\s+(East|West|North|South)$/i, '').trim();
   // Drop a trailing " - Station name" first, then a joined place ("Langley Ave-Bridgepoint ..."), then the side and street type.
-  const clean = (x: string) => x.replace(/ - .*$/, '').replace(/-[A-Z].*$/, '').replace(SIDE, '').replace(SUFFIX, '').trim();
+  const clean = (x: string) => x.replace(/\s+-\s.*$/, '').replace(/-[A-Z].*$/, '').trim().replace(SIDE, '').replace(SUFFIX, '').trim();
   const cross = clean(rawCross ?? rawStreet);
   return { street, cross, short: rawCross ? `${clean(rawStreet)} & ${cross}` : cross };
 }
