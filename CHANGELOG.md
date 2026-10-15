@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Subway and rail lines whose feed has no usable short name (TTC Line 1, Line 2) now show a bold "Line 1" with the name in regular weight, like every other route, instead of the whole name in bold in the map list and search.
 - A stop a route only drops off at (the layover it starts from, the terminal it ends at) no longer grades the route or colours its first section limited: RFTA L on Sunday and LA Metro 28 read a tier lower than riders get because one shape's arrivals at such a stop were graded on their own ([#879](https://github.com/Civic-Minds/Atlas/issues/879)).
 - A route card's hourly chart now reads the same stops as its rows: it used to show the pooled trunk's bars (every 8) under a row that says every 16, because the chart skipped the worst-drawn-stop floor the rows already had ([#771](https://github.com/Civic-Minds/Atlas/issues/771)).
 - **Night routes show their real overnight frequency**: a night bus drawn on one of its minor patterns read its overnight gap from that pattern alone, so TTC 337 and 373, every 30 all night, showed gaps of up to 217 minutes ([#896](https://github.com/Civic-Minds/Atlas/issues/896))

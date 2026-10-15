@@ -50,6 +50,12 @@ export function routeRowLabels(shortName: string | null | undefined, longName: s
   const blankShortName = !shortName || !shortName.trim();
   const hiddenShortName = blankShortName || shouldHideNumericRouteShortName(shortName, longName, routeType);
   if (hiddenShortName && longName) {
+    // "Line 1 (Yonge-University)" -> bold "Line 1" + regular "Yonge-University", matching
+    // how normal routes read ("7 Bathurst"). Other long names stay as one primary label.
+    const designator = longName.trim().match(/^((?:Line|Route)\s+[A-Za-z0-9]{1,3})\s*(?:\(([^)]+)\)|[-–—:]\s*(.+))$/i);
+    if (designator) {
+      return { shortName: titleCase(designator[1]), name: titleCase((designator[2] ?? designator[3]).trim()) };
+    }
     return { shortName: titleCase(longName), name: undefined };
   }
   const displayShortName = hiddenShortName ? '' : shortName;
