@@ -6,6 +6,9 @@ import { useViewport } from '../context/ViewportContext';
 import {
   PANEL_TITLE,
   PANEL_EMPTY,
+  PANEL_SECTION_HEAD,
+  LIST_ROW_PRIMARY,
+  LIST_ROW_DIM,
   Z_PANEL,
   SIDEBAR_LEFT_FALLBACK,
   SIDEBAR_PANEL_WIDTH,
@@ -214,9 +217,9 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
           {loadState === 'ready' && agencies.length === 0 && (
             <p className={PANEL_EMPTY}>No agencies match that search.</p>
           )}
-          {loadState === 'ready' && agencies.map(agency => (
+          {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>
-              <div className="px-4 pt-2.5 pb-1 text-xs font-black text-[var(--text-primary)]">
+              <div className={`${PANEL_SECTION_HEAD} ${agencyIndex > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
                 {agency.agencyName}
                 {agency.region && <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.region}</span>}
                 <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.routes.length} {agency.routes.length === 1 ? 'route' : 'routes'}</span>
@@ -229,12 +232,12 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
                   className="disabled:cursor-default"
                 >
                   <div className="min-w-0 flex-1">
-                  <div className="text-xs font-black text-[var(--text-primary)] line-clamp-2 break-words" title={[route.routeShortName, route.routeLongName].filter(Boolean).join(" — ")}>
+                  <div className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={[route.routeShortName, route.routeLongName].filter(Boolean).join(" — ")}>
                     {route.routeShortName || route.routeLongName || 'Unnamed route'}
-                    {route.routeShortName && route.routeLongName && <span className="font-normal text-[var(--text-dim)]"> — {route.routeLongName}</span>}
+                    {route.routeShortName && route.routeLongName && <span className={`font-normal ${LIST_ROW_DIM}`}> — {route.routeLongName}</span>}
                   </div>
                   {route.destinations.length > 0 && (
-                    <div className="mt-0.5 text-xs font-bold text-[var(--text-dim)] truncate" title={route.destinations.join(' · ')}>
+                    <div className={`mt-0.5 ${LIST_ROW_DIM} truncate`} title={route.destinations.join(' · ')}>
                       To {route.destinations.join(' · ')}
                     </div>
                   )}
