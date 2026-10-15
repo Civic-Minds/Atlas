@@ -11,17 +11,22 @@ vehicle positions and the timetable.
 
 ## What it measures (the `v3` block)
 
-- **Delay at a stop** = the time the car passed the stop (interpolated between archived positions, projected on the trip's shape)
-  minus the timetable's departure for that trip at that stop. Trips are matched by trip number. Passages more than an hour off the
-  timetable are dropped and counted.
+- **Delay at a stop** = the time the car LEFT the stop (interpolated between archived positions, at the point 25 m past the stop on
+  the trip's shape) minus the timetable's departure for that trip at that stop. Departure, not arrival: at terminals a car arrives
+  and waits, which would look early. Trips are matched by trip number. A run whose median delay is 15+ minutes off its own trip is
+  reassigned if another scheduled trip on the same pattern fits within 3 minutes at 80% of its stops (a swapped trip number),
+  otherwise dropped; the counts are in `v3.swaps`. Passages more than an hour off the timetable are dropped and counted.
 - **On time** uses the same thresholds as the map (`shared/liveDelayStatus.ts`): early at or below -1.5 min, late at or above +5.5.
-  "Early" only means the car passed the stop before the timetable's time (cars often wait to leave on time), so the headline is the
+  "Early" only means the car left before the timetable's time (cars often wait to leave on time), so the headline is the
   share that is **not late**. Adherence is reported at timepoints (the stops the timetable really schedules) and at all stops.
-- **B1 adherence** by hour, date, direction and weekday/weekend. **B2 stops with the most delay**: median and 90th percentile per
-  stop (ranked when there are at least 30 passages). **B3 where delays start**: the first stretch that adds more than a minute of
+  Positions come about every minute, so each time is interpolated; `v3.uncertainty.nearCutoffShare` is the share of timepoint
+  departures within 0.75 min of a cutoff, where a small error can change the label.
+- **B1 adherence** by hour, date, direction and weekday/weekend. **B2 stops with the most delay**: ranked by late share (5.5+ min late,
+  at least 30 passages, `lateRank`), with the median and 90th percentile beside it. **B3 where delays start**: the first stretch that adds more than a minute of
   delay in at least half of the runs, and the delay already there at the first stop.
 - **B4 bunching**: the gaps between consecutive cars at each stop. Bunched = gap under 2 minutes, gapped = more than twice the
-  scheduled gap. Bunching forms at the first stretch where that share rises by 5 points and stays up. What lines up with it is
+  scheduled gap. Bunching "forms" at the largest step of 10+ points that stays up to the end of the route; a slower climb is
+  called gradual (`kind`), and the whole per-stop profile is stored. What lines up with it is
   listed as "linked to": uneven departures at the terminal, stood-still time, running time over the timetable, short turns.
 
 The window is the last `--days` service dates (default 7) that the archive and the timetable both cover. The thresholds and
@@ -30,5 +35,5 @@ constants are in `shared/stopDelay.ts` and `shared/bunching.ts`.
 ## Check it
 
 `python3 scripts/handcheck/live-arrival-check.py --route 505 --obs <obs.json> --gtfs ../_live-data/gtfs/candidates/surface --archive ../_live-data/archive`
-recomputes random stop passages from the raw archive and the timetable with separate code and prints both numbers
+recomputes random stop departures (25 m past the stop) from the raw archive and the timetable with separate code and prints both numbers
 (`--obs-out` on `scripts/live-segment-delay.ts` writes the passages it used).

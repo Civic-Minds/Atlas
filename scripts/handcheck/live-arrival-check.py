@@ -3,10 +3,10 @@
 
 Takes random stop passages from a segment-delay run (the --obs-out file of scripts/live-segment-delay.ts) and recomputes
 each one from scratch: project the archived positions of that trip onto its GTFS shape (plain geometry, written here),
-interpolate the time the car reached the stop between the two positions around it, and subtract the timetable's
+interpolate the time the car LEFT the stop (25 m past it along the shape, the timetable's departure moment) between the two positions around that point, and subtract the timetable's
 departure for that trip at that stop. Prints both numbers side by side.
 
-usage: live-arrival-check.py --route 504 --obs <obs.json> --gtfs <dir> --archive <dir> [--n 10] [--seed 1] [--tol 30]
+usage: live-arrival-check.py --route 504 --obs <obs.json> --gtfs <dir> --archive <dir> [--n 10] [--seed 1] [--tol 30] [--offset 25]
 Exit code 1 when any checked arrival differs by more than --tol seconds (default 30).
 """
 import argparse, csv, datetime, json, math, os, random, sys
@@ -40,7 +40,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--route', required=True); ap.add_argument('--obs', required=True)
     ap.add_argument('--gtfs', required=True); ap.add_argument('--archive', required=True)
-    ap.add_argument('--n', type=int, default=10); ap.add_argument('--seed', type=int, default=1); ap.add_argument('--tol', type=float, default=30)
+    ap.add_argument('--n', type=int, default=10); ap.add_argument('--seed', type=int, default=1); ap.add_argument('--tol', type=float, default=30); ap.add_argument('--offset', type=float, default=25)
     a = ap.parse_args()
     runs = json.load(open(a.obs))
     rnd = random.Random(a.seed)
@@ -51,7 +51,7 @@ def main():
         k = (r['date'], r['directionId'])
         if k in seen and len(seen) < 14: continue
         seen.add(k); picks.append((r, s))
-        if len(picks) == a.n: break
+        if len(picks) == a.n * 3: break  # extras: runs the analysis moved to another trip number can't be found under their own number
     trip_ids = {r['tripId'] for r, _ in picks}
     trips = {}
     with open(os.path.join(a.gtfs, 'trips.txt'), encoding='utf-8-sig') as f:
@@ -82,7 +82,7 @@ def main():
         return out
     print(f"route {a.route}: {len(picks)} arrivals, tolerance {a.tol:.0f} s\n")
     print(f"{'date':10} {'dir':3} {'stop':34} {'trip':9} {'sched':>8} {'bracket':>8} {'recomputed':>11} {'analysis':>9} {'diff':>6}")
-    worst = 0; bad = 0
+    worst = 0; bad = 0; skipped = 0; checked = 0
     for r, s in picks:
         trip = trips.get(r['tripId'])
         pts = sorted(shapes.get(trip['shape_id'], [])) if trip else []
@@ -94,6 +94,7 @@ def main():
         cum = [0.0]
         for i in range(1, len(poly)): cum.append(cum[-1] + math.hypot(poly[i][0] - poly[i - 1][0], poly[i][1] - poly[i - 1][1]))
         stop_along, _ = along_of(poly, cum, xy(stops[s['stopId']][0], stops[s['stopId']][1], lat0))
+        stop_along += a.offset
         samples = []
         for ts, v in archive_samples(s['t']):
             if v[1] == r['tripId'] and abs(ts - s['t']) < 1500: samples.append((v[4] if len(v) > 4 and v[4] else ts, v[2], v[3]))
@@ -107,14 +108,16 @@ def main():
             if a1 <= stop_along <= a2 and a2 > a1 and t2 - t1 <= 180 and t1 - 600 < s['t'] < t2 + 600:
                 hit = (t1 + (stop_along - a1) / (a2 - a1) * (t2 - t1), t2 - t1); break
         if not hit:
-            print(f"{r['date']:10} {r['directionId']:<3} {stops[s['stopId']][2][:34]:34} {r['tripId']:9} (no pair of archived positions brackets this stop)"); bad += 1; continue
+            skipped += 1; continue  # reassigned trip number, or no bracketing pair under this number
+        if checked == a.n: break
+        checked += 1
         h, m_, sec = map(int, dep.split(':'))
         scheduled = day_start(r['date']) + h * 3600 + m_ * 60 + sec
         mine = hit[0] - scheduled
         diff = abs(mine - s['delaySec']); worst = max(worst, diff)
         if diff > a.tol: bad += 1
         print(f"{r['date']:10} {r['directionId']:<3} {stops[s['stopId']][2][:34]:34} {r['tripId']:9} {dep:>8} {hit[1]:>7.0f}s {mine / 60:>10.1f}m {s['delaySec'] / 60:>8.1f}m {diff:>5.0f}s")
-    print(f"\nlargest difference {worst:.0f} s; {bad} of {len(picks)} outside tolerance or not checkable")
+    print(f"\nlargest difference {worst:.0f} s; {bad} of {checked} outside tolerance or not checkable ({skipped} candidates skipped: no bracketing pair under that trip number)")
     sys.exit(1 if bad else 0)
 
 if __name__ == '__main__':

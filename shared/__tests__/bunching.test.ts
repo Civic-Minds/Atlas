@@ -22,12 +22,13 @@ describe('stopBunching', () => {
 describe('bunchingProfile', () => {
   const stop = (id: string, bad: number): StopBunching => ({ stopId: id, n: MIN_GAPS, bunchedShare: bad, gappedShare: 0, badShare: bad, medianGapSec: 300, spread: 2 });
 
-  it('names the first stretch where the bad share rises and stays up, e.g. 5-minute departures turning into trains of three', () => {
+  it('names the largest step in the bad share that stays up to the end, e.g. 5-minute departures turning into trains of three', () => {
     const stops = [stop('T', 0.05), stop('A', 0.06), stop('B', 0.05), stop('C', 0.07), stop('D', 0.2), stop('E', 0.3), stop('F', 0.35), stop('G', 0.4)];
     const p = bunchingProfile(stops);
     expect(p.baselineBadShare).toBeCloseTo(0.0533, 3);
     expect(p.forms).toMatchObject({ fromStopId: 'C', toStopId: 'D' });
     expect(p.forms!.rise).toBeCloseTo(0.13);
+    expect(p.kind).toBe('forms');
     expect(p.biggestRise).toMatchObject({ fromStopId: 'C', toStopId: 'D' });
   });
 
@@ -36,6 +37,15 @@ describe('bunchingProfile', () => {
     expect(bunchingProfile(blip).forms).toBeNull();
     const even = [stop('T', 0.05), stop('A', 0.06), stop('B', 0.05), stop('C', 0.06), stop('D', 0.07)];
     expect(bunchingProfile(even).forms).toBeNull();
+  });
+
+  it('calls a slow climb with no single step gradual, and keeps the biggest rise', () => {
+    const climb = [stop('T', 0.05), stop('A', 0.05), stop('B', 0.05), stop('C', 0.09), stop('D', 0.14), stop('E', 0.19), stop('F', 0.24)];
+    const p = bunchingProfile(climb);
+    expect(p.kind).toBe('gradual');
+    expect(p.forms).toBeNull();
+    expect(p.climb).toBeCloseTo(0.19);
+    expect(p.biggestRise!.rise).toBeCloseTo(0.05);
   });
 
   it('skips stops with too few gaps and needs enough stops to judge', () => {

@@ -34,6 +34,13 @@ const DAYS = Number(args.days ?? 7);
 const OBS_OUT = args['obs-out'];
 /** A stop passage more than this far from the timetable is a wrong trip match or a bad fix, not a delay. */
 const MAX_DELAY_SEC = 3600;
+/** The departure moment: the car is this far past the stop. */
+const DEPARTURE_OFFSET_M = 25;
+/** A run whose median delay is this far off its own trip may be on a swapped trip number... */
+const SWAP_OFF_SEC = 900;
+/** ...when another scheduled trip on the same pattern fits within this many seconds at this share of stops. */
+const SWAP_FIT_SEC = 180;
+const SWAP_FIT_SHARE = 0.8;
 
 function readCsv(path: string, keep?: (row: Record<string, string>) => boolean): Record<string, string>[] {
   const lines = readFileSync(path, 'utf8').split(/\r?\n/);
@@ -224,6 +231,8 @@ const passagesAt = new Map<string, { tripId: string; t: number }[]>();
 const holds: (HoldEvent & { directionId: number })[] = [];
 const runDelays: RunDelays[] = [];
 let delaysExcluded = 0;
+let runsWithDelays = 0;
+const swapLog: { date: string; outcome: 'reassigned' | 'dropped' }[] = [];
 const shortTurnEvents: { stopId: string; directionId: number; date: string }[] = [];
 // Per vehicle: its runs in time order (for turn-backs); per trip: when it was seen.
 const vehicleRuns = new Map<string, { tripId: string; first: PositionSample; last: PositionSample; samples: PositionSample[] }[]>();
@@ -298,25 +307,46 @@ for (const [key, samples] of runs) {
       if (excess != null) holds.push({ ...h, end: h.start + excess, directionId: pattern.directionId });
     }
     const legs = stopPassages(projected, pattern);
-    // v3: delay at each stop = when the car passed it minus the timetable's departure for this trip there.
-    const firstPassage = legs.flat()[0];
-    if (firstPassage && times.length) {
-      const svcDate = serviceDateOf(firstPassage.t);
+    // v3: delay at each stop = when the car LEFT it (25 m past) minus the timetable's departure for this trip there.
+    // Terminal "passes" are layover arrivals, so the arrival moment would fake early cars.
+    const deps = stopPassages(projected, pattern, SEGMENT_DEFAULTS, DEPARTURE_OFFSET_M).flat();
+    const firstDeparture = deps[0];
+    if (firstDeparture && times.length) {
+      const svcDate = serviceDateOf(firstDeparture.t);
       const base = serviceDayStart(svcDate);
-      const depByStop = new Map<string, number>();
-      const tpByStop = new Map<string, boolean>();
-      for (const st of times) if (!depByStop.has(st.stopId)) { depByStop.set(st.stopId, st.dep); tpByStop.set(st.stopId, st.tp); }
-      const seen = new Set<string>();
-      const stopsOut: RunStopDelay[] = [];
-      for (const leg of legs) for (const p of leg) {
-        const dep = depByStop.get(p.stopId);
-        if (dep == null || seen.has(p.stopId)) continue;
-        const delaySec = p.t - (base + dep);
-        if (Math.abs(delaySec) > MAX_DELAY_SEC) { delaysExcluded++; continue; }
-        seen.add(p.stopId);
-        stopsOut.push({ stopId: p.stopId, t: p.t, hour: hourOf(p.t), delaySec, timepoint: tpByStop.get(p.stopId) === true });
+      const seenStop = new Set<string>();
+      const observed = deps.filter(p => !seenStop.has(p.stopId) && !!seenStop.add(p.stopId));
+      const delaysFor = (tid: string) => {
+        const tt = timesByTrip.get(tid) ?? [];
+        const depByStop = new Map<string, number>();
+        const tpByStop = new Map<string, boolean>();
+        for (const st of tt) if (!depByStop.has(st.stopId)) { depByStop.set(st.stopId, st.dep); tpByStop.set(st.stopId, st.tp); }
+        return observed.filter(p => depByStop.has(p.stopId)).map(p => ({ p, delaySec: p.t - (base + depByStop.get(p.stopId)!), timepoint: tpByStop.get(p.stopId) === true }));
+      };
+      let assigned = tripId;
+      let rows = delaysFor(tripId);
+      const med = median(rows.map(r => r.delaySec));
+      if (rows.length >= 5 && med != null && Math.abs(med) >= SWAP_OFF_SEC) {
+        // 15+ min off its own trip: is it really another scheduled trip on the same pattern (a swapped trip number)?
+        const services = activeServices(svcDate) ?? [];
+        let best: { id: string; share: number } | null = null;
+        for (const c of trips) {
+          if (c.trip_id === tripId || c.shape_id !== trip.shape_id || !services.includes(c.service_id)) continue;
+          const cr = delaysFor(c.trip_id);
+          if (cr.length < 5) continue;
+          const share = cr.filter(r => Math.abs(r.delaySec) <= SWAP_FIT_SEC).length / cr.length;
+          if (share >= SWAP_FIT_SHARE && (!best || share > best.share)) best = { id: c.trip_id, share };
+        }
+        if (best) { assigned = best.id; rows = delaysFor(best.id); swapLog.push({ date: svcDate, outcome: 'reassigned' }); }
+        else { rows = []; swapLog.push({ date: svcDate, outcome: 'dropped' }); }
       }
-      if (stopsOut.length) runDelays.push({ date: svcDate, directionId: pattern.directionId, tripId, stops: stopsOut });
+      runsWithDelays++;
+      const stopsOut: RunStopDelay[] = [];
+      for (const r of rows) {
+        if (Math.abs(r.delaySec) > MAX_DELAY_SEC) { delaysExcluded++; continue; }
+        stopsOut.push({ stopId: r.p.stopId, t: r.p.t, hour: hourOf(r.p.t), delaySec: r.delaySec, timepoint: r.timepoint });
+      }
+      if (stopsOut.length) runDelays.push({ date: svcDate, directionId: pattern.directionId, tripId: assigned, stops: stopsOut });
     }
     for (const o of segmentObservations(legs, pattern, '')) observations.push({ ...o, date: serviceDateOf(o.departT) });
     for (const leg of legs) for (const p of leg) {
@@ -684,10 +714,19 @@ const orderIndex = (dir: number, stopId: string) => stopOrder.get(dir)?.indexOf(
 const r1 = (x: number | null) => (x == null ? null : Math.round(x * 10) / 10);
 const r3 = (x: number | null) => (x == null ? null : Math.round(x * 1000) / 1000);
 
+const swapsInWindow = swapLog.filter(x => inWindow.has(x.date));
+const swapsReassigned = swapsInWindow.filter(x => x.outcome === 'reassigned').length;
+const swapsDropped = swapsInWindow.length - swapsReassigned;
+const tpMinutes = windowRuns.flatMap(r => r.stops.filter(s => s.timepoint).map(s => s.delaySec / 60));
+const nearCutoffShare = tpMinutes.length ? tpMinutes.filter(m => Math.abs(m - EARLY_AT_OR_BELOW_MIN) < 0.75 || Math.abs(m - LATE_AT_OR_ABOVE_MIN) < 0.75).length / tpMinutes.length : 0;
 const stopStatsV3 = stopDelayStats(windowRuns).map(s => ({
   ...stopInfo(s.stopId), directionId: s.directionId, order: orderIndex(s.directionId, s.stopId), n: s.n,
   medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare), ranked: s.ranked,
 })).sort((a, b) => a.directionId - b.directionId || a.order - b.order);
+// B2 ranks by late share (5.5+ min late) among stops with enough passages; median and p90 sit beside it.
+for (const dir of new Set(stopStatsV3.map(x => x.directionId))) {
+  stopStatsV3.filter(x => x.directionId === dir && x.ranked).sort((a, b) => (b.lateShare ?? 0) - (a.lateShare ?? 0) || b.n - a.n).forEach((x, i) => { (x as typeof x & { lateRank?: number }).lateRank = i + 1; });
+}
 const buildupV3 = delayBuildup(windowRuns, stopOrder).map(d => {
   const named = (s: typeof d.start) => s && { ...s, fromName: stopInfo(s.fromStopId).name, toName: stopInfo(s.toStopId).name, medianAddedMin: r1(s.medianAddedMin), addedShare: r3(s.addedShare), medianDelayMin: r1(s.medianDelayMin), p10DelayMin: r1(s.p10DelayMin), p90DelayMin: r1(s.p90DelayMin) };
   return { directionId: d.directionId, startingDelayMin: r1(d.startingDelayMin), start: named(d.start), biggest: named(d.biggest), stretches: d.stretches.map(s => named(s)) };
@@ -727,6 +766,8 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
     const describe = (s: typeof profile.forms) => s && { ...s, fromName: stopInfo(s.fromStopId).name, toName: stopInfo(s.toStopId).name, rise: r3(s.rise), fromBadShare: r3(s.fromBadShare), toBadShare: r3(s.toBadShare), links: bunchingLinks(evidenceFor(s.fromStopId, s.toStopId)), evidence: evidenceFor(s.fromStopId, s.toStopId) };
     return [band, {
       baselineBadShare: r3(profile.baselineBadShare),
+      kind: profile.kind,
+      climb: r3(profile.climb),
       forms: describe(profile.forms),
       biggestRise: describe(profile.biggestRise),
       stops: stops.map((s, i) => ({ ...stopInfo(s.stopId), order: i, n: s.n, bunchedShare: r3(s.bunchedShare), gappedShare: r3(s.gappedShare), badShare: r3(s.badShare), medianGapSec: s.medianGapSec == null ? null : Math.round(s.medianGapSec), spread: r1(s.spread) })),
@@ -738,7 +779,9 @@ const v3 = {
   schema: 3,
   window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS },
   thresholds: { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_AT_OR_ABOVE_MIN, bunchedGapSec: BUNCHED_GAP_SEC },
-  method: 'Delay at a stop = the time the car passed it (interpolated between archived positions, projected on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Trips are matched by trip number; passages more than an hour off the timetable are dropped. Estimated from positions: the TTC feed has no delay values. "Early" means the car passed the stop before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
+  method: 'Delay at a stop = the time the car left it (interpolated between archived positions, at the point 25 m past the stop on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Departure, not arrival: at terminals a car arrives and waits, which would look early. Trips are matched by trip number; a run 15+ min off its own trip is reassigned when another scheduled trip on the same pattern fits within 3 min at 80% of stops, otherwise dropped; passages over an hour off are dropped. Estimated from positions: the TTC feed has no delay values. Positions come about every minute, so each time is interpolated; ' + Math.round(nearCutoffShare * 100) + '% of timepoint departures fall within 0.75 min of an on-time cutoff, where a small error can change the label. "Early" means the car left before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
+  swaps: { reassigned: swapsReassigned, dropped: swapsDropped, rate: r3(windowRuns.length + swapsDropped ? swapsInWindow.length / (windowRuns.length + swapsDropped) : 0) },
+  uncertainty: { nearCutoffShare: r3(nearCutoffShare), withinMin: 0.75, note: 'Share of timepoint departures within 0.75 min of an on-time cutoff; positions are about a minute apart, so those can land on either side.' },
   totals: { runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded },
   directionLabels,
   // The headline adherence counts timepoints only (where the timetable really schedules a time); allStops counts every stop.

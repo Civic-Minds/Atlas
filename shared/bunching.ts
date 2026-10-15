@@ -1,7 +1,7 @@
 /**
  * B4: where and why bunching forms along a route, from the gaps between consecutive vehicles at each stop.
  * Where: the share of gaps under two minutes (bunched) plus gaps over twice the scheduled gap (gapped), stop by stop;
- * bunching forms at the first stretch where that share rises and stays up. Why: which measured things sit at that stretch
+ * bunching forms at the largest step up in that share that stays up to the end of the route (a slow climb with no such step is gradual). Why: which measured things sit at that stretch
  * ("linked to", never "caused by"): uneven departures at the terminal, vehicles standing still, slow running vs the
  * timetable, short turns. Pure functions; scripts/live-segment-delay.ts feeds them.
  */
@@ -11,10 +11,14 @@ export const BUNCHED_GAP_SEC = 120;
 export const GAPPED_FACTOR = 2;
 /** A stop needs this many gaps before it counts. */
 export const MIN_GAPS = 30;
-/** Bunching forms where the bad share rises by at least this much (0.05 = 5 percentage points)... */
-export const RISE = 0.05;
-/** ...and stays at least this far above the baseline for the next two stops. */
+/** A rise counts as a step (bunching "forms" there) when the bad share jumps by at least this much (0.10 = 10 points)... */
+export const RISE = 0.1;
+/** ...and the later stops stay up: each is at least half the rise above where it started, to the end of the route. */
+export const STAYS_UP_SHARE = 0.5;
+/** The baseline is the mean bad share over this many first stops with enough gaps. */
 export const BASELINE_STOPS = 3;
+/** Smaller climbs than RISE that add up to at least this much over the route are called gradual. */
+export const GRADUAL_CLIMB = 0.05;
 
 export interface GapWindow {
   /** Seconds between consecutive vehicles passing the stop, in one (date, band) window. */
@@ -66,16 +70,24 @@ export interface BunchingStretch {
 export interface BunchingProfile {
   /** Mean bad share over the first stops with enough gaps (the terminal end). */
   baselineBadShare: number | null;
-  /** First stretch where bunching forms (rise >= RISE and the next two stops stay above the baseline), or null. */
+  /**
+   * 'forms': one stretch where the bad share steps up by RISE or more and stays up to the end of the route.
+   * 'gradual': no such step, but the bad share still climbs by GRADUAL_CLIMB or more along the route.
+   * 'none': flat. Null when there are too few stops with enough gaps.
+   */
+  kind: 'forms' | 'gradual' | 'none' | null;
+  /** The largest rise that stays up to the end (kind 'forms'), or null. */
   forms: BunchingStretch | null;
-  /** The stretch with the largest rise. */
+  /** The stretch with the largest single rise, whether or not it stays up. */
   biggestRise: BunchingStretch | null;
+  /** Highest bad share after the baseline minus the baseline: how far it climbs overall. */
+  climb: number | null;
 }
 
-/** `stops` in travel order. Stops with fewer than MIN_GAPS gaps are skipped. */
+/** `stops` in travel order. Stops with fewer than MIN_GAPS gaps are skipped. The full per-stop profile is shown beside this. */
 export function bunchingProfile(stops: readonly StopBunching[]): BunchingProfile {
   const usable = stops.filter(s => s.n >= MIN_GAPS);
-  if (usable.length < BASELINE_STOPS + 1) return { baselineBadShare: null, forms: null, biggestRise: null };
+  if (usable.length < BASELINE_STOPS + 1) return { baselineBadShare: null, kind: null, forms: null, biggestRise: null, climb: null };
   const baseline = usable.slice(0, BASELINE_STOPS).reduce((a, s) => a + s.badShare, 0) / BASELINE_STOPS;
   const stretchAt = (i: number): BunchingStretch => ({
     fromStopId: usable[i - 1].stopId, toStopId: usable[i].stopId, rise: usable[i].badShare - usable[i - 1].badShare,
@@ -86,11 +98,13 @@ export function bunchingProfile(stops: readonly StopBunching[]): BunchingProfile
   for (let i = 1; i < usable.length; i++) {
     const s = stretchAt(i);
     if (!biggest || s.rise > biggest.rise) biggest = s;
-    if (forms) continue;
-    const following = usable.slice(i, i + 3);
-    if (s.rise >= RISE && following.every(f => f.badShare >= baseline + RISE)) forms = s;
+    if (s.rise < RISE) continue;
+    const staysUp = usable.slice(i).every(f => f.badShare >= s.fromBadShare + STAYS_UP_SHARE * s.rise);
+    if (staysUp && (!forms || s.rise > forms.rise)) forms = s;
   }
-  return { baselineBadShare: baseline, forms, biggestRise: biggest && biggest.rise > 0 ? biggest : null };
+  const climb = Math.max(...usable.slice(BASELINE_STOPS).map(s => s.badShare)) - baseline;
+  const kind = forms ? 'forms' : climb >= GRADUAL_CLIMB ? 'gradual' : 'none';
+  return { baselineBadShare: baseline, kind, forms, biggestRise: biggest && biggest.rise > 0 ? biggest : null, climb };
 }
 
 /** Evidence near a stretch, from the other analysis blocks. Each is optional: absent means "not measured". */
