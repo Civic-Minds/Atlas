@@ -161,3 +161,29 @@ describe('the one frequency-filter rule: worst direction decides', () => {
     expect(featurePassesHeadwayFilter({ routeId: 'a' }, 'all', Infinity)).toBe(true);
   });
 });
+
+describe('a rush-hour-only direction beside an all-day one (#720)', () => {
+  const line = (p: Record<string, unknown>) => ({
+    type: 'Feature' as const,
+    geometry: { type: 'LineString' as const, coordinates: [[0, 0], [1, 1]] },
+    properties: { agencySlug: 'x', routeId: '1', routeShortName: '1', day: 'Weekday', ...p },
+  });
+  const features = () => {
+    const fc = [
+      line({ directionId: 0, headsign: 'A', tier: '20', serviceClass: 'regular', headway: 20, headwayByPeriod: { amPeak: 20, midday: 20, pmPeak: 20, evening: 30, late: null, overnight: null } }),
+      // Rush-hour-only, alone in its direction: every 10 at the peaks, nothing at midday.
+      line({ directionId: 1, headsign: 'B', tier: '10', serviceClass: 'time-limited', headway: 10, headwayByPeriod: { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null } }),
+    ];
+    normalizeRouteFilterFeatures(fc as any);
+    return fc.map(f => f.properties as any);
+  };
+
+  it('never makes the route read better than its all-day direction', () => {
+    const props = features();
+    expect(props.map(p => p.worstDirectionHeadway)).toEqual([20, 20]);
+    expect(props[0].worstDirectionHeadwayByPeriod).toMatchObject({ amPeak: 20, pmPeak: 20 });
+    expect(routePassesHeadwayFilter(props, 'all', 'Weekday', 15)).toBe(false);
+    expect(routePassesHeadwayFilter(props, 'amPeak', 'Weekday', 10)).toBe(false);
+    expect(routePassesHeadwayFilter(props, 'amPeak', 'Weekday', 20)).toBe(true);
+  });
+});

@@ -946,7 +946,8 @@ export async function processGtfsBuffer(
   // only when it draws: communitytransit 130 Saturday to Edmonds runs hourly all day on two
   // shapes with different last stops, the drawn shape has no midday trips and the midday shape
   // lost dedupe to it, so the whole direction went dark as a "variant" of a line nobody drew.
-  const keepsHeadline = (feature: GeoJsonFeature): boolean => feature.properties.tier !== 'span' && feature.properties.serviceClass !== 'irregular';
+  const keepsHeadline = (feature: GeoJsonFeature): boolean => feature.properties.tier !== 'span' && feature.properties.serviceClass !== 'irregular'
+    && !rushHourOnlyFeatures.has(feature);
   let drawnMembersByPool: Map<string, Set<string>> | null = null;
   const drawnMembers = (poolKey: string): ReadonlySet<string> => {
     if (!drawnMembersByPool) {
@@ -1079,6 +1080,10 @@ export async function processGtfsBuffer(
   // Weekday features of routes that skip the representative weekday (#710), and days whose only
   // service is the previous night's after-midnight tail (#718): no stop metrics.
   const partialWeekdayFeatures = new Set<GeoJsonFeature>();
+  // #720: steady rush-hour-only patterns. They are rated now, but pool and stand as siblings as
+  // they did when they were one-off, so their peak trips never lift another line's readings
+  // (lacmta 105 to Marlton/King read 10, the trunk's peak, for a weekday PM pattern every ~20).
+  const rushHourOnlyFeatures = new Set<GeoJsonFeature>();
   const featureBranchTripCount = new Map<GeoJsonFeature, number>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
@@ -1153,6 +1158,7 @@ export async function processGtfsBuffer(
       runsOnRepDay: newRunsOnRepDay,
       carriesRepDay: newCarriesRepDay,
       line: hasRouteShape ? points!.map(([lat, lon]) => [lon, lat]) : undefined,
+      rushHourOnly: result.rushHourOnly === true,
     };
     if (decideDedupe(incumbent, candidate, repWeekday) === 'keep') continue;
 
@@ -1220,6 +1226,7 @@ export async function processGtfsBuffer(
     featureBranchTripCount.set(newFeature, result.times.length);
     if (result.partialWeekday || result.previousNightTailOnly) partialWeekdayFeatures.add(newFeature);
     else partialWeekdayFeatures.delete(newFeature);
+    if (result.rushHourOnly) rushHourOnlyFeatures.add(newFeature);
   }
   const features = [...dedupedFeatures.values()];
 
@@ -1238,7 +1245,7 @@ export async function processGtfsBuffer(
   }
 
   for (const [feature, slot] of featureStopHeadwaySlots) {
-    if (partialWeekdayFeatures.has(feature) || !isPoolablePattern(feature)) continue;
+    if (partialWeekdayFeatures.has(feature) || rushHourOnlyFeatures.has(feature) || !isPoolablePattern(feature)) continue;
     sharedEligibleHeadsigns.add(`${slot.shortName}::${slot.dirId}::${slot.day}::${feature.properties.routeId}::${(feature.properties.headsign as string | null) ?? ''}`);
   }
 

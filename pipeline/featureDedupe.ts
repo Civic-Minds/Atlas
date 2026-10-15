@@ -43,6 +43,8 @@ export interface DedupePattern {
   carriesRepDay: boolean;
   /** The drawn line as [lon, lat] points (#844), absent for a mapless pattern. */
   line?: number[][];
+  /** Rush-hour-only limited service (#720): rated, but runs only in the AM and/or PM peak. */
+  rushHourOnly?: boolean;
 }
 
 /** Two drawn patterns are the same line when their lengths differ by under 2% (#844). */
@@ -133,6 +135,17 @@ export function explainDedupe(
   repWeekday: DayName | undefined,
 ): DedupeExplanation {
   if (!incumbent) return { decision: 'replace', reason: 'empty-slot' };
+  // #720: steady rush-hour-only service is rated, but that changes how it is classed, not which
+  // pattern draws a slot. Against a pattern that is not rush-hour-only it competes unrated, as it
+  // did when it was one-off: otherwise its peak headway wins the slot from the all-day line under
+  // the same destination (MBTA 7 City Point every 6 in place of every 36 all day, centro 21980
+  // every 40 in place of every 80) and the all-day line reads part-time. Two rush-hour-only
+  // patterns still compete on headway.
+  if ((incumbent.rushHourOnly === true) !== (candidate.rushHourOnly === true)) {
+    const unrated = (p: DedupePattern): DedupePattern => p.rushHourOnly ? { ...p, headway: null, dedupeHeadway: null } : p;
+    incumbent = unrated(incumbent);
+    candidate = unrated(candidate);
+  }
   // Conditions on the pair, the same whichever side holds the slot.
   const replacesMaplessWithShape = !incumbent.hasShape && candidate.hasShape;
   const bothDrawn = incumbent.hasShape && candidate.hasShape && repWeekday != null;
