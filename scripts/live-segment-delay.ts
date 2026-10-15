@@ -4,7 +4,10 @@
  * Atlas-worktrees/_live-data) and the TTC "Surface Routes and Schedules for
  * BusTime" GTFS, whose trip IDs match the live feed.
  *
- *   npx tsx scripts/live-segment-delay.ts --gtfs <dir> --archive <dir> --route 504 --out <file>
+ *   npx tsx scripts/live-segment-delay.ts --gtfs <dir> --archive <dir> --route 504 --out <file> [--days 7] [--obs-out <file>]
+ *
+ * Schema v3 (the `v3` block) adds the dashboard analysis over the last --days service dates (default 7): adherence, stops with
+ * the most delay, where delays start, and where and why bunching forms. See docs/operations/LIVE_ANALYSIS.md.
  *
  * Days the GTFS calendar doesn't cover are dropped, not guessed.
  */
@@ -16,6 +19,9 @@ import {
   segmentObservations, stopPassages,
   type HoldEvent, type Pattern, type TripPing, type TripStopStatus, type PositionSample, type ScheduledRunTimes, type SegmentObservation, type TimeBand,
 } from '../shared/segmentDelay.js';
+import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
+import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
+import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
@@ -24,6 +30,10 @@ const ARCHIVE = args.archive;
 const ROUTE = args.route ?? '504';
 const OUT = args.out;
 const TZ = 'America/Toronto';
+const DAYS = Number(args.days ?? 7);
+const OBS_OUT = args['obs-out'];
+/** A stop passage more than this far from the timetable is a wrong trip match or a bad fix, not a delay. */
+const MAX_DELAY_SEC = 3600;
 
 function readCsv(path: string, keep?: (row: Record<string, string>) => boolean): Record<string, string>[] {
   const lines = readFileSync(path, 'utf8').split(/\r?\n/);
@@ -70,10 +80,10 @@ const prevDate = (d: string) => new Date(Date.parse(`${d}T12:00:00Z`) - 86400_00
 const trips = readCsv(join(GTFS, 'trips.txt'), r => r.route_id === ROUTE);
 const tripById = new Map(trips.map(t => [t.trip_id, t]));
 const stopTimesPath = existsSync(join(GTFS, `${ROUTE}-stop_times.txt`)) ? join(GTFS, `${ROUTE}-stop_times.txt`) : join(GTFS, 'stop_times.txt');
-const timesByTrip = new Map<string, { stopId: string; seq: number; arr: number; dep: number }[]>();
+const timesByTrip = new Map<string, { stopId: string; seq: number; arr: number; dep: number; tp: boolean }[]>();
 for (const st of readCsv(stopTimesPath, r => tripById.has(r.trip_id))) {
   const list = timesByTrip.get(st.trip_id) ?? [];
-  list.push({ stopId: st.stop_id, seq: Number(st.stop_sequence), arr: gtfsSec(st.arrival_time), dep: gtfsSec(st.departure_time) });
+  list.push({ stopId: st.stop_id, seq: Number(st.stop_sequence), arr: gtfsSec(st.arrival_time), dep: gtfsSec(st.departure_time), tp: st.timepoint === '1' });
   timesByTrip.set(st.trip_id, list);
 }
 for (const l of timesByTrip.values()) l.sort((a, b) => a.seq - b.seq);
@@ -212,6 +222,9 @@ const observations: SegmentObservation[] = [];
 // Passages by stop+direction, for headways.
 const passagesAt = new Map<string, { tripId: string; t: number }[]>();
 const holds: (HoldEvent & { directionId: number })[] = [];
+const runDelays: RunDelays[] = [];
+let delaysExcluded = 0;
+const shortTurnEvents: { stopId: string; directionId: number; date: string }[] = [];
 // Per vehicle: its runs in time order (for turn-backs); per trip: when it was seen.
 const vehicleRuns = new Map<string, { tripId: string; first: PositionSample; last: PositionSample; samples: PositionSample[] }[]>();
 const tripPings = new Map<string, TripPing[]>(); // per trip number: reports, with position along its route
@@ -285,6 +298,26 @@ for (const [key, samples] of runs) {
       if (excess != null) holds.push({ ...h, end: h.start + excess, directionId: pattern.directionId });
     }
     const legs = stopPassages(projected, pattern);
+    // v3: delay at each stop = when the car passed it minus the timetable's departure for this trip there.
+    const firstPassage = legs.flat()[0];
+    if (firstPassage && times.length) {
+      const svcDate = serviceDateOf(firstPassage.t);
+      const base = serviceDayStart(svcDate);
+      const depByStop = new Map<string, number>();
+      const tpByStop = new Map<string, boolean>();
+      for (const st of times) if (!depByStop.has(st.stopId)) { depByStop.set(st.stopId, st.dep); tpByStop.set(st.stopId, st.tp); }
+      const seen = new Set<string>();
+      const stopsOut: RunStopDelay[] = [];
+      for (const leg of legs) for (const p of leg) {
+        const dep = depByStop.get(p.stopId);
+        if (dep == null || seen.has(p.stopId)) continue;
+        const delaySec = p.t - (base + dep);
+        if (Math.abs(delaySec) > MAX_DELAY_SEC) { delaysExcluded++; continue; }
+        seen.add(p.stopId);
+        stopsOut.push({ stopId: p.stopId, t: p.t, hour: hourOf(p.t), delaySec, timepoint: tpByStop.get(p.stopId) === true });
+      }
+      if (stopsOut.length) runDelays.push({ date: svcDate, directionId: pattern.directionId, tripId, stops: stopsOut });
+    }
     for (const o of segmentObservations(legs, pattern, '')) observations.push({ ...o, date: serviceDateOf(o.departT) });
     for (const leg of legs) for (const p of leg) {
       const k = `${p.stopId}|${pattern.directionId}`;
@@ -554,6 +587,7 @@ for (const { svcDate, trip, base } of tripInstanceList) {
   if (firstPing == null && statuses.every(st => st === 'feed_gap')) tripsFeedGap++;
   if (startedOtherTripAfterIndex != null) {
     tripsShortTurned++;
+    shortTurnEvents.push({ stopId: stopIds[startedOtherTripAfterIndex], directionId: Number(trip.direction_id), date: svcDate });
     if (process.env.DEBUG_FIRST) console.log('  TB', trip.trip_id, svcDate, stopsById.get(stopIds[startedOtherTripAfterIndex])?.stop_name, 'cars', new Set(pieces.map(x => x.vehicle)).size);
     const k = `${stopIds[startedOtherTripAfterIndex]}|${trip.direction_id}`;
     const m = shortTurnsAt.get(k) ?? new Map();
@@ -638,12 +672,101 @@ const holdStats = [...holdsAt].map(([k, m]) => {
 if (process.env.DEBUG_FIRST) console.log('joined_late at first stop:', firstStopJoinedLate);
 console.log(`v2: trip instances ${tripInstances} (short pieces left out ${tripsShortExcluded}), not seen ${tripsNotSeen}, unlisted cover ${tripsUnlistedCover}, feed-gap trips ${tripsFeedGap}, turned back ${tripsShortTurned}, stood-still events ${holds.length}, degraded snapshots empty/stale/thin ${degradedEmpty}/${degradedStale}/${degradedThin}, stood-still dropped for degraded feed ${standingStillDegraded}`);
 
+// --- v3: the dashboard analysis over the last DAYS service dates ---
+const windowDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d)).sort().slice(-DAYS);
+const inWindow = new Set(windowDates);
+const windowRuns = runDelays.filter(r => inWindow.has(r.date));
+const isWeekend = (d: string) => { const g = new Date(`${d}T12:00:00Z`).getUTCDay(); return g === 0 || g === 6; };
+const stopOrder = new Map<number, string[]>();
+for (const p of busiest) if (!stopOrder.has(p.directionId)) stopOrder.set(p.directionId, p.stops.map(s => s.stopId));
+const stopInfo = (stopId: string) => ({ stopId, name: stopsById.get(stopId)?.stop_name ?? stopId, lonLat: [Number(stopsById.get(stopId)?.stop_lon), Number(stopsById.get(stopId)?.stop_lat)] as [number, number] });
+const orderIndex = (dir: number, stopId: string) => stopOrder.get(dir)?.indexOf(stopId) ?? -1;
+const r1 = (x: number | null) => (x == null ? null : Math.round(x * 10) / 10);
+const r3 = (x: number | null) => (x == null ? null : Math.round(x * 1000) / 1000);
+
+const stopStatsV3 = stopDelayStats(windowRuns).map(s => ({
+  ...stopInfo(s.stopId), directionId: s.directionId, order: orderIndex(s.directionId, s.stopId), n: s.n,
+  medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare), ranked: s.ranked,
+})).sort((a, b) => a.directionId - b.directionId || a.order - b.order);
+const buildupV3 = delayBuildup(windowRuns, stopOrder).map(d => {
+  const named = (s: typeof d.start) => s && { ...s, fromName: stopInfo(s.fromStopId).name, toName: stopInfo(s.toStopId).name, medianAddedMin: r1(s.medianAddedMin), addedShare: r3(s.addedShare), medianDelayMin: r1(s.medianDelayMin), p10DelayMin: r1(s.p10DelayMin), p90DelayMin: r1(s.p90DelayMin) };
+  return { directionId: d.directionId, startingDelayMin: r1(d.startingDelayMin), start: named(d.start), biggest: named(d.biggest), stretches: d.stretches.map(s => named(s)) };
+});
+
+// Bunching (B4): gaps between consecutive vehicles at each stop, per direction and band, then what lines up with it.
+const windowHolds = holds.filter(h => inWindow.has(serviceDateOf(h.start)) && !feedDown(h.start) && !feedDown(h.end) && !feedDown((h.start + h.end) / 2));
+const windowShortTurns = shortTurnEvents.filter(e => inWindow.has(e.date));
+const windowSegments = aggregateSegments(observations.filter(o => inWindow.has(o.date)), scheduled, scheduleKeyForDate, hourOf);
+const perDay = (n: number) => (windowDates.length ? n / windowDates.length : 0);
+const BANDS: (TimeBand | 'all')[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
+const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
+  directionId: dir,
+  bands: Object.fromEntries(BANDS.map(band => {
+    const stops = order.map(stopId => {
+      const wins: GapWindow[] = (headwayByStop.get(`${stopId}|${dir}`)?.get(band) ?? []).filter(w => inWindow.has(w.date));
+      return stopBunching(stopId, wins);
+    });
+    const profile = bunchingProfile(stops);
+    const evidenceFor = (fromId: string, toId: string) => {
+      const a = Math.max(0, order.indexOf(fromId) - 2), b = order.indexOf(toId);
+      const near = new Set(order.slice(a, b + 1));
+      const evs = windowHolds.filter(h => h.directionId === dir && near.has(h.stopId));
+      const segs = windowSegments.filter(s => s.directionId === dir && near.has(s.fromStopId) && near.has(s.toStopId));
+      const slow = segs.map(s => ({ fromStopId: s.fromStopId, toStopId: s.toStopId, gainedSec: s.bands[band === 'all' ? 'all' : band]?.gainedMedianSec ?? null }))
+        .filter((s): s is { fromStopId: string; toStopId: string; gainedSec: number } => s.gainedSec != null)
+        .sort((x, y) => y.gainedSec - x.gainedSec)[0] ?? null;
+      // The first stop with enough gaps stands for the terminal end (no gaps are measured at the very first stop).
+      const term = stops.find(x => x.n >= 30);
+      return {
+        terminalBadShare: term ? term.badShare : null,
+        standStill: { eventsPerDay: perDay(evs.length), minutesPerDay: perDay(evs.reduce((m, h) => m + (h.end - h.start) / 60, 0)) },
+        slowestSegment: slow,
+        shortTurnsPerDay: perDay(windowShortTurns.filter(e => e.directionId === dir && near.has(e.stopId)).length),
+      };
+    };
+    const describe = (s: typeof profile.forms) => s && { ...s, fromName: stopInfo(s.fromStopId).name, toName: stopInfo(s.toStopId).name, rise: r3(s.rise), fromBadShare: r3(s.fromBadShare), toBadShare: r3(s.toBadShare), links: bunchingLinks(evidenceFor(s.fromStopId, s.toStopId)), evidence: evidenceFor(s.fromStopId, s.toStopId) };
+    return [band, {
+      baselineBadShare: r3(profile.baselineBadShare),
+      forms: describe(profile.forms),
+      biggestRise: describe(profile.biggestRise),
+      stops: stops.map((s, i) => ({ ...stopInfo(s.stopId), order: i, n: s.n, bunchedShare: r3(s.bunchedShare), gappedShare: r3(s.gappedShare), badShare: r3(s.badShare), medianGapSec: s.medianGapSec == null ? null : Math.round(s.medianGapSec), spread: r1(s.spread) })),
+    }];
+  })),
+}));
+
+const v3 = {
+  schema: 3,
+  window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS },
+  thresholds: { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_AT_OR_ABOVE_MIN, bunchedGapSec: BUNCHED_GAP_SEC },
+  method: 'Delay at a stop = the time the car passed it (interpolated between archived positions, projected on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Trips are matched by trip number; passages more than an hour off the timetable are dropped. Estimated from positions: the TTC feed has no delay values. "Early" means the car passed the stop before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
+  totals: { runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded },
+  directionLabels,
+  // The headline adherence counts timepoints only (where the timetable really schedules a time); allStops counts every stop.
+  adherence: {
+    timepoints: {
+      all: adherenceReport(windowRuns, { timepointsOnly: true }),
+      weekday: adherenceReport(windowRuns.filter(r => !isWeekend(r.date)), { timepointsOnly: true }),
+      weekend: adherenceReport(windowRuns.filter(r => isWeekend(r.date)), { timepointsOnly: true }),
+    },
+    allStops: {
+      all: adherenceReport(windowRuns),
+      weekday: adherenceReport(windowRuns.filter(r => !isWeekend(r.date))),
+      weekend: adherenceReport(windowRuns.filter(r => isWeekend(r.date))),
+    },
+  },
+  stops: stopStatsV3,
+  buildup: buildupV3,
+  bunching: bunchingV3,
+};
+if (OBS_OUT) writeFileSync(OBS_OUT, JSON.stringify(windowRuns));
+console.log(`v3: window ${windowDates.length} days (${windowDates[0]}..${windowDates[windowDates.length - 1]}), runs ${windowRuns.length}, stop passages ${v3.totals.stopPassages}, dropped off-timetable ${delaysExcluded}`);
+
 const usedDates = dates;
 const result = {
   agency: 'ttc',
   route: ROUTE,
   generatedAt: new Date().toISOString(),
-  gtfs: readCsv(join(GTFS, 'feed_info.txt'))[0]?.feed_version ?? null,
+  gtfs: existsSync(join(GTFS, 'feed_info.txt')) ? readCsv(join(GTFS, 'feed_info.txt'))[0]?.feed_version ?? null : null,
   dates: usedDates,
   directionLabels,
   // The timetable runs this route entirely as replacement buses (e.g. 503, 507 in fall 2026).
@@ -672,6 +795,7 @@ const result = {
     missed, shortTurns, standingStill: holdStats,
   },
   sharedSection: sharedSectionStats(terminalStops),
+  v3,
   headways: headways.map(h => {
     const to = nextStop.get(`${h.stopId}|${h.directionId}`);
     return { ...h, terminal: terminalStops.has(h.stopId), coordinates: to ? segGeom.get(segmentKey(h.stopId, to)) ?? [] : [] };

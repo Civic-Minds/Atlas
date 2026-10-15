@@ -14,6 +14,7 @@
     "dev:api": "npx tsx api-dev-server.ts",
     "live": "bash scripts/live.sh",
     "live:check": "npx tsx scripts/live-check.ts",
+    "live:analyze": "bash scripts/live-analyze.sh",
     "prebuild": "npm run build:agency-catalog && npm run build:sitemap",
     "build": "tsc && vite build && npm run prerender",
     "prerender": "vite build --ssr src/prerender.tsx --outDir .prerender && npx tsx scripts/prerender-routes.ts",
