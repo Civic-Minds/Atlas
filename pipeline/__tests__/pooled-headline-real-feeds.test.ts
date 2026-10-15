@@ -29,11 +29,12 @@ describe('pooled headline on real feeds (#690, #771, #813)', () => {
     expect(l['0 Keele Station via Keelesdale']).toMatchObject({ headway: 8, midday: 8 });
   });
 
-  it('ttc 129 weekday Steeles via STC: a pool with a midday hole leaves the own midday 20, not its all-day 28', async () => {
+  it('ttc 129 weekday Steeles via STC: a pool with a midday hole leaves the own midday (18 by departure, #750), not its all-day 28', async () => {
     // Shape 1122030, 72 trips; 22 midday departures every 20 at every stop. The pool's merged
     // midday list has a 30-minute hole, so it is not read there.
     const l = await lines('ttc-129-weekday-pool-hole', 'ttc', 'Weekday');
-    expect(l['1 Steeles via Scarborough Centre Stn']).toMatchObject({ headway: 20, midday: 20 });
+    // #750: midday reads first-stop departures 09:20-14:38 (alternating 10/20 gaps plus one 18) -> 18.
+    expect(l['1 Steeles via Scarborough Centre Stn']).toMatchObject({ headway: 20, midday: 18 });
   });
 
   it('ttc 38 weekday Kennedy via STC: the branch every 15 stands against the shared terminal every 7', async () => {

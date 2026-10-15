@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **A route's frequency by time of day counts each bus in the period it sets out in**: buses were counted when they reached the end of the line, so a 6:56 pm departure fell into the evening and rush-hour-only routes showed evening or midday service ([#750](https://github.com/Civic-Minds/Atlas/issues/750))
 - A route direction whose buses start at two different places and run the same line to one destination, like TTC 29 northbound from Dufferin Gate and from Princes' Gates to Wilson, now shows one row per starting point beside the shared-stretch row, the way branches to different destinations already do, instead of one row with a range; the hourly chart is held to the same stops as the rows ([#879](https://github.com/Civic-Minds/Atlas/issues/879) class).
 - A route direction whose drawn pattern runs only in the mornings and evenings no longer hides the all-day pattern under the same destination: TTC 86 westbound to Kennedy on Saturdays showed as limited with no midday frequency while buses run every 10 all day ([#877](https://github.com/Civic-Minds/Atlas/issues/877)).
 - Data releases now stop for review when a subway or streetcar line drops two steps on its own frequency scale (every 5 to every 10), which the release check used to miss unless the headway doubled ([#871](https://github.com/Civic-Minds/Atlas/issues/871)).
