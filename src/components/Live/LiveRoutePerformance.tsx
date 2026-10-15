@@ -2,14 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { useSegmentDelay } from '../../hooks/useSegmentDelay';
 import { syncUrlParams } from '../../utils/syncUrlParams';
-import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { periodKeyForHour } from '../../../shared/config';
 import {
   MIN_DAYS, MIN_SEGMENT_TRIPS, SEGMENT_BAND_OPTIONS, halfMinutes, halfMinutesDown, tidyStopName, usableStandingStill,
   type SegmentBand, type SegmentDelayData,
 } from '../../utils/segmentDelayView';
 import {
-  extraWaitRun, lineModel, liveGaps, placeOnLine, runningTimeTally, sharedSummary, stretchBetween, stretchForRow, stripStops, withStats,
+  extraWaitRun, lineModel, liveGaps, type RecentSnapshot, placeOnLine, runningTimeTally, sharedSummary, stretchBetween, stretchForRow, stripStops, withStats,
   type LineModel, type LineStop, type Stretch,
 } from '../../utils/livePerformance';
 
@@ -189,7 +188,6 @@ function stopLabel(name: string): string {
 interface Props {
   slug: string;
   routeShortName: string;
-  vehicles: LiveVehicle[];
   /** Live feed is down, stale or incomplete: "Right now" is hidden. */
   feedDegraded: boolean;
   onZoom: (bounds: [number, number, number, number]) => void;
@@ -203,7 +201,7 @@ interface Props {
 type Screen = { kind: 'card' } | { kind: 'stretch'; from: number; to: number; row: number | null } | { kind: 'details' };
 
 /** The Live route card: how the route's spacing holds up, now and over the archive. */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onZoom, onHighlight, registerMapClick, onDetailsChange }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, feedDegraded, onZoom, onHighlight, registerMapClick, onDetailsChange }: Props) {
   const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // View state lives in the URL (p, dir, stretch, view) so a shared link reopens it.
   const [initial] = useState(() => new URLSearchParams(window.location.search));
@@ -217,7 +215,18 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const [screen, setScreen] = useState<Screen>(() => (initial.get('view') === 'details' ? { kind: 'details' } : { kind: 'card' }));
   const pendingStretch = React.useRef<string | null>(initial.get('stretch'));
   const [now, setNow] = useState(() => Date.now());
-  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 15_000); return () => clearInterval(t); }, []);
+  // The last 30 min of archived positions for this route, refreshed every 30 s (archive is written each minute).
+  const [recent, setRecent] = useState<RecentSnapshot[] | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    const load = () => fetch(`/api/live-recent?agency=${encodeURIComponent(slug)}&route=${encodeURIComponent(routeShortName)}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(j => { if (!cancelled) { setRecent(Array.isArray(j?.snapshots) ? j.snapshots : null); setNow(Date.now()); } })
+      .catch(() => { if (!cancelled) setRecent(null); });
+    load();
+    const t = setInterval(load, 30_000);
+    return () => { cancelled = true; clearInterval(t); };
+  }, [slug, routeShortName]);
 
   const line: LineModel | null = useMemo(() => (data ? lineModel(data, directionId) : null), [data, directionId]);
   const stops = useMemo(() => (line ? withStats(line, band) : []), [line, band]);
@@ -323,7 +332,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const ewt = extraWaitRun(stops);
   const tally = runningTimeTally(line.segments, band);
   const liveBand = livePeriod(data);
-  const live = feedDegraded ? null : liveGaps(data, line, liveBand === band ? stops : withStats(line, liveBand), liveBand, vehicles, Math.floor(now / 1000));
+  const live = feedDegraded || !recent ? null : liveGaps(data, line, liveBand === band ? stops : withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000));
 
   return (
     <div className="flex flex-col gap-3">
@@ -336,12 +345,14 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
             <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-xs font-bold tabular-nums">
               <span className="text-[var(--text-dim)]">Gaps, front to back (min)</span>
               {live.gapsMin.map((g, i) => (
-                <span key={i} style={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? { color: AMBER } : undefined} className={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? 'font-black' : 'text-[var(--text-primary)]'}>{g}</span>
+                g == null
+                  ? <span key={i} className="text-[var(--text-dim)]" title="The car ahead's passing wasn't seen">–</span>
+                  : <span key={i} style={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? { color: AMBER } : undefined} className={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? 'font-black' : 'text-[var(--text-primary)]'}>{g}</span>
               ))}
             </div>
           </>
         ) : (
-          <div className="text-xs font-bold text-[var(--text-muted)]">{feedDegraded || live?.incomplete ? 'Live feed incomplete right now' : 'Fewer than 2 cars on the shared section'}</div>
+          <div className="text-xs font-bold text-[var(--text-muted)]">{feedDegraded || !recent || live?.incomplete ? 'Live feed incomplete right now' : 'Fewer than 2 cars on the shared section'}</div>
         )}
       </Section>
 
@@ -445,7 +456,7 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
           <li>"8 in 10 gaps" is the 10th to 90th percentile of actual gaps. Typical is the median. Extra wait is the average wait for a rider arriving at random, minus the same for the timetable.</li>
           <li>Time between stops compares every car's time for each stop pair with the timetable for that time of day. Line ends and the stop next to them are left out (layover and loop time).</li>
           <li>Stood still: moved 25 m or less for 2+ min within 60 m of a stop. Could be holding for time, a signal or a blockage; the data can't tell which. Terminals, turn-back points and carhouses are left out; a stop needs 10 times on 5 days.</li>
-          <li>Right now: each car's position on the line, in minutes at this period's typical running time; a gap is how long the car behind typically takes to reach the car ahead's spot. Hidden when the live feed is incomplete.</li>
+          <li>Right now: from the last 30 min of recorded positions, a gap is how long ago the car ahead passed the spot where the car behind is now. "–" means that passing wasn't seen. Hidden when the feed is behind, a car on the line has a trip the timetable doesn't list, or fewer than half the scheduled cars are reporting.</li>
           <li>Values are rounded to the nearest ½ min; stops with fewer than 30 gaps or 5 days are left out.</li>
         </ul>
       </Section>

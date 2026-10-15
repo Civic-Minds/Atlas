@@ -60,46 +60,55 @@ describe('livePerformance', () => {
     expect(placeOnLine(line, [lon(2), LAT + 0.01])).toBeNull();
   });
 
-  it('measures live gaps in minutes of typical running time, front car first', () => {
+  // Snapshots once a minute; cars move one stop pair (0.01 deg lon) every 2 min.
+  const snap = (t: number, cars: [string, string, number][]) => ({ capturedAt: t, v: cars.map(([id, trip, at]) => [id, trip, LAT, lon(at), t] as [string, string, number, number, number]) });
+
+  it('measures how long ago the car ahead passed the car behind, front car first', () => {
     const line = lineModel(data, 0)!;
     const stops = withStats(line, 'all');
-    const now = 1_000_000;
-    const g = liveGaps(data, line, stops, 'all', [
-      { id: 'a', tripId: 't1', lat: LAT, lon: lon(3.5), tsEpoch: now }, // front: 3.5 stop pairs along
-      { id: 'b', tripId: 't2', lat: LAT, lon: lon(1.5), tsEpoch: now }, // 2 stop pairs (4 min) behind
-      { id: 'c', tripId: 'other', lat: LAT, lon: lon(1), tsEpoch: now }, // another direction's trip: ignored
-      { id: 'd', tripId: 't3', lat: LAT, lon: lon(2), tsEpoch: now - 600 }, // stale: ignored
-    ], now)!;
+    const t0 = 10_000;
+    // Car a passes stop position 2 at t0+240 s; car b is there at t0+480 s: a 4 min gap.
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7, 8].map(k => snap(t0 + k * 60, [
+      ['a', 't1', 0 + k * 0.5],
+      ...(k >= 4 ? [['b', 't2', (k - 4) * 0.5] as [string, string, number]] : []),
+      ['c', 'other', 2], // the other direction's trip: ignored
+    ]));
+    const g = liveGaps(data, line, stops, 'all', snaps, t0 + 8 * 60)!;
+    expect(g.incomplete).toBeUndefined();
     expect(g.cars).toBe(2);
     expect(g.gapsMin).toEqual([4]);
     expect(g.scheduledSec).toBe(300);
   });
 
+  it('leaves a gap unknown when the car ahead was never seen passing', () => {
+    const line = lineModel(data, 0)!;
+    const t0 = 10_000;
+    const snaps = [snap(t0, [['a', 't1', 3], ['b', 't2', 1.5]])];
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, t0)!.gapsMin).toEqual([null]);
+  });
+
+  it('marks the feed incomplete when the newest snapshot is old', () => {
+    const line = lineModel(data, 0)!;
+    const snaps = [snap(1_000, [['a', 't1', 3], ['b', 't2', 1.5]])];
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, 1_000 + 600)!.incomplete).toBe(true);
+  });
+
   it('marks the feed incomplete when a car on the section has a trip not in the timetable', () => {
     const line = lineModel(data, 0)!;
-    const now = 1_000;
-    const g = liveGaps(data, line, withStats(line, 'all'), 'all', [
-      { id: 'a', tripId: 't1', lat: LAT, lon: lon(3.5), tsEpoch: now },
-      { id: 'b', tripId: 't2', lat: LAT, lon: lon(1.5), tsEpoch: now },
-      { id: 'x', tripId: 'unlisted', lat: LAT, lon: lon(2.5), tsEpoch: now },
-    ], now)!;
-    expect(g.incomplete).toBe(true);
+    const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5], ['x', 'unlisted', 2.5]])];
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, 1_000)!.incomplete).toBe(true);
   });
 
   it('marks the feed incomplete when fewer than half the scheduled cars are placed', () => {
     // 4 shared stop pairs of 10 min each, every 5 min: 8 cars expected, 2 placed.
     const slow = { ...data, segments: data.segments.map(s => ({ ...s, bands: { all: { ...s.bands.all!, actualMedianSec: 600 } } })) } as typeof data;
     const line = lineModel(slow, 0)!;
-    const now = 1_000;
-    const g = liveGaps(slow, line, withStats(line, 'all'), 'all', [
-      { id: 'a', tripId: 't1', lat: LAT, lon: lon(3.5), tsEpoch: now },
-      { id: 'b', tripId: 't2', lat: LAT, lon: lon(1.5), tsEpoch: now },
-    ], now)!;
-    expect(g.incomplete).toBe(true);
+    const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5]])];
+    expect(liveGaps(slow, line, withStats(line, 'all'), 'all', snaps, 1_000)!.incomplete).toBe(true);
   });
 
   it('returns nothing with fewer than two placed cars', () => {
     const line = lineModel(data, 0)!;
-    expect(liveGaps(data, line, withStats(line, 'all'), 'all', [{ id: 'a', tripId: 't1', lat: LAT, lon: lon(2), tsEpoch: 5 }], 5)).toBeNull();
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', [snap(5, [['a', 't1', 2]])], 5)).toBeNull();
   });
 });

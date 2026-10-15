@@ -249,71 +249,102 @@ export function placeOnLine(line: LineModel, lonLat: [number, number], maxM = MA
   return best && (best as { distM: number }).distM <= maxM ? best : null;
 }
 
-export interface LiveCar {
-  id: string;
-  tripId: string;
-  lat: number;
-  lon: number;
-  tsEpoch: number | null;
+/** One archived snapshot: [vehicleId, tripId, lat, lon, reportedAt] per car on the route. */
+export interface RecentSnapshot {
+  capturedAt: number;
+  v: [string, string, number, number, number][];
 }
 
 export interface LiveGaps {
-  /** Too few cars placed for the schedule, or a car on the line we can't place: gaps would be invented. */
+  /** The feed is behind, too few cars are placed for the schedule, or a car on the line can't be placed. */
   incomplete?: boolean;
   cars: number;
-  /** Minutes between consecutive cars, front of the line first. */
-  gapsMin: number[];
+  /** Minutes between consecutive cars, front of the line first; null when the car ahead's passing wasn't seen. */
+  gapsMin: (number | null)[];
   scheduledSec: number | null;
 }
 
+/** Metres along the line to the start of each stop pair, and each pair's length. */
+function lineMetres(line: LineModel): { start: number[]; len: number[] } {
+  const start: number[] = [], len: number[] = [];
+  let run = 0;
+  for (const seg of line.segments) {
+    let l = 0;
+    for (let i = 1; i < seg.coordinates.length; i++) l += lonLatDist(seg.coordinates[i - 1], seg.coordinates[i]);
+    start.push(run); len.push(l); run += l;
+  }
+  return { start, len };
+}
+
 /**
- * Gaps between the cars on the shared section right now. Each car's position
- * is turned into minutes along the line using the typical running time of each
- * stop pair in this time band (from the archive); a gap is how long the car
- * behind typically needs to reach the car ahead's spot.
+ * Real time gaps between the cars on the shared section now, from the last
+ * 30 minutes of archived positions: a gap is how long ago the car ahead
+ * passed the spot where the car behind is now. Nothing is estimated; when the
+ * car ahead's passing wasn't seen, that gap is null.
  */
-export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<string, string[]> }, line: LineModel, stops: LineStop[], band: SegmentBand, cars: LiveCar[], nowSec: number): LiveGaps | null {
+export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<string, string[]> }, line: LineModel, stops: LineStop[], band: SegmentBand, snapshots: RecentSnapshot[], nowSec: number): LiveGaps | null {
   const trips = new Set(data.tripDirections?.[String(line.directionId)] ?? []);
-  if (trips.size === 0) return null;
-  // Minutes from the start of the line to the start of each stop pair, at typical running time.
-  const cum: number[] = [];
-  let t = 0;
-  for (const s of line.segments) {
-    cum.push(t);
-    const b = s.bands[band] ?? s.bands.all;
-    t += b ? b.actualMedianSec : 0;
+  if (trips.size === 0 || snapshots.length === 0) return null;
+  const sched = med(stops.filter(s => s.shared && s.stat).map(s => s.stat!.scheduledMedianGapSec));
+  const latest = snapshots[snapshots.length - 1];
+  // The archive is written every minute: an old newest snapshot means the feed or the archive is behind.
+  if (nowSec - latest.capturedAt > LIVE_STALE_SEC) return { incomplete: true, cars: 0, gapsMin: [], scheduledSec: sched };
+
+  const { start, len } = lineMetres(line);
+  const onShared = (segIndex: number) => !!stops[segIndex]?.shared && !!stops[segIndex + 1]?.shared;
+  const along = (lon: number, lat: number) => {
+    const p = placeOnLine(line, [lon, lat]);
+    return p ? { m: start[p.segIndex] + p.frac * len[p.segIndex], segIndex: p.segIndex } : null;
+  };
+  // Each car's track on its current trip: (reported time, metres along the line).
+  const tracks = new Map<string, { t: number; m: number }[]>();
+  for (const snap of snapshots) {
+    for (const [id, tripId, lat, lon, t] of snap.v) {
+      if (!trips.has(tripId)) continue;
+      const a = along(lon, lat);
+      if (!a) continue;
+      const key = `${id}|${tripId}`;
+      if (!tracks.has(key)) tracks.set(key, []);
+      const tr = tracks.get(key)!;
+      if (!tr.length || t > tr[tr.length - 1].t) tr.push({ t, m: a.m });
+    }
   }
   const known = new Set(Object.values(data.tripDirections ?? {}).flat());
-  const onShared = (p: { segIndex: number } | null) => !!p && !!stops[p.segIndex]?.shared && !!stops[p.segIndex + 1]?.shared;
-  const placed: number[] = [];
+  const now: { key: string; t: number; m: number }[] = [];
   let unplaceable = 0;
-  for (const c of cars) {
-    if (c.tsEpoch == null || nowSec - c.tsEpoch > LIVE_STALE_SEC) continue;
-    const p = placeOnLine(line, [c.lon, c.lat]);
-    if (!trips.has(c.tripId)) {
+  for (const [id, tripId, lat, lon, t] of latest.v) {
+    if (latest.capturedAt - t > LIVE_STALE_SEC) continue;
+    const a = along(lon, lat);
+    if (!trips.has(tripId)) {
       // A current car on this section whose trip isn't in the timetable: we can't tell its direction,
-      // so any gap around it would be wrong.
-      if (!known.has(c.tripId) && onShared(p)) unplaceable++;
+      // so the gaps either side of it would be wrong.
+      if (!known.has(tripId) && a && onShared(a.segIndex)) unplaceable++;
       continue;
     }
-    if (!p || !onShared(p)) continue;
-    const seg = line.segments[p.segIndex];
-    const b = seg.bands[band] ?? seg.bands.all;
-    placed.push(cum[p.segIndex] + p.frac * (b ? b.actualMedianSec : 0));
+    if (a && onShared(a.segIndex)) now.push({ key: `${id}|${tripId}`, t, m: a.m });
   }
-  const sched = med(stops.filter(s => s.shared && s.stat).map(s => s.stat!.scheduledMedianGapSec));
-  // Same idea as the archive's "thin" feed rule: fewer than half the cars the schedule puts on this
+  // Same idea as the archive's "thin" feed rule: fewer than half the cars the schedule puts on the
   // section means some aren't reporting, and a missing car would show as one long gap.
   let sharedSec = 0;
   line.segments.forEach((seg, i) => {
-    if (!stops[i]?.shared || !stops[i + 1]?.shared) return;
+    if (!onShared(i)) return;
     const b = seg.bands[band] ?? seg.bands.all;
     sharedSec += b ? b.actualMedianSec : 0;
   });
   const expected = sched ? sharedSec / sched : 0;
-  if (unplaceable > 0 || (expected >= 2 && placed.length < expected / 2)) return { incomplete: true, cars: placed.length, gapsMin: [], scheduledSec: sched };
-  if (placed.length < 2) return null;
-  placed.sort((a, b) => b - a);
-  const gapsMin = placed.slice(1).map((x, i) => Math.round((placed[i] - x) / 60));
-  return { cars: placed.length, gapsMin, scheduledSec: sched };
+  if (unplaceable > 0 || (expected >= 2 && now.length < expected / 2)) return { incomplete: true, cars: now.length, gapsMin: [], scheduledSec: sched };
+  if (now.length < 2) return null;
+  now.sort((a, b) => b.m - a.m);
+  const gapsMin = now.slice(1).map((car, i) => {
+    const track = tracks.get(now[i].key) ?? [];
+    for (let k = 1; k < track.length; k++) {
+      const a = track[k - 1], b = track[k];
+      if (a.m <= car.m && b.m >= car.m && b.m > a.m) {
+        const passed = a.t + ((car.m - a.m) / (b.m - a.m)) * (b.t - a.t);
+        return Math.max(0, Math.round((car.t - passed) / 60));
+      }
+    }
+    return null;
+  });
+  return { cars: now.length, gapsMin, scheduledSec: sched };
 }

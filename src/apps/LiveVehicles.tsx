@@ -732,7 +732,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   key={selectedRoute ?? ''}
                   slug={selectedGroup.agencySlug}
                   routeShortName={selectedGroup.routeShortName}
-                  vehicles={selectedGroup.vehicles}
                   feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
                   onZoom={zoomToStretch}
                   onHighlight={setHighlight}
