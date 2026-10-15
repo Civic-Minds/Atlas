@@ -45,25 +45,17 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
           })}
         </div>
       </div>
-      <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-primary)]">
-        {shown.map(x => {
-          const href = mapHref ? bandMapHref(mapHref, x.i) : null;
-          const item = (
-            <>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+        <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-primary)]">
+          {shown.map(x => (
+            <li key={x.i} className="flex items-center gap-1.5 whitespace-nowrap">
               <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: BAND_FILLS[x.i] }} />
               <span><span className="font-black">{x.n}</span> {BAND_SHORT[x.i]}{x.i === unitBand ? ' min' : ''}</span>
-            </>
-          );
-          return (
-            <li key={x.i}>
-              {href
-                ? <a href={href} aria-label={`${sentence(x)}. ${bandMapLinkLabel(x.i)}.`} className={`flex items-center gap-1.5 whitespace-nowrap ${LINK}`}>{item}</a>
-                : <span className="flex items-center gap-1.5 whitespace-nowrap">{item}</span>}
             </li>
-          );
-        })}
-      </ul>
-      {mapHref && <a href={bandMapHref(mapHref, 'all')!} className={`mt-3 inline-block text-sm font-black ${LINK}`}>See these routes on the map</a>}
+          ))}
+        </ul>
+        {mapHref && <a href={bandMapHref(mapHref, 'all')!} className={`text-sm font-black sm:ml-auto ${LINK}`}>See these routes on the map</a>}
+      </div>
     </div>
   );
 }

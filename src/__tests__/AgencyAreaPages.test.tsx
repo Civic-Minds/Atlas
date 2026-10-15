@@ -45,7 +45,7 @@ describe('AgencyPage', () => {
   it('shows the frequency band bar with counts and no fixed threshold', () => {
     view(<AgencyPage data={data} />);
     expect(screen.queryByText(/15 min or better/)).toBeNull();
-    expect(screen.getAllByRole('link', { name: /1 route every 10 min or better/ }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('link', { name: /1 route every 10 min or better/ }).length).toBe(1);
     expect(screen.getAllByRole('link', { name: /route every 16–20 min/ }).length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: /with no regular midday service/ })).toBeTruthy(); // not a filter value: no link
     fireEvent.focus(screen.getAllByRole('link', { name: /route every 16–20 min/ })[0]);
@@ -56,7 +56,7 @@ describe('AgencyPage', () => {
   it('opens the map framed on the agency with the band\'s filter, weekday and midday, from the band, its legend item and one plain link', () => {
     view(<AgencyPage data={data} />);
     const hrefs = screen.getAllByRole('link', { name: /route every 10 min or better/ }).map(a => a.getAttribute('href')!);
-    expect(hrefs).toHaveLength(2); // the bar segment and its legend item
+    expect(hrefs).toHaveLength(1); // the bar segment only: the legend labels are plain text
     for (const href of hrefs) {
       const url = new URL(href, 'http://x');
       expect(url.pathname).toBe('/');
@@ -67,7 +67,7 @@ describe('AgencyPage', () => {
     }
     expect(new URL(screen.getAllByRole('link', { name: /route every 21–30 min/ })[0].getAttribute('href')!, 'http://x').searchParams.get('h')).toBe('30');
     // The link says what the map shows: routes every N min or better, not only the band's own routes.
-    expect(screen.getAllByRole('link', { name: /every 11–15 min\. Show routes every 15 min or better on the map\./ }).length).toBe(2);
+    expect(screen.getAllByRole('link', { name: /every 11–15 min\. Show routes every 15 min or better on the map\./ }).length).toBe(1);
     expect(screen.queryByRole('link', { name: /Show them on the map/ })).toBeNull();
     const all = new URL(screen.getByRole('link', { name: 'See these routes on the map' }).getAttribute('href')!, 'http://x');
     expect([all.searchParams.get('agencies'), all.searchParams.get('h'), all.searchParams.get('p'), all.searchParams.get('day')]).toEqual(['ttc', 'all', 'midday', 'Weekday']);
