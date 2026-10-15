@@ -43,7 +43,8 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     const sb = weekday.find((p: any) => p.headsign === 'Downtown Station SB');
     const nb = weekday.find((p: any) => p.headsign === 'Leander Station NB');
     expect(sb.headway).toBe(54);
-    expect(sb.headwayByPeriod.midday).toBe(54);
+    // #750: midday reads each train at the line's first station: 09:11 10:13 11:05 12:01 12:57 13:58 14:30 -> 56.
+    expect(sb.headwayByPeriod.midday).toBe(56);
     expect(nb.headway).toBe(34);
     expect(sb.worstDirectionHeadway).toBe(54);
     // Tier follows the hand count: no 30-minute weekday service in either direction.
@@ -56,11 +57,12 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     // Friday run different shape ids for Campus: 17779_shp (30 trips Mon-Thu) and 17786_shp
     // (31 Friday trips). The representative weekday is Monday, so the Campus feature is
     // drawn on 17779_shp and its headway and stop data come from the same Mon-Thu service
-    // (midday every 24). Before #716 the Friday shape won the slot and showed 21.
+    // (midday every 26 by departure, #750). Before #716 the Friday shape won the slot and showed 21.
     const weekday = await weekdayFeatures('cata-ve-friday-shape', 'cata-state-college', '44');
     const campus = weekday.find((p: any) => p.headsign === 'Campus');
     expect(campus.headway).toBe(24);
-    expect(campus.headwayByPeriod.midday).toBe(24);
+    // #750: midday reads first-stop departures 09:00 09:32 10:04 10:15 10:36 ... 14:25 14:57 -> 26.
+    expect(campus.headwayByPeriod.midday).toBe(26);
     expect(campus.worstDirectionHeadway).toBe(24);
   });
 
@@ -72,19 +74,21 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     const kennedy = weekday.find((p: any) => p.directionId === 0);
     expect(kennedy.headway).toBe(20);
     expect(kennedy.headwayByPeriod.midday).toBe(20);
-    expect(kennedy.periodCoverageHeadway.midday).toBe(23);
+    // #750: coverage reads first-stop departures 09:12 ... 14:28 14:45, longest wait 20.
+    expect(kennedy.periodCoverageHeadway.midday).toBe(20);
   });
 
   it('reads capmetro 550 SB on the fresh feed from the Downtown pool, not a 5-trip shape', async () => {
     // Real CapMetro fresh feed (20270109), route 550 only, shapes thinned. Mon-Thu SB has
     // 16 Downtown trips on 8 shapes; the headline shape 4610 has 5 (05:41-14:30) and no stop
     // headway, so its phase-2 value 222 stayed. Hand count, Wed Oct 14 2026 (21-172): 16
-    // trips, median gap 47; first-stop midday (9-15) median 56.5. The terminal midday is 54.
+    // trips, median gap 47; first-stop midday (9-15) median 56.5. Read at the line's first station (#750) the midday is 56.
     const weekday = await weekdayFeatures('capmetro-550-fresh-per-trip-shapes', 'capmetro', '550');
     const sb = weekday.find((p: any) => p.headsign === 'Downtown Station SB');
     const nb = weekday.find((p: any) => p.headsign === 'Leander Station NB');
     expect(sb.headway).toBe(54);
-    expect(sb.headwayByPeriod.midday).toBe(54);
+    // #750: midday reads each train at the line's first station: 09:11 10:13 11:05 12:01 12:57 13:58 14:30 -> 56.
+    expect(sb.headwayByPeriod.midday).toBe(56);
     expect(sb.tier).toBe('infrequent');
     expect(nb.headway).toBe(34);
     expect(sb.worstDirectionHeadway).toBe(54);

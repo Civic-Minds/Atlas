@@ -77,10 +77,15 @@ describe('TTC night routes drawn on a minor pattern (#896)', () => {
     expect(values['373 1 Sunday']).toEqual({ headway: 30, coverage: 87, maxGap: 30, headline: 30 });
   });
 
-  it('leaves lines that read their periods from the destination already (Step 5) unchanged', async () => {
+  it('lines that read their periods from the destination already (Step 5) keep their headline', async () => {
     const values = await overnight();
-    expect(values['337 1 Sunday']).toEqual({ headway: 30, coverage: 68, maxGap: 68, headline: 30 });
-    expect(values['373 0 Sunday']).toEqual({ headway: 30, coverage: 57, maxGap: 57, headline: 30 });
+    // #750: periods place each trip by when it leaves its first stop. Sunday night's 26:25 trip
+    // left there before the terminal arrival at 27:08, so the opening wait is no longer 68; with
+    // Sunday's 04:24-05:46 trips the night reads every 29-30, as Saturday's does.
+    expect(values['337 1 Sunday']).toEqual({ headway: 29, coverage: 30, maxGap: 30, headline: 30 });
+    // To Steeles from 10866: Sunday night 26:20-28:50 every 30, then Sunday's own 05:10 and 05:40; the
+    // 57 was the wait to the first arrival at 26:57.
+    expect(values['373 0 Sunday']).toEqual({ headway: 30, coverage: 30, maxGap: 30, headline: 30 });
   });
 });
 

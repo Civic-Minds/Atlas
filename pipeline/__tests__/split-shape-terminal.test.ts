@@ -35,7 +35,8 @@ describe('headline when a destination is split over several shapes', () => {
     // Shape 116c74 runs on the hour, 8fbf61 on the half hour; both serve the same 36 stops.
     const p = await weekdayProps('brandon-23-interleaved', 'brandon', 'Downtown Terminal (Return)');
     expect(p.headway).toBe(30);
-    expect(p.headwayByPeriod.midday).toBe(29);
+    // #750: midday reads first-stop departures 09:00, 09:30, ... 14:30 at stop 3106 -> 30.
+    expect(p.headwayByPeriod.midday).toBe(30);
   });
 
   it('MTA Maryland Silver to Curtis Bay: the Morgan State stops keep their own evening, not the combined 20', async () => {

@@ -181,7 +181,10 @@ describe('real routes with alternating gaps (#772)', () => {
     const queenWest = JSON.parse(result.geojson).features
       .map((feature: any) => feature.properties)
       .find((p: any) => p.day === 'Weekday' && p.stopId == null && p.headsign === 'QUEEN WEST');
-    expect(queenWest.headwayByPeriod).toMatchObject({ midday: 25, late: 34, overnight: 29 });
+    // Period values read each trip at the line's first stop (#750): midday 9:23-14:45 departures
+    // read 36 (terminal arrivals 9:35-14:09 read 25), late 23:34-25:42 every 29-35 reads 32, and the
+    // 03:46-05:55 trips every 19-27 read 21 overnight (their arrivals ran past 06:00).
+    expect(queenWest.headwayByPeriod).toMatchObject({ midday: 36, late: 32, overnight: 21 });
   });
 
   it('TTC 96B Weekday: a thin early-morning shape that won dedupe reads the headsign at York Mills, 17', async () => {

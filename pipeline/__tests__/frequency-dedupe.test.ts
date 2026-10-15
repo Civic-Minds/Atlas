@@ -341,9 +341,11 @@ describe('processGtfsBuffer single-trip rows next to a timetable (#721)', () => 
   it('keeps cue-bus TL-2\'s 05:50 trip whose row holds the 06:00 timetable start', async () => {
     const route = await weekdayRoutes(cueBusFixtureZip(), 'cue-bus');
     const [line] = route('Gold');
-    // Terminal departures 06:21 (the 05:50 trip), 06:31, 07:01, 07:38, 08:08, 08:45 in the AM
-    // peak: gaps 10/30/37/30/37, median 30. Losing the 05:50 trip gives 34.
-    expect(line.headwayByPeriod?.amPeak).toBe(30);
+    // #750: periods place trips at first-stop departure: 06:00 06:30 07:07 07:37 08:14 08:45 -> 31.
+    expect(line.headwayByPeriod?.amPeak).toBe(31);
+    // The 05:50 trip is still counted: the longest gap starting in the 5 o'clock hour is 05:15 to
+    // 05:50 (35), not 05:15 to 06:00 (45).
+    expect(line.maxGapByHour?.[5]).toBe(35);
   });
 });
 

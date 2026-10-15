@@ -22,7 +22,9 @@ describe('a rush-hour-only pattern never takes an all-day slot (#720, dedupe Ste
       .map((feature: any) => feature.properties)
       .find((p: any) => p.stopId == null && p.day === 'Weekday' && p.directionId === 0 && p.headsign === 'City Point');
     expect(cityPoint).toMatchObject({ headway: 36, tier: 'infrequent', serviceClass: 'regular' });
-    expect(cityPoint.headwayByPeriod).toMatchObject({ midday: 36, pmPeak: 6 });
+    // #750: midday places trips by when they leave 16535; the 14:46 trip (arriving 15:05) now counts
+    // and the 45-minute block reads 45, the "every 40-45" above. The headline is unchanged.
+    expect(cityPoint.headwayByPeriod).toMatchObject({ midday: 45, pmPeak: 6 });
   });
 
   const weekdayLine = async (fixture: string, slug: string, dir: number, headsign: string) => {

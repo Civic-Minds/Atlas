@@ -951,6 +951,19 @@ export async function processGtfsBuffer(
     if (!set) { set = new Set(); boardableStopsByShape.set(shKey, set); }
     set.add(stopId);
   };
+  // #750: the trips behind stopDepsByHeadsignGroup / stopDepsByShapeGroup at each stop (a
+  // frequency trip with its generated offset), so Step 4 can place each trip counted at a
+  // terminal (where the times are arrivals, a run after the trip left) by when it set out.
+  type TripRef = { tripId: string; offset: number };
+  const tripRefsByHeadsignGroup = new Map<string, Map<string, TripRef[]>>();
+  const tripRefsByShapeGroup = new Map<string, Map<string, TripRef[]>>();
+  const pushTripRef = (map: Map<string, Map<string, TripRef[]>>, key: string, stopId: string, ref: TripRef) => {
+    let stopMap = map.get(key);
+    if (!stopMap) { stopMap = new Map(); map.set(key, stopMap); }
+    const refs = stopMap.get(stopId) ?? [];
+    if (!refs.some(r => r.tripId === ref.tripId && r.offset === ref.offset)) refs.push(ref);
+    stopMap.set(stopId, refs);
+  };
   // Night-service-only mirrors of stopDepsByGroup/stopDepsByHeadsignGroup (#297): an early
   // (pre-6am) departure on a genuinely overnight-only service_id (see serviceIdMaxMinute above)
   // is shifted +1440 and pushed here instead, so it lands inside hasSustainedNightService's
@@ -1386,6 +1399,8 @@ export async function processGtfsBuffer(
             if (grp.inGroup && pooledOk) pushDep(stopDepsByGroup, gKey, stopId, mins);
             if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroup, hsKey, stopId, mins);
             if (shKey && grp.inShape) pushDep(stopDepsByShapeGroup, shKey, stopId, mins);
+            if (hsKey && grp.inHeadsign && headsignOk) pushTripRef(tripRefsByHeadsignGroup, hsKey, stopId, { tripId: st.trip_id, offset: 0 });
+            if (shKey && grp.inShape) pushTripRef(tripRefsByShapeGroup, shKey, stopId, { tripId: st.trip_id, offset: 0 });
             // Drop-off-only stop times (pickup_type 1) are not departures a rider can take.
             if (smKey && grp.inGroup && pooledOk && st.pickup_type?.trim() !== '1') pushDep(stopDepsBySharedMember, smKey, stopId, mins);
             // Night-service-only shift (#297) -- see stopDepsByGroupNight declaration above.
@@ -1545,8 +1560,62 @@ export async function processGtfsBuffer(
     }
     return times;
   };
+  const tripIdsByShape = new Map<string, string[]>();
+  for (const trip of gtfs.trips ?? []) {
+    if (!trip.shape_id) continue;
+    const list = tripIdsByShape.get(trip.shape_id) ?? [];
+    list.push(trip.trip_id);
+    tripIdsByShape.set(trip.shape_id, list);
+  }
   const branchTerminalTimes = (hsKey: string, shapeStopIds: readonly string[], terminalId: string, fullOuterThird = false): number[] =>
     branchPoolTimesAt(hsKey, shapeStopIds, terminalId, fullOuterThird);
+  // #750: each trip's first-visit time at each stop (stop and parent station), for placing a
+  // trip by its time at the drawn line's first stop.
+  const tripStopTimeCache = new Map<string, Map<string, number>>();
+  const tripStopTimes = (tripId: string): Map<string, number> => {
+    let byStop = tripStopTimeCache.get(tripId);
+    if (byStop) return byStop;
+    byStop = new Map();
+    for (const st of firstVisitStopTimes(stopTimesByTripId.get(tripId) ?? [])) {
+      const mins = t2m(st.departure_time || st.arrival_time);
+      if (mins == null) continue;
+      for (const id of [st.stop_id, childToParent.get(st.stop_id)]) if (id != null && !byStop.has(id)) byStop.set(id, mins);
+    }
+    tripStopTimeCache.set(tripId, byStop);
+    return byStop;
+  };
+  // The drawn shape's typical running time from its own first stop to each drawn stop (median
+  // over the shape's trips), so a trip that starts further along is placed where a bus of the
+  // drawn line would be: Brampton 7A starts 13 minutes nearer the terminal than the 7.
+  const runOffsetsCache = new Map<string, Map<string, number>>();
+  const drawnRunOffsets = (shapeId: string, drawnStopIds: readonly string[]): Map<string, number> => {
+    const key = `${shapeId}|${drawnStopIds.join(',')}`;
+    const hit = runOffsetsCache.get(key);
+    if (hit) return hit;
+    const samples = new Map<string, number[]>();
+    for (const tripId of tripIdsByShape.get(shapeId) ?? []) {
+      const byStop = tripStopTimes(tripId);
+      const start = drawnStopIds.map(id => byStop.get(id)).find(t => t != null);
+      if (start == null) continue;
+      for (const id of drawnStopIds) {
+        const t = byStop.get(id);
+        if (t != null && t >= start) samples.set(id, [...(samples.get(id) ?? []), t - start]);
+      }
+    }
+    const offsets = new Map<string, number>();
+    for (const [id, runs] of samples) offsets.set(id, [...runs].sort((a, b) => a - b)[Math.floor(runs.length / 2)]);
+    runOffsetsCache.set(key, offsets);
+    return offsets;
+  };
+  /** A trip's time at the drawn line's first stop: its time at the first drawn stop it serves, less the drawn shape's run to it. */
+  const alignedDeparture = (byStop: ReadonlyMap<string, number>, offset: number, drawnStopIds: readonly string[], offsets: ReadonlyMap<string, number>): number | null => {
+    for (const id of drawnStopIds) {
+      const t = byStop.get(id);
+      const run = offsets.get(id);
+      if (t != null && run != null) return t + offset - run;
+    }
+    return null;
+  };
 
   const pushUnique = (map: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
     let stopMap = map.get(key);
@@ -1555,12 +1624,22 @@ export async function processGtfsBuffer(
     if (!arr.includes(mins)) arr.push(mins);
     stopMap.set(stopId, arr);
   };
-  const addFrequencyDeparture = (grp: StopTripGroup, stopId: string, mins: number, pickupAllowed = true) => {
+  const addFrequencyDeparture = (grp: StopTripGroup, stopId: string, mins: number, pickupAllowed: boolean, ref: TripRef) => {
     const groupKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
     if (grp.inGroup) pushUnique(stopDepsByGroup, groupKey, stopId, mins);
-    if (grp.headsign && grp.inHeadsign) pushUnique(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, mins);
-    if (grp.shapeId && grp.inShape) pushUnique(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`, stopId, mins);
-    if (grp.shapeId && grp.inShape && pickupAllowed) markBoardable(`${grp.shapeId}::${grp.dayType}`, stopId);
+    const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
+    const shKey = `${grp.shapeId}::${grp.dayType}`;
+    // Every generated trip is kept as a trip ref, even when its arrival shares a minute with
+    // another trip's (pushUnique keeps one time): the refs are the trips, not the minutes.
+    if (grp.headsign && grp.inHeadsign) {
+      pushUnique(stopDepsByHeadsignGroup, hsKey, stopId, mins);
+      pushTripRef(tripRefsByHeadsignGroup, hsKey, stopId, ref);
+    }
+    if (grp.shapeId && grp.inShape) {
+      pushUnique(stopDepsByShapeGroup, shKey, stopId, mins);
+      pushTripRef(tripRefsByShapeGroup, shKey, stopId, ref);
+    }
+    if (grp.shapeId && grp.inShape && pickupAllowed) markBoardable(shKey, stopId);
     const smKey = sharedMemberKey(grp);
     if (smKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsBySharedMember, smKey, stopId, mins);
     if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
@@ -1660,12 +1739,12 @@ export async function processGtfsBuffer(
           if (parentId) seenParents.add(parentId);
           for (const grp of groups) {
             const pickupAllowed = st.pickup_type?.trim() !== '1';
-            addFrequencyDeparture(grp, st.stop_id, mins, pickupAllowed);
+            addFrequencyDeparture(grp, st.stop_id, mins, pickupAllowed, { tripId, offset });
             if (grp.inGroup) {
               const night = mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF;
               addStretchVisit(`${grp.shortName}::${grp.dirId}::${grp.dayType}`, `${tripId}@${offset}`, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined });
             }
-            if (countParent) addFrequencyDeparture(grp, parentId!, mins, pickupAllowed);
+            if (countParent) addFrequencyDeparture(grp, parentId!, mins, pickupAllowed, { tripId, offset });
             else if (parentId && pickupAllowed && grp.shapeId && grp.inShape) markBoardable(`${grp.shapeId}::${grp.dayType}`, parentId);
           }
         }
@@ -2830,14 +2909,45 @@ export async function processGtfsBuffer(
         terminalStopId ? shapeMap?.get(terminalStopId) : undefined,
         headsignTerminalTimes,
       ));
-    const headsignTerminalPeriodHw = terminalScopedTimes && terminalScopedTimes.length > 0
-      ? computePeriodHeadways(terminalScopedTimes)
+    // #750: the terminal's times are arrivals, a run after each trip left, so a trip used to count
+    // in the period it arrived in: TTC 996S's 18:56 departure arrives 19:00:54 and fell out of the
+    // PM peak; SF Muni 8BX's rush-hour trips arrived into the evening and midday. Period values
+    // read the same trips (the same source as terminalScopedTimes) at their first-stop departure.
+    // Each trip is placed by its time at the drawn line's first stop (its time at the first drawn
+    // stop it serves, less the drawn shape's typical run there), so a pool of trips that start at
+    // different stops keeps the spacing riders see (Brampton 7 and 7A, every 8 along the line).
+    const drawnStopIds = onShape.map(p => p.stopId);
+    const runOffsets = featureShape && !isMapless ? drawnRunOffsets(featureShape, drawnStopIds) : new Map<string, number>();
+    const placeTrips = (entries: Array<{ byStop: ReadonlyMap<string, number>; offset: number }>): number[] | undefined => {
+      const placed: number[] = [];
+      for (const { byStop, offset } of entries) {
+        const t = alignedDeparture(byStop, offset, drawnStopIds, runOffsets);
+        if (t == null) return undefined;
+        placed.push(t);
+      }
+      return placed.sort((a, b) => a - b);
+    };
+    const refsAtTerminal = (map: Map<string, TripRef[]> | undefined) => {
+      const refs = terminalStopId ? map?.get(terminalStopId) : undefined;
+      return refs ? placeTrips(refs.map(ref => ({ byStop: tripStopTimes(ref.tripId), offset: ref.offset }))) : undefined;
+    };
+    const hsTripRefs = featHeadsign ? tripRefsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featHeadsign}`) : undefined;
+    const shapeTripRefs = shapeMap && featureShape ? tripRefsByShapeGroup.get(`${featureShape}::${day}`) : undefined;
+    const placedTerminalTimes = !terminalScopedTimes || runOffsets.size === 0 ? undefined
+      : periodsFromPool
+        ? placeTrips([...branchPoolTrips(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), true).values()]
+          .filter(byStop => byStop.has(terminalStopId!)).map(byStop => ({ byStop, offset: 0 })))
+        : headsignTerminalTimes ? refsAtTerminal(hsTripRefs) : refsAtTerminal(shapeTripRefs);
+    // A trip that can't be placed (no drawn stop with a run offset) leaves the arrival reading.
+    const periodTerminalTimes = placedTerminalTimes ?? terminalScopedTimes;
+    const headsignTerminalPeriodHw = periodTerminalTimes && periodTerminalTimes.length > 0
+      ? computePeriodHeadways(periodTerminalTimes)
       : undefined;
-    const headsignTerminalMaxGaps = terminalScopedTimes && terminalScopedTimes.length > 0
-      ? computePeriodMaxGaps(terminalScopedTimes)
+    const headsignTerminalMaxGaps = periodTerminalTimes && periodTerminalTimes.length > 0
+      ? computePeriodMaxGaps(periodTerminalTimes)
       : undefined;
-    const headsignTerminalPeriodSustained = terminalScopedTimes && terminalScopedTimes.length > 0
-      ? computePeriodSustained(terminalScopedTimes)
+    const headsignTerminalPeriodSustained = periodTerminalTimes && periodTerminalTimes.length > 0
+      ? computePeriodSustained(periodTerminalTimes)
       : undefined;
     const terminalPeriodSustained = terminalStopId ? allStopPeriodSustained[terminalStopId] : undefined;
     const terminalPeriodMaxGaps = terminalStopId ? allStopPeriodMaxGaps[terminalStopId] : undefined;
@@ -2845,7 +2955,7 @@ export async function processGtfsBuffer(
     // Select the time array before looking up a period: a scoped null is real no-service,
     // not permission to borrow departures from another branch at the same stop.
     const terminalCoverage = computePeriodCoverageHeadways(
-      terminalScopedTimes ?? (terminalStopId ? metricStopMap.get(terminalStopId) : undefined) ?? [],
+      periodTerminalTimes ?? (terminalStopId ? metricStopMap.get(terminalStopId) : undefined) ?? [],
     );
     const branchCoverage = feature.properties.periodCoverageHeadway as HeadwayByPeriod;
     const periodCoverage: HeadwayByPeriod = {};
