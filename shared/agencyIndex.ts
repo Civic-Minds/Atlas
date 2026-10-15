@@ -63,7 +63,7 @@ export function agencyIndexTitle(): string {
 }
 
 export function agencyIndexDescription(d: Pick<AgencyIndexData, 'agencyCount' | 'areas'>): string {
-  return `${d.agencyCount.toLocaleString('en-US')} transit ${d.agencyCount === 1 ? 'agency' : 'agencies'} and ${d.areas.length} ${d.areas.length === 1 ? 'region' : 'regions'}. Each agency's page shows how often every route runs, from its published schedule.`;
+  return `${d.agencyCount.toLocaleString('en-US')} transit ${d.agencyCount === 1 ? 'agency' : 'agencies'} and ${d.areas.length} ${d.areas.length === 1 ? 'region' : 'regions'}. Each agency's page shows how often every route runs.`;
 }
 
 export function resolveAgencyIndexSeo(
