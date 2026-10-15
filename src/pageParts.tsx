@@ -11,8 +11,8 @@ const BAND_FILLS = [...HEADWAY_TIERS.map(t => t.color), 'var(--control-inactive-
 
 /**
  * One flat stacked bar of route counts per weekday-midday frequency band. The legend is one short wrapping line.
- * Hovering, focusing or tapping a segment highlights its legend item and fades the other segments; hovering or
- * tapping a legend item does the same in reverse. Each segment keeps its aria-label (count and band).
+ * Hovering, focusing or tapping a segment highlights its legend item and fades the other segments; hovering,
+ * focusing or tapping a legend item does the same in reverse (both use the pointer cursor). Each segment keeps its aria-label (count and band).
  */
 export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The page's map link: the one link under the bar opens the map with these routes (Weekday midday). The bar itself is not clickable. */ mapHref?: string }) {
   const [active, setActive] = useState<number | null>(null);
@@ -28,7 +28,7 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
       <div onMouseLeave={() => setActive(null)}>
         <div role="group" aria-label="Routes by weekday midday frequency" className="flex h-4 gap-0.5 overflow-hidden rounded-full">
           {shown.map(x => (
-            <button key={x.i} type="button" aria-label={sentence(x)} className="h-full min-w-1 cursor-default border-0 p-0 outline-offset-2 transition-opacity"
+            <button key={x.i} type="button" aria-label={sentence(x)} className="h-full min-w-1 cursor-pointer border-0 p-0 outline-offset-2 transition-opacity"
               style={{ flexGrow: x.n, flexBasis: 0, background: BAND_FILLS[x.i], opacity: faded(x.i) ? 0.35 : 1 }}
               onMouseEnter={() => setActive(x.i)} onFocus={() => setActive(x.i)} onBlur={() => setActive(null)}
               onClick={() => setActive(a => (a === x.i ? null : x.i))} />
@@ -39,9 +39,10 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-primary)]">
           {shown.map(x => (
             <li key={x.i} data-active={active === x.i ? 'true' : undefined}
-              className={`-mx-1.5 flex items-center gap-1.5 whitespace-nowrap rounded-md px-1.5 py-0.5 transition-colors`}
+              tabIndex={0} aria-label={sentence(x)}
+              className="-mx-1.5 flex cursor-pointer select-none items-center gap-1.5 whitespace-nowrap rounded-md px-1.5 py-0.5 outline-offset-2 transition-colors"
               style={active === x.i ? { background: 'var(--bg-btn-hover)' } : undefined}
-              onMouseEnter={() => setActive(x.i)} onMouseLeave={() => setActive(null)} onClick={() => setActive(a => (a === x.i ? null : x.i))}>
+              onMouseEnter={() => setActive(x.i)} onMouseLeave={() => setActive(null)} onFocus={() => setActive(x.i)} onBlur={() => setActive(null)} onClick={() => setActive(a => (a === x.i ? null : x.i))}>
               <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: BAND_FILLS[x.i] }} />
               <span><span className="font-black">{x.n}</span> {BAND_SHORT[x.i]}{x.i === unitBand ? ' min' : ''}</span>
             </li>
