@@ -18,6 +18,8 @@ import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayTe
 import Panel, { PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import Pill from '../components/ui/Pill';
+import { syncUrlParams } from '../utils/syncUrlParams';
+import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 
 export interface RouteSnapshot {
   label: string;
@@ -320,17 +322,20 @@ const SINCE_FILTERS = [
 function HistoryAgencyPanel({
   agencyHistory,
   onRouteSelect,
+  routeQuery,
+  setRouteQuery,
+  activeFilter,
+  setActiveFilter,
 }: {
   agencyHistory: AgencyHistory;
   onRouteSelect: (routeShortName: string) => void;
+  /** Held by History so they can live in the URL; History resets them when the agency changes or a route opens. */
+  routeQuery: string;
+  setRouteQuery: (q: string) => void;
+  activeFilter: HistoryRouteFilterKey | null;
+  setActiveFilter: (key: HistoryRouteFilterKey | null) => void;
 }) {
-  const [routeQuery, setRouteQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<HistoryRouteFilterKey | null>(null);
   const tier = agencyHistoryTier(agencyHistory) ?? 'recent';
-
-  useEffect(() => {
-    setActiveFilter(null);
-  }, [agencyHistory.slug]);
 
   const minYear = useMemo(() => {
     const all = agencyHistory.routes.flatMap(r => r.snapshots.map(s => s.year));
@@ -474,10 +479,18 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
   // typing a new search gets raced back to whatever agency the map still
   // has selected, since that prop doesn't change just because the user typed.
   const appliedInitialSlugRef = useRef(false);
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
-  const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
+  // Shared links: History's view is read from the URL once, when it opens (it remounts on every visit).
+  const [urlState] = useState<HistoryUrlState | null>(() => (
+    active && typeof window !== 'undefined' ? parseHistoryUrlState(window.location.search) : null
+  ));
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(() => urlState?.agency ?? null);
+  const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(() => urlState?.route ?? null);
   const [selectedYear, setSelectedYear] = useState<number>(0);
-  const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
+  // A linked year waits for the agency's years to load; it applies once if that year exists.
+  const pendingUrlYearRef = useRef<number>(urlState?.year ?? 0);
+  const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set(urlState?.regions ?? []));
+  const [routeQuery, setRouteQuery] = useState(() => urlState?.routeQuery ?? '');
+  const [activeFilter, setActiveFilter] = useState<HistoryRouteFilterKey | null>(() => (urlState?.routeMode as HistoryRouteFilterKey | null) ?? null);
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
   const { setOverlay } = useHistoryMapOverlay();
@@ -596,10 +609,36 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
     }
     onPendingRouteHandled?.();
   }, [pendingRouteClick, historyData, onPendingRouteHandled]);
+  // A new search clears the selection. Compared with the last value (not skipped once) so a linked
+  // selection survives mount, including StrictMode's repeated effects.
+  const lastQueryRef = useRef(query);
   useEffect(() => {
+    if (lastQueryRef.current === query) return;
+    lastQueryRef.current = query;
     setSelectedSlug(null);
     setSelectedRouteShortName(null);
   }, [query]);
+
+  // The route search and mode filter belong to one agency's list: they reset when the agency
+  // changes or a route opens, as they did when the list kept them itself.
+  const lastSelectionRef = useRef({ slug: selectedSlug, route: selectedRouteShortName });
+  useEffect(() => {
+    const last = lastSelectionRef.current;
+    lastSelectionRef.current = { slug: selectedSlug, route: selectedRouteShortName };
+    if (last.slug !== selectedSlug || (selectedRouteShortName && last.route !== selectedRouteShortName)) {
+      setRouteQuery('');
+      setActiveFilter(null);
+    }
+  }, [selectedSlug, selectedRouteShortName]);
+
+  // A linked agency that History doesn't have: fall back to the agency chooser.
+  useEffect(() => {
+    if (!historyData || !selectedSlug) return;
+    if (!historyData.some(a => a.slug === selectedSlug)) {
+      setSelectedSlug(null);
+      setSelectedRouteShortName(null);
+    }
+  }, [historyData, selectedSlug]);
 
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
@@ -656,10 +695,11 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
   }, [historyAgencies]);
 
   useEffect(() => {
-    if (regionFilter.size === 0) return;
+    // Regions are only known once the data loads; a linked filter must not be emptied before then.
+    if (regionFilter.size === 0 || historyData === null) return;
     const next = new Set([...regionFilter].filter(region => historyRegions.includes(region)));
     if (next.size !== regionFilter.size) setRegionFilter(next);
-  }, [historyRegions, regionFilter]);
+  }, [historyRegions, regionFilter, historyData]);
 
   /** Match the main agency browser: region sections, then alphabetical agencies. */
   const agenciesByRegion = useMemo(() => {
@@ -690,11 +730,31 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
 
   useEffect(() => {
     if (selectedSlug && availableYears.length > 0) {
-      setSelectedYear(availableYears[availableYears.length - 1]);
+      const linkedYear = pendingUrlYearRef.current;
+      pendingUrlYearRef.current = 0;
+      setSelectedYear(availableYears.includes(linkedYear) ? linkedYear : availableYears[availableYears.length - 1]);
     } else {
+      // Once the data is in, a linked year that never matched is dropped.
+      if (historyData !== null) pendingUrlYearRef.current = 0;
       setSelectedYear(0);
     }
-  }, [selectedSlug, availableYears]);
+  }, [selectedSlug, availableYears, historyData]);
+
+  // Keep the URL in step so the page link reproduces this view. Waits for the data so the
+  // linked values (and the default year, the newest one) are known before anything is rewritten.
+  const latestYear = availableYears.length ? availableYears[availableYears.length - 1] : 0;
+  const regionList = useMemo(() => [...regionFilter].sort(), [regionFilter]);
+  useEffect(() => {
+    if (!active || historyData === null) return;
+    syncUrlParams(encodeHistoryUrlState({
+      agency: selectedSlug,
+      route: selectedRouteShortName,
+      year: pendingUrlYearRef.current || selectedYear,
+      regions: regionList,
+      routeQuery,
+      routeMode: activeFilter,
+    }, latestYear));
+  }, [active, historyData, selectedSlug, selectedRouteShortName, selectedYear, latestYear, regionList, routeQuery, activeFilter]);
 
 
   if (!shouldRender) return null;
@@ -730,6 +790,10 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
             <HistoryAgencyPanel
               agencyHistory={agencyHistory}
               onRouteSelect={setSelectedRouteShortName}
+              routeQuery={routeQuery}
+              setRouteQuery={setRouteQuery}
+              activeFilter={activeFilter}
+              setActiveFilter={setActiveFilter}
             />
           );
         })()

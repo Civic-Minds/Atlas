@@ -534,7 +534,7 @@ export default function App() {
           type="button"
           onClick={() => {
             if (inFrequentServiceStory) {
-              navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`);
+              navigate(FEATURE_ROUTES.frequentService.map);
             } else if (inFrequentService || activeApp !== 'frequency') {
               navigate('/');
             } else {
@@ -714,7 +714,7 @@ export default function App() {
           {inResearch ? (
             <ResearchPage />
           ) : inFrequentServiceStory ? (
-            <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`)} />
+            <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(FEATURE_ROUTES.frequentService.map)} />
           ) : <>
             <Interval
               agencies={intervalAgencies}
