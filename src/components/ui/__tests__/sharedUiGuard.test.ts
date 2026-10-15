@@ -25,8 +25,9 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled spinner', pattern: /border-t-transparent rounded-full animate-spin/, use: 'Spinner' },
   { name: 'hand-rolled link card', pattern: /px-3 py-2 rounded-xl bg-\[var\(--bg-app\)\] border border-\[var\(--border-primary\)\] hover:border-\[var\(--accent\)\]/, use: 'LinkCard' },
   { name: 'hand-rolled tag', pattern: /px-1\.5 py-(0\.5|px)[^"`']*rounded-full|rounded-full[^"`']*px-1\.5 py-(0\.5|px)/, use: 'Tag' },
+  { name: 'typed arrow in a link', pattern: />[^<>{}]*[^\s<>{}][^<>{}]* →\s*</, use: 'ArrowLink' },
   { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
-  { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP)\b/, use: 'ArrowLink, Tag' },
+  { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP|CARD_NOTICE_ACTION)\b/, use: 'ArrowLink, Tag' },
   { name: 'hand-rolled page frame', pattern: /<main className="min-h-screen bg-\[var\(--bg-app\)\] px-/, use: 'PageShell' },
 ];
 

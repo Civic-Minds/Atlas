@@ -1,6 +1,6 @@
-import { ExternalLink } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { trackEvent } from '../lib/analytics';
+import ArrowLink from './ui/ArrowLink';
 
 const CONTACT_EMAIL = 'hey@ryanisnota.pro';
 
@@ -22,13 +22,13 @@ export default function SiteContact({
       <h2 className="text-base font-black text-[var(--text-primary)] mb-2">{title}</h2>
       <div className="space-y-2 text-[var(--text-dim)]">
         <p>{children}</p>
-        <a
-          className="inline-flex items-center gap-2 font-bold text-[var(--accent)] hover:underline"
+        <ArrowLink
+          external
           href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`}
           onClick={() => trackEvent('feedback_opened', { source: 'site_contact' })}
         >
-          {linkLabel} <ExternalLink className="w-3.5 h-3.5" />
-        </a>
+          {linkLabel}
+        </ArrowLink>
       </div>
     </section>
   );

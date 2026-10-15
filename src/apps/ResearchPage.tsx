@@ -1,6 +1,7 @@
 import { Moon, Zap } from 'lucide-react';
 import { FEATURE_ROUTES } from '../../shared/config';
 import PageShell from '../components/ui/PageShell';
+import ArrowLink from '../components/ui/ArrowLink';
 import { SURFACE } from '../styles';
 
 const CARDS = [
@@ -33,7 +34,7 @@ export default function ResearchPage() {
                   <Icon className="h-4 w-4 text-[var(--text-dim)]" aria-hidden="true" />
                   <h2 className="mt-4 text-base font-black text-[var(--text-primary)]">{title}</h2>
                   <p className="mt-2">{body}</p>
-                  <span className="mt-4 inline-block text-xs font-bold text-[var(--text-muted)] group-hover:text-[var(--accent)]">Open →</span>
+                  <ArrowLink as="span" tone="inline" size="xs" nudge className="mt-4">Open</ArrowLink>
                 </a>
               ))}
             </div>

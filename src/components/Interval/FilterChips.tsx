@@ -15,6 +15,7 @@ import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorVision } from '../../context/ColorVisionContext';
+import ArrowLink from '../ui/ArrowLink';
 import { headwayAmount, headwayBandLabel, headwayFilterLabel, headwayTierLabel } from '../../utils/headwayText';
 
 export { getNowDay };
@@ -207,12 +208,9 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           </div>
         ))}
         {!agencyQuery && (
-          <button
-            onClick={() => setShowAll(v => !v)}
-            className="mt-1 mb-0.5 mx-2 text-xs font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors text-left"
-          >
-            {showAll ? '← In view only' : `All agencies (${allGroups.length}) →`}
-          </button>
+          <ArrowLink as="button" tone="inline" size="xs" back={showAll} onClick={() => setShowAll(v => !v)} className="mt-1 mb-0.5 mx-2 text-left">
+            {showAll ? 'In view only' : `All agencies (${allGroups.length})`}
+          </ArrowLink>
         )}
       </div>
     </div>

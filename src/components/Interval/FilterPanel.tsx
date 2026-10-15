@@ -14,6 +14,7 @@ import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
 import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
+import ArrowLink from '../ui/ArrowLink';
 
 
 interface FilterPanelProps {
@@ -624,30 +625,21 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
                         {id === 'span' && (
                           <>
-                            <button
-                              onClick={() => setView('hidden-routes')}
-                              className="mt-1 text-xs text-[var(--accent)] hover:underline"
-                            >
-                              See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'} →
-                            </button>
+                            <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('hidden-routes')} className="mt-1">
+                              See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'}
+                            </ArrowLink>
                           </>
                         )}
                         {id === 'limited' && limitedServiceRouteCount != null && (
-                          <button
-                            onClick={() => setView('limited-routes')}
-                            className="mt-1 text-xs text-[var(--accent)] hover:underline"
-                          >
-                            {limitedServiceRouteCount.toLocaleString()} {plural(limitedServiceRouteCount, 'route')} affected →
-                          </button>
+                          <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('limited-routes')} className="mt-1">
+                            {limitedServiceRouteCount.toLocaleString()} {plural(limitedServiceRouteCount, 'route')} affected
+                          </ArrowLink>
                         )}
                         {id === 'quality' && (
-                          <button
-                            onClick={() => setView('degraded-feeds')}
-                            className="mt-1 text-xs text-[var(--accent)] hover:underline"
-                          >
+                          <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('degraded-feeds')} className="mt-1">
                             {hideLowQuality ? 'See hidden feeds' : 'Review degraded feeds'}
-                            {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''} →
-                          </button>
+                            {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''}
+                          </ArrowLink>
                         )}
                       </div>
                     </div>

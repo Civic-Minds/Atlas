@@ -3,11 +3,12 @@ import { createPortal } from 'react-dom';
 import { ArrowLeft, Flag, Radio, X } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
-import { CARD_NOTICE, CARD_NOTICE_ACTION, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
+import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
 import { openAtlasProblemEmail } from '../../utils/reportIssue';
 import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
 import { useColorVision } from '../../context/ColorVisionContext';
+import ArrowLink from '../ui/ArrowLink';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -560,7 +561,7 @@ export function AgencyFilterChips({
 export function CardHelpNotice({
   message,
   onLearnMore,
-  actionLabel = 'Learn more →',
+  actionLabel = 'Learn more',
 }: {
   message: string;
   onLearnMore: () => void;
@@ -569,9 +570,9 @@ export function CardHelpNotice({
   return (
     <div className={`${CARD_NOTICE} flex min-w-0 flex-wrap items-start gap-x-1 gap-y-0.5`}>
       <span className="min-w-0 flex-1 whitespace-normal break-words leading-relaxed">{message}</span>
-      <button type="button" onClick={onLearnMore} className={`${CARD_NOTICE_ACTION} shrink-0 whitespace-nowrap`}>
+      <ArrowLink as="button" tone="inline" size="xs" onClick={onLearnMore} className="shrink-0 whitespace-nowrap">
         {actionLabel}
-      </button>
+      </ArrowLink>
     </div>
   );
 }
