@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react';
+import ArrowLink from './ui/ArrowLink';
 import { FEATURES } from '../../shared/config';
 import AtlasBrand from './AtlasBrand';
 
@@ -14,7 +14,7 @@ export default function SiteHeader({ showWordmark = true }: { showWordmark?: boo
         {FEATURES.agencyPages && <a href="/agencies" className="hover:text-[var(--text-primary)]">Agencies</a>}
         {FEATURES.researchApps && <a href="/research" className="hover:text-[var(--text-primary)]">Research</a>}
         <a href="/about/docs" className="hover:text-[var(--text-primary)]">Docs</a>
-        <a href="/" className="inline-flex items-center gap-1 hover:text-[var(--text-primary)]">Go to Atlas <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
+        <ArrowLink tone="quiet" href="/">Go to Atlas</ArrowLink>
       </nav>
     </header>
   );

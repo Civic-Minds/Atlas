@@ -1,6 +1,6 @@
 import type { WhatsNewItem } from '../data/whatsNew';
 
-const TAG = 'inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px font-bold leading-tight text-[var(--accent)] align-middle';
+import Tag from './ui/Tag';
 
 /** One what's-new bullet: bold lead, colon, short clause, then "New" / "Beta" tags with a real space before them. */
 export function WhatsNewItemText({ item, tagClass = 'text-xs', leadClass = 'font-black', hideNew = false }: { item: WhatsNewItem; tagClass?: string; /** Weight of the lead; the what's-new panel uses a regular weight so its version heading stands out. */ leadClass?: string; /** The what's-new panel's name already says it, so it drops the New pills. */ hideNew?: boolean }) {
@@ -8,8 +8,8 @@ export function WhatsNewItemText({ item, tagClass = 'text-xs', leadClass = 'font
     <>
       {item.lead && <><strong className={`${leadClass} text-[var(--text-primary)]`}>{item.lead}</strong>: </>}
       {item.text}
-      {item.isNew && !hideNew && <>{' '}<span className={`${TAG} ${tagClass} ml-1`}>New</span></>}
-      {item.beta && <>{' '}<span className={`${TAG} ${tagClass} ml-1`}>Beta</span></>}
+      {item.isNew && !hideNew && <>{' '}<Tag tone="accent" className={`${tagClass} ml-1`}>New</Tag></>}
+      {item.beta && <>{' '}<Tag tone="accent" className={`${tagClass} ml-1`}>Beta</Tag></>}
     </>
   );
 }

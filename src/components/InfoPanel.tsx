@@ -3,6 +3,7 @@ import { X, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
+import Tag from './ui/Tag';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
@@ -483,17 +484,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                               {(showLiveBadge || showHistoryBadge) && (
                                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
                                   {showLiveBadge && (
-                                    <span
-                                      title={liveCoverageBySlug.has(a.slug) ? undefined : 'Live route coverage is still loading.'}
-                                      className="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]"
-                                    >
+                                    <Tag title={liveCoverageBySlug.has(a.slug) ? undefined : 'Live route coverage is still loading.'}>
                                       {liveCoverageBySlug.get(a.slug) === 'full' ? 'Full live' : liveCoverageBySlug.get(a.slug) === 'partial' ? 'Partial live' : 'Live routes'}
-                                    </span>
+                                    </Tag>
                                   )}
                                   {showHistoryBadge && (
-                                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
-                                      History
-                                    </span>
+                                    <Tag>History</Tag>
                                   )}
                                 </div>
                               )}
@@ -705,7 +701,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {selectedLiveRoutes.length > 0 && (
                     <div>
                       <div className="mb-2">
-                        <span className="inline-block text-xs font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">Live ({selectedLiveRoutes.length})</span>
+                        <Tag className="inline-block">Live ({selectedLiveRoutes.length})</Tag>
                       </div>
                       <div className="space-y-1">
                         {selectedLiveRoutes.map(r => (
@@ -726,9 +722,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {selectedHistory && (
                     <div>
                       <div className="mb-2">
-                        <span className="inline-block text-xs font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
-                          History
-                        </span>
+                        <Tag className="inline-block">History</Tag>
                       </div>
                       <p className="text-xs text-[var(--text-dim)]">
                         Historical frequency data available for {selectedHistory.routes.length} routes {historyYearsText}.

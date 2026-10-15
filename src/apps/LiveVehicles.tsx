@@ -17,7 +17,7 @@ import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { andOthers, plural } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
-import { CHIP } from '../pageStyles';
+import Tag from '../components/ui/Tag';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, delayAmount, headwayAbout, headwayEvery } from '../utils/headwayText';
@@ -760,7 +760,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     variant="spaced"
                     onClick={() => handlePlaceClick(p.slug)}
                     subtitle={(
-                      <span className={`${CHIP} inline-block mt-1.5 whitespace-nowrap`}>{p.withPerformance ? 'Vehicles + performance' : 'Vehicles'}</span>
+                      <Tag size="md" className="inline-block mt-1.5 whitespace-nowrap">{p.withPerformance ? 'Vehicles + performance' : 'Vehicles'}</Tag>
                     )}
                     right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
                   />

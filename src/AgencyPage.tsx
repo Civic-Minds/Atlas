@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { ArrowRight } from 'lucide-react';
 import {
   bandCounts,
   agencyDatesText,
@@ -22,10 +21,11 @@ import { andOthers } from '../shared/overflowText';
 import { routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE } from '../shared/config';
 import PageShell from './components/ui/PageShell';
+import ArrowLink from './components/ui/ArrowLink';
 import DataTable from './components/ui/DataTable';
 import { applySeoToDocument } from './lib/seoDom';
 import { titleCase } from './utils/format';
-import { LINK, PAGE_ACTION } from './pageStyles';
+import { LINK } from './pageStyles';
 import { FrequencyBar } from './pageParts';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -118,7 +118,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
       <PageShell variant="wide">
           <h1 className="mt-24 text-3xl font-black tracking-tight">No page for this agency</h1>
           <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Atlas has no frequency page at this address.</p>
-          <a href="/" className={`mt-6 inline-flex items-center gap-2 text-sm font-black ${LINK}`}>Open the Atlas map <ArrowRight className="h-4 w-4" /></a>
+          <ArrowLink href="/" className="mt-6">Open the Atlas map</ArrowLink>
       </PageShell>
     );
   }
@@ -134,12 +134,10 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <div className="min-w-0">
               <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{agencyPageH1(agency)}</h1>
               {data!.area
-                ? <a className={`mt-1 inline-block text-sm ${LINK}`} href={`/area/${data!.area.slug}`}>{areaRegionTitle(data!.area)} →</a>
+                ? <ArrowLink tone="inline" className="mt-1" href={`/area/${data!.area.slug}`}>{areaRegionTitle(data!.area)}</ArrowLink>
                 : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
-            <a href={agencyMapHref(agency)} className={PAGE_ACTION}>
-              View on map <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </a>
+            <ArrowLink href={agencyMapHref(agency)}>View on map</ArrowLink>
           </div>
           <Intro data={data!} />
 
@@ -175,9 +173,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                 <h2 id="nearby-heading" className="text-xl font-black tracking-tight">
                   {data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={`/area/${data!.area.slug}`}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
                 </h2>
-                <a href="/agencies" className={PAGE_ACTION}>
-                  See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </a>
+                <ArrowLink href="/agencies">See all agencies</ArrowLink>
               </div>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (
@@ -188,9 +184,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           )}
 
           {nearby.length === 0 && (
-            <a href="/agencies" className={`${PAGE_ACTION} mt-6`}>
-              See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </a>
+            <ArrowLink href="/agencies" className="mt-6">See all agencies</ArrowLink>
           )}
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">

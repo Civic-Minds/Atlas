@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 // Tables, pills, list rows and panel shells come from src/components/ui/. This fails when a screen
 // hand-rolls one again, so the look cannot drift screen by screen. To fix a failure, use the shared
-// component (DataTable, Pill, ListRow, Panel, LinkCard). If a new variant is needed, add it to the shared component.
+// component (DataTable, Pill, ListRow, Panel, LinkCard, Tag, ArrowLink). If a new variant is needed, add it to the shared component.
 const SRC = resolve(__dirname, '../../..');
 
 function files(dir: string): string[] {
@@ -24,6 +24,9 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled switch', pattern: /role="switch"/, use: 'Toggle' },
   { name: 'hand-rolled spinner', pattern: /border-t-transparent rounded-full animate-spin/, use: 'Spinner' },
   { name: 'hand-rolled link card', pattern: /px-3 py-2 rounded-xl bg-\[var\(--bg-app\)\] border border-\[var\(--border-primary\)\] hover:border-\[var\(--accent\)\]/, use: 'LinkCard' },
+  { name: 'hand-rolled tag', pattern: /px-1\.5 py-(0\.5|px)[^"`']*rounded-full|rounded-full[^"`']*px-1\.5 py-(0\.5|px)/, use: 'Tag' },
+  { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
+  { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP)\b/, use: 'ArrowLink, Tag' },
   { name: 'hand-rolled page frame', pattern: /<main className="min-h-screen bg-\[var\(--bg-app\)\] px-/, use: 'PageShell' },
 ];
 
@@ -33,6 +36,8 @@ const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
   'components/Interval/FilterPanel.tsx': ['option pill classes'],
   'apps/History.tsx': ['option pill classes'],
+  // A filled call-to-action button (not a link) that ends in an arrow.
+  'apps/FrequentServiceStory.tsx': ['hand-rolled arrow link'],
 };
 
 describe('shared UI components', () => {

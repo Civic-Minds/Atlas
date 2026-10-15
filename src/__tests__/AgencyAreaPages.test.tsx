@@ -31,7 +31,7 @@ describe('AgencyPage', () => {
   it('shows the full agency name in the heading, the area link, plain stats and the five period columns', () => {
     view(<AgencyPage data={data} />);
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Toronto Transit Commission');
-    expect(screen.getByRole('link', { name: 'Greater Toronto and Hamilton Area →' }).getAttribute('href')).toBe('/area/toronto');
+    expect(screen.getByRole('link', { name: 'Greater Toronto and Hamilton Area' }).getAttribute('href')).toBe('/area/toronto');
     expect(screen.queryByText('every 16 min')).toBeNull(); // no average wait stat
     expect(screen.getAllByText('every 4 min').length).toBeGreaterThan(0);
     expect(screen.queryByText('24 h')).toBeNull(); // service hours stat removed

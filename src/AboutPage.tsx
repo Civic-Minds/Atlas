@@ -1,6 +1,6 @@
-import { ArrowRight } from 'lucide-react';
 import { FEATURES, FEATURE_ROUTES } from '../shared/config';
 import PageShell from './components/ui/PageShell';
+import ArrowLink from './components/ui/ArrowLink';
 
 export default function AboutPage() {
   return (
@@ -11,7 +11,7 @@ export default function AboutPage() {
             <h1 className="max-w-3xl text-5xl font-black tracking-[-0.045em] sm:text-7xl">Find the transit service that actually runs.</h1>
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency, and place.</p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <a href="/" className="inline-flex items-center gap-2 text-sm font-black text-[var(--accent)] hover:underline">Try Atlas <ArrowRight className="h-4 w-4" /></a>
+              <ArrowLink href="/">Try Atlas</ArrowLink>
               {FEATURES.researchApps && <a href="/research" className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">Explore research</a>}
             </div>
           </div>
@@ -41,7 +41,7 @@ export default function AboutPage() {
           <div className="space-y-5 text-base leading-7 text-[var(--text-muted)]">
             <p>Atlas brings published agency schedules into one place so riders, planners, researchers, and advocates can compare routes across cities, time periods, and modes.</p>
             <p>It does not replace official trip planning or live alerts. It makes the patterns in scheduled service easier to see.</p>
-            <a href="/about/docs" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline">Read how Atlas works <ArrowRight className="h-4 w-4" /></a>
+            <ArrowLink href="/about/docs">Read how Atlas works</ArrowLink>
           </div>
         </section>
 
@@ -51,12 +51,12 @@ export default function AboutPage() {
             <a href="/research/frequent-service/story" className="group border-l-2 border-[var(--accent-border)] pl-4">
               <h3 className="text-lg font-black group-hover:text-[var(--accent)]">What happens when you miss the bus?</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">A source-backed look at what frequent service means across transit networks.</p>
-              <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)]">Read the story <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+              <ArrowLink as="span" nudge className="mt-4">Read the story</ArrowLink>
             </a>
             <a href={FEATURE_ROUTES.nightService} className="group border-l-2 border-[var(--accent-border)] pl-4">
               <h3 className="text-lg font-black group-hover:text-[var(--accent)]">What still runs overnight?</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Find routes with sustained scheduled service from 2am to 6am.</p>
-              <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)]">Explore Night Service <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+              <ArrowLink as="span" nudge className="mt-4">Explore Night Service</ArrowLink>
             </a>
           </div>
         </section>}

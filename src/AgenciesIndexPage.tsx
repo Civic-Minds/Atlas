@@ -13,7 +13,8 @@ import historyAgencies from '../shared/data/history-agencies.json';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { isLiveEligibleSlug } from '../shared/livePollingConfig';
 import { applySeoToDocument } from './lib/seoDom';
-import { TAG, LINK } from './pageStyles';
+import { LINK } from './pageStyles';
+import Tag from './components/ui/Tag';
 import PageShell from './components/ui/PageShell';
 
 /** Read this page's data from the JSON the prerender embedded next to the app root. */
@@ -39,8 +40,8 @@ const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAg
 function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
   return (
     <>
-      {live && <span className={`${TAG} ml-1.5 inline-block`}>Live</span>}
-      {history && <span className={`${TAG} ml-1 inline-block`}>History</span>}
+      {live && <Tag className="ml-1.5 inline-block">Live</Tag>}
+      {history && <Tag className="ml-1 inline-block">History</Tag>}
     </>
   );
 }

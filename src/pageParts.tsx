@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE, allRoutesMapHref } from '../shared/agencyPages';
-import { ArrowRight } from 'lucide-react';
-import { PAGE_ACTION } from './pageStyles';
+import ArrowLink from './components/ui/ArrowLink';
 import { HEADWAY_TIERS } from '../shared/config';
 import { plural } from '../shared/overflowText';
 
@@ -49,7 +48,7 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
             </li>
           ))}
         </ul>
-        {mapHref && <a href={allRoutesMapHref(mapHref)} className={`${PAGE_ACTION} sm:ml-auto`}>See these routes on the map <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>}
+        {mapHref && <ArrowLink href={allRoutesMapHref(mapHref)} className="sm:ml-auto">See these routes on the map</ArrowLink>}
       </div>
     </div>
   );
