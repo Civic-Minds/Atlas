@@ -16,7 +16,7 @@ import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from 
 import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
 import { Z_PANEL, MAP_BADGE } from '../../styles';
-import { LIVE_ANALYSIS_ROUTES, hasLiveAnalysis } from '../../../shared/livePollingConfig';
+import { LIVE_ANALYSIS_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
@@ -788,7 +788,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         const properties = feature.properties as Record<string, any> | null;
         if (!properties?.routeId || !properties.routeShortName) return [];
         if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') return [];
-        if (liveRoutesOnly && !hasLiveAnalysis(properties.agencySlug ?? slug, properties.routeShortName)) return [];
         const periodHeadway = routeFilterHeadway(properties, period);
         return [{
           ...feature,
@@ -801,7 +800,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
     });
     return { type: 'FeatureCollection', features };
-  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies, colorMode, liveRoutesOnly]);
+  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies, colorMode]);
 
   useEffect(() => {
     onMapContextAgencyCountChange?.(mapContextAgencies.length);
@@ -1040,12 +1039,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const frequencySegmentOverlay = useMemo(() => {
     // nightServiceView colors routes by a boolean nightService flag, not by headway tier --
     // the #317 overlay is a frequency-filter concept and doesn't apply there.
-    // Live draws only its own routes, so the frequency overlay stays off there too.
-    if (!showRouteLayers || nightServiceView || frequentServiceView || liveRoutesOnly || !filteredLayers) {
+    if (!showRouteLayers || nightServiceView || frequentServiceView || !filteredLayers) {
       return { segments: [], partialMatches: [], sharedStretchRoutes: [] };
     }
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
-  }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, liveRoutesOnly, colorMode]);
+  }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, colorMode]);
 
 
   // CIV-152 (beta): the sections of every visible line whose every-gap grade differs from
@@ -2158,6 +2156,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     if (hasOverviewRoutes) map.setFilter('overview-routes-layer', routeFilter as any);
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
+    // Local (non-tile) routes: Live's route allowlist as a layer filter, so switching modes never
+    // rebuilds the local route data.
+    if (hasLocalRoutes) map.setFilter('local-routes-layer', liveRoutesOnly ? ['any', ...LIVE_ANALYSIS_ROUTES.map(k => k.split('::')).map(([slug, rsn]) => ['all', ['==', ['get', 'agencySlug'], slug], ['==', ['get', 'routeShortName'], rsn]])] as any : null);
     const routeSortKey = buildRouteSortKeyExpression(headwayExpr);
     if (hasOverviewRoutes) map.setLayoutProperty('overview-routes-layer', 'line-sort-key', routeSortKey as any);
     if (hasRoutes) map.setLayoutProperty('routes-layer', 'line-sort-key', routeSortKey as any);
@@ -2353,6 +2354,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         && !onDemandFocus
         && !nightServiceView
         && !frequentServiceView
+        // Live draws only its own routes. The overlay is hidden, not recomputed, so leaving Live
+        // doesn't redo it inside the route change (that left Live on screen with the URL at "/").
+        && !liveRoutesOnly
         && !(selectedStop && routesForStop?.siblingIdsByAgency);
       if (map.getLayer('frequency-qualifying-segments-layer')) {
         map.setLayoutProperty(

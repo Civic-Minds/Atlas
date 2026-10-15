@@ -2,6 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMe
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
+import { useUrlPathname } from './hooks/useUrlPathname';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasBrand from './components/AtlasBrand';
@@ -166,6 +167,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const gated = isAppGated(routedApp, FEATURES)
     || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
+  // The router's view of the address lags the address bar while the next mode renders (a
+  // transition). Follow the bar urgently so a mode never stays on screen after its URL is gone.
+  const urlApp: AppId = PATH_TO_APP[useUrlPathname()] ?? 'frequency';
+  const modeCatchingUp = urlApp !== routedApp;
 
   useEffect(() => {
     if (gated) navigate('/', { replace: true });
@@ -388,6 +393,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     [inHistory, historyAgencySlugs, visibleAgencies],
   );
   const inLive = activeApp === 'live';
+  // Live's own UI switches off the moment the address leaves /apps/live (CIV-214).
+  const liveShown = inLive && urlApp === 'live';
+  // The Live tab follows the address straight away, in both directions.
+  const liveTabOn = urlApp === 'live';
   const inNight = activeApp === 'night';
   const loadedAgencySlugs = useMemo(
     () => new Set([
@@ -621,11 +630,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
         {showLiveControl && (
           <button
-            onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
+            onClick={() => setActiveApp(liveTabOn ? 'frequency' : 'live')}
             aria-label="Live vehicles"
-            aria-pressed={inLive}
+            aria-pressed={liveTabOn}
             title={liveTabCollapsed ? 'Live vehicles' : undefined}
-            className={`hidden sm:flex h-8 ${modeTabSpacing(liveTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+            className={`hidden sm:flex h-8 ${modeTabSpacing(liveTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${liveTabOn ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
             <Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
             <ModeTabLabel collapsed={liveTabCollapsed}>
@@ -677,7 +686,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                 aria-expanded={appLinksOpen}
                 className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
-                <span>{inLive ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}</span>
+                <span>{liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
               </button>
               {appLinksOpen && (
@@ -685,9 +694,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   {showLiveControl && (
                     <button
                       type="button"
-                      onClick={() => { setActiveApp(inLive ? 'frequency' : 'live'); setAppLinksOpen(false); }}
-                      aria-pressed={inLive}
-                      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                      onClick={() => { setActiveApp(liveTabOn ? 'frequency' : 'live'); setAppLinksOpen(false); }}
+                      aria-pressed={liveTabOn}
+                      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${liveTabOn ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
                     >
                       <Radio className="w-3.5 h-3.5" aria-hidden="true" />
                       <span>Live</span>
@@ -813,13 +822,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               </React.Suspense>
             )}
             {FEATURES.live && liveMounted && (
-              <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${liveShown ? 'opacity-100' : 'opacity-0'}`}>
                 <React.Suspense fallback={null}>
                   <LiveVehicles
                   agencies={visibleAgencies}
                     lightMode={lightMode}
                     setLightMode={setLightMode}
-                    active={inLive}
+                    active={liveShown}
                     onInfoOpen={openInfo}
                     query={deferredQuery}
                     layers={layers}
@@ -833,9 +842,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </>}
           </React.Suspense>
           </ErrorBoundary>
-        {agenciesLoadState === 'loading' && (
+        {(agenciesLoadState === 'loading' || modeCatchingUp) && (
           <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">
-            Loading agency data…
+            {agenciesLoadState === 'loading' ? 'Loading agency data…' : 'Loading map…'}
           </div>
         )}
         {agenciesLoadState === 'error' && (
