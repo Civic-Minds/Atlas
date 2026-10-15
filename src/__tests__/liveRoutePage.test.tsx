@@ -105,6 +105,16 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/Westbound: no single stretch adds more than a minute/)).toBeTruthy();
   });
 
+  it('shows a message instead of a blank page when one section cannot be drawn, and the rest still shows', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const broken = { ...ready, v3: { ...v3, buildup: undefined as unknown as LiveV3['buildup'] }, uncertainStart: undefined as unknown as number[] };
+    renderPage(broken);
+    expect(await screen.findByText(/Where delays start could not be drawn/)).toBeTruthy();
+    expect(screen.getByRole('region', { name: /How well it keeps to its timetable/ })).toBeTruthy();
+    expect(screen.getByRole('region', { name: /How this is measured/ })).toBeTruthy();
+    vi.restoreAllMocks();
+  });
+
   it('says why when there is nothing to show', async () => {
     const { unmount } = renderPage({ status: 'held', reason: 'The 512 is held back: reason here.' }, '/apps/live/ttc/512');
     expect(await screen.findByText('The 512 is held back: reason here.')).toBeTruthy();

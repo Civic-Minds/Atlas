@@ -8,6 +8,7 @@ import {
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { titleCase } from './utils/format';
+import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
 import Pill from './components/ui/Pill';
@@ -279,7 +280,8 @@ export default function LiveRoutePage() {
       </PageShell>
     );
   }
-  const v3 = withNiceNames(data.v3);
+  // A malformed file must not blank the page: fall back to the raw names and let each section's boundary report its own problem.
+  const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
   return (
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
@@ -298,11 +300,11 @@ export default function LiveRoutePage() {
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         <Filters v3={v3} day={day} setDay={setDay} dir={dir} setDir={setDir} />
-        <Adherence v3={v3} day={day} dir={dir} />
-        <Buildup v3={v3} dir={dir} uncertainStart={data.uncertainStart} />
-        <WorstStops v3={v3} dir={dir} />
-        <Bunching v3={v3} dir={dir} />
-        <Method data={data} />
+        <ErrorBoundary label="How well it keeps to its timetable could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze."><Adherence v3={v3} day={day} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label="Where delays start could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze."><Buildup v3={v3} dir={dir} uncertainStart={data.uncertainStart ?? []} /></ErrorBoundary>
+        <ErrorBoundary label="Stops with the most delay could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze."><WorstStops v3={v3} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label="Where bunching forms could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze."><Bunching v3={v3} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label="How this is measured could not be drawn."><Method data={data} /></ErrorBoundary>
       </article>
     </PageShell>
   );
