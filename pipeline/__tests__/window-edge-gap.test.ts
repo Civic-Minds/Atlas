@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processGtfsBuffer, scopedTerminalHeadline } from '../process-core';
+import { determineTierWithEdgeGapAllowance } from '../transit-phase2';
+import { DEFAULT_CRITERIA, getTiersForCriteria } from '../defaults';
 
 // #773: a gap that straddles the grading window's edge counts for its part inside the window.
 // Halifax 2 Saturday runs hourly until about 08:00 and every 15 after; at the origin-end stops
@@ -46,8 +48,8 @@ describe('scopedTerminalHeadline at the window edge (#773)', () => {
     expect(scopedTerminalHeadline([...until, hm(22, 43)], 'Saturday', '3', false)?.tier).toBe('60');
     expect(scopedTerminalHeadline([...until, hm(23, 30)], 'Saturday', '3', false)?.tier).toBe('60');
     expect(scopedTerminalHeadline(until, 'Saturday', '3', false)?.tier).toBe('30');
-    // A later bus after midnight is the next service day's: the line closed at 21:13.
-    expect(scopedTerminalHeadline([...until, hm(24, 30)], 'Saturday', '3', false)?.tier).toBe('30');
+    // A 24:00+ bus is the same service day in GTFS: the rider still waits 47 minutes from 21:13.
+    expect(scopedTerminalHeadline([...until, hm(24, 30)], 'Saturday', '3', false)?.tier).toBe('60');
     // Every 15 until 21:30 then 22:30: a 30-minute wait at the edge fits the 20 grade's allowance.
     expect(scopedTerminalHeadline([...every(hm(7, 0), hm(21, 30), 15), hm(22, 30)], 'Saturday', '3', false)?.tier).toBe('20');
   });
@@ -65,10 +67,33 @@ describe('scopedTerminalHeadline at the window edge (#773)', () => {
     expect(scopedTerminalHeadline([hm(8, 50), ...steady], 'Sunday', '3', false)?.tier).toBe('20');
   });
 
-  it('a departure far outside the window is not the other side of a gap when it belongs to the next day', () => {
-    // Service that ends at 15:00 at this platform and returns after midnight (REM A3-A1) closes at 15:00.
+  it('a 24:00+ departure counts as continuing service: 23:59, 24:01, 24:30 and 25:30 agree', () => {
+    // F1: every 30 until 21:13; the next bus at 23:59 graded 60 but at 24:01 graded 30.
+    const until = every(hm(7, 13), hm(21, 13), 30);
+    for (const later of [hm(23, 59), hm(24, 1), hm(24, 30), hm(25, 30)]) {
+      expect(scopedTerminalHeadline([...until, later], 'Saturday', '3', false)?.tier).toBe('60');
+    }
+  });
+
+  it('a closing edge differs only between closed and open: 22:30, 23:59 and 24:30 agree', () => {
+    // F2: every 15 07:00-21:00 plus 21:25 is closed and keeps its edge allowance, 15; any later
+    // bus opens it and the 35-minute wait from 21:25 to 22:00 grades it, wherever the bus runs.
+    const base = [...every(hm(7, 0), hm(21, 0), 15), hm(21, 25)];
+    expect(scopedTerminalHeadline(base, 'Saturday', '3', false)?.tier).toBe('15');
+    const open = [hm(22, 30), hm(23, 59), hm(24, 30)].map(later => scopedTerminalHeadline([...base, later], 'Saturday', '3', false)?.tier);
+    expect(open).toEqual(['30', '30', '30']);
+  });
+
+  it('service that stops before the evening and returns only after midnight closes at its last daytime departure (#842)', () => {
+    // REM A3-A1 to Anse-a-l'Orme: the line runs from this platform until mid-afternoon, then from
+    // the neighbouring platform, and comes back here after midnight. It closes at 15:00.
     const platform = [hm(5, 30), ...every(hm(7, 0), hm(15, 0), 15), hm(24, 51), hm(25, 6)];
     expect(scopedTerminalHeadline(platform, 'Weekday', '3', false)?.tier).toBe('15');
+    // The deliberate cost of that rule: a line that stops at 18:13 reads open with one more bus
+    // at 23:59 (the 3h47 wait to 22:00 grades it infrequent) and closed with it at 24:01.
+    const early = every(hm(7, 13), hm(18, 13), 15);
+    expect(scopedTerminalHeadline([...early, hm(23, 59)], 'Weekday', '3', false)?.tier).toBe('infrequent');
+    expect(scopedTerminalHeadline([...early, hm(24, 1)], 'Weekday', '3', false)?.tier).toBe('15');
   });
 });
 
@@ -130,5 +155,29 @@ describe('edge waits at a pooled stop (#773)', () => {
     const line = JSON.parse(result.geojson).features.map((f: any) => f.properties).find((p: any) => p.stopId == null && p.day === 'Weekday');
     expect(new Set(Object.values(line.stopTiers))).toEqual(new Set(['15']));
     expect(line.tier).toBe('15');
+  });
+});
+
+describe('phase 2 closing edge: one service-day boundary (#773)', () => {
+  // The route tier's own window (no edge waits): every 15 07:00-21:00 plus 21:25.
+  const tierOf = (raw: number[]) => {
+    const windowed = raw.filter(t => t >= hm(7, 0) && t <= hm(22, 0));
+    return determineTierWithEdgeGapAllowance(
+      windowed.slice(1).map((t, i) => t - windowed[i]), windowed.length, windowed[windowed.length - 1] - windowed[0],
+      getTiersForCriteria('3', DEFAULT_CRITERIA.dayTypes.Saturday!.tiers, DEFAULT_CRITERIA.modeTierOverrides),
+      DEFAULT_CRITERIA.graceMinutes, DEFAULT_CRITERIA.maxGraceViolations, DEFAULT_CRITERIA.gracePercent, DEFAULT_CRITERIA.violationPercent,
+      { rawDepartureTimes: raw, analysisTimes: windowed, day: 'Saturday', routeType: '3', railLike: false },
+      DEFAULT_CRITERIA.violationPercentByTier,
+    );
+  };
+  const base = [...every(hm(7, 0), hm(21, 0), 15), hm(21, 25)];
+  it('closed keeps the edge allowance; a later bus before or after midnight opens it the same way', () => {
+    expect(tierOf(base)).toBe('15');
+    // 20: the 25-minute 21:00 to 21:25 gap is past the 15 grade's grace once it is not the last.
+    expect([hm(22, 30), hm(23, 59), hm(24, 30)].map(later => tierOf([...base, later]))).toEqual(['20', '20', '20']);
+  });
+  it('service that stops before the evening is not reopened by a 24:00+ departure (#842)', () => {
+    const daytime = [hm(5, 30), ...every(hm(7, 0), hm(14, 30), 15), hm(14, 55)];
+    expect(tierOf([...daytime, hm(24, 21)])).toBe(tierOf(daytime));
   });
 });
