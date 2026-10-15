@@ -1699,29 +1699,22 @@ export async function processGtfsBuffer(
     return hit;
   };
 
-  // #899: each route direction's midday wait (the longest wait in 09:00-15:00) from every trip it
-  // runs that day, each at its own first stop, so a timetable split over shapes (TTC 191 changes
-  // shape at noon) or a thin drawn pattern (SEPTA 98 to Norristown) still reads as all-day service.
-  // Frequency templates are left out. Read by the all-day filter cap in shared/worstDirection.ts.
-  let directionMiddayWaitByKey: Map<string, number | null> | null = null;
+  // #899: each route direction's midday wait (the longest wait in 09:00-15:00) at its best-served
+  // stop, from every trip the direction runs that day (stopDepsByGroup), so a timetable split over
+  // shapes (TTC 191 changes shape at noon), a thin drawn pattern (SEPTA 98 to Norristown) or a
+  // synthesized loop direction (North Bay 4) still reads as all-day service, while a direction
+  // whose trips leave every stop with a long midday wait (an AM run ending at 09:10, one stray
+  // midday trip) does not. Read by the all-day filter cap in shared/worstDirection.ts.
+  const directionMiddayWaitByKey = new Map<string, number | null>();
   const directionMiddayWait = (key: string): number | null => {
-    if (!directionMiddayWaitByKey) {
-      const startsByKey = new Map<string, Set<number>>();
-      for (const [tripId, groups] of tripGroupByTripId) {
-        const start = firstDepartureByTripId.get(tripId);
-        if (start === undefined || frequencyTemplateTripIds.has(tripId)) continue;
-        for (const grp of groups) {
-          if (!grp.inGroup) continue;
-          const k = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
-          const set = startsByKey.get(k) ?? new Set<number>();
-          set.add(start);
-          startsByKey.set(k, set);
-        }
-      }
-      directionMiddayWaitByKey = new Map();
-      for (const [k, starts] of startsByKey) directionMiddayWaitByKey.set(k, computePeriodCoverageHeadways([...starts]).midday ?? null);
+    if (directionMiddayWaitByKey.has(key)) return directionMiddayWaitByKey.get(key)!;
+    let best: number | null = null;
+    for (const times of stopDepsByGroup.get(key)?.values() ?? []) {
+      const wait = computePeriodCoverageHeadways(times).midday ?? null;
+      if (wait != null && (best == null || wait < best)) best = wait;
     }
-    return directionMiddayWaitByKey.get(key) ?? null;
+    directionMiddayWaitByKey.set(key, best);
+    return best;
   };
 
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
@@ -1731,7 +1724,12 @@ export async function processGtfsBuffer(
     feature.properties.nightService30 = false;
     feature.properties.nightService60 = false;
     const gKey = `${shortName}::${dirId}::${day}`;
-    feature.properties.directionMiddayWait = directionMiddayWait(gKey);
+    // No value, so no cap, without stop data for the direction or when the feed gave the route no
+    // direction_id: a synthesized "direction" can be an early and late variant of a one-way loop
+    // (Kingston 32: every 30 all day one way, the 04:29-06:17 and 20:15-22:15 trips the other).
+    if (stopDepsByGroup.has(gKey) && !gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) {
+      feature.properties.directionMiddayWait = directionMiddayWait(gKey);
+    }
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap || partialWeekdayFeatures.has(feature)) {
       feature.properties.nightService = false;
