@@ -1,0 +1,93 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+2288,2288,Eglinton Ave East at Markham Rd West Side,,43.743168,-79.219635,,,,,,1
+6528,6528,Toronto Zoo,,43.819735,-79.179955,,,,,,1
+6575,6575,Meadowvale Rd at Sheppard Ave East,,43.808582,-79.171055,,,,,,1
+6625,6625,Highland Creek Overpass at Kingston Rd,,43.784451,-79.168491,,,,,,1
+6569,6569,Meadowvale Rd at Generation Blvd,,43.804115,-79.168529,,,,,,1
+2282,2282,Eglinton Ave East at Kingston Rd West Side,,43.744079,-79.212339,,,,,,1
+6490,6490,Kingston Rd at Manse Rd,,43.774713,-79.178071,,,,,,1
+9672,9672,Park Rd (Zoo) at Kirkhams Rd East Side,,43.818209,-79.17505,,,,,,2
+2242,2242,Eglinton Ave East at Beachell St,,43.742641,-79.221935,,,,,,1
+6484,6484,Kingston Rd at Beechgrove Dr,,43.776782,-79.173522,,,,,,1
+14316,14316,Meadowvale Rd at Lavery Trail,,43.795871,-79.164864,,,,,,1
+4422,4422,Lawrence Ave East at Megan Ave,,43.771806,-79.170693,,,,,,1
+3320,3320,Beechgrove Dr at Janellan Ter,,43.770246,-79.159896,,,,,,2
+4255,4255,Kingston Rd at Poplar Rd,,43.765656,-79.191177,,,,,,1
+3445,3445,470 Coronation Dr,,43.764539,-79.168984,,,,,,1
+2293,2293,Eglinton Ave East at McCowan Rd,,43.73901,-79.238255,,,,,,1
+6489,6489,Lawson Rd at Highway 2A Overpass,,43.782487,-79.16655,,,,,,1
+5252,5252,Lawrence Ave East at Collinsgrove Rd,,43.769269,-79.182716,,,,,,1
+6570,6570,Meadowvale Rd at Kingston Rd,,43.788846,-79.162248,,,,,,1
+4414,4414,Lawrence Ave East at Bennett Rd,,43.772716,-79.16665,,,,,,1
+3446,3446,640 Coronation Dr,,43.766498,-79.159629,,,,,,1
+4413,4413,Lawrence Ave East at Beechgrove Dr,,43.7737,-79.161987,,,,,,1
+4418,4418,Lawrence Ave East at Homestead Rd,,43.769641,-79.180335,,,,,,1
+1033,1033,Eglinton Ave East at Gilder Dr,,43.735775,-79.25309,,,,,,1
+4424,4424,Lawrence Ave East at Morningside Ave,,43.768579,-79.185862,,,,,,1
+6578,6578,Meadowvale Rd at Dean Park Rd,,43.804327,-79.168982,,,,,,1
+9343,9343,Meadowvale Loop at Sheppard Ave East,,43.809148,-79.170722,,,,,,1
+4459,4459,Manse Rd at Deanscroft Sq North Side,,43.765474,-79.174068,,,,,,1
+6492,6492,Kingston Rd at Military Trail,,43.781511,-79.169244,,,,,,2
+2256,2256,Eglinton Ave East at Cedar Dr,,43.743769,-79.215702,,,,,,1
+3318,3318,Beechgrove Dr at Coronation Dr,,43.766925,-79.158407,,,,,,1
+1039,1039,Eglinton Ave East at Torrance Rd,,43.739362,-79.235449,,,,,,1
+2244,2244,Eglinton Ave East at Bellamy Rd North - Eglinton GO Station,,43.740039,-79.23221,,,,,,1
+4425,4425,Lawrence Ave East at Valia Rd,,43.771392,-79.172549,,,,,,1
+6483,6483,Kingston Rd at Beechgrove Dr,,43.776158,-79.173723,,,,,,1
+5282,5282,Lawrence Ave East at Kingston Rd,,43.767941,-79.188877,,,,,,1
+10914,10914,Kingston Rd at Choiceland Blvd,,43.787226,-79.164653,,,,,,1
+6568,6568,Meadowvale Rd at Euclid Ave,,43.796107,-79.165195,,,,,,1
+11668,11668,Meadowvale Rd at Sheppard Ave East,,43.808077,-79.170511,,,,,,1
+6573,6573,Meadowvale Rd at Sheppard Ave East North Side,,43.808976,-79.170941,,,,,,1
+5285,5285,Lawrence Ave East at Manse Rd West Side,,43.770564,-79.176953,,,,,,1
+6571,6571,Meadowvale Rd at Kingston Rd North Side,,43.789314,-79.162252,,,,,,1
+4462,4462,Manse Rd at Hainford St,,43.768338,-79.175291,,,,,,1
+6494,6494,Kingston Rd at Morningside Ave,,43.770097,-79.18712,,,,,,1
+6565,6565,Meadowvale Rd at Ellesmere Rd,,43.792363,-79.163397,,,,,,1
+4427,4427,Lawrence Ave East at West Hill Dr,,43.769932,-79.179771,,,,,,1
+6564,6564,Meadowvale Rd at Zoo Rd,,43.818114,-79.173192,,,,,,1
+6491,6491,Kingston Rd at Manse Rd,,43.775016,-79.177804,,,,,,1
+4229,4229,Kingston Rd at Guildwood Pkwy East Side,,43.74987,-79.205505,,,,,,1
+4419,4419,Lawrence Ave East at Ling Rd,,43.769003,-79.18293,,,,,,1
+3456,3456,Coronation Dr at Wallsend Dr,,43.764615,-79.167327,,,,,,1
+6620,6620,6070 Kingston Rd,,43.783338,-79.169415,,,,,,1
+6495,6495,Kingston Rd at Morningside Ave,,43.770998,-79.186736,,,,,,1
+2241,2241,Eglinton Ave East at Beachell St,,43.742332,-79.222161,,,,,,2
+6486,6486,Kingston Rd at Cromwell Rd West Side,,43.749401,-79.206461,,,,,,1
+11185,11185,Lawrence Ave East at Morning Dew Rd,,43.772188,-79.169034,,,,,,1
+13466,13466,Kingston Rd at Old Kingston Rd,,43.773854,-79.183177,,,,,,1
+3319,3319,Beechgrove Dr at Dunstall Cres,,43.772505,-79.160886,,,,,,2
+3454,3454,Coronation Dr at Manse Rd,,43.76452,-79.173148,,,,,,1
+4423,4423,Lawrence Ave East at Morningside Ave,,43.76821,-79.186546,,,,,,1
+1040,1040,Eglinton Ave East at Torrance Rd West Side,,43.739553,-79.235824,,,,,,1
+2283,2283,Eglinton Ave East at Kingston Rd,,43.743796,-79.212135,,,,,,1
+13694,13694,Kingston Rd at Old Kingston Rd,,43.774223,-79.182991,,,,,,1
+2260,2260,Eglinton Ave East at Danforth Rd,,43.737338,-79.245756,,,,,,1
+6488,6488,Kingston Rd at Lawrence Ave East,,43.767363,-79.189589,,,,,,1
+5284,5284,Lawrence Ave East at Manse Rd East Side,,43.770643,-79.175848,,,,,,1
+6493,6493,Kingston Rd at Military Trail,,43.781393,-79.169994,,,,,,1
+2257,2257,Eglinton Ave East at Cedar Dr,,43.744094,-79.215486,,,,,,1
+6566,6566,Meadowvale Rd at Ellesmere Rd,,43.792656,-79.163771,,,,,,1
+1037,1037,Eglinton Ave East at Midland Ave,,43.73431,-79.258468,,,,,,1
+1032,1032,Eglinton Ave East at Falmouth Ave,,43.735453,-79.253308,,,,,,1
+2292,2292,Eglinton Ave East at McCowan Rd,,43.738651,-79.238637,,,,,,1
+2259,2259,Eglinton Ave East at Danforth Rd,,43.736844,-79.246727,,,,,,1
+3450,3450,Coronation Dr at Chemical Crt,,43.765644,-79.163145,,,,,,1
+1038,1038,North Service Rd at Eglinton Ave East,,43.733029,-79.265477,,,,,,1
+3314,3314,Beechgrove Dr at Bethley Dr South Side,,43.768431,-79.15907,,,,,,2
+2290,2290,Eglinton Ave East at Mason Rd,,43.741584,-79.225483,,,,,,1
+14441,14441,Kingston Rd at Choiceland Blvd,,43.786936,-79.164855,,,,,,1
+14710,14710,Kennedy Station - Platform A,,43.732361,-79.26374,,,,,,1
+15278,15278,Eglinton Ave East at Midland Ave,,43.734823,-79.257997,,,,,,1
+15901,15901,Eglinton Ave East at Bellamy Rd North West Side - Eglinton GO Station,,43.740238,-79.232608,,,,,,1
+15902,15902,Eglinton Ave East at Mason Rd West Side,,43.741773,-79.225961,,,,,,1
+15903,15903,Eglinton Ave East at Markham Rd East Side,,43.743171,-79.218404,,,,,,1
+15904,15904,Kingston Rd at Scarborough Golf Club Rd East Side,,43.746198,-79.208997,,,,,,1
+15905,15905,Kingston Rd at Scarborough Golf Club Rd West Side,,43.745786,-79.209733,,,,,,1
+15906,15906,Kingston Rd at Celeste Dr East Side - Guildwood GO Station,,43.757245,-79.198945,,,,,,1
+15907,15907,Kingston Rd at Celeste Dr West Side - Guildwood GO Station,,43.756753,-79.199757,,,,,,1
+15908,15908,Kingston Rd at Galloway Rd East Side,,43.762214,-79.194368,,,,,,1
+15909,15909,Kingston Rd at Galloway Rd West Side,,43.761802,-79.195118,,,,,,1
+15910,15910,Kingston Rd at Poplar Rd West Side,,43.765768,-79.191466,,,,,,1
+15911,15911,Kingston Rd at Lawrence Ave East South Side,,43.766896,-79.190515,,,,,,1
+16341,16341,Kingston Rd at Highland Creek Overpass,,43.78471,-79.16865,,,,,,1

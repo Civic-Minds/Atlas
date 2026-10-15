@@ -79,3 +79,19 @@ describe('decideDedupe step 3b: the midday drawing of the same line (#844, #842)
     expect(decideDedupe(noMidday(), midday({ departures: MIN_THIN_REPLACING_DEPARTURES - 1 }), undefined)).toBe('keep');
   });
 });
+
+describe('a pattern with no departure 09:00-19:00 never holds the slot against a midday one (#877)', () => {
+  const base = { hasShape: true, runsOnRepDay: true, carriesRepDay: true };
+  // TTC 86 Saturday to Kennedy: 58 trips mornings and evenings (every 8, an AM-peak value, no
+  // departure 9-19h) against 69 trips all day (every 10 at midday).
+  const morningEvening = { ...base, dedupeHeadway: 8, headway: 8, departures: 25, hasDaytime: false, runsInDay: true, runsMidday: false };
+  const allDay = { ...base, dedupeHeadway: 10, headway: 10, departures: 69, hasDaytime: true, runsInDay: true, runsMidday: true };
+  it('replaces it and keeps the all-day pattern against it', () => {
+    expect(decideDedupe(morningEvening, allDay, undefined)).toBe('replace');
+    expect(decideDedupe(allDay, morningEvening, undefined)).toBe('keep');
+  });
+  it('still lets a midday pattern of a thin block lose on headway (CapMetro per-trip shapes)', () => {
+    const thinMidday = { ...allDay, departures: 5 };
+    expect(decideDedupe(morningEvening, thinMidday, undefined)).toBe('keep');
+  });
+});

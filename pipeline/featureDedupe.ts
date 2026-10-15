@@ -127,10 +127,14 @@ export function decideDedupe(
   // two rated patterns, and the midday side must be a real sample (MIN_THIN_REPLACING_DEPARTURES,
   // the same floor as Step 4): in a feed that gives every 3-5 trip block its own shape (CapMetro,
   // #737) a midday block reads its own few trips (320 Springdale Sunday 110 -> 153).
+  // #877: the same for a pattern with no departure at all between 09:00 and 19:00, even when
+  // its early-morning or evening trips give it a period value: TTC 86 Saturday's 58-trip
+  // morning-and-evening shape (every 8 at its terminal, nothing 9-19h) held the Kennedy slot
+  // against the 69-trip all-day shape, and the direction read limited with no midday value.
   const bothTimed = !replacesMaplessWithShape && candidate.headway != null && incumbent.headway != null;
-  if (bothTimed && incumbent.runsMidday && incumbent.departures >= MIN_THIN_REPLACING_DEPARTURES && !candidate.runsInDay) return 'keep';
+  if (bothTimed && incumbent.runsMidday && incumbent.departures >= MIN_THIN_REPLACING_DEPARTURES && (!candidate.runsInDay || !candidate.hasDaytime)) return 'keep';
   const replacesNightOnly = bothTimed && candidate.runsMidday && candidate.departures >= MIN_THIN_REPLACING_DEPARTURES
-    && !incumbent.runsInDay;
+    && (!incumbent.runsInDay || !incumbent.hasDaytime);
 
   // Step 3b (#844, #842): between two drawings of the same line whose headways read as one
   // service, a pattern with no midday trips never takes or keeps the slot from one that runs
