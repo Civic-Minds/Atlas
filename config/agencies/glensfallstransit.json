@@ -14,6 +14,8 @@
     -73.4
   ],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media",
+  "hiddenInProduction": true,
+  "overrideNote": "Greater Glens Falls Transit is now run by CDTA, and its routes are shown under CDTA: 402 Bay/College, 404 Hudson Falls/Fort Edward, 407 West Glens Falls, 411 Glen St/Walmart, 412 Glen St/Aviation Mall, 419 Route 9/Lake George, 804 East-West Commuter and the 876-877 summer trolleys. Route 5 Moreau-South Glens Falls, the Ridge Street Commuter and the two shopper routes did not carry over.",
   "lastFeedExpiry": "20231231",
   "lastFeedVersion": "",
   "lastRefreshedAt": "20260811",

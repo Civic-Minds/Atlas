@@ -14,6 +14,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
+- **Atlas's server can no longer be made to re-fetch tiles or live data on demand**: the unused tile-archive proxy is gone, basemap and history requests with junk or out-of-range values are refused, live vehicles are shared between viewers for about 15 seconds, and the site now blocks being framed by other sites. This protects Vercel transfer limits and the agencies' API keys. ([#867](https://github.com/Civic-Minds/Atlas/issues/867))
 - **Basemap images now stay in the browser for 7 days**: returning visitors no longer re-download the base map, and far fewer tile requests reach Atlas's server, cutting Vercel transfer use. Error and "API key required" tiles are never cached. (#856)
 - **Route card branch colours no longer repeat**: the hourly chart now gives up to eight branches their own colour, so a fifth branch (e.g. TTC 52's "Terminal 3 Only") no longer looks like the first one. (#853)
 - **Route card branch key is left-aligned**: the branch names under the hourly chart now line up in one column at the chart's left edge instead of being centred.
@@ -66,6 +67,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Rebuilds no longer get stuck on, or pick, an old archived feed**: when an expired feed had been re-uploaded after the current one, or two archived files had misleading names, rebuilds either used the expired feed (GRT) or refused the agency; they now pick by the service dates inside each file. (#859)
 - **Routes whose midday trips run on their own shape no longer show a fake midday gap**: when one line was drawn from separate morning-evening and midday patterns (Lethbridge 4 on Saturdays) or ended at a different platform in the morning (REM A3), the pattern without midday trips could speak for the route, leaving midday empty or reading a gap of several hours. (#844, #842)
 - **The Roosevelt Island Tramway stays an aerial tram**: its feed now labels the tram as light rail, which would have shown it as a streetcar; it keeps its gondola/aerial tram mode. (#861)
 - **An agency whose refresh produces no route lines is no longer marked up to date**: a feed with stops but no drawable routes (El Monte) was stamped "current", so nothing flagged it as broken; it now keeps its last good data and is marked as needing another try. (#634)
