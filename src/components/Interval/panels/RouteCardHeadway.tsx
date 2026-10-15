@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router';
+import { useInRouterContext, useNavigate } from 'react-router';
 import { useSegmentDelay } from '../../../hooks/useSegmentDelay';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import type { Agency } from '../../../App';
@@ -200,6 +200,14 @@ export interface RouteCardHeadwayProps {
   onInfoOpen?: OpenInfoFn;
 }
 
+/** Router navigation when the card is inside a router (the app); null in isolated renders (tests). */
+function useOptionalNavigate() {
+  const inRouter = useInRouterContext();
+  // The router context never appears or disappears for a mounted card, so the hook order is stable.
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return inRouter ? useNavigate() : null;
+}
+
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   currentRoute,
   agencyFeatures,
@@ -226,7 +234,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   // Routes with Live analysis link to it; the analysis itself lives only in Live mode.
   const hasLiveAnalysis = useSegmentDelay(routeSlug, currentRoute.routeShortName) != null;
-  const navigate = useNavigate();
+  const navigate = useOptionalNavigate();
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
   const routeOverrideNote = routeAgency?.overrideNote
@@ -442,7 +450,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {hasLiveAnalysis && (
         <button
           type="button"
-          onClick={() => navigate(`/apps/live?route=${encodeURIComponent(`${routeSlug}::${currentRoute.routeShortName}`)}`)}
+          onClick={() => {
+            const to = `/apps/live?route=${encodeURIComponent(`${routeSlug}::${currentRoute.routeShortName}`)}`;
+            if (navigate) navigate(to); else window.location.assign(to);
+          }}
           className="mb-3 w-full text-left text-xs font-bold text-[var(--accent)] hover:underline"
         >
           See how the {currentRoute.routeShortName} is doing in Live →

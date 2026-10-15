@@ -7,7 +7,7 @@ import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
-import { PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_EMPTY, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_EMPTY, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors } from '../utils/colors';
@@ -17,11 +17,12 @@ import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
-import { liveVehiclesEqual, liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
+import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, delayAmount, headwayAbout, headwayEvery } from '../utils/headwayText';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
-import { syncUrlParams } from '../utils/syncUrlParams';
+import { useLiveFeeds } from '../hooks/useLiveFeeds';
+import { useLiveCardMapLink, useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import { useSegmentDelay } from '../hooks/useSegmentDelay';
 
 interface Props {
@@ -48,7 +49,6 @@ interface RouteGroup {
   dominantStatus: LiveVehicle['status'];
 }
 
-const POLL_INTERVAL_MS = 15_000;
 // After this many consecutive failures (~45s), stop implying the feed will
 // definitely recover — it may be structurally broken, not a transient blip.
 const STUCK_FAIL_THRESHOLD = 3;
@@ -89,19 +89,40 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const { setOverlay } = useLiveVehiclesMapOverlay();
   const { bounds, zoom } = useViewport();
 
-  // Per-agency vehicle state
-  const [vehiclesBySlug, setVehiclesBySlug] = useState<Record<string, LiveVehicle[]>>({});
-  // Observed headways from the API: slug → routeShortName → { gapMin, samples }
-  const [headwaysBySlug, setHeadwaysBySlug] = useState<Record<string, Record<string, { gapMin: number; samples: number }>>>({});
-  const [loadingBySlug, setLoadingBySlug] = useState<Record<string, boolean>>({});
-  const [errorBySlug, setErrorBySlug] = useState<Record<string, string | null>>({});
-  // Consecutive failures per slug — used to soften "will retry automatically"
-  // once a feed has clearly been down for a while, not just a blip.
-  const [failCountBySlug, setFailCountBySlug] = useState<Record<string, number>>({});
-  const [degradedBySlug, setDegradedBySlug] = useState<Record<string, string | null>>({});
-
   // Locally-fetched agency GeoJSON (fallback when Interval layers haven't loaded yet)
   const [localLayers, setLocalLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
+
+
+  // selectedRoute is a composite "slug::routeShortName" key
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const selectedRouteRef = useRef(selectedRoute);
+  selectedRouteRef.current = selectedRoute;
+  const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
+  const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
+  const { fitArea, highlight, setHighlight, zoomToStretch, registerMapClick, mapLineClickRef } = useLiveCardMapLink();
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  // With the performance card shown, the vehicle list folds behind one row.
+  const [vehiclesOpen, setVehiclesOpen] = useState(false);
+  // A route handed over from the main map (or a link), waiting for its agency to come into view.
+  const pendingRouteRef = useRef<string | null>(null);
+
+  const isZoomedIn = zoom !== null && zoom >= MIN_LIVE_ZOOM;
+
+  // Which agency slugs are currently in the viewport
+  const visibleSlugs = useMemo(() => {
+    if (!bounds || !isZoomedIn) return [];
+    return Object.entries(LIVE_AGENCY_BBOXES)
+      .filter(([slug, [w, s, e, n]]) =>
+        ELIGIBLE_SLUGS.has(slug) &&
+        bounds.e > w && bounds.w < e &&
+        bounds.n > s && bounds.s < n
+      )
+      .map(([slug]) => slug);
+  }, [bounds]);
+
+  const visibleSlugKey = useMemo(() => [...visibleSlugs].sort().join(','), [visibleSlugs]);
+
+  const { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, failCountBySlug, degradedBySlug } = useLiveFeeds(active, visibleSlugs, visibleSlugKey);
 
   // Fill missing direction metadata from static directional route shapes. Some
   // GTFS-RT feeds provide vehicle positions without direction_id or headsign.
@@ -122,129 +143,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return resolved;
   }, [vehiclesBySlug, layers, localLayers]);
 
-  // selectedRoute is a composite "slug::routeShortName" key
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
-  const selectedRouteRef = useRef(selectedRoute);
-  selectedRouteRef.current = selectedRoute;
-  const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
-  const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
-  // Stretch zoom and highlight from the route card; map clicks are routed back to it.
-  const [fitArea, setFitArea] = useState<{ bounds: [number, number, number, number]; ts: number } | null>(null);
-  const [highlight, setHighlight] = useState<[number, number][] | null>(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  // With the performance card shown, the vehicle list folds behind one row.
-  const [vehiclesOpen, setVehiclesOpen] = useState(false);
-  const mapLineClickRef = useRef<((lonLat: [number, number], toleranceM: number) => void) | null>(null);
-  const registerMapClick = useCallback((fn: ((lonLat: [number, number], toleranceM: number) => void) | null) => { mapLineClickRef.current = fn; }, []);
-  const zoomToStretch = useCallback((bounds: [number, number, number, number]) => setFitArea({ bounds, ts: Date.now() }), []);
-  // Deep link from a route card on the main map: /apps/live?route=ttc::504
-  const pendingRouteRef = useRef<string | null>(null);
-
-  const isZoomedIn = zoom !== null && zoom >= MIN_LIVE_ZOOM;
-
-  // Which agency slugs are currently in the viewport
-  const visibleSlugs = useMemo(() => {
-    if (!bounds || !isZoomedIn) return [];
-    return Object.entries(LIVE_AGENCY_BBOXES)
-      .filter(([slug, [w, s, e, n]]) =>
-        ELIGIBLE_SLUGS.has(slug) &&
-        bounds.e > w && bounds.w < e &&
-        bounds.n > s && bounds.s < n
-      )
-      .map(([slug]) => slug);
-  }, [bounds]);
-
-  const visibleSlugKey = useMemo(() => [...visibleSlugs].sort().join(','), [visibleSlugs]);
-
-  const fetchForSlug = useCallback(async (slug: string) => {
-    try {
-      const res = await fetch(`/api/live-vehicles?agency=${slug}`);
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Can't reach this feed right now.");
-      }
-      const data = await res.json();
-      const tagged: LiveVehicle[] = (data.vehicles || []).map((v: any) => ({ ...v, agencySlug: slug }));
-      // Skip React updates when poll returns the same map-relevant vehicle state
-      // (avoids full Live + deck rebuild every 15s while buses idle).
-      setVehiclesBySlug(prev => {
-        const prior = prev[slug];
-        if (prior && liveVehiclesEqual(prior, tagged)) return prev;
-        return { ...prev, [slug]: tagged };
-      });
-      setHeadwaysBySlug(prev => ({ ...prev, [slug]: data.headways || {} }));
-      setErrorBySlug(prev => (prev[slug] == null ? prev : { ...prev, [slug]: null }));
-      setFailCountBySlug(prev => (prev[slug] ? { ...prev, [slug]: 0 } : prev));
-      const degradedMsg = data.degraded ? (data.degradedReason ?? 'Some data unavailable') : null;
-      setDegradedBySlug(prev => (prev[slug] === degradedMsg ? prev : { ...prev, [slug]: degradedMsg }));
-    } catch (err: any) {
-      setErrorBySlug(prev => ({ ...prev, [slug]: err.message || 'Feed unavailable' }));
-      setFailCountBySlug(prev => ({ ...prev, [slug]: (prev[slug] ?? 0) + 1 }));
-    }
-  }, []);
-
-  // Start/stop polling when visible slugs change
-  useEffect(() => {
-    if (!active || visibleSlugs.length === 0) {
-      setVehiclesBySlug({});
-      setHeadwaysBySlug({});
-      setLoadingBySlug({});
-      setErrorBySlug({});
-      setFailCountBySlug({});
-      setDegradedBySlug({});
-      return;
-    }
-
-    // Initial fetch
-    const loading: Record<string, boolean> = {};
-    visibleSlugs.forEach(s => (loading[s] = true));
-    setLoadingBySlug(loading);
-    Promise.all(visibleSlugs.map(s => fetchForSlug(s))).finally(() =>
-      setLoadingBySlug(prev => {
-        const next = { ...prev };
-        visibleSlugs.forEach(s => (next[s] = false));
-        return next;
-      })
-    );
-
-    const pollId = setInterval(() => visibleSlugs.forEach(fetchForSlug), POLL_INTERVAL_MS);
-    return () => {
-      clearInterval(pollId);
-      // Clear stale data for slugs that left the viewport
-      setVehiclesBySlug(prev => {
-        const keep = new Set(visibleSlugs);
-        const next: typeof prev = {};
-        for (const [s, v] of Object.entries(prev)) {
-          if (keep.has(s)) next[s] = v;
-        }
-        return next;
-      });
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, visibleSlugKey, fetchForSlug]);
-
-  // A route handed over from the map or a link opens once its agency is in view.
-  useEffect(() => {
-    if (!active || !routeRequest) return;
-    const key = `${routeRequest.slug}::${routeRequest.routeShortName}`;
-    pendingRouteRef.current = key;
-    setFocusedVehicle(null);
-    if (visibleSlugs.includes(routeRequest.slug)) {
-      pendingRouteRef.current = null;
-      setSelectedRoute(key);
-      return;
-    }
-    const bbox = LIVE_AGENCY_BBOXES[routeRequest.slug];
-    if (bbox) setFocusArea({ bounds: bbox, minZoom: MIN_LIVE_ZOOM + 0.2, ts: Date.now() });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, routeRequest]);
-  useEffect(() => {
-    const pending = pendingRouteRef.current;
-    if (pending && visibleSlugs.includes(pending.split('::')[0])) {
-      pendingRouteRef.current = null;
-      setSelectedRoute(pending);
-    }
-  }, [visibleSlugs]);
+  useLiveRouteRequest({
+    active, routeRequest, visibleSlugs, pendingRouteRef,
+    open: key => { setFocusedVehicle(null); setSelectedRoute(key); },
+    flyTo: slug => {
+      const bbox = LIVE_AGENCY_BBOXES[slug];
+      if (bbox) setFocusArea({ bounds: bbox, minZoom: MIN_LIVE_ZOOM + 0.2, ts: Date.now() });
+    },
+  });
   useEffect(() => { setHighlight(null); setDetailsOpen(false); setVehiclesOpen(false); }, [selectedRoute]);
 
 
@@ -580,22 +486,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // Direction drill-down within a route
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
   useEffect(() => { setSelectedDirection(null); }, [selectedRoute]);
-  // The view is in the URL so a shared link reopens it: route, followed vehicle, vehicle-list direction.
-  const restoreRef = useRef(active ? { vehicle: new URLSearchParams(window.location.search).get('vehicle'), group: new URLSearchParams(window.location.search).get('group') } : null);
-  useEffect(() => {
-    if (!active) return;
-    if (pendingRouteRef.current) return;
-    syncUrlParams({ route: selectedRoute, vehicle: focusedVehicle?.id ?? null, group: selectedDirection });
-  }, [active, selectedRoute, focusedVehicle?.id, selectedDirection]);
-  // Restore the followed vehicle and list direction from a shared link, once the route is open.
-  useEffect(() => {
-    const r = restoreRef.current;
-    if (!r || !selectedGroup) return;
-    restoreRef.current = null;
-    const v = r.vehicle ? selectedGroup.vehicles.find(x => x.id === r.vehicle) : null;
-    if (v) setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
-    if (r.group) { setSelectedDirection(r.group); setVehiclesOpen(true); }
-  }, [selectedGroup]);
+  useLiveViewUrl({
+    active, selectedRoute, focusedVehicle, selectedDirection, selectedGroup, pendingRouteRef,
+    onRestore: (vehicle, group) => {
+      if (vehicle) setFocusedVehicle({ id: vehicle.id, lat: vehicle.lat, lon: vehicle.lon, ts: Date.now() });
+      if (group) { setSelectedDirection(group); setVehiclesOpen(true); }
+    },
+  });
 
   // Group vehicles by headsign if available, else by directionId
   const vehiclesByDirection = useMemo(() => {

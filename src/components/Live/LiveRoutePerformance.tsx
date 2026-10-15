@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
+import Pill from '../ui/Pill';
 import { useSegmentDelay } from '../../hooks/useSegmentDelay';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { periodKeyForHour } from '../../../shared/config';
@@ -70,20 +71,7 @@ function shortDate(d: string): string {
 function Chips<T extends string | number>({ options, value, onChange }: { options: { id: T; label: string }[]; value: T; onChange: (v: T) => void }) {
   return (
     <div className="flex flex-wrap gap-1">
-      {options.map(o => (
-        <button
-          key={String(o.id)}
-          type="button"
-          onClick={() => onChange(o.id)}
-          className={`px-2 py-0.5 rounded-full text-xs font-bold border transition-colors ${
-            value === o.id
-              ? 'border-[var(--accent)] text-[var(--accent)] bg-[var(--bg-secondary)]'
-              : 'border-[var(--border-primary)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-          }`}
-        >
-          {o.label}
-        </button>
-      ))}
+      {options.map(o => <Pill key={String(o.id)} selected={value === o.id} onClick={() => onChange(o.id)}>{o.label}</Pill>)}
     </div>
   );
 }
@@ -126,7 +114,7 @@ function GapStrip({ stops, onRow, activeIndex }: { stops: LineStop[]; onRow?: (i
     <div className="flex flex-col">
       <div className="flex items-center gap-2 pb-0.5">
         <span className="w-[30%] shrink-0" />
-        <div className="relative flex-1 h-3 text-[10px] font-bold text-[var(--text-dim)] tabular-nums">
+        <div className="relative flex-1 h-3 text-2xs font-bold text-[var(--text-dim)] tabular-nums">
           <span className="absolute left-0">0</span>
           <span className="absolute right-0">{Math.round(scale / 60)} min</span>
         </div>
@@ -145,7 +133,7 @@ function GapStrip({ stops, onRow, activeIndex }: { stops: LineStop[]; onRow?: (i
           <span className={`${NUM} w-[3.75rem] shrink-0 text-right`}>{minsRange(s.stat!.gapP10Sec, s.stat!.gapP90Sec)}</span>
         </button>
       ))}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pt-1 text-[10px] font-bold text-[var(--text-dim)]">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pt-1 text-2xs font-bold text-[var(--text-dim)]">
         <span className="inline-flex items-center gap-1"><span className="w-0.5 h-2.5 bg-[var(--text-primary)]" />scheduled</span>
         <span className="inline-flex items-center gap-1"><span className="w-3 h-1.5 rounded-full bg-[var(--accent)] opacity-35" />8 in 10 gaps</span>
         <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--accent)]" />typical</span>
@@ -170,7 +158,7 @@ function Stats({ items }: { items: [string, string][] }) {
     <div className="grid grid-cols-3 gap-2">
       {items.map(([label, value]) => (
         <div key={label} className="min-w-0">
-          <div className="text-[10px] font-bold text-[var(--text-dim)] truncate">{label}</div>
+          <div className="text-xs font-bold text-[var(--text-dim)] truncate">{label}</div>
           <div className="text-sm font-black text-[var(--text-primary)] tabular-nums whitespace-nowrap">{value}</div>
         </div>
       ))}
