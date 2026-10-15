@@ -262,7 +262,7 @@ export function useLiveVehiclesLayer(
 
       if (routeKey && liveFittedRouteRef.current !== routeKey) {
         liveFittedRouteRef.current = routeKey;
-        frameRoute(map, features.flatMap(f => lineCoordinates(f.geometry)));
+        frameRoute(map, features.flatMap(f => lineCoordinates(f.geometry)), { phoneSheet: true });
       }
     } else {
       source.setData({ type: 'FeatureCollection', features: [] });
@@ -297,7 +297,7 @@ export function useLiveVehiclesLayer(
     const area = liveOverlay?.fitArea;
     if (!map || !mapLoaded || !area) return;
     const [w, so, e, n] = area.bounds;
-    frameRoute(map, [[w, so], [e, n]], { maxZoom: 16 });
+    frameRoute(map, [[w, so], [e, n]], { maxZoom: 16, phoneSheet: true });
   }, [liveOverlay?.fitArea, mapLoaded, mapRef]);
 
   // Highlighted stretch, drawn over the route shape.

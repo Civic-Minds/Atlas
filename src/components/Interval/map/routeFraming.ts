@@ -9,9 +9,10 @@ export type CardSide = 'left' | 'right';
  * Camera padding that keeps a route clear of the card: beside it on wide screens, above the
  * bottom sheet on phones. One place for every "zoom to this route or stretch" camera move.
  */
-export function routeFramePadding(map: maplibregl.Map, side: CardSide = 'left'): maplibregl.PaddingOptions {
+export function routeFramePadding(map: maplibregl.Map, side: CardSide = 'left', { phoneSheet = false }: { phoneSheet?: boolean } = {}): maplibregl.PaddingOptions {
   const { clientWidth, clientHeight } = map.getContainer();
-  if (clientWidth < 640) return { top: 60, bottom: Math.round(clientHeight * 0.45), left: 30, right: 30 };
+  // Live's card is a bottom sheet on phones; the main map and History keep their framing.
+  if (phoneSheet && clientWidth < 640) return { top: 60, bottom: Math.round(clientHeight * 0.45), left: 30, right: 30 };
   return side === 'left'
     ? { top: 80, bottom: 80, left: 320, right: 80 }
     : { top: 80, bottom: 80, left: 80, right: 280 };
@@ -21,11 +22,11 @@ export function routeFramePadding(map: maplibregl.Map, side: CardSide = 'left'):
 export function frameRoute(
   map: maplibregl.Map,
   points: ReadonlyArray<LonLat>,
-  { side = 'left', maxZoom = 14 }: { side?: CardSide; maxZoom?: number } = {},
+  { side = 'left', maxZoom = 14, phoneSheet = false }: { side?: CardSide; maxZoom?: number; phoneSheet?: boolean } = {},
 ): boolean {
   const target = fitTargetForPoints(points);
   if (!target) return false;
-  const padding = routeFramePadding(map, side);
+  const padding = routeFramePadding(map, side, { phoneSheet });
   if (target.kind === 'bounds') map.fitBounds(target.bounds, { padding, maxZoom });
   else map.flyTo({ center: target.center, zoom: Math.max(map.getZoom(), maxZoom), padding, duration: 900 });
   return true;
