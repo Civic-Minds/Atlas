@@ -216,7 +216,7 @@ export default function AboutDocsPage() {
             <p>Frequency and regularity are separate properties. A route can run every 30 minutes and still be irregular if it only operates for a short burst or has too few repeated departures to establish a sustained pattern.</p>
             <dl className="space-y-2">
               <div><dt className="font-bold text-[var(--text-primary)]">Regular</dt><dd>Service covers the normal analysis window. It may be frequent or infrequent.</dd></div>
-              <div><dt className="font-bold text-[var(--text-primary)]">Time-limited</dt><dd>Predictable service operates during part of the day and has enough repeated departures for a meaningful frequency estimate.</dd></div>
+              <div><dt className="font-bold text-[var(--text-primary)]">Part-time</dt><dd>Predictable service operates during part of the day and has enough repeated departures for a meaningful frequency estimate.</dd></div>
               <div><dt className="font-bold text-[var(--text-primary)]">Irregular</dt><dd>Exceptional, very short, one-sided, peak-only, or otherwise unsustained service that should not be presented as a normal route cadence.</dd></div>
             </dl>
             <p>Two filters, both on by default, decide which of these routes the map shows. Hide one-off routes hides irregular service: school runs, routes with only a few trips a day, and on-demand shuttles. Hide part-time routes hides time-limited service: routes that only run at rush hour, in the evening, or on some days. A part-time route you choose to show is still judged by the frequency filter, on the selected period’s frequency. Periods outside its operation remain empty rather than inheriting an all-day value.</p>
@@ -359,7 +359,7 @@ export default function AboutDocsPage() {
             <p><strong className="text-[var(--text-primary)]">Headway:</strong> The time between consecutive scheduled departures.</p>
             <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: AM Peak (6 to 9 a.m.), Midday (9 a.m. to 3 p.m.), PM Peak (3 to 7 p.m.), Evening (7 to 11 p.m.), Late (11 p.m. to 2 a.m.), or Overnight (2 to 6 a.m.).</p>
             <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as every 10, 15, 20, 30, or 60 minutes or less, used to colour and filter service on the map.</p>
-            <p><strong className="text-[var(--text-primary)]">Service class:</strong> The operating pattern assigned to a route or pattern: regular, time-limited, or irregular.</p>
+            <p><strong className="text-[var(--text-primary)]">Service class:</strong> The operating pattern assigned to a route or pattern: regular, part-time, or irregular.</p>
             <p><strong className="text-[var(--text-primary)]">Sustained service:</strong> Service whose departure gaps remain within the qualification tolerance across the analysed window, rather than only appearing frequent in a short burst.</p>
             <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status, and correction history attached to an Atlas result.</p>
             <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>
