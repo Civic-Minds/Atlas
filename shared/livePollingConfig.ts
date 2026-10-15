@@ -519,3 +519,8 @@ export const LIVE_ANALYSIS_ROUTES: readonly string[] = ['ttc::503', 'ttc::504', 
 export function hasLiveAnalysis(slug: string | null | undefined, routeShortName: string | null | undefined): boolean {
   return !!slug && !!routeShortName && LIVE_ANALYSIS_ROUTES.includes(`${slug}::${routeShortName}`);
 }
+
+/** True when any of an agency's routes has Live route analysis (the performance card), not just vehicle positions. */
+export function agencyHasLiveAnalysis(slug: string): boolean {
+  return LIVE_ANALYSIS_ROUTES.some(key => key.startsWith(`${slug}::`));
+}
