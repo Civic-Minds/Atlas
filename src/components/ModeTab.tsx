@@ -1,6 +1,6 @@
 import React from 'react';
 import { APP_TAB_ACTIVE, APP_TAB_INACTIVE } from '../styles';
-import { ModeTabLabel, modeTabSpacing } from './ModeTabLabel';
+import { ModeTabLabel, modeTabSpacing, modeTabCollapsed, useModeTabsCollapseOthers } from './ModeTabLabel';
 
 const FOCUS = 'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]';
 
@@ -10,19 +10,19 @@ const FOCUS = 'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(-
  * none of them is a link.
  */
 export default function ModeTab({
-  icon, label, extra, active, collapsed = false, onClick, ariaLabel, variant = 'bar',
+  icon, label, extra, active, onClick, ariaLabel, variant = 'bar',
 }: {
   icon: React.ReactNode;
   label: string;
   /** Small count after the label, e.g. "7" or "22+". */
   extra?: React.ReactNode;
   active: boolean;
-  /** Another mode is active: the bar tab shrinks to its icon. */
-  collapsed?: boolean;
   onClick: () => void;
   ariaLabel?: string;
   variant?: 'bar' | 'menu';
 }) {
+  // Shrinks to its icon while a non-map view is on and this tab is not the selected one.
+  const collapsed = modeTabCollapsed(true, useModeTabsCollapseOthers(), active);
   const state = active ? APP_TAB_ACTIVE : APP_TAB_INACTIVE;
   const extraEl = extra != null && extra !== '' ? <span className="font-normal text-[var(--text-dim)]">{extra}</span> : null;
   if (variant === 'menu') {

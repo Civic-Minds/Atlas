@@ -18,7 +18,7 @@ const NightService = React.lazy(() => import('./apps/NightService'));
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 import { isAppGated, type AppId } from './utils/appGate';
-import { modeTabCollapsed } from './components/ModeTabLabel';
+import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
@@ -413,10 +413,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     ]),
     [layers, viewportAgencySlugs],
   );
-  // Desktop mode tabs: while one mode is on, the others shrink to icons (beta).
-  const activeModeTab = inLive ? 'live' : activeApp === 'history' ? 'history' : compareActive ? 'compare' : null;
-  const liveTabCollapsed = modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'live');
-  const historyTabCollapsed = modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'history');
+  // One rule for the desktop mode tabs (beta): while any non-map view is on, the unselected tabs
+  // shrink to icons. ModeTab applies it, so views and future views never decide this themselves.
+  const nonMapViewActive = FEATURES.collapseModeTabs
+    && (inLive || inHistory || inNight || inFrequentService || compareActive);
   const showCompareControl = FEATURES.compareMode && inFrequency;
   const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
@@ -550,6 +550,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   return (
     <ViewportProvider>
+    <ModeTabsProvider nonMapViewActive={nonMapViewActive}>
     <OnDemandStatusProvider data={onDemandData}>
     <OnDemandViewportLoader data={onDemandData} />
     <HistoryMapOverlayProvider>
@@ -642,7 +643,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           <ModeTab
             icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label="Live" extra={liveAgencyCount} ariaLabel="Live vehicles"
-            active={liveTabOn} collapsed={liveTabCollapsed}
+            active={liveTabOn}
             onClick={() => setActiveApp(liveTabOn ? 'frequency' : 'live')}
           />
         )}
@@ -652,7 +653,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             icon={<HistoryIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
             ariaLabel={inHistory ? 'Back to frequency map' : 'Historical service'}
-            active={inHistory} collapsed={historyTabCollapsed}
+            active={inHistory}
             onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
           />
         )}
@@ -663,7 +664,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         {FEATURES.compareMode && (inLive || inHistory) && (
           <CompareTab
             active={false}
-            collapsed={modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'compare')}
             onStart={() => { setCompareStartRequest(Date.now()); setActiveApp('frequency'); }}
             onExit={() => {}}
           />
@@ -888,6 +888,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>
     </OnDemandStatusProvider>
+    </ModeTabsProvider>
     </ViewportProvider>
   );
 }
