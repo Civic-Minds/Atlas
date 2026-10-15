@@ -304,6 +304,27 @@ export function runsAcrossNightMidpoint(nightTimes: readonly number[]): boolean 
   return nightTimes.some(x => x >= STRETCH_NIGHT_START_MIN && x < mid) && nightTimes.some(x => x >= mid && x <= STRETCH_NIGHT_END_MIN);
 }
 
+/**
+ * One direction's Night verdict at `gap` minutes, 2-5am. 'pass': the main stretch passes and every
+ * tail that runs at night passes (D3); for disconnected pieces, every piece that runs at night
+ * passes and at least one runs. Anything else is 'fail', including night service on only part of
+ * the daytime route (CTA 87, NYC subway 3/5/M/N/R). That case is the one a 'partial' verdict
+ * (night service on part of the route, drawn only there) would split out, pending Ryan's call.
+ */
+export type NightVerdict = 'pass' | 'fail';
+export function directionNightVerdict(d: DirectionStretches, gap: 30 | 60): NightVerdict {
+  if (!d.main) return 'fail';
+  const runsAtNight = (t: Stretch) => runsAcrossNightMidpoint(t.nightTimes);
+  const passes = (t: Stretch) => stretchNight(t, gap) === true;
+  if (d.disconnected) {
+    // The main stretch is only one piece, so it drops out like a tail when it does not run at
+    // night (NYC subway S's 42 St shuttle).
+    const running = [d.main, ...d.tails].filter(runsAtNight);
+    return running.length > 0 && running.every(passes) ? 'pass' : 'fail';
+  }
+  return passes(d.main) && d.tails.filter(runsAtNight).every(passes) ? 'pass' : 'fail';
+}
+
 export interface DirectionRollup {
   period: Record<PeriodKey, { value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null }>;
   night30: boolean;
@@ -329,12 +350,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
   // of the window's midpoint. One that only starts its day inside the window (CTA 20's downtown
   // loop at 4:47 and 4:57) or only ends it there does not run at night, and drops out.
-  const runsAtNight = (t: Stretch) => runsAcrossNightMidpoint(t.nightTimes);
-  // Disconnected pieces: the main stretch is only one piece, so it drops out like a tail when it
-  // does not run at night (NYC subway S's 42 St shuttle); at least one piece must run.
-  const night = (gap: 30 | 60) => d.disconnected
-    ? [d.main!, ...d.tails].some(runsAtNight) && [d.main!, ...d.tails].filter(runsAtNight).every(t => stretchNight(t, gap) === true)
-    : stretchNight(d.main!, gap) === true && d.tails.filter(runsAtNight).every(t => stretchNight(t, gap) === true);
+  const night = (gap: 30 | 60) => directionNightVerdict(d, gap) === 'pass';
   return { period, night30: night(30), night60: night(60) };
 }
 
