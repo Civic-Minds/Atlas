@@ -126,3 +126,38 @@ describe('isSingleTripFrequencyWindow layover allowance (#706)', () => {
     expect(departures).toHaveLength(1 + 6 + 45 + 2);
   });
 });
+
+describe('one-departure groups at the route level (#720)', () => {
+  const gtfs = (trips: Array<{ trip: string; route: string; shape: string; time: string }>): GtfsData => ({
+    agencies: [],
+    routes: [...new Set(trips.map(t => t.route))].map(id => ({ route_id: id, route_short_name: id, route_long_name: '', route_type: '3' })),
+    trips: trips.map(t => ({ route_id: t.route, service_id: 'wk', trip_id: t.trip, direction_id: '0', shape_id: t.shape, trip_headsign: 'Terminal' })),
+    stops: [{ stop_id: 'a', stop_name: 'a', stop_lat: '38.2', stop_lon: '-85.8' }, { stop_id: 'b', stop_name: 'b', stop_lat: '38.25', stop_lon: '-85.75' }],
+    stopTimes: trips.flatMap(t => [
+      { trip_id: t.trip, arrival_time: `${t.time}:00`, departure_time: `${t.time}:00`, stop_id: 'a', stop_sequence: '1' },
+      { trip_id: t.trip, arrival_time: `${t.time.slice(0, 3)}59:00`, departure_time: `${t.time.slice(0, 3)}59:00`, stop_id: 'b', stop_sequence: '2' },
+    ]),
+    frequencies: [],
+    calendar: [{ service_id: 'wk', monday: '1', tuesday: '1', wednesday: '1', thursday: '1', friday: '1', saturday: '0', sunday: '0', start_date: '20260601', end_date: '20261231' }],
+    calendarDates: [],
+    shapes: [],
+  } as unknown as GtfsData);
+
+  it('keeps a route whose every pattern runs once a day (TARC 99)', () => {
+    const raw = computeRawDepartures(gtfs([
+      { trip: 'early', route: '99', shape: 's1', time: '04:29' },
+      { trip: 'late', route: '99', shape: 's2', time: '22:10' },
+    ]), '20260608').filter(r => r.day === 'Monday');
+    expect(raw.map(r => r.departureTimes)).toEqual(expect.arrayContaining([[at('04:29')], [at('22:10')]]));
+  });
+
+  it('leaves out a single trip of a route direction that has a timetable', () => {
+    const raw = computeRawDepartures(gtfs([
+      { trip: 't1', route: '5', shape: 'main', time: '08:00' },
+      { trip: 't2', route: '5', shape: 'main', time: '09:00' },
+      { trip: 'short', route: '5', shape: 'short-turn', time: '08:30' },
+    ]), '20260608').filter(r => r.day === 'Monday');
+    expect(raw).toHaveLength(1);
+    expect(raw[0].shapeId).toBe('main');
+  });
+});

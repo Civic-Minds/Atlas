@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,route_sort_order
+233,1,233,Albany - Schodack,Between Downtown Albany and Schodak Park & Ride (7 days a week),3,https://www.cdta.org/schedules-route-detail?route_id=233,008000,FFFFFF,22

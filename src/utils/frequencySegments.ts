@@ -172,7 +172,10 @@ export function sharedStopFilterView(
   const headwayByPeriodSustained: Record<string, boolean> = {};
   const periods = onlyPeriod == null ? PERIOD_KEYS : onlyPeriod === 'all' ? [] : [onlyPeriod as PeriodKey];
   if (onlyPeriod === 'all') {
-    return { tier: p.tier, headway: (pooled('headway') as number | undefined) ?? p.stopHeadways?.[stopId] ?? null };
+    return {
+      tier: p.tier,
+      headway: (pooled('headway') as number | undefined) ?? p.stopHeadways?.[stopId] ?? null,
+    };
   }
   if (onlyPeriod != null) {
     const pk = onlyPeriod as PeriodKey;
@@ -289,7 +292,8 @@ function stopFilterValue(ctx: SharedPassContext, p: ShapeProperties, stopId: str
   }
   let value = ctx.viewValues.get(viewKey);
   if (value === undefined) {
-    value = routeFilterHeadway(sharedStopFilterView(ctx.index, p, stopId, period), period);
+    const view = sharedStopFilterView(ctx.index, p, stopId, period);
+    value = routeFilterHeadway(view, period);
     ctx.viewValues.set(viewKey, value);
   }
   byKey.set(key, value);
@@ -338,6 +342,10 @@ export function sharedStretchStopPass(
     const p = f.properties as unknown as StretchProps;
     if (!p.stopOrder || !p.stopPositions || p.stopPositions.length !== p.stopOrder.length) continue;
     if (!options.includePassing && featurePassesHeadwayFilter(p, period, maxHeadway)) continue; // passing routes: handled above
+    // #899: with an all-day threshold set, the route's midday cap decides pass or fail for its
+    // stretches too (a direction with no midday service fails them all). It never changes the
+    // values shown, and with no threshold it does nothing.
+    if (period === 'all' && maxHeadway !== Infinity && (p.worstDirectionMiddayCap ?? 0) > maxHeadway) continue;
     const groupKey = `${p.routeId}|${p.day ?? ''}`;
     const byDir = ctx.groups.get(groupKey);
     if (!byDir) continue;

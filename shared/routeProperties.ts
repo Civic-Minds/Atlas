@@ -44,6 +44,8 @@ export interface RouteProperties {
   stopPeriodCoverageHeadways?: Record<string, HeadwayByPeriod>;
   routeHasIrregularDirection?: boolean;
   routeHasLimitedDirection?: boolean;
+  /** #899: the all-day filter cap from a direction with little or no midday service (worstDirection.ts). */
+  worstDirectionMiddayCap?: number;
   minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;

@@ -986,7 +986,8 @@ export async function processGtfsBuffer(
   // only when it draws: communitytransit 130 Saturday to Edmonds runs hourly all day on two
   // shapes with different last stops, the drawn shape has no midday trips and the midday shape
   // lost dedupe to it, so the whole direction went dark as a "variant" of a line nobody drew.
-  const keepsHeadline = (feature: GeoJsonFeature): boolean => feature.properties.tier !== 'span' && feature.properties.serviceClass !== 'irregular';
+  const keepsHeadline = (feature: GeoJsonFeature): boolean => feature.properties.tier !== 'span' && feature.properties.serviceClass !== 'irregular'
+    && !rushHourOnlyFeatures.has(feature);
   let drawnMembersByPool: Map<string, Set<string>> | null = null;
   const drawnMembers = (poolKey: string): ReadonlySet<string> => {
     if (!drawnMembersByPool) {
@@ -1119,6 +1120,10 @@ export async function processGtfsBuffer(
   // Weekday features of routes that skip the representative weekday (#710), and days whose only
   // service is the previous night's after-midnight tail (#718): no stop metrics.
   const partialWeekdayFeatures = new Set<GeoJsonFeature>();
+  // #720: steady rush-hour-only patterns. They are rated now, but pool and stand as siblings as
+  // they did when they were one-off, so their peak trips never lift another line's readings
+  // (lacmta 105 to Marlton/King read 10, the trunk's peak, for a weekday PM pattern every ~20).
+  const rushHourOnlyFeatures = new Set<GeoJsonFeature>();
   const featureBranchTripCount = new Map<GeoJsonFeature, number>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
@@ -1193,6 +1198,7 @@ export async function processGtfsBuffer(
       runsOnRepDay: newRunsOnRepDay,
       carriesRepDay: newCarriesRepDay,
       line: hasRouteShape ? points!.map(([lat, lon]) => [lon, lat]) : undefined,
+      rushHourOnly: result.rushHourOnly === true,
     };
     if (decideDedupe(incumbent, candidate, repWeekday) === 'keep') continue;
 
@@ -1260,6 +1266,7 @@ export async function processGtfsBuffer(
     featureBranchTripCount.set(newFeature, result.times.length);
     if (result.partialWeekday || result.previousNightTailOnly) partialWeekdayFeatures.add(newFeature);
     else partialWeekdayFeatures.delete(newFeature);
+    if (result.rushHourOnly) rushHourOnlyFeatures.add(newFeature);
   }
   const features = [...dedupedFeatures.values()];
 
@@ -1278,7 +1285,7 @@ export async function processGtfsBuffer(
   }
 
   for (const [feature, slot] of featureStopHeadwaySlots) {
-    if (partialWeekdayFeatures.has(feature) || !isPoolablePattern(feature)) continue;
+    if (partialWeekdayFeatures.has(feature) || rushHourOnlyFeatures.has(feature) || !isPoolablePattern(feature)) continue;
     sharedEligibleHeadsigns.add(`${slot.shortName}::${slot.dirId}::${slot.day}::${feature.properties.routeId}::${(feature.properties.headsign as string | null) ?? ''}`);
   }
 
@@ -1792,6 +1799,24 @@ export async function processGtfsBuffer(
     return headsignTripStartsByKey.get(key);
   };
 
+  // #899: each route direction's midday wait (the longest wait in 09:00-15:00) at its best-served
+  // stop, from every trip the direction runs that day (stopDepsByGroup), so a timetable split over
+  // shapes (TTC 191 changes shape at noon), a thin drawn pattern (SEPTA 98 to Norristown) or a
+  // synthesized loop direction (North Bay 4) still reads as all-day service, while a direction
+  // whose trips leave every stop with a long midday wait (an AM run ending at 09:10, one stray
+  // midday trip) does not. Read by the all-day filter cap in shared/worstDirection.ts.
+  const directionMiddayWaitByKey = new Map<string, number | null>();
+  const directionMiddayWait = (key: string): number | null => {
+    if (directionMiddayWaitByKey.has(key)) return directionMiddayWaitByKey.get(key)!;
+    let best: number | null = null;
+    for (const times of stopDepsByGroup.get(key)?.values() ?? []) {
+      const wait = computePeriodCoverageHeadways(times).midday ?? null;
+      if (wait != null && (best == null || wait < best)) best = wait;
+    }
+    directionMiddayWaitByKey.set(key, best);
+    return best;
+  };
+
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
     // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
     feature.properties.frequentService = false;
@@ -1799,6 +1824,12 @@ export async function processGtfsBuffer(
     feature.properties.nightService30 = false;
     feature.properties.nightService60 = false;
     const gKey = `${shortName}::${dirId}::${day}`;
+    // No value, so no cap, without stop data for the direction or when the feed gave the route no
+    // direction_id: a synthesized "direction" can be an early and late variant of a one-way loop
+    // (Kingston 32: every 30 all day one way, the 04:29-06:17 and 20:15-22:15 trips the other).
+    if (stopDepsByGroup.has(gKey) && !gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) {
+      feature.properties.directionMiddayWait = directionMiddayWait(gKey);
+    }
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap || partialWeekdayFeatures.has(feature)) {
       feature.properties.nightService = false;
