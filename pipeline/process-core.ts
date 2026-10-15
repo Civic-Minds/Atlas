@@ -648,14 +648,11 @@ export { MIN_THIN_REPLACING_DEPARTURES } from './featureDedupe.js';
 export const MIN_POOLED_TIER_DEPARTURES = 8;
 
 /**
- * A midday reading: at least MIN_ALL_DAY_TERMINAL_DEPARTURES unique departures 9-15h, spread
- * past phase 2's burst span. The test behind "limited" for a variant of a line with midday
- * service elsewhere (CIV-150, decision of 2026-10-14).
- */
-/**
- * A midday reading must spread over at least half of the 9-15h window: four departures inside
- * 90 minutes are a burst, but four inside two hours (a school-time shuttle 11:00-12:50) are not
- * midday service either. Phase 2's burst span was written for a whole day's sample.
+ * A midday reading, the test behind "limited" for a variant of a line with midday service
+ * elsewhere (CIV-150, decision of 2026-10-14): at least MIN_ALL_DAY_TERMINAL_DEPARTURES unique
+ * departures 9-15h, spread over at least half of that window. Four departures inside 90 minutes
+ * are a burst, but four inside two hours (a school-time shuttle 11:00-12:50) are not midday
+ * service either; phase 2's burst span was written for a whole day's sample.
  */
 export const MIDDAY_READING_MIN_SPAN_MINUTES = 180;
 
