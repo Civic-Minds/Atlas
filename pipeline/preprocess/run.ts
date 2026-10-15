@@ -7,13 +7,14 @@ import { synthesizeLondonRouteNames } from '../transforms/london-route-names.js'
 import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels.js';
+import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'brantford-route-labels' | 'interpolate-untimed-stops';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -110,6 +111,11 @@ export function normalizeGtfs(
   if (options?.preprocess === 'brantford-route-labels') {
     gtfs = normalizeBrantfordRouteLabels(gtfs);
     onStatus?.('Brantford route labels: removed feed-supplied leading separators');
+  }
+  if (options?.preprocess === 'mountain-line-frequency-fix') {
+    const result = fixMountainLineFrequencyWindow(gtfs);
+    gtfs = result.gtfs;
+    if (result.fixed) onStatus?.('Mountain Line RT 46: afternoon frequency window starts at 14:15 like its trip (#727)');
   }
   if (options?.preprocess === 'interpolate-untimed-stops') {
     const result = interpolateUntimedStops(gtfs);
