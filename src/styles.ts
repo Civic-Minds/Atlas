@@ -53,7 +53,8 @@ export const CONTROL_INACTIVE = 'bg-[var(--control-inactive-bg)] border-[var(--c
 /** Compact filter option button used across agency, hidden-route, and feed lists. */
 export const FILTER_OPTION = 'px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap';
 /** App switchers use the same glass pill surface as the filter chips. */
-export const APP_TAB_ACTIVE = `${GLASS_PILL} ${CONTROL_ACTIVE_GLASS}`;
+/** Active view tab: the selected tint plus a firmer ring, so it stands out in both themes without a dark fill. */
+export const APP_TAB_ACTIVE = `${GLASS_PILL} ${CONTROL_ACTIVE_GLASS} ring-1 ring-[var(--control-active-border)]`;
 export const APP_TAB_INACTIVE = `${GLASS_PILL} bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--accent)]`;
 export const SELECTION_ACTIVE = 'bg-[var(--selection-active-bg)] border-l-2 border-[var(--selection-active-border)]';
 export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';

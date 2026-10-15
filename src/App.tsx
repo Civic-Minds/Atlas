@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown } from 'lucide-react';
+import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
+import { CompareTab } from './components/Interval/CompareControl';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasBrand from './components/AtlasBrand';
@@ -246,6 +247,8 @@ export default function App() {
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
   // Interval renders its Compare view tab here, beside History and Live.
   const [viewTabsPortalEl, setViewTabsPortalEl] = useState<Element | null>(null);
+  // Compare picked from Live or History: back to the map, then start comparing.
+  const [compareStartRequest, setCompareStartRequest] = useState<number | null>(null);
   const viewTabsPortalRef = useCallback((el: HTMLDivElement | null) => { setViewTabsPortalEl(el); }, []);
 
   // Phones: Compare sits in the More menu beside History and Live (the menu mounts only while open).
@@ -614,9 +617,9 @@ export default function App() {
             aria-label="Live vehicles"
             aria-pressed={inLive}
             title={liveTabCollapsed ? 'Live vehicles' : undefined}
-            className={`hidden sm:flex h-8 ${modeTabSpacing(liveTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+            className={`hidden sm:flex h-8 ${modeTabSpacing(liveTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
-            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--control-active-fg)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
+            <Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
             <ModeTabLabel collapsed={liveTabCollapsed}>
               <span>Live</span>
               <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
@@ -642,6 +645,15 @@ export default function App() {
 
         {/* Compare (beta) portals in here from Interval. Phones reach it from the filter panel. */}
         <div ref={viewTabsPortalRef} className="hidden sm:contents" />
+        {/* Live and History have no compare view: keep the tab (as an icon) and take it back to the map to compare. */}
+        {FEATURES.compareMode && (inLive || inHistory) && (
+          <CompareTab
+            active={false}
+            collapsed={modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'compare')}
+            onStart={() => { setCompareStartRequest(Date.now()); setActiveApp('frequency'); }}
+            onExit={() => {}}
+          />
+        )}
 
         {/* Phones fold Live and History into one menu. Research is reached from the About page,
             not the map's top bar (#651). */}
@@ -657,7 +669,7 @@ export default function App() {
                 aria-expanded={appLinksOpen}
                 className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
-                <span>More</span>
+                <span>{inLive ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
               </button>
               {appLinksOpen && (
@@ -667,9 +679,9 @@ export default function App() {
                       type="button"
                       onClick={() => { setActiveApp(inLive ? 'frequency' : 'live'); setAppLinksOpen(false); }}
                       aria-pressed={inLive}
-                      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${inLive ? 'bg-[var(--control-active-fg)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
+                      <Radio className="w-3.5 h-3.5" aria-hidden="true" />
                       <span>Live</span>
                       <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
                     </button>
@@ -768,6 +780,7 @@ export default function App() {
               onCompareActiveChange={setCompareActive}
               headerPortalContainer={headerPortalEl}
               viewTabsPortalContainer={viewTabsPortalEl}
+              compareStartRequest={compareStartRequest}
               moreMenuPortalContainer={moreMenuPortalEl}
               onMoreMenuDone={() => setAppLinksOpen(false)}
               sidebarLeft={sidebarLeft}
