@@ -73,3 +73,13 @@ feed zip directly (no pipeline code) and prints, per direction, the patterns, th
 stretch's dispatch end (or `--stop`): count, max gap, and the gap at each edge. Feed lookup: `--zip`, `Atlas-worktrees/_feeds/<slug>.zip`,
 `_feeds/<slug>/*.zip`, then `_live-data/gtfs/<slug>.zip`. Example (the Night hand-check): `stretch-departures.py ttc 320 Weekday 2 6 --stop 8981`
 gives 29 departures, max gap 15, edges 4 and 20 in direction 0.
+
+## Consistency audit on a branch (local mode)
+
+`npx tsx scripts/audit-headway-filter-consistency.ts --dir=PATH [slug ...]` runs the app-vs-map consistency audit on a local folder
+(`<slug>/<slug>.json` reprocess output, or `<slug>.json`) instead of the live release, so a branch can be checked before it is published.
+Without slugs it audits every agency in the folder; expect zero mismatches of every kind.
+
+## Feed zips
+
+`Atlas-worktrees/_feeds/` holds a stable copy of the scan zips (`<slug>/*.zip`, outside git); see its README. Use it as `<zips>` for `drive.sh`.
