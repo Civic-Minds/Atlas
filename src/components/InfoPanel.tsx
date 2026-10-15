@@ -403,14 +403,15 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 </button>
               </div>
 
-              <div className="text-xs text-[var(--text-dim)] flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                <a href="/about/docs" className="hover:text-[var(--accent)] hover:underline">Documentation</a>
-                <span aria-hidden="true">·</span>
-                <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
-                <span aria-hidden="true">·</span>
-                <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy Policy</a>
-                <span aria-hidden="true">·</span>
-                <span>© 2026 Civic Minds.</span>
+              <div className="text-xs text-[var(--text-dim)] space-y-1">
+                <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                  <a href="/about/docs" className="hover:text-[var(--accent)] hover:underline">Documentation</a>
+                  <span aria-hidden="true">·</span>
+                  <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
+                  <span aria-hidden="true">·</span>
+                  <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy Policy</a>
+                </div>
+                <p>© 2026 Civic Minds.</p>
               </div>
             </div>
           )}

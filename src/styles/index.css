@@ -19,6 +19,24 @@ html {
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
+/* The map page never scrolls as a document. Pinning html, body and #root stops a panel's scroll from
+   chaining to the page (or rubber-banding on touch), which left a blank bar above the map. Doc pages
+   don't get the class, so they scroll normally. */
+html.map-page,
+html.map-page body,
+html.map-page #root {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Every scrollable panel on the map keeps its scroll to itself at the top and bottom. */
+html.map-page .overflow-y-auto,
+html.map-page .overflow-auto,
+html.map-page .overflow-y-scroll {
+  overscroll-behavior: contain;
+}
+
 :root {
   --bg-app: #f0f0f0;
   --bg-header: #ffffff;
