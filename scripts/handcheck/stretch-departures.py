@@ -217,8 +217,13 @@ def main():
         stretch = [s for s in longest if s in common]
         trip_stops = [{x[1] for x in ordered[tid]} for tid in tids]
         serves = collections.Counter(sid for st in trip_stops for sid in st)
-        say(f'   main stretch: {len(stretch)} stops (served by every regular pattern)')
-        dres = {'direction': direction, 'trips': len(tids), 'patterns': len(patterns), 'regular': len(regular), 'stretch_stops': len(stretch), 'main': None, 'also': [], 'tails': []}
+        fallback = False
+        if not stretch:  # the spec's fallback: stops served by more than half of the direction's trips, in the longest pattern's order
+            stretch = [s_ for s_ in max(patterns, key=len) if serves[s_] * 2 > len(tids)]
+            common = set(stretch); fallback = bool(stretch)
+        say(f'   main stretch: {len(stretch)} stops (' + ('FALLBACK: regular patterns share no stop, so the stops served by more than half of the trips' if fallback else 'served by every regular pattern') + ')')
+        dres = {'direction': direction, 'trips': len(tids), 'patterns': len(patterns), 'regular': len(regular), 'stretch_stops': len(stretch), 'fallback': False, 'main': None, 'also': [], 'tails': []}
+        dres['fallback'] = fallback
         result['directions'].append(dres)
         if not stretch and not a.stop:
             say('   no stop is shared by every regular pattern; pass --stop'); continue
