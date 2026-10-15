@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Night and Frequent Service explain themselves the same way**: both show the rule in one identical card above their content, in plain one-line wording with the times and days you picked. What's new now keeps only the version line bold.
 - **Night page: the Atlas wordmark lines up with the header buttons**: the taller 30/60 toggle was pushing the logo and search 1px off the line they sit on in the other views; the header row now has one fixed height everywhere ([#908](https://github.com/Civic-Minds/Atlas/issues/908)).
 - **Night and Frequent Service share one info panel**: a heading and the rule in plain words, using the numbers you have selected (30 or 60 minutes; 15 or 30, days and time window), always visible with no close button. Route and agency counts moved into the map's stat pills (whole routes, not patterns), with the colour key beside them (CIV-235).
 - **Night page: clicking a route now works like the main map**: the other night routes fade, the route card opens in place of the list, and the card no longer shows speed or time-of-day filter notices that don't apply to Night.

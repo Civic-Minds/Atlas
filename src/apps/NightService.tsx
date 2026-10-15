@@ -7,9 +7,6 @@ import {
   PANEL_SECTION_HEAD,
   LIST_ROW_PRIMARY,
   LIST_ROW_DIM,
-  Z_PANEL,
-  SIDEBAR_LEFT_FALLBACK,
-  SIDEBAR_PANEL_WIDTH,
 } from '../styles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import type { NightServiceFrequency } from '../../shared/nightService';
@@ -166,17 +163,12 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
   if (!active) return null;
 
   return (
-      <Panel
-        enter
-        className={`absolute top-[4.5rem] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-136px)] ${selectionActive ? 'invisible pointer-events-none' : 'pointer-events-auto'}`}
-        style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
-      >
+    <ResearchInfo heading={NIGHT_INFO_HEADING} sidebarLeft={sidebarLeft} hidden={selectionActive} below={
+      <Panel className="min-h-0 flex-1">
         <PanelTitleBar>
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
           <span className={PANEL_TITLE}>Night Service</span>
         </PanelTitleBar>
-
-        {data && <ResearchInfo heading={NIGHT_INFO_HEADING}>{nightRuleText(frequency)}</ResearchInfo>}
 
         <PanelBody>
           {loadState === 'loading' && <p className={PANEL_EMPTY}>Loading…</p>}
@@ -215,5 +207,6 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
           ))}
         </PanelBody>
       </Panel>
+    }>{nightRuleText(frequency)}</ResearchInfo>
   );
 }

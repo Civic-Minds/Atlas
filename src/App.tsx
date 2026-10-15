@@ -30,7 +30,6 @@ import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
-import Panel from './components/ui/Panel';
 import ResearchInfo from './components/ResearchInfo';
 import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
@@ -824,16 +823,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               </React.Suspense>
             )}
             {inFrequentService && (
-              <Panel
-                sidebar
-                enter
-                className={`${intervalSelectionActive ? 'invisible pointer-events-none' : 'pointer-events-auto'}`}
-                style={{ '--sidebar-left': `${sidebarLeft}px` } as React.CSSProperties}
-              >
-                <ResearchInfo heading={FREQUENT_INFO_HEADING} bordered={false}>
-                  {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
-                </ResearchInfo>
-              </Panel>
+              <ResearchInfo heading={FREQUENT_INFO_HEADING} sidebarLeft={sidebarLeft} hidden={intervalSelectionActive}>
+                {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
+              </ResearchInfo>
             )}
             {FEATURES.live && liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${liveShown ? 'opacity-100' : 'opacity-0'}`}>

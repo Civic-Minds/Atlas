@@ -6,8 +6,19 @@ import type { NightServiceFrequency } from '../../shared/nightService';
 
 export const NIGHT_INFO_HEADING = 'Which routes run all night?';
 
+/** Minutes after midnight as plain clock text: 3am, 2:30am, 6:45pm, midnight. */
+export function clockText(minutes: number): string {
+  const m = ((minutes % 1440) + 1440) % 1440;
+  if (m === 0) return 'midnight';
+  const hour24 = Math.floor(m / 60);
+  const mins = m % 60;
+  const suffix = hour24 < 12 ? 'am' : 'pm';
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  return `${hour12}${mins ? `:${String(mins).padStart(2, '0')}` : ''}${suffix}`;
+}
+
 export function nightRuleText(frequency: NightServiceFrequency): string {
-  return `Listed routes leave at least every ${frequency} minutes from 2am to 6am, including one within ${frequency} minutes of 2am and one within ${frequency} minutes of 6am.`;
+  return `Routes with a departure at least every ${frequency} minutes from 2am to 6am.`;
 }
 
 export const FREQUENT_INFO_HEADING = 'Which routes are frequent?';
@@ -24,6 +35,7 @@ export function frequentRuleText(options: {
   window: FrequentServiceWindow;
   days: readonly DayType[];
 }): string {
-  const hours = options.window === 'extended' ? '7am to midnight' : '7am to 7pm';
-  return `A route counts if it leaves at least every ${options.frequency} minutes, ${hours}, on ${dayList(options.days)}, including one within ${options.frequency} minutes of the start and one within ${options.frequency} minutes of the end.`;
+  const startMin = 7 * 60;
+  const endMin = options.window === 'extended' ? 24 * 60 : 19 * 60;
+  return `Routes with a departure at least every ${options.frequency} minutes, ${clockText(startMin)} to ${clockText(endMin)}, on ${dayList(options.days)}.`;
 }
