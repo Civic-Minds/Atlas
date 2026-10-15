@@ -112,6 +112,24 @@ describe('headway adherence', () => {
     expect(stat.excessWaitSec).toBe(0);
   });
 
+  it('reports the range 8 in 10 actual gaps fall in (nearest-rank 10th to 90th percentile)', () => {
+    // 20 gaps: 60, 120, ..., 1200 s across two windows
+    const gaps = Array.from({ length: 20 }, (_, i) => (i + 1) * 60);
+    const stat = headwayBandStat([
+      { date: 'a', actualGaps: gaps.slice(0, 10), scheduledGaps: [300, 300] },
+      { date: 'b', actualGaps: gaps.slice(10), scheduledGaps: [300, 300] },
+    ])!;
+    expect(stat.gapP10Sec).toBe(120); // 2nd of 20
+    expect(stat.gapP90Sec).toBe(1080); // 18th of 20
+    expect(stat.days).toBe(2);
+  });
+
+  it('keeps an even service\'s range tight around the scheduled gap', () => {
+    const stat = headwayBandStat([{ date: 'd', actualGaps: [300, 300, 300, 300], scheduledGaps: [300, 300, 300, 300] }])!;
+    expect(stat.gapP10Sec).toBe(300);
+    expect(stat.gapP90Sec).toBe(300);
+  });
+
   it('returns null extra wait when there is nothing to measure', () => {
     expect(headwayBandStat([])).toBeNull();
   });

@@ -618,6 +618,8 @@ const result = {
   gtfs: readCsv(join(GTFS, 'feed_info.txt'))[0]?.feed_version ?? null,
   dates: usedDates,
   directionLabels,
+  // Trip number -> direction, so the live card can place current vehicles (the live feed's trip IDs match this timetable).
+  tripDirections: Object.fromEntries([...new Set(trips.map(t => t.direction_id))].map(d => [d, trips.filter(t => t.direction_id === d).map(t => t.trip_id)])),
   runsTotal,
   runsMatched,
   runsUnmatched,
@@ -636,7 +638,7 @@ const result = {
     degradedSnapshots: { empty: degradedEmpty, stale: degradedStale, thin: degradedThin },
     standingStillDroppedForFeed: standingStillDegraded,
     statusLabels: TRIP_STOP_STATUS_LABELS,
-    standingStillLabel: 'Stood still 2+ min near this stop (includes layovers, operator changes and waiting for time)',
+    standingStillLabel: 'Stood still 2+ min near this stop (terminals, turn-back points, carhouses, layovers and operator changes left out)',
     missed, shortTurns, standingStill: holdStats,
   },
   headways: headways.map(h => {

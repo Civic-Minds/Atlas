@@ -262,6 +262,9 @@ export interface HeadwayBandStat {
   withinShare: number;
   /** Actual average wait minus scheduled average wait (TfL-style EWT); null if unmeasurable. */
   excessWaitSec: number | null;
+  /** Nearest-rank 10th and 90th percentiles of the actual gaps: 8 in 10 gaps fall between them. */
+  gapP10Sec: number;
+  gapP90Sec: number;
 }
 
 export interface HeadwayStopStat {
@@ -334,6 +337,8 @@ export function headwayBandStat(
     days: new Set(usable.map(w => w.date)).size,
     scheduledMedianGapSec: Math.round(median(usable.flatMap(w => w.scheduledGaps))!),
     actualMedianGapSec: Math.round(median(usable.flatMap(w => w.actualGaps))!),
+    gapP10Sec: Math.round(percentile(usable.flatMap(w => w.actualGaps), 0.1)!),
+    gapP90Sec: Math.round(percentile(usable.flatMap(w => w.actualGaps), 0.9)!),
     withinShare: Math.round((within / gaps) * 100) / 100,
     excessWaitSec: weight ? Math.round(ewtSum / weight) : null,
   };
