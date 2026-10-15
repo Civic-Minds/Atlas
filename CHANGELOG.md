@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- A route direction whose drawn pattern runs only in the mornings and evenings no longer hides the all-day pattern under the same destination: TTC 86 westbound to Kennedy on Saturdays showed as limited with no midday frequency while buses run every 10 all day ([#877](https://github.com/Civic-Minds/Atlas/issues/877)).
 - Data releases now stop for review when a subway or streetcar line drops two steps on its own frequency scale (every 5 to every 10), which the release check used to miss unless the headway doubled ([#871](https://github.com/Civic-Minds/Atlas/issues/871)).
 - **An hourly or half-hourly route no longer drops a frequency tier for one bus a minute or two late in the timetable**: a whole-day sample (eight gaps or more) may carry one gap inside the grace, so WMATA P72 on Saturday stays "every 60" with a 61-minute gap instead of infrequent, and RCT 117 and TTC 79 keep their tiers; short samples still fail on one long gap.
 - The shared-stretch frequency no longer disappears along a busy stretch because of one held bus: TTC 52 westbound at midday, four branches merged to every 5, lost its combined value at 14 stops on Lawrence Ave W over a single 10-minute gap near 2:30 pm ([#851](https://github.com/Civic-Minds/Atlas/issues/851)).

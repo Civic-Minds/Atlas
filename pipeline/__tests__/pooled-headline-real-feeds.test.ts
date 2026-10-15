@@ -78,6 +78,20 @@ describe('midday variants of a line with midday service (CIV-150)', () => {
     expect(l['0 Chester Transit Center'].headway).toBe(33);
   });
 
+  it('ttc 86 Saturday: the all-day Kennedy shape draws the slot, not the morning-and-evening one (#877)', async () => {
+    // Westbound to Kennedy runs on three shapes: 69 trips all day (37 midday departures), 41
+    // trips with 18 at midday, and 58 trips with nothing between 09:00 and 19:00 (every 8 at
+    // its terminal). The 58-trip shape held the slot on headway, had no own stop value, and
+    // the direction read limited with no midday value while riders get a bus every 10 all day.
+    const l = await lines('ttc-86-saturday', 'ttc', 'Saturday');
+    expect(l['1 Kennedy'].headway).toBe(10);
+    expect(l['1 Kennedy'].tier).toBe('10');
+    expect(l['1 Kennedy'].midday).toBe(10);
+    // Eastbound: the Sheppard short turn runs only in the rush hours and stays limited.
+    expect(l['0 Sheppard'].headway).toBeNull();
+    expect(l['0 Toronto Zoo'].headway).toBe(10);
+  });
+
   it('ttc 129 weekday: the five-trip Steeles short turn is limited beside the all-day Steeles via STC', async () => {
     // Shape with 10:08 10:38 19:25 19:52 23:11 at its terminal read 28 from its pooled stops.
     const l = await lines('ttc-129-weekday-pool-hole', 'ttc', 'Weekday');
