@@ -452,6 +452,10 @@ describe('#899: the all-day midday cap from each direction\'s midday wait', () =
     expect(route([20, undefined])).toEqual([undefined, undefined]);
   });
 
+  it('a midday reading from an AM run that ends at 09:40 does not count (MBTA 354)', () => {
+    expect(route([20, 320], { amPeak: 20, midday: 30, pmPeak: 30, evening: null, late: null, overnight: null })).toEqual([999999, 999999]);
+  });
+
   it('one direction alone gets no cap', () => {
     const one = [feat({ routeShortName: '2', day: 'Weekday', directionId: 0, headway: 10, tier: '10', headwayByPeriod: peak, periodCoverageHeadway: peak })];
     one[0].properties.directionMiddayWait = null;
