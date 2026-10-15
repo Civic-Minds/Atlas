@@ -4,15 +4,16 @@
  * building the map overlay features.
  */
 import { STATUS_COLORS, COLOR_VISION_STATUS_COLORS, type ColorVisionMode } from './colors';
+import { TIME_PERIODS } from '../../shared/config';
 
-export type SegmentBand = 'all' | 'am' | 'midday' | 'pm' | 'evening';
+export type SegmentBand = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
 
+const periodLabel = (key: SegmentBand) => TIME_PERIODS.find(p => p.key === key)?.label ?? key;
+
+/** Atlas's shared period names (late night and overnight have too few trips to show). */
 export const SEGMENT_BAND_OPTIONS: { id: SegmentBand; label: string }[] = [
   { id: 'all', label: 'All day' },
-  { id: 'am', label: 'AM rush' },
-  { id: 'midday', label: 'Midday' },
-  { id: 'pm', label: 'PM rush' },
-  { id: 'evening', label: 'Evening' },
+  ...(['amPeak', 'midday', 'pmPeak', 'evening'] as const).map(id => ({ id, label: periodLabel(id) })),
 ];
 
 /** A stop pair needs at least this many observed trips, over this many days, to be shown. */

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatMinutes, halfMinutes, halfMinutesDown, plural, rankSegments, segmentColor, tidyStopName, usableStandingStill, type SegmentDelayData } from '../segmentDelayView';
+import { formatMinutes, halfMinutes, halfMinutesDown, plural, rankSegments, segmentColor, tidyStopName, usableStandingStill, SEGMENT_BAND_OPTIONS, type SegmentDelayData } from '../segmentDelayView';
 
 const stat = (gained: number, trips = 100, p90 = gained + 60) => ({
   trips, days: 10, firstDate: '2026-10-01', lastDate: '2026-10-10',
@@ -64,5 +64,9 @@ describe('segmentDelayView', () => {
       ] },
     };
     expect(usableStandingStill(data, 'all').map(x => x.stop.stopId)).toEqual(['sumach']);
+  });
+
+  it('band chips use Atlas\'s period names', () => {
+    expect(SEGMENT_BAND_OPTIONS.map(o => o.label)).toEqual(['All day', 'AM Peak', 'Midday', 'PM Peak', 'Evening']);
   });
 });

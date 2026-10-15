@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildShape } from '../shapeProjection.js';
+import { TIME_PERIODS } from '../config.js';
 import {
   aggregateSegments, averageWaitSec, bandForHour, classifyTripStops, detectHolds, headwayBandStat, isTurnBack, standingStillExcess, headwayWindows, percentile, projectRun,
   segmentObservations, stopPassages, type Pattern, type ScheduledRunTimes,
@@ -117,11 +118,18 @@ describe('headway adherence', () => {
 });
 
 describe('helpers', () => {
-  it('bands wrap past midnight', () => {
-    expect(bandForHour(8)).toBe('am');
-    expect(bandForHour(16)).toBe('pm');
-    expect(bandForHour(2)).toBe('late');
-    expect(bandForHour(25)).toBe('late');
+  it('time bands are Atlas\'s shared periods, so the card matches the map', () => {
+    for (const p of TIME_PERIODS) {
+      expect(bandForHour(p.startHour)).toBe(p.key);
+      expect(bandForHour(p.endHour - 1)).toBe(p.key);
+    }
+    expect(bandForHour(6)).toBe('amPeak');
+    expect(bandForHour(9)).toBe('midday');
+    expect(bandForHour(16)).toBe('pmPeak');
+    expect(bandForHour(23)).toBe('late');
+    expect(bandForHour(2)).toBe('overnight');
+    expect(bandForHour(25)).toBe('late'); // GTFS 25:00 = 1 a.m.
+    expect(bandForHour(5)).toBe('overnight');
   });
   it('percentile uses nearest rank', () => {
     expect(percentile([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 0.9)).toBe(9);

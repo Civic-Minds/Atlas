@@ -10,6 +10,7 @@
  * the route shape.
  */
 import { projectOntoShape, type Shape, type ShapeProjection } from './shapeProjection.js';
+import { TIME_PERIODS, type PeriodKey } from './config.js';
 
 export interface PatternStop {
   stopId: string;
@@ -139,22 +140,14 @@ export function segmentObservations(legs: StopPassage[][], pattern: Pattern, dat
   return out;
 }
 
-export type TimeBand = 'early' | 'am' | 'midday' | 'pm' | 'evening' | 'late';
-export const TIME_BANDS: { id: TimeBand; startHour: number; endHour: number }[] = [
-  { id: 'early', startHour: 5, endHour: 7 },
-  { id: 'am', startHour: 7, endHour: 10 },
-  { id: 'midday', startHour: 10, endHour: 15 },
-  { id: 'pm', startHour: 15, endHour: 19 },
-  { id: 'evening', startHour: 19, endHour: 22 },
-  { id: 'late', startHour: 22, endHour: 29 },
-];
+/** Time bands are Atlas's shared periods (AM Peak 6-9, Midday 9-3, ...), so Live matches the map. */
+export type TimeBand = PeriodKey;
 
 export function bandForHour(hour: number): TimeBand {
-  const h = ((hour % 24) + 24) % 24;
-  for (const b of TIME_BANDS) {
-    if ((h >= b.startHour && h < b.endHour) || (h + 24 >= b.startHour && h + 24 < b.endHour)) return b.id;
-  }
-  return 'late';
+  // Periods run 6:00 to 30:00 (6 a.m. the next day), as on the map.
+  let h = ((hour % 24) + 24) % 24;
+  if (h < TIME_PERIODS[0].startHour) h += 24;
+  return TIME_PERIODS.find(p => h >= p.startHour && h < p.endHour)?.key ?? 'overnight';
 }
 
 export function median(xs: number[]): number | null {
