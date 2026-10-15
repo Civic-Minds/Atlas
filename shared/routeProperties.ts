@@ -44,6 +44,8 @@ export interface RouteProperties {
   stopPeriodCoverageHeadways?: Record<string, HeadwayByPeriod>;
   routeHasIrregularDirection?: boolean;
   routeHasLimitedDirection?: boolean;
+  /** #899: a direction of this route-day has no midday service, so it fails every all-day threshold. */
+  routeHasNoMiddayDirection?: boolean;
   minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;

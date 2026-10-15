@@ -130,7 +130,13 @@ export function buildTileHeadwayFilterClause(period: PeriodFilter | undefined, m
   }
 
   const threshold = maxHeadway === Infinity ? NO_PERIOD_SERVICE_TILE_VALUE - 1 : maxHeadway;
-  return ['<=', tileEffectiveHeadwayExpr(period), threshold];
+  const clause = ['<=', tileEffectiveHeadwayExpr(period), threshold];
+  // #899: all day, a route with a direction that has no midday service fails every "every N"
+  // (worstDirection.ts). A tile without the flag behaves as before.
+  if ((!period || period === 'all') && maxHeadway !== Infinity) {
+    return ['all', ['!=', ['coalesce', ['get', 'routeHasNoMiddayDirection'], false], true], clause];
+  }
+  return clause;
 }
 
 /** Flat per-mode matchers (avoids nested case expr that breaks filter compilation). */
