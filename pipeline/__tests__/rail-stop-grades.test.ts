@@ -20,22 +20,25 @@ async function fixtureZip(name: string): Promise<Buffer> {
 describe('rail stop grades (#756)', () => {
   beforeAll(() => { vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-14T12:00:00') }); });
   afterAll(() => { vi.useRealTimers(); });
-  it('WMATA Yellow northbound on Saturday and Sunday: the shared trunk grades 8 on both rows, the Greenbelt branch keeps its own', async () => {
+  it('WMATA Yellow northbound on Saturday and Sunday: the shared trunk grades 8 and 10 on both rows, the Greenbelt branch keeps its own', async () => {
     const result = await processGtfsBuffer(await fixtureZip('wmata-yellow-weekend'), undefined, { slug: 'wmata' });
     const rows = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null && p.directionId === 0);
-    for (const day of ['Saturday', 'Sunday']) {
+    // The stop grade is the rail rule's every-gap grade of the midday window, never better than
+    // the typical wait: the trunk runs every 8 on Saturday and every 8 with 9 to 11-minute gaps
+    // on Sunday (10), and each branch every 16 (30 on the rail scale).
+    for (const [day, trunk] of [['Saturday', '8'], ['Sunday', '10']] as const) {
       const mvs = rows.find((p: any) => p.day === day && p.headsign === 'Mount Vernon Square');
       const gb = rows.find((p: any) => p.day === day && p.headsign === 'Greenbelt');
       expect(mvs.headway).toBe(16);
       expect(gb.headway).toBe(16);
-      // Every stop of the short-turn row is on the trunk and reads the pooled 8.
-      expect(new Set(Object.values(mvs.stopTiers))).toEqual(new Set(['8']));
+      // Every stop of the short-turn row is on the trunk and reads the pooled service.
+      expect(new Set(Object.values(mvs.stopTiers))).toEqual(new Set([trunk]));
       const gbTiers = gb.stopOrder.map((s: string) => gb.stopTiers[s] ?? null);
-      expect(gbTiers.slice(0, 26).every((t: string) => t === '8')).toBe(true);
-      expect(gbTiers.slice(26).every((t: string) => t === '15' || t === '30')).toBe(true);
-      // The client colours the trunk at 8 on both rows against their route tier of 30.
-      expect(sectionRuns(mvs.stopOrder.map((s: string) => mvs.stopTiers[s] ?? null), mvs.tier)[0]).toMatchObject({ from: 0, to: 25, tier: '8' });
-      expect(sectionRuns(gbTiers, gb.tier)[0]).toMatchObject({ from: 0, to: 25, tier: '8' });
+      expect(gbTiers.slice(0, 26).every((t: string) => t === trunk)).toBe(true);
+      expect(gbTiers.slice(26).every((t: string) => t === '30')).toBe(true);
+      // The client colours the trunk at the trunk's grade on both rows against their route tier of 30.
+      expect(sectionRuns(mvs.stopOrder.map((s: string) => mvs.stopTiers[s] ?? null), mvs.tier)[0]).toMatchObject({ from: 0, to: 25, tier: trunk });
+      expect(sectionRuns(gbTiers, gb.tier)[0]).toMatchObject({ from: 0, to: 25, tier: trunk });
     }
   });
 
