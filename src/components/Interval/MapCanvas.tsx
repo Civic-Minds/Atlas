@@ -37,6 +37,7 @@ import { describeMapExport, type MapExportBox, type MapExportDetails, type MapEx
 import { getRouteLabel, titleCase } from '../../utils/format';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
+import { mapViewKind, viewAllowsOnDemand } from '../../../shared/viewLayers';
 import { useOnDemandStatus, useReportOnDemandVisible } from '../../hooks/useOnDemandData';
 import { FEATURES } from '../../../shared/config';
 import { trackEvent, withShareTags, SHARE_UTM_MEDIUM_LINK, type ShareMedium } from '../../lib/analytics';
@@ -449,7 +450,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Each zone and stop is filtered on its own hours (zones/stops that aren't
   // running are hidden, like fixed routes); ones with no hours on file stay
   // visible but are drawn muted so they never read as confirmed service.
-  const onDemandShown = FEATURES.onDemand && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE));
+  const onDemandAllowed = viewAllowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }));
+  const onDemandShown = FEATURES.onDemand && onDemandAllowed && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE));
   useReportOnDemandVisible(onDemandShown);
   const onDemandAgencies = useMemo(() => (
     onDemandShown
@@ -1234,7 +1236,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <MapNoticePill raised={onDemandStatus === 'error' && onDemandShown} className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           {mapHint}
         </MapNoticePill>
-      ) : onDemandStatus !== 'error' && selectedModes.has(ON_DEMAND_MODE) && (
+      ) : onDemandStatus !== 'error' && onDemandAllowed && selectedModes.has(ON_DEMAND_MODE) && (
         // A missing zone must never read as "no on-demand service here" (CIV-23).
         <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           On-demand coverage is still growing. Not every service is mapped yet.
