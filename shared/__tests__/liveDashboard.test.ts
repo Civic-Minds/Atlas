@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, buildupSentence, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardStop, type LiveV3 } from '../liveDashboard';
+import { dateRangeText, freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, buildupSentence, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardStop, type LiveV3 } from '../liveDashboard';
 
 const stop = (id: string, dir: number, late: number, n = 100, ranked = true): DashboardStop => ({ stopId: id, name: id, directionId: dir, order: 0, n, medianMin: 0, p90Min: 5, lateShare: late, earlyShare: 0, ranked });
 
@@ -55,5 +55,13 @@ describe('freshness', () => {
   });
   it('says so when there are no days at all', () => {
     expect(freshness(v3([]), '505', 0).stale).toBe(true);
+  });
+});
+
+describe('dateRangeText', () => {
+  it('writes the range in plain format', () => {
+    expect(dateRangeText('2026-10-08', '2026-10-14')).toBe('Oct 8–14');
+    expect(dateRangeText('2026-09-30', '2026-10-14')).toBe('Sep 30–Oct 14');
+    expect(dateRangeText('2026-10-08', '2026-10-08')).toBe('Oct 8');
   });
 });

@@ -41,6 +41,6 @@ describe('live-dashboard API: always a status and a reason, never a bare 404 or 
     writeFileSync(join(dir, 'ttc-510-segments.json'), JSON.stringify({ generatedAt: '2026-10-15T00:00:00Z', v3: { schema: 3, window: { days: 7, dates: [] } } }));
     const r = await get('agency=ttc&route=510');
     expect(r.body).toMatchObject({ status: 'ready', route: '510', replacementBuses: false });
-    expect(String(r.body.note)).toMatch(/about \+2 to \+3 min/);
+    expect(String(r.body.note)).toMatch(/about 2–3 min late/);
   });
 });

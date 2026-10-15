@@ -4,7 +4,7 @@ import { Maximize2, X } from 'lucide-react';
 import { headwayToTierColor, getHeadwayTiers } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 export { headwayToTierColor };
-import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS, TIME_PERIODS } from '../../../shared/config';
+import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS, TIME_PERIODS } from '../../../shared/config';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
@@ -19,7 +19,7 @@ import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUr
 const HOURS = SPARKLINE_HOURS;
 
 // Label positions: 6a, 12p, 6p, 12a
-const HOUR_LABELS: Record<number, string> = { 6: '6a', 12: '12p', 18: '6p', 24: '12a' };
+const HOUR_LABELS = SPARKLINE_HOUR_LABELS;
 
 function formatClock(totalMinutes: number): string {
   const h24 = Math.floor(totalMinutes / 60) % 24;

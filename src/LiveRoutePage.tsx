@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { FEATURES } from '../shared/config';
 import {
-  LINK_LABELS, bunchingSentence, freshness, buildupSentence, linkValueText, rankStops,
+  LINK_LABELS, bunchingSentence, dateRangeText, freshness, buildupSentence, linkValueText, rankStops,
   type AdherenceBlock, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -13,9 +13,9 @@ import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
 import Pill from './components/ui/Pill';
 import LiveOffNotice from './components/LiveOffNotice';
-import LineChart from './components/charts/LineChart';
+import ProfileBars from './components/charts/ProfileBars';
 import BarChart from './components/charts/BarChart';
-import StackedBars from './components/charts/StackedBars';
+import HourBars from './components/charts/HourBars';
 import { PAGE_ACTION, TILE } from './pageStyles';
 
 type Day = 'all' | 'weekday' | 'weekend';
@@ -32,7 +32,6 @@ function withNiceNames(v3: LiveV3): LiveV3 {
     bunching: v3.bunching.map(d => ({ ...d, bands: Object.fromEntries(Object.entries(d.bands).map(([k, band]) => [k, { ...band, forms: stretch(band.forms), biggestRise: stretch(band.biggestRise), stops: band.stops.map(x => ({ ...x, name: t(x.name) })) }])) })),
   };
 }
-const nRange = (ns: number[]) => (ns.length ? `${Math.min(...ns).toLocaleString()} to ${Math.max(...ns).toLocaleString()}` : '');
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const mins = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`;
 
@@ -77,27 +76,26 @@ function Adherence({ v3, day, dir }: { v3: LiveV3; day: Day; dir: number | null 
   const block: AdherenceBlock = v3.adherence.timepoints[day];
   const counts = dir == null ? block.overall : block.byDirection[String(dir)];
   const all = v3.adherence.allStops[day];
-  const hours = block.byHour.filter(h => h.n >= 20);
   return (
     <Section id="b1" title="How well it keeps to its timetable">
       {counts && counts.n > 0 ? (
         <>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <Tile label="Not late" value={pct(counts.notLateShare)} sub={`${counts.n.toLocaleString()} departures from timepoints`} />
+            <Tile label="Not late" value={pct(counts.notLateShare)} sub={`${counts.n.toLocaleString()} departures at stops with a scheduled time`} />
             <Tile label={`Late (${v3.thresholds.lateAtOrAboveMin}+ min)`} value={pct(counts.lateShare)} sub={`${counts.late.toLocaleString()} of ${counts.n.toLocaleString()}`} />
             <Tile label="Left ahead of the timetable" value={pct(counts.earlyShare)} sub={`${Math.abs(v3.thresholds.earlyAtOrBelowMin)}+ min early; cars often wait to leave on time`} />
           </div>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-            Counted where the timetable really schedules a time (timepoints). Counting every stop, {pct(all.overall.lateShare)} of {all.overall.n.toLocaleString()} departures are late, but the times between timepoints are only interpolated.
+            Counted at the stops where the timetable gives a time. Counting every stop, {pct(all.overall.lateShare)} of {all.overall.n.toLocaleString()} departures are late, but the times between those stops are only estimated.
           </p>
           <h3 className="mt-6 text-base font-black">By hour of the day</h3>
-          <StackedBars
+          <HourBars
             ariaLabel="Share of departures ahead of the timetable, on time and late, by hour of the day"
             parts={[{ name: 'Ahead', color: 'var(--status-caution)' }, { name: 'On time', color: 'var(--status-positive)' }, { name: 'Late', color: 'var(--status-negative)' }]}
-            columns={hours.map(h => ({ label: `${h.hour}:00`, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
+            columns={block.byHour.map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
           />
         </>
-      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at timepoints for this choice.</p>}
+      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time for this choice.</p>}
     </Section>
   );
 }
@@ -120,16 +118,17 @@ function Buildup({ v3, dir, uncertainStart }: { v3: LiveV3; dir: number | null; 
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
               <p className="mt-1 text-sm leading-6">{buildupSentence(label, b, uncertainStart.includes(b.directionId))}</p>
-              <LineChart
-                ariaLabel={`${label}: median delay along the route, with the 10th to 90th percentile range`}
+              <ProfileBars
+                ariaLabel={`${label}: median delay along the route, with the range that 8 in 10 cars fall in`}
                 points={stretches.map(s => ({ label: s.toName, y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n }))}
                 formatY={y => `${Math.round(y * 10) / 10}`}
-                baseline={0}
+                unit="runs"
+                zero
                 marks={startIdx >= 0 ? [{ index: startIdx, label: 'Delays start' }] : []}
                 startLabel="Start of route"
                 endLabel="End of route"
               />
-              <p className="text-xs text-[var(--text-dim)]">Minutes late (line: median; band: 10th to 90th percentile). Each point is {nRange(stretches.map(x => x.n))} runs.</p>
+              <p className="text-xs text-[var(--text-dim)]">Minutes late: the bar is the typical delay, the thin line is where 8 in 10 cars fall.</p>
               <div className="mt-3 overflow-x-auto">
                 <DataTable
                   caption={`${label}: the five stretches that add the most delay`}
@@ -158,7 +157,7 @@ function WorstStops({ v3, dir }: { v3: LiveV3; dir: number | null }) {
   return (
     <Section id="b2" title="Stops with the most delay">
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-        Stops ranked by the share of cars leaving {v3.thresholds.lateAtOrAboveMin}+ minutes late. Only stops with at least 30 departures are ranked; the median and 90th percentile sit beside it.
+        Stops ranked by the share of cars leaving {v3.thresholds.lateAtOrAboveMin}+ minutes late. Only stops with at least 30 departures are ranked; the typical delay and the delay that 1 in 10 cars exceed sit beside it.
       </p>
       {top.length ? (
         <>
@@ -176,8 +175,8 @@ function WorstStops({ v3, dir }: { v3: LiveV3; dir: number | null }) {
               columns={[
                 { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => name(s) },
                 { key: 'late', header: 'Late', cell: s => pct(s.lateShare) },
-                { key: 'median', header: 'Median', cell: s => mins(s.medianMin) },
-                { key: 'p90', header: '90th percentile', cell: s => mins(s.p90Min) },
+                { key: 'median', header: 'Typical', cell: s => mins(s.medianMin) },
+                { key: 'p90', header: '1 in 10 later than', cell: s => mins(s.p90Min) },
                 { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
               ]}
             />
@@ -205,7 +204,7 @@ function Bunching({ v3, dir }: { v3: LiveV3; dir: number | null }) {
           const label = v3.directionLabels[String(b.directionId)];
           const data: DashboardBunchingBand | undefined = b.bands[band];
           if (!data) return null;
-          const measured = data.stops.filter(s => s.n >= 30);
+          const measured = data.stops.filter(s => s.n >= 10); // stops with fewer than 30 gaps are drawn faded
           const stretch = data.forms ?? data.biggestRise;
           const markIdx = stretch ? measured.findIndex(s => s.stopId === stretch.toStopId) : -1;
           return (
@@ -213,16 +212,17 @@ function Bunching({ v3, dir }: { v3: LiveV3; dir: number | null }) {
               <h3 className="text-base font-black">{label}</h3>
               <p className="mt-1 text-sm leading-6">{bunchingSentence(label, data)}</p>
               {measured.length > 1 && (
-                <LineChart
+                <ProfileBars
                   ariaLabel={`${label}: share of gaps that are too short or too long, stop by stop`}
                   points={measured.map(s => ({ label: s.name, y: s.badShare, n: s.n }))}
                   formatY={y => pct(y)}
+                  unit="gaps"
                   marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? 'Forms here' : 'Biggest rise' }] : []}
                   startLabel="Start of route"
                   endLabel="End of route"
                 />
               )}
-              <p className="text-xs text-[var(--text-dim)]">Gaps off the timetable, by stop. Each point is {nRange(measured.map(x => x.n))} gaps (stops with fewer than 30 are left out).</p>
+              <p className="text-xs text-[var(--text-dim)]">Share of gaps that are too short or too long, stop by stop.</p>
               {stretch && (
                 <>
                   <h4 className="mt-3 text-sm font-black">{data.kind === 'forms' ? 'Linked to, between' : 'Its biggest rise is between'} {stretch.fromName} and {stretch.toName}{data.kind === 'forms' ? '' : '. Linked to'}</h4>
@@ -250,10 +250,12 @@ function Method({ data }: { data: Ready }) {
   return (
     <Section id="method" title="How this is measured">
       <ul className="mt-3 max-w-3xl list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--text-muted)]">
-        <li>Window: the last {v3.window.days} service days ({first} to {last}); {v3.totals.runs.toLocaleString()} runs and {v3.totals.stopPassages.toLocaleString()} stop departures. Built {data.generatedAt.slice(0, 10)}.</li>
-        <li>{v3.method}</li>
+        <li>Window: the last {v3.window.days} service days ({first} to {last}); {v3.totals.runs.toLocaleString()} trips and {v3.totals.stopPassages.toLocaleString()} stop departures. Built {data.generatedAt.slice(0, 10)}.</li>
+        <li>Delay at a stop is how late the vehicle left it compared with the timetable. The agency does not report delays, so we work them out from where each vehicle was seen (about once a minute) and estimate the moment it left the stop.</li>
+        <li>Vehicles are matched to timetable trips by trip number. If a trip is 15+ minutes off its own slot but another trip fits within 3 minutes at most stops, it is counted as that trip; otherwise it is left out.</li>
+        <li>Because vehicles are seen only about once a minute, {pct(v3.uncertainty.nearCutoffShare)} of departures at stops with a scheduled time are within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit, and could land on either side of it.</li>
         <li>Late means {v3.thresholds.lateAtOrAboveMin}+ minutes after the timetable; ahead means {Math.abs(v3.thresholds.earlyAtOrBelowMin)}+ minutes before it. These are the same limits the Live map uses.</li>
-        <li>{pct(v3.swaps.rate)} of runs were on a trip number that did not fit their own timetable slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</li>
+        <li>{pct(v3.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</li>
         {data.replacementBuses && <li>This route is run by replacement buses in this timetable, so every figure describes the buses.</li>}
       </ul>
     </Section>
@@ -289,14 +291,14 @@ export default function LiveRoutePage() {
           <div className="min-w-0">
             <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{title}: how it is running</h1>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              Last {v3.window.days} days · {v3.totals.runs.toLocaleString()} runs · estimated from vehicle positions, not reported by the agency
+              {v3.window.dates.length ? `${dateRangeText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} runs · estimated from where vehicles were, not reported by {agency.toUpperCase()}
             </p>
           </div>
           <a href="/apps/live" className={PAGE_ACTION}>View on Live map <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>
         </div>
         {(() => {
           const f = freshness(v3, route, Date.now());
-          return <p className={`mt-2 text-sm ${f.stale ? 'font-bold text-[var(--status-caution-text)]' : 'text-[var(--text-muted)]'}`} role={f.stale ? 'status' : undefined}>{f.text}</p>;
+          return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{f.text}</p> : null;
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         <Filters v3={v3} day={day} setDay={setDay} dir={dir} setDir={setDir} />

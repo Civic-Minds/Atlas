@@ -47,7 +47,7 @@ describe('Live route dashboard', () => {
     // B1: tiles read from the file (timepoints, all days).
     const b1 = screen.getByRole('region', { name: /How well it keeps to its timetable/ });
     expect(within(b1).getByText('91%')).toBeTruthy();
-    expect(within(b1).getByText('1,000 departures from timepoints')).toBeTruthy();
+    expect(within(b1).getByText('1,000 departures at stops with a scheduled time')).toBeTruthy();
     // B3: sentence and the table of stretches.
     expect(screen.getByText(/Eastbound: delays start between Stop 2 and Stop 3: \+2\.4 min added in 71% of 300 runs/)).toBeTruthy();
     // B2: ranked by late share with the sample size beside it.
@@ -59,7 +59,7 @@ describe('Live route dashboard', () => {
     expect(screen.getAllByText(/Not linked: Uneven departures at the terminal \(5% of gaps off\)/).length).toBe(2);
     // Method.
     expect(screen.getByText(/Window: the last 7 service days/)).toBeTruthy();
-    expect(screen.getByText(/4% of runs were on a trip number/)).toBeTruthy();
+    expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
   });
 
   it('shows names in normal case, sample sizes on the charts, and no "here" in the links', async () => {
@@ -68,15 +68,19 @@ describe('Live route dashboard', () => {
     await screen.findByRole('heading', { name: /how it is running/ });
     expect(screen.queryByText(/RONCESVALLES/)).toBeNull();
     expect(screen.getAllByText(/Roncesvalles Ave at Queen St W/).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Each point is 300 to 300 runs/).length).toBe(2);
-    expect(screen.getAllByText(/Each point is 60 to 60 gaps/).length).toBe(2);
+    // One plain caption per chart, no ranges; each bar carries its own count for hover, focus and screen readers.
+    expect(screen.getByText('Faded bars are based on fewer than 30 departures.')).toBeTruthy();
+    expect(screen.getAllByText('Faded bars are based on fewer than 30 runs.').length).toBe(2);
+    expect(screen.getAllByText('Faded bars are based on fewer than 30 gaps.').length).toBe(2);
+    expect(document.body.textContent).not.toMatch(/Each (bar|point) is/);
+    expect(screen.getAllByLabelText(/Stop 3: .*\(300 runs\)/).length).toBeGreaterThan(0);
     expect(document.body.textContent).not.toMatch(/near here/);
   });
 
   it('says the 510 first-stop delay is about +2 to +3 min, not a single figure', async () => {
     renderPage({ ...ready, uncertainStart: [1] });
     await screen.findByRole('heading', { name: /how it is running/ });
-    expect(screen.getByText(/Westbound: .*Delay at the first stops is about \+2 to \+3 min/)).toBeTruthy();
+    expect(screen.getByText(/Westbound: .*Delay at the first few stops is less exact, about 2–3 min late/)).toBeTruthy();
     expect(screen.queryByText(/Median delay at the first stop is/)).toBeNull();
   });
 
@@ -85,7 +89,8 @@ describe('Live route dashboard', () => {
     vi.setSystemTime(new Date('2026-10-15T20:00:00Z'));
     try {
       const { unmount } = renderPage(ready);
-      expect(await screen.findByText('Data up to 2026-10-14.')).toBeTruthy();
+      expect(await screen.findByText('Oct 8–14 · 1,234 runs · estimated from where vehicles were, not reported by TTC')).toBeTruthy();
+      expect(screen.queryByRole('status')).toBeNull();
       unmount();
       vi.setSystemTime(new Date('2026-10-25T20:00:00Z'));
       renderPage(ready);

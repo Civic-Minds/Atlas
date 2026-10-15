@@ -67,14 +67,14 @@ export type LiveDashboardResponse =
 
 /** Routes whose analysis is built but not shown until a known problem is fixed. */
 export const LIVE_DASHBOARD_HOLD: Readonly<Record<string, string>> = {
-  'ttc::501': 'The 501 is not shown yet: about a quarter of its positions are buses with no timetable trip on Queen West, so its gaps and delays would be overstated until they are separated out.',
+  'ttc::501': 'The 501 is not shown yet: about a quarter of the vehicles on it are buses that are not on the timetable (on Queen West), so its delays and gaps would be overstated until they are separated out.',
   'ttc::506': 'The 506 is not shown yet: its timetable mixes the streetcar with a replacement bus under one route, so its line and gaps blend both.',
-  'ttc::512': 'The 512 is held back: 15% of its runs are on trip numbers that do not match the timetable (the live feed has no start times to check them against), so its delays cannot be trusted yet.',
+  'ttc::512': 'The 512 is held back: about 15% of its trips run under a trip number that does not match the timetable, so its delays cannot be trusted yet.',
 };
 
 /** Things to know when reading one route's numbers. */
 export const LIVE_DASHBOARD_NOTES: Readonly<Record<string, string>> = {
-  'ttc::510': 'Northbound trips start under Union Station and at the Queens Quay Loop, where positions arrive about every 90 seconds. Read the delay at the first stops as about +2 to +3 min.',
+  'ttc::510': 'Delay at the first few stops is less exact (about 2–3 min late), because streetcars report their location less often in the Union Station tunnel.',
 };
 
 /** Directions whose delay at the first stops is uncertain, so the page says "about +2 to +3 min" instead of a single figure. */
@@ -89,7 +89,7 @@ export function dashboardUnavailable(agency: string, route: string): { status: '
   const hold = dashboardHold(agency, route);
   if (hold) return { status: 'held', reason: hold };
   if (!hasLiveAnalysis(agency, route)) {
-    return { status: 'no_analysis', reason: `No analysis is built for ${agency.toUpperCase()} ${route} yet. It needs archived positions and a timetable for the route; build it with "npm run live:analyze -- ${route}".` };
+    return { status: 'no_analysis', reason: `No analysis is built for ${agency.toUpperCase()} ${route} yet. It needs saved vehicle locations and the timetable for the route; build it with "npm run live:analyze -- ${route}".` };
   }
   return null;
 }
@@ -101,7 +101,7 @@ const min = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`;
 export function buildupSentence(label: string, b: DashboardBuildup, uncertainStart = false): string {
   if (b.start) return `${label}: delays start between ${b.start.fromName} and ${b.start.toName}: ${min(b.start.medianAddedMin)} added in ${pct(b.start.addedShare)} of ${b.start.n} runs.`;
   const first = b.startingDelayMin == null ? ''
-    : uncertainStart ? ' Delay at the first stops is about +2 to +3 min (see the note above).'
+    : uncertainStart ? ' Delay at the first few stops is less exact, about 2–3 min late (see the note above).'
     : ` Median delay at the first stop is ${min(b.startingDelayMin)}.`;
   return `${label}: no single stretch adds more than a minute in half the runs.${first}`;
 }
@@ -135,7 +135,7 @@ export function linkValueText(kind: BunchingLinkKind, value: number | null): str
   return `${Math.round(value * 10) / 10} a day`;
 }
 
-/** B2: stops ranked by late share among those with enough passages, for the chosen direction (null = both). */
+/** B2: stops ranked by late share among those with enough departures, for the chosen direction (null = both). */
 export function rankStops(stops: readonly DashboardStop[], directionId: number | null): DashboardStop[] {
   return stops
     .filter(s => s.ranked && (directionId == null || s.directionId === directionId))
@@ -163,6 +163,16 @@ export function cardSummary(v3: LiveV3, directionId: number): CardSummary {
   };
 }
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** "Oct 8–14", or "Sep 30–Oct 14" across months, from two YYYY-MM-DD dates. */
+export function dateRangeText(first: string, last: string): string {
+  const [, m1, d1] = first.split('-').map(Number);
+  const [, m2, d2] = last.split('-').map(Number);
+  if (first === last) return `${MONTHS[m1 - 1]} ${d1}`;
+  return m1 === m2 ? `${MONTHS[m1 - 1]} ${d1}–${d2}` : `${MONTHS[m1 - 1]} ${d1}–${MONTHS[m2 - 1]} ${d2}`;
+}
+
 /** The analysis is "stale" once its newest day is more than this many days old. */
 export const STALE_AFTER_DAYS = 2;
 
@@ -184,7 +194,7 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
   return {
     upTo, daysOld, stale,
     text: stale
-      ? `Data up to ${upTo}, ${daysOld} days ago. Rebuild it with "npm run live:analyze -- ${route}" (needs fresh archived positions).`
+      ? `Data up to ${upTo}, ${daysOld} days ago. Rebuild it with "npm run live:analyze -- ${route}" (needs fresh saved vehicle locations).`
       : `Data up to ${upTo}.`,
   };
 }
