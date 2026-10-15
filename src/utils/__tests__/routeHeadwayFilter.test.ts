@@ -198,8 +198,8 @@ describe('#899: all-day thresholds and a direction with no midday service', () =
   const peak = { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null };
   const props = (other: Record<string, unknown>) => {
     const fc = [
-      line({ directionId: 0, headsign: 'A', tier: '20', serviceClass: 'regular', headway: 20, headwayByPeriod: allDay, periodCoverageHeadway: allDay }),
-      line({ directionId: 1, headsign: 'B', headwayByPeriod: peak, periodCoverageHeadway: peak, ...other }),
+      line({ directionId: 0, headsign: 'A', tier: '20', serviceClass: 'regular', headway: 20, headwayByPeriod: allDay, periodCoverageHeadway: allDay, directionMiddayWait: 20 }),
+      line({ directionId: 1, headsign: 'B', headwayByPeriod: peak, periodCoverageHeadway: peak, directionMiddayWait: null, ...other }),
     ];
     normalizeRouteFilterFeatures(fc as any);
     return fc.map(f => f.properties as any);
@@ -222,8 +222,33 @@ describe('#899: all-day thresholds and a direction with no midday service', () =
   }
 
   it('an old tile without the flag behaves as before', () => {
-    const p = props({ tier: '10', serviceClass: 'time-limited', headway: 10 }).map(x => ({ ...x, routeHasNoMiddayDirection: undefined }));
+    const p = props({ tier: '10', serviceClass: 'time-limited', headway: 10 }).map(x => ({ ...x, worstDirectionMiddayCap: undefined }));
     expect(featurePassesHeadwayFilter(p[0], 'all', 20)).toBe(true);
+  });
+});
+
+describe('#899: a direction with some midday service but no steady midday pattern caps the route', () => {
+  const line = (p: Record<string, unknown>) => ({
+    type: 'Feature' as const,
+    geometry: { type: 'LineString' as const, coordinates: [[0, 0], [1, 1]] },
+    properties: { agencySlug: 'x', routeId: '7', routeShortName: '7', day: 'Weekday', ...p },
+  });
+  it('every 15 all day one way, rush-hour-heavy the other (midday wait 100): fails every 30, passes every 120', () => {
+    const every15 = { amPeak: 15, midday: 15, pmPeak: 15, evening: 15, late: null, overnight: null };
+    const fc = [
+      line({ directionId: 0, headsign: 'A', tier: '15', serviceClass: 'regular', headway: 15, headwayByPeriod: every15, periodCoverageHeadway: every15, directionMiddayWait: 15 }),
+      line({ directionId: 1, headsign: 'B', tier: '10', serviceClass: 'time-limited', headway: 10,
+        headwayByPeriod: { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null },
+        periodCoverageHeadway: { amPeak: 10, midday: 100, pmPeak: 10, evening: null, late: null, overnight: null }, directionMiddayWait: 100 }),
+    ];
+    normalizeRouteFilterFeatures(fc as any);
+    const p = fc.map(f => f.properties as any);
+    expect(p[0].worstDirectionMiddayCap).toBe(100);
+    expect(routePassesHeadwayFilter(p, 'all', 'Weekday', 30)).toBe(false);
+    expect(routePassesHeadwayFilter(p, 'all', 'Weekday', 90)).toBe(false);
+    expect(routePassesHeadwayFilter(p, 'all', 'Weekday', 120)).toBe(true);
+    // The colour value is unchanged.
+    expect(routeFilterHeadway(p[0], 'all')).toBe(15);
   });
 });
 

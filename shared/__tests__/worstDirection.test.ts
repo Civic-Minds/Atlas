@@ -418,72 +418,41 @@ describe('all-day worst-direction headline sets aside occasional patterns (#749)
   });
 });
 
-describe('#899: a direction with no midday service fails every all-day threshold', () => {
-  const allDayCov = { amPeak: 20, midday: 20, pmPeak: 20, evening: 30, late: null, overnight: null };
-  const peakCov = { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null };
-  const route = (other: { tier: string; headway: number | null }, cov: Record<string, number | null> | null = peakCov) => {
-    const features = [
-      feat({ routeShortName: '1', day: 'Weekday', directionId: 0, headway: 20, tier: '20', headwayByPeriod: allDayCov, periodCoverageHeadway: allDayCov }),
-      feat({ routeShortName: '1', day: 'Weekday', directionId: 1, headway: other.headway, tier: other.tier, headwayByPeriod: peakCov, periodCoverageHeadway: cov ?? undefined }),
-    ];
-    stampWorstDirectionHeadways(features);
-    return features;
-  };
-
-  it('flags the route-day when one direction runs at midday and the other never does', () => {
-    // Rush-hour-only (rated since #720) or one-off (span), the flag is the same.
-    for (const other of [{ tier: '10', headway: 10 }, { tier: 'span', headway: null }]) {
-      const features = route(other);
-      expect(features.every(f => f.properties.routeHasNoMiddayDirection === true)).toBe(true);
-      // The all-day value itself, which also colours the line, is unchanged.
-      expect(features[0].properties.worstDirectionHeadway).toBe(20);
-    }
-  });
-
-  it('leaves the flag off when both directions run at midday, for one direction, and for older artifacts', () => {
-    expect(route({ tier: '20', headway: 20 }, allDayCov).some(f => f.properties.routeHasNoMiddayDirection)).toBe(false);
-    const one = [feat({ routeShortName: '2', day: 'Weekday', directionId: 0, headway: 20, tier: '20', periodCoverageHeadway: peakCov })];
-    stampWorstDirectionHeadways(one);
-    expect(one[0].properties.routeHasNoMiddayDirection).toBeUndefined();
-    // No period coverage on a sibling: no complete picture, no flag.
-    expect(route({ tier: '10', headway: 10 }, null).some(f => f.properties.routeHasNoMiddayDirection)).toBe(false);
-  });
-});
-
-describe('#899: a direction runs at midday only with a midday wait of 60 or less', () => {
+describe('#899: the all-day midday cap from each direction\'s midday wait', () => {
   const allDay = { amPeak: 20, midday: 20, pmPeak: 20, evening: 30, late: null, overnight: null };
-  const pair = (other: Record<string, number | null>, otherHw: Record<string, number | null> = other) => {
+  const peak = { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null };
+  // One feature per direction; directionMiddayWait is the pipeline's direction-level value.
+  const route = (waits: [number | null | undefined, number | null | undefined], otherMidday = peak) => {
     const features = [
-      feat({ routeShortName: '9', day: 'Weekday', directionId: 0, headway: 20, tier: '20', headwayByPeriod: allDay, periodCoverageHeadway: allDay }),
-      feat({ routeShortName: '9', day: 'Weekday', directionId: 1, headway: 10, tier: '10', headwayByPeriod: otherHw, periodCoverageHeadway: other }),
+      feat({ routeShortName: '1', day: 'Weekday', directionId: 0, headway: 20, tier: '20', headwayByPeriod: allDay, periodCoverageHeadway: allDay }),
+      feat({ routeShortName: '1', day: 'Weekday', directionId: 1, headway: 10, tier: '10', headwayByPeriod: otherMidday, periodCoverageHeadway: otherMidday }),
     ];
+    waits.forEach((w, i) => { if (w !== undefined) features[i].properties.directionMiddayWait = w; });
     stampWorstDirectionHeadways(features);
-    return features[0].properties.routeHasNoMiddayDirection === true;
+    return features.map(f => f.properties.worstDirectionMiddayCap);
   };
 
-  it('an AM run that ends at 09:10 does not count as midday service', () => {
-    // One departure at 09:10 leaves a 350-minute midday wait.
-    expect(pair({ amPeak: 10, midday: 350, pmPeak: null, evening: null, late: null, overnight: null },
-      { amPeak: 10, midday: null, pmPeak: null, evening: null, late: null, overnight: null })).toBe(true);
+  it('a direction with no midday service beside one with it fails every all-day threshold', () => {
+    // No midday departure at all, an AM run ending at 09:10 (wait 350), a stray 12:00 trip (180).
+    for (const w of [null, 350, 180]) expect(route([20, w])).toEqual([999999, 999999]);
   });
 
-  it('one stray midday short turn does not count either', () => {
-    const features = [
-      feat({ routeShortName: '8', day: 'Weekday', directionId: 0, headway: 20, tier: '20', headwayByPeriod: allDay, periodCoverageHeadway: allDay }),
-      feat({ routeShortName: '8', day: 'Weekday', directionId: 1, headway: 10, tier: '10',
-        headwayByPeriod: { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null },
-        periodCoverageHeadway: { amPeak: 10, midday: null, pmPeak: 10, evening: null, late: null, overnight: null } }),
-      // A short turn with one 12:00 trip: no midday headway, a 180-minute midday wait.
-      feat({ routeShortName: '8', day: 'Weekday', directionId: 1, headway: null, tier: 'span',
-        headwayByPeriod: { amPeak: null, midday: null, pmPeak: null, evening: null, late: null, overnight: null },
-        periodCoverageHeadway: { amPeak: null, midday: 180, pmPeak: null, evening: null, late: null, overnight: null } }),
-    ];
-    stampWorstDirectionHeadways(features);
-    expect(features.every(f => f.properties.routeHasNoMiddayDirection === true)).toBe(true);
+  it('a direction with some midday service but no midday headway reading caps the route at its wait', () => {
+    expect(route([20, 100])).toEqual([100, 100]);
   });
 
-  it('a direction every 60 at midday runs through it', () => {
-    expect(pair({ amPeak: 10, midday: 60, pmPeak: 10, evening: null, late: null, overnight: null })).toBe(false);
+  it('no cap when both directions have midday service, the waiting direction has a midday headway, or for older artifacts', () => {
+    expect(route([20, 20], allDay)).toEqual([undefined, undefined]);
+    // An hourly direction with one 64-minute midday gap runs at midday.
+    expect(route([60, 64], allDay)).toEqual([undefined, undefined]);
+    // No direction-level wait on a sibling (an older artifact): no cap.
+    expect(route([20, undefined])).toEqual([undefined, undefined]);
+  });
+
+  it('one direction alone gets no cap', () => {
+    const one = [feat({ routeShortName: '2', day: 'Weekday', directionId: 0, headway: 10, tier: '10', headwayByPeriod: peak, periodCoverageHeadway: peak })];
+    one[0].properties.directionMiddayWait = null;
+    stampWorstDirectionHeadways(one);
+    expect(one[0].properties.worstDirectionMiddayCap).toBeUndefined();
   });
 });
-

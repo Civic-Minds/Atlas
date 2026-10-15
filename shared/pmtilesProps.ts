@@ -65,7 +65,7 @@ export const TILE_ROUTE_SCALAR_KEYS: readonly string[] = [
   'busSubType', 'directionId', 'headsign', 'day',
   'serviceClass', 'tier', 'weekdayTierVariation', 'edgeGapAllowance',
   'headway', 'worstDirectionHeadway', 'minStopHeadway',
-  'routeHasIrregularDirection', 'routeHasLimitedDirection', 'routeHasNoMiddayDirection',
+  'routeHasIrregularDirection', 'routeHasLimitedDirection', 'worstDirectionMiddayCap',
   'noRouteShape', 'frequentService', 'nightService', 'nightService30', 'nightService60',
 ];
 

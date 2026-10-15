@@ -75,7 +75,7 @@ function buildOverviewRoutes(routes: Feature[]): Feature[] {
           'routeType', 'directionId', 'day', 'serviceClass', 'tier',
           'weekdayTierVariation',
           'edgeGapAllowance',
-          'routeHasIrregularDirection', 'routeHasNoMiddayDirection', 'headway', 'minStopHeadway', 'worstDirectionHeadway',
+          'routeHasIrregularDirection', 'worstDirectionMiddayCap', 'headway', 'minStopHeadway', 'worstDirectionHeadway',
           'tippecanoe:minzoom',
         ].includes(key)
         || /^(pch|wdpch|hps|msph|wdph|hph|pws)_/.test(key)

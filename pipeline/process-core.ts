@@ -1706,6 +1706,31 @@ export async function processGtfsBuffer(
     return hit;
   };
 
+  // #899: each route direction's midday wait (the longest wait in 09:00-15:00) from every trip it
+  // runs that day, each at its own first stop, so a timetable split over shapes (TTC 191 changes
+  // shape at noon) or a thin drawn pattern (SEPTA 98 to Norristown) still reads as all-day service.
+  // Frequency templates are left out. Read by the all-day filter cap in shared/worstDirection.ts.
+  let directionMiddayWaitByKey: Map<string, number | null> | null = null;
+  const directionMiddayWait = (key: string): number | null => {
+    if (!directionMiddayWaitByKey) {
+      const startsByKey = new Map<string, Set<number>>();
+      for (const [tripId, groups] of tripGroupByTripId) {
+        const start = firstDepartureByTripId.get(tripId);
+        if (start === undefined || frequencyTemplateTripIds.has(tripId)) continue;
+        for (const grp of groups) {
+          if (!grp.inGroup) continue;
+          const k = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
+          const set = startsByKey.get(k) ?? new Set<number>();
+          set.add(start);
+          startsByKey.set(k, set);
+        }
+      }
+      directionMiddayWaitByKey = new Map();
+      for (const [k, starts] of startsByKey) directionMiddayWaitByKey.set(k, computePeriodCoverageHeadways([...starts]).midday ?? null);
+    }
+    return directionMiddayWaitByKey.get(key) ?? null;
+  };
+
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
     // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
     feature.properties.frequentService = false;
@@ -1713,6 +1738,7 @@ export async function processGtfsBuffer(
     feature.properties.nightService30 = false;
     feature.properties.nightService60 = false;
     const gKey = `${shortName}::${dirId}::${day}`;
+    feature.properties.directionMiddayWait = directionMiddayWait(gKey);
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap || partialWeekdayFeatures.has(feature)) {
       feature.properties.nightService = false;
