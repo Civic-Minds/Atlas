@@ -11,6 +11,7 @@
     36.9741,
     -122.0308
   ],
+  "region": "California",
   "feedUrl": "https://developer.scmetro.org/gtfs.zip",
   "lastFeedExpiry": "20261216",
   "lastFeedVersion": "S1000117",

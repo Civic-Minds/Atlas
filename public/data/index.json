@@ -9034,6 +9034,7 @@
         33.8586,
         -118.316
       ],
+      "region": "California",
       "feedUrl": "https://transit.torranceca.gov/home/showpublisheddocument/16673/639196160075870000",
       "lastFeedExpiry": "20270109",
       "lastFeedVersion": "S1000178",
@@ -9085,6 +9086,7 @@
         33.8492,
         -118.3884
       ],
+      "region": "California",
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1999/latest.zip",
       "lastFeedExpiry": "20281015",
       "lastFeedVersion": "New Schedule",
@@ -9129,6 +9131,7 @@
         33.8432,
         -118.2573
       ],
+      "region": "California",
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
       "lastFeedExpiry": "20281015",
       "lastFeedVersion": "20231127",
@@ -9176,6 +9179,7 @@
         34.2396,
         -119.2042
       ],
+      "region": "California",
       "feedUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip",
       "bbox": [
         34,
@@ -15609,6 +15613,7 @@
         27.9701,
         -82.5348
       ],
+      "region": "Florida",
       "agencyId": "2",
       "feedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
@@ -21575,6 +21580,7 @@
         36.9741,
         -122.0308
       ],
+      "region": "California",
       "feedUrl": "https://developer.scmetro.org/gtfs.zip",
       "lastFeedExpiry": "20261216",
       "lastFeedVersion": "S1000117",

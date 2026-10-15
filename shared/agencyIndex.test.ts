@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { agencyIndexDescription, buildAgencyIndexData, resolveAgencyIndexSeo } from './agencyIndex';
 import type { AgencyPageSummary } from './agencyPages';
+import summaries from './data/agency-pages.json';
+import indexJson from '../public/data/index.json';
 
 const ag = (slug: string, name: string, country: string | undefined, region: string | undefined, routeCount: number, midday: number | null = 10): AgencyPageSummary => ({
   slug, name, displayName: name, city: 'X', country, region, routeCount, span: null, lastRefreshedAt: null,
@@ -38,3 +40,20 @@ describe('buildAgencyIndexData', () => {
   });
 });
 
+
+/** Slugs deliberately left without a region or country (so they list under "Other"). Keep empty unless a real reason exists. */
+const EXPLICITLY_UNASSIGNED: readonly string[] = [];
+
+describe('every agency has a place', () => {
+  it('no agency page lands under "Other" unless explicitly marked unassigned', () => {
+    const list = (summaries as unknown as { agencies: AgencyPageSummary[] }).agencies;
+    const d = buildAgencyIndexData(list, [], null);
+    const other = d.groups.flatMap(g => g.regions.filter(r => g.country === 'Other' || r.region === 'Other').flatMap(r => r.agencies.map(a => a.slug)));
+    expect(other.filter(s => !EXPLICITLY_UNASSIGNED.includes(s))).toEqual([]);
+  });
+
+  it('every agency in the registry config has a region', () => {
+    const missing = (indexJson as { agencies: Array<{ slug: string; region?: string | null }> }).agencies.filter(a => !a.region).map(a => a.slug);
+    expect(missing.filter(s => !EXPLICITLY_UNASSIGNED.includes(s))).toEqual([]);
+  });
+});
