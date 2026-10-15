@@ -37,6 +37,7 @@ import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
+import { isNightRouteDirection, nextServiceDay, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
@@ -1722,6 +1723,51 @@ export async function processGtfsBuffer(
     return hit;
   };
 
+  // #896: each trip's first departure, per route direction, day and headsign (frequency templates
+  // excluded), built once when a night route needs it.
+  let headsignTripStartsByKey: Map<string, number[]> | null = null;
+  const headsignTripStarts = (key: string): number[] | undefined => {
+    if (!headsignTripStartsByKey) {
+      headsignTripStartsByKey = new Map();
+      const seen = new Set<string>();
+      // A chained continuation (#341) starts where the same bus just ended a trip under the same
+      // headsign: one bus, not a second departure. Its start is left out.
+      const chainedEndsAt = new Map<string, number[]>();
+      for (const [key, sameHeadsign] of chainedTripEnds) {
+        if (!sameHeadsign) continue;
+        const [endingTrip, stopId] = key.split('|');
+        const route = tripById.get(endingTrip)?.route_id;
+        const end = stopTimesByTripId.get(endingTrip)?.find(st => st.stop_id === stopId);
+        const arrive = end ? t2m(end.arrival_time || end.departure_time || '') : null;
+        if (route == null || arrive == null) continue;
+        const k = `${route}|${stopId}`;
+        chainedEndsAt.set(k, [...(chainedEndsAt.get(k) ?? []), arrive]);
+      }
+      const isContinuation = (tripId: string, start: number): boolean => {
+        const trip = tripById.get(tripId);
+        const first = [...(stopTimesByTripId.get(tripId) ?? [])].sort((a, b) => Number(a.stop_sequence) - Number(b.stop_sequence))[0];
+        if (!trip || !first) return false;
+        return (chainedEndsAt.get(`${trip.route_id}|${first.stop_id}`) ?? [])
+          .some(arrive => start >= arrive && start - arrive <= CHAINED_TRIP_MAX_LAYOVER_MIN);
+      };
+      for (const [tripId, groups] of tripGroupByTripId) {
+        const start = firstDepartureByTripId.get(tripId);
+        if (start === undefined || frequencyTemplateTripIds.has(tripId) || isContinuation(tripId, start)) continue;
+        for (const grp of groups) {
+          if (!grp.headsign || !grp.inHeadsign) continue;
+          const k = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
+          // A trip counts once per key (keyed by trip, not time: two trips can leave together).
+          if (seen.has(`${k}|${tripId}`)) continue;
+          seen.add(`${k}|${tripId}`);
+          const list = headsignTripStartsByKey.get(k) ?? [];
+          list.push(start);
+          headsignTripStartsByKey.set(k, list);
+        }
+      }
+    }
+    return headsignTripStartsByKey.get(key);
+  };
+
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
     // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
     feature.properties.frequentService = false;
@@ -2303,6 +2349,70 @@ export async function processGtfsBuffer(
             feature.properties.tier = newTier;
           }
           rescued = true;
+        }
+      }
+      // #896: a night route drawn on a minor pattern read its overnight values from that pattern's
+      // trips alone (ttc 337 to Steeles on Saturday: a short turn at 04:42, 05:05 and 05:28), so
+      // service every 30 read as a 162-minute gap. Read the overnight period from every trip to the
+      // destination, carried into the next day's early trips (below).
+      // Night routes only: no stop of the route direction has a departure between 09:00 and 19:00
+      // that day (ttc 337, actransit 801), and it runs at night (a departure from 23:00 or past
+      // 24:00), so a morning-only route is not one. A daytime route's thin shape (an
+      // evening variant, an early-morning short turn) keeps its own overnight values.
+      const stopTimes = [...stopMap.values()];
+      // An early departure counts only as the tail of the night: the direction also runs from 23:00
+      // that day, or the departure is written past 24:00 (a 03:45 morning start is not a night).
+      const nightRoute = isNightRouteDirection(stopTimes);
+      const nextDay = nextServiceDay(day as DayType);
+      const nextDayMap = nextDay && featureHeadsign ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${nextDay}::${featureHeadsign}`) : undefined;
+      // Every trip to the destination at its own first stop (ttc 304 Saturday: patterns ending at
+      // different terminal stops), never better than the best single stop of the drawn line except
+      // its last (two branches' trips counted at different first stops, or one bus counted on both
+      // trips of a chained run, would otherwise add up to service no stop gets).
+      let overnight: ReturnType<typeof overnightPeriodValues> | null = null;
+      const tripStarts = featureHeadsign ? headsignTripStarts(`${shortName}::${dirId}::${day}::${featureHeadsign}`) : undefined;
+      if (nightRoute && headsignMap && tripStarts && tripStarts.length > 0) {
+        const nextStarts = nextDay ? headsignTripStarts(`${shortName}::${dirId}::${nextDay}::${featureHeadsign}`) : undefined;
+        const fromStarts = overnightPeriodValues(overnightWindowTimes(tripStarts, nextStarts));
+        let best: ReturnType<typeof overnightPeriodValues> | null = null;
+        // The drawn line's last stop is where its trips arrive, not leave.
+        for (const { stopId } of coverageStops.length > 1 ? coverageStops.slice(0, -1) : coverageStops) {
+          const own = headsignMap.get(stopId);
+          if (!own || own.length === 0) continue;
+          const values = overnightPeriodValues(overnightWindowTimes(own, nextDayMap ? (nextDayMap.get(stopId) ?? []) : undefined));
+          if (values.coverage == null) continue;
+          if (!best || best.coverage == null || values.coverage < best.coverage
+            || (values.coverage === best.coverage && (values.headway ?? Infinity) < (best.headway ?? Infinity))) best = values;
+        }
+        // Never better than one stop gets: a value the best stop cannot read (fewer than three
+        // overnight departures there) is not published from the trip starts either.
+        const worse = (x: number | null, y: number | null | undefined) => (x == null || y == null ? null : Math.max(x, y));
+        overnight = best == null ? null : {
+          headway: worse(fromStarts.headway, best.headway),
+          coverage: worse(fromStarts.coverage, best.coverage),
+          maxGap: worse(fromStarts.maxGap, best.maxGap),
+          sustained: fromStarts.sustained === false || best.sustained === false ? false : fromStarts.sustained,
+        };
+      }
+      if (overnight) {
+        feature.properties.headwayByPeriod = { ...(feature.properties.headwayByPeriod as HeadwayByPeriod), overnight: overnight.headway };
+        feature.properties.periodCoverageHeadway = { ...(feature.properties.periodCoverageHeadway as HeadwayByPeriod), overnight: overnight.coverage };
+        feature.properties.maxGapByPeriod = { ...(feature.properties.maxGapByPeriod as HeadwayByPeriodMaxGap), overnight: overnight.maxGap };
+        const sustained = { ...(feature.properties.headwayByPeriodSustained as HeadwayByPeriodSustained) };
+        if (overnight.headway != null) sustained.overnight = overnight.sustained; else delete sustained.overnight;
+        feature.properties.headwayByPeriodSustained = sustained;
+        // The headline of a night-only line is never better than its overnight reading: phase 2
+        // read 337 Saturday's three-trip short turn as every 23, against every 30 all night.
+        // Only when the rescue above did not run; the tier only degrades.
+        const headline = feature.properties.headway as number | null;
+        // Only a line with no evening service either (no departure 09:00-23:00): Marin 30 on
+        // Saturday runs every 30 from 20:30 to 02:00, and its overnight gap to the Sunday 05:30 trip
+        // is not its headline.
+        const overnightOnly = ![...stopMap.values()].some(times => times.some(t => t >= 540 && t < 1380));
+        if (overnightOnly && !rescued && !limitedVariant && headline != null && overnight.headway != null && overnight.headway > headline) {
+          feature.properties.headway = overnight.headway;
+          const newTier = headwayToTierOn(overnight.headway, routeTierScale());
+          if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[feature.properties.tier as string] ?? -1)) feature.properties.tier = newTier;
         }
       }
       // Pooled stop values can still describe the stops the thin shape serves (#690).
