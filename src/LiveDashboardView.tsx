@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
-import { dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { branchRunTimeLine, dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, weekRangeLine, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import DataTable from './components/ui/DataTable';
@@ -145,6 +145,14 @@ function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: num
                 <div className="mt-2"><RunTimeChart hours={g.hours} scale={scale} ariaLabel={`${g.label}: run time against the schedule by the hour the trip starts. ${runTimeTakeaway(g.label, g.hours)}`} /></div>
               </>
             ) : <p className="mt-1 text-sm text-[var(--text-muted)]">Too few trips were measured {BAND_WORDS[band]} to draw this.</p>}
+            {(rt?.branches?.[String(g.d)] ?? []).length > 0 && (
+              <div className="mt-3">
+                <h4 className="text-sm font-black">Longer patterns, each end to end</h4>
+                <ul className="mt-1 space-y-1 text-sm text-[var(--text-secondary)]">
+                  {rt!.branches![String(g.d)].map(b => <li key={`${b.fromStopId}-${b.toStopId}`} className={b.all.n < 30 ? 'text-[var(--text-dim)]' : ''}>{branchRunTimeLine(b, n => shortStopName(titleCase(n)))}{b.all.n < 30 ? ' Few trips: treat with care.' : ''}</li>)}
+                </ul>
+              </div>
+            )}
           </div>
         ))}
       </div>

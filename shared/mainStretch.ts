@@ -20,12 +20,20 @@ export interface PatternTrips {
   trips: number;
 }
 
+/** The spec's regular patterns: at least 20% of the direction's trips, or the most common one alone. */
+export function regularPatterns<P extends PatternTrips>(patterns: readonly P[]): P[] {
+  const all = patterns.filter(p => p.trips > 0 && p.stops.length > 0);
+  if (!all.length) return [];
+  const total = all.reduce((n, p) => n + p.trips, 0);
+  const regular = all.filter(p => p.trips >= REGULAR_PATTERN_MIN_SHARE * total);
+  return regular.length ? regular : [all.reduce((a, b) => (b.trips > a.trips ? b : a))];
+}
+
 export function mainStretchStops(patterns: readonly PatternTrips[]): string[] {
   const all = patterns.filter(p => p.trips > 0 && p.stops.length > 0);
   if (!all.length) return [];
   const total = all.reduce((n, p) => n + p.trips, 0);
-  let regular = all.filter(p => p.trips >= REGULAR_PATTERN_MIN_SHARE * total);
-  if (!regular.length) regular = [all.reduce((a, b) => (b.trips > a.trips ? b : a))];
+  const regular = regularPatterns(all);
   const longest = regular.reduce((a, b) => (b.stops.length > a.stops.length ? b : a));
   const shared = longest.stops.filter(s => regular.every(p => p.stops.includes(s)));
   if (shared.length >= 2) return shared;
@@ -55,4 +63,25 @@ export function reliableStretch(stops: readonly string[], coverage: (stopId: str
 export function stationOrLoop(stopName: string): string | null {
   const place = stopName.split(/\s+at\s+/i)[0].trim().toLowerCase();
   return /\b(station|loop)\b/.test(place) ? place : null;
+}
+
+/**
+ * Branches: regular patterns with a tail, a contiguous run of stops off the main stretch at least `minStops` long and
+ * `minM` metres long (the spec's tail test; the caller passes SHARED_STRETCH_MIN_STOPS and SHARED_STRETCH_MIN_KM).
+ * Each gets its own run-time line, measured over the whole pattern. `along[i]` is stop i's metres along the pattern.
+ */
+export function branchPatterns<P extends PatternTrips & { along: readonly number[] }>(patterns: readonly P[], main: readonly string[], minStops: number, minM: number): P[] {
+  const onMain = new Set(main);
+  return regularPatterns(patterns).filter(p => {
+    let start = -1;
+    for (let i = 0; i <= p.stops.length; i++) {
+      const off = i < p.stops.length && !onMain.has(p.stops[i]);
+      if (off && start < 0) start = i;
+      if (!off && start >= 0) {
+        if (i - start >= minStops && p.along[i - 1] - p.along[start] >= minM) return true;
+        start = -1;
+      }
+    }
+    return false;
+  });
 }

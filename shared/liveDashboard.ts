@@ -56,6 +56,12 @@ export function runTimeTileStretch(stretch: Record<string, RunTimeStretch> | und
   const ends = dirs.map(d => `${nice(stretch[d].fromName)} to ${nice(stretch[d].toName)}`);
   return dirs.length === 1 ? `over ${n} stops, ${ends[0]}` : `over ${n} stops: ${ends.join('; ')}`;
 }
+export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: RunTimeFigures; byHour: Array<{ hour: number } & RunTimeFigures> }
+/** "To Marine Parade: usually 12 min, timetable 14 (over 14 stops from Humber Loop, 215 trips)." */
+export function branchRunTimeLine(b: RunTimeBranch, nice: (name: string) => string = x => x): string {
+  const f = b.all;
+  return `To ${nice(b.toName)}: usually ${Math.round(f.typicalMin)} min, timetable ${Math.round(f.scheduledMin)}, 1 in 10 over ${Math.round(f.p90Min)} (over ${b.stops} stops from ${nice(b.fromName)}, ${f.n.toLocaleString()} trips).`;
+}
 export interface RunTimeFigures { n: number; scheduledMin: number; typicalMin: number; p90Min: number; overMin: number }
 export interface WeekMetrics {
   days: number;
@@ -110,6 +116,8 @@ export interface LiveV3 {
   runningTime?: {
     /** Per direction, the stops run time is measured between (older files measure the main pattern end to end). */
     stretch?: Record<string, RunTimeStretch>;
+    /** Per direction, a line for each regular pattern that runs well past the main stretch (a branch, or the full route beside a common short turn), measured over the whole pattern. */
+    branches?: Record<string, RunTimeBranch[]>;
     bands: Record<DashboardBand, Record<string, RunTimeFigures | null>>;
     byHour: Record<string, Array<{ hour: number } & RunTimeFigures>>;
   };

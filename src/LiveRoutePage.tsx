@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
+  LINK_LABELS, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -353,6 +353,14 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
                   <p className="mt-1 text-sm font-bold">{runTimeTakeaway(label, hours)}</p>
                   <div className="mt-2"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${runningTimeSentence(label, figures)}`} /></div>
                 </>
+              )}
+              {(rt.branches?.[String(d)] ?? []).length > 0 && (
+                <div className="mt-3">
+                  <h4 className="text-sm font-black">Longer patterns, each end to end</h4>
+                  <ul className="mt-1 space-y-1 text-sm text-[var(--text-secondary)]">
+                    {rt.branches![String(d)].map(b => <li key={`${b.fromStopId}-${b.toStopId}`} className={b.all.n < 30 ? 'text-[var(--text-dim)]' : ''}>{branchRunTimeLine(b, n => shortStopName(titleCase(n)))}{b.all.n < 30 ? ' Few trips: treat with care.' : ''}</li>)}
+                  </ul>
+                </div>
               )}
             </div>
           );

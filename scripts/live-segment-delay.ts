@@ -23,7 +23,8 @@ import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type Run
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
-import { mainStretchStops, reliableStretch, stationOrLoop } from '../shared/mainStretch.js';
+import { branchPatterns, mainStretchStops, reliableStretch, stationOrLoop } from '../shared/mainStretch.js';
+import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 
 const args: Record<string, string> = {};
@@ -869,6 +870,19 @@ const mainPatternRunTimes = runTimes.filter(r => mainPatternId.get(r.directionId
 // trimmed at either end to stops whose departures are measured reliably, against the timetable over the same stops.
 const stretchInfo: Record<string, { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; routeStops: number; fullRoute: boolean; mainPatternTrips: number; trips: number }> = {};
 const mainRunTimes: RunTimeRow[] = [];
+/** Run time between two stops for every run that left the first and reached the second, against the timetable there. */
+function runTimesBetween(d: number, a: string, b: string): RunTimeRow[] {
+  const out: RunTimeRow[] = [];
+  for (const r of stretchRuns.filter(x => x.directionId === d)) {
+    const sa = r.sched.get(a), sb = r.sched.get(b), ta = r.dep.get(a), tb = r.arr.get(b) ?? r.dep.get(b);
+    if (!sa || !sb || ta == null || tb == null) continue;
+    const schedSec = sb.arr - sa.dep, actualSec = tb - ta;
+    if (schedSec > 0 && actualSec > 0 && Math.abs(actualSec - schedSec) <= 3600) out.push({ date: r.date, directionId: d, startHour: Math.floor(sa.dep / 3600), schedSec, actualSec });
+  }
+  return out;
+}
+type BranchRunTime = { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: NonNullable<ReturnType<typeof runTimeStat>>; byHour: Array<{ hour: number } & NonNullable<ReturnType<typeof runTimeStat>>> };
+const branchesByDir: Record<string, BranchRunTime[]> = {};
 for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
   const main = mainStretchStops(dirPatterns.map(p => ({ stops: p.stops.map(s => s.stopId), trips: tripsPerShape.get(p.id) ?? 0 })));
@@ -883,12 +897,22 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   const stretch = reliableStretch(main, coverage);
   if (!stretch) continue;
   const a = stretch[0], b = stretch[stretch.length - 1];
-  for (const r of stretchRuns.filter(x => x.directionId === d)) {
-    const sa = r.sched.get(a), sb = r.sched.get(b), ta = r.dep.get(a), tb = r.arr.get(b) ?? r.dep.get(b);
-    if (!sa || !sb || ta == null || tb == null) continue;
-    const schedSec = sb.arr - sa.dep, actualSec = tb - ta;
-    if (schedSec > 0 && actualSec > 0 && Math.abs(actualSec - schedSec) <= 3600) mainRunTimes.push({ date: r.date, directionId: d, startHour: Math.floor(sa.dep / 3600), schedSec, actualSec });
+  mainRunTimes.push(...runTimesBetween(d, a, b));
+  // Branches: a regular pattern with its own long tail gets its own line, over the whole pattern (trimmed the same way).
+  const branchLines: BranchRunTime[] = [];
+  for (const p of branchPatterns(dirPatterns.map(p => ({ p, stops: p.stops.map(s => s.stopId), along: p.stops.map(s => s.along), trips: tripsPerShape.get(p.id) ?? 0 })), main, SHARED_STRETCH_MIN_STOPS, SHARED_STRETCH_MIN_KM * 1000)) {
+    const span = reliableStretch(p.stops, coverage);
+    if (!span || (span[0] === a && span[span.length - 1] === b)) continue;
+    const rows = runTimesBetween(d, span[0], span[span.length - 1]).filter(r => inWindow.has(r.date));
+    const stat = runTimeStat(rows);
+    if (!stat) continue;
+    branchLines.push({
+      fromStopId: span[0], toStopId: span[span.length - 1], fromName: stopInfo(span[0]).name, toName: stopInfo(span[span.length - 1]).name, stops: span.length,
+      all: stat,
+      byHour: [...new Set(rows.map(r => r.startHour % 24))].sort((x, y) => x - y).map(h => ({ hour: h, ...runTimeStat(rows.filter(r => r.startHour % 24 === h))! })),
+    });
   }
+  if (branchLines.length) branchesByDir[String(d)] = branchLines;
   const longest = dirPatterns.reduce<Pattern | null>((x, y) => (!x || y.stops.length > x.stops.length ? y : x), null);
   stretchInfo[String(d)] = {
     fromStopId: a, toStopId: b, fromName: stopInfo(a).name, toName: stopInfo(b).name, stops: stretch.length, routeStops: longest?.stops.length ?? stretch.length,
@@ -897,12 +921,14 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
     trips: mainRunTimes.filter(r => r.directionId === d && inWindow.has(r.date)).length,
   };
 }
+console.log(`runtime branches: ${Object.entries(branchesByDir).map(([d, bs]) => bs.map(x => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) n ${x.all.n}`).join('; ')).join('; ') || 'none'}`);
 console.log(`runtime stretch: ${Object.entries(stretchInfo).map(([d, x]) => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) trips ${x.mainPatternTrips} -> ${x.trips}`).join('; ')}`);
 const windowRunTimes = mainRunTimes.filter(r => inWindow.has(r.date));
 const directionsSeen = [...new Set(windowRunTimes.map(r => r.directionId))].sort();
 const rtFor = (rows: readonly RunTimeRow[]) => runTimeStat(rows);
 const runningTimeV3 = {
   stretch: stretchInfo,
+  branches: branchesByDir,
   bands: Object.fromEntries(BANDS.map(band => [band, Object.fromEntries(directionsSeen.map(d => [String(d), rtFor(windowRunTimes.filter(r => r.directionId === d && (band === 'all' || bandForHour(r.startHour) === band)))]))])),
   byHour: Object.fromEntries(directionsSeen.map(d => [String(d), [...new Set(windowRunTimes.filter(r => r.directionId === d).map(r => r.startHour % 24))].sort((a, b) => a - b)
     .map(h => ({ hour: h, ...rtFor(windowRunTimes.filter(r => r.directionId === d && r.startHour % 24 === h))! }))])),

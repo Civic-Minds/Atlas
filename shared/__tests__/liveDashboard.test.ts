@@ -149,3 +149,12 @@ describe('build-up label with a terminal stretch', () => {
     expect(text).not.toMatch(/7\.4/);
   });
 });
+
+describe('branch run-time line', () => {
+  it('says where the branch goes, how long it usually takes, and over which stops', async () => {
+    const { branchRunTimeLine } = await import('../liveDashboard');
+    const all = { n: 215, scheduledMin: 14.2, typicalMin: 12.4, p90Min: 16.1, overMin: -1.8 };
+    expect(branchRunTimeLine({ fromStopId: 'a', toStopId: 'b', fromName: 'Humber Loop', toName: 'Marine Parade', stops: 14, all, byHour: [] }))
+      .toBe('To Marine Parade: usually 12 min, timetable 14, 1 in 10 over 16 (over 14 stops from Humber Loop, 215 trips).');
+  });
+});
