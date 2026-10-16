@@ -7,7 +7,8 @@ import SortableDataTable from './components/ui/SortableDataTable';
 import { withoutDevHint } from './lib/liveReportData';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
-import RouteStrip, { routeStripFromV3 } from './components/Live/RouteStrip';
+import DirectionStrip from './components/Live/DirectionStrip';
+import { routeStripFromV3 } from './components/Live/routeStripModel';
 import Pill from './components/ui/Pill';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
@@ -217,7 +218,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
             return (
               <div key={d.directionId} className="min-w-0">
                 {!pickable && <h3 className="text-base font-black">{d.label}</h3>}
-                <RouteStrip className="mt-2" stops={d.stops} directionLabel={d.label} delaysStart={d.delaysStart} bunchingForms={d.bunchingForms} />
+                <DirectionStrip className="mt-2" v3={v3} directionId={d.directionId} band="all" uncertain={uncertain} />
                 {notes.map(n => <p key={n} className="mt-2 max-w-3xl text-sm text-[var(--text-secondary)]">{n}</p>)}
               </div>
             );
