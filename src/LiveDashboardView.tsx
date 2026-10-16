@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
-import { dateRangeText, rankStops, runTimeStretchLabel, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
-import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, type DayKind, type Kpi } from './utils/liveKpi';
+import { branchFigures, branchRunTimeLine, dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, weekRangeLine, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import DataTable from './components/ui/DataTable';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
@@ -40,7 +40,23 @@ function Delta({ k }: { k: Kpi }) {
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.</p>;
-  const tiles = kpiTiles(w, weekDailyValues(v3));
+  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), runTimeTileStretch(v3.runningTime?.stretch, n => shortStopName(titleCase(n))))} caption={weekRangeLine(w)} />;
+}
+
+/** The week comparison explained, at the bottom of the page (the tiles carry only the two date ranges). */
+function WeekMethod({ v3, toFull }: { v3: LiveV3; toFull: (hash: string) => void }) {
+  if (!v3.weekly) return null;
+  return (
+    <details className="mt-12" id="dash-method">
+      <summary className="cursor-pointer text-xl font-black tracking-tight">How this is measured</summary>
+      <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{weekCaption(v3.weekly)} {NOISE_RULE}</p>
+      <p className="mt-3"><ArrowLink href="?view=analysis#method" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('method'); }}>The full method, in Full analysis</ArrowLink></p>
+    </details>
+  );
+}
+
+/** The tiles row itself: the route dashboard and the agency dashboard show their figures the same way. */
+export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption: string }) {
   return (
     <section aria-label="This week compared with last week" className="mt-5">
       <ul className={`grid grid-cols-2 gap-3 sm:grid-cols-3 ${tiles.length >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
@@ -56,7 +72,7 @@ export function KpiRow({ v3 }: { v3: LiveV3 }) {
           );
         })}
       </ul>
-      <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">{weekCaption(w)} {NOISE_RULE}</p>
+      <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">{caption}</p>
     </section>
   );
 }
@@ -129,6 +145,14 @@ function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: num
                 <div className="mt-2"><RunTimeChart hours={g.hours} scale={scale} ariaLabel={`${g.label}: run time against the schedule by the hour the trip starts. ${runTimeTakeaway(g.label, g.hours)}`} /></div>
               </>
             ) : <p className="mt-1 text-sm text-[var(--text-muted)]">Too few trips were measured {BAND_WORDS[band]} to draw this.</p>}
+            {(rt?.branches?.[String(g.d)] ?? []).length > 0 && (
+              <div className="mt-3">
+                <h4 className="text-sm font-black">Longer patterns, each end to end</h4>
+                <ul className="mt-1 space-y-1 text-sm text-[var(--text-secondary)]">
+                  {rt!.branches![String(g.d)].flatMap(b => { const f = branchFigures(b, band); return f ? [<li key={`${b.fromStopId}-${b.toStopId}`} className={f.n < 30 ? 'text-[var(--text-dim)]' : ''}>{branchRunTimeLine(b, n => shortStopName(titleCase(n)), f)}{f.n < 30 ? ' Few trips: treat with care.' : ''}</li>] : []; })}
+                </ul>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -245,6 +269,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
       <section className="mt-10 max-w-xl" aria-label="The stops most often late">
         <ErrorBoundary label={bad('The stop list')}><WorstStops v3={v3} data={data} dir={dir} uncertain={uncertain} toFull={toFull} /></ErrorBoundary>
       </section>
+      <WeekMethod v3={v3} toFull={toFull} />
     </>
   );
 }

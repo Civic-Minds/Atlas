@@ -44,7 +44,7 @@ describe('route metadata table', () => {
     const main = readFileSync('src/main.tsx', 'utf8');
     const app = readFileSync('src/App.tsx', 'utf8');
     const routePaths = [...main.matchAll(/<Route path="(\/[^"*]*)"/g)].map(m => m[1])
-      .filter(p => !p.startsWith('/dev/') && p !== '/apps/night' && p !== '/docs' && p !== '/agencies' && p !== '/agency/:slug' && p !== '/area/:slug' && p !== '/apps/live/:agency/:route'); // /apps/night and /docs only redirect; the agency index is prerendered per build; the Live route dashboard is local-only
+      .filter(p => !p.startsWith('/dev/') && p !== '/apps/night' && p !== '/docs' && p !== '/agencies' && p !== '/agency/:slug' && p !== '/area/:slug' && p !== '/apps/live/:agency/:route' && p !== '/apps/live/:agency'); // /apps/night and /docs only redirect; the agency index is prerendered per build; the Live route and agency dashboards are local-only
     const appPaths = [...app.matchAll(/'(\/apps\/[a-z]+)':/g)].map(m => m[1]);
     const research = [...readFileSync('shared/config.ts', 'utf8').matchAll(/: '(\/research[^']*)'/g)].map(m => m[1]);
     const known = new Set([...SEO_ROUTES.map(r => r.path), ...UNREACHABLE_APP_PATHS]);

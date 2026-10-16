@@ -26,6 +26,8 @@ export interface DashboardStretch {
   /** Share of trips where delay grew by 30+ seconds across this stretch: how consistent the build-up is. */
   growShare: number;
   medianDelayMin: number; p10DelayMin: number; p90DelayMin: number;
+  /** Touches a terminal (loop and layover time): drawn, never named, and left out of the start and end figures. */
+  terminal?: boolean;
 }
 export interface DashboardBuildup {
   directionId: number; startingDelayMin: number | null;
@@ -37,10 +39,31 @@ export interface DashboardBuildup {
   start: DashboardStretch | null; biggest: DashboardStretch | null; stretches: DashboardStretch[];
 }
 /** The run of stops every regular pattern serves, trimmed to stops measured reliably; short turns count. */
-export interface RunTimeStretch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; fullRoute: boolean; mainPatternTrips: number; trips: number }
+export interface RunTimeStretch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; /** Stops on the longest pattern (older files: absent). */ routeStops?: number; fullRoute: boolean; mainPatternTrips: number; trips: number }
 /** "Run time from Spadina Station to Queens Quay, all trips", or null for an older file. */
 export function runTimeStretchLabel(s: RunTimeStretch | undefined, nice: (name: string) => string = x => x): string | null {
-  return s ? `Run time from ${nice(s.fromName)} to ${nice(s.toName)}, all trips` : null;
+  return s ? `Run time over ${s.stops} stops, ${nice(s.fromName)} to ${nice(s.toName)}, all trips` : null;
+}
+/**
+ * The run-time tile's subject, so it never reads as the whole route: "over 7 stops, Humber Loop to Park Lawn".
+ * Both directions share the tile, so both are named: "over 5–7 stops: Humber Loop to Park Lawn; Park Lawn to Stephen Dr".
+ */
+export function runTimeTileStretch(stretch: Record<string, RunTimeStretch> | undefined, nice: (name: string) => string = x => x): string | null {
+  const dirs = Object.keys(stretch ?? {}).sort();
+  if (!stretch || !dirs.length) return null;
+  const counts = [...new Set(dirs.map(d => stretch[d].stops))].sort((a, b) => a - b);
+  const n = counts.length > 1 ? `${counts[0]}–${counts[counts.length - 1]}` : String(counts[0]);
+  const ends = dirs.map(d => `${nice(stretch[d].fromName)} to ${nice(stretch[d].toName)}`);
+  return dirs.length === 1 ? `over ${n} stops, ${ends[0]}` : `over ${n} stops: ${ends.join('; ')}`;
+}
+export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: RunTimeFigures; /** By time of day (older files: absent, all day only). */ bands?: Partial<Record<DashboardBand, RunTimeFigures | null>>; byHour: Array<{ hour: number } & RunTimeFigures> }
+/** A branch's figures for a time of day: null when that period has none (or an older file has only all day). */
+export function branchFigures(b: RunTimeBranch, band: DashboardBand): RunTimeFigures | null {
+  return b.bands ? b.bands[band] ?? null : band === 'all' ? b.all : null;
+}
+/** "To Marine Parade: usually 12 min, timetable 14 (over 14 stops from Humber Loop, 215 trips)." */
+export function branchRunTimeLine(b: RunTimeBranch, nice: (name: string) => string = x => x, f: RunTimeFigures = b.all): string {
+  return `To ${nice(b.toName)}: usually ${Math.round(f.typicalMin)} min, timetable ${Math.round(f.scheduledMin)}, 1 in 10 over ${Math.round(f.p90Min)} (over ${b.stops} stops from ${nice(b.fromName)}, ${f.n.toLocaleString()} trips).`;
 }
 export interface RunTimeFigures { n: number; scheduledMin: number; typicalMin: number; p90Min: number; overMin: number }
 export interface WeekMetrics {
@@ -96,6 +119,8 @@ export interface LiveV3 {
   runningTime?: {
     /** Per direction, the stops run time is measured between (older files measure the main pattern end to end). */
     stretch?: Record<string, RunTimeStretch>;
+    /** Per direction, a line for each regular pattern that runs well past the main stretch (a branch, or the full route beside a common short turn), measured over the whole pattern. */
+    branches?: Record<string, RunTimeBranch[]>;
     bands: Record<DashboardBand, Record<string, RunTimeFigures | null>>;
     byHour: Record<string, Array<{ hour: number } & RunTimeFigures>>;
   };
@@ -162,8 +187,10 @@ export function buildupSentence(label: string, b: DashboardBuildup): string {
 /** B3's one-line takeaway above the chart: what the bars show, in the chart's own terms. */
 export function buildupTakeaway(b: DashboardBuildup, lessExactStops = 0): string {
   // The start is read at the first stop measured well (510 northbound's first stops are in the tunnel).
-  const first = b.stretches.find((s, i) => s.n >= 30 && i >= Math.max(0, lessExactStops - 1)) ?? b.stretches[0];
-  const last = [...b.stretches].reverse().find(s => s.n >= 30) ?? b.stretches[b.stretches.length - 1];
+  // Terminal stretches (the run out of and into a loop) are left out of the start and end figures.
+  const inner = b.stretches.filter(s => !s.terminal);
+  const first = b.stretches.find((s, i) => s.n >= 30 && !s.terminal && i >= Math.max(0, lessExactStops - 1)) ?? inner[0];
+  const last = [...inner].reverse().find(s => s.n >= 30) ?? inner[inner.length - 1];
   const ends = first && last ? ` (${min(first.medianDelayMin)} at the start, ${min(last.medianDelayMin)} at the end)` : '';
   if (b.kind === 'forms' && b.forms) return `Delay jumps by ${min(b.forms.medianAddedMin)} between ${b.forms.fromName} and ${b.forms.toName}, and stays up${ends}.`;
   if (b.kind === 'gradual') return `Delay builds slowly along the route; no single stretch stands out${ends}.`;

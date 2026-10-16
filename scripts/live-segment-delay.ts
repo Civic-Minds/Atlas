@@ -23,7 +23,8 @@ import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type Run
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
-import { mainStretchStops, reliableStretch } from '../shared/mainStretch.js';
+import { branchPatterns, mainStretchStops, reliableStretch, stationOrLoop } from '../shared/mainStretch.js';
+import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 
 const args: Record<string, string> = {};
@@ -679,6 +680,21 @@ for (const { svcDate, trip, base } of tripInstanceList) {
     statusByStop.set(k, m);
   });
 }
+// A station or loop where a main pattern ends (50+ trips, the same bar as the terminals above) is a terminal at every
+// one of its stops, so a car waiting in another bay of the same station is never read as delay or a hold. A rare
+// pattern short-turning at a mid-route station does not make that station a terminal.
+const terminalPlaces = new Set<string>();
+for (const p of patterns.values()) {
+  if ((tripsPerShape.get(p.id) ?? 0) < 50) continue;
+  for (const st of [p.stops[0], p.stops[p.stops.length - 1]]) {
+    const place = st ? stationOrLoop(stopsById.get(st.stopId)?.stop_name ?? '') : null;
+    if (place) terminalPlaces.add(place);
+  }
+}
+for (const p of patterns.values()) for (const st of p.stops) {
+  const place = stationOrLoop(stopsById.get(st.stopId)?.stop_name ?? '');
+  if (place && terminalPlaces.has(place)) terminalStops.add(st.stopId);
+}
 // Ends of minor scheduled patterns (e.g. "to Roncesvalles and Queen"): waits there are
 // planned layovers, not holds, so they're flagged separately from the main terminals.
 const turnbackStops = new Set<string>();
@@ -774,7 +790,7 @@ function stopsAndBuildup(rs: readonly RunDelays[]) {
   for (const dir of new Set(stops.map(x => x.directionId))) {
     stops.filter(x => x.directionId === dir && x.ranked).sort((a, b) => (b.lateShare ?? 0) - (a.lateShare ?? 0) || b.n - a.n).forEach((x, i) => { (x as typeof x & { lateRank?: number }).lateRank = i + 1; });
   }
-  const buildup = delayBuildup(rs, stopOrder, alongOf).map(d => {
+  const buildup = delayBuildup(rs, stopOrder, alongOf, stopId => terminalStops.has(stopId)).map(d => {
     const named = (s: typeof d.start) => s && { ...s, fromName: stopInfo(s.fromStopId).name, toName: stopInfo(s.toStopId).name, medianAddedMin: r1(s.medianAddedMin), addedShare: r3(s.addedShare), growShare: r3(s.growShare), medianDelayMin: r1(s.medianDelayMin), p10DelayMin: r1(s.p10DelayMin), p90DelayMin: r1(s.p90DelayMin) };
     return { directionId: d.directionId, startingDelayMin: r1(d.startingDelayMin), kind: d.kind, climbMin: r1(d.climbMin), forms: named(d.forms), start: named(d.start), biggest: named(d.biggest), stretches: d.stretches.map(s => named(s)) };
   });
@@ -852,8 +868,21 @@ for (const p of busiest) if (!mainPatternId.has(p.directionId)) mainPatternId.se
 const mainPatternRunTimes = runTimes.filter(r => mainPatternId.get(r.directionId) === r.patternId);
 // Run time over each direction's main stretch (the stops every regular pattern serves, so short turns count too),
 // trimmed at either end to stops whose departures are measured reliably, against the timetable over the same stops.
-const stretchInfo: Record<string, { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; fullRoute: boolean; mainPatternTrips: number; trips: number }> = {};
+const stretchInfo: Record<string, { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; routeStops: number; fullRoute: boolean; mainPatternTrips: number; trips: number }> = {};
 const mainRunTimes: RunTimeRow[] = [];
+/** Run time between two stops for every run that left the first and reached the second, against the timetable there. */
+function runTimesBetween(d: number, a: string, b: string): RunTimeRow[] {
+  const out: RunTimeRow[] = [];
+  for (const r of stretchRuns.filter(x => x.directionId === d)) {
+    const sa = r.sched.get(a), sb = r.sched.get(b), ta = r.dep.get(a), tb = r.arr.get(b) ?? r.dep.get(b);
+    if (!sa || !sb || ta == null || tb == null) continue;
+    const schedSec = sb.arr - sa.dep, actualSec = tb - ta;
+    if (schedSec > 0 && actualSec > 0 && Math.abs(actualSec - schedSec) <= 3600) out.push({ date: r.date, directionId: d, startHour: Math.floor(sa.dep / 3600), schedSec, actualSec });
+  }
+  return out;
+}
+type BranchRunTime = { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: NonNullable<ReturnType<typeof runTimeStat>>; bands: Record<TimeBand | 'all', ReturnType<typeof runTimeStat>>; byHour: Array<{ hour: number } & NonNullable<ReturnType<typeof runTimeStat>>> };
+const branchesByDir: Record<string, BranchRunTime[]> = {};
 for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
   const main = mainStretchStops(dirPatterns.map(p => ({ stops: p.stops.map(s => s.stopId), trips: tripsPerShape.get(p.id) ?? 0 })));
@@ -868,26 +897,45 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   const stretch = reliableStretch(main, coverage);
   if (!stretch) continue;
   const a = stretch[0], b = stretch[stretch.length - 1];
-  for (const r of stretchRuns.filter(x => x.directionId === d)) {
-    const sa = r.sched.get(a), sb = r.sched.get(b), ta = r.dep.get(a), tb = r.arr.get(b) ?? r.dep.get(b);
-    if (!sa || !sb || ta == null || tb == null) continue;
-    const schedSec = sb.arr - sa.dep, actualSec = tb - ta;
-    if (schedSec > 0 && actualSec > 0 && Math.abs(actualSec - schedSec) <= 3600) mainRunTimes.push({ date: r.date, directionId: d, startHour: Math.floor(sa.dep / 3600), schedSec, actualSec });
+  mainRunTimes.push(...runTimesBetween(d, a, b));
+  // Branches: a regular pattern with its own long tail gets its own line, over the whole pattern (trimmed the same way).
+  // Patterns are one per shape, so two shapes between the same two stops are one line: rows are every run between those
+  // stops whatever its shape, so the shared line already counts all their trips, once.
+  const branchLines: BranchRunTime[] = [];
+  const seenSpans = new Set<string>();
+  for (const p of branchPatterns(dirPatterns.map(p => ({ p, stops: p.stops.map(s => s.stopId), along: p.stops.map(s => s.along), trips: tripsPerShape.get(p.id) ?? 0 })), main, SHARED_STRETCH_MIN_STOPS, SHARED_STRETCH_MIN_KM * 1000)) {
+    const span = reliableStretch(p.stops, coverage);
+    if (!span || (span[0] === a && span[span.length - 1] === b)) continue;
+    const key = `${span[0]}|${span[span.length - 1]}`;
+    if (seenSpans.has(key)) continue;
+    seenSpans.add(key);
+    const rows = runTimesBetween(d, span[0], span[span.length - 1]).filter(r => inWindow.has(r.date));
+    const stat = runTimeStat(rows);
+    if (!stat) continue;
+    branchLines.push({
+      fromStopId: span[0], toStopId: span[span.length - 1], fromName: stopInfo(span[0]).name, toName: stopInfo(span[span.length - 1]).name, stops: span.length,
+      all: stat,
+      bands: Object.fromEntries(BANDS.map(band => [band, runTimeStat(rows.filter(r => band === 'all' || bandForHour(r.startHour) === band))])) as Record<TimeBand | 'all', ReturnType<typeof runTimeStat>>,
+      byHour: [...new Set(rows.map(r => r.startHour % 24))].sort((x, y) => x - y).map(h => ({ hour: h, ...runTimeStat(rows.filter(r => r.startHour % 24 === h))! })),
+    });
   }
+  if (branchLines.length) branchesByDir[String(d)] = branchLines;
   const longest = dirPatterns.reduce<Pattern | null>((x, y) => (!x || y.stops.length > x.stops.length ? y : x), null);
   stretchInfo[String(d)] = {
-    fromStopId: a, toStopId: b, fromName: stopInfo(a).name, toName: stopInfo(b).name, stops: stretch.length,
+    fromStopId: a, toStopId: b, fromName: stopInfo(a).name, toName: stopInfo(b).name, stops: stretch.length, routeStops: longest?.stops.length ?? stretch.length,
     fullRoute: !!longest && longest.stops[0]?.stopId === a && longest.stops[longest.stops.length - 1]?.stopId === b,
     mainPatternTrips: mainPatternRunTimes.filter(r => r.directionId === d && inWindow.has(r.date)).length,
     trips: mainRunTimes.filter(r => r.directionId === d && inWindow.has(r.date)).length,
   };
 }
+console.log(`runtime branches: ${Object.entries(branchesByDir).map(([d, bs]) => bs.map(x => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) n ${x.all.n}`).join('; ')).join('; ') || 'none'}`);
 console.log(`runtime stretch: ${Object.entries(stretchInfo).map(([d, x]) => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) trips ${x.mainPatternTrips} -> ${x.trips}`).join('; ')}`);
 const windowRunTimes = mainRunTimes.filter(r => inWindow.has(r.date));
 const directionsSeen = [...new Set(windowRunTimes.map(r => r.directionId))].sort();
 const rtFor = (rows: readonly RunTimeRow[]) => runTimeStat(rows);
 const runningTimeV3 = {
   stretch: stretchInfo,
+  branches: branchesByDir,
   bands: Object.fromEntries(BANDS.map(band => [band, Object.fromEntries(directionsSeen.map(d => [String(d), rtFor(windowRunTimes.filter(r => r.directionId === d && (band === 'all' || bandForHour(r.startHour) === band)))]))])),
   byHour: Object.fromEntries(directionsSeen.map(d => [String(d), [...new Set(windowRunTimes.filter(r => r.directionId === d).map(r => r.startHour % 24))].sort((a, b) => a - b)
     .map(h => ({ hour: h, ...rtFor(windowRunTimes.filter(r => r.directionId === d && r.startHour % 24 === h))! }))])),
