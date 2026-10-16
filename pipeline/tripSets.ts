@@ -15,7 +15,7 @@
 import { TIME_PERIODS, type PeriodKey } from '../shared/config.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
-import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, computeHeadwayStats } from './transit-phase2.js';
+import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, MIN_SCHEDULE_DEPARTURES, computeHeadwayStats } from './transit-phase2.js';
 import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
@@ -87,6 +87,12 @@ export interface DirectionStretches {
    * only the pieces that run at night must pass.
    */
   disconnected?: boolean;
+  /**
+   * #899's midday input as main's rule reads it: the direction's longest midday wait at its
+   * best-served stop over every trip, and whether that stop has a typical midday gap. Set by the
+   * caller; without it the main stretch's own midday is read.
+   */
+  midday899?: { wait: number | null; hasReading: boolean };
   /**
    * The same direction built from only the trips that run in the 2-5am window (nightOnlyTrips):
    * the night version of the route, judged when the daytime main stretch has no night service
@@ -178,12 +184,17 @@ export function directionStretches(
   // (a night route) is shaped by the patterns that run steadily in any period.
   // #720's minimum evidence for a timetable, on the pattern's own trips (not phase 2's per-shape
   // class, which a feed giving each trip its own shape defeats): fewer than
-  // MIN_PEAK_BLOCK_DEPARTURES trips, or all of them within BURST_MAX_SPAN_MINUTES, is a burst and
-  // never a branch (TransLink 044's 3-trip Dundarave Express).
+  // MIN_SCHEDULE_DEPARTURES trips, or all of them within BURST_MAX_SPAN_MINUTES, is one-off or a
+  // burst and never a branch; a pattern running only in one rush-hour period needs
+  // MIN_PEAK_BLOCK_DEPARTURES there (TransLink 044's Dundarave Express: 15:06, 16:03, 17:07). Three
+  // trips spread over the day are a schedule (GO 88C, Saturday 10:00-14:30).
+  const peakWindows = PERIOD_WINDOWS.filter(w => w.key === 'amPeak' || w.key === 'pmPeak');
   const eligible = all.filter(p => {
-    if (p.trips.length < MIN_PEAK_BLOCK_DEPARTURES) return false;
+    if (p.trips.length < MIN_SCHEDULE_DEPARTURES) return false;
     const starts = p.trips.map(t => t.visits[0].minutes);
-    return Math.max(...starts) - Math.min(...starts) > BURST_MAX_SPAN_MINUTES;
+    if (Math.max(...starts) - Math.min(...starts) <= BURST_MAX_SPAN_MINUTES) return false;
+    const onePeak = peakWindows.some(w => starts.every(t => t >= w.start && t < w.end));
+    return !onePeak || p.trips.length >= MIN_PEAK_BLOCK_DEPARTURES;
   });
   const steadyIn = (periods: readonly PeriodKey[]) => eligible.filter(p => runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)], periods));
   let regular = steadyIn(DAYTIME_PERIODS);
@@ -526,10 +537,12 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     return t.length >= 2 ? Math.round(computeHeadwayStats(t).median) : null;
   };
   const allDays = [d.main, ...allDayTails].map(allDayOf);
-  // The #899 rule unchanged: a midday reading with a wait under three hours, or a wait of at most
-  // ALL_DAY_MIDDAY_MAX_WAIT, means the direction runs at midday.
-  const middayWait = main.midday.coverage;
-  const middayHasReading = main.midday.headway != null && middayWait != null && middayWait < 3 * 60;
+  // The #899 rule unchanged, on main's input (the direction's best-served stop over every trip,
+  // midday899): a midday reading with a wait under three hours, or a wait of at most
+  // ALL_DAY_MIDDAY_MAX_WAIT, means the direction runs at midday (GO 88 Saturday: 90 and 95 at
+  // Durham College, though 182 at King St on the local main stretch).
+  const middayWait = d.midday899 ? d.midday899.wait : main.midday.coverage;
+  const middayHasReading = (d.midday899 ? d.midday899.hasReading : main.midday.headway != null) && middayWait != null && middayWait < 3 * 60;
   const middayRuns = middayHasReading || (middayWait != null && middayWait <= ALL_DAY_MIDDAY_MAX_WAIT);
   // Limited (#720): a direction whose main stretch does not run at midday by that rule has no
   // all-day value: rush-hour-only (OC Transpo 226) or evening-only service, and a median that

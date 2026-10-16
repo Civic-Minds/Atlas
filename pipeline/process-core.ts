@@ -1843,6 +1843,15 @@ export async function processGtfsBuffer(
     directionMiddayWaitByKey.set(key, best);
     return best;
   };
+  // The same best-served stop's midday reading (a typical midday gap there), for the stretch
+  // selector's limited decision and midday cap (step 6): one #899 input for both.
+  const directionMidday899 = (key: string): { wait: number | null; hasReading: boolean } => {
+    const wait = directionMiddayWait(key);
+    if (wait == null) return { wait, hasReading: false };
+    const hasReading = [...(stopDepsByGroup.get(key)?.values() ?? [])].some(times =>
+      computePeriodCoverageHeadways(times).midday === wait && computePeriodHeadways(times).midday != null);
+    return { wait, hasReading };
+  };
 
   const rowRunsAtNight = new Map<GeoJsonFeature, boolean>();
   const rowNightStops = new Map<GeoJsonFeature, string[]>();
@@ -3030,6 +3039,7 @@ export async function processGtfsBuffer(
       // The night version (Ryan, 2026-10-15): the same direction from its 2-5am trips only.
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
+      stretches.midday899 = directionMidday899(gKey);
       stretchesByKey.set(gKey, stretches);
     }
     options?.onStretches?.({ stretches: stretchesByKey, stopDepsByGroup });

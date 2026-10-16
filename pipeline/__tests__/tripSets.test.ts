@@ -650,4 +650,9 @@ describe('step 6 review: all-day value and limited service from the stretch, not
     expect(rows[0].routeAllDayHeadway).toBe(10);
     expect(rows.some(p => p.frequentService)).toBe(false);
   });
+  it('GO 88 Saturday (every 90-120 at midday both ways) is not limited: the 3-trip 88C spread over the day is a schedule and shapes the main stretch', async () => {
+    const rows = r_(await run('go-88-saturday', 'go'), '88', 'Saturday');
+    expect(rows.some(p => p.routeHasLimitedDirection === true)).toBe(false);
+    expect(rows[0].routeAllDayHeadway).toBeLessThan(999999);
+  });
 });

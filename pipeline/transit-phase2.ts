@@ -66,6 +66,8 @@ export const BURST_MAX_SPAN_MINUTES = 90;
 export const MIN_PEAK_BLOCK_DEPARTURES = 4;
 /** #720: service spanning less than this share of the grading window is limited (time-limited), not all-day. */
 export const ALL_DAY_MIN_COVERAGE = 0.4;
+/** #720: three repeated departures are the minimum evidence for a schedule; one or two trips are one-off. */
+export const MIN_SCHEDULE_DEPARTURES = 3;
 /** ...and this many minutes from first to last departure, at least. */
 export const MIN_PEAK_BLOCK_SPAN_MINUTES = 60;
 
@@ -637,7 +639,7 @@ export function applyAnalysisCriteria(
         // The 07:00–22:00 coverage check remains a coverage signal, not proof of irregularity.
         // Three repeated departures are the minimum evidence for a schedule; one or two trips
         // remain irregular even when their single gap happens to match a published tier.
-        const hasSustainedCadence = analysisWindow.length >= 3 && determinedTier !== 'span';
+        const hasSustainedCadence = analysisWindow.length >= MIN_SCHEDULE_DEPARTURES && determinedTier !== 'span';
         // The overnight fallback exists for genuinely overnight-only service. One or two trips
         // that merely fall outside the daytime window (stl AOUT2626E: 06:09 and 10:07) are made
         // irregular below, as they would be inside it, when the route has regular service (#732).
