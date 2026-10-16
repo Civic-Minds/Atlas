@@ -19,6 +19,8 @@ interface Props {
   live?: boolean;
   // Limited service
   limited?: boolean;
+  /** Words for the limited state; "no regular service" where the filter says the route has none in the period. */
+  limitedLabel?: string;
   edgeGapAllowance?: 'opening' | 'closing' | 'both';
   onEdgeGapAllowanceClick?: () => void;
   // Filtering
@@ -36,7 +38,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
+export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const interactive = !!(onHoverStart && onHoverEnd);
@@ -79,7 +81,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
         {limited && (
           <span className="inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
-            limited
+            {limitedLabel}
           </span>
         )}
         {!limited && headway != null && !showRange && (

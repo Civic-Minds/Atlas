@@ -54,3 +54,30 @@ export function clipBetweenStopIndices(
     : stopPositions[toIdx];
   return clipLinestring(coords, tStart, tEnd);
 }
+
+/**
+ * The parts of a line that run between the given stops (a route whose night service covers only
+ * part of it). Consecutive night stops form one piece; a gap in the stop order starts another.
+ * Returns null when the feature has no usable stop positions, so the caller draws the whole line.
+ */
+export function clipToStopIds(
+  coords: number[][],
+  stopOrder: string[] | undefined,
+  stopPositions: number[] | undefined,
+  keepStopIds: string[],
+): number[][][] | null {
+  if (!stopOrder || !stopPositions || stopOrder.length !== stopPositions.length || stopOrder.length < 2) return null;
+  const keep = new Set(keepStopIds);
+  const pieces: number[][][] = [];
+  let from = -1;
+  for (let i = 0; i <= stopOrder.length; i++) {
+    const on = i < stopOrder.length && keep.has(stopOrder[i]);
+    if (on && from < 0) from = i;
+    if (!on && from >= 0) {
+      const clipped = clipBetweenStopIndices(coords, stopPositions, from, i - 1);
+      if (clipped) pieces.push(clipped);
+      from = -1;
+    }
+  }
+  return pieces;
+}

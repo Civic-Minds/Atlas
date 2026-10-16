@@ -4,6 +4,7 @@ import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange } from './headwayText';
+import { routeContract } from './stretchCard';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -236,6 +237,13 @@ interface RouteListCadence {
 }
 
 function routeListCadence(features: readonly ShapeProperties[], period: TimePeriod): RouteListCadence {
+  // The filter's own value for the route (frequency focus): lists never show a number the map's filter disagrees with, and show
+  // the D1 range ("every 8–25") as the shared-stretch range: its low end is the best stretch, its high end the filter value.
+  const contract = routeContract(features, period);
+  if (contract) {
+    const { filterValue, range } = contract;
+    return { headway: filterValue, shared: filterValue != null && range && range[0] < filterValue ? range[0] : null };
+  }
   const byDirection = new Map<number | null, ShapeProperties[]>();
   for (const feature of features) {
     const direction = feature.directionId ?? null;
@@ -288,13 +296,23 @@ export function routeListSharedHeadway(features: readonly ShapeProperties[], per
  * number (#708); a direction that runs with no cadence makes the route limited (#821).
  */
 export function routeListDisplayLimited(features: readonly ShapeProperties[], period: TimePeriod): boolean {
+  // No regular service (the filter's null) is its own wording, not "limited".
+  if (routeListNoRegularService(features, period)) return false;
   return routeListDisplayHeadway(features, period) == null
     && features.some(feature => routeCardDisplayLimited(feature, period));
+}
+
+/** The filter says the route has no regular service in this period: lists say "no regular service", never a number. */
+export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {
+  const contract = routeContract(features, period);
+  return contract != null && contract.filterValue == null && contract.runs;
 }
 
 export interface RouteListDisplay {
   headway: number | null;
   limited: boolean;
+  /** The filter's null for a route that does run in the period: show "no regular service". */
+  noRegular?: boolean;
   /** Lower end of a display-only range on the shared stretch; absent when there is none. */
   sharedHeadway?: number;
 }
@@ -303,6 +321,7 @@ export interface RouteListDisplay {
 export function routeListDisplay(features: readonly ShapeProperties[], period: TimePeriod): RouteListDisplay {
   const { headway, shared } = routeListCadence(features, period);
   const display: RouteListDisplay = { headway, limited: routeListDisplayLimited(features, period) };
+  if (routeListNoRegularService(features, period)) display.noRegular = true;
   if (shared != null) display.sharedHeadway = shared;
   return display;
 }

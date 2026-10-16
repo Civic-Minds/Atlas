@@ -3,6 +3,7 @@ import * as maplibregl from 'maplibre-gl';
 import type { DayType } from '../../../../shared/dayTypes';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../../shared/frequentService';
 import { effectiveMode, ON_DEMAND_MODE } from '../../../../shared/modes';
+import { clipToStopIds } from '../../../utils/lineClip';
 import { nightServiceKey, type NightServiceFrequency } from '../../../../shared/nightService';
 
 type MapRef = React.RefObject<maplibregl.Map | null>;
@@ -59,6 +60,13 @@ export function useNightServiceLayer(
     return Object.values(layers).flatMap(collection => collection.features.filter(feature => {
       const properties = feature.properties as Record<string, any> | null;
       return feature.geometry.type === 'LineString' && (properties?.[nightServiceKey(nightServiceFrequency)] === true || (nightServiceFrequency === 60 && properties?.nightService === true));
+    }).flatMap((feature): GeoJSON.Feature[] => {
+      // A route that runs at night on only part of it draws just the stops it serves.
+      const p = feature.properties as Record<string, any> | null;
+      if (nightServiceFrequency !== 60 || p?.nightServicePartOfRoute !== true || !Array.isArray(p.nightServiceStops)) return [feature];
+      const pieces = clipToStopIds((feature.geometry as GeoJSON.LineString).coordinates, p.stopOrder, p.stopPositions, p.nightServiceStops);
+      if (!pieces) return [feature];
+      return pieces.map(coordinates => ({ ...feature, geometry: { type: 'LineString', coordinates } }));
     }));
   }, [layers, nightServiceFrequency, nightServiceView]);
 

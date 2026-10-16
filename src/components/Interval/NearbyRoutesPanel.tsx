@@ -77,9 +77,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                       {r.sharedHeadway != null ? headwayAboutRange(r.sharedHeadway, r.headway) : fmtHeadway(r.headway)}
                     </span>
                   )}
-                  {r.headway == null && r.limited && (
+                  {r.headway == null && (r.limited || r.noRegular) && (
                     <span className="text-xs font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
-                      limited
+                      {r.noRegular ? 'no regular service' : 'limited'}
                     </span>
                   )}
                 </div>

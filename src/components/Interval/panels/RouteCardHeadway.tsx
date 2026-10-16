@@ -41,6 +41,7 @@ import {
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
+import { hasStretchRoles, routeContract } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
@@ -250,6 +251,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const hasNoRouteShape = currentRoute.directions.length > 0
     && currentRoute.directions.every(direction => direction.noRouteShape);
   const hasWeekdayTierVariation = currentRoute.directions.some(direction => direction.weekdayTierVariation);
+  // Frequency focus: rows come from the stretches, and the route-level number is the filter's own value with its range.
+  const stretchMode = hasStretchRoles(currentRoute.directions);
+  const contract = routeContract(currentRoute.directions, period);
+  const noRegularService = contract != null && contract.filterValue == null && contract.runs;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
@@ -356,6 +361,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   // each direction's shared-stretch (or combined) cadence, as in the direction
   // rows below; the slower direction decides, as everywhere else on the card.
   const scheduleHeadline = (() => {
+    if (contract) {
+      if (contract.filterValue == null) return contract.runs ? 'Scheduled: no regular service' : null;
+      return `Scheduled: ${contract.range ? headwayAboutRange(contract.range[0], contract.range[1]) : headwayAbout(contract.filterValue)}`;
+    }
     const cores = displayGroups.map(group => {
       const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
       const hasCore = shared != null || shouldShowTrunkSummary(group.realTier, period);
@@ -628,11 +637,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           return displayGroups.map((group, gi) => {
             // CIV-82: real pooled departures replace the reciprocal-of-medians estimate when the
             // data has them ("Shared stretch every N"; branch rows keep each branch's own M).
-            const groupShared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
+            const groupShared = stretchMode ? null : sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
             // A route that fails the filter as a whole can still have a shared stretch that passes.
             const onlySharedPasses = groupShared != null && maxHeadway !== Infinity
               && group.realTier.some(d => !featurePassesHeadwayFilter(d, period, maxHeadway));
-            const groupHasCoreSummary = groupShared != null || shouldShowTrunkSummary(group.realTier, period);
+            const groupHasCoreSummary = !stretchMode && (groupShared != null || shouldShowTrunkSummary(group.realTier, period));
             const groupCoreHeadway = groupShared?.headway ?? (groupHasCoreSummary
               ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)
               : null);
@@ -712,12 +721,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       const trunkHw = hoveredHour == null && period !== 'all'
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
-                      const isLimited = displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);
+                      const isLimited = noRegularService && hoveredHour == null
+                        ? true
+                        : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);
                       return (
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             label={label}
-                            headway={displayH ?? undefined}
+                            headway={noRegularService && hoveredHour == null ? undefined : displayH ?? undefined}
+                            limitedLabel={noRegularService && hoveredHour == null ? 'no regular service' : undefined}
                             colorHeadway={hoveredHour == null ? branchFilterHeadway : undefined}
                             headwayLabel={hoveredHour == null ? routeCardCoverageText(d, period) : undefined}
                             trunkHeadway={trunkHw}

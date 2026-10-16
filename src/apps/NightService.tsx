@@ -30,6 +30,7 @@ interface NightServiceRouteSummary {
   routeId: string | null;
   routeShortName: string | null;
   routeLongName: string | null;
+  partOfRoute?: boolean;
   destinations: string[];
 }
 
@@ -37,6 +38,7 @@ interface NightServiceFeatureProperties {
   nightService?: boolean;
   nightService30?: boolean;
   nightService60?: boolean;
+  nightServicePartOfRoute?: boolean;
   routeId?: string | null;
   routeShortName?: string | null;
   routeLongName?: string | null;
@@ -147,6 +149,9 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
         routeLongName: properties.routeLongName ?? indexed?.routeLongName ?? null,
         destinations: [],
       };
+      // Part of the route only when every lit row of it is partial.
+      const partial = frequency === 60 && properties.nightServicePartOfRoute === true;
+      summary.partOfRoute = summary.partOfRoute === undefined ? partial : summary.partOfRoute && partial;
       const headsign = properties.headsign ?? indexed?.headsign;
       if (headsign && !summary.destinations.includes(headsign)) summary.destinations.push(headsign);
       entry.routes.set(summaryKey, summary);
@@ -166,7 +171,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
         ),
       }))
       .filter(agency => agency.agencyName.toLowerCase().includes(q) || agency.routes.length > 0);
-  }, [data, query, visibleRoutes]);
+  }, [data, query, visibleRoutes, frequency]);
 
   if (!active) return null;
 
@@ -238,6 +243,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
                       To {route.destinations.join(' · ')}
                     </div>
                   )}
+                  {route.partOfRoute && <div className="mt-0.5 text-xs font-bold text-[var(--text-dim)]">Night service on part of the route</div>}
                   </div>
                 </ListRow>
               ))}
