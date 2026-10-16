@@ -128,13 +128,10 @@ describe('Live route dashboard', () => {
     };
     renderPage({ ...ready, v3: rich });
     await screen.findByRole('heading', { name: /how it is running/ });
-    // This week against last week: tiles with a change chip, coloured only beyond normal week-to-week noise.
-    const weekRegion = screen.getByRole('region', { name: /This week compared with last week/ });
-    const lateTile = within(weekRegion).getByLabelText(/^Late: 9%, last week 12%, better$/);
-    expect(within(lateTile).getByText(/3 pts/)).toBeTruthy();
-    expect(within(weekRegion).getByLabelText(/^Trips that ran: 96%, last week 99%, worse$/)).toBeTruthy();
-    // Bunched 20% both weeks: about the same, not coloured.
-    expect(within(weekRegion).getByLabelText(/^Bunched or gapped: 20%, last week 20%, about the same$/)).toBeTruthy();
+    // This week against last week: the dashboard's own tiles (same labels and change rule as the dashboard view).
+    const weekRegion = screen.getAllByRole('region', { name: /This week compared with last week/ })[0];
+    for (const label of ['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
+    expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
     expect(screen.getByText(/left out of both weeks/)).toBeTruthy();
     expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();
     expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
