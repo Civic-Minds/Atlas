@@ -14,6 +14,7 @@ import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
 import Pill from './components/ui/Pill';
 import LiveOffNotice from './components/LiveOffNotice';
+import LiveDashboardView from './LiveDashboardView';
 import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts/ProfileBars';
 import HourBars from './components/charts/HourBars';
 import { PAGE_ACTION, TILE } from './pageStyles';
@@ -490,6 +491,13 @@ export default function LiveRoutePage() {
   const [dir, setDir] = useState<number | null>(() => { const d = new URLSearchParams(window.location.search).get('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   // The filters live in the address, so a link reopens the same view.
   useEffect(() => { syncUrlParams({ band: band === 'all' ? null : band, dir: dir == null ? null : String(dir) }); }, [band, dir]);
+  // The dashboard is the default; ?view=analysis is the full page.
+  const [view, setView] = useState<'dashboard' | 'analysis'>(() => (new URLSearchParams(window.location.search).get('view') === 'analysis' ? 'analysis' : 'dashboard'));
+  useEffect(() => { syncUrlParams({ view: view === 'analysis' ? 'analysis' : null }); }, [view]);
+  useEffect(() => {
+    if (view !== 'analysis' || !window.location.hash) return;
+    document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
+  }, [view, state.kind]);
   if (!FEATURES.live) return <LiveOffNotice />;
   const title = `${agency.toUpperCase()} ${route}`;
   const back = <a href="/apps/live" className={`${PAGE_ACTION} mt-6`}>Open Live <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>;
@@ -526,6 +534,15 @@ export default function LiveRoutePage() {
           return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{f.text}</p> : null;
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
+        <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="View">
+          <Pill size="segment" selected={view === 'dashboard'} onClick={() => setView('dashboard')}>Dashboard</Pill>
+          <Pill size="segment" selected={view === 'analysis'} onClick={() => setView('analysis')}>Full analysis</Pill>
+        </div>
+        {view === 'dashboard' ? (
+          <LiveDashboardView v3={v3} data={bandData} band={band} dir={dir} uncertain={uncertain} note={data.note} title={title}
+            filters={<Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} />}
+            toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
+        ) : (<>
         <Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} />
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} band={band} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
@@ -536,6 +553,7 @@ export default function LiveRoutePage() {
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label="How this is measured could not be drawn."><Method data={data} /></ErrorBoundary>
+        </>)}
       </article>
     </PageShell>
   );

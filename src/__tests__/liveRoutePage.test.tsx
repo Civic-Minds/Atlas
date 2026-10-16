@@ -40,7 +40,7 @@ function renderPage(response: LiveDashboardResponse | Error, path = '/apps/live/
 
 describe('Live route dashboard', () => {
   beforeEach(() => {
-    window.history.replaceState(null, '', '/apps/live/ttc/505');
+    window.history.replaceState(null, '', '/apps/live/ttc/505?view=analysis');
     vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
   });
@@ -86,7 +86,7 @@ describe('Live route dashboard', () => {
   });
 
   it('opens on the view in the address', async () => {
-    window.history.replaceState(null, '', '/apps/live/ttc/505?band=amPeak&dir=0&day=weekday');
+    window.history.replaceState(null, '', '/apps/live/ttc/505?view=analysis&band=amPeak&dir=0&day=weekday');
     renderPage(ready);
     await screen.findByRole('heading', { name: /how it is running/ });
     expect(screen.getByRole('button', { name: 'AM peak' }).getAttribute('aria-pressed')).toBe('true');
