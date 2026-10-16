@@ -41,7 +41,7 @@ import {
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
-import { hasStretchRoles, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
+import { hasStretchRoles, routeAllDayContract, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
@@ -254,7 +254,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   // Frequency focus: rows come from the stretches, and the route-level number is the filter's own value with its range.
   const stretchMode = hasStretchRoles(currentRoute.directions);
   const contract = routeContract(currentRoute.directions, period);
-  const noRegularService = contract != null && contract.filterValue == null && contract.runs;
+  // All day reads the route's all-day filter value (routeAllDayHeadway), the same as the lists.
+  const allDay = period === 'all' ? routeAllDayContract(currentRoute.directions) : undefined;
+  const noRegularService = (contract != null && contract.filterValue == null && contract.runs)
+    || (allDay != null && allDay.filterValue == null);
+  const noRegularLabel = allDay?.limited ? 'limited' : 'no regular service';
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
@@ -726,7 +730,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all'
                         ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
                         : undefined;
-                      const directionFallback = typeof directionH === 'number' ? directionH : undefined;
+                      const allDayH = allDay?.filterValue != null && hoveredHour == null ? allDay.filterValue : undefined;
+                      // All day: every row reads the route's all-day value, the number the lists and the map filter use.
+                      const directionFallback = allDayH ?? (typeof directionH === 'number' ? directionH : undefined);
                       const fallbackRange = directionFallback != null && contract?.range && contract.range[0] < directionFallback && contract.range[1] >= directionFallback
                         ? headwayAboutRange(contract.range[0], directionFallback)
                         : undefined;
@@ -744,7 +750,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             label={label}
                             headway={noRegularService && hoveredHour == null ? undefined : displayH ?? undefined}
-                            limitedLabel={noRegularService && hoveredHour == null ? 'no regular service' : undefined}
+                            limitedLabel={noRegularService && hoveredHour == null ? noRegularLabel : undefined}
                             colorHeadway={hoveredHour == null ? branchFilterHeadway : undefined}
                             headwayLabel={hoveredHour == null && variantH === undefined ? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period)) : undefined}
                             trunkHeadway={trunkHw}
