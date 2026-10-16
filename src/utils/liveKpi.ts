@@ -4,6 +4,7 @@
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
 import { dailyNoise, dateRangeText, weekChangeTone, type CompareKey, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
+import { LATE_TILE_CAPTION } from '../../shared/liveWording';
 export { NOISE_RULE } from '../../shared/liveDashboard';
 
 export type KpiTone = 'better' | 'worse' | 'same';
@@ -60,7 +61,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   const mk = (key: CompareKey, label: string, value: string, sub: string, n: number, unit: string, nLast: number | null, delta: Kpi['delta'], last: string | null): Kpi => ({ key, label, value, sub, n, unit, nLastWeek: nLast, delta, lastWeekText: last });
   const compare = w.comparable;
   const tiles = [
-    mk('late', 'Late', t.late ? pct0(t.late.share) : '–', 'of departures left more than 5½ min late', t.late?.n ?? 0, 'departures', l.late?.n ?? null,
+    mk('late', 'Late', t.late ? pct0(t.late.share) : '–', LATE_TILE_CAPTION, t.late?.n ?? 0, 'departures', l.late?.n ?? null,
       compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, dailyNoise(daily.late, nThis, nLast), l.late ? pct0(l.late.share) : null) : null, l.late ? pct0(l.late.share) : null),
     mk('tripTime', 'Run time', t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : '–', t.tripTime ? `${runStretch ? `${runStretch}; ` : ''}timetable ${Math.round(t.tripTime.scheduledMin)} min` : 'too few trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
       compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false, null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null) : null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null),
