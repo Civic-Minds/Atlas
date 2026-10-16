@@ -27,6 +27,8 @@ const AreaPage = React.lazy(() => import('./AreaPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
+// Dev-only demo of the Live route strip; the import is dropped from production builds entirely.
+const RouteStripDemo = import.meta.env.DEV ? React.lazy(() => import('./components/Live/RouteStripDemo')) : () => null;
 
 /** Night Service moved from /apps/night to /research/night; keep old links and their filters working. */
 function NightServiceRedirect() {
@@ -74,6 +76,7 @@ ReactDOM.createRoot(rootElement).render(
             <>
               <Route path="/dev/diagnostics/uneven-headway" element={<DiagnosticsUnevenPage />} />
               <Route path="/dev/diagnostics/performance" element={<DiagnosticsPerformancePage />} />
+              <Route path="/apps/live/strip-demo" element={<RouteStripDemo />} />
             </>
           )}
           {/* Live is local-only: the route dashboard exists only where Live can run. */}
