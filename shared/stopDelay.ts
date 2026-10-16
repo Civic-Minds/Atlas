@@ -170,7 +170,12 @@ export interface DelayBuildup {
  * B3: where delays start. `order` is each direction's stop order (its busiest pattern). A stretch is a pair of consecutive
  * stops; only runs seen at both count. Delay starts at the first stretch that adds more than a minute in half the runs.
  */
-export function delayBuildup(runs: readonly RunDelays[], order: ReadonlyMap<number, readonly string[]>, alongM?: ReadonlyMap<string, number>): DelayBuildup[] {
+/**
+ * `atTerminal(stopId)`: a stop at or next to a pattern's end. A stretch touching one is still drawn, but is never named
+ * where delay builds up: running into or out of a terminal includes loop and layover time, not delay (the same rule
+ * B4's slow-stretch link uses).
+ */
+export function delayBuildup(runs: readonly RunDelays[], order: ReadonlyMap<number, readonly string[]>, alongM?: ReadonlyMap<string, number>, atTerminal: (stopId: string) => boolean = () => false): DelayBuildup[] {
   const out: DelayBuildup[] = [];
   for (const [directionId, stopIds] of order) {
     const perRun = runs.filter(r => r.directionId === directionId).map(r => new Map(r.stops.map(s => [s.stopId, s.delaySec / 60])));
@@ -195,9 +200,10 @@ export function delayBuildup(runs: readonly RunDelays[], order: ReadonlyMap<numb
       });
     }
     const enough = stretches.filter(s => s.n >= MIN_SAMPLES);
+    const nameable = enough.filter(s => !atTerminal(s.fromStopId) && !atTerminal(s.toStopId));
     // The delay before each stretch is what the previous stretch left it at (or the route's starting delay).
     let forms: Stretch | null = null;
-    for (const s of enough) {
+    for (const s of nameable) {
       if (s.medianAddedMin < STEP_MIN) continue;
       const i = stretches.indexOf(s);
       const before = s.medianDelayMin - s.medianAddedMin;
@@ -216,8 +222,8 @@ export function delayBuildup(runs: readonly RunDelays[], order: ReadonlyMap<numb
       directionId,
       startingDelayMin: first.length >= MIN_SAMPLES ? median(first) : null,
       stretches,
-      start: enough.find(s => s.addedShare >= ADDED_DELAY_SHARE) ?? null,
-      biggest: enough.length ? enough.reduce((best, s) => (s.medianAddedMin > best.medianAddedMin ? s : best)) : null,
+      start: nameable.find(s => s.addedShare >= ADDED_DELAY_SHARE) ?? null,
+      biggest: nameable.length ? nameable.reduce((best, s) => (s.medianAddedMin > best.medianAddedMin ? s : best)) : null,
     });
   }
   return out;

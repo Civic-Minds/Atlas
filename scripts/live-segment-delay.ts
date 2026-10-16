@@ -774,7 +774,7 @@ function stopsAndBuildup(rs: readonly RunDelays[]) {
   for (const dir of new Set(stops.map(x => x.directionId))) {
     stops.filter(x => x.directionId === dir && x.ranked).sort((a, b) => (b.lateShare ?? 0) - (a.lateShare ?? 0) || b.n - a.n).forEach((x, i) => { (x as typeof x & { lateRank?: number }).lateRank = i + 1; });
   }
-  const buildup = delayBuildup(rs, stopOrder, alongOf).map(d => {
+  const buildup = delayBuildup(rs, stopOrder, alongOf, stopId => terminalStops.has(stopId)).map(d => {
     const named = (s: typeof d.start) => s && { ...s, fromName: stopInfo(s.fromStopId).name, toName: stopInfo(s.toStopId).name, medianAddedMin: r1(s.medianAddedMin), addedShare: r3(s.addedShare), growShare: r3(s.growShare), medianDelayMin: r1(s.medianDelayMin), p10DelayMin: r1(s.p10DelayMin), p90DelayMin: r1(s.p90DelayMin) };
     return { directionId: d.directionId, startingDelayMin: r1(d.startingDelayMin), kind: d.kind, climbMin: r1(d.climbMin), forms: named(d.forms), start: named(d.start), biggest: named(d.biggest), stretches: d.stretches.map(s => named(s)) };
   });
