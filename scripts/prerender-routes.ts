@@ -12,6 +12,9 @@ import { AGENCY_INDEX_DATA_SCRIPT_ID, AGENCY_INDEX_PATH, buildAgencyIndexData, r
 import { AREA_DATA_SCRIPT_ID, areaPageJsonLd, buildAreaPageData, resolveAreaSeo } from '../shared/areaPages';
 import { areaPagePath, type AreaConfig } from '../shared/areas';
 import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../shared/agencyPagesData';
+import { liveReportPaths } from '../shared/liveReportPaths';
+import { liveLinkPreview } from '../shared/liveLinkPreview';
+import { DEFAULT_R2_PUBLIC_URL } from '../shared/config';
 
 const dist = resolve('dist');
 const mod = await import(pathToFileURL(resolve('.prerender/prerender.js')).href);
@@ -87,4 +90,26 @@ if (mod.BUILD_FLAGS.agencyPages) {
     writeFileSync(join(dist, 'sitemap.xml'), buildSitemapXml(urls));
     console.log(`Prerendered ${agencies.length} agency pages and ${areas.length} area pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
   }
+}
+
+// Live report pages (builds with the Live reports switch on): one static page per published report, so a pasted
+// link shows the route and its late share. Crawlers do not run JS; the app mounts over the page as usual. The figures
+// come from the published agency summary on R2; if it cannot be read, the pages get the title alone.
+if (mod.BUILD_LIVE_REPORTS) {
+  const paths = liveReportPaths().filter(p => !p.endsWith('/'));
+  const agencies = [...new Set(paths.map(p => p.split('/')[3]))];
+  for (const agency of agencies) {
+    const summary = await fetch(`${DEFAULT_R2_PUBLIC_URL}/atlas/live/${agency}/agency.json`, { signal: AbortSignal.timeout(15000) })
+      .then(r => (r.ok ? r.json() : null)).then(d => d?.summary ?? null).catch(() => null);
+    if (!summary) console.warn(`!!! Live link previews for ${agency}: no published summary; pages get the title only.`);
+    for (const path of paths.filter(p => p.split('/')[3] === agency)) {
+      const route = path.split('/')[4] ?? null;
+      const preview = liveLinkPreview(agency, route, summary);
+      const seo = { title: preview.title, description: preview.description, canonicalUrl: `${origin}${path}`, noindex: true, matchedPath: path };
+      const file = join(dist, path, 'index.html');
+      mkdirSync(dirname(file), { recursive: true });
+      writeFileSync(file, applySeoToHtml(shell, seo));
+    }
+  }
+  console.log(`Prerendered ${paths.length} Live report link previews`);
 }
