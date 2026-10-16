@@ -39,6 +39,14 @@ describe('bunchingProfile', () => {
     expect(bunchingProfile(even).forms).toBeNull();
   });
 
+  it('never names a stretch touching a terminal (the run out of a loop), the same rule as delay build-up', () => {
+    const stops = [stop('T', 0.05), stop('A', 0.05), stop('B', 0.05), stop('L', 0.05), stop('M', 0.3), stop('N', 0.3), stop('O', 0.3), stop('P', 0.3)];
+    expect(bunchingProfile(stops).forms).toMatchObject({ fromStopId: 'L', toStopId: 'M' });
+    const p = bunchingProfile(stops, id => id === 'L');
+    expect(p.forms).toBeNull();
+    expect(p.biggestRise?.fromStopId).not.toBe('L');
+  });
+
   it('still names a step that later recovers, if it stays up for the next 3 stops', () => {
     const rec = [stop('T', 0.05), stop('A', 0.05), stop('B', 0.05), stop('C', 0.05), stop('D', 0.25), stop('E', 0.25), stop('F', 0.24), stop('G', 0.05), stop('H', 0.05)];
     expect(bunchingProfile(rec).forms).toMatchObject({ fromStopId: 'C', toStopId: 'D' });

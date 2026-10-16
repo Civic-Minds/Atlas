@@ -830,7 +830,7 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
       const wins: GapWindow[] = (headwayByStop.get(`${stopId}|${dir}`)?.get(band) ?? []).filter(w => inWindow.has(w.date));
       return { ...stopBunching(stopId, wins), alongM: alongOf.get(`${dir}|${stopId}`) };
     });
-    const profile = bunchingProfile(stops);
+    const profile = bunchingProfile(stops, stopId => terminalStops.has(stopId));
     const evidenceFor = (fromId: string, toId: string) => {
       const a = order.indexOf(fromId), b = order.indexOf(toId); // only inside the stretch itself
       const near = new Set(order.slice(a, b + 1));
