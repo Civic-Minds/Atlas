@@ -31,7 +31,8 @@ export default function SortableDataTable<T>({ columns, rows, defaultSort, ...re
       fixed
       fill
       rows={sorted}
-      columns={columns.map(({ worst, ...c }) => ({ ...c, sortable: !!worst }))}
+      // Headers stay on one line, as in the Routes table.
+      columns={columns.map(({ worst, ...c }) => ({ ...c, header: <span className="whitespace-nowrap">{c.header}</span>, sortable: !!worst }))}
       sort={sort ?? undefined}
       onSort={key => setSort(s => (s?.key === key ? { key, reversed: !s.reversed } : { key, reversed: false }))}
     />

@@ -69,10 +69,10 @@ function Section({ id, title, intro, children }: { id: string; title: string; in
   );
 }
 
-/** A hotspot's route, in the Routes table's name style, then its direction. */
-function HotspotRoute({ s, route, direction }: { s: AgencySummary; route: string; direction: string }) {
+/** A hotspot's route, in the Routes table's name style, on one line (its direction sits in its own column). */
+function HotspotRoute({ s, route }: { s: AgencySummary; route: string }) {
   const r = s.routes.find(x => x.route === route);
-  return <><a href={liveDashboardPath(s.agency, route)} className="hover:underline"><RouteNameCell shortName={route} longName={r?.longName} mode={r?.mode ?? 3} agencyName={s.agency.toUpperCase()} /></a> <span className="text-[var(--text-muted)]">{titleCase(direction)}</span></>;
+  return <a href={liveDashboardPath(s.agency, route)} className="whitespace-nowrap hover:underline"><RouteNameCell shortName={route} longName={r?.longName} mode={r?.mode ?? 3} agencyName={s.agency.toUpperCase()} /></a>;
 }
 
 function RoutesTable({ s }: { s: AgencySummary }) {
@@ -130,8 +130,9 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
         defaultSort="late"
         rowKey={r => `${r.route}-${r.directionId}-${r.stopId}`}
         columns={[
-          { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: r => stop(r.name) },
-          { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} direction={r.direction} /> },
+          { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal truncate', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
+          { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'dir', header: 'Direction', cell: r => titleCase(r.direction) },
           { key: 'late', header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
           { key: 'typical', header: 'Typical', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
           { key: 'p90', header: '1 in 10 later than', worst: r => r.p90Min, cell: r => mins(r.p90Min) },
@@ -153,8 +154,9 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
-          { key: 'stretch', header: 'Stretch', rowHeader: true, className: 'font-normal', cell: r => `${stop(r.fromName)} to ${stop(r.toName)}` },
-          { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} direction={r.direction} /> },
+          { key: 'stretch', header: 'Stretch', rowHeader: true, width: 24, className: 'font-normal truncate', cell: r => <span title={`${stop(r.fromName)} to ${stop(r.toName)}`}>{stop(r.fromName)} to {stop(r.toName)}</span> },
+          { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'dir', header: 'Direction', cell: r => titleCase(r.direction) },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),
         ]}
       />

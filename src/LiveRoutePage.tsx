@@ -198,9 +198,9 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
                   rows={worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={[
-                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => `${s.fromName} to ${s.toName}` },
-                    { key: 'added', header: 'Typical added', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: 'Trips where it grows', worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
+                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal truncate', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{shortStopName(s.fromName)} to {shortStopName(s.toName)}</span> },
+                    { key: 'added', header: 'Typical added', width: 7, worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
+                    { key: 'grows', header: 'Trips where it grows', width: 10, worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ]}
                 />
               </div>
@@ -229,7 +229,7 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
             rows={top}
             rowKey={s => `${s.stopId}-${s.directionId}`}
             columns={[
-              { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
+              { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal truncate', cell: s => <span title={s.name}>{s.name}</span> },
               ...(both ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
               { key: 'late', header: 'Late', worst: s => s.lateShare, cell: s => (
                 <span className="inline-flex items-center gap-2">
@@ -238,7 +238,7 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
                 </span>
               ) },
               { key: 'median', header: 'Typical delay', worst: s => s.medianMin, cell: s => mins(s.medianMin) },
-              { key: 'p90', header: '1 in 10 later than', worst: s => s.p90Min, cell: s => mins(s.p90Min) },
+              { key: 'p90', header: '1 in 10 later than', width: 10, worst: s => s.p90Min, cell: s => mins(s.p90Min) },
               { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
             ]}
           />
@@ -419,7 +419,7 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
                 rows={worst}
                 rowKey={s => `${s.stopId}-${s.directionId}`}
                 columns={[
-                  { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
+                  { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal truncate', cell: s => <span title={s.name}>{s.name}</span> },
                   ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
                   { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => `${num(s.extraWaitMin)} min` },
                   { key: 'sched', header: 'Scheduled every', cell: s => `${num(s.scheduledGapMin)} min` },
