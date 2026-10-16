@@ -514,7 +514,6 @@ export default function LiveExplorePage() {
       <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3" role="group" aria-label="Filters">
         <Group label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
           options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
-        <Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} />
         <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
       </div>
 
@@ -523,6 +522,7 @@ export default function LiveExplorePage() {
       </ErrorBoundary>
 
       <Section id="x-late" title="How well it keeps to its timetable">
+        <Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} />
         <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Late data={bandData} dir={dir} day={day} band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
       </Section>
       <Section id="x-runtime" title="Run time">
