@@ -15,7 +15,7 @@ import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { LINK } from './pageStyles';
 import { FrequencyBar } from './pageParts';
-import PageShell from './components/ui/PageShell';
+import DocsPageLayout from './components/ui/DocsPageLayout';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
@@ -62,9 +62,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
 
 
   return (
-    <PageShell variant="wide">
-
-        <article className="pb-16 pt-10 sm:pt-14">
+    <DocsPageLayout width="wide">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <PageTitle>{areaPageH1(data)}</PageTitle>
@@ -100,7 +98,6 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
             Area: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). {areaDatesText(data)}
           </p>
-        </article>
-    </PageShell>
+    </DocsPageLayout>
   );
 }

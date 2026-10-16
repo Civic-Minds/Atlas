@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
 import { FEATURES } from '../shared/config';
-import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
-import PageShell from './components/ui/PageShell';
+import DocsPageLayout from './components/ui/DocsPageLayout';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 
@@ -62,12 +61,7 @@ export default function AboutDocsPage() {
   const showCompare = FEATURES.compareMode;
 
   return (
-    <PageShell stickyHeader>
-
-        <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
-          <PageContents title="Documentation" items={DOCS_CONTENTS.map(([id, label]) => ({ id, label }))} />
-
-          <article className="space-y-8">
+    <DocsPageLayout contents={{ title: 'Documentation', items: DOCS_CONTENTS.map(([id, label]) => ({ id, label })) }}>
           <header>
             <div className="flex flex-wrap items-center gap-3">
               <PageTitle>Documentation</PageTitle>
@@ -368,8 +362,6 @@ export default function AboutDocsPage() {
           <SiteContact title="Technical questions and feedback" subject="Atlas Feedback" linkLabel="Contact us with a question or correction">
             Questions about the methodology, a suspected data problem, or a transit agency’s coverage are welcome. Feedback is most useful when it identifies the agency, route, schedule period, and specific result that needs review.
           </SiteContact>
-          </article>
-        </div>
-    </PageShell>
+    </DocsPageLayout>
   );
 }
