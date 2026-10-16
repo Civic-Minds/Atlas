@@ -27,7 +27,7 @@ export function runTimeScale(groups: ReadonlyArray<readonly RunTimeHour[]>): { m
   return { min: Math.max(0, Math.floor((lo - 2) / 5) * 5), max: Math.ceil((hi + 2) / 5) * 5 };
 }
 
-function useWidth() {
+export function useWidth() {
   const ref = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(0);
   useEffect(() => {
