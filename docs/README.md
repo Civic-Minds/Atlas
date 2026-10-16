@@ -33,6 +33,7 @@ Use this page as the documentation index. The root [README](../README.md) explai
 - [Product decisions](product/DECISIONS.md)
 - [Strategy](product/STRATEGY.md)
 - [Research](product/RESEARCH.md)
+- [How Live measures a route](product/LIVE_METHOD.md)
 - [Research index](research/INDEX.md)
 - [International expansion](research/international-expansion-2026-09/INDEX.md)
 - [Population context](research/population-context-2026-09/INDEX.md)
