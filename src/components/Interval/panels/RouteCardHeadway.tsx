@@ -23,7 +23,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, routeCardCoverageText, routeCardEdgeText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
 import { branchStackColor } from '../../../utils/colors';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
@@ -735,7 +735,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             headway={rowNoRegular ? undefined : displayH ?? undefined}
                             limitedLabel={rowNoRegular ? noRegularLabel : undefined}
                             colorHeadway={hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined}
-                            headwayLabel={hoveredHour == null && variantH === undefined ? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period)) : undefined}
+                            headwayLabel={hoveredHour == null && variantH === undefined ? (directionFallback != null ? (allDayH == null ? routeCardEdgeText(d, period) : undefined) ?? fallbackRange : routeCardCoverageText(d, period)) : undefined}
                             trunkHeadway={trunkHw}
                             edgeGapAllowance={d.edgeGapAllowance}
                             onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}

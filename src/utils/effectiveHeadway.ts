@@ -6,6 +6,7 @@ import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange } from './headwayText';
 import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
+import { clockText } from '../content/researchRules';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -136,6 +137,22 @@ export function routeCardCoverageText(p: ShapeProperties, period: TimePeriod): s
   // Coverage is a filter-eligibility metric, not a rider-facing headway. A route
   // can run every 10 minutes within a shorter service span inside this period.
   return undefined;
+}
+
+/**
+ * #934: a period whose value is only a late start or an early end around steady service reads
+ * "from 7:17am, every 9 min" or "until 5:40pm, every 10 min" on the card, not "every 77".
+ */
+export function routeCardEdgeText(p: ShapeProperties, period: TimePeriod): string | undefined {
+  if (period === 'all') return undefined;
+  const edge = p.stretchPeriodEdge?.[period];
+  if (!edge) return undefined;
+  const parts = [
+    edge.from != null ? `from ${clockText(edge.from)}` : null,
+    edge.until != null ? `until ${clockText(edge.until)}` : null,
+    headwayEvery(edge.every),
+  ].filter(Boolean);
+  return parts.length > 1 ? parts.join(', ') : undefined;
 }
 
 export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): string | undefined {

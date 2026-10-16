@@ -26,6 +26,7 @@ import {
   computeResearchFrequentService,
   forCrossMidnightWindow,
   hasSustainedFrequentService,
+  isSustainedHeadway,
   medianHeadwayInWindow,
   hasSustainedServiceInWindow,
   isSustainedHeadway,
@@ -467,6 +468,8 @@ export interface DirectionRollup {
     runs: boolean;
     /** The main stretch has any departure in the period. A direction with none is skipped by the route (a one-way peak route). */
     hasService: boolean;
+    /** #934: the filter value is the main stretch's late start or early end around steady service (card wording only). */
+    edge: StretchPeriodEdge | null;
   }>;
   night30: boolean;
   night60: boolean;
@@ -483,6 +486,40 @@ export interface DirectionRollup {
   /** Step 6 shadow: Frequent Service (7-19 every 15, no gap) on the main stretch and every tail running then. */
   frequent: boolean;
   research: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
+}
+
+/**
+ * #934: a period whose value is a late start or an early end around steady service (SF Muni 8BX
+ * AM: every 8-11 from 7:17, so a 77-minute wait). `from` is the first departure when the start gap
+ * sets the value, `until` the last when the end gap does, `every` the median gap between them.
+ */
+export interface StretchPeriodEdge {
+  from?: number;
+  until?: number;
+  every: number;
+}
+
+/**
+ * The edge reading of one period at a stretch's reference stop, or null. Only when `value` (the
+ * direction's filter value) is that stretch's full-window wait, an edge gap sets it, and the gaps
+ * between departures pass the steadiness gap test: the card can then say when service starts or
+ * ends instead of "every 77". Read like computePeriodCoverageHeadways' window.
+ */
+export function periodEdge(stretchTimes: readonly number[], start: number, end: number, value: number | null): StretchPeriodEdge | null {
+  if (value == null) return null;
+  const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
+  if (t.length < 3) return null;
+  const gaps = t.slice(1).map((x, i) => x - t[i]);
+  const lead = t[0] - start;
+  const trail = end - t[t.length - 1];
+  const inner = Math.max(...gaps);
+  if (Math.ceil(Math.max(lead, trail, inner)) !== value || inner >= value) return null;
+  const every = medianHeadwayInWindow(t, start, end, 3);
+  if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
+  const edge: StretchPeriodEdge = { every };
+  if (lead === value) edge.from = t[0];
+  if (trail === value) edge.until = t[t.length - 1];
+  return edge;
 }
 
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
@@ -504,6 +541,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       filterValue: null,
       runs: false,
       hasService: false,
+      edge: null,
     };
   }
   // Step 5a: the filter value and whether the direction runs, per period.
@@ -535,6 +573,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     period[key].runs = runs;
     period[key].hasService = timesIn(d.main).length > 0;
     period[key].filterValue = runs && values.length > 0 ? Math.max(...values) : null;
+    period[key].edge = runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : null;
   }
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
   // of the window's midpoint. One that only starts its day inside the window (CTA 20's downtown
@@ -697,6 +736,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchPeriodSustained',
   'stretchPeriodSustainedMid',
   'stretchPeriodOneGap',
+  'stretchPeriodEdge',
   'stretchRoutePeriodHeadway',
   'stretchPeriodRange',
   'stretchNight30',
@@ -771,6 +811,12 @@ export function stampStretchShadow(
     p.stretchPeriodSustained = byPeriod(k => dir.period[k].sustained);
     p.stretchPeriodSustainedMid = byPeriod(k => dir.period[k].sustainedMid);
     p.stretchPeriodOneGap = byPeriod(k => dir.period[k].oneGap);
+    // #934: only periods with an edge reading, so most features carry an empty object at most.
+    {
+      const edges = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (dir.period[key].edge ? [[key, dir.period[key].edge]] : [])));
+      if (Object.keys(edges).length > 0) p.stretchPeriodEdge = edges;
+      else delete p.stretchPeriodEdge;
+    }
     p.stretchRoutePeriodHeadway = byPeriod(k => route.period[k].value);
     p.stretchPeriodRange = byPeriod(k => route.period[k].range);
     p.stretchNight30 = route.night30;

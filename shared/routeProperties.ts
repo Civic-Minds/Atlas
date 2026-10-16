@@ -82,6 +82,8 @@ export interface RouteProperties {
   /** The route's range, [best stretch, worst] ("every 8–25"); null: one number. Display only. */
   stretchPeriodRange?: Partial<Record<PeriodKey, [number, number] | null>>;
   /** What this feature is on the card: the direction's main stretch, a tail, or a variant (a short turn: no destination row). */
+  /** #934: periods whose value is a late start or early end around steady service: the first or last departure (GTFS minutes) and the steady spacing. Card wording only. */
+  stretchPeriodEdge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>;
   stretchRole?: 'main' | 'tail' | 'variant';
   /** 0 for the main stretch; a tail's index into stretchMeta.tails. Absent for variants. */
   stretchIndex?: number;
