@@ -79,9 +79,9 @@ export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption: string }) 
 }
 
 /** Late share and lateness by hour for all days, weekdays and weekends, side by side on one scale. */
-function Days({ v3, data, band, dir }: { v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null }) {
+function Days({ v3, data, band, dir, allOnly = false }: { v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; /** The lite view: the All days chart only. */ allOnly?: boolean }) {
   const healthy = v3.weekly?.thisWeek.healthyDates ?? v3.window.dates;
-  const cols = DAY_KINDS.map(([kind, label]) => {
+  const cols = DAY_KINDS.filter(([kind]) => !allOnly || kind === 'all').map(([kind, label]) => {
     const block = data.adherence.timepoints[kind];
     const late = lateForDays(block.byDate, healthy, kind);
     const hours: HourValue[] = block.byHour.filter(h => h.n > 0 && (band === 'all' || periodKeyForHour(h.hour) === band)).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));
@@ -261,7 +261,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
     <>
       <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
-      <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={null} /></ErrorBoundary>
+      <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={null} allOnly /></ErrorBoundary>
       <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
     </>
   );
