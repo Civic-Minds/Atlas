@@ -12,7 +12,9 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import { shortStopName } from './utils/stopLabel';
 import { useMediaQuery } from './hooks/useMediaQuery';
-import { PAGE_ACTION, TILE } from './pageStyles';
+import { TILE } from './pageStyles';
+import ArrowLink from './components/ui/ArrowLink';
+import { SectionTitle } from './components/ui/PageTitle';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', '−');
@@ -72,7 +74,7 @@ function Days({ v3, data, band, dir }: { v3: LiveV3; data: DashboardBandData; ba
   const scale = { min: 0, max: Math.ceil(max * 10) / 10 };
   return (
     <section aria-labelledby="dash-days" className="mt-10">
-      <h2 id="dash-days" className="text-xl font-black tracking-tight">Late, by day and hour</h2>
+      <SectionTitle id="dash-days">Late, by day and hour</SectionTitle>
       <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
         How often cars leave 5.5+ minutes late {BAND_WORDS[band]}, by kind of day and hour, at stops where the timetable gives a time.
         {dir != null && ' Both directions: this view is not split by direction yet.'}
@@ -114,7 +116,7 @@ function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: num
   const scale = runTimeScale(groups.map(g => g.hours));
   return (
     <section aria-labelledby="dash-runtime" className="mt-10">
-      <h2 id="dash-runtime" className="text-xl font-black tracking-tight">Run time vs schedule</h2>
+      <SectionTitle id="dash-runtime">Run time vs schedule</SectionTitle>
       <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, {BAND_WORDS[band]}, over the stops every regular trip serves, so short turns count too.</p>
       <div className={`mt-4 grid gap-x-10 gap-y-8 ${groups.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {groups.map(g => (
@@ -168,7 +170,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
   const dirs = pickable ? [all[Math.min(phoneDir, all.length - 1)]] : all;
   return (
     <section aria-labelledby="dash-strip" className="mt-10">
-      <h2 id="dash-strip" className="text-xl font-black tracking-tight">Along the route</h2>
+      <SectionTitle id="dash-strip">Along the route</SectionTitle>
       <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
         Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.
       </p>
@@ -199,7 +201,7 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
   const top = useMemo(() => rankStops(data.stops, dir, uncertain).slice(0, 5), [data, dir, uncertain]);
   return (
     <div className="min-w-0">
-      <h2 className="text-xl font-black tracking-tight">Stops most often late</h2>
+      <SectionTitle>Stops most often late</SectionTitle>
       {top.length ? (
         <div className="mt-3">
           <DataTable
@@ -218,7 +220,7 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
           />
         </div>
       ) : <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank.</p>}
-      <p className="mt-3"><a href="?view=analysis#b2" onClick={e => { e.preventDefault(); toFull('b2'); }} className={PAGE_ACTION}>Every stop, in Full analysis</a></p>
+      <p className="mt-3"><ArrowLink href="?view=analysis#b2" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('b2'); }}>Every stop, in Full analysis</ArrowLink></p>
     </div>
   );
 }

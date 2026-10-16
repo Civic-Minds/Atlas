@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
-import { ArrowRight } from 'lucide-react';
 import { FEATURES, periodKeyForHour } from '../shared/config';
 import {
   LINK_LABELS, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
@@ -20,7 +19,9 @@ import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts
 import HourBars from './components/charts/HourBars';
 import { KpiRow } from './LiveDashboardView';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
-import { PAGE_ACTION, TILE } from './pageStyles';
+import { TILE } from './pageStyles';
+import ArrowLink from './components/ui/ArrowLink';
+import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -56,7 +57,7 @@ type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <section className="mt-12" aria-labelledby={id}>
-      <h2 id={id} className="text-xl font-black tracking-tight">{title}</h2>
+      <SectionTitle id={id}>{title}</SectionTitle>
       {children}
     </section>
   );
@@ -503,14 +504,14 @@ export default function LiveRoutePage() {
   }, [view, state.kind]);
   if (!FEATURES.live) return <LiveOffNotice />;
   const title = `${agency.toUpperCase()} ${route}`;
-  const back = <a href="/apps/live" className={`${PAGE_ACTION} mt-6`}>Open Live <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>;
+  const back = <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink>;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p></PageShell>;
-  if (state.kind === 'error') return <PageShell variant="wide"><h1 className="mt-24 text-3xl font-black tracking-tight">{title}</h1><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{state.reason}</p>{back}</PageShell>;
+  if (state.kind === 'error') return <PageShell variant="wide"><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{state.reason}</p>{back}</PageShell>;
   const data = state.data;
   if (data.status !== 'ready') {
     return (
       <PageShell variant="wide">
-        <h1 className="mt-24 text-3xl font-black tracking-tight">{title}</h1>
+        <PageTitle className="mt-24">{title}</PageTitle>
         <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{data.reason}</p>
         {back}
       </PageShell>
@@ -525,12 +526,12 @@ export default function LiveRoutePage() {
       <article className="pb-16 pt-10 sm:pt-14">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{title}: how it is running</h1>
+            <PageTitle>{title}: how it is running</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
               {v3.window.dates.length ? `${dateRangeText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} trips · estimated from where vehicles were, not reported by {agency.toUpperCase()}
             </p>
           </div>
-          <a href="/apps/live" className={PAGE_ACTION}>View on Live map <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>
+          <ArrowLink href="/apps/live">View on Live map</ArrowLink>
         </div>
         {(() => {
           const f = freshness(v3, route, Date.now());

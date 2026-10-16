@@ -284,8 +284,8 @@ function Tooltip({ stop, x, width, top }: { stop: RouteStripStop; x: number; wid
 }
 
 /** Columns of dots for the vertical layouts: one per track, side by side, each on its own line. */
-const COL_X = [14, 60];
-const NAME_LEFT = 82;
+const COL_X = [16, 70];
+const NAME_LEFT = 94;
 
 function TrackDots({ tracks, s, i, last, size, active, centred }: { tracks: readonly Track[]; s: RouteStripStop; i: number; last: number; size: number; active: boolean; centred: string }) {
   return (
@@ -311,7 +311,7 @@ function TrackDots({ tracks, s, i, last, size, active, centred }: { tracks: read
 
 function TrackHeads({ tracks }: { tracks: readonly Track[] }) {
   return (
-    <div className="relative h-5 text-[10px] font-bold text-[var(--text-secondary)]" aria-hidden="true">
+    <div className="relative h-5 text-xs font-bold text-[var(--text-secondary)]" aria-hidden="true">
       {tracks.map((t, k) => <span key={t.mode} className="absolute top-0 -translate-x-1/2 whitespace-nowrap" style={{ left: COL_X[k] }}>{TRACK_NAME[t.mode]}</span>)}
     </div>
   );
