@@ -115,7 +115,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
         </div>
       ))}
       <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">
-        Late: departures 5.5+ minutes after the timetable, at stops where it gives a time. Run time: the typical trip over the main stretch against its scheduled time. Bunching: gaps under 2 minutes or over twice the scheduled gap. Delivered: scheduled trips that ran. All for this week.
+        Late: trips that left the end of the line more than 5 min late. Run time: the typical trip over the main stretch against its scheduled time. Bunching: gaps under 2 minutes or over twice the scheduled gap. Delivered: scheduled trips that ran. All for this week.
       </p>
     </>
   );
