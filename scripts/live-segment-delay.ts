@@ -37,8 +37,8 @@ const DAYS = Number(args.days ?? 7);
 const OBS_OUT = args['obs-out'];
 /** Optional: write each measured end-to-end trip time (for hand-checking). */
 const RUNTIMES_OUT = args['runtimes-out'];
-/** Trips whose headsign matches this are another service under the same route number (e.g. replacement buses): left out and counted. */
-const EXCLUDE_HEADSIGN = args['exclude-headsign'] ? new RegExp(args['exclude-headsign'], 'i') : null;
+/** Trips whose headsign contains this text (any case) are another service under the same route number (e.g. replacement buses): left out and counted. Plain text, not a pattern. */
+const EXCLUDE_HEADSIGN = args['exclude-headsign'] ? String(args['exclude-headsign']).toLowerCase() : null;
 /** A stop passage more than this far from the timetable is a wrong trip match or a bad fix, not a delay. */
 const MAX_DELAY_SEC = 3600;
 /** The departure moment: the car is this far past the stop. */
@@ -92,7 +92,7 @@ const prevDate = (d: string) => new Date(Date.parse(`${d}T12:00:00Z`) - 86400_00
 
 // --- static GTFS ---
 const allRouteTrips = readCsv(join(GTFS, 'trips.txt'), r => r.route_id === ROUTE);
-const excludedTripIds = new Set(allRouteTrips.filter(t => EXCLUDE_HEADSIGN?.test(t.trip_headsign)).map(t => t.trip_id));
+const excludedTripIds = new Set(allRouteTrips.filter(t => EXCLUDE_HEADSIGN != null && (t.trip_headsign ?? '').toLowerCase().includes(EXCLUDE_HEADSIGN)).map(t => t.trip_id));
 const trips = allRouteTrips.filter(t => !excludedTripIds.has(t.trip_id));
 const tripById = new Map(trips.map(t => [t.trip_id, t]));
 const stopTimesPath = existsSync(join(GTFS, `${ROUTE}-stop_times.txt`)) ? join(GTFS, `${ROUTE}-stop_times.txt`) : join(GTFS, 'stop_times.txt');
