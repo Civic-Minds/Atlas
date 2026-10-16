@@ -11,7 +11,7 @@
  *
  * Days the GTFS calendar doesn't cover are dropped, not guessed.
  */
-import { readFileSync, readdirSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { buildShape, haversineM, projectOntoShape, type Shape } from '../shared/shapeProjection.js';
 import {
@@ -36,6 +36,8 @@ const OUT = args.out;
 const TZ = 'America/Toronto';
 const DAYS = Number(args.days ?? 7);
 const OBS_OUT = args['obs-out'];
+/** Optional: a folder to write the string-line data into, one file per service day (the last 3), <route>-<date>.json. */
+const STRINGS_DIR = args['strings-dir'];
 /** Optional: write each measured end-to-end trip time (for hand-checking). */
 const RUNTIMES_OUT = args['runtimes-out'];
 /** Trips whose headsign contains this text (any case) are another service under the same route number (e.g. replacement buses): left out and counted. Plain text, not a pattern. */
@@ -434,6 +436,7 @@ for (const svcDate of dates) {
 }
 type Win = { date: string; actualGaps: number[]; scheduledGaps: number[] };
 const headwayByStop = new Map<string, Map<TimeBand | 'all', Win[]>>();
+const headwayByStopHour = new Map<string, Map<number, Win[]>>();
 let windowsTotal = 0, windowsKept = 0;
 for (const [k, sched] of scheduledAt) {
   const [date, stopId, dir] = k.split('|');
@@ -456,6 +459,16 @@ for (const [k, sched] of scheduledAt) {
       m.set(b, l);
     }
     headwayByStop.set(`${stopId}|${dir}`, m);
+  }
+  // The same windows by hour of day, for the planner's by-hour chart.
+  const byHour = new Map<number, { tripId: string; t: number }[]>();
+  for (const x of sched) { const h = hourOf(x.t) % 24; const l = byHour.get(h) ?? []; l.push(x); byHour.set(h, l); }
+  for (const [hour, hourSched] of byHour) {
+    const wins = headwayWindows(hourSched, byTrip, obs.map(p => p.t));
+    if (!wins.length) continue;
+    const m = headwayByStopHour.get(`${stopId}|${dir}`) ?? new Map<number, Win[]>();
+    m.set(hour, [...(m.get(hour) ?? []), ...wins.map(w => ({ date, ...w }))]);
+    headwayByStopHour.set(`${stopId}|${dir}`, m);
   }
 }
 const headways = [...headwayByStop].map(([k, m]) => {
@@ -1053,6 +1066,46 @@ for (const d of [...stopOrder.keys()].sort((a, b) => a - b)) {
     .sort((a, b) => Number(b.main) - Number(a.main) || b.trips - a.trips);
 }
 
+// By hour of day, for each stop on a regular pattern: [departures, late share, gaps, bunched share, too-long share, extra wait min], or null for an hour with nothing. Index = hour 0-23.
+const lateByStopHour = new Map<string, { n: number; late: number }>();
+for (const r of windowRuns) for (const st of r.stops) {
+  const k = `${r.directionId}|${st.stopId}|${st.hour % 24}`;
+  const c = lateByStopHour.get(k) ?? { n: 0, late: 0 };
+  c.n++; if (st.delaySec / 60 >= LATE_AT_OR_ABOVE_MIN) c.late++;
+  lateByStopHour.set(k, c);
+}
+const stopHoursV3: Record<string, Record<string, Array<[number, number | null, number, number | null, number | null, number | null] | null>>> = {};
+for (const [d, ps] of Object.entries(patternsV3)) {
+  stopHoursV3[d] = {};
+  for (const id of new Set(ps.flatMap(q => q.stops.map(x => x.stopId)))) {
+    const row = Array.from({ length: 24 }, (_, h) => {
+      const late = lateByStopHour.get(`${d}|${id}|${h}`);
+      const wins = (headwayByStopHour.get(`${id}|${d}`)?.get(h) ?? []).filter(w => inWindow.has(w.date));
+      const sb = stopBunching(id, wins);
+      const stat = headwayBandStat(wins);
+      const extra = stat && stat.excessWaitSec != null && stat.scheduledMedianGapSec <= EXTRA_WAIT_MAX_SCHEDULED_SEC && stat.gaps >= 5 ? r1(stat.excessWaitSec / 60) : null;
+      if (!late && !sb.n) return null;
+      return [late?.n ?? 0, late && late.n ? r3(late.late / late.n) : null, sb.n, sb.n ? r3(sb.bunchedShare) : null, sb.n ? r3(sb.gappedShare) : null, extra] as [number, number | null, number, number | null, number | null, number | null];
+    });
+    if (row.some(x => x)) stopHoursV3[d][id] = row;
+  }
+}
+
+// The street line between each pair of consecutive stops on a regular pattern (the planner map draws these).
+const segmentLinesV3: Record<string, Array<{ from: string; to: string; coordinates: [number, number][] }>> = {};
+for (const [d, ps] of Object.entries(patternsV3)) {
+  const seen = new Set<string>();
+  segmentLinesV3[d] = [];
+  for (const q of ps) for (let i = 0; i + 1 < q.stops.length; i++) {
+    const from = q.stops[i].stopId, to = q.stops[i + 1].stopId;
+    const k = `${from}>${to}`;
+    const coordinates = segGeom.get(segmentKey(from, to));
+    if (seen.has(k) || !coordinates?.length) continue;
+    seen.add(k);
+    segmentLinesV3[d].push({ from, to, coordinates });
+  }
+}
+
 const v3 = {
   schema: 3,
   window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS },
@@ -1077,6 +1130,8 @@ const v3 = {
   bands: bandsV3,
   runningTime: runningTimeV3,
   patterns: patternsV3,
+  segmentLines: segmentLinesV3,
+  stopHours: stopHoursV3,
   extraWait: extraWaitV3,
   serviceDelivered: serviceDeliveredV3,
   weekly: weeklyV3,
@@ -1084,6 +1139,24 @@ const v3 = {
   buildup: buildupV3,
   bunching: bunchingV3,
 };
+// String-line data: for the last 3 service days, each trip's actual and timetable time at every stop on the direction's main pattern (index = place in the main pattern's order), in seconds after `base`.
+if (STRINGS_DIR) {
+  mkdirSync(STRINGS_DIR, { recursive: true });
+  for (const date of windowDates.slice(-3)) {
+    const runs = windowRuns.filter(r => r.date === date);
+    const base = Math.min(...runs.flatMap(r => r.stops.map(x => x.t)));
+    const trips = runs.map(r => ({
+      id: r.tripId, dir: r.directionId,
+      s: r.stops.flatMap(x => { const i = orderIndex(r.directionId, x.stopId); return i >= 0 ? [[i, Math.round(x.t - base), Math.round(x.t - x.delaySec - base)]] : []; }),
+    })).filter(t => t.s.length > 1);
+    const dirs = [...stopOrder.keys()].sort((a, b) => a - b);
+    writeFileSync(join(STRINGS_DIR, `${ROUTE}-${date}.json`), JSON.stringify({
+      schema: 1, agency: 'ttc', route: ROUTE, date, base, timeZone: TZ, directionLabels,
+      stops: Object.fromEntries(dirs.map(d => [String(d), stopOrder.get(d)!.map(stopInfo).map(x => ({ stopId: x.stopId, name: x.name }))])),
+      trips,
+    }));
+  }
+}
 if (OBS_OUT) writeFileSync(OBS_OUT, JSON.stringify(windowRuns));
 if (RUNTIMES_OUT) writeFileSync(RUNTIMES_OUT, JSON.stringify(windowRunTimes));
 console.log(`v3: window ${windowDates.length} days (${windowDates[0]}..${windowDates[windowDates.length - 1]}), runs ${windowRuns.length}, stop passages ${v3.totals.stopPassages}, dropped off-timetable ${delaysExcluded}`);

@@ -19,6 +19,8 @@ export interface AdherenceBlock {
 export interface DashboardStop {
   stopId: string; name: string; directionId: number; order: number; n: number;
   medianMin: number; p90Min: number; lateShare: number; earlyShare: number; ranked: boolean; lateRank?: number;
+  /** [longitude, latitude] of the stop (older files: absent). */
+  lonLat?: [number, number];
   /** Most departures here are at a timepoint (the timetable's own time). Absent in older files. */
   timepoint?: boolean;
 }
@@ -117,6 +119,10 @@ export interface LiveV3 {
   };
   stops: DashboardStop[];
   buildup: DashboardBuildup[];
+  /** Per direction, per stop on a regular pattern, by hour of day (index 0-23): [departures, late share, gaps, bunched share, too-long share, extra wait minutes], null where nothing was measured. Older files: absent. */
+  stopHours?: Record<string, Record<string, Array<[number, number | null, number, number | null, number | null, number | null] | null>>>;
+  /** Per direction, the street line between each pair of consecutive stops on a regular pattern, for the planner map. Older files: absent (the map draws straight lines). */
+  segmentLines?: Record<string, Array<{ from: string; to: string; coordinates: [number, number][] }>>;
   /** Per direction, the regular patterns (20%+ of the direction's trips) as ordered stops, the main one first: the trunk and the branches. Older files: absent. */
   patterns?: Record<string, Array<{ main: boolean; trips: number; stops: Array<{ stopId: string; name: string }> }>>;
   /** Running time against the timetable, by time of day then direction; `null` where no trip was measured. */
