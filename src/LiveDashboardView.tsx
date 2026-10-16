@@ -40,7 +40,11 @@ function Delta({ k }: { k: Kpi }) {
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.</p>;
-  const tiles = kpiTiles(w, weekDailyValues(v3));
+  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3))} caption={`${weekCaption(w)} ${NOISE_RULE}`} />;
+}
+
+/** The tiles row itself: the route dashboard and the agency dashboard show their figures the same way. */
+export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption: string }) {
   return (
     <section aria-label="This week compared with last week" className="mt-5">
       <ul className={`grid grid-cols-2 gap-3 sm:grid-cols-3 ${tiles.length >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
@@ -56,7 +60,7 @@ export function KpiRow({ v3 }: { v3: LiveV3 }) {
           );
         })}
       </ul>
-      <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">{weekCaption(w)} {NOISE_RULE}</p>
+      <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">{caption}</p>
     </section>
   );
 }
