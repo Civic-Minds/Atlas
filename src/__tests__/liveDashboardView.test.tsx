@@ -24,8 +24,8 @@ describe('Live dashboard view', () => {
     render(<LiveDashboardView v3={v3} data={one} band="all" dir={null} uncertain={[]} note={null} title="TTC 510" filters={<div>filters</div>} toFull={() => {}} />);
     const tiles = within(screen.getByRole('region', { name: /This week compared with last week/ })).getAllByRole('listitem');
     expect(tiles).toHaveLength(5);
-    expect(within(tiles[0]).getByText('up from 20% last week').className).toMatch(/text-muted/);
-    expect(within(tiles[4]).getByText('down from 99.8% last week').className).toMatch(/text-muted/);
+    expect(within(tiles[0]).getByText('▲ from 20% last week').className).toMatch(/text-muted/);
+    expect(within(tiles[4]).getByText('▼ from 99.8% last week').className).toMatch(/text-muted/);
     expect(tiles[0].getAttribute('title')).toMatch(/900 departures this week/);
     expect(screen.getByRole('table', { name: /five stops/ }).querySelectorAll('tbody tr')).toHaveLength(5);
     expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(expect.arrayContaining(['All days', 'Weekdays', 'Weekends']));
