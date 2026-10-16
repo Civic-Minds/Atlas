@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Live: a planner screen (`/apps/live/ttc/tool`)**: every analysed route on the map coloured by Late, Run time, Extra wait or Bunching and by time of day, a route list on the left, and widgets that follow what you pick (network figures, late by hour, worst stops, a stops-by-hour map, a string-line chart); a click on a stop or stretch opens a small card on the map.
+- **Live route strips show branches**: a route that runs more than one pattern (504A and 504B, the 510's short turn) draws the shared line forking into one line per branch, each named by its end stop, instead of one straight line.
 - **A Live route page opens on its short summary** (the week's tiles, the route strip, late by hour and a link to the full analysis); the longer dashboard is still at `?view=dashboard`.
 - **Live's headline "Late" now matches the TTC's own measure**: the share of trips that left the end of the line more than 5 minutes late (route tiles, the agency page, link previews, the late-by-hour charts by the hour trips start). It used to count every timepoint, which on the TTC is mostly the same terminals plus a few mid-route stops. The route strip shows "1+ min early" only where the timetable sets a real time.
 - **Live hour charts end cleanly after midnight (local only)**: run time, late by hour and the hour sparklines run 5 am to 4 am in one line and stop at the last hour with enough trips, so no stray marks float past 12a or under the line labels; charts side by side share one axis.
