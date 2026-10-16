@@ -36,6 +36,18 @@ export interface DashboardBuildup {
   climbMin: number | null;
   start: DashboardStretch | null; biggest: DashboardStretch | null; stretches: DashboardStretch[];
 }
+export interface RunTimeFigures { n: number; scheduledMin: number; typicalMin: number; p90Min: number; overMin: number }
+export interface WeekMetrics {
+  days: number;
+  dates: string[];
+  healthyDates: string[];
+  late: { share: number; n: number } | null;
+  tripTime: { n: number; scheduledMin: number; typicalMin: number; overMin: number } | null;
+  extraWait: { minutes: number; gaps: number } | null;
+  bunching: { share: number; gaps: number } | null;
+  delivered: { share: number; seen: number; notSeen: number; unknown: number } | null;
+}
+export interface DeliveredFigures { seen: number; notSeen: number; unknown: number; share: number | null }
 /** Time-of-day keys: the whole day, then the map's periods. */
 export type DashboardBand = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
 export interface DashboardBandData {
@@ -74,6 +86,15 @@ export interface LiveV3 {
   };
   stops: DashboardStop[];
   buildup: DashboardBuildup[];
+  /** Running time against the timetable, by time of day then direction; `null` where no trip was measured. */
+  runningTime?: { bands: Record<DashboardBand, Record<string, RunTimeFigures | null>>; byHour: Record<string, Array<{ hour: number } & RunTimeFigures>> };
+  /** Extra wait at stops where service is every 15 minutes or better, by time of day. */
+  extraWait?: Record<DashboardBand, Array<{ directionId: number; stopId: string; name: string; order: number; scheduledGapMin: number; extraWaitMin: number; gaps: number }>>;
+  serviceDelivered?: {
+    byDay: Array<{ date: string; healthy: boolean; share: number | null; seen: number; notSeen: number; unknown: number; byDirection: Record<string, number | null> }>;
+    overall: DeliveredFigures & { byDirection: Record<string, DeliveredFigures> };
+  };
+  weekly?: { minHealthyDays: number; health: Array<{ date: string; snapshots: number; healthy: boolean }>; thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean };
   /** Stops, build-up and adherence for each time of day. The top-level `adherence`, `stops` and `buildup` are the 'all' entry. */
   bands: Record<DashboardBand, DashboardBandData>;
   bunching: Array<{ directionId: number; bands: Record<string, DashboardBunchingBand> }>;
@@ -231,4 +252,51 @@ const cell = (v: string | number | null) => {
 /** Rows as CSV text (for the table downloads): a header line, then one line per row. */
 export function toCsv(header: readonly string[], rows: ReadonlyArray<ReadonlyArray<string | number | null>>): string {
   return [header, ...rows].map(r => r.map(cell).join(',')).join('\n') + '\n';
+}
+
+// --- running time, extra wait, service delivered and the week-over-week comparison ---
+
+const m1 = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', '\u2212');
+const hourName = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'am' : 'pm'}`;
+
+/** "Scheduled 22 min · usually 27 · 1 in 10 over 34 min" (with the hour when one is given). */
+export function runningTimeSentence(label: string, r: RunTimeFigures | null | undefined, atHour?: number): string {
+  if (!r) return `${label}: no trip was measured from end to end.`;
+  if (r.n < 30) return `${label}: too few trips (${r.n}) were measured from end to end to say.`;
+  return `${label}: scheduled ${Math.round(r.scheduledMin)} min · usually ${Math.round(r.typicalMin)} · 1 in 10 over ${Math.round(r.p90Min)} min${atHour != null ? ` at ${hourName(atHour)}` : ''}.`;
+}
+
+/** The stop where riders wait longest, as a sentence; null when no stop has service every 15 minutes or better. */
+export function extraWaitSentence(stops: ReadonlyArray<{ name: string; extraWaitMin: number; gaps: number }>, directionLabel: string): string | null {
+  const ranked = stops.filter(s => s.gaps >= 30).sort((a, b) => b.extraWaitMin - a.extraWaitMin);
+  const top = ranked[0];
+  if (!top) return null;
+  if (top.extraWaitMin < 0.5) return `${directionLabel}: riders wait about as long as the timetable promises at every stop.`;
+  return `${directionLabel}: riders at ${top.name} wait about ${m1(Math.round(top.extraWaitMin * 2) / 2)} min longer than scheduled.`;
+}
+
+/** "96% of scheduled trips ran" with how it was counted, in plain words. */
+export function deliveredSentence(d: DeliveredFigures, label?: string): string {
+  if (d.share == null) return `${label ? `${label}: ` : ''}not enough days of recordings to say how many scheduled trips ran.`;
+  return `${label ? `${label}: ` : ''}${m1(Math.round(d.share * 1000) / 10)}% of scheduled trips ran (${d.seen.toLocaleString()} of ${(d.seen + d.notSeen).toLocaleString()} that we can judge).`;
+}
+
+export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered';
+
+/** One comparison line per measure, this week against last, with a plain up or down. The same rule for every measure. */
+export function compareLines(w: NonNullable<LiveV3['weekly']>): Array<{ key: CompareKey; label: string; text: string; direction: 'better' | 'worse' | 'same' | 'unknown' }> {
+  const t = w.thisWeek, l = w.lastWeek;
+  const pct0 = (x: number) => `${Math.round(x * 100)}%`;
+  const line = (key: CompareKey, label: string, now: number | null, before: number | null, short: (x: number) => string, full: (x: number) => string, lowerIsBetter: boolean) => {
+    if (now == null || before == null) return { key, label, text: `${label}: not enough healthy days to compare.`, direction: 'unknown' as const };
+    if (short(now) === short(before)) return { key, label, text: `${full(now)}, unchanged from last week.`, direction: 'same' as const };
+    return { key, label, text: `${full(now)}, ${now > before ? 'up' : 'down'} from ${short(before)}.`, direction: (now > before) !== lowerIsBetter ? 'better' as const : 'worse' as const };
+  };
+  return [
+    line('late', 'Late', t.late?.share ?? null, l.late?.share ?? null, pct0, x => `${pct0(x)} late`, true),
+    line('tripTime', 'Trip time', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, x => `${Math.round(x)} min`, x => `Typical trip ${Math.round(x)} min`, true),
+    line('extraWait', 'Extra wait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, x => `${m1(x)} min`, x => `Riders wait ${m1(x)} min longer than scheduled`, true),
+    line('bunching', 'Bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, pct0, x => `${pct0(x)} of gaps too close or too far apart`, true),
+    line('delivered', 'Service delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, x => `${m1(Math.round(x * 1000) / 10)}%`, x => `${m1(Math.round(x * 1000) / 10)}% of scheduled trips ran`, false),
+  ];
 }

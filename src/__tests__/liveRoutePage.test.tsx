@@ -112,6 +112,28 @@ describe('Live route dashboard', () => {
     expect(screen.getAllByText('Show as a table').length).toBe(5);
   });
 
+  it('shows trip time, extra wait, service delivered and this week against last week, in plain words', async () => {
+    const fig = { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 };
+    const week = (late: number, delivered: number) => ({ days: 7, dates: ['2026-10-01', '2026-10-07'], healthyDates: ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04', '2026-10-05'], late: { share: late, n: 900 }, tripTime: { n: 100, scheduledMin: 22, typicalMin: 27, overMin: 5 }, extraWait: { minutes: 1.5, gaps: 900 }, bunching: { share: 0.2, gaps: 900 }, delivered: { share: delivered, seen: 95, notSeen: 5, unknown: 0 } });
+    const rich: LiveV3 = {
+      ...v3,
+      runningTime: { bands: { all: { '0': fig, '1': null }, amPeak: { '0': fig, '1': null }, midday: { '0': fig, '1': null }, pmPeak: { '0': fig, '1': null }, evening: { '0': fig, '1': null } }, byHour: { '0': [8, 9, 10].map(hour => ({ hour, ...fig })), '1': [] } },
+      extraWait: { all: [{ directionId: 0, stopId: 's1', name: 'Spadina & Queens Quay', order: 1, scheduledGapMin: 6, extraWaitMin: 2.1, gaps: 400 }, { directionId: 0, stopId: 's2', name: 'Stop two', order: 2, scheduledGapMin: 6, extraWaitMin: 0.8, gaps: 400 }, { directionId: 0, stopId: 's3', name: 'Stop three', order: 3, scheduledGapMin: 6, extraWaitMin: 1, gaps: 400 }], amPeak: [], midday: [], pmPeak: [], evening: [] },
+      serviceDelivered: { byDay: [{ date: '2026-10-08', healthy: true, share: 0.96, seen: 96, notSeen: 4, unknown: 0, byDirection: { '0': 0.96 } }, { date: '2026-10-09', healthy: true, share: 0.98, seen: 98, notSeen: 2, unknown: 0, byDirection: { '0': 0.98 } }, { date: '2026-10-14', healthy: false, share: 1, seen: 10, notSeen: 0, unknown: 0, byDirection: { '0': 1 } }], overall: { seen: 194, notSeen: 6, unknown: 3, share: 0.97, byDirection: {} } },
+      weekly: { minHealthyDays: 4, health: [], comparable: true, thisWeek: week(0.09, 0.96), lastWeek: week(0.12, 0.99) },
+    };
+    renderPage({ ...ready, v3: rich });
+    await screen.findByRole('heading', { name: /how it is running/ });
+    expect(screen.getByText('9% late, down from 12%.')).toBeTruthy();
+    expect(screen.getByText('96% of scheduled trips ran, down from 99%.')).toBeTruthy();
+    expect(screen.getByText(/Days when our recordings have gaps are left out of both/)).toBeTruthy();
+    expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();
+    expect(screen.getByText('Westbound: no trip was measured from end to end.')).toBeTruthy();
+    expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
+    expect(screen.getByText('97% of scheduled trips ran (194 of 200 that we can judge).')).toBeTruthy();
+    expect(screen.getByText(/Days when our recordings have gaps are not counted.*Oct 14/)).toBeTruthy();
+  });
+
   it('says how many runs were left out and why, so the figures are honest about what they cover', async () => {
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
     await screen.findByRole('heading', { name: /how it is running/ });

@@ -29,10 +29,17 @@ vehicle positions and the timetable.
   called gradual (`kind`), and the whole per-stop profile is stored. What lines up with it is
   listed as "linked to": uneven departures at the terminal, stood-still time, running time over the timetable, short turns.
 
+- **Running time** (`v3.runningTime`): from leaving the first stop (25 m past it) to reaching the last, against the timetable's first departure and last arrival, per direction and start hour; only trips on the direction's main pattern, seen at both ends. Scheduled, typical (median) and 1 in 10 over (90th percentile).
+- **Extra wait** (`v3.extraWait`): per stop where the timetable runs every 15 minutes or better, the average wait implied by the actual gaps minus the one implied by the scheduled gaps (sum of squares over twice the sum), per time of day.
+- **Service delivered** (`v3.serviceDelivered`): per day, scheduled trips with a vehicle seen under their trip number among those we can judge; trips in feed gaps or covered by unlisted cars are "unknown", not missed. Only days with healthy archive coverage (at least 90% of a normal day's snapshots) count.
+- **This week against last** (`v3.weekly`): the same measures (late share, typical trip time, extra wait, bunching share, service delivered) computed by one function over the newest 7 and the previous 7 service dates, healthy days only; compared only when each week has at least 4 healthy days.
+
 The window is the last `--days` service dates (default 7) that the archive and the timetable both cover. The thresholds and
 constants are in `shared/stopDelay.ts` and `shared/bunching.ts`.
 
 ## Check it
+
+Also `scripts/handcheck/live-triptime-check.py` (end-to-end trip times), `live-extrawait-check.py` (extra wait at one stop) and `live-delivered-check.py` (service delivered for one day).
 
 `python3 scripts/handcheck/live-arrival-check.py --route 505 --obs <obs.json> --gtfs ../_live-data/gtfs/candidates/surface --archive ../_live-data/archive`
 recomputes random stop departures (25 m past the stop) from the raw archive and the timetable with separate code and prints both numbers

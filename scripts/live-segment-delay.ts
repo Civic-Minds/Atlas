@@ -22,6 +22,7 @@ import {
 import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
+import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
@@ -32,6 +33,8 @@ const OUT = args.out;
 const TZ = 'America/Toronto';
 const DAYS = Number(args.days ?? 7);
 const OBS_OUT = args['obs-out'];
+/** Optional: write each measured end-to-end trip time (for hand-checking). */
+const RUNTIMES_OUT = args['runtimes-out'];
 /** Trips whose headsign matches this are another service under the same route number (e.g. replacement buses): left out and counted. */
 const EXCLUDE_HEADSIGN = args['exclude-headsign'] ? new RegExp(args['exclude-headsign'], 'i') : null;
 /** A stop passage more than this far from the timetable is a wrong trip match or a bad fix, not a delay. */
@@ -238,6 +241,10 @@ let delaysExcluded = 0;
 /** Runs (a vehicle on a trip number) the analysis does not use, with why, and the ones it does, by service date. */
 const leftOutRuns: { date: string; reason: 'excluded' | 'no_timetable_trip' }[] = [];
 const keptRuns: string[] = [];
+/** End-to-end trip time per run: first-stop departure to last-stop arrival, against the timetable's. */
+const runTimes: { date: string; directionId: number; startHour: number; schedSec: number; actualSec: number; tripId: string; patternId: string }[] = [];
+/** One entry per scheduled trip: did a vehicle run it, was it not seen, or can't we tell (data gap)? */
+const tripOutcomes: { date: string; directionId: number; outcome: 'seen' | 'not_seen' | 'unknown' }[] = [];
 let runsWithDelays = 0;
 const swapLog: { date: string; outcome: 'reassigned' | 'dropped' }[] = [];
 const shortTurnEvents: { stopId: string; directionId: number; date: string }[] = [];
@@ -352,6 +359,17 @@ for (const [key, samples] of runs) {
         else { rows = []; swapLog.push({ date: svcDate, outcome: 'dropped' }); }
       }
       runsWithDelays++;
+      if (rows.length) {
+        const tt = timesByTrip.get(assigned) ?? [];
+        const firstSt = pattern.stops[0], lastSt = pattern.stops[pattern.stops.length - 1];
+        const dep0 = deps.find(p => p.stopId === firstSt?.stopId);
+        const arrN = legs.flat().find(p => p.stopId === lastSt?.stopId);
+        if (dep0 && arrN && tt.length > 1 && tt[0].stopId === firstSt.stopId && tt[tt.length - 1].stopId === lastSt.stopId) {
+          const schedSec = tt[tt.length - 1].arr - tt[0].dep;
+          const actualSec = arrN.t - dep0.t;
+          if (schedSec > 0 && actualSec > 0 && Math.abs(actualSec - schedSec) <= 3600) runTimes.push({ date: svcDate, directionId: pattern.directionId, startHour: Math.floor(tt[0].dep / 3600), schedSec, actualSec, tripId: assigned, patternId: pattern.id });
+        }
+      }
       const stopsOut: RunStopDelay[] = [];
       for (const r of rows) {
         if (Math.abs(r.delaySec) > MAX_DELAY_SEC) { delaysExcluded++; continue; }
@@ -624,6 +642,10 @@ for (const { svcDate, trip, base } of tripInstanceList) {
     }
   }
   if (statuses.every(st => st === 'not_seen')) tripsNotSeen++;
+  tripOutcomes.push({
+    date: svcDate, directionId: Number(trip.direction_id),
+    outcome: statuses.every(st => st === 'not_seen') ? 'not_seen' : statuses.every(st => st === 'feed_gap' || st === 'unlisted_cover' || st === 'not_seen') ? 'unknown' : 'seen',
+  });
   if (statuses.every(st => st === 'unlisted_cover')) tripsUnlistedCover++;
   if (firstPing == null && statuses.every(st => st === 'feed_gap')) tripsFeedGap++;
   if (startedOtherTripAfterIndex != null) {
@@ -814,6 +836,74 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
   })),
 }));
 
+// Running time (end to end) against the timetable, by time of day and direction.
+// Only trips on each direction's main pattern: short turns and other partial patterns have a different length and would blur the typical time.
+const mainPatternId = new Map<number, string>();
+for (const p of busiest) if (!mainPatternId.has(p.directionId)) mainPatternId.set(p.directionId, p.id);
+const mainRunTimes = runTimes.filter(r => mainPatternId.get(r.directionId) === r.patternId);
+const windowRunTimes = mainRunTimes.filter(r => inWindow.has(r.date));
+const directionsSeen = [...new Set(windowRunTimes.map(r => r.directionId))].sort();
+const rtFor = (rows: readonly RunTimeRow[]) => runTimeStat(rows);
+const runningTimeV3 = {
+  bands: Object.fromEntries(BANDS.map(band => [band, Object.fromEntries(directionsSeen.map(d => [String(d), rtFor(windowRunTimes.filter(r => r.directionId === d && (band === 'all' || bandForHour(r.startHour) === band)))]))])),
+  byHour: Object.fromEntries(directionsSeen.map(d => [String(d), [...new Set(windowRunTimes.filter(r => r.directionId === d).map(r => r.startHour % 24))].sort((a, b) => a - b)
+    .map(h => ({ hour: h, ...rtFor(windowRunTimes.filter(r => r.directionId === d && r.startHour % 24 === h))! }))])),
+};
+// Extra wait: at each stop, how much longer riders wait than the timetable promises (average wait from actual gaps minus from scheduled gaps), where service is every 15 min or better.
+const EXTRA_WAIT_MAX_SCHEDULED_SEC = 900;
+const extraWaitV3 = Object.fromEntries(BANDS.map(band => [band, [...headwayByStop].flatMap(([key, m]) => {
+  const [stopId, dir] = key.split('|');
+  const stat = headwayBandStat((m.get(band) ?? []).filter(w => inWindow.has(w.date)));
+  if (!stat || stat.excessWaitSec == null || stat.scheduledMedianGapSec > EXTRA_WAIT_MAX_SCHEDULED_SEC || stat.gaps < 10) return [];
+  return [{ directionId: Number(dir), ...stopInfo(stopId), order: orderIndex(Number(dir), stopId), scheduledGapMin: r1(stat.scheduledMedianGapSec / 60), extraWaitMin: r1(stat.excessWaitSec / 60), gaps: stat.gaps }];
+}).sort((a, b) => a.directionId - b.directionId || a.order - b.order)]));
+// Which days of the archive are healthy, then the same measures for this week and last week.
+const snapshotsByDate = new Map<string, number>();
+for (const t of snapshotTimes) { const d = serviceDateOf(t); if (scheduleKeyForDate(d)) snapshotsByDate.set(d, (snapshotsByDate.get(d) ?? 0) + 1); }
+const healthV3 = dayHealth(snapshotsByDate);
+const allValidDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d)).sort();
+const weeks = weekSplit(allValidDates, healthV3);
+function weekMetrics(days: readonly string[]) {
+  const ds = new Set(days);
+  const tp = adherenceReport(runDelays.filter(r => ds.has(r.date)), { timepointsOnly: true }).overall;
+  let ewtSum = 0, ewtW = 0, bad = 0, gaps = 0;
+  for (const [key, m] of headwayByStop) {
+    const wins = (m.get('all') ?? []).filter(w => ds.has(w.date));
+    const stat = headwayBandStat(wins);
+    if (stat && stat.excessWaitSec != null && stat.scheduledMedianGapSec <= EXTRA_WAIT_MAX_SCHEDULED_SEC && stat.gaps >= 10) { ewtSum += stat.excessWaitSec * stat.gaps; ewtW += stat.gaps; }
+    const sb = stopBunching(key.split('|')[0], wins);
+    bad += sb.badShare * sb.n; gaps += sb.n;
+  }
+  const rt = runTimeStat(mainRunTimes.filter(r => ds.has(r.date)));
+  const dv = delivered(tripOutcomes.filter(o => ds.has(o.date)));
+  return {
+    days: days.length,
+    late: tp.n ? { share: r3(tp.lateShare), n: tp.n } : null,
+    tripTime: rt && { n: rt.n, scheduledMin: rt.scheduledMin, typicalMin: rt.typicalMin, overMin: rt.overMin },
+    extraWait: ewtW ? { minutes: r1(ewtSum / ewtW / 60), gaps: ewtW } : null,
+    bunching: gaps ? { share: r3(bad / gaps), gaps } : null,
+    delivered: dv.share == null ? null : { share: r3(dv.share), seen: dv.seen, notSeen: dv.notSeen, unknown: dv.unknown },
+  };
+}
+const serviceDeliveredV3 = {
+  byDay: healthV3.filter(h => windowDates.includes(h.date)).map(h => {
+    const rows = tripOutcomes.filter(o => o.date === h.date);
+    return { date: h.date, healthy: h.healthy, ...delivered(rows), share: r3(delivered(rows).share), byDirection: Object.fromEntries([...new Set(rows.map(r => r.directionId))].sort().map(d => [String(d), r3(delivered(rows.filter(r => r.directionId === d)).share)])) };
+  }),
+  overall: (() => {
+    const rows = tripOutcomes.filter(o => inWindow.has(o.date) && healthV3.find(h => h.date === o.date)?.healthy);
+    const dv = delivered(rows);
+    return { ...dv, share: r3(dv.share), byDirection: Object.fromEntries([...new Set(rows.map(r => r.directionId))].sort().map(d => { const x = delivered(rows.filter(r => r.directionId === d)); return [String(d), { ...x, share: r3(x.share) }]; })) };
+  })(),
+};
+const weeklyV3 = {
+  minHealthyDays: MIN_HEALTHY_DAYS,
+  health: healthV3.filter(h => allValidDates.includes(h.date)),
+  thisWeek: { dates: weeks.thisWeek, healthyDates: weeks.thisHealthy, ...weekMetrics(weeks.thisHealthy) },
+  lastWeek: { dates: weeks.lastWeek, healthyDates: weeks.lastHealthy, ...weekMetrics(weeks.lastHealthy) },
+  comparable: weeks.thisHealthy.length >= MIN_HEALTHY_DAYS && weeks.lastHealthy.length >= MIN_HEALTHY_DAYS,
+};
+
 const v3 = {
   schema: 3,
   window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS },
@@ -835,11 +925,16 @@ const v3 = {
   adherence: bandsV3.all.adherence,
   // Everything above filtered to one time of day (keys: all, amPeak, midday, pmPeak, evening); `adherence`, `stops` and `buildup` are the 'all' entry.
   bands: bandsV3,
+  runningTime: runningTimeV3,
+  extraWait: extraWaitV3,
+  serviceDelivered: serviceDeliveredV3,
+  weekly: weeklyV3,
   stops: stopStatsV3,
   buildup: buildupV3,
   bunching: bunchingV3,
 };
 if (OBS_OUT) writeFileSync(OBS_OUT, JSON.stringify(windowRuns));
+if (RUNTIMES_OUT) writeFileSync(RUNTIMES_OUT, JSON.stringify(windowRunTimes));
 console.log(`v3: window ${windowDates.length} days (${windowDates[0]}..${windowDates[windowDates.length - 1]}), runs ${windowRuns.length}, stop passages ${v3.totals.stopPassages}, dropped off-timetable ${delaysExcluded}`);
 
 const usedDates = dates;

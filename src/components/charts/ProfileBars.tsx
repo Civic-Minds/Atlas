@@ -9,6 +9,8 @@ export interface ProfilePoint {
   /** Optional range drawn as a thin line through the bar (clipped to the chart's scale). */
   lo?: number;
   hi?: number;
+  /** A reference value drawn as a short tick across the bar (for example the timetable's running time). */
+  ref?: number;
   /** Sample size, shown on hover and in the table. */
   n?: number;
 }
@@ -47,6 +49,10 @@ interface ProfileBarsProps {
   series?: readonly ProfileSeries[];
   /** Header for the value column of the table view. */
   valueHeader: string;
+  /** Header for the reference column of the table view (when points carry `ref`). */
+  refHeader?: string;
+  /** What the "Show as a table" first column holds (default Stop). */
+  rowHeader?: string;
 }
 
 /** The scale two charts should share: the bars' own range (not the thin lines), always including zero. */
@@ -63,7 +69,7 @@ export function sharedScale(groups: ReadonlyArray<readonly ProfilePoint[]>): { m
  * 90% opacity with a small gap. Values below zero hang under a dashed zero line. A marked stretch gets a tinted band
  * behind its bar, so it shows even when the bar is zero high. The values are also available as a table.
  */
-export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, marks = [], zero = false, scale, startLabel, endLabel, series, valueHeader }: ProfileBarsProps) {
+export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, marks = [], zero = false, scale, startLabel, endLabel, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
   if (points.length < 2) return null;
   const sc = scale ?? sharedScale([points]);
   const span = sc.max - sc.min || 1;
@@ -94,6 +100,9 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
                   <div style={{ height: h1, background: series?.[0]?.color ?? 'var(--accent)' }} />
                   {p.y2 ? <div style={{ height: pos(p.y2) - pos(0), background: series?.[1]?.color ?? 'var(--accent)' }} /> : null}
                 </div>
+                {p.ref != null && (
+                  <div className="pointer-events-none absolute left-1/2 h-[2px] w-[90%] max-w-[22px] -translate-x-1/2 bg-[var(--text-primary)]" style={{ bottom: pos(p.ref) }} />
+                )}
                 {p.lo != null && p.hi != null && (
                   <div className="absolute left-1/2 w-px -translate-x-1/2 bg-[var(--text-muted)] opacity-70" style={{ bottom: pos(p.lo), height: Math.max(1, pos(p.hi) - pos(p.lo)) }} />
                 )}
@@ -126,9 +135,10 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
             rows={points.map((p, i) => ({ p, i }))}
             rowKey={r => `${r.p.label}-${r.i}`}
             columns={[
-              { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: r => r.p.label },
+              { key: 'stop', header: rowHeader, rowHeader: true, className: 'font-normal', cell: r => r.p.label },
               { key: 'value', header: valueHeader, cell: r => formatY(r.p.y + (r.p.y2 ?? 0)) },
-              ...(points.some(p => p.lo != null) ? [{ key: 'range', header: 'Most trips between', cell: (r: { p: ProfilePoint }) => (r.p.lo != null && r.p.hi != null ? `${formatY(r.p.lo)} and ${formatY(r.p.hi)}` : '') }] : []),
+              ...(points.some(p => p.ref != null) ? [{ key: 'ref', header: refHeader ?? 'Reference', cell: (r: { p: ProfilePoint }) => (r.p.ref != null ? formatY(r.p.ref) : '') }] : []),
+              ...(points.some(p => p.lo != null) ? [{ key: 'range', header: points.some(p => p.ref != null) ? '1 in 10 over' : 'Most trips between', cell: (r: { p: ProfilePoint }) => (r.p.lo != null && r.p.hi != null ? (r.p.ref != null ? formatY(r.p.hi) : `${formatY(r.p.lo)} and ${formatY(r.p.hi)}`) : '') }] : []),
               { key: 'n', header: unit.charAt(0).toUpperCase() + unit.slice(1), cell: r => (r.p.n != null ? r.p.n.toLocaleString() : '') },
             ]}
           />

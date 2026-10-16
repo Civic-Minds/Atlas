@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
-import { FEATURES } from '../shared/config';
+import { FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, bunchingSentence, dateRangeText, freshness, buildupSentence, linkValueText, rankStops, toCsv,
+  LINK_LABELS, bunchingSentence, compareLines, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -286,6 +286,176 @@ function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: Das
   );
 }
 
+const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'a' : 'p'}`;
+
+/** This week against last week for the headline measures, with a plain up or down. One rule for all of them. */
+function WeekCompare({ v3 }: { v3: LiveV3 }) {
+  const w = v3.weekly;
+  if (!w) return null;
+  const range = (dates: string[]) => (dates.length ? dateRangeText(dates[0], dates[dates.length - 1]) : 'no days');
+  const tone = { better: 'text-[var(--status-positive-text)]', worse: 'text-[var(--status-negative-text)]', same: 'text-[var(--text-muted)]', unknown: 'text-[var(--text-dim)]' } as const;
+  return (
+    <Section id="week" title="This week compared with last week">
+      {w.comparable ? (
+        <ul className="mt-3 max-w-2xl space-y-1.5 text-sm">
+          {compareLines(w).map(l => <li key={l.key} className={tone[l.direction]}>{l.text}</li>)}
+        </ul>
+      ) : <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">Not enough days of good recordings to compare two weeks: each week needs at least {w.minHealthyDays}.</p>}
+      <p className="mt-3 max-w-2xl text-xs text-[var(--text-dim)]">
+        This week is {range(w.thisWeek.dates)} and last week is {range(w.lastWeek.dates)}. Days when our recordings have gaps are left out of both (this week {w.thisWeek.healthyDates.length} of {w.thisWeek.dates.length} days counted, last week {w.lastWeek.healthyDates.length} of {w.lastWeek.dates.length}), and both weeks are counted the same way.
+      </p>
+    </Section>
+  );
+}
+
+/** How long the whole trip takes against the timetable, by direction and hour. */
+function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
+  const rt = v3.runningTime;
+  if (!rt) return null;
+  const dirs = Object.keys(v3.directionLabels).map(Number).sort().filter(d => dir == null || d === dir);
+  const pointsOf = (d: number): ProfilePoint[] => (rt.byHour[String(d)] ?? [])
+    .filter(h => band === 'all' || periodKeyForHour(h.hour) === band)
+    .map(h => ({ label: hourLabel(h.hour), y: h.typicalMin, ref: h.scheduledMin, hi: h.p90Min, lo: h.typicalMin, n: h.n }));
+  const scale = sharedScale(dirs.map(d => pointsOf(d).map(p => ({ ...p, y: Math.max(p.y, p.hi ?? 0, p.ref ?? 0) }))));
+  return (
+    <Section id="runtime" title="How long the trip takes">
+      <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
+        From leaving the first stop to reaching the last, against the timetable. Only trips on the main route that we saw at both ends are counted (short turns are left out).
+      </p>
+      <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
+        {dirs.map(d => {
+          const label = v3.directionLabels[String(d)];
+          const figures = rt.bands[band]?.[String(d)];
+          const points = pointsOf(d).filter(p => (p.n ?? 0) >= 1);
+          return (
+            <div key={d} className="min-w-0">
+              <h3 className="text-base font-black">{label}</h3>
+              <p className="mt-1 text-sm leading-6">{runningTimeSentence(label, figures)}</p>
+              {points.length > 1 && (
+                <ProfileBars
+                  ariaLabel={`${label}: typical trip time by hour the trip starts, against the timetable. ${runningTimeSentence(label, figures)}`}
+                  points={points}
+                  formatY={y => `${Math.round(y)} min`}
+                  unit="trips"
+                  valueHeader="Typical trip time"
+                  refHeader="Scheduled"
+                  rowHeader="Starts at"
+                  caption="Each bar is the typical trip time for trips starting that hour, the tick is the timetable, and the thin line reaches the time that 1 in 10 trips exceed."
+                  scale={{ min: 0, max: scale.max }}
+                  startLabel={points[0].label}
+                  endLabel={points[points.length - 1].label}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
+
+/** Extra wait: how much longer riders wait than the timetable promises, at stops with service every 15 minutes or better. */
+function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
+  const all = v3.extraWait?.[band];
+  if (!all) return null;
+  const dirs = Object.keys(v3.directionLabels).map(Number).sort().filter(d => dir == null || d === dir);
+  const pointsOf = (d: number): ProfilePoint[] => all.filter(s => s.directionId === d).map(s => ({ label: s.name, y: Math.max(0, s.extraWaitMin), n: s.gaps }));
+  const scale = sharedScale(dirs.map(pointsOf));
+  const worst = all.filter(s => (dir == null || s.directionId === dir) && s.gaps >= 30).sort((a, b) => b.extraWaitMin - a.extraWaitMin).slice(0, 10);
+  return (
+    <Section id="wait" title="Extra wait">
+      <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
+        How much longer riders wait than the timetable promises. It is worked out from the gaps between vehicles at each stop, so it grows when vehicles bunch or leave long gaps. Shown only where the timetable has a vehicle every 15 minutes or better.
+      </p>
+      {all.length === 0 ? <p className="mt-3 text-sm text-[var(--text-muted)]">No stop on this route has a vehicle every 15 minutes or better in this time of day.</p> : (
+        <>
+          <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
+            {dirs.map(d => {
+              const label = v3.directionLabels[String(d)];
+              const points = pointsOf(d);
+              const sentence = extraWaitSentence(all.filter(s => s.directionId === d), label);
+              return (
+                <div key={d} className="min-w-0">
+                  <h3 className="text-base font-black">{label}</h3>
+                  {sentence && <p className="mt-1 text-sm leading-6">{sentence}</p>}
+                  {points.length > 1 && (
+                    <ProfileBars
+                      ariaLabel={`${label}: extra wait at each stop along the route. ${sentence ?? ''}`}
+                      points={points}
+                      formatY={y => `${num(y)} min`}
+                      unit="gaps"
+                      valueHeader="Extra wait"
+                      caption="Extra wait at each stop along the route."
+                      scale={scale}
+                      startLabel={points[0].label}
+                      endLabel={points[points.length - 1].label}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {worst.length > 0 && (
+            <div className="mt-5 overflow-x-auto">
+              <DataTable
+                caption="Stops where riders wait longest compared with the timetable"
+                rows={worst}
+                rowKey={s => `${s.stopId}-${s.directionId}`}
+                columns={[
+                  { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
+                  ...(dir == null ? [{ key: 'dir', header: 'Direction', className: 'whitespace-nowrap', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
+                  { key: 'extra', header: 'Extra wait', className: 'whitespace-nowrap', cell: s => `${num(s.extraWaitMin)} min` },
+                  { key: 'sched', header: 'Scheduled every', className: 'whitespace-nowrap', cell: s => `${num(s.scheduledGapMin)} min` },
+                  { key: 'n', header: 'Gaps', cell: s => s.gaps.toLocaleString() },
+                ]}
+              />
+            </div>
+          )}
+        </>
+      )}
+    </Section>
+  );
+}
+
+/** Service delivered: the share of scheduled trips that ran, by day, only on days with healthy recordings. */
+function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
+  const sd = v3.serviceDelivered;
+  if (!sd) return null;
+  const overall = dir == null ? sd.overall : sd.overall.byDirection[String(dir)];
+  const days = sd.byDay.filter(d => d.healthy);
+  const skipped = sd.byDay.filter(d => !d.healthy);
+  const points: ProfilePoint[] = days.map(d => ({ label: dateRangeText(d.date, d.date), y: dir == null ? d.share ?? 0 : d.byDirection[String(dir)] ?? 0, n: d.seen + d.notSeen }));
+  return (
+    <Section id="delivered" title="Service delivered">
+      <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
+        The share of scheduled trips that ran. A trip counts as run when a vehicle was seen under its trip number.
+      </p>
+      {overall && <p className="mt-2 text-sm leading-6">{deliveredSentence(overall, dir == null ? undefined : v3.directionLabels[String(dir)])}</p>}
+      {points.length > 1 && (
+        <div className="mt-4 max-w-2xl">
+          <ProfileBars
+            ariaLabel="Share of scheduled trips that ran, day by day"
+            points={points}
+            formatY={y => `${Math.round(y * 1000) / 10}%`}
+            unit="trips"
+            valueHeader="Ran"
+            rowHeader="Day"
+            caption="Share of scheduled trips that ran, day by day."
+            scale={{ min: 0.9, max: 1 }}
+            startLabel={points[0].label}
+            endLabel={points[points.length - 1].label}
+          />
+        </div>
+      )}
+      <p className="mt-3 max-w-2xl text-xs text-[var(--text-dim)]">
+        {skipped.length > 0 && <>Days when our recordings have gaps are not counted, because a trip missing from them may just be missing data ({skipped.map(d => dateRangeText(d.date, d.date)).join(', ')}). </>}
+        {overall && overall.unknown > 0 && <>{overall.unknown.toLocaleString()} trips could not be judged (the feed was down, or other vehicles covered their slot) and are left out. </>}
+        The bars start at 90%.
+      </p>
+    </Section>
+  );
+}
+
 function Method({ data }: { data: Ready }) {
   const { v3 } = data;
   const [first, last] = [v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1]];
@@ -357,10 +527,14 @@ export default function LiveRoutePage() {
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         <Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} />
+        <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} band={band} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('How long the trip takes')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWait v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label="How this is measured could not be drawn."><Method data={data} /></ErrorBoundary>
       </article>
     </PageShell>
