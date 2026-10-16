@@ -1033,6 +1033,13 @@ const serviceDeliveredV3 = {
     return { ...dv, share: r3(dv.share), byDirection: Object.fromEntries([...new Set(rows.map(r => r.directionId))].sort().map(d => { const x = delivered(rows.filter(r => r.directionId === d)); return [String(d), { ...x, share: r3(x.share) }]; })) };
   })(),
 };
+// One day at a time, the same figures as a week (CIV-278, the Yesterday view): every valid date in the archive, with
+// whether it was a good day and its late share by the hour trips start.
+const dailyV3 = Object.fromEntries(allValidDates.map(date => {
+  const h = healthV3.find(x => x.date === date);
+  const hours = adherenceReport(runDelays.filter(r => r.date === date), { tripStartsOnly: true }).byHour;
+  return [date, { healthy: !!h?.healthy, ...weekMetrics([date]), lateByHour: hours.map(x => ({ hour: x.hour, n: x.n, lateShare: r3(x.lateShare) })) }];
+}));
 const weeklyV3 = {
   minHealthyDays: MIN_HEALTHY_DAYS,
   health: healthV3.filter(h => allValidDates.includes(h.date)),
@@ -1080,6 +1087,7 @@ const v3 = {
   extraWait: extraWaitV3,
   serviceDelivered: serviceDeliveredV3,
   weekly: weeklyV3,
+  daily: dailyV3,
   stops: stopStatsV3,
   buildup: buildupV3,
   bunching: bunchingV3,

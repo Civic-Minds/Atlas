@@ -26,6 +26,8 @@ async function loadHandlers() {
   handlers['/api/live-dashboard'] = liveDashboard.fetch;
   const { default: liveAgency } = await import('./local-api/live-agency.js');
   handlers['/api/live-agency'] = liveAgency.fetch;
+  const { default: liveYesterday } = await import('./local-api/live-yesterday.js');
+  handlers['/api/live-yesterday'] = liveYesterday.fetch;
   handlers['/api/live-vehicles'] = liveVehicles.fetch;
   handlers['/api/history-adherence'] = historyAdherence.fetch;
   handlers['/api/carto-tiles'] = cartoTiles.fetch;
@@ -68,5 +70,5 @@ createServer(async (req, res) => {
   }
 }).listen(API_PORT, () => {
   console.log(`API dev server listening on http://localhost:${API_PORT}`);
-  console.log('Routes: /api/live-vehicles, /api/live-segments, /api/live-dashboard, /api/live-agency, /api/live-recent, /api/history-adherence, /api/live-stop, /api/carto-tiles, /api/privacy-region');
+  console.log('Routes: /api/live-vehicles, /api/live-segments, /api/live-dashboard, /api/live-agency, /api/live-yesterday, /api/live-recent, /api/history-adherence, /api/live-stop, /api/carto-tiles, /api/privacy-region');
 });

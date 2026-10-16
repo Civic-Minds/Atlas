@@ -12,6 +12,7 @@
     "dev:all": "VITE_ATLAS_MODE=dev VITE_LIVE_ENABLED=false vite",
     "dev:live": "VITE_ATLAS_MODE=dev VITE_LIVE_ENABLED=true vite",
     "live:publish": "npx tsx scripts/live-publish.ts",
+    "live:yesterday": "bash scripts/live-analyze.sh all --days 15 && npx tsx scripts/live-yesterday.ts ttc --upload",
     "dev:api": "npx tsx api-dev-server.ts",
     "live": "bash scripts/live.sh",
     "live:check": "npx tsx scripts/live-check.ts",
