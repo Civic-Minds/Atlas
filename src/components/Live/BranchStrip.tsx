@@ -1,11 +1,12 @@
-import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { isMajorStop } from '../../utils/stopLabel';
 import {
-  LEGEND_TITLE, MIN_N, STEP_LABELS, delayText, labelWidth, pct, shortStopName, stepColor, stepFor, stopDetail, stopN, stopValue,
+  MIN_N, delayInterpolated, delayText, labelWidth, lessExactOn, pct, shortStopName, stepFor, stopDetail, stopN, stopValue,
   type RouteStripMode, type RouteStripStop, type Step,
 } from './routeStripModel';
+import { StripLegend, Tooltip, swatchStyle } from './RouteStrip';
 import { allBranchStops, type BranchModel } from './branchStripModel';
 
 export interface BranchStripProps {
@@ -23,10 +24,9 @@ export interface BranchStripProps {
 
 const INSET = 10;
 const GUTTER = 72;
-const LABEL_H = 16;
-const DOT_H = 24;
-const ROW_H = LABEL_H + DOT_H;
-const TRACK_GAP = 8;
+const TRACK_H = 22;
+const LABEL_H = 22;
+const ROW_GAP = 10;
 const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunching: 'Bunching' };
 
 function useWidth() {
@@ -45,63 +45,46 @@ function useWidth() {
   return [ref, width] as const;
 }
 
-function swatchStyle(mode: RouteStripMode, step: Step | null, uncertain: boolean): CSSProperties {
-  if (step == null) return { background: 'transparent', border: '1.5px dashed var(--text-dim)' };
-  const c = stepColor(mode, step);
-  if (uncertain) return { background: `repeating-linear-gradient(135deg, ${c} 0 1.5px, transparent 1.5px 3.5px)`, border: `1.5px solid ${c}` };
-  return { background: c, boxShadow: '0 0 0 1px var(--strip-ring)' };
-}
+/** The colour step a stop gets on a track: an interpolated timetable time is not a measured delay, so it stays on the first step, hatched. */
+const stepOf = (s: RouteStripStop, mode: RouteStripMode): Step | null => (mode === 'delay' && delayInterpolated(s) ? 0 : stepFor(mode, stopValue(s, mode)));
 
-function Swatch({ mode, step, uncertain = false, faded = false }: { mode: RouteStripMode; step: Step | null; uncertain?: boolean; faded?: boolean }) {
-  return <span aria-hidden="true" className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ ...swatchStyle(mode, step, uncertain), opacity: faded ? 0.35 : 1 }} />;
-}
-
-function valueText(stop: RouteStripStop, mode: RouteStripMode): string {
-  const v = stopValue(stop, mode);
-  if (v == null) return 'not measured';
-  return mode === 'delay' ? delayText(v) : `${pct(v)} of gaps off`;
-}
-
-/**
- * Which trunk stops get a name under the lines: both ends of the trunk, then `majors` evenly spaced stops (nudged to a
- * neighbour when the even spot would overlap). Each label is centred on its stop; none overlaps another.
- */
-function pickTrunkLabels(xs: readonly number[], widths: readonly number[], majors: number, min: number, max: number, gap = 10): number[] {
-  const n = xs.length;
-  if (n === 0) return [];
+/** Which labels fit on one line: `want` first (always tried), then `majors` evenly spaced candidates; each is centred on its x, kept inside the plot, and none overlaps another. */
+function fitLabels(items: ReadonlyArray<{ x: number; text: string }>, want: readonly number[], majors: number, min: number, max: number, gap = 12): number[] {
+  const widths = items.map(i => labelWidth(i.text) + 6);
+  const span = (i: number): [number, number] => { const l = Math.max(min, Math.min(max - widths[i], items[i].x - widths[i] / 2)); return [l, l + widths[i]]; };
   const placed: number[] = [];
-  const span = (i: number): [number, number] => { const l = Math.max(min, Math.min(max - widths[i], xs[i] - widths[i] / 2)); return [l, l + widths[i]]; };
   const fits = (i: number) => { const [a, b] = span(i); return placed.every(j => { const [c, d] = span(j); return b + gap <= c || d + gap <= a; }); };
-  const tryAdd = (i: number) => { if (i < 0 || i >= n || placed.includes(i) || !fits(i)) return false; placed.push(i); return true; };
-  tryAdd(0);
-  tryAdd(n - 1);
-  for (let k = 1; k <= majors; k++) {
-    const target = Math.round((k * (n - 1)) / (majors + 1));
-    for (const d of [0, 1, -1, 2, -2]) if (tryAdd(target + d)) break;
+  const tryAdd = (i: number) => { if (i < 0 || i >= items.length || placed.includes(i) || !fits(i)) return false; placed.push(i); return true; };
+  want.forEach(tryAdd);
+  const rest = items.map((_, i) => i).filter(i => !want.includes(i));
+  for (let k = 1; k <= majors && rest.length; k++) {
+    const target = Math.round((k * (rest.length - 1)) / (majors + 1));
+    for (const d of [0, 1, -1, 2, -2]) if (tryAdd(rest[target + d] ?? -1)) break;
   }
-  return placed.sort((a, b) => a - b);
+  return placed;
 }
 
-/** Where each stop sits: a slot along the line (shared by every track) and a row (0 is the trunk's own line). */
+/** Where each stop sits: a slot along the line (shared by every track) and a row (0 is the trunk's own line). A fork on a lower row leaves one empty slot beside the trunk, so its curve has room. */
 interface Placed { stop: RouteStripStop; slot: number; row: number }
 
 function layout(m: BranchModel) {
-  const nIn = Math.max(0, ...m.starts.map(f => f.length));
+  const gap = (k: number) => (k > 0 ? 1 : 0);
+  const padIn = Math.max(0, ...m.starts.map((f, k) => f.length + gap(k)));
+  const padOut = Math.max(0, ...m.ends.map((f, k) => f.length + gap(k)));
   const nTrunk = m.trunk.length;
-  const nOut = Math.max(0, ...m.ends.map(f => f.length));
   const placed: Placed[] = [];
-  m.starts.forEach((f, k) => f.forEach((stop, j) => placed.push({ stop, slot: nIn - f.length + j, row: k })));
-  m.trunk.forEach((stop, i) => placed.push({ stop, slot: nIn + i, row: 0 }));
-  m.ends.forEach((f, k) => f.forEach((stop, j) => placed.push({ stop, slot: nIn + nTrunk + j, row: k })));
-  return { nIn, nTrunk, nOut, slots: nIn + nTrunk + nOut, rows: Math.max(1, m.starts.length, m.ends.length), placed };
+  m.starts.forEach((f, k) => f.forEach((stop, j) => placed.push({ stop, slot: padIn - gap(k) - f.length + j, row: k })));
+  m.trunk.forEach((stop, i) => placed.push({ stop, slot: padIn + i, row: 0 }));
+  m.ends.forEach((f, k) => f.forEach((stop, j) => placed.push({ stop, slot: padIn + nTrunk + gap(k) + j, row: k })));
+  return { padIn, nTrunk, padOut, slots: padIn + nTrunk + padOut, rows: Math.max(1, m.starts.length, m.ends.length), placed };
 }
 
 /**
- * One direction of a route that runs more than one pattern: the delay and bunching tracks of RouteStrip, but with the
- * stops every pattern serves as one shared line (the trunk) that forks into a line per branch where the patterns
- * differ, each branch named by its end stop. A stop on a branch shows its own delay; bunching is only measured along
- * the main pattern, so branch stops show it as not measured. Phones get a vertical list: the branches one after
- * another around the trunk.
+ * One direction of a route that runs more than one pattern: the delay and bunching tracks of RouteStrip, with the stops
+ * every pattern serves as one shared line (the trunk) that splits into parallel lines, one per branch, where the
+ * patterns differ. Each line is a pair of tracks with its stop names underneath: the trunk names a few stops and both
+ * ends, a branch names the stop where it ends. A branch stop shows its own delay; bunching is only measured along the
+ * main pattern, so branch stops show it as not measured. Phones get a vertical list: the branches one after another.
  */
 export default function BranchStrip({ model, selected = null, onSelect, modes = ['delay', 'bunching'], minN = MIN_N, verticalBelow = 360, className = '' }: BranchStripProps) {
   const [ref, width] = useWidth();
@@ -114,9 +97,9 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const stops = useMemo(() => allBranchStops(model), [model]);
   const lay = useMemo(() => layout(model), [model]);
   const faded = (s: RouteStripStop, mode: RouteStripMode) => stopN(s, mode) > 0 && stopN(s, mode) < minN;
-  const anyUncertain = stops.some(s => s.uncertain);
+  const anyUncertain = stops.some(s => modes.some(m => lessExactOn(s, m)));
   const anyFaded = stops.some(s => modes.some(m => faded(s, m)));
-  const anyMissing = stops.some(s => modes.some(m => stepFor(m, stopValue(s, m)) == null));
+  const anyMissing = stops.some(s => modes.some(m => stepOf(s, m) == null));
   const activeStop = stops.find(s => s.stopId === active) ?? null;
   const announce = activeStop ? `${activeStop.name}. ${stopDetail(activeStop).lines.join('. ')}.` : '';
   const summary = `${model.label}: ${model.trunk.length} stops on the shared line, then ${model.starts.length + model.ends.length} branches, ending at ${[...new Set(model.endLabels.map(e => e.stop.name))].join(', ')}. Use the left and right arrow keys to hear each stop.`;
@@ -132,24 +115,6 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
     else if ((e.key === 'Enter' || e.key === ' ') && active && onSelect) { e.preventDefault(); onSelect(active); }
   }, [stops, active, onSelect]);
 
-  const legend = (
-    <div className="mt-2 space-y-1 text-xs text-[var(--text-legend)]">
-      {modes.map(mode => (
-        <div key={mode} className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="font-bold text-[var(--text-secondary)]">{LEGEND_TITLE[mode]}:</span>
-          {([0, 1, 2] as const).map(step => <span key={step} className="inline-flex items-center gap-1.5"><Swatch mode={mode} step={step} />{STEP_LABELS[mode][step]}</span>)}
-        </div>
-      ))}
-      {(anyUncertain || anyFaded || anyMissing) && (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          {anyUncertain && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} uncertain />Less exact</span>}
-          {anyFaded && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} faded />Fewer than {minN} departures or gaps</span>}
-          {anyMissing && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={null} />Not measured</span>}
-        </div>
-      )}
-    </div>
-  );
-
   const table = (
     <div id={tableId} className="sr-only">
       <DataTable
@@ -158,7 +123,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         rowKey={s => s.stopId}
         columns={[
           { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
-          { key: 'delay', header: 'Typical delay', cell: s => (s.delayMin != null && s.n > 0 ? delayText(s.delayMin) : 'not measured') },
+          { key: 'delay', header: 'Typical delay', cell: s => (s.delayMin != null && s.n > 0 && !delayInterpolated(s) ? delayText(s.delayMin) : 'not measured') },
           { key: 'late', header: 'Late', cell: s => (s.lateShare != null && s.n > 0 ? pct(s.lateShare) : '') },
           { key: 'bunch', header: 'Gaps off', cell: s => (s.bunchingShare != null && (s.bunchingN ?? s.n) > 0 ? pct(s.bunchingShare) : 'not measured') },
           { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
@@ -167,100 +132,55 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
     </div>
   );
 
-  // Horizontal geometry.
+  // Horizontal geometry: one block per row (a pair of tracks, then the names under it), all sharing the slots' x positions.
   const plotW = Math.max(0, width - GUTTER);
   const inner = Math.max(0, plotW - INSET * 2);
   const step = lay.slots > 1 ? inner / (lay.slots - 1) : inner;
   const xOf = (slot: number) => GUTTER + INSET + slot * step;
   const dot = Math.max(6, Math.min(12, Math.floor(step - 3)));
-  const trackH = lay.rows * ROW_H;
-  const trackTop = (t: number) => t * (trackH + TRACK_GAP);
-  const yOf = (t: number, row: number) => trackTop(t) + row * ROW_H + LABEL_H + DOT_H / 2;
-  const labelsTop = modes.length * (trackH + TRACK_GAP);
-  const trunkText = model.trunk.map(s => shortStopName(s.name));
-  const trunkLabels = useMemo(() => (vertical || width === 0 ? [] : pickTrunkLabels(model.trunk.map((_, i) => xOf(lay.nIn + i)), trunkText.map(t => labelWidth(t) + 6), Math.max(2, Math.min(6, Math.floor(plotW / 150))), GUTTER, width)), [vertical, width, plotW, model]); // eslint-disable-line react-hooks/exhaustive-deps
-  const lineY = (t: number, r: number) => yOf(t, r);
+  const pairH = modes.length * TRACK_H;
+  const rowH = pairH + LABEL_H + ROW_GAP;
+  const yOf = (row: number, t: number) => row * rowH + t * TRACK_H + TRACK_H / 2;
+  const total = lay.rows * rowH - ROW_GAP;
   const placedAt = new Map(lay.placed.map(p => [p.stop.stopId, p]));
 
-  const horizontal = (
-    <div className="relative select-none" style={{ height: labelsTop + 24 }} aria-hidden="true">
-      {modes.map((mode, t) => (
-        <Fragment key={mode}>
-          <span className="absolute left-0 text-xs font-bold text-[var(--text-secondary)]" style={{ top: lineY(t, 0) - 8, width: GUTTER - 8 }}>{TRACK_NAME[mode]}</span>
-          <svg className="pointer-events-none absolute left-0 top-0" width={width} height={labelsTop} style={{ overflow: 'visible' }}>
-            {(() => {
-              const line = (x1: number, y1: number, x2: number, y2: number, key: string) => <line key={key} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--text-dim)" strokeOpacity={0.4} strokeWidth={2} strokeLinecap="round" />;
-              const out = [];
-              const first0 = model.starts[0] ? lay.nIn - model.starts[0].length : lay.nIn;
-              const last0 = model.ends[0] ? lay.nIn + lay.nTrunk + model.ends[0].length - 1 : lay.nIn + lay.nTrunk - 1;
-              out.push(line(xOf(first0), lineY(t, 0), xOf(last0), lineY(t, 0), 'main'));
-              model.starts.forEach((f, k) => {
-                if (k === 0) return;
-                out.push(line(xOf(lay.nIn - f.length), lineY(t, k), xOf(lay.nIn - 1), lineY(t, k), `s${k}`), line(xOf(lay.nIn - 1), lineY(t, k), xOf(lay.nIn), lineY(t, 0), `sj${k}`));
-              });
-              model.ends.forEach((f, k) => {
-                if (k === 0) return;
-                out.push(line(xOf(lay.nIn + lay.nTrunk), lineY(t, k), xOf(lay.nIn + lay.nTrunk + f.length - 1), lineY(t, k), `e${k}`), line(xOf(lay.nIn + lay.nTrunk - 1), lineY(t, 0), xOf(lay.nIn + lay.nTrunk), lineY(t, k), `ej${k}`));
-              });
-              return out;
-            })()}
-          </svg>
-          {lay.placed.map(({ stop, slot, row }) => {
-            const on = selected === stop.stopId, hot = active === stop.stopId;
-            return (
-              <span
-                key={`${mode}-${stop.stopId}`}
-                className="absolute cursor-pointer rounded-full transition-transform"
-                style={{
-                  ...swatchStyle(mode, stepFor(mode, stopValue(stop, mode)), !!stop.uncertain),
-                  width: dot, height: dot, left: xOf(slot) - dot / 2, top: lineY(t, row) - dot / 2,
-                  opacity: faded(stop, mode) ? 0.35 : 1,
-                  transform: hot || on ? 'scale(1.45)' : undefined,
-                  outline: on ? '2px solid var(--accent)' : hot ? '2px solid var(--text-primary)' : undefined,
-                  outlineOffset: 2,
-                }}
-              />
-            );
-          })}
-        </Fragment>
-      ))}
-      <div
-        className="absolute inset-0 touch-pan-y"
-        onPointerMove={e => { if (e.pointerType === 'mouse') setActive(pickStop(e)); }}
-        onPointerDown={e => { const id = pickStop(e); setActive(id); if (id) onSelect?.(id); }}
-        onPointerLeave={e => { if (e.pointerType === 'mouse') setActive(null); }}
-      />
-      {/* Names where a branch ends, above its line. */}
-      {model.endLabels.filter(e => !e.onTrunk).map(e => {
-        const p = placedAt.get(e.stop.stopId);
-        if (!p) return null;
-        const x = xOf(p.slot);
-        const text = shortStopName(e.stop.name);
-        return (
-          <span
-            key={`${e.side}-${e.stop.stopId}`}
-            className="pointer-events-none absolute whitespace-nowrap text-xs font-bold text-[var(--text-primary)]"
-            style={{ top: trackTop(0) + e.row * ROW_H, ...(e.side === 'start' ? { left: Math.max(GUTTER, x - 6) } : { right: Math.max(0, width - x - 6) }) }}
-            title={e.stop.name}
-          >{text}</span>
-        );
-      })}
-      {/* Names along the shared line. */}
-      {trunkLabels.map(i => {
-        const w = labelWidth(trunkText[i]);
-        const x = xOf(lay.nIn + i);
-        const left = Math.max(GUTTER, Math.min(width - w, x - w / 2));
-        return <span key={i} className="pointer-events-none absolute whitespace-normal break-words text-center text-xs leading-4 text-[var(--text-dim)]" style={{ left, width: w, top: labelsTop }}>{trunkText[i]}</span>;
-      })}
-      {activeStop && placedAt.get(activeStop.stopId) && <Tooltip stop={activeStop} x={xOf(placedAt.get(activeStop.stopId)!.slot)} width={width} top={labelsTop + 26} />}
-    </div>
-  );
+  // Names: row 0 names both ends of its line and a few trunk stops; every other row names the stop where its branch ends.
+  const labels = useMemo(() => {
+    if (vertical || width === 0) return [] as Array<{ stop: RouteStripStop; row: number; x: number; end: boolean }>;
+    const out: Array<{ stop: RouteStripStop; row: number; x: number; end: boolean }> = [];
+    const row0 = lay.placed.filter(p => p.row === 0).sort((a, b) => a.slot - b.slot);
+    const items = row0.map(p => ({ x: xOf(p.slot), text: shortStopName(p.stop.name) }));
+    const picked = fitLabels(items, [0, items.length - 1], Math.max(2, Math.min(6, Math.floor(plotW / 150))), GUTTER, width);
+    picked.forEach(i => out.push({ stop: row0[i].stop, row: 0, x: items[i].x, end: i === 0 || i === items.length - 1 }));
+    model.endLabels.filter(e => !e.onTrunk && e.row > 0).forEach(e => { const p = placedAt.get(e.stop.stopId); if (p) out.push({ stop: e.stop, row: e.row, x: xOf(p.slot), end: true }); });
+    return out;
+  }, [vertical, width, plotW, model, lay]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /** The stop nearest the pointer along the line, among the stops on the row it points at (the tracks repeat the same rows). */
+  const rails = (t: number) => {
+    const line = (d: string, key: string) => <path key={key} d={d} fill="none" stroke="var(--text-dim)" strokeOpacity={0.4} strokeWidth={2} strokeLinecap="round" />;
+    const out = [];
+    const firstSlot = (k: number) => lay.padIn - (k > 0 ? 1 : 0) - model.starts[k].length;
+    const first0 = model.starts[0] ? firstSlot(0) : lay.padIn;
+    const last0 = model.ends[0] ? lay.padIn + lay.nTrunk + model.ends[0].length - 1 : lay.padIn + lay.nTrunk - 1;
+    out.push(line(`M ${xOf(first0)} ${yOf(0, t)} H ${xOf(last0)}`, 'main'));
+    model.starts.forEach((f, k) => {
+      if (k === 0) return;
+      const x1 = xOf(lay.padIn - 1 - 1), x2 = xOf(lay.padIn), dx = (x2 - x1) / 2;
+      out.push(line(`M ${xOf(firstSlot(k))} ${yOf(k, t)} H ${x1} C ${x1 + dx} ${yOf(k, t)} ${x2 - dx} ${yOf(0, t)} ${x2} ${yOf(0, t)}`, `s${k}`));
+    });
+    model.ends.forEach((f, k) => {
+      if (k === 0) return;
+      const x1 = xOf(lay.padIn + lay.nTrunk - 1), x2 = xOf(lay.padIn + lay.nTrunk + 1), dx = (x2 - x1) / 2;
+      out.push(line(`M ${x1} ${yOf(0, t)} C ${x1 + dx} ${yOf(0, t)} ${x2 - dx} ${yOf(k, t)} ${x2} ${yOf(k, t)} H ${xOf(lay.padIn + lay.nTrunk + 1 + f.length - 1)}`, `e${k}`));
+    });
+    return out;
+  };
+
+  /** The stop nearest the pointer along the line, among the stops on the row it points at. */
   function pickStop(e: React.PointerEvent<HTMLDivElement>): string | null {
     const box = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - box.left, y = e.clientY - box.top;
-    const row = Math.max(0, Math.min(lay.rows - 1, Math.floor((y % (trackH + TRACK_GAP)) / ROW_H)));
+    const row = Math.max(0, Math.min(lay.rows - 1, Math.floor(y / rowH)));
     const pool = lay.placed.some(p => p.row === row) ? lay.placed.filter(p => p.row === row) : lay.placed;
     let best: { id: string; d: number } | null = null;
     for (const { stop, slot } of pool) {
@@ -269,6 +189,53 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
     }
     return best ? best.id : null;
   }
+
+  const horizontal = (
+    <div className="relative select-none" style={{ height: total }} aria-hidden="true">
+      {modes.map((mode, t) => (
+        <span key={mode} className="absolute left-0 text-xs font-bold text-[var(--text-secondary)]" style={{ top: yOf(0, t) - 8, width: GUTTER - 8 }}>{TRACK_NAME[mode]}</span>
+      ))}
+      <svg className="pointer-events-none absolute left-0 top-0" width={width} height={total} style={{ overflow: 'visible' }}>
+        {modes.map((_, t) => rails(t))}
+      </svg>
+      {modes.map((mode, t) => lay.placed.map(({ stop, slot, row }) => {
+        const on = selected === stop.stopId, hot = active === stop.stopId;
+        return (
+          <span
+            key={`${mode}-${stop.stopId}`}
+            className="absolute rounded-full transition-transform"
+            style={{
+              ...swatchStyle(mode, stepOf(stop, mode), lessExactOn(stop, mode)),
+              width: dot, height: dot, left: xOf(slot) - dot / 2, top: yOf(row, t) - dot / 2,
+              opacity: faded(stop, mode) ? 0.35 : 1,
+              transform: hot || on ? 'scale(1.45)' : undefined,
+              outline: on ? '2px solid var(--accent)' : hot ? '2px solid var(--text-primary)' : undefined,
+              outlineOffset: 2,
+            }}
+          />
+        );
+      }))}
+      <div
+        className="absolute inset-0 touch-pan-y"
+        onPointerMove={e => { if (e.pointerType === 'mouse') setActive(pickStop(e)); }}
+        onPointerDown={e => { const id = pickStop(e); setActive(id); if (id) onSelect?.(id); }}
+        onPointerLeave={e => { if (e.pointerType === 'mouse') setActive(null); }}
+      />
+      {labels.map(l => {
+        const w = labelWidth(shortStopName(l.stop.name)) + 6;
+        const left = Math.max(GUTTER, Math.min(width - w, l.x - w / 2));
+        return (
+          <span
+            key={`${l.row}-${l.stop.stopId}`}
+            className={`pointer-events-none absolute whitespace-nowrap text-center text-xs leading-4 ${l.end ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-dim)]'}`}
+            style={{ left, width: w, top: l.row * rowH + pairH + 3 }}
+            title={l.stop.name}
+          >{shortStopName(l.stop.name)}</span>
+        );
+      })}
+      {activeStop && placedAt.get(activeStop.stopId) && <Tooltip stop={activeStop} x={xOf(placedAt.get(activeStop.stopId)!.slot)} width={width} top={yOf(placedAt.get(activeStop.stopId)!.row, 0) + pairH + 14} />}
+    </div>
+  );
 
   return (
     <figure className={`m-0 min-w-0 ${className}`.trim()}>
@@ -291,21 +258,9 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
           {allStops ? 'Show key stops only' : `Show all ${stops.length} stops`}
         </button>
       )}
-      {legend}
+      <StripLegend modes={modes} anyUncertain={anyUncertain} anyFaded={anyFaded} anyMissing={anyMissing} minN={minN} />
       {table}
     </figure>
-  );
-}
-
-function Tooltip({ stop, x, width, top }: { stop: RouteStripStop; x: number; width: number; top: number }) {
-  const w = Math.min(260, width);
-  const left = Math.max(0, Math.min(width - w, x - w / 2));
-  const d = stopDetail(stop);
-  return (
-    <div className="pointer-events-none absolute z-10 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-2 text-xs shadow-sm" style={{ left, top, width: w }}>
-      <div className="font-bold text-[var(--text-primary)]">{d.name}</div>
-      {d.lines.map(l => <div key={l} className="mt-0.5 text-[var(--text-secondary)]">{l}</div>)}
-    </div>
   );
 }
 
@@ -351,7 +306,7 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
                 {rails}
                 {modes.map((m, k) => {
                   const size = named ? 10 : 6;
-                  return <span key={m} className="absolute rounded-full" style={{ ...swatchStyle(m, stepFor(m, stopValue(s, m)), !!s.uncertain), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(50% - ${size / 2}px)`, opacity: stopN(s, m) > 0 && stopN(s, m) < minN ? 0.35 : 1, outline: on ? '2px solid var(--accent)' : undefined, outlineOffset: 1 }} />;
+                  return <span key={m} className="absolute rounded-full" style={{ ...swatchStyle(m, stepOf(s, m), lessExactOn(s, m)), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(50% - ${size / 2}px)`, opacity: stopN(s, m) > 0 && stopN(s, m) < minN ? 0.35 : 1, outline: on ? '2px solid var(--accent)' : undefined, outlineOffset: 1 }} />;
                 })}
                 {sec.branch && <span className="pointer-events-none absolute bottom-0 top-0 w-0.5 bg-[var(--text-secondary)]" style={{ left: NAME_LEFT - 10 }} />}
                 {named && <span className="min-w-0 flex-1 break-words py-0.5 text-sm leading-5 text-[var(--text-secondary)]">{shortStopName(s.name)}</span>}

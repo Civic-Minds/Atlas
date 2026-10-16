@@ -112,6 +112,7 @@ export function branchStripFromV3(v3: LiveV3, directionId: number, band: Dashboa
       n: st?.n ?? 0,
       bunchingN: 0,
       uncertain: !!st && st.order >= 0 && st.order < lessExact,
+      timepoint: st?.timepoint,
     };
   };
   const found = branchesOf(patterns, stopFor);

@@ -83,7 +83,7 @@ function Block({ title, children }: { title?: string; children: ReactNode }) {
 }
 
 /** Everything known about the picked stop or stretch, for the time of day chosen above. */
-export function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: DashboardBand; sel: Selection; stops: Map<string, RouteStripStop>; data: DashboardBandData }) {
+export function DetailPanel({ v3, band, sel, stops, data, docked = false, kicker = null }: { v3: LiveV3; band: DashboardBand; sel: Selection; stops: Map<string, RouteStripStop>; data: DashboardBandData; docked?: boolean; kicker?: string | null }) {
   const strip = { label: v3.directionLabels[String(sel.dir)] };
   const buildup = data.buildup.find(b => b.directionId === sel.dir);
   const bunchBand = v3.bunching.find(b => b.directionId === sel.dir)?.bands[band];
@@ -94,7 +94,7 @@ export function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: 
       const f = buildup?.forms;
       if (!f) return null;
       return (
-        <Panel title={`${nice(f.fromName)} to ${nice(f.toName)}`} sub={strip.label}>
+        <Panel title={`${nice(f.fromName)} to ${nice(f.toName)}`} sub={strip.label} docked={docked} kicker={kicker}>
           <Block>
             <Fact label="Typical added" value={mins(f.medianAddedMin)} />
             <Fact label="Trips where it grows" value={pct(f.growShare)} sub={`of ${f.n.toLocaleString()}`} />
@@ -108,7 +108,7 @@ export function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: 
     if (!b) return null;
     const linked = b.links.filter(l => l.linked);
     return (
-      <Panel title={`${nice(b.fromName)} to ${nice(b.toName)}`} sub={strip.label}>
+      <Panel title={`${nice(b.fromName)} to ${nice(b.toName)}`} sub={strip.label} docked={docked} kicker={kicker}>
         <Block>
           <Fact label="Gaps off the timetable" value={`${pct(b.fromBadShare)} to ${pct(b.toBadShare)}`} />
         </Block>
@@ -128,7 +128,7 @@ export function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: 
   const extra = v3.extraWait?.[band]?.find(x => x.directionId === sel.dir && x.stopId === s.stopId);
   const into = buildup?.stretches.find(x => x.toStopId === s.stopId);
   return (
-    <Panel title={s.name} sub={strip.label}>
+    <Panel title={s.name} sub={strip.label} docked={docked} kicker={kicker}>
       <Block>
         {s.n > 0 && s.delayMin != null ? (
           <>
@@ -160,7 +160,20 @@ export function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: 
   );
 }
 
-function Panel({ title, sub, children }: { title: string; sub: string; children: ReactNode }) {
+/** `docked`: a column of its own (header, then figures) for the planner screen; otherwise the floating card. `kicker`: why the panel opened on this (when nothing was picked). */
+function Panel({ title, sub, children, docked = false, kicker = null }: { title: string; sub: string; children: ReactNode; docked?: boolean; kicker?: string | null }) {
+  if (docked) {
+    return (
+      <aside className="flex min-h-0 min-w-0 flex-col" aria-live="polite">
+        <div className="border-b border-[var(--border-primary)] px-4 py-3">
+          {kicker && <div className="text-xs font-bold text-[var(--text-muted)]">{kicker}</div>}
+          <h3 className="text-base font-bold leading-snug">{title}</h3>
+          <div className="mt-0.5 text-xs text-[var(--text-dim)]">{sub}</div>
+        </div>
+        <div className="px-4 py-3">{children}</div>
+      </aside>
+    );
+  }
   return (
     <aside className={`${TILE} min-w-0 lg:sticky lg:top-4`} aria-live="polite">
       <h3 className="text-lg font-black leading-tight">{title}</h3>
