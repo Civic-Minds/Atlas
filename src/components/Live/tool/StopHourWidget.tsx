@@ -17,13 +17,13 @@ function cellValue(e: NonNullable<NonNullable<LiveV3['stopHours']>[string][strin
 }
 
 /** Every stop of the direction by every hour of the day, coloured by the measure: where and when it goes wrong. A cell picks its stop. Run time has no per-stop hourly figure, so for it nothing is drawn. */
-export default function StopHourWidget({ v3, dir, stops, measure, selectedStopId, onPick }: { v3: LiveV3; dir: number; stops: ReadonlyMap<string, RouteStripStop>; measure: MapMeasure; selectedStopId: string | null; onPick: (stopId: string) => void }) {
+export default function StopHourWidget({ v3, dir, stops, measure, selectedStopId, onPick, onStringLine }: { v3: LiveV3; dir: number; stops: ReadonlyMap<string, RouteStripStop>; measure: MapMeasure; selectedStopId: string | null; onPick: (stopId: string) => void; /** Opens the full-size string-line view. */ onStringLine?: () => void }) {
   const m = measure;
   const rows = useMemo(() => [...stops.values()].map(s => ({ s, row: v3.stopHours?.[String(dir)]?.[s.stopId] })).filter(x => x.row), [v3, dir, stops]);
   if (m === 'runTime' || !rows.length) return null;
   const fam = m === 'bunching' ? 'bunching' : 'delay';
   return (
-    <Widget title="Stops by hour" size="large">
+    <Widget title="Stops by hour" size="large" action={onStringLine ? <button type="button" onClick={onStringLine} className="rounded-full border border-[var(--border-primary)] px-2 py-0.5 text-xs font-bold text-[var(--text-secondary)] hover:border-[var(--accent-border)]">String line</button> : undefined}>
       <div className="flex h-full flex-col">
         <div className="grid min-h-0 flex-1 gap-px" style={{ gridTemplateColumns: `repeat(${SPARKLINE_HOURS.length}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${rows.length}, minmax(0, 1fr))` }} role="img" aria-label="Stops down the route by hour of the day, coloured by the chosen measure.">
           {rows.map(({ s, row }) => SPARKLINE_HOURS.map(gh => {

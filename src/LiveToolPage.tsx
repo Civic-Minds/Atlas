@@ -26,6 +26,7 @@ import OverviewList from './components/Live/tool/OverviewList';
 import LateByHourWidget from './components/Live/tool/LateByHourWidget';
 import ProblemsWidget from './components/Live/tool/ProblemsWidget';
 import StopHourWidget from './components/Live/tool/StopHourWidget';
+import StringLineView from './components/Live/tool/StringLineView';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData from './components/Live/tool/useNetworkData';
 import { KpiTile } from './LiveDashboardView';
@@ -113,8 +114,8 @@ function networkWidgets(s: AgencySummary, band: DashboardBand, onStop: (route: s
 }
 
 /** The widgets for a route, in priority order: the picked stop or segment, the tiles, late by hour, run time, stops by hour, the worst stops. Whatever the window is too short for goes to a later page. */
-function routeWidgets({ route, data, v3, dir, band, measure, pick, stops, setPick }: {
-  route: string; data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; stops: ReturnType<typeof directionStopsById>; setPick: (p: MapPick | null) => void;
+function routeWidgets({ route, data, v3, dir, band, measure, pick, stops, setPick, onStringLine }: {
+  onStringLine: () => void; route: string; data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; stops: ReturnType<typeof directionStopsById>; setPick: (p: MapPick | null) => void;
 }): PanelWidget[] {
   const bandData = v3.bands[band] as DashboardBandData;
   const worst = rankStops(bandData.stops, dir, data.uncertainStart ?? []).slice(0, 3);
@@ -130,7 +131,7 @@ function routeWidgets({ route, data, v3, dir, band, measure, pick, stops, setPic
     ...tileWidgets(weekly(v3)),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourWidget hours={hours} band={band} overall={v3.bands.all.adherence.timepoints.all.overall?.lateShare ?? null} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
-    ...(hasHeat ? [{ key: 'stops-hour', size: 'large' as const, node: <StopHourWidget v3={v3} dir={dir} stops={stops} measure={measure} selectedStopId={pick?.kind === 'stop' ? pick.stopId : null} onPick={id => setPick({ kind: 'stop', stopId: id })} /> }] : []),
+    ...(hasHeat ? [{ key: 'stops-hour', size: 'large' as const, node: <StopHourWidget v3={v3} dir={dir} stops={stops} measure={measure} selectedStopId={pick?.kind === 'stop' ? pick.stopId : null} onPick={id => setPick({ kind: 'stop', stopId: id })} onStringLine={onStringLine} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops with the most delay" rows={worst.map(x => ({ key: x.stopId, label: shortStopName(titleCase(x.name)), value: pct(x.lateShare), onPick: () => setPick({ kind: 'stop', stopId: x.stopId }) }))} /> }] : []),
   ];
 }
@@ -167,7 +168,9 @@ function Body({ agency, s, route, setRoute, dir, setDir, band, measure, pick, se
       : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked)} /> : null
     : null;
   const openStop = (r: string, d: number, stopId: string) => { setRoute(r); setDir(d); setPick({ kind: 'stop', stopId }); };
-  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ route: route!, data: ready, v3, dir: shown, band, measure, pick, stops, setPick }) : !route ? networkWidgets(s, band, openStop) : [];
+  const [stringOpen, setStringOpen] = useState(false);
+  useEffect(() => { setStringOpen(false); }, [route, shown]);
+  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ route: route!, data: ready, v3, dir: shown, band, measure, pick, stops, setPick, onStringLine: () => setStringOpen(true) }) : !route ? networkWidgets(s, band, openStop) : [];
   return (
     <div className="relative min-h-0 flex-1">
       <div className="absolute inset-0">
@@ -190,6 +193,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, band, measure, pick, se
         </div>
         <WidgetPanel className="pointer-events-auto w-[24.5rem] shrink-0" widgets={widgets} />
       </div>
+      {stringOpen && v3 && route && <StringLineView agency={agency} route={route} v3={v3} dir={shown} onClose={() => setStringOpen(false)} />}
     </div>
   );
 }

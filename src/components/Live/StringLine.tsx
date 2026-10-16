@@ -34,11 +34,11 @@ export function useStrings(agency: string, route: string, date: string | null): 
 
 const WIDE = { m: { left: 150, right: 20, top: 12, bottom: 28 }, h: 440 };
 const SMALL = { m: { left: 8, right: 8, top: 6, bottom: 22 }, h: 250 };
-const clock = (h: number) => `${Math.floor(h) % 12 === 0 ? 12 : Math.floor(h) % 12}${Math.floor(h) % 24 < 12 ? ' am' : ' pm'}`;
-const clockAt = (h: number) => { const m = Math.round((h - Math.floor(h)) * 60); const hh = Math.floor(h) + (m === 60 ? 1 : 0); return `${hh % 12 === 0 ? 12 : hh % 12}:${String(m === 60 ? 0 : m).padStart(2, '0')} ${hh % 24 < 12 ? 'am' : 'pm'}`; };
+export const clock = (h: number) => `${Math.floor(h) % 12 === 0 ? 12 : Math.floor(h) % 12}${Math.floor(h) % 24 < 12 ? ' am' : ' pm'}`;
+export const clockAt = (h: number) => { const m = Math.round((h - Math.floor(h)) * 60); const hh = Math.floor(h) + (m === 60 ? 1 : 0); return `${hh % 12 === 0 ? 12 : hh % 12}:${String(m === 60 ? 0 : m).padStart(2, '0')} ${hh % 24 < 12 ? 'am' : 'pm'}`; };
 
 /** Hours of the local service day for each trip point (can pass 24 after midnight). */
-function dayStartEpoch(base: number, timeZone: string): number {
+export function dayStartEpoch(base: number, timeZone: string): number {
   const parts = new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(new Date(base * 1000));
   const n = (t: string) => Number(parts.find(p => p.type === t)?.value ?? 0);
   return base - ((n('hour') % 24) * 3600 + n('minute') * 60 + n('second'));
