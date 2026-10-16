@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router';
-import { ATLAS_MODE, FEATURES } from '../../shared/config';
+import { ATLAS_MODE, FEATURES, seoFlags } from '../../shared/config';
 import { resolveSeo } from '../../shared/seo';
 import { AGENCY_PATH_PREFIX } from '../../shared/agencyPages';
 import { AREA_PATH_PREFIX } from '../../shared/areas';
@@ -15,13 +15,7 @@ export default function RouteSeo() {
     if (FEATURES.agencyPages && (pathname.startsWith(AGENCY_PATH_PREFIX) || pathname.startsWith(AREA_PATH_PREFIX) || pathname === AGENCY_INDEX_PATH)) return;
     const seo = resolveSeo(pathname, {
       mode: ATLAS_MODE,
-      flags: {
-        researchApps: FEATURES.researchApps,
-        whatsNew: FEATURES.whatsNew,
-        live: FEATURES.live,
-        history: FEATURES.history,
-        agencyPages: FEATURES.agencyPages,
-      },
+      flags: seoFlags(),
       // Production keeps the real site address; staging builds describe the host they run on.
       origin: ATLAS_MODE === 'public' ? undefined : window.location.origin,
     });

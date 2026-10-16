@@ -15,6 +15,9 @@ import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorVision } from '../../context/ColorVisionContext';
+import ArrowLink from '../ui/ArrowLink';
+import PanelEmpty from '../ui/PanelEmpty';
+import AgencyName from '../ui/AgencyName';
 import { headwayAmount, headwayBandLabel, headwayFilterLabel, headwayTierLabel } from '../../utils/headwayText';
 
 export { getNowDay };
@@ -175,7 +178,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
       </div>
       <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
         {byRegion.size === 0 && (
-          <p className="px-2 py-2 text-xs text-[var(--text-dim)]">No agencies in view.</p>
+          <PanelEmpty>No agencies in view.</PanelEmpty>
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
           <div key={region}>
@@ -197,8 +200,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
                   aria-label={g.name}
                 >
                   <span className="truncate flex-1 min-w-0">
-                    {primary}
-                    {secondary && <span className="opacity-60 font-semibold"> · {secondary}</span>}
+                    <AgencyName primary={primary} secondary={secondary} tone="inherit" />
                   </span>
                   <span className={`ml-auto w-2 h-2 rounded-full shrink-0 ${active ? 'bg-current' : 'border border-current opacity-30'}`} />
                 </button>
@@ -207,12 +209,9 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           </div>
         ))}
         {!agencyQuery && (
-          <button
-            onClick={() => setShowAll(v => !v)}
-            className="mt-1 mb-0.5 mx-2 text-xs font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors text-left"
-          >
-            {showAll ? '← In view only' : `All agencies (${allGroups.length}) →`}
-          </button>
+          <ArrowLink as="button" tone="inline" size="xs" back={showAll} onClick={() => setShowAll(v => !v)} className="mt-1 mb-0.5 mx-2 text-left">
+            {showAll ? 'In view only' : `All agencies (${allGroups.length})`}
+          </ArrowLink>
         )}
       </div>
     </div>

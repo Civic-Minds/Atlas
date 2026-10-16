@@ -442,7 +442,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {patternLabel && (
         <p className="text-xs font-bold text-[var(--text-dim)] -mt-1 mb-3 truncate" data-testid="route-pattern-label">{patternLabel}</p>
       )}
-      {FEATURES.beta && variantFamily && (
+      {FEATURES.routeVariants && variantFamily && (
         <p className="text-xs text-[var(--text-dim)] -mt-1 mb-3">
           Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
         </p>
@@ -507,7 +507,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           currentRoute.routeLongName ?? '',
         );
         // Beta only, and only from data already in the agency file: the full-day view's trip time.
-        const runningTimes = FEATURES.beta && routeSlug
+        const runningTimes = FEATURES.runningTimes && routeSlug
           ? (getCachedAgencyGeo(routeSlug) as { runningTimes?: PublishedRunningTimes } | undefined)?.runningTimes
           : undefined;
         const tripTimeFor = (group: DirectionGroup) => {
@@ -535,7 +535,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               period={period}
               onPeriodChange={p => setPeriod(p as TimePeriod)}
               onHourHover={setHoveredHour}
-              allowExpand={FEATURES.beta}
+              allowExpand={FEATURES.sparklineExpand}
               reserveStackedLegendSpace={hasTrunkSparkline}
               title={titleCase(getRouteLabel(currentRoute.routeShortName, currentRoute.routeLongName, agencyDisplayName))}
             />

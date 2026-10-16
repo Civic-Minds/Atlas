@@ -9,10 +9,15 @@ import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
+import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
 import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
+import ArrowLink from '../ui/ArrowLink';
+import PanelEmpty from '../ui/PanelEmpty';
+import AgencyName from '../ui/AgencyName';
+import { loadingText } from '../../content/stateCopy';
 
 
 interface FilterPanelProps {
@@ -434,13 +439,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </div>
                   </div>
                   {hiddenRoutesLoading && !limitedView ? (
-                    <p className="px-5 py-4 text-xs text-[var(--text-muted)]">Loading hidden routes…</p>
+                    <PanelEmpty kind="loading">{loadingText('hidden routes')}</PanelEmpty>
                   ) : filteredHiddenRoutes.length === 0 ? (
-                    <p className="px-5 py-4 text-xs text-[var(--text-muted)]">
+                    <PanelEmpty>
                       {listRoutes.length === 0
                         ? (limitedView ? 'No limited-service routes in view.' : 'The hidden-route list is unavailable right now.')
                         : (limitedView ? 'No limited-service routes match your search.' : 'No hidden routes match your search.')}
-                    </p>
+                    </PanelEmpty>
                   ) : (
                     <div className="px-5 pb-4">
                       {hiddenRoutesByAgency.map(([agencySlug, group]) => {
@@ -448,8 +453,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         return (
                         <div key={agencySlug}>
                           <p className="pt-2 pb-1 text-xs font-bold text-[var(--text-primary)]">
-                            {primary}
-                            {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
+                            <AgencyName primary={primary} secondary={secondary} />
                           </p>
                           <div className="divide-y divide-[var(--border-primary)]">
                             {group.routes.map(route => (
@@ -525,8 +529,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">
                             <p className="text-xs font-bold text-[var(--text-primary)] min-w-0">
-                              {primary}
-                              {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
+                              <AgencyName primary={primary} secondary={secondary} />
                             </p>
                             {quality.reasons.length > 0 && (
                               <ul className="mt-1.5 space-y-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
@@ -569,7 +572,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </div>
               </div>
 
-              {FEATURES.beta && (
+              {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
                     <p className="text-xs font-bold text-[var(--text-dim)]">Map</p>
@@ -588,7 +591,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </>
               )}
 
-              {FEATURES.beta && (
+              {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
                     <p className="text-xs font-bold text-[var(--text-dim)]">Data &amp; performance</p>
@@ -623,30 +626,21 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
                         {id === 'span' && (
                           <>
-                            <button
-                              onClick={() => setView('hidden-routes')}
-                              className="mt-1 text-xs text-[var(--accent)] hover:underline"
-                            >
-                              See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'} →
-                            </button>
+                            <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('hidden-routes')} className="mt-1">
+                              See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'}
+                            </ArrowLink>
                           </>
                         )}
                         {id === 'limited' && limitedServiceRouteCount != null && (
-                          <button
-                            onClick={() => setView('limited-routes')}
-                            className="mt-1 text-xs text-[var(--accent)] hover:underline"
-                          >
-                            {limitedServiceRouteCount.toLocaleString()} {limitedServiceRouteCount === 1 ? 'route' : 'routes'} affected →
-                          </button>
+                          <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('limited-routes')} className="mt-1">
+                            {limitedServiceRouteCount.toLocaleString()} {plural(limitedServiceRouteCount, 'route')} affected
+                          </ArrowLink>
                         )}
                         {id === 'quality' && (
-                          <button
-                            onClick={() => setView('degraded-feeds')}
-                            className="mt-1 text-xs text-[var(--accent)] hover:underline"
-                          >
+                          <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('degraded-feeds')} className="mt-1">
                             {hideLowQuality ? 'See hidden feeds' : 'Review degraded feeds'}
-                            {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''} →
-                          </button>
+                            {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''}
+                          </ArrowLink>
                         )}
                       </div>
                     </div>

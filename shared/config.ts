@@ -111,6 +111,29 @@ export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
   return `/data/catalog-${mode}.json`;
 }
 
+// Beta-only features that used to read FEATURES.beta ("any non-public build") because they had no flag
+// of their own. Each has its own name now so it can graduate alone; until one is changed on purpose,
+// every one of them is exactly BETA_BUILD, so what each build shows has not changed.
+// Saved Settings: hide-low-quality, persistent legend and data saver, remembered between visits.
+export const PERSISTED_SETTINGS_ENABLED = BETA_BUILD;
+// The "a new version is available" banner.
+export const UPDATE_BANNER_ENABLED = BETA_BUILD;
+// The map-context readout and the match percentage in the map's status badge.
+export const MAP_CONTEXT_ENABLED = BETA_BUILD;
+export const MATCH_PERCENTAGE_ENABLED = BETA_BUILD;
+// Feed-quality notes on the route and agency cards.
+export const FEED_QUALITY_ENABLED = BETA_BUILD;
+// The "Outdated" choice in the agency list filter.
+export const OUTDATED_FILTER_ENABLED = BETA_BUILD;
+// Entries marked beta-only in "What's new".
+export const WHATS_NEW_BETA_ITEMS_ENABLED = BETA_BUILD;
+// "Includes variants ..." under a route's title.
+export const ROUTE_VARIANTS_ENABLED = BETA_BUILD;
+// Trip running times on the route card's frequency chart.
+export const RUNNING_TIMES_ENABLED = BETA_BUILD;
+// The expand control on the route card's frequency chart.
+export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
+
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
  * routes, data, and controls instead of checking environment flags independently.
@@ -134,7 +157,28 @@ export const FEATURES = {
   segmentColours: SEGMENT_COLOURS_ENABLED,
   whatsNew: WHATS_NEW_ENABLED,
   agencyPages: AGENCY_PAGES_ENABLED,
+  persistedSettings: PERSISTED_SETTINGS_ENABLED,
+  updateBanner: UPDATE_BANNER_ENABLED,
+  mapContext: MAP_CONTEXT_ENABLED,
+  matchPercentage: MATCH_PERCENTAGE_ENABLED,
+  feedQuality: FEED_QUALITY_ENABLED,
+  outdatedFilter: OUTDATED_FILTER_ENABLED,
+  whatsNewBetaItems: WHATS_NEW_BETA_ITEMS_ENABLED,
+  routeVariants: ROUTE_VARIANTS_ENABLED,
+  runningTimes: RUNNING_TIMES_ENABLED,
+  sparklineExpand: SPARKLINE_EXPAND_ENABLED,
 } as const;
+
+/** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */
+export function seoFlags() {
+  return {
+    researchApps: FEATURES.researchApps,
+    whatsNew: FEATURES.whatsNew,
+    live: FEATURES.live,
+    history: FEATURES.history,
+    agencyPages: FEATURES.agencyPages,
+  };
+}
 
 export const FEATURE_ROUTES = {
   research: '/research',

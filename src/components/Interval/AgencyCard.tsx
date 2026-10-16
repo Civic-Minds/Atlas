@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { FEATURES } from '../../../shared/config';
+import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
 import { areaLinkFor } from '../../../shared/agencyArea';
 import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
@@ -31,6 +32,8 @@ import {
   type OnDemandAvailability,
 } from '../../../shared/onDemandAvailability';
 import { headwayTierLabel } from '../../utils/headwayText';
+import ArrowLink from '../ui/ArrowLink';
+import PanelEmpty from '../ui/PanelEmpty';
 
 interface RouteRow {
   routeId: string;
@@ -196,7 +199,7 @@ export function buildHeaderSummary(
   maxHeadway: number,
 ): string {
   const matching = routes.filter(r => r.matchesFilter).length;
-  const parts = [`${routes.length} route${routes.length !== 1 ? 's' : ''}`];
+  const parts = [`${routes.length} ${plural(routes.length, 'route')}`];
   const freqLabel = frequencyFilterLabel(maxHeadway);
   if (freqLabel) parts.push(`${matching} match filters`);
   return parts.join(' · ');
@@ -508,7 +511,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           </p>
           {FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug) && (
             <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-              <a href={agencyPagePath(agency.slug)} className="text-[var(--accent)] hover:underline">About this agency →</a>
+              <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>
               {(() => { const area = areaLinkFor(agency.slug, FEATURES.agencyPages); return area && <a href={area.href} className="text-[var(--accent)] hover:underline">{area.label}</a>; })()}
             </p>
           )}
@@ -517,9 +520,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <div className="flex items-baseline justify-between gap-2">
                 <p className="text-xs font-black text-[var(--accent)]">On-demand service</p>
                 {agency.onDemandServiceArea.sourceUrl && (
-                  <OutboundLink href={agency.onDemandServiceArea.sourceUrl} kind="on_demand_source" agencySlug={agency.slug} className="shrink-0 text-xs text-[var(--accent)] hover:underline">
-                    Details →
-                  </OutboundLink>
+                  <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.onDemandServiceArea.sourceUrl} kind="on_demand_source" agencySlug={agency.slug} className="shrink-0">
+                    Details
+                  </ArrowLink>
                 )}
               </div>
               <p className="text-xs font-bold text-[var(--text-primary)] mt-0.5">{agency.onDemandServiceArea.serviceName}</p>
@@ -555,9 +558,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <div className="flex items-baseline justify-between gap-2">
                 <p className="text-xs font-black text-[var(--accent)]">On-demand service</p>
                 {coverageNote.url && (
-                  <OutboundLink href={coverageNote.url} kind="coverage_note" agencySlug={agency.slug} className="shrink-0 text-xs text-[var(--accent)] hover:underline">
-                    Details →
-                  </OutboundLink>
+                  <ArrowLink as={OutboundLink} size="xs" tone="inline" href={coverageNote.url} kind="coverage_note" agencySlug={agency.slug} className="shrink-0">
+                    Details
+                  </ArrowLink>
                 )}
               </div>
               <p className="text-xs font-bold text-[var(--text-primary)] mt-0.5">{coverageNote.serviceName}</p>
@@ -636,9 +639,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {visibleRoutes.length === 0 ? (
-          <p className="px-4 py-4 text-xs text-[var(--text-dim)]">
-            {activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}
-          </p>
+          <PanelEmpty>{activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}</PanelEmpty>
         ) : hasFilterSplit ? (
           <>
             {matchingRoutes.length > 0 && (
@@ -653,14 +654,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 <div className={CARD_NOTICE_INLINE}>
                   {!showOthersExpanded ? (
                     <CardHelpNotice
-                      message={`${otherRoutes.length} route${otherRoutes.length !== 1 ? 's' : ''} outside your filters.`}
-                      actionLabel="Show →"
+                      message={`${otherRoutes.length} ${plural(otherRoutes.length, 'route')} outside your filters.`}
+                      actionLabel="Show"
                       onLearnMore={() => setShowOtherRoutes(true)}
                     />
                   ) : (
                     <CardHelpNotice
                       message="Routes outside your filters."
-                      actionLabel="Hide →"
+                      actionLabel="Hide"
                       onLearnMore={() => setShowOtherRoutes(false)}
                     />
                   )}

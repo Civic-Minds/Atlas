@@ -3,6 +3,7 @@ import { ArrowLeft, X } from 'lucide-react';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
 import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
 import Toggle from './ui/Toggle';
+import ArrowLink from './ui/ArrowLink';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
 
@@ -35,7 +36,7 @@ function Controls({ onClose }: { onClose: () => void }) {
             <Toggle on={consent === 'granted'} onToggle={() => choose(consent === 'granted' ? 'denied' : 'granted')} label="Toggle Google Analytics" />
           </div>
         </div>
-        <a href="/privacy" className="inline-block text-[var(--accent)] hover:underline">Read the Privacy Policy →</a>
+        <ArrowLink tone="inline" href="/privacy">Read the Privacy Policy</ArrowLink>
       </div>
     </div>
   </div>;

@@ -8,6 +8,7 @@ import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/fo
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
 import type { AreaSearchResult } from '../../../shared/areaSearch';
+import { plural } from '../../../shared/overflowText';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -95,7 +96,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
 }) => {
   const areaBlock = areaResults.length > 0 && onSelectArea ? (
     <SearchSplitList
-      headLabel={`Areas · ${areaResults.length} ${areaResults.length === 1 ? 'match' : 'matches'}`}
+      headLabel={`Areas · ${areaResults.length} ${plural(areaResults.length, 'match', 'matches')}`}
       inView={areaResults}
       elsewhere={[]}
       itemKey={(a: AreaSearchResult) => a.slug}
@@ -111,7 +112,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
           }}
           right={(
             <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
-              {a.agencyCount} {a.agencyCount === 1 ? 'agency' : 'agencies'}
+              {a.agencyCount} {plural(a.agencyCount, 'agency', 'agencies')}
             </span>
           )}
         />

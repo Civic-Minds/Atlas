@@ -4,9 +4,11 @@ import { useColorVision } from '../../context/ColorVisionContext';
 import { fmtHeadway, titleCase } from '../../utils/format';
 import { headwayAboutRange } from '../../utils/headwayText';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
-import { PANEL_Z_INDEX, PANEL_TITLE, PANEL_EMPTY } from '../../styles';
+import { PANEL_Z_INDEX, PANEL_TITLE } from '../../styles';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
+import PanelEmpty from '../ui/PanelEmpty';
+import { loadingText } from '../../content/stateCopy';
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
@@ -40,14 +42,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       </PanelTitleBar>
 
       {loading ? (
-        <div className="flex items-center gap-2 px-4 py-3">
-          <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
-          <span className="text-xs font-bold text-[var(--text-muted)]">Loading nearby…</span>
-        </div>
+        <PanelEmpty kind="loading">{loadingText('nearby routes')}</PanelEmpty>
       ) : routes.length === 0 ? (
-        <p className={PANEL_EMPTY}>
-          No routes within 500 m
-        </p>
+        <PanelEmpty>No routes within 500 m</PanelEmpty>
       ) : (
         <PanelBody>
           {routes.map(r => (
