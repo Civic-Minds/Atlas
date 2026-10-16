@@ -32,7 +32,7 @@ const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 < 12 ? '
  * same way the route card's schedule sparkline does (shared bands in utils/sparklinePeriods), and the line under the
  * chart reads out that hour. `showKey`: the colour key and low-sample note (turn off for small multiples sharing one key).
  */
-export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey = true, title, hours }: { columns: readonly HourColumn[]; parts: readonly HourPart[]; ariaLabel: string; minN?: number; showKey?: boolean; title?: string; /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these columns. */ hours?: readonly number[] }) {
+export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey = true, title, hours, hoverLine }: { columns: readonly HourColumn[]; parts: readonly HourPart[]; ariaLabel: string; minN?: number; showKey?: boolean; title?: string; /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these columns. */ hours?: readonly number[]; /** The hover line for an hour, replacing the default share list (the late charts: lateHourLine). */ hoverLine?: (clock: string, c: HourColumn) => string }) {
   const tableId = useId();
   const [hour, setHour] = useState<number | null>(null);
   const period = hour != null ? HOUR_TO_PERIOD[hour] ?? null : null;
@@ -40,7 +40,7 @@ export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey
   const axis = hours ?? liveChartHours(h => (byHour.get(h)?.n ?? 0) >= minN);
   const bands = periodBandsFor(axis);
   const pick = (e: React.MouseEvent<HTMLDivElement>) => setHour(hourAtOn(axis, e.clientX, e.currentTarget.getBoundingClientRect()));
-  const text = (c: HourColumn) => `${clock(c.hour)}: ${c.parts.map((p, i) => `${parts[i].name} ${Math.round(p * 100)}%`).join(', ')} (${c.n.toLocaleString()} departures)`;
+  const text = (c: HourColumn) => (hoverLine ? hoverLine(clock(c.hour), c) : `${clock(c.hour)}: ${c.parts.map((p, i) => `${parts[i].name} ${Math.round(p * 100)}%`).join(', ')} (${c.n.toLocaleString()} departures)`);
   const ordered = axis.map(h => byHour.get(h % 24)).filter((c): c is HourColumn => !!c);
   return (
     <figure className="m-0">

@@ -16,3 +16,10 @@ describe('liveLinkPreview', () => {
     expect(liveLinkPreview('ttc', '512', null)).toEqual({ title: 'TTC 512 · Live · Atlas', description: '' });
   });
 });
+
+describe('lateHourLine', () => {
+  it('reads "2 pm: 8 of 167 timed stops left late"', async () => {
+    const { lateHourLine, lateCount } = await import('../liveWording');
+    expect(lateHourLine('2 pm', lateCount(8 / 167, 167), 167)).toBe('2 pm: 8 of 167 timed stops left late');
+  });
+});
