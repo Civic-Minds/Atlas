@@ -13,10 +13,13 @@ export function expiredFeedNotice(agencyName: string, expDateStr?: string, manua
 }
 
 export function selectedRouteFilterNotice(options: {
+  /** The route's own filter value for the period; without one the notice names no frequency. */
+  headway?: number | null;
   activeRange: string;
   periodRange: string;
 }): string {
-  return `Service runs ${headwayAbout(30)} from ${options.activeRange}, but not throughout the selected ${options.periodRange} period.`;
+  const runs = options.headway != null ? `Service runs ${headwayAbout(options.headway)}` : 'Service runs';
+  return `${runs} from ${options.activeRange}, but not throughout the selected ${options.periodRange} period.`;
 }
 
 export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {

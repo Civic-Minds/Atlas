@@ -42,6 +42,7 @@ interface RouteRow {
   longName: string | null;
   headway: number | null;
   limited: boolean;
+  noRegular?: boolean;
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
   tier: string | null;
@@ -320,7 +321,8 @@ function RouteListSection({
             label={label}
             headway={r.headway ?? undefined}
             headwayLabel={r.headway != null && r.sharedHeadway != null ? headwayAboutRange(r.sharedHeadway, r.headway) : undefined}
-            limited={r.limited}
+            limited={r.limited || r.noRegular === true}
+            limitedLabel={r.noRegular ? 'no regular service' : undefined}
             subLabel={isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName })
                 ? 'Rail replacement bus'
                 : undefined}
