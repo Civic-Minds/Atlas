@@ -194,9 +194,22 @@ export function directionStretches(
   // Foster turn (18%) shrank the main stretch to its own stops and its evening trips read as
   // evening service on the route, and SEPTA 66's 5-trip Cottman turn cut the trunk to 17 stops.
   // TTC 94's Wellesley pattern (half the trips) still shapes it, so the Harbord tail stays.
+  // "On" a longer pattern: off it, the short turn has no run that would pass the tail test (a
+  // turning loop of a stop or two at its end is not a branch: CTA 152's 8-trip Harlem turn).
   const regularSets = new Map(regular.map(p => [p, new Set(p.stops)]));
+  const liesOn = (p: (typeof regular)[number], other: (typeof regular)[number]) => {
+    const on = regularSets.get(other)!;
+    let run: string[] = [];
+    const runs: string[][] = [];
+    for (const stop of [...p.stops, null]) {
+      if (stop != null && !on.has(stop)) { run.push(stop); continue; }
+      if (run.length > 0) runs.push(run);
+      run = [];
+    }
+    return runs.every(r => r.length < SHARED_STRETCH_MIN_STOPS || (runKm(r, stopCoord) ?? 0) < SHARED_STRETCH_MIN_KM);
+  };
   const minorShortTurn = (p: (typeof regular)[number]) => p.trips.length < SHORT_TURN_MIN_SHARE * withVisits.length
-    && regular.some(other => other !== p && other.stops.length > p.stops.length && p.stops.every(stop => regularSets.get(other)!.has(stop)));
+    && regular.some(other => other !== p && other.stops.length > p.stops.length && liesOn(p, other));
   if (regular.some(p => !minorShortTurn(p))) regular = regular.filter(p => !minorShortTurn(p));
   // No pattern runs steadily: the most common one alone is regular.
   const busiest = (list: typeof all) => list.reduce((x, y) => (y.trips.length > x.trips.length ? y : x));
