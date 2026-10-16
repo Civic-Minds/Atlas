@@ -230,6 +230,14 @@ describe('route values from the selector (shadow fields)', () => {
     }
   });
 
+  it('CTA 93 Sunday evening: a 7-trip short turn does not shape the main stretch, so the route has no evening service', async () => {
+    // Oracle at the full route's middle stop (California & Lincoln): direction 1's last evening
+    // bus is 19:42, before the 21:00 midpoint; the evening trips run only Logan Square - Foster.
+    const r = await run('cta-93-sunday');
+    expect(r.stretches.get('93::1::Sunday')!.main!.stops.length).toBeGreaterThan(70);
+    expect(row(r, '93', 'Sunday').routeFilterHeadwayByPeriod.evening).toBeNull();
+  });
+
   it('CTA 36 Saturday PM: every 12, not the #602 29', async () => {
     const r = await run('cta-36-saturday');
     expect(row(r, '36', 'Saturday').stretchRoutePeriodHeadway.pmPeak).toBe(12);

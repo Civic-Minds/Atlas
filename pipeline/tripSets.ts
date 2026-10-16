@@ -24,6 +24,9 @@ import {
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
 
+/** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
+export const SHORT_TURN_MIN_SHARE = 0.2;
+
 /** Night for the stretch fields (D7): 2-5am, GTFS 26:00 to 29:00. */
 export const STRETCH_NIGHT_START_MIN = 26 * 60;
 export const STRETCH_NIGHT_END_MIN = 29 * 60;
@@ -160,6 +163,16 @@ export function directionStretches(
   const steadyIn = (periods: readonly PeriodKey[]) => eligible.filter(p => runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)], periods));
   let regular = steadyIn(DAYTIME_PERIODS);
   if (regular.length === 0) regular = steadyIn(ALL_PERIODS);
+  // A short turn: a regular pattern whose stops all lie on a longer regular pattern shapes the
+  // main stretch only when it carries a real share of the direction's trips (the spec's 20%).
+  // Below it, it is a variant whose trips count where they serve: CTA 93's 7-trip Logan Square -
+  // Foster turn (18%) shrank the main stretch to its own stops and its evening trips read as
+  // evening service on the route, and SEPTA 66's 5-trip Cottman turn cut the trunk to 17 stops.
+  // TTC 94's Wellesley pattern (half the trips) still shapes it, so the Harbord tail stays.
+  const regularSets = new Map(regular.map(p => [p, new Set(p.stops)]));
+  const minorShortTurn = (p: (typeof regular)[number]) => p.trips.length < SHORT_TURN_MIN_SHARE * withVisits.length
+    && regular.some(other => other !== p && other.stops.length > p.stops.length && p.stops.every(stop => regularSets.get(other)!.has(stop)));
+  if (regular.some(p => !minorShortTurn(p))) regular = regular.filter(p => !minorShortTurn(p));
   // No pattern runs steadily: the most common one alone is regular.
   const busiest = (list: typeof all) => list.reduce((x, y) => (y.trips.length > x.trips.length ? y : x));
   if (regular.length === 0) regular = [busiest(all)];
@@ -202,32 +215,38 @@ export function directionStretches(
 
   const main = mainStops.length > 0 ? stretch('main', mainStops, runKm(mainStops, stopCoord) ?? 0) : null;
 
-  // Tails: each regular pattern's maximal runs off the main stretch that pass the shared-stretch
-  // test. Runs sharing their middle stop, or overlapping in half their stops, are one tail.
-  const runs: Array<{ stops: string[]; km: number }> = [];
+  // Tails: each regular pattern's runs off the main stretch, split wherever the set of regular
+  // patterns serving the stops changes, that pass the shared-stretch test. Two branches that share
+  // a road beyond the main stretch and then part (TTC 102B and 102D on Markham Rd, 102D alone to
+  // Major Mackenzie) give a shared tail and a 102D-only tail, so the slower part is not read at a
+  // stop both serve. The same segment from several patterns is one tail.
+  const servingSet = (stop: string) => regular.filter(p => p.stops.includes(stop)).map(p => regular.indexOf(p)).join(',');
+  const segments = new Map<string, { stops: string[]; km: number }>();
   for (const pattern of regular) {
     let run: string[] = [];
-    for (const stop of [...pattern.stops, null]) {
-      if (stop !== null && !common.has(stop)) { run.push(stop); continue; }
+    let runSet: string | null = null;
+    const close = () => {
       // A disconnected piece is not a branch off the main stretch, so it is a stretch of its
       // own whatever its length (NYC subway S's 4-stop Franklin Av shuttle).
       const wholePiece = disconnected && run.length === pattern.stops.length;
       if (wholePiece || run.length >= SHARED_STRETCH_MIN_STOPS) {
         const length = runKm(run, stopCoord);
-        if (length != null && (wholePiece || length >= SHARED_STRETCH_MIN_KM)) runs.push({ stops: run, km: length });
+        const key = [...run].sort().join('>');
+        if (length != null && (wholePiece || length >= SHARED_STRETCH_MIN_KM) && !segments.has(key)) segments.set(key, { stops: run, km: length });
       }
       run = [];
+      runSet = null;
+    };
+    for (const stop of pattern.stops) {
+      if (common.has(stop)) { close(); continue; }
+      const set = servingSet(stop);
+      if (runSet !== null && set !== runSet) close();
+      run.push(stop);
+      runSet = set;
     }
+    close();
   }
-  const merged: Array<{ stops: string[]; km: number }> = [];
-  for (const run of [...runs].sort((a, b) => b.stops.length - a.stops.length)) {
-    const into = merged.find(m => {
-      const overlap = run.stops.filter(stop => m.stops.includes(stop)).length;
-      return overlap * 2 >= run.stops.length || m.stops.includes(run.stops[Math.floor(run.stops.length / 2)]);
-    });
-    if (into) into.stops.push(...run.stops.filter(stop => !into.stops.includes(stop)));
-    else merged.push({ stops: [...run.stops], km: run.km });
-  }
+  const merged = [...segments.values()];
   const tails = main ? merged.map(t => stretch('tail', t.stops, t.km)) : [];
 
   return { key, main, tails, regularPatternCount: regular.length, variantTripCount, disconnected: disconnected || undefined };
