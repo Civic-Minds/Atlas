@@ -147,7 +147,8 @@ export type LiveDashboardResponse =
 
 /** Routes whose analysis is built but not shown until a known problem is fixed. */
 export const LIVE_DASHBOARD_HOLD: Readonly<Record<string, string>> = {
-  'ttc::512': 'The 512 is held back: about 15% of its trips run under a trip number that does not match the timetable, so its delays cannot be trusted yet.',
+  // Pages say only that the route isn't included, never why (Ryan, 2026-10-16).
+  'ttc::512': "The 512 isn't included yet.",
 };
 
 /** Things to know when reading one route's numbers. */
@@ -345,7 +346,7 @@ export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'deliv
  * means, from the day-to-day spread (dailyNoise). Elsewhere a fixed amount stands in (FIXED_NOISE, provisional until the
  * analysis stores daily values for those measures too).
  */
-export const NOISE_RULE = 'A change is coloured only when it is bigger than usual day to day: for late and trips that ran, more than the spread between days would explain; for the others, more than 2 points (bunching), 1 minute (trip time) or half a minute (extra wait). Smaller changes stay grey.';
+export const NOISE_RULE = 'Only when bigger than the usual day-to-day change: Late and Delivered by more than the spread between days, Bunching by more than 2 points, Run time by more than 1 min, Extra wait by more than half a minute. Smaller changes stay grey.';
 
 /**
  * PROVISIONAL: smallest change that counts, in the figure's own unit (share as 0-1, or minutes), for measures without

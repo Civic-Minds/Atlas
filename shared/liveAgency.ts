@@ -51,7 +51,7 @@ export interface AgencySummary {
   /** Routes in the agency's timetable, and the routes this page covers (held routes are listed, not counted). */
   totalRoutes: number;
   covered: string[];
-  held: Array<{ route: string; reason: string }>;
+  held: Array<{ route: string }>;
   weekly: { thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean; minHealthyDays: number } | null;
   /** Network late share per day of this week (days with good recordings), for the change's noise. */
   daily: { late: number[]; delivered: number[] };
@@ -124,7 +124,7 @@ export function agencySummary(input: {
   agency: string;
   totalRoutes: number;
   routes: readonly AgencyRouteInput[];
-  held?: ReadonlyArray<{ route: string; reason: string }>;
+  held?: ReadonlyArray<{ route: string }>;
   generatedAt?: string;
   top?: { stops?: number; stretches?: number };
 }): AgencySummary {
@@ -186,7 +186,7 @@ export function agencySummary(input: {
     generatedAt: input.generatedAt ?? new Date().toISOString(),
     totalRoutes: input.totalRoutes,
     covered: routes.map(r => r.route),
-    held: [...(input.held ?? [])],
+    held: (input.held ?? []).map(h => ({ route: h.route })),
     weekly,
     daily: weekly ? networkDaily(routes, weekly.thisWeek.healthyDates) : { late: [], delivered: [] },
     routes: rows,
@@ -194,10 +194,5 @@ export function agencySummary(input: {
     delayStarts,
     bunchingForms,
   };
-}
-
-/** "9 of 230 TTC routes" (the coverage line every figure carries). */
-export function coverageText(s: Pick<AgencySummary, 'covered' | 'totalRoutes' | 'agency'>): string {
-  return `${s.covered.length} of ${s.totalRoutes} ${s.agency.toUpperCase()} routes`;
 }
 

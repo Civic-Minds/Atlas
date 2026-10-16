@@ -26,8 +26,8 @@ import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import RouteStrip, { routeStripFromV3, type RouteStripMode } from './components/Live/RouteStrip';
 import { delayText, type RouteStripDirection } from './components/Live/routeStripModel';
 import { KpiRow } from './LiveDashboardView';
-import { BOUNDARY, Method, withNiceNames } from './LiveRoutePage';
-import { weekOfText, lateCount, lateHourLine } from '../shared/liveWording';
+import { BOUNDARY, Method, routeSubtitle, withNiceNames } from './LiveRoutePage';
+import { lateCount, lateHourLine } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -511,7 +511,7 @@ export default function LiveExplorePage() {
         <div className="min-w-0">
           <PageTitle>{title}: how it is running</PageTitle>
           <p className="mt-1 text-sm text-[var(--text-muted)]">
-            {v3.window.dates.length ? `${weekOfText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} trips · estimated from where vehicles were, not reported by {agency.toUpperCase()}
+            {routeSubtitle(v3, agency)}
           </p>
         </div>
         {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}

@@ -69,7 +69,7 @@ describe('Live route dashboard', () => {
     expect(screen.getAllByText(/Linked: Vehicles standing still in this stretch \(0\.6 a day\)/).length).toBe(2);
     expect(screen.getAllByText(/Not linked: Uneven departures at the terminal \(5% of gaps off\)/).length).toBe(2);
     // Method.
-    expect(screen.getByText(/Window: the last 7 service days/)).toBeTruthy();
+    expect(screen.getByText(/^Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\.$/)).toBeTruthy();
     expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
   });
 
@@ -116,7 +116,7 @@ describe('Live route dashboard', () => {
     expect(screen.queryByRole('button', { name: /CSV/ })).toBeNull();
   });
 
-  it('shows trip time, extra wait, service delivered and this week against last week, in plain words', async () => {
+  it('shows run time, extra wait, service delivered and this week against last week, in plain words', async () => {
     const fig = { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 };
     const week = (late: number, delivered: number) => ({ days: 7, dates: ['2026-10-01', '2026-10-07'], healthyDates: ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04', '2026-10-05'], late: { share: late, n: 900 }, tripTime: { n: 100, scheduledMin: 22, typicalMin: 27, overMin: 5 }, extraWait: { minutes: 1.5, gaps: 900 }, bunching: { share: 0.2, gaps: 900 }, delivered: { share: delivered, seen: 95, notSeen: 5, unknown: 0 } });
     const rich: LiveV3 = {
@@ -132,9 +132,14 @@ describe('Live route dashboard', () => {
     const weekRegion = screen.getAllByRole('region', { name: /This week compared with last week/ })[0];
     for (const label of ['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
-    expect(screen.getByText(/Days with gaps in our recordings are left out of both/)).toBeTruthy();
-    // By the tiles, only the two weeks' dates; the explanation is under How this is measured.
-    expect(screen.getAllByText(/^Changes compared with the week before \([A-Z][a-z]{2} \d+–\d+\)$/).length).toBeGreaterThan(0);
+    // The subtitle names both weeks; no separate line under the tiles. The method says it once, in groups.
+    expect(screen.getByText('Week of Oct 8–14, compared with Oct 1–7 · 1,234 trips · estimated from vehicle positions, not reported by the TTC')).toBeTruthy();
+    expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
+    expect(screen.getByText(/^This week is .+ and last week is .+: \d+ of \d+ days counted this week, \d+ of \d+ last week\.$/)).toBeTruthy();
+    expect(screen.getAllByText(/days with gaps in our recordings are left out/).length).toBe(1);
+    for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByRole('heading', { name: g })).toBeTruthy();
+    expect(screen.queryByText(/trip time/i)).toBeNull();
+    expect(screen.getByText(/3 trips that could not be judged are left out of Delivered/)).toBeTruthy();
     expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();
     expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
     expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
@@ -145,7 +150,8 @@ describe('Live route dashboard', () => {
   it('says how many runs were left out and why, so the figures are honest about what they cover', async () => {
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
     await screen.findByRole('heading', { name: /how it is running/ });
-    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) were under a trip number that is not on the timetable.*500 runs by replacement buses that share this route number are also left out.*the 900 timetabled trips that were kept/)).toBeTruthy();
+    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the 900 timetabled trips kept/)).toBeTruthy();
+    expect(screen.getByText(/500 runs by replacement buses that share this route number are left out/)).toBeTruthy();
   });
 
   it('says the 510 first stops are less exact and leaves them out of the ranking', async () => {
@@ -164,7 +170,7 @@ describe('Live route dashboard', () => {
     vi.setSystemTime(new Date('2026-10-15T20:00:00Z'));
     try {
       const { unmount } = renderPage(ready);
-      expect(await screen.findByText('Week of Oct 8–14 · 1,234 trips · estimated from where vehicles were, not reported by TTC')).toBeTruthy();
+      expect(await screen.findByText('Week of Oct 8–14 · 1,234 trips · estimated from vehicle positions, not reported by the TTC')).toBeTruthy();
       expect(screen.queryByRole('status')).toBeNull();
       unmount();
       vi.setSystemTime(new Date('2026-10-25T20:00:00Z'));
@@ -186,8 +192,8 @@ describe('Live route dashboard', () => {
   });
 
   it('says why when there is nothing to show', async () => {
-    const { unmount } = renderPage({ status: 'held', reason: 'The 512 is held back: reason here.' }, '/apps/live/ttc/512');
-    expect(await screen.findByText('The 512 is held back: reason here.')).toBeTruthy();
+    const { unmount } = renderPage({ status: 'held', reason: "The 512 isn't included yet." }, '/apps/live/ttc/512');
+    expect(await screen.findByText("The 512 isn't included yet.")).toBeTruthy();
     unmount();
     renderPage(new Error('down'));
     expect(await screen.findByText(/did not answer. Start Live with "npm run live"/)).toBeTruthy();
