@@ -39,7 +39,7 @@ describe('accepted tile-rules versions', () => {
     expect(ACCEPTED_TILE_RULES_VERSIONS).toContain(TILE_RULES_VERSION);
   });
 
-  it('accepts exactly versions 4 and 5 during the frequency focus rollout', () => {
+  it('accepts exactly versions 4 and 5 during the frequency focus rollout (CIV-252)', () => {
     expect([...ACCEPTED_TILE_RULES_VERSIONS].sort()).toEqual([4, 5]);
   });
 

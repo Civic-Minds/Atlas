@@ -301,6 +301,9 @@ export const SPARKLINE_HOURS: readonly number[] = [
   ...SPARKLINE_OVERNIGHT_TAIL,
 ];
 
+/** Axis labels the sparkline puts under its bars (keyed by GTFS hour): 6a, 12p, 6p, 12a. Other charts reuse them. */
+export const SPARKLINE_HOUR_LABELS: Readonly<Record<number, string>> = { 6: '6a', 12: '12p', 18: '6p', 24: '12a' };
+
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 
 /** Parallel to HeadwayByPeriod (#281) -- whether each period's own median fairly describes its

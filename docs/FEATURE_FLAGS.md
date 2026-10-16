@@ -67,7 +67,7 @@ When running locally, open `/dev/diagnostics/performance` to see browser navigat
 2. The `routedApp`/`gated` check — direct URL navigation (e.g. typing `/apps/live`) redirects to the frequency map and corrects the URL, rather than silently rendering the full app anyway. Without this, hiding the pill alone doesn't actually restrict access.
 3. The component import itself where bundle isolation matters. A boolean check alone can still ship a component's JS in the bundle, so sensitive/internal tools should remain unreachable from production as well as hidden from its navigation.
 
-Local dev runs in `dev` mode, so mode-based features are on; env flags follow `.env.local` or the `dev:*` script. `dev:public`, `dev:beta`, and `dev:all` keep Live off; only `npm run dev:live` turns it on.
+Local dev runs in `dev` mode, so mode-based features are on; env flags follow `.env.local` or the `dev:*` script. `dev:public`, `dev:beta`, and `dev:all` keep Live off; only `npm run dev:live` (or `npm run live`, which starts the API server too) turns it on.
 
 ## Iterating on a gated feature
 

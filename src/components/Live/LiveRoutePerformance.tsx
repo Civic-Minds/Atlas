@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import Pill from '../ui/Pill';
+import { useLiveDashboard, liveDashboardPath } from '../../hooks/useLiveDashboard';
+import { cardSummary } from '../../../shared/liveDashboard';
 import { useSegmentDelay } from '../../hooks/useSegmentDelay';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { periodKeyForHour } from '../../../shared/config';
@@ -195,6 +197,8 @@ type Screen = { kind: 'card' } | { kind: 'stretch'; from: number; to: number; ro
 
 /** The Live route card: how the route's spacing holds up, now and over the archive. */
 export default function LiveRoutePerformance({ slug, routeShortName, feedDegraded, onZoom, onHighlight, registerMapClick, onDetailsChange }: Props) {
+  const dash = useLiveDashboard(slug, routeShortName);
+  const dashData = dash.kind === 'done' && dash.data.status === 'ready' ? dash.data : null;
   const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // View state lives in the URL (p, dir, stretch, view) so a shared link reopens it.
   const [initial] = useState(() => new URLSearchParams(window.location.search));
@@ -358,6 +362,31 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
         )}
       </Section>
 
+      {dashData ? (
+        <Section title={`Last ${dashData.v3.window.days} days · ${directions.find(d => d.id === directionId)?.label ?? ''}`}>
+          {(() => {
+            const f = cardSummary(dashData.v3, directionId, dashData.uncertainStart ?? []);
+            return (
+              <>
+                {([
+                  ['Late', f.late ? `${Math.round(f.late.share * 100)}% of ${f.late.n.toLocaleString()} departures` : '–'],
+                  ['Worst stop', f.worstStop ? `${stopLabel(f.worstStop.name)}, ${Math.round(f.worstStop.lateShare * 100)}% late` : '–'],
+                  ['Delays start', f.startsText ?? 'No single stretch'],
+                ] as [string, string][]).map(([label, value]) => (
+                  <div key={label} className="flex flex-col">
+                    <span className="text-xs font-bold text-[var(--text-dim)]">{label}</span>
+                    <span className="text-xs font-black text-[var(--text-primary)] leading-snug">{value}</span>
+                  </div>
+                ))}
+                <a href={liveDashboardPath(slug, routeShortName)} className="inline-flex items-center gap-0.5 text-xs font-bold text-[var(--accent)] hover:underline">
+                  Full analysis<ChevronRight className="w-3 h-3" aria-hidden="true" />
+                </a>
+              </>
+            );
+          })()}
+        </Section>
+      ) : (
+        <>
       <Section title={`${bandLabel} · ${directions.find(d => d.id === directionId)?.label ?? ''}${summary ? ` · ${line.sharedStreet}` : ''}`}>
         {summary && (
           <Stats items={[
@@ -388,6 +417,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
       <Section title="Time between stops">
         <Plain text={tally.total ? `${tally.within} of ${tally.total} stop pairs within ½ min of timetable or faster` : 'Not enough trips measured'} />
       </Section>
+        </>
+      )}
 
       <button type="button" onClick={() => setScreen({ kind: 'details' })} className="flex items-center justify-between pt-3 border-t border-[var(--border-primary)] text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
         <span>{totalDays} days, {range}</span>

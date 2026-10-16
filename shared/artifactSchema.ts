@@ -57,9 +57,9 @@ export function releaseTileRulesVersion(release: { tileRulesVersion?: unknown })
  * silently drop the outgoing version the moment the constant is bumped.
  * Anything else fails closed.
  */
-// Frequency focus rollout: 5 is accepted beside the live 4, so the app keeps drawing the live
-// version-4 release and then the first version-5 release. The same [4, 5] ships to main in a small
-// push before that publish (3 dropped, CIV-252). Drop 4 once the version-5 release is live.
+// Frequency focus rollout (CIV-252): this build makes version-5 tiles, and 4 stays accepted so the
+// app keeps drawing the live version-4 release until the first version-5 release is published.
+// Drop 4 once that release is live. 3 is no longer live and is dropped.
 export const ACCEPTED_TILE_RULES_VERSIONS: readonly number[] = [4, 5];
 
 export function isAcceptedTileRulesVersion(release: { tileRulesVersion?: unknown }): boolean {

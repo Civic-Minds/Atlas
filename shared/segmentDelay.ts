@@ -83,9 +83,10 @@ export function projectRun(samples: PositionSample[], pattern: Pattern): Project
  * too far apart in time or the vehicle went backwards. Passages are split
  * into legs at any off-shape sample, so a stop pair that spans a diversion
  * never becomes a segment observation. Samples implying an impossible speed
- * are dropped as bad GPS fixes.
+ * are dropped as bad GPS fixes. `offsetM` shifts the measured point along the shape: 25 gives the moment the vehicle
+ * left the stop (its departure), which is what a timetable's time means; 0 is when it reached it.
  */
-export function stopPassages(projected: Projected[], pattern: Pattern, opts = SEGMENT_DEFAULTS): StopPassage[][] {
+export function stopPassages(projected: Projected[], pattern: Pattern, opts = SEGMENT_DEFAULTS, offsetM = 0): StopPassage[][] {
   const legs: Projected[][] = [[]];
   for (const p of projected) {
     const leg = legs[legs.length - 1];
@@ -101,13 +102,14 @@ export function stopPassages(projected: Projected[], pattern: Pattern, opts = SE
     const out: StopPassage[] = [];
     let i = 0;
     for (const stop of pattern.stops) {
-      while (i < leg.length - 1 && leg[i + 1].along < stop.along) i++;
+      const target = stop.along + offsetM;
+      while (i < leg.length - 1 && leg[i + 1].along < target) i++;
       if (i >= leg.length - 1) break;
       const a = leg[i];
       const b = leg[i + 1];
-      if (!(a.along <= stop.along && b.along >= stop.along) || b.along <= a.along) continue;
+      if (!(a.along <= target && b.along >= target) || b.along <= a.along) continue;
       if (b.t <= a.t || b.t - a.t > opts.maxBracketGapSec) continue;
-      const frac = (stop.along - a.along) / (b.along - a.along);
+      const frac = (target - a.along) / (b.along - a.along);
       out.push({ stopId: stop.stopId, t: a.t + frac * (b.t - a.t) });
     }
     return out;
