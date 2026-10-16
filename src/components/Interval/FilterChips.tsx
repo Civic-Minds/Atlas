@@ -349,7 +349,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <Dot show={maxHeadway !== Infinity} />
       </button>
       {openChip === 'frequency' && (
-        <div className={`${PANEL} w-36`}>
+        <div className={`${PANEL} w-52`}>
           {frequencyOptions.map(o => {
             const isSelected = maxHeadway === o.max;
             return (
@@ -360,7 +360,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                 aria-pressed={isSelected}
                 aria-label={o.max === Infinity ? 'Show all routes' : o.label}
               >
-                <LegendItem color={o.color}>{o.max === Infinity ? 'All routes' : o.key}</LegendItem>
+                <LegendItem color={o.color}>{o.label}</LegendItem>
               </button>
             );
           })}

@@ -19,7 +19,7 @@ export function PersistentMapLegend() {
         </div>
         <div className="border-t border-[var(--border-primary)] pt-1.5 space-y-0.5">
           <LegendItem kind="line" color="var(--text-primary)" className="flex text-xs text-[var(--text-primary)]">Selected / qualifying</LegendItem>
-          <LegendItem kind="line" color="var(--text-muted)" className="flex text-xs text-[var(--text-muted)] opacity-60">Other routes</LegendItem>
+          <LegendItem kind="line" color="var(--text-muted)" swatchClassName="opacity-40" className="flex text-xs text-[var(--text-muted)]">Other routes</LegendItem>
         </div>
       </div>
     </aside>

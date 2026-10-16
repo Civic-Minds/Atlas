@@ -8,10 +8,10 @@ const SWATCH = {
 } as const;
 
 /** One legend entry: a coloured swatch and its label. Every legend (map, research, charts, agency pages) uses this. */
-export default function LegendItem({ color, kind = 'dot', className = '', children }: { color: string; kind?: keyof typeof SWATCH; className?: string; children: ReactNode }) {
+export default function LegendItem({ color, kind = 'dot', className = '', swatchClassName = '', children }: { color: string; kind?: keyof typeof SWATCH; className?: string; /** Extra classes for the swatch alone (for example a faded one). */ swatchClassName?: string; children: ReactNode }) {
   return (
     <span className={`inline-flex items-center gap-1.5 ${className}`.trim()}>
-      <span aria-hidden="true" className={`${SWATCH[kind]} shrink-0`} style={{ background: color }} />
+      <span aria-hidden="true" className={`${SWATCH[kind]} shrink-0 ${swatchClassName}`.trim()} style={{ background: color }} />
       {children}
     </span>
   );
