@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
-import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
+import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
+import { liveChartHours } from '../../utils/sparklinePeriods';
 import DataTable from '../ui/DataTable';
 
 export interface HourValue {
@@ -19,7 +20,7 @@ const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 % 24 < 1
  * to every chart in a row so their bars compare. Values below zero hang under a dashed zero line. Hours with no data are
  * left empty, not drawn as zero. The whole chart is one focusable unit with a summary label, and a table view.
  */
-export default function HourSpark({ values, scale, color, format, ariaLabel, unit, valueHeader, minN = 30 }: {
+export default function HourSpark({ values, scale, color, format, ariaLabel, unit, valueHeader, minN = 30, hours }: {
   values: readonly HourValue[];
   scale: { min: number; max: number };
   /** CSS colour (a token). */
@@ -30,6 +31,8 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
   unit: string;
   valueHeader: string;
   minN?: number;
+  /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these values. */
+  hours?: readonly number[];
 }) {
   const tableId = useId();
   const [hover, setHover] = useState<number | null>(null);
@@ -37,7 +40,8 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
   const span = scale.max - scale.min || 1;
   const pos = (v: number) => Math.max(0, Math.min(H, ((v - scale.min) / span) * H));
   const zeroPx = pos(0);
-  const ordered = SPARKLINE_HOURS.map(h => byHour.get(h % 24)).filter((v): v is HourValue => !!v);
+  const axis = hours ?? liveChartHours(h => (byHour.get(h)?.n ?? 0) >= minN);
+  const ordered = axis.map(h => byHour.get(h % 24)).filter((v): v is HourValue => !!v);
   return (
     <figure className="m-0">
       <div role="img" aria-label={ariaLabel} aria-describedby={tableId} tabIndex={0} className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]">
@@ -48,7 +52,7 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
           </div>
           <div className="relative flex gap-px" style={{ height: H }}>
             {scale.min < 0 && <div className="pointer-events-none absolute inset-x-0 border-t border-dashed border-[var(--text-dim)] opacity-60" style={{ bottom: zeroPx }} />}
-            {SPARKLINE_HOURS.map(gtfsHour => {
+            {axis.map(gtfsHour => {
               const v = byHour.get(gtfsHour % 24);
               if (!v) return <div key={gtfsHour} className="min-w-0 flex-1" />;
               const top = pos(Math.max(v.value, 0));
@@ -64,7 +68,7 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
             })}
           </div>
           <div className="mt-1 flex gap-px">
-            {SPARKLINE_HOURS.map(h => (
+            {axis.map(h => (
               <div key={h} className="min-w-0 flex-1 text-center"><span className="text-xs text-[var(--text-dim)]">{SPARKLINE_HOUR_LABELS[h]}</span></div>
             ))}
           </div>

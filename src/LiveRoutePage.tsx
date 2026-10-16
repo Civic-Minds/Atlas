@@ -12,6 +12,7 @@ import { SITE_URL } from '../shared/seo';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import { isMajorStop, shortStopName } from './utils/stopLabel';
+import { liveChartHours } from './utils/sparklinePeriods';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import SortableDataTable from './components/ui/SortableDataTable';
@@ -126,8 +127,10 @@ function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: numbe
           <div className="mt-3 grid gap-6 md:grid-cols-3">
             {DAYS.map(([k, label]) => {
               const c = countsFor(k);
+              const axis = liveChartHours(h => DAYS.some(([d]) => (data.adherence.timepoints[d].byHour.find(x => x.hour === h)?.n ?? 0) >= 30));
               return (
                 <HourBars
+                  hours={axis}
                   key={k}
                   title={label}
                   showKey={k === 'weekend'}
@@ -346,6 +349,7 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
           const label = v3.directionLabels[String(d)];
           const figures = rt.bands[band]?.[String(d)];
           const hours = hoursOf(d);
+          const axis = liveChartHours(h => dirs.some(dd => hoursOf(dd).some(x => x.hour === h && x.n >= 5)));
           return (
             <div key={d} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
@@ -354,7 +358,7 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
               {hours.length > 1 && (
                 <>
                   <p className="mt-1 text-sm font-bold">{runTimeTakeaway(label, hours)}</p>
-                  <div className="mt-2"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${withoutDevHint(runningTimeSentence(label, figures))}`} /></div>
+                  <div className="mt-2"><RunTimeChart hours={hours} axis={axis} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${withoutDevHint(runningTimeSentence(label, figures))}`} /></div>
                 </>
               )}
               {(rt.branches?.[String(d)] ?? []).length > 0 && (

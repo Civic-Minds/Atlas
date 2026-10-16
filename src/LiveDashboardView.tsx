@@ -12,6 +12,7 @@ import Pill from './components/ui/Pill';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import { shortStopName } from './utils/stopLabel';
+import { liveChartHours } from './utils/sparklinePeriods';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
@@ -108,7 +109,7 @@ function Days({ v3, data, band, dir }: { v3: LiveV3; data: DashboardBandData; ba
                 <div className="mt-1 text-2xl font-black tracking-tight" title={`${c.late.n.toLocaleString()} departures`}>{pct(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>
                 <div className="mt-2">
                   {c.hours.length ? (
-                    <HourSpark values={c.hours} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
+                    <HourSpark values={c.hours} hours={liveChartHours(h => cols.some(cc => (cc.hours.find(x => x.hour === h)?.n ?? 0) >= 30))} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
                       ariaLabel={`${c.label}: share of departures late by hour of the day, ${pct(c.late.share)} late overall.`} />
                   ) : <p className="text-sm text-[var(--text-muted)]">No departures in this part of the day.</p>}
                 </div>
@@ -143,7 +144,7 @@ function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: num
             {g.hours.length > 1 ? (
               <>
                 <p className="mt-1 text-sm font-bold">{runTimeTakeaway(g.label, g.hours)}</p>
-                <div className="mt-2"><RunTimeChart hours={g.hours} scale={scale} ariaLabel={`${g.label}: run time against the schedule by the hour the trip starts. ${runTimeTakeaway(g.label, g.hours)}`} /></div>
+                <div className="mt-2"><RunTimeChart hours={g.hours} axis={liveChartHours(h => groups.some(gg => gg.hours.some(x => x.hour === h && x.n >= 5)))} scale={scale} ariaLabel={`${g.label}: run time against the schedule by the hour the trip starts. ${runTimeTakeaway(g.label, g.hours)}`} /></div>
               </>
             ) : <p className="mt-1 text-sm text-[var(--text-muted)]">Too few trips were measured {BAND_WORDS[band]} to draw this.</p>}
             {(rt?.branches?.[String(g.d)] ?? []).length > 0 && (

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
+import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
+import { liveChartHours } from '../../utils/sparklinePeriods';
 import DataTable from '../ui/DataTable';
 
 export interface RunTimeHour {
@@ -60,21 +61,24 @@ function spread(labels: EndLabel[], min: number, max: number): Array<EndLabel & 
  * line is labelled where it ends; hours with few trips are faded. The whole chart is one focusable unit with a summary
  * label, each hour shows its figures on hover, and the same figures are available as a table.
  */
-export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height: H = 240 }: {
+export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height: H = 240, axis: axisProp }: {
   hours: readonly RunTimeHour[];
   scale: { min: number; max: number };
   ariaLabel: string;
   minN?: number;
   /** Chart height in px. */
   height?: number;
+  /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these hours. */
+  axis?: readonly number[];
 }) {
   const tableId = useId();
   const [hover, setHover] = useState<number | null>(null);
   const [ref, width] = useWidth();
-  const slot = (h: number) => SPARKLINE_HOURS.findIndex(x => x % 24 === h);
+  const axis = axisProp ?? liveChartHours(h => hours.some(x => x.hour === h && x.n >= minN));
+  const slot = (h: number) => axis.findIndex(x => x % 24 === h);
   const pts = hours.map(h => ({ ...h, i: slot(h.hour) })).filter(h => h.i >= 0).sort((a, b) => a.i - b.i);
   const plotW = Math.max(0, width - AXIS_W - LABEL_W);
-  const x = (i: number) => AXIS_W + (SPARKLINE_HOURS.length > 1 ? (i / (SPARKLINE_HOURS.length - 1)) * plotW : 0);
+  const x = (i: number) => AXIS_W + (axis.length > 1 ? (i / (axis.length - 1)) * plotW : 0);
   const span = scale.max - scale.min || 1;
   const y = (m: number) => PAD_TOP + (1 - (m - scale.min) / span) * (H - PAD_TOP - PAD_BOTTOM);
   const step = span > 30 ? 10 : 5;
@@ -93,7 +97,7 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
     { key: 'usual', y: y(last.typicalMin), h: 15, lines: ['Usually'], color: 'var(--text-primary)', weight: 700 },
     { key: 'sched', y: y(last.scheduledMin), h: 15, lines: ['Scheduled'], color: 'var(--text-secondary)', weight: 400 },
   ], PAD_TOP - 8, H - PAD_BOTTOM) : [];
-  const colW = plotW / Math.max(1, SPARKLINE_HOURS.length - 1);
+  const colW = plotW / Math.max(1, axis.length - 1);
   return (
     <figure className="m-0">
       <div ref={ref} role="img" aria-label={ariaLabel} aria-describedby={tableId} tabIndex={0} className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]">
@@ -122,7 +126,7 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
             {ends.map(l => l.lines.map((t, k) => (
               <text key={`${l.key}${k}`} x={AXIS_W + plotW + 10} y={l.top + 11 + k * 14} fontSize={13} fontWeight={l.weight} fill={l.color}>{t}</text>
             )))}
-            {SPARKLINE_HOURS.map((h, i) => SPARKLINE_HOUR_LABELS[h] && (
+            {axis.map((h, i) => SPARKLINE_HOUR_LABELS[h] && (
               <text key={h} x={x(i)} y={H - 4} textAnchor="middle" fontSize={13} fill="var(--text-dim)">{SPARKLINE_HOUR_LABELS[h]}</text>
             ))}
             {pts.map(p => (

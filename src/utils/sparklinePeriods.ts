@@ -37,3 +37,38 @@ export function sparklineHourAt(clientX: number, rect: { left: number; width: nu
   const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
   return SPARKLINE_HOURS[Math.min(Math.floor(fraction * SPARKLINE_HOURS.length), SPARKLINE_HOURS.length - 1)];
 }
+
+/**
+ * The Live hour charts' axis: 5 AM to 4 AM next day (GTFS hours 5-28) in one unbroken run, trimmed at both ends to the
+ * hours that have enough trips. Never an overnight tail after 12a: late-night hours follow on from midnight, and an
+ * axis ends at its last well-measured hour. Charts shown side by side pass the same hours so they line up.
+ */
+export const LIVE_DAY_HOURS: readonly number[] = Array.from({ length: 24 }, (_, i) => i + 5);
+
+export function liveChartHours(enough: (hour24: number) => boolean): number[] {
+  const first = LIVE_DAY_HOURS.findIndex(h => enough(h % 24));
+  if (first < 0) return [];
+  let last = LIVE_DAY_HOURS.length - 1;
+  while (last > first && !enough(LIVE_DAY_HOURS[last] % 24)) last--;
+  return LIVE_DAY_HOURS.slice(first, last + 1);
+}
+
+/** Contiguous hover bands per period for a given hour axis, as fractions of the chart width. */
+export function periodBandsFor(hours: readonly number[]): Record<string, { left: number; width: number }[]> {
+  const result: Record<string, { left: number; width: number }[]> = {};
+  let i = 0;
+  while (i < hours.length) {
+    const p = HOUR_TO_PERIOD[hours[i]];
+    if (!p) { i++; continue; }
+    const start = i;
+    while (i < hours.length && HOUR_TO_PERIOD[hours[i]] === p) i++;
+    (result[p] ??= []).push({ left: start / hours.length, width: (i - start) / hours.length });
+  }
+  return result;
+}
+
+/** The hour under a pointer position on a chart drawn over `hours`. */
+export function hourAtOn(hours: readonly number[], clientX: number, rect: { left: number; width: number }): number {
+  const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  return hours[Math.min(Math.floor(fraction * hours.length), hours.length - 1)];
+}
