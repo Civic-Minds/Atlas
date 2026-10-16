@@ -679,10 +679,12 @@ for (const { svcDate, trip, base } of tripInstanceList) {
     statusByStop.set(k, m);
   });
 }
-// Any pattern (however few trips) that ends at a station or loop makes every stop of that station or loop a terminal,
-// so a car waiting in another bay of the same station is never read as delay or a hold.
+// A station or loop where a main pattern ends (50+ trips, the same bar as the terminals above) is a terminal at every
+// one of its stops, so a car waiting in another bay of the same station is never read as delay or a hold. A rare
+// pattern short-turning at a mid-route station does not make that station a terminal.
 const terminalPlaces = new Set<string>();
 for (const p of patterns.values()) {
+  if ((tripsPerShape.get(p.id) ?? 0) < 50) continue;
   for (const st of [p.stops[0], p.stops[p.stops.length - 1]]) {
     const place = st ? stationOrLoop(stopsById.get(st.stopId)?.stop_name ?? '') : null;
     if (place) terminalPlaces.add(place);
