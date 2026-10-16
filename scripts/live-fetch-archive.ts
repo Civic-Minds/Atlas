@@ -14,6 +14,7 @@
 import { config } from 'dotenv';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
+import { createHash } from 'crypto';
 import { GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { liveArchiveClient } from '../shared/liveArchive';
 import { mapWithConcurrency } from '../local-api/concurrency';
@@ -21,17 +22,21 @@ import { mapWithConcurrency } from '../local-api/concurrency';
 const BUCKET = 'atlas-live';
 
 /** Dates from --days, or every date from --from to --to (inclusive). */
-/** Letters, digits, dot, dash and underscore only, so a feed value can never reach outside the archive folder. */
-export function fileSafe(s: string): string {
-  return s.replace(/[^A-Za-z0-9._-]/g, '_').replace(/^\.+/, '');
-}
-
 export function datesFromArgs(args: Record<string, string | undefined>): string[] {
   if (args.days) return args.days.split(',').map(d => d.trim()).filter(Boolean);
   if (!args.from || !args.to) return [];
   const out: string[] = [];
   for (let t = Date.parse(`${args.from}T12:00:00Z`); t <= Date.parse(`${args.to}T12:00:00Z`); t += 86400_000) out.push(new Date(t).toISOString().slice(0, 10));
   return out;
+}
+
+/**
+ * Letters, digits, dot, dash and underscore only, so a feed value can never reach outside the archive folder. A value
+ * that had to change gets a short hash of the original, so "1/2" and "1_2" never land in the same file.
+ */
+export function fileSafe(s: string): string {
+  const safe = s.replace(/[^A-Za-z0-9._-]/g, '_').replace(/^\.+/, '');
+  return safe === s ? s : `${safe}~${createHash('sha1').update(s).digest('hex').slice(0, 6)}`;
 }
 
 type Vehicle = { id: string; r: string; tripId?: string; lat: number; lon: number; t?: number | null; brg?: number | null; spd?: number | null };

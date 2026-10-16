@@ -56,10 +56,13 @@ export function runTimeTileStretch(stretch: Record<string, RunTimeStretch> | und
   const ends = dirs.map(d => `${nice(stretch[d].fromName)} to ${nice(stretch[d].toName)}`);
   return dirs.length === 1 ? `over ${n} stops, ${ends[0]}` : `over ${n} stops: ${ends.join('; ')}`;
 }
-export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: RunTimeFigures; byHour: Array<{ hour: number } & RunTimeFigures> }
+export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: RunTimeFigures; /** By time of day (older files: absent, all day only). */ bands?: Partial<Record<DashboardBand, RunTimeFigures | null>>; byHour: Array<{ hour: number } & RunTimeFigures> }
+/** A branch's figures for a time of day: null when that period has none (or an older file has only all day). */
+export function branchFigures(b: RunTimeBranch, band: DashboardBand): RunTimeFigures | null {
+  return b.bands ? b.bands[band] ?? null : band === 'all' ? b.all : null;
+}
 /** "To Marine Parade: usually 12 min, timetable 14 (over 14 stops from Humber Loop, 215 trips)." */
-export function branchRunTimeLine(b: RunTimeBranch, nice: (name: string) => string = x => x): string {
-  const f = b.all;
+export function branchRunTimeLine(b: RunTimeBranch, nice: (name: string) => string = x => x, f: RunTimeFigures = b.all): string {
   return `To ${nice(b.toName)}: usually ${Math.round(f.typicalMin)} min, timetable ${Math.round(f.scheduledMin)}, 1 in 10 over ${Math.round(f.p90Min)} (over ${b.stops} stops from ${nice(b.fromName)}, ${f.n.toLocaleString()} trips).`;
 }
 export interface RunTimeFigures { n: number; scheduledMin: number; typicalMin: number; p90Min: number; overMin: number }

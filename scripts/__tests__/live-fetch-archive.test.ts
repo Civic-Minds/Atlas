@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { datesFromArgs, splitSnapshot } from '../live-fetch-archive';
+import { datesFromArgs, splitSnapshot, fileSafe } from '../live-fetch-archive';
 
 describe('live-fetch-archive', () => {
   it('keeps every route of a snapshot, one line per route in the analysis format', () => {
@@ -17,5 +17,15 @@ describe('live-fetch-archive', () => {
   it('reads --days or a --from/--to range', () => {
     expect(datesFromArgs({ days: '2026-10-01,2026-10-02' })).toEqual(['2026-10-01', '2026-10-02']);
     expect(datesFromArgs({ from: '2026-09-30', to: '2026-10-02' })).toEqual(['2026-09-30', '2026-10-01', '2026-10-02']);
+  });
+});
+
+describe('fileSafe', () => {
+  it('keeps safe names as they are and never lets two different names share a file', () => {
+    expect(fileSafe('504')).toBe('504');
+    expect(fileSafe('2026-10-14')).toBe('2026-10-14');
+    expect(fileSafe('1/2')).not.toBe(fileSafe('1_2'));
+    expect(fileSafe('1/2')).toMatch(/^1_2~[0-9a-f]{6}$/);
+    expect(fileSafe('../x')).not.toMatch(/\.\.|\//);
   });
 });

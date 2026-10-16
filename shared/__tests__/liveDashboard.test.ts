@@ -158,3 +158,16 @@ describe('branch run-time line', () => {
       .toBe('To Marine Parade: usually 12 min, timetable 14, 1 in 10 over 16 (over 14 stops from Humber Loop, 215 trips).');
   });
 });
+
+describe('branch lines follow the time of day', () => {
+  it('uses the period figures, none for a period with no trips, and all day for an older file', async () => {
+    const { branchFigures } = await import('../liveDashboard');
+    const all = { n: 215, scheduledMin: 14, typicalMin: 12, p90Min: 16, overMin: -2 };
+    const am = { n: 12, scheduledMin: 15, typicalMin: 14, p90Min: 17, overMin: -1 };
+    const base = { fromStopId: 'a', toStopId: 'b', fromName: 'A', toName: 'B', stops: 14, all, byHour: [] };
+    expect(branchFigures({ ...base, bands: { all, amPeak: am, evening: null } }, 'amPeak')).toBe(am);
+    expect(branchFigures({ ...base, bands: { all, amPeak: am, evening: null } }, 'evening')).toBeNull();
+    expect(branchFigures(base, 'all')).toBe(all);
+    expect(branchFigures(base, 'pmPeak')).toBeNull();
+  });
+});

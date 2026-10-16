@@ -881,7 +881,7 @@ function runTimesBetween(d: number, a: string, b: string): RunTimeRow[] {
   }
   return out;
 }
-type BranchRunTime = { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: NonNullable<ReturnType<typeof runTimeStat>>; byHour: Array<{ hour: number } & NonNullable<ReturnType<typeof runTimeStat>>> };
+type BranchRunTime = { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: NonNullable<ReturnType<typeof runTimeStat>>; bands: Record<TimeBand | 'all', ReturnType<typeof runTimeStat>>; byHour: Array<{ hour: number } & NonNullable<ReturnType<typeof runTimeStat>>> };
 const branchesByDir: Record<string, BranchRunTime[]> = {};
 for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
@@ -899,16 +899,23 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   const a = stretch[0], b = stretch[stretch.length - 1];
   mainRunTimes.push(...runTimesBetween(d, a, b));
   // Branches: a regular pattern with its own long tail gets its own line, over the whole pattern (trimmed the same way).
+  // Patterns are one per shape, so two shapes between the same two stops are one line: rows are every run between those
+  // stops whatever its shape, so the shared line already counts all their trips, once.
   const branchLines: BranchRunTime[] = [];
+  const seenSpans = new Set<string>();
   for (const p of branchPatterns(dirPatterns.map(p => ({ p, stops: p.stops.map(s => s.stopId), along: p.stops.map(s => s.along), trips: tripsPerShape.get(p.id) ?? 0 })), main, SHARED_STRETCH_MIN_STOPS, SHARED_STRETCH_MIN_KM * 1000)) {
     const span = reliableStretch(p.stops, coverage);
     if (!span || (span[0] === a && span[span.length - 1] === b)) continue;
+    const key = `${span[0]}|${span[span.length - 1]}`;
+    if (seenSpans.has(key)) continue;
+    seenSpans.add(key);
     const rows = runTimesBetween(d, span[0], span[span.length - 1]).filter(r => inWindow.has(r.date));
     const stat = runTimeStat(rows);
     if (!stat) continue;
     branchLines.push({
       fromStopId: span[0], toStopId: span[span.length - 1], fromName: stopInfo(span[0]).name, toName: stopInfo(span[span.length - 1]).name, stops: span.length,
       all: stat,
+      bands: Object.fromEntries(BANDS.map(band => [band, runTimeStat(rows.filter(r => band === 'all' || bandForHour(r.startHour) === band))])) as Record<TimeBand | 'all', ReturnType<typeof runTimeStat>>,
       byHour: [...new Set(rows.map(r => r.startHour % 24))].sort((x, y) => x - y).map(h => ({ hour: h, ...runTimeStat(rows.filter(r => r.startHour % 24 === h))! })),
     });
   }
