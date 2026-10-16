@@ -24,6 +24,7 @@ import { KpiTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import { weekOfText } from '../shared/liveWording';
+import MethodFootnote from './components/Live/MethodFootnote';
 
 const MINUS = '−';
 const pct = (x: number | null) => (x == null ? '–' : `${Math.round(x * 100)}%`);
@@ -217,8 +218,7 @@ export default function LiveAgencyPage() {
           <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" />
         </Section>
 
-        <Section id="agency-method" title="How this is measured">
-          <ul className="mt-3 max-w-3xl list-disc space-y-1 pl-5 text-sm leading-6 text-[var(--text-muted)]">
+        <MethodFootnote id="agency-method">
             <li>Late: trips that left the end of the line more than 5 min late. Run time: the typical trip over the main stretch against its scheduled time. Bunching: gaps under 2 minutes or over twice the scheduled gap. Delivered: scheduled trips that ran. All for this week.</li>
             <li>Stops: at least 30 departures, at most 3 from one route direction.</li>
             <li>Directions where delay builds slowly have no single place and are left out.</li>
@@ -227,8 +227,7 @@ export default function LiveAgencyPage() {
             {w && <li>This week compared with last week: {weekCaption({ ...w, health: [] })} {NOISE_RULE}</li>}
             <li>Covered: {coverage}. {s.held.length ? `Held back: ${s.held.map(h => `${h.route} (${h.reason})`).join(' ')}` : ''}</li>
             <li>Built {new Date(s.generatedAt).toLocaleString()}.</li>
-          </ul>
-        </Section>
+        </MethodFootnote>
       </article>
     </PageShell>
   );

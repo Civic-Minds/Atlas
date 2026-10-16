@@ -19,6 +19,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import LegendItem from './components/ui/LegendItem';
 import { SectionTitle } from './components/ui/PageTitle';
 import { lateCount, lateHourLine } from '../shared/liveWording';
+import MethodFootnote from './components/Live/MethodFootnote';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', '−');
@@ -50,11 +51,9 @@ export function KpiRow({ v3 }: { v3: LiveV3 }) {
 function WeekMethod({ v3, toFull }: { v3: LiveV3; toFull: (hash: string) => void }) {
   if (!v3.weekly) return null;
   return (
-    <details className="mt-12" id="dash-method">
-      <summary className="cursor-pointer text-xl font-black tracking-tight">How this is measured</summary>
-      <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{weekCaption(v3.weekly)} {NOISE_RULE}</p>
-      <p className="mt-3"><ArrowLink href="?view=analysis#method" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('method'); }}>The full method, in Full analysis</ArrowLink></p>
-    </details>
+    <MethodFootnote id="dash-method" collapsible after={<p className="mt-2 text-xs"><ArrowLink href="?view=analysis#method" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('method'); }}>The full method, in Full analysis</ArrowLink></p>}>
+      <li>{weekCaption(v3.weekly)} {NOISE_RULE}</li>
+    </MethodFootnote>
   );
 }
 

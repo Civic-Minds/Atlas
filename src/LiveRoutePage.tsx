@@ -29,6 +29,7 @@ import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import { weekOfText, lateCount, lateHourLine } from '../shared/liveWording';
+import MethodFootnote from './components/Live/MethodFootnote';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -476,9 +477,7 @@ export function Method({ data }: { data: Ready }) {
   const { v3 } = data;
   const [first, last] = [v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1]];
   return (
-    <details className="mt-12 group" id="method">
-      <summary className="cursor-pointer text-xl font-black tracking-tight">How this is measured</summary>
-      <ul className="mt-3 max-w-3xl list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--text-muted)]">
+    <MethodFootnote id="method" collapsible>
         <li>Counted where each trip leaves the end of the line, as the TTC measures it.</li>
         <li>Delay builds up where the biggest jump in delay holds for the next few stops (3 stops or about 1 km).</li>
         <li>Bunching: gaps under {Math.round(v3.thresholds.bunchedGapSec / 60)} minutes count as too close together; gaps more than twice the timetable's count as too far apart. "Linked to" means measured in the same stretch, not the cause.</li>
@@ -499,8 +498,7 @@ export function Method({ data }: { data: Ready }) {
         )}
         <li>{pct(v3.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</li>
         {data.replacementBuses && <li>This route is run by replacement buses in this timetable, so every figure describes the buses.</li>}
-      </ul>
-    </details>
+    </MethodFootnote>
   );
 }
 
