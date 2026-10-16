@@ -2,7 +2,7 @@ import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, typ
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
-  LEGEND_TITLE, MIN_N, delayText, delayInterpolated, lessExactOn, legendSteps, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopN, stopValue, stretchSpan, stripSummary,
+  LEGEND_TITLE, MIN_N, delayText, delayInterpolated, delaySegments, lessExactOn, legendSteps, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
 } from './routeStripModel';
 
@@ -33,6 +33,8 @@ export interface RouteStripProps {
   selectedStretch?: RouteStripMode | null;
   /** Called when a marked stretch's bracket is clicked. */
   onSelectStretch?: (mode: RouteStripMode) => void;
+  /** How the delay track shows interpolated stops: hatched (default) or by segments between timepoints (?strip=segments, for comparison). */
+  delayStyle?: 'timepoints' | 'segments';
 }
 
 const INSET = 10;
@@ -84,6 +86,10 @@ interface Track {
   faded: (s: RouteStripStop) => boolean;
   /** Drawn hatched (less exact) on this track. */
   hatched: (s: RouteStripStop) => boolean;
+  /** Segment colour of the line reaching stop i from the stop before it (segments mode), or null. */
+  segmentInto?: (i: number) => string | null;
+  /** A small neutral dot (an in-between stop in segments mode). */
+  small?: (s: RouteStripStop) => boolean;
 }
 
 /**
@@ -94,19 +100,23 @@ interface Track {
  * named, and a "Show all stops" switch for the full list. The strip is one focusable unit: its label sums it up, the
  * arrow keys step through the stops, and the same figures are in a table for screen readers.
  */
-export default function RouteStrip({ stops, modes = ['delay', 'bunching'], directionLabel, delaysStart, bunchingForms, minN = MIN_N, verticalBelow = 360, className = '', selected = null, onSelect, selectedStretch = null, onSelectStretch }: RouteStripProps) {
+export default function RouteStrip({ stops, modes = ['delay', 'bunching'], directionLabel, delaysStart, bunchingForms, minN = MIN_N, verticalBelow = 360, className = '', selected = null, onSelect, selectedStretch = null, onSelectStretch, delayStyle }: RouteStripProps) {
   const [ref, width] = useWidth();
   const [active, setActive] = useState<number | null>(null);
   const [allStops, setAllStops] = useState(false);
   const liveId = useId();
   const tableId = useId();
+  const segmentMode = (delayStyle ?? (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('strip') === 'segments' ? 'segments' : 'timepoints')) === 'segments';
+  const segments = useMemo(() => (segmentMode ? delaySegments(stops) : []), [segmentMode, stops]);
   const tracks: Track[] = useMemo(() => modes.map(mode => ({
     mode,
     steps: stops.map(s => (mode === 'delay' && delayInterpolated(s) ? 0 : stepFor(mode, stopValue(s, mode)))),
-    hatched: (s: RouteStripStop) => lessExactOn(s, mode),
+    hatched: (s: RouteStripStop) => (segmentMode && mode === 'delay' && delayInterpolated(s) ? false : lessExactOn(s, mode)),
+    segmentInto: (i: number) => { if (mode !== 'delay') return null; const g = segments.find(x => i > x.from && i <= x.to); return g ? stepColor('delay', g.step) : null; },
+    small: (s: RouteStripStop) => segmentMode && mode === 'delay' && delayInterpolated(s),
     stretch: mode === 'delay' ? stretchSpan(stops, delaysStart, 'delaysStart') : stretchSpan(stops, bunchingForms, 'bunchingForms'),
     faded: (s: RouteStripStop) => stopN(s, mode) > 0 && stopN(s, mode) < minN,
-  })), [modes, stops, delaysStart, bunchingForms, minN]);
+  })), [modes, stops, delaysStart, bunchingForms, minN, segmentMode, segments]);
   const summary = useMemo(() => tracks.map((t, k) => {
     const text = stripSummary(stops, t.mode, directionLabel, t.stretch);
     return k < tracks.length - 1 ? text.replace(/ Use the left and right arrow keys to hear each stop\.$/, '') : text;
@@ -247,20 +257,27 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
                   </div>
                 )}
                 <div className="absolute rounded-full bg-[var(--text-dim)] opacity-40" style={{ left: GUTTER + INSET, right: INSET, top: lineY(k) - 1, height: 2 }} />
-                {stops.map((s, i) => (
+                {t.mode === 'delay' && segments.map(g => (
+                  <div key={`seg${g.from}`} className="absolute rounded-full" style={{ left: xs[g.from], width: xs[g.to] - xs[g.from], top: lineY(k) - 2, height: 4, background: stepColor('delay', g.step) }} />
+                ))}
+                {stops.map((s, i) => {
+                  const small = segmentMode && t.mode === 'delay' && delayInterpolated(s);
+                  const d = small ? Math.max(4, Math.round(dot * 0.5)) : dot;
+                  return (
                   <span
                     key={`${s.stopId}-${i}`}
                     className="absolute rounded-full transition-transform"
                     style={{
                       ...swatchStyle(t.mode, t.steps[i], t.hatched(s)),
-                      width: dot, height: dot, left: xs[i] - dot / 2, top: lineY(k) - dot / 2,
+                      width: d, height: d, left: xs[i] - d / 2, top: lineY(k) - d / 2,
                       opacity: t.faded(s) ? 0.35 : 1,
                       transform: active === i ? 'scale(1.45)' : undefined,
                       outline: active === i ? '2px solid var(--text-primary)' : undefined,
                       outlineOffset: 2,
                     }}
                   />
-                ))}
+                  );
+                })}
               </Fragment>
             ))}
             {labels.map(i => {
@@ -315,11 +332,13 @@ function TrackDots({ tracks, s, i, last, size, active, centred }: { tracks: read
         return (
           <Fragment key={t.mode}>
             <span className="pointer-events-none absolute w-0.5 bg-[var(--text-dim)] opacity-40" style={{ left: COL_X[k] - 1, top: i === 0 ? centred : 0, bottom: i === last ? `calc(100% - ${centred})` : 0 }} />
+            {t.segmentInto?.(i) && <span className="pointer-events-none absolute w-1 rounded-full" style={{ left: COL_X[k] - 2, top: 0, height: centred, background: t.segmentInto(i)! }} />}
+            {t.segmentInto?.(i + 1) && <span className="pointer-events-none absolute w-1 rounded-full" style={{ left: COL_X[k] - 2, top: centred, bottom: 0, background: t.segmentInto(i + 1)! }} />}
             {inStretch && <span className="pointer-events-none absolute w-0.5 bg-[var(--text-secondary)]" style={{ left: bx, top: i === t.stretch!.from ? centred : 0, bottom: i === t.stretch!.to ? `calc(100% - ${centred})` : 0 }} />}
             {inStretch && (i === t.stretch!.from || i === t.stretch!.to) && <span className="pointer-events-none absolute h-0.5 w-1.5 bg-[var(--text-secondary)]" style={{ left: k === 0 ? bx : bx - 5, top: centred }} />}
             <span
               className="absolute rounded-full"
-              style={{ ...swatchStyle(t.mode, t.steps[i], t.hatched(s)), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(${centred} - ${size / 2}px)`, opacity: t.faded(s) ? 0.35 : 1, outline: active ? '2px solid var(--text-primary)' : undefined, outlineOffset: 2 }}
+              style={{ ...swatchStyle(t.mode, t.steps[i], t.hatched(s)), width: t.small?.(s) ? size / 2 : size, height: t.small?.(s) ? size / 2 : size, left: COL_X[k] - (t.small?.(s) ? size / 4 : size / 2), top: `calc(${centred} - ${t.small?.(s) ? size / 4 : size / 2}px)`, opacity: t.faded(s) ? 0.35 : 1, outline: active ? '2px solid var(--text-primary)' : undefined, outlineOffset: 2 }}
             />
           </Fragment>
         );

@@ -65,6 +65,20 @@ export const stepColor = (mode: RouteStripMode, step: Step) => `var(--strip-${mo
 
 /** Delay is coloured only at timepoints: elsewhere the timetable's time is interpolated, so the stop is drawn hatched grey. */
 export const delayInterpolated = (stop: RouteStripStop): boolean => stop.timepoint === false;
+/**
+ * The delay track drawn by segments (the ?strip=segments alternative): the line between each pair of consecutive
+ * timepoints takes the step of the delay added across it (later timepoint's typical delay minus the earlier one's),
+ * with the early step for a segment that gains 1+ min. Stops in between are not coloured.
+ */
+export function delaySegments(stops: readonly RouteStripStop[]): Array<{ from: number; to: number; step: Step }> {
+  const tps = stops.map((s, i) => ({ s, i })).filter(({ s }) => !delayInterpolated(s) && s.n > 0 && s.delayMin != null);
+  const out: Array<{ from: number; to: number; step: Step }> = [];
+  for (let k = 1; k < tps.length; k++) {
+    const step = stepFor('delay', tps[k].s.delayMin! - tps[k - 1].s.delayMin!);
+    if (step != null) out.push({ from: tps[k - 1].i, to: tps[k].i, step });
+  }
+  return out;
+}
 /** Drawn hatched ("Less exact") on this track. */
 export const lessExactOn = (stop: RouteStripStop, mode: RouteStripMode): boolean => !!stop.uncertain || (mode === 'delay' && delayInterpolated(stop));
 
