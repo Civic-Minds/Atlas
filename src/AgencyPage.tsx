@@ -20,7 +20,7 @@ import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
 import { andOthers } from '../shared/overflowText';
 import { routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE } from '../shared/config';
-import PageShell from './components/ui/PageShell';
+import DocsPageLayout from './components/ui/DocsPageLayout';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
@@ -131,9 +131,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
   const nearby = data!.nearby;
 
   return (
-    <PageShell variant="wide">
-
-        <article className="pb-16 pt-10 sm:pt-14">
+    <DocsPageLayout width="wide">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <PageTitle>{agencyPageH1(agency)}</PageTitle>
@@ -195,7 +193,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             {agencyDatesText(agency, data!.releaseDate)}
             {agency.websiteUrl && <> Agency website: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{introName(agency.name, agency.city)}</a>.</>}
           </p>
-        </article>
-    </PageShell>
+    </DocsPageLayout>
   );
 }

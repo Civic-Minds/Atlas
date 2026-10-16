@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 - Frequencies always read in minutes (e.g. 'every 120 min'), so a column of values no longer mixes hours and minutes.
+- **"On this page" highlights the section you are reading** on Docs, Terms, Privacy and Changelog, so you can see where you are in long pages.
+- **The top bar stays put while you scroll on agency, area and agencies pages**, as it already did on Docs, Terms and Privacy, so navigation is always one tap away.
+- **Agencies page: country lists use the same three-column layout as Regions on wide screens.**
 - **Stop cards match the route card**: a stop card no longer shows a route "about every 8 min" in a period the route card says it has no regular service, such as SF Muni 8AX/8BX in the evening ([#750](https://github.com/Civic-Minds/Atlas/issues/750)).
 - **Route cards no longer show an "every N" for a time period the route only runs part of**: buses that start after the period's midpoint, or stop before it, now read as limited instead of a steady frequency. The map filters were already doing this.
 - **Processing gives the same frequencies on any machine**: its calendar date math ran in the machine's time zone, so a build on a UTC server read MBTA 7, 9, 10, 19 and 65 differently from the reviewed data (MBTA 9: span instead of every 14); every run now uses Toronto time ([#923](https://github.com/Civic-Minds/Atlas/issues/923)).

@@ -1,6 +1,5 @@
 import { WhatsNewItemText } from './components/WhatsNewItemText';
-import PageContents from './components/PageContents';
-import PageShell from './components/ui/PageShell';
+import DocsPageLayout from './components/ui/DocsPageLayout';
 import { buildChangelog } from './lib/changelog';
 import { WHATS_NEW, visibleWhatsNew } from './data/whatsNew';
 import { FEATURES } from '../shared/config';
@@ -10,10 +9,10 @@ export default function ChangelogPage() {
   const entries = buildChangelog(visibleWhatsNew(FEATURES.whatsNewBetaItems, WHATS_NEW));
 
   return (
-    <PageShell stickyHeader>
-        <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
-          <PageContents title="Changelog" items={entries.map(entry => ({ id: entry.key, label: entry.label }))} />
-          <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
+    <DocsPageLayout
+      contents={{ title: 'Changelog', items: entries.map(entry => ({ id: entry.key, label: entry.label })) }}
+      articleClassName="text-sm leading-relaxed text-[var(--text-dim)]"
+    >
             <header>
               <PageTitle className="text-[var(--text-primary)]">Changelog</PageTitle>
               <p className="mt-3">What changed in Atlas.</p>
@@ -33,8 +32,6 @@ export default function ChangelogPage() {
                 </ul>
               </section>
             ))}
-          </article>
-        </div>
-    </PageShell>
+    </DocsPageLayout>
   );
 }
