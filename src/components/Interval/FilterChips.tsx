@@ -16,6 +16,7 @@ import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../s
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
+import LegendItem from '../ui/LegendItem';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
@@ -359,8 +360,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                 aria-pressed={isSelected}
                 aria-label={o.max === Infinity ? 'Show all routes' : o.label}
               >
-                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: o.color }} />
-                {o.max === Infinity ? 'All routes' : o.key}
+                <LegendItem color={o.color}>{o.max === Infinity ? 'All routes' : o.key}</LegendItem>
               </button>
             );
           })}

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Pill from '../ui/Pill';
+import LegendItem from '../ui/LegendItem';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { headwayFilterLabel } from '../../utils/headwayText';
 import { useColorVision } from '../../context/ColorVisionContext';
@@ -42,8 +43,7 @@ export function FrequencyPicker({ value, onChange }: { value: number; onChange: 
     <div className="flex flex-wrap gap-1">
       {options.map(o => (
         <Pill size="segment" key={o.key} onClick={() => onChange(o.max)} selected={value === o.max}>
-          <span className="mr-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: o.color }} />
-          {o.label}
+          <LegendItem color={o.color}>{o.label}</LegendItem>
         </Pill>
       ))}
     </div>

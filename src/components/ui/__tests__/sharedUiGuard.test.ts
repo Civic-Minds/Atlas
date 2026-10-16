@@ -32,6 +32,8 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled section heading', pattern: /<h2 [^>]*className="[^"]*text-(xl|base) font-black/, use: 'SectionTitle' },
   { name: 'hand-rolled frequency picker', pattern: /HEADWAY_TIERS\.map\(\(\{ max/, use: 'FrequencyPicker or useFrequencyOptions (Interval/pickers.tsx)' },
   { name: 'hand-rolled day buttons', pattern: /flex-1 h-7 flex items-center justify-center/, use: 'DayPicker' },
+  { name: 'hand-rolled legend swatch', pattern: /shrink-0 rounded(-full|-sm)?" style=\{\{ background/, use: 'LegendItem' },
+  { name: 'legend reading the default palette', pattern: /import \{[^}]*\bHEADWAY_TIERS\b[^}]*\} from '[^']*shared\/config'/, use: 'useHeadwayTiers (colour-vision aware)' },
   { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
   { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP|CARD_NOTICE_ACTION)\b/, use: 'ArrowLink, Tag' },
   { name: 'hand-rolled page frame', pattern: /<main className="min-h-screen bg-\[var\(--bg-app\)\] px-/, use: 'PageShell' },
