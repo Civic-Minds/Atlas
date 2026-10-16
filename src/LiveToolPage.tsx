@@ -82,52 +82,40 @@ function SegmentPanel({ v3, band, dir, fromStopId, toStopId, data, stops }: { v3
   );
 }
 
-function Canvas({ data, v3, route, dir, band, measure, pick, setPick }: {
+function Canvas({ data, v3, route, dir, band, measure, pick, anchor, setPick }: {
   data: Extract<ReturnType<typeof useLiveDashboard>, { kind: 'done' }>['data'] & { status: 'ready' }; v3: LiveV3; route: string; dir: number; band: DashboardBand; measure: MapMeasure;
-  pick: MapPick | null; setPick: (p: MapPick | null) => void;
+  pick: MapPick | null; anchor: [number, number] | null; setPick: (p: MapPick | null, at: [number, number] | null) => void;
 }) {
   const bandData = v3.bands[band] as DashboardBandData;
   const uncertain = data.uncertainStart ?? [];
   const model = useMemo(() => routeMapModel(v3, dir, band, measure), [v3, dir, band, measure]);
   const stops = useMemo(() => directionStopsById(v3, dir, band, uncertain), [v3, dir, band, uncertain]);
-  const forms = bandData.buildup.find(b => b.directionId === dir)?.forms;
-  const bForms = v3.bunching.find(b => b.directionId === dir)?.bands[band]?.forms;
-  // With nothing picked the panel opens on where delays start, else where bunching forms, else stays empty.
-  const auto: { sel: Selection; kicker: string } | null = forms ? { sel: { dir, kind: 'stretch', mode: 'delay' }, kicker: 'Where delays start' } : bForms ? { sel: { dir, kind: 'stretch', mode: 'bunching' }, kicker: 'Where bunching forms' } : null;
   const hasChart = measure === 'late' || measure === 'runTime';
+  const card = pick?.kind === 'segment' ? (
+    <SegmentPanel v3={v3} band={band} dir={dir} fromStopId={pick.fromStopId} toStopId={pick.toStopId} data={bandData} stops={stops} />
+  ) : pick?.kind === 'stop' && stops.has(pick.stopId) ? (
+    <DetailPanel docked v3={v3} band={band} sel={{ dir, kind: 'stop', stopId: pick.stopId }} stops={stops} data={bandData} />
+  ) : null;
   return (
-    <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_22rem]">
-      <div className="flex min-h-0 min-w-0 flex-col">
-        <div className="relative min-h-0 flex-1">
-          <RouteMap model={model} measure={measure} selected={pick} onPick={setPick} frameKey={`${route}-${dir}`} />
-          <Key measure={measure} />
-          {data.note && <p className="absolute bottom-3 left-3 right-3 z-10 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{data.note}</p>}
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="relative min-h-0 flex-1">
+        <RouteMap model={model} measure={measure} selected={pick} onPick={(p, at) => setPick(p, at)} anchor={anchor ?? (pick?.kind === 'stop' ? model.stops.find(x => x.stopId === pick.stopId)?.lonLat ?? null : null)} card={card} frameKey={`${route}-${dir}`} />
+        <Key measure={measure} />
+        {data.note && <p className="absolute bottom-3 left-3 right-3 z-10 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{data.note}</p>}
+      </div>
+      {hasChart && (
+        <div className="max-h-[40%] shrink-0 overflow-y-auto border-t border-[var(--border-primary)] bg-[var(--bg-app)] px-6 pb-4">
+          <ErrorBoundary label="This chart could not be drawn.">
+            {measure === 'late' ? <Late data={bandData} dir={dir} day="all" band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /> : <RunTime v3={v3} band={band} dir={dir} />}
+          </ErrorBoundary>
         </div>
-        {hasChart && (
-          <div className="max-h-[40%] shrink-0 overflow-y-auto border-t border-[var(--border-primary)] bg-[var(--bg-app)] px-6 pb-4">
-            <ErrorBoundary label="This chart could not be drawn.">
-              {measure === 'late' ? <Late data={bandData} dir={dir} day="all" band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /> : <RunTime v3={v3} band={band} dir={dir} />}
-            </ErrorBoundary>
-          </div>
-        )}
-      </div>
-      <div className="min-h-0 overflow-y-auto border-t border-[var(--border-primary)] bg-[var(--bg-header)] lg:border-l lg:border-t-0">
-        {pick?.kind === 'segment' ? (
-          <SegmentPanel v3={v3} band={band} dir={dir} fromStopId={pick.fromStopId} toStopId={pick.toStopId} data={bandData} stops={stops} />
-        ) : pick?.kind === 'stop' && stops.has(pick.stopId) ? (
-          <DetailPanel docked v3={v3} band={band} sel={{ dir, kind: 'stop', stopId: pick.stopId }} stops={stops} data={bandData} />
-        ) : auto ? (
-          <DetailPanel docked kicker={auto.kicker} v3={v3} band={band} sel={auto.sel} stops={stops} data={bandData} />
-        ) : (
-          <Panel docked title={data.routeTitle || `${v3.directionLabels[String(dir)]}`} sub={v3.directionLabels[String(dir)]}><span /></Panel>
-        )}
-      </div>
+      )}
     </div>
   );
 }
 
-function RouteCanvas({ agency, route, dir, setDir, band, measure, pick, setPick }: {
-  agency: string; route: string; dir: number | null; setDir: (d: number) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+function RouteCanvas({ agency, route, dir, setDir, band, measure, pick, anchor, setPick }: {
+  agency: string; route: string; dir: number | null; setDir: (d: number) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; anchor: [number, number] | null; setPick: (p: MapPick | null, at: [number, number] | null) => void;
 }) {
   const state = useLiveDashboard(agency, route);
   if (state.kind === 'loading') return <p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {agency.toUpperCase()} {route}…</p>;
@@ -140,7 +128,7 @@ function RouteCanvas({ agency, route, dir, setDir, band, measure, pick, setPick 
   return (
     <>
       <DirectionBar ids={ids} labels={v3.directionLabels} dir={shown} setDir={setDir} />
-      <Canvas data={data} v3={v3} route={route} dir={shown} band={band} measure={measure} pick={pick} setPick={setPick} />
+      <Canvas data={data} v3={v3} route={route} dir={shown} band={band} measure={measure} pick={pick} anchor={anchor} setPick={setPick} />
     </>
   );
 }
@@ -163,7 +151,9 @@ export default function LiveToolPage() {
   const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
   const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) ? (m as MapMeasure) : 'late'; });
-  const [pick, setPick] = useState<MapPick | null>(() => {
+  const [anchor, setAnchor] = useState<[number, number] | null>(null);
+  const setPick = (p: MapPick | null, at: [number, number] | null) => { setPickRaw(p); setAnchor(at); };
+  const [pick, setPickRaw] = useState<MapPick | null>(() => {
     const stop = readParam('stop'), seg = readParam('seg');
     if (stop) return { kind: 'stop', stopId: stop };
     const [f, t] = (seg ?? '').split('>');
@@ -189,11 +179,11 @@ export default function LiveToolPage() {
     <>
       <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2">
         <a href="/" aria-label="Atlas by Civic Minds"><AtlasBrand /></a>
-        {current && <RoutePicker s={s} route={current} onPick={r => { setRoute(r); setPick(null); }} />}
+        {current && <RoutePicker s={s} route={current} onPick={r => { setRoute(r); setPick(null, null); }} />}
         <Group label="Measure" value={measure} onChange={v => setMeasure(v as MapMeasure)} options={MEASURES} />
         <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
       </header>
-      {current && <RouteCanvas agency={agency} route={current} dir={dir} setDir={d => { setDir(d); setPick(null); }} band={band} measure={measure} pick={pick} setPick={setPick} />}
+      {current && <RouteCanvas agency={agency} route={current} dir={dir} setDir={d => { setDir(d); setPick(null, null); }} band={band} measure={measure} pick={pick} anchor={anchor} setPick={setPick} />}
     </>,
   );
 }

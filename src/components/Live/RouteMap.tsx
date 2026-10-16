@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { getMapStyle } from '../../lib/mapStyle';
@@ -11,7 +11,11 @@ interface Props {
   measure: MapMeasure;
   /** The picked segment or stop: drawn marked. */
   selected: MapPick | null;
-  onPick: (pick: MapPick) => void;
+  /** A click on a segment or stop, with where it landed; a click on empty map gives null. */
+  onPick: (pick: MapPick | null, at: [number, number] | null) => void;
+  /** Where the card is anchored (longitude, latitude), and what it shows. The card follows the map as it moves. */
+  anchor?: [number, number] | null;
+  card?: ReactNode;
   /** Changes when the route or direction changes: the map then frames the new route. */
   frameKey: string;
   className?: string;
@@ -29,7 +33,7 @@ function stepColor(measure: MapMeasure, step: 0 | 1 | 2 | null): string {
  * with a dot at each stop in the same colour. Segments and stops can be clicked; the picked one is marked. A segment or
  * stop with no value is drawn grey. Frames the route whenever `frameKey` changes.
  */
-export default function RouteMap({ model, measure, selected, onPick, frameKey, className = '' }: Props) {
+export default function RouteMap({ model, measure, selected, onPick, anchor = null, card = null, frameKey, className = '' }: Props) {
   const box = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
@@ -38,6 +42,15 @@ export default function RouteMap({ model, measure, selected, onPick, frameKey, c
   const latest = useRef({ model, measure, selected });
   latest.current = { model, measure, selected };
   const framed = useRef<string | null>(null);
+  const [at, setAt] = useState<{ x: number; y: number; w: number } | null>(null);
+  const anchorRef = useRef(anchor);
+  anchorRef.current = anchor;
+  const place = () => {
+    const map = mapRef.current, a = anchorRef.current;
+    if (!map || !a) { setAt(null); return; }
+    const p = map.project(a);
+    setAt({ x: p.x, y: p.y, w: map.getContainer().clientWidth });
+  };
 
   const draw = () => {
     const map = mapRef.current;
@@ -67,7 +80,9 @@ export default function RouteMap({ model, measure, selected, onPick, frameKey, c
       const b = new maplibregl.LngLatBounds();
       m.stops.forEach(s => b.extend(s.lonLat));
       m.segments.forEach(s => s.coordinates.forEach(c => b.extend(c)));
-      map.fitBounds(b, { padding: { top: 56, bottom: 56, left: 56, right: 56 }, maxZoom: 15, duration: 0 });
+      // The map sits in a flex layout whose size can change after the first paint: measure it again before framing.
+      map.resize();
+      map.fitBounds(b, { padding: { top: 72, bottom: 72, left: 72, right: 72 }, maxZoom: 15, duration: 0 });
     }
   };
 
@@ -76,6 +91,7 @@ export default function RouteMap({ model, measure, selected, onPick, frameKey, c
     const light = document.documentElement.getAttribute('data-theme') !== 'dark';
     const map = new maplibregl.Map({ container: box.current, style: getMapStyle(light), center: [-79.38, 43.65], zoom: 11, attributionControl: false });
     mapRef.current = map;
+    if (import.meta.env.DEV) (window as unknown as { __routeMap?: maplibregl.Map }).__routeMap = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-left');
     map.on('load', () => {
       const halo = light ? '#ffffff' : '#111827';
@@ -92,18 +108,37 @@ export default function RouteMap({ model, measure, selected, onPick, frameKey, c
     map.on('click', e => {
       const hit = (layers: string[]) => map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers });
       const stop = hit(['stp'])[0];
-      if (stop) { pick.current({ kind: 'stop', stopId: String(stop.properties?.id) }); return; }
+      if (stop) { pick.current({ kind: 'stop', stopId: String(stop.properties?.id) }, (stop.geometry as unknown as { coordinates: [number, number] }).coordinates); return; }
       const seg = hit(['seg'])[0];
-      if (seg) pick.current({ kind: 'segment', fromStopId: String(seg.properties?.from), toStopId: String(seg.properties?.to) });
+      if (seg) pick.current({ kind: 'segment', fromStopId: String(seg.properties?.from), toStopId: String(seg.properties?.to) }, [e.lngLat.lng, e.lngLat.lat]);
+      else pick.current(null, null);
     });
     map.on('mousemove', e => {
       const over = map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers: ['stp', 'seg'] }).length > 0;
       map.getCanvas().style.cursor = over ? 'pointer' : '';
     });
-    return () => { ready.current = false; map.remove(); mapRef.current = null; };
+    map.on('move', place);
+    map.on('resize', place);
+    const ro = new ResizeObserver(() => { if (!map.isMoving()) map.resize(); });
+    ro.observe(box.current);
+    return () => { ro.disconnect(); ready.current = false; map.remove(); mapRef.current = null; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(draw, [model, measure, selected, frameKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(place, [anchor]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <div ref={box} className={`h-full w-full ${className}`.trim()} role="img" aria-label="Map of the route, coloured by the chosen measure" />;
+  // The card sits above its anchor, or below it when the anchor is near the top; kept inside the map's width.
+  const cardW = 320;
+  const below = at != null && at.y < 280;
+  return (
+    <div className={`relative h-full w-full overflow-hidden ${className}`.trim()}>
+      <div ref={box} className="h-full w-full" role="img" aria-label="Map of the route, coloured by the chosen measure" />
+      {at && card && (
+        <div className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)] shadow-2xl"
+          style={{ left: Math.max(8, Math.min(at.w - cardW - 8, at.x - cardW / 2)), top: at.y, width: cardW, maxHeight: '60%', overflowY: 'auto', transform: below ? 'translateY(16px)' : 'translateY(calc(-100% - 16px))' }}>
+          {card}
+        </div>
+      )}
+    </div>
+  );
 }
