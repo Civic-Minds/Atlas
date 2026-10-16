@@ -27,7 +27,7 @@ const median = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); retu
  * its height the gap in minutes, coloured with the route strip's bunching steps, over the timetable's gap for each hour
  * (dashed). The hour axis follows the other Live hour charts.
  */
-export default function GapsChart({ gaps, ariaLabel, height: H = 220 }: { gaps: StopGaps; ariaLabel: string; height?: number }) {
+export default function GapsChart({ gaps, ariaLabel, height: H = 180 }: { gaps: StopGaps; ariaLabel: string; height?: number }) {
   const [ref, width] = useWidth();
   const perHour = new Map<number, number>();
   for (const m of gaps.m) { const h = Math.floor(m / 60) % 24; perHour.set(h, (perHour.get(h) ?? 0) + 1); }
@@ -54,20 +54,17 @@ export default function GapsChart({ gaps, ariaLabel, height: H = 220 }: { gaps: 
       <div ref={ref} role="img" aria-label={ariaLabel}>
         {width > 0 && (
           <svg width={width} height={H} aria-hidden="true" className="block">
-            {ticks.map(t => (
-              <g key={t}>
-                <line x1={AXIS_W} x2={AXIS_W + plotW} y1={y(t)} y2={y(t)} stroke="var(--border-primary)" strokeWidth={1} />
-                <text x={AXIS_W - 6} y={y(t) + 4} textAnchor="end" fontSize={13} fill="var(--text-dim)">{t}</text>
-              </g>
-            ))}
-            <text x={0} y={10} fontSize={13} fill="var(--text-dim)">min</text>
+            {/* Sparkline-clean: a faint baseline and minute labels only, no gridlines. */}
+            <line x1={AXIS_W} x2={AXIS_W + plotW} y1={y(0)} y2={y(0)} stroke="var(--border-primary)" strokeWidth={1} />
+            {ticks.map(t => <text key={t} x={AXIS_W - 6} y={y(t) + 4} textAnchor="end" fontSize={12} fill="var(--text-dim)">{t}</text>)}
+            <text x={0} y={10} fontSize={12} fill="var(--text-dim)">min</text>
             {/* Near-timetable gaps first, so the bunched and long ones sit on top. */}
             {[0, 1, 2].map(s => dots.filter(d => d.step === s).map((d, k) => (
-              <circle key={`${s}-${k}`} cx={x(d.m)} cy={y(d.min)} r={2} fill={STEP_COLOR[s]} opacity={s ? 0.75 : 0.45} />
+              <circle key={`${s}-${k}`} cx={x(d.m)} cy={y(d.min)} r={1.6} fill={STEP_COLOR[s]} opacity={s ? 0.8 : 0.4} />
             )))}
             <path d={schedPath} fill="none" stroke="var(--text-secondary)" strokeWidth={1.5} strokeDasharray="4 3" />
             {axis.map(h => SPARKLINE_HOUR_LABELS[h] && (
-              <text key={h} x={x(h * 60)} y={H - 4} textAnchor="middle" fontSize={13} fill="var(--text-dim)">{SPARKLINE_HOUR_LABELS[h]}</text>
+              <text key={h} x={x(h * 60)} y={H - 4} textAnchor="middle" fontSize={12} fill="var(--text-dim)">{SPARKLINE_HOUR_LABELS[h]}</text>
             ))}
           </svg>
         )}
