@@ -23,7 +23,7 @@ import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type Run
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
-import { branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop } from '../shared/mainStretch.js';
+import { branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 
@@ -805,10 +805,15 @@ for (const d of new Set([...patterns.values()].map(p => p.directionId))) {
 }
 /** Stops (B2) and delay build-up (B3) for a set of runs. */
 function stopsAndBuildup(rs: readonly RunDelays[]) {
+  // B2 also needs the stop measured on enough of the runs the timetable sends there (the run-time stretch's coverage
+  // bar, RELIABLE_STOP_MIN_SHARE): where vehicles leave the drawn shape, only a few odd runs are timed and would rank.
+  const due = new Map<string, number>();
+  for (const r of rs) for (const st of new Set((timesByTrip.get(r.tripId) ?? []).map(x => x.stopId))) due.set(`${r.directionId}|${st}`, (due.get(`${r.directionId}|${st}`) ?? 0) + 1);
+  const covered = (dir: number, stopId: string, n: number) => n >= RELIABLE_STOP_MIN_SHARE * (due.get(`${dir}|${stopId}`) ?? Infinity);
   const stops = stopDelayStats(rs).map(s => ({
     ...stopInfo(s.stopId), directionId: s.directionId, order: orderIndex(s.directionId, s.stopId), n: s.n,
     medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare),
-    ranked: s.ranked && regularStops.has(`${s.directionId}|${s.stopId}`),
+    ranked: s.ranked && regularStops.has(`${s.directionId}|${s.stopId}`) && covered(s.directionId, s.stopId, s.n),
   })).sort((a, b) => a.directionId - b.directionId || a.order - b.order);
   // B2 ranks by late share (5.5+ min late) among stops with enough departures; median and p90 sit beside it.
   for (const dir of new Set(stops.map(x => x.directionId))) {
