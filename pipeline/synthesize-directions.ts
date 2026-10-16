@@ -52,8 +52,12 @@ function fillBlankDirections(
     if (hasDir(t)) continue;
     const shapeDirs = t.shape_id ? byShape.get(t.shape_id) : undefined;
     // The shape decides when labelled trips use it one way only; otherwise the destination does.
+    // When the two disagree (the shape says one way, the destination the other), the trip stays blank.
     const dest = destination(t);
-    const dir = only(shapeDirs) ?? only(dest ? byDestination.get(dest) : undefined);
+    const byShapeDir = only(shapeDirs);
+    const byDestDir = only(dest ? byDestination.get(dest) : undefined);
+    if (byShapeDir != null && byDestDir != null && byShapeDir !== byDestDir) continue;
+    const dir = byShapeDir ?? byDestDir;
     if (dir == null) continue;
     t.direction_id = dir;
     filled++;

@@ -66,6 +66,14 @@ describe('synthesizeMissingDirections: a route that labels only some trips (#730
     expect(dirs(out)).toMatchObject({ 'blank-loop': undefined, 'blank-east': '1', 'blank-new': undefined });
   });
 
+  it('leaves a trip blank when its shape says one direction and its headsign the other', () => {
+    const out = synthesizeMissingDirections(routeFeed([
+      trip('a', '0', 'west', 'Downtown'), trip('b', '1', 'east', 'Uptown'),
+      trip('blank-conflict', undefined, 'west', 'Uptown'), trip('blank-agree', undefined, 'west', 'Downtown'),
+    ]));
+    expect(dirs(out)).toMatchObject({ 'blank-conflict': undefined, 'blank-agree': '0' });
+  });
+
   it('leaves a fully labelled route alone and still synthesizes a fully blank one', () => {
     const labelled = synthesizeMissingDirections(routeFeed([trip('a', '0', 's1', 'X'), trip('b', '1', 's2', 'Y')]));
     expect(dirs(labelled)).toEqual({ a: '0', b: '1' });
