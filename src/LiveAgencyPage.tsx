@@ -17,7 +17,6 @@ import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
 import Pill from './components/ui/Pill';
-import HourSpark from './components/charts/HourSpark';
 import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
@@ -79,8 +78,6 @@ function RoutesTable({ s }: { s: AgencySummary }) {
   });
   useEffect(() => { syncUrlParams({ sort: sort === 'late' ? null : sort }); }, [sort]);
   const rows = [...s.routes].sort((a, b) => sortValue(sort, b) - sortValue(sort, a) || a.route.localeCompare(b.route, undefined, { numeric: true }));
-  const lateMax = Math.max(0.1, ...s.routes.flatMap(r => r.lateByHour.filter(h => h.n >= 30).map(h => h.value)));
-  const scale = { min: 0, max: Math.ceil(lateMax * 10) / 10 };
   return (
     <>
       <div className="mt-4 flex flex-wrap items-center gap-1.5" role="group" aria-label="Sort routes by">
@@ -100,12 +97,6 @@ function RoutesTable({ s }: { s: AgencySummary }) {
             { key: 'runTime', header: 'Run time', className: 'whitespace-nowrap', cell: r => pctSigned(r.runTimeOver) },
             { key: 'bunching', header: 'Bunching', className: 'whitespace-nowrap', cell: r => pct(r.bunchingShare) },
             { key: 'delivered', header: 'Delivered', className: 'whitespace-nowrap', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
-            {
-              key: 'hours', header: 'Late by hour', className: 'w-56 min-w-[12rem]', cell: r => (
-                <HourSpark values={r.lateByHour} scale={scale} color="var(--status-negative-text)" format={v => `${Math.round(v * 100)}% late`}
-                  ariaLabel={`${r.label}: share of departures 5.5+ minutes late, by hour of day`} unit="departures" valueHeader="Late" />
-              ),
-            },
           ]}
         />
       </div>
@@ -199,7 +190,7 @@ export default function LiveAgencyPage() {
             : <p className="mt-5 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in the analysis files yet. Rebuild them with npm run live:analyze.')}</p>}
         </ErrorBoundary>
 
-        <Section id="agency-routes" title="Routes" intro="Every analysed route, worst first. Open a route for its own dashboard.">
+        <Section id="agency-routes" title="Routes" intro="Every analysed route, worst first.">
           <RoutesTable s={s} />
         </Section>
 
