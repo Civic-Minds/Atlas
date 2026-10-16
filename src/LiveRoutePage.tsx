@@ -321,7 +321,7 @@ function Bunching({ v3, dir, band, gaps }: { v3: LiveV3; dir: number | null; ban
                   caption="How often vehicles arrive too close together or too far apart, at each stop."
                   axisTitle="Share of gaps"
                   scale={scale}
-                  series={[{ name: 'Too close together', color: 'var(--status-negative-text)' }, { name: 'Too far apart', color: 'var(--status-caution-text)' }]}
+                  series={[{ name: 'Too close together', color: 'var(--strip-bunching-2)' }, { name: 'Too far apart', color: 'var(--strip-bunching-1)' }]}
                   marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? 'Forms here' : 'Biggest rise' }] : []}
                 />
               )}
