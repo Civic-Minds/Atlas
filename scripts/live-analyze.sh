@@ -31,3 +31,5 @@ for route in "${ROUTES[@]}"; do
     --gtfs "$DATA/gtfs/candidates/surface" --archive "$DATA/archive" --route "$route" --days "$DAYS" ${EXTRA[@]+"${EXTRA[@]}"} \
     --out "$DATA/out/ttc-$route-segments.json" | grep -E "^(v3|dates)" || exit 1
 done
+# The agency page (/apps/live/ttc) reads one summary of every route's analysis.
+npx tsx scripts/live-agency-summary.ts ttc || exit 1

@@ -125,3 +125,49 @@ describe('week-change colouring (one rule for the dashboard and the full analysi
     expect(weekChangeTone('delivered', 0.96, 0.99, false)).toMatchObject({ tone: 'worse' });
   });
 });
+
+describe('run-time stretch wording', () => {
+  const st = (stops: number, from: string, to: string) => ({ fromStopId: 'a', toStopId: 'b', fromName: from, toName: to, stops, fullRoute: false, mainPatternTrips: 0, trips: 10 });
+  it('names the stretch on the tile and the section, so it never reads as the whole route', async () => {
+    const { runTimeTileStretch, runTimeStretchLabel } = await import('../liveDashboard');
+    expect(runTimeTileStretch({ '0': st(7, 'Humber Loop', 'Park Lawn'), '1': st(5, 'Park Lawn', 'Stephen Dr') })).toBe('over 5–7 stops: Humber Loop to Park Lawn; Park Lawn to Stephen Dr');
+    expect(runTimeTileStretch({ '0': st(22, 'Sackville', 'Dufferin') })).toBe('over 22 stops, Sackville to Dufferin');
+    expect(runTimeTileStretch(undefined)).toBeNull();
+    expect(runTimeStretchLabel(st(7, 'Humber Loop', 'Park Lawn'))).toBe('Run time over 7 stops, Humber Loop to Park Lawn, all trips');
+  });
+});
+
+describe('build-up label with a terminal stretch', () => {
+  it('reads "stays about the same" when the only jump is the run into the end loop, with start and end figures from inside the route', async () => {
+    const { delayBuildup } = await import('../stopDelay');
+    const { buildupTakeaway } = await import('../liveDashboard');
+    const runs = Array.from({ length: 40 }, (_, k) => ({ date: '2026-10-01', directionId: 0, tripId: `t${k}`, stops: [0, 0.2, 0.4, 7.4].map((m, i) => ({ stopId: 'ABCD'[i], t: 0, hour: 8, delaySec: Math.round(m * 60) })) }));
+    const [d] = delayBuildup(runs, new Map([[0, ['A', 'B', 'C', 'D']]]), undefined, stop => stop === 'D');
+    const named = { ...d, forms: null, start: null, biggest: null, stretches: d.stretches.map(s => ({ ...s, fromName: s.fromStopId, toName: s.toStopId })) };
+    const text = buildupTakeaway(named as never);
+    expect(text).toMatch(/^Delay stays about the same from end to end/);
+    expect(text).not.toMatch(/7\.4/);
+  });
+});
+
+describe('branch run-time line', () => {
+  it('says where the branch goes, how long it usually takes, and over which stops', async () => {
+    const { branchRunTimeLine } = await import('../liveDashboard');
+    const all = { n: 215, scheduledMin: 14.2, typicalMin: 12.4, p90Min: 16.1, overMin: -1.8 };
+    expect(branchRunTimeLine({ fromStopId: 'a', toStopId: 'b', fromName: 'Humber Loop', toName: 'Marine Parade', stops: 14, all, byHour: [] }))
+      .toBe('To Marine Parade: usually 12 min, timetable 14, 1 in 10 over 16 (over 14 stops from Humber Loop, 215 trips).');
+  });
+});
+
+describe('branch lines follow the time of day', () => {
+  it('uses the period figures, none for a period with no trips, and all day for an older file', async () => {
+    const { branchFigures } = await import('../liveDashboard');
+    const all = { n: 215, scheduledMin: 14, typicalMin: 12, p90Min: 16, overMin: -2 };
+    const am = { n: 12, scheduledMin: 15, typicalMin: 14, p90Min: 17, overMin: -1 };
+    const base = { fromStopId: 'a', toStopId: 'b', fromName: 'A', toName: 'B', stops: 14, all, byHour: [] };
+    expect(branchFigures({ ...base, bands: { all, amPeak: am, evening: null } }, 'amPeak')).toBe(am);
+    expect(branchFigures({ ...base, bands: { all, amPeak: am, evening: null } }, 'evening')).toBeNull();
+    expect(branchFigures(base, 'all')).toBe(all);
+    expect(branchFigures(base, 'pmPeak')).toBeNull();
+  });
+});

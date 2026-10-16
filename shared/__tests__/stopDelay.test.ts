@@ -74,6 +74,20 @@ describe('delayBuildup (B3)', () => {
     expect(delayBuildup(late.slice(0, 5), order)[0].startingDelayMin).toBeNull();
   });
 
+  it('never names a stretch that touches a terminal: the run into the end loop is layover, not delay (501 eastbound)', () => {
+    // +7 min added only on the last stretch, C to D, where D is the end loop.
+    const runs = Array.from({ length: 40 }, () => run('2026-10-01', [0, 0.2, 0.4, 7.4]));
+    const [d] = delayBuildup(runs, order, undefined, stop => stop === 'D');
+    expect(d.forms).toBeNull();
+    expect(d.start).toBeNull();
+    expect(d.biggest?.toStopId).not.toBe('D');
+    expect(d.stretches).toHaveLength(3);
+    // The terminal stretch is drawn but flagged, and left out of the climb: this route does not build up delay.
+    expect(d.stretches[2].terminal).toBe(true);
+    expect(d.climbMin).toBeCloseTo(0.4);
+    expect(d.kind).toBe('none');
+  });
+
   it('counts only runs seen at both stops of a stretch', () => {
     const full = Array.from({ length: 31 }, () => run('2026-10-01', [0, 2, 2, 2]));
     const partial: RunDelays = { date: '2026-10-01', directionId: 0, tripId: 'x', stops: [{ stopId: 'C', t: 0, hour: 8, delaySec: 600 }, { stopId: 'D', t: 0, hour: 8, delaySec: 700 }] };
