@@ -199,9 +199,9 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
                   className="disabled:cursor-default"
                 >
                   <div className="min-w-0 flex-1">
-                  <div className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencyName: agency.agencyName }).text}>
+                  <div className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName }).text}>
                     {(() => {
-                      const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencyName: agency.agencyName });
+                      const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName });
                       return <>{label.primary || 'Unnamed route'}{label.secondary && <span className={`font-normal ${LIST_ROW_DIM}`}> — {label.secondary}</span>}</>;
                     })()}
                   </div>

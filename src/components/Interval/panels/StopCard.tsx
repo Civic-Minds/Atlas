@@ -30,6 +30,8 @@ export interface StopRoute {
   shortName: string;
   longName: string;
   agencyName: string;
+  agencySlug?: string;
+  routeType?: number;
   branches: StopBranch[];
 }
 
@@ -38,6 +40,8 @@ export interface NearbyConnection {
   routeShortName: string;
   routeLongName: string;
   agencyName: string;
+  agencySlug?: string;
+  routeType?: number;
   headway: number | null;
   nearestStopName: string;
   distanceMeters: number;
@@ -139,6 +143,8 @@ export const StopCard: React.FC<StopCardProps> = ({
             shortName={route.shortName}
             longName={route.longName}
             agencyName={route.agencyName}
+            agencySlug={route.agencySlug}
+            routeType={route.routeType}
             branches={route.branches}
             period={period}
             showAgency={stopAgencies.length > 1}
@@ -149,11 +155,11 @@ export const StopCard: React.FC<StopCardProps> = ({
 
       {nearbyConnections.length > 0 && (
         <SidebarCardSection label="Nearby routes">
-          {nearbyConnections.map(({ rKey, routeShortName, routeLongName, agencyName, headway, nearestStopName, distanceMeters }) => {
+          {nearbyConnections.map(({ rKey, routeShortName, routeLongName, agencyName, agencySlug, routeType, headway, nearestStopName, distanceMeters }) => {
             return (
               <CardDirectionRow
                 key={rKey}
-                label={routeLabels({ shortName: routeShortName, longName: routeLongName, agencyName }).text}
+                label={routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text}
                 subLabel={`${nearestStopName} · ${Math.round(distanceMeters)} m away`}
                 headway={headway ?? undefined}
                 onClick={() => openRoute(rKey)}

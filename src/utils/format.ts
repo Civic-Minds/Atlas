@@ -220,11 +220,12 @@ export { shouldHideNumericRouteShortName };
 /**
  * Case for one part of a route label. A feed that shouts ("PARK ST") is title-cased; a name that already has lower-case letters
  * ("Granville-YVR", "Kendall/MIT Station", "Île-des-Soeurs") is the feed's own spelling and is left alone, and so is a short code
- * (up to 3 characters, or up to 6 with a digit: "WCE", "SL1", "34E", "1X"), which title case would turn into "Wce" or "Sl1".
+ * (up to 3 characters, or up to 6 with a digit: "WCE", "SL1", "34E", "1X", "SU 43"), which title case would turn into "Wce" or "Sl1".
  */
 export function routeLabelCase(part: string): string {
   if (!part || /\p{Ll}/u.test(part)) return part;
-  if (!/\s/.test(part) && (part.length <= 3 || (/\d/.test(part) && part.length <= 6))) return part;
+  // Short codes, also with a space before the number ("SU 43", "RT 5"): title case would write "Su 43".
+  if ((!/\s/.test(part) && part.length <= 3) || (/\d/.test(part) && part.length <= 6)) return part;
   return titleCase(part);
 }
 

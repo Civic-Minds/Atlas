@@ -20,6 +20,8 @@ interface Props {
   shortName: string;
   longName: string;
   agencyName: string;
+  agencySlug?: string;
+  routeType?: number;
   branches: StopBranch[];
   period: TimePeriod;
   showAgency: boolean;
@@ -31,12 +33,14 @@ export default function StopRouteGroup({
   shortName,
   longName,
   agencyName,
+  agencySlug,
+  routeType,
   branches,
   period,
   showAgency,
   onOpenRoute,
 }: Props) {
-  const routeLabel = routeLabels({ shortName, longName, agencyName: showAgency ? agencyName : undefined }).text;
+  const routeLabel = routeLabels({ shortName, longName, routeType, agencySlug, agencyName: showAgency ? agencyName : undefined }).text;
   const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;
   const simpleBidirectional = hasMultipleDirections && branches.length === 2 &&
     new Set(branches.map(b => b.directionId)).size === 2;

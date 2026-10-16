@@ -106,7 +106,7 @@ export function useNearbyRoutes(
         const { headway, limited, sharedHeadway } = routeListDisplay(routeFeatures, period);
 
         if (!routeMap.has(mapKey)) {
-          const label = routeLabels({ shortName: p.routeShortName, longName: p.routeLongName as string | null, routeType: p.routeType, agencyName: p.agencyName });
+          const label = routeLabels({ shortName: p.routeShortName, longName: p.routeLongName as string | null, routeType: p.routeType, agencySlug: slug, agencyName: p.agencyName });
           routeMap.set(mapKey, {
             rKey: rk,
             routeShortName: shortName,

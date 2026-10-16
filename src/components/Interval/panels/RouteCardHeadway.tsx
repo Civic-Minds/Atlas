@@ -169,6 +169,9 @@ export interface DirectionGroup {
 export interface CurrentRouteData {
   routeShortName: string | null;
   routeLongName: string | null;
+  /** The feed's route_type and agency slug, so the title names the route the same way lists and agency pages do. */
+  routeType?: number | string | null;
+  agencySlug?: string;
   directions: ShapeProperties[];
 }
 
@@ -390,12 +393,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       `  stopHeadways (${period}): ${formatMetricMap(selectedPeriodStopHeadways, 'stopId', 'typicalGapMinutes', '\n    ')}`,
     ].join('\n');
   }).join('\n\n');
+  // One route name for the title, the sparkline and the issue report (shared/routeDisplay.ts).
+  const routeTitle = routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName }).text;
   const reportPeriod = selectedPeriod
     ? `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`
     : 'All day';
   const reportDetails = [
     `**Agency:** ${routeAgency?.name ?? routeSlug ?? 'Unknown'}`,
-    `**Route:** ${currentRoute.routeShortName ?? 'Unknown'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`,
+    `**Route:** ${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`,
     `**Period:** ${reportPeriod}`,
     `**Agency data refreshed:** ${routeAgency?.lastRefreshedAt ?? 'unknown'}`,
     `**Feed expiry:** ${routeAgency?.lastFeedExpiry ?? 'unknown'}`,
@@ -417,13 +422,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <RouteCardTitle
               routeShortName={currentRoute.routeShortName}
               routeLongName={currentRoute.routeLongName}
+              routeType={currentRoute.routeType ?? currentRoute.directions[0]?.routeType}
+              agencySlug={currentRoute.agencySlug ?? routeSlug}
               agencyName={agencyDisplayName}
               onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
             />
           </div>
           <CardReportButton
             ref={reportRef}
-            title={`${routeAgency?.name ?? agencyDisplayName} ${currentRoute.routeShortName ?? 'Unknown route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
+            title={`${routeAgency?.name ?? agencyDisplayName} ${routeTitle || 'Unknown route'}`}
             details={reportDetails}
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
@@ -537,7 +544,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               onHourHover={setHoveredHour}
               allowExpand={FEATURES.sparklineExpand}
               reserveStackedLegendSpace={hasTrunkSparkline}
-              title={routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, agencyName: agencyDisplayName }).text}
+              title={routeTitle}
             />
           </>
         );

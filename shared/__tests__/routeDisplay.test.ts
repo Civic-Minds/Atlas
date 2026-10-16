@@ -74,4 +74,15 @@ describe('routeDisplay', () => {
   it('reads a number range as one name', () => {
     expect(d('', 'Route 10-12', 3).primary).toBe('Route 10-12');
   });
+  it('names a route the same with only the agency slug as with its name (agency card, single-agency stop rows)', () => {
+    const byName = routeDisplay({ shortName: 'SMART', longName: 'Main Line', routeType: 2, agencySlug: 'smart-ca', agencyName: 'Sonoma-Marin Area Rail Transit (SMART)' });
+    const bySlug = routeDisplay({ shortName: 'SMART', longName: 'Main Line', routeType: 2, agencySlug: 'smart-ca' });
+    expect(bySlug.text).toBe(byName.text);
+  });
+  it('hides numeric ids on light rail and ferry from the raw route_type and slug (UTA 701, Calgary 201, HRT 800/090)', () => {
+    expect(routeDisplay({ shortName: '701', longName: 'Blue Line', routeType: 0, agencySlug: 'uta' }).text).toBe('Blue Line');
+    expect(routeDisplay({ shortName: '201', longName: 'Red Line - Somerset - Bridlewood/Tuscany CTrain', routeType: 0, agencySlug: 'calgary' }).primary).not.toBe('201');
+    expect(routeDisplay({ shortName: '090', longName: 'ELIZABETH RIVER FERRY', routeType: 4, agencySlug: 'hrt' }).text).toBe('ELIZABETH RIVER FERRY');
+    expect(routeDisplay({ shortName: '501', longName: 'Queen', routeType: 0, agencySlug: 'ttc' }).text).toBe('501 — Queen');
+  });
 });

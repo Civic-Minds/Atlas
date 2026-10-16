@@ -87,7 +87,10 @@ export function routeDisplay(input: {
   agencySlug?: string;
   agencyName?: string | null;
 }): RouteDisplay {
-  const { shortName, longName, agencyName } = input;
+  const { shortName, longName } = input;
+  // The agency-specific name rules (SMART's "Main Line", STM's "Ligne") key on the agency; a site that has only the slug
+  // (agency card, single-agency stop rows) must name the route the same way as one that has the agency's name.
+  const agencyName = input.agencyName ?? input.agencySlug ?? null;
   const mode = input.mode ?? (input.routeType == null || input.routeType === '' ? undefined
     : effectiveMode({ routeType: input.routeType, routeShortName: shortName, routeLongName: longName, agencySlug: input.agencySlug }));
   const blankShort = !shortName || !shortName.trim();

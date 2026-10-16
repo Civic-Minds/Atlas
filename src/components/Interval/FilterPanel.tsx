@@ -73,6 +73,7 @@ export interface HiddenRoute {
   region?: string | null;
   routeShortName: string;
   routeLongName?: string | null;
+  routeType?: number;
 }
 
 export function getHiddenFeedAgencies(agencies: Agency[]): Agency[] {
@@ -457,7 +458,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           </p>
                           <div className="divide-y divide-[var(--border-primary)]">
                             {group.routes.map(route => {
-                              const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, agencyName: group.agencyName });
+                              const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug, agencyName: group.agencyName });
                               return (
                                 <div key={route.key} className="py-2.5">
                                   <div className="flex items-baseline justify-between gap-3">

@@ -313,7 +313,7 @@ function RouteListSection({
       {routes.map(r => {
         const isLive = FEATURES.live && liveShortNames.has(r.shortName);
         const key = `${r.agencySlug}::${r.routeId}`;
-        const label = routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType }).text;
+        const label = routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }).text;
         return (
           <div key={r.routeId} className="px-3 py-1 hover:bg-[var(--bg-btn-hover)] transition-colors">
           <CardDirectionRow

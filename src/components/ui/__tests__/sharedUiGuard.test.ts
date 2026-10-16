@@ -31,6 +31,9 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled page heading', pattern: /<h1[ >]/, use: 'PageTitle' },
   { name: 'hand-rolled section heading', pattern: /<h2 [^>]*className="[^"]*text-(xl|base) font-black/, use: 'SectionTitle' },
   { name: 'route label written by hand', pattern: /\b(getRouteLabel|shouldHideNumericRouteShortName|routeListCompanionName)\(/, use: 'routeLabels (utils/format.ts, one helper in shared/routeDisplay.ts)' },
+  // A short and a long name joined by hand for display ("${short} — ${long}", "{shortName} {longName}", [short, long].join(' ')).
+  // Keys joined with '::' or '-' are not labels and do not match.
+  { name: 'route label joined by hand', pattern: /\$\{[^}\n]*[sS]hortName[^}\n]*\}(?:\s*[—–·|]\s*|\s+-\s+|\s+)\$\{[^}\n]*[lL]ongName|[sS]hortName[^\n`]{0,40}\}\$\{[^}\n]*[lL]ongName[^}\n]*\?\s*`\s*[—–·|-]|\{[^{}\n]*[sS]hortName\}(?:\s*[—–·|]\s*|\s+-\s+|\s+)\{[^{}\n]*[lL]ongName\}|\[[^\]\n]*[sS]hortName[^\]\n]*[lL]ongName[^\]\n]*\]\s*\.filter\(Boolean\)\s*\.join\(\s*['"`](?!::)|[sS]hortName\s*\+\s*['"`][\s—–·|-]{1,5}['"`]\s*\+\s*[\w.?]*[lL]ongName/, use: 'routeLabels (utils/format.ts)' },
   { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
   { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP|CARD_NOTICE_ACTION)\b/, use: 'ArrowLink, Tag' },
   { name: 'hand-rolled page frame', pattern: /<main className="min-h-screen bg-\[var\(--bg-app\)\] px-/, use: 'PageShell' },
@@ -43,7 +46,7 @@ const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterPanel.tsx': ['option pill classes'],
   'apps/History.tsx': ['option pill classes'],
   // Live is local-only and its route groups carry no route type; it still names routes its own way (audit R8).
-  'apps/LiveVehicles.tsx': ['route label written by hand'],
+  'apps/LiveVehicles.tsx': ['route label written by hand', 'route label joined by hand'],
   // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
   'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
   'components/Interval/HeadwaySparkline.tsx': ['hand-rolled section heading'],
