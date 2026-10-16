@@ -5,6 +5,7 @@ import { delayAmount } from '../shared/headwayText';
 import type { AgencySummary } from '../shared/liveAgency';
 import { rankStops, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
@@ -86,6 +87,7 @@ function MapCard({ title, lines }: { title: string; lines: string[] }) {
 }
 
 const PANEL_PAD = { top: 24, bottom: 24, left: 320, right: 410 };
+const NARROW_PAD = { top: 56, bottom: 24, left: 24, right: 24 };
 const weekly = (v3: LiveV3) => (v3.weekly ? kpiTiles(v3.weekly, weekDailyValues(v3)) : []);
 
 /** The network's late share by hour, from each route's own by-hour shares weighted by their departures. */
@@ -140,6 +142,7 @@ function routeWidgets({ route, data, v3, dir, band, measure, pick, stops, setPic
 function Body({ agency, s, route, setRoute, dir, setDir, band, measure, pick, setPick }: {
   agency: string; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
+  const wide = useMediaQuery('(min-width: 1024px)');
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
   const network = useNetworkData(agency, routes);
   const state = useLiveDashboard(route ? agency : null, route);
@@ -171,29 +174,48 @@ function Body({ agency, s, route, setRoute, dir, setDir, band, measure, pick, se
   const [stringOpen, setStringOpen] = useState(false);
   useEffect(() => { setStringOpen(false); }, [route, shown]);
   const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ route: route!, data: ready, v3, dir: shown, band, measure, pick, stops, setPick, onStringLine: () => setStringOpen(true) }) : !route ? networkWidgets(s, band, openStop) : [];
+  const mapEl = (
+    <RouteMap
+      model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={wide ? PANEL_PAD : NARROW_PAD}
+      onPick={p => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); }}
+      frameKey={route ? `${route}-${shown}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
+    />
+  );
+  const direction = ids.length > 1 && (
+    <div className="pointer-events-auto rounded-full border border-[var(--border-primary)] bg-[var(--bg-header)] px-2 py-1 shadow-sm">
+      <Group label="Direction" value={String(shown)} onChange={v => { setDir(Number(v)); setPick(null); }} options={ids.map(d => [String(d), v3!.directionLabels[String(d)]] as const)} />
+    </div>
+  );
+  const note = ready?.note && <p className="pointer-events-none absolute bottom-0 left-0 right-0 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
+  const overlay = stringOpen && v3 && route && <StringLineView agency={agency} route={route} v3={v3} dir={shown} onClose={() => setStringOpen(false)} />;
+  if (!wide) {
+    // Narrow screens: the map on top, the widgets as swipeable pages under it, the route list behind the route picker. The page may scroll; no panel does.
+    return (
+      <div className="relative min-h-0 flex-1">
+        <div className="absolute inset-0 overflow-y-auto">
+          <div className="relative h-[55vh] min-h-[22rem]">
+            <div className="absolute inset-0">{mapEl}</div>
+            <div className="pointer-events-none absolute inset-3"><Key measure={measure} />{ids.length > 1 && <div className="absolute right-0 top-0">{direction}</div>}{note}</div>
+          </div>
+          <WidgetPanel swipe rows={2} className="p-3" widgets={widgets} />
+        </div>
+        {overlay}
+      </div>
+    );
+  }
   return (
     <div className="relative min-h-0 flex-1">
-      <div className="absolute inset-0">
-        <RouteMap
-          model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={PANEL_PAD}
-          onPick={p => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); }}
-          frameKey={route ? `${route}-${shown}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
-        />
-      </div>
+      <div className="absolute inset-0">{mapEl}</div>
       <div className="pointer-events-none absolute inset-3 flex gap-3">
         <div className="pointer-events-auto flex w-72 shrink-0 flex-col"><OverviewList s={s} measure={measure} route={route} network={network} onPick={r => { setRoute(r); setPick(null); }} /></div>
         <div className="relative min-w-0 flex-1">
           <Key measure={measure} />
-          {ids.length > 1 && (
-            <div className="pointer-events-auto absolute left-1/2 top-0 -translate-x-1/2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-header)] px-2 py-1 shadow-sm">
-              <Group label="Direction" value={String(shown)} onChange={v => { setDir(Number(v)); setPick(null); }} options={ids.map(d => [String(d), v3!.directionLabels[String(d)]] as const)} />
-            </div>
-          )}
-          {ready?.note && <p className="pointer-events-none absolute bottom-0 left-0 right-0 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>}
+          {ids.length > 1 && <div className="absolute left-1/2 top-0 -translate-x-1/2">{direction}</div>}
+          {note}
         </div>
         <WidgetPanel className="pointer-events-auto w-[24.5rem] shrink-0" widgets={widgets} />
       </div>
-      {stringOpen && v3 && route && <StringLineView agency={agency} route={route} v3={v3} dir={shown} onClose={() => setStringOpen(false)} />}
+      {overlay}
     </div>
   );
 }

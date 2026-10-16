@@ -43,7 +43,7 @@ export function packWidgets(widgets: readonly PanelWidget[], rows: number): Arra
  * The widget panel: a two-column grid sized to the window so it never scrolls. The most useful widgets sit on the first
  * page; when the window is too short for all of them the rest go to further pages, reached by the dots under the grid.
  */
-export default function WidgetPanel({ widgets, className = '' }: { widgets: readonly PanelWidget[]; className?: string }) {
+export default function WidgetPanel({ widgets, className = '', rows: fixedRows, swipe = false }: { widgets: readonly PanelWidget[]; className?: string; /** A fixed number of rows (a narrow screen, where the panel sits under the map and has its own height) instead of filling the height it is given. */ rows?: number; /** The pages sit side by side and swipe, instead of replacing one another. */ swipe?: boolean }) {
   const box = useRef<HTMLDivElement | null>(null);
   const [h, setH] = useState(0);
   const [page, setPage] = useState(0);
@@ -57,25 +57,32 @@ export default function WidgetPanel({ widgets, className = '' }: { widgets: read
     return () => ro.disconnect();
   }, []);
   const grid = h - PAGER;
-  const rows = Math.max(1, Math.floor((grid + GAP) / (MIN_UNIT + GAP)));
-  const unit = rows > 0 ? (grid - (rows - 1) * GAP) / rows : MIN_UNIT;
+  const rows = fixedRows ?? Math.max(1, Math.floor((grid + GAP) / (MIN_UNIT + GAP)));
+  const unit = fixedRows ? MIN_UNIT : rows > 0 ? (grid - (rows - 1) * GAP) / rows : MIN_UNIT;
   const pages = useMemo(() => packWidgets(widgets, rows), [widgets, rows]);
   useEffect(() => { setPage(p => Math.min(p, Math.max(0, pages.length - 1))); }, [pages.length]);
-  const items = pages[Math.min(page, Math.max(0, pages.length - 1))] ?? [];
+  const strip = useRef<HTMLDivElement | null>(null);
+  const goTo = (i: number) => { setPage(i); if (swipe && strip.current) strip.current.scrollTo({ left: i * strip.current.clientWidth, behavior: 'smooth' }); };
+  const place = (items: Array<{ w: PanelWidget; col: number; row: number }>) => items.map(({ w, col, row }) => {
+    const [cw, rh] = UNITS[w.size];
+    const style = { gridColumn: `${col + 1} / span ${cw}`, gridRow: `${row + 1} / span ${rh}` };
+    return w.tile
+      ? <ul key={w.key} className="m-0 flex min-h-0 list-none p-0 [&>li]:flex-1" style={style}>{w.node}</ul>
+      : <div key={w.key} className="flex min-h-0 [&>section]:flex-1" style={style}>{w.node}</div>;
+  });
+  const gridStyle = { gridTemplateRows: `repeat(${rows}, ${Math.max(unit, 0)}px)` };
   return (
     <div ref={box} className={`flex min-h-0 flex-col ${className}`.trim()}>
-      <div className="grid min-h-0 flex-1 grid-cols-2 gap-3" style={{ gridTemplateRows: `repeat(${rows}, ${Math.max(unit, 0)}px)` }}>
-        {items.map(({ w, col, row }) => {
-          const [cw, rh] = UNITS[w.size];
-          const style = { gridColumn: `${col + 1} / span ${cw}`, gridRow: `${row + 1} / span ${rh}` };
-          return w.tile
-            ? <ul key={w.key} className="m-0 flex min-h-0 list-none p-0 [&>li]:flex-1" style={style}>{w.node}</ul>
-            : <div key={w.key} className="flex min-h-0 [&>section]:flex-1" style={style}>{w.node}</div>;
-        })}
-      </div>
+      {swipe ? (
+        <div ref={strip} onScroll={e => setPage(Math.round(e.currentTarget.scrollLeft / Math.max(1, e.currentTarget.clientWidth)))} className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {pages.map((items, i) => <div key={i} className="grid w-full shrink-0 snap-center grid-cols-2 gap-3" style={gridStyle}>{place(items)}</div>)}
+        </div>
+      ) : (
+        <div className="grid min-h-0 flex-1 grid-cols-2 gap-3" style={gridStyle}>{place(pages[Math.min(page, Math.max(0, pages.length - 1))] ?? [])}</div>
+      )}
       <div className="flex h-7 shrink-0 items-center justify-center gap-2">
         {pages.length > 1 && pages.map((_, i) => (
-          <button key={i} type="button" aria-label={`Page ${i + 1} of ${pages.length}`} aria-current={i === page ? 'true' : undefined} onClick={() => setPage(i)}
+          <button key={i} type="button" aria-label={`Page ${i + 1} of ${pages.length}`} aria-current={i === page ? 'true' : undefined} onClick={() => goTo(i)}
             className={`h-2 w-2 rounded-full ${i === page ? 'bg-[var(--text-secondary)]' : 'bg-[var(--border-primary)]'}`} />
         ))}
       </div>
