@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
+  LINK_LABELS, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -18,6 +18,7 @@ import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
 import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts/ProfileBars';
 import HourBars from './components/charts/HourBars';
+import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { PAGE_ACTION, TILE } from './pageStyles';
 
 type Day = 'all' | 'weekday' | 'weekend';
@@ -337,35 +338,25 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
   const rt = v3.runningTime;
   if (!rt) return null;
   const dirs = Object.keys(v3.directionLabels).map(Number).sort().filter(d => dir == null || d === dir);
-  const pointsOf = (d: number): ProfilePoint[] => (rt.byHour[String(d)] ?? [])
-    .filter(h => band === 'all' || periodKeyForHour(h.hour) === band)
-    .map(h => ({ label: hourLabel(h.hour), y: h.typicalMin, ref: h.scheduledMin, hi: h.p90Min, lo: h.typicalMin, n: h.n }));
-  const scale = sharedScale(dirs.map(d => pointsOf(d).map(p => ({ ...p, y: Math.max(p.y, p.hi ?? 0, p.ref ?? 0) }))));
+  const hoursOf = (d: number) => (rt.byHour[String(d)] ?? []).filter(h => h.n >= 1 && (band === 'all' || periodKeyForHour(h.hour) === band));
+  const scale = runTimeScale(dirs.map(hoursOf));
   return (
-    <Section id="runtime" title="How long the trip takes">
-      <p className="mt-2 text-sm text-[var(--text-muted)]">End-to-end trip time by the hour the trip starts, against the timetable.</p>
+    <Section id="runtime" title="Run time vs schedule">
+      <p className="mt-2 text-sm text-[var(--text-muted)]">Minutes from the first stop to the last, by the hour the trip starts, against the schedule.</p>
       <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {dirs.map(d => {
           const label = v3.directionLabels[String(d)];
           const figures = rt.bands[band]?.[String(d)];
-          const points = pointsOf(d).filter(p => (p.n ?? 0) >= 1);
+          const hours = hoursOf(d);
           return (
             <div key={d} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
               <p className="mt-1 text-sm leading-6">{runningTimeSentence(label, figures)}</p>
-              {points.length > 1 && (
-                <ProfileBars
-                  ariaLabel={`${label}: typical trip time by hour the trip starts, against the timetable. ${runningTimeSentence(label, figures)}`}
-                  points={points}
-                  formatY={y => `${Math.round(y)} min`}
-                  unit="trips"
-                  valueHeader="Typical trip time"
-                  refHeader="Scheduled"
-                  rowHeader="Starts at"
-                  caption="Each bar is the typical trip time for trips starting that hour, the black tick is the timetable, and the faint line reaches the time that 1 in 10 trips exceed."
-                  axisTitle="Minutes from first stop to last"
-                  scale={{ min: 0, max: scale.max }}
-                />
+              {hours.length > 1 && (
+                <>
+                  <p className="mt-1 text-sm font-bold">{runTimeTakeaway(label, hours)}</p>
+                  <div className="mt-2"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${runningTimeSentence(label, figures)}`} /></div>
+                </>
               )}
             </div>
           );
@@ -561,7 +552,7 @@ export default function LiveRoutePage() {
         <Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} />
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} band={band} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('How long the trip takes')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Run time vs schedule')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWait v3={v3} band={band} dir={dir} /></ErrorBoundary>

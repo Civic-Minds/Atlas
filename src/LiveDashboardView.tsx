@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
-import { dateRangeText, rankStops, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { dateRangeText, rankStops, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import DataTable from './components/ui/DataTable';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
+import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import RouteStrip, { routeStripFromV3, type RouteStripMode } from './components/Live/RouteStrip';
 import Pill from './components/ui/Pill';
 import { syncUrlParams } from './utils/syncUrlParams';
@@ -117,42 +118,33 @@ function Days({ v3, data, band, dir }: { v3: LiveV3; data: DashboardBandData; ba
   );
 }
 
-/** Trip time against the timetable by the hour a trip starts, one small chart per direction on one scale. */
+/** Run time against the schedule by the hour a trip starts, one chart per direction on one scale. */
 function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
   const rt = v3.runningTime;
   const groups = dirsOf(v3, dir).map(d => ({
     d,
-    hours: (rt?.byHour[String(d)] ?? []).filter(h => h.n > 0 && (band === 'all' || periodKeyForHour(h.hour) === band)).map(h => ({ hour: h.hour, value: h.overMin, n: h.n })),
-    band: rt?.bands[band]?.[String(d)] ?? null,
+    label: v3.directionLabels[String(d)],
+    hours: (rt?.byHour[String(d)] ?? []).filter(h => h.n > 0 && (band === 'all' || periodKeyForHour(h.hour) === band)),
   }));
-  const shown = groups.flatMap(g => g.hours.filter(h => h.n >= 5).map(h => h.value));
-  const lim = Math.max(2, ...shown.map(Math.abs));
-  const scale = { min: Math.min(0, ...shown) < 0 ? -lim : 0, max: lim };
+  const scale = runTimeScale(groups.map(g => g.hours));
   return (
-    <div className="min-w-0 lg:col-span-2">
-      <h2 className="text-xl font-black tracking-tight">Trip time against the timetable</h2>
-      <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">Minutes longer (above the line) or shorter (below) than scheduled, end to end, by the hour the trip starts. Bars run from {mins(scale.min)} to {mins(scale.max)}.</p>
-      <div className={`mt-4 grid gap-x-8 gap-y-6 ${groups.length > 1 ? 'sm:grid-cols-2' : ''}`}>
+    <section aria-labelledby="dash-runtime" className="mt-10">
+      <h2 id="dash-runtime" className="text-xl font-black tracking-tight">Run time vs schedule</h2>
+      <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">Minutes from the first stop to the last, {BAND_WORDS[band]}.</p>
+      <div className={`mt-4 grid gap-x-10 gap-y-8 ${groups.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {groups.map(g => (
           <div key={g.d} className="min-w-0">
-            <div className="flex items-baseline justify-between gap-2">
-              <h3 className="text-base font-black">{v3.directionLabels[String(g.d)]}</h3>
-              {g.band && <span className="whitespace-nowrap text-sm text-[var(--text-dim)]">{g.band.n.toLocaleString()} trips</span>}
-            </div>
-            {g.band ? (
-              <div className="mt-1 text-2xl font-black tracking-tight">{Math.round(g.band.typicalMin)} min <span className="text-sm font-bold text-[var(--text-muted)]">typical, timetable {Math.round(g.band.scheduledMin)}</span></div>
-            ) : null}
-            <div className="mt-2">
-              {g.hours.length > 1 ? (
-                <HourSpark values={g.hours} scale={scale} minN={5} color="var(--text-muted)" format={mins} unit="trips" valueHeader="Against the timetable"
-                  ariaLabel={`${v3.directionLabels[String(g.d)]}: trip time against the timetable by the hour the trip starts.`} />
-              ) : <p className="text-sm text-[var(--text-muted)]">No trip was measured from end to end for this choice.</p>}
-            </div>
+            <h3 className="text-base font-black">{g.label}</h3>
+            {g.hours.length > 1 ? (
+              <>
+                <p className="mt-1 text-sm font-bold">{runTimeTakeaway(g.label, g.hours)}</p>
+                <div className="mt-2"><RunTimeChart hours={g.hours} scale={scale} ariaLabel={`${g.label}: run time against the schedule by the hour the trip starts. ${runTimeTakeaway(g.label, g.hours)}`} /></div>
+              </>
+            ) : <p className="mt-1 text-sm text-[var(--text-muted)]">No trip was measured from end to end for this choice.</p>}
           </div>
         ))}
       </div>
-      <p className="mt-2 text-xs text-[var(--text-dim)]">Faded bars are based on fewer than 5 trips. Only full trips on each direction's main route count.</p>
-    </div>
+    </section>
   );
 }
 
@@ -242,9 +234,9 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
         {filters}
       </div>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} band={band} dir={dir} uncertain={uncertain} /></ErrorBoundary>
+      <ErrorBoundary label={bad('Run time')}><TripTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
       <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
-      <section className="mt-10 grid gap-x-8 gap-y-10 lg:grid-cols-3" aria-label="Trip time and the stops most often late">
-        <ErrorBoundary label={bad('Trip time')}><TripTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
+      <section className="mt-10 max-w-xl" aria-label="The stops most often late">
         <ErrorBoundary label={bad('The stop list')}><WorstStops v3={v3} data={data} dir={dir} uncertain={uncertain} toFull={toFull} /></ErrorBoundary>
       </section>
     </>

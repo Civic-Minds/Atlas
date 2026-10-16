@@ -1,0 +1,149 @@
+import { useEffect, useRef, useState } from 'react';
+import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
+import DataTable from '../ui/DataTable';
+
+export interface RunTimeHour {
+  /** Hour of day the trips start, 0-23. */
+  hour: number;
+  n: number;
+  scheduledMin: number;
+  typicalMin: number;
+  p90Min: number;
+}
+
+const PAD_TOP = 22;
+const PAD_BOTTOM = 22;
+const AXIS_W = 40;
+const LABEL_W = 118;
+const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 % 24 < 12 ? 'am' : 'pm'}`;
+
+/** The minute range every chart in a row should share, with a little headroom, on whole 5-minute steps. */
+export function runTimeScale(groups: ReadonlyArray<readonly RunTimeHour[]>): { min: number; max: number } {
+  const all = groups.flat();
+  if (!all.length) return { min: 0, max: 10 };
+  const lo = Math.min(...all.map(h => Math.min(h.scheduledMin, h.typicalMin)));
+  const hi = Math.max(...all.map(h => Math.max(h.scheduledMin, h.p90Min)));
+  return { min: Math.max(0, Math.floor((lo - 2) / 5) * 5), max: Math.ceil((hi + 2) / 5) * 5 };
+}
+
+function useWidth() {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const read = () => setWidth(el.getBoundingClientRect().width || el.clientWidth || 0);
+    read();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return [ref, width] as const;
+}
+
+interface EndLabel { key: string; y: number; h: number; lines: string[]; color: string; weight: number }
+
+/** Place labels near their line's end (`y` is the line's height there), top to bottom, at least their own height apart. */
+function spread(labels: EndLabel[], min: number, max: number): Array<EndLabel & { top: number }> {
+  const sorted = [...labels].sort((a, b) => a.y - b.y).map(l => ({ ...l, top: l.y - l.h / 2 }));
+  for (let k = 1; k < sorted.length; k++) sorted[k].top = Math.max(sorted[k].top, sorted[k - 1].top + sorted[k - 1].h + 2);
+  const overflow = sorted.length ? sorted[sorted.length - 1].top + sorted[sorted.length - 1].h - max : 0;
+  if (overflow > 0) for (const l of sorted) l.top -= overflow;
+  for (let k = 0; k < sorted.length; k++) sorted[k].top = Math.max(sorted[k].top, k ? sorted[k - 1].top + sorted[k - 1].h + 2 : min);
+  return sorted;
+}
+
+/**
+ * Run time against the schedule for one direction, by the hour trips start: the schedule as a dashed line, the usual
+ * (median) run time as a solid line with dots, and a light band up to the time 1 in 10 trips take longer than. Each
+ * line is labelled where it ends; hours with few trips are faded. The whole chart is one focusable unit with a summary
+ * label, each hour shows its figures on hover, and the same figures are available as a table.
+ */
+export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height: H = 240 }: {
+  hours: readonly RunTimeHour[];
+  scale: { min: number; max: number };
+  ariaLabel: string;
+  minN?: number;
+  /** Chart height in px. */
+  height?: number;
+}) {
+  const [ref, width] = useWidth();
+  const slot = (h: number) => SPARKLINE_HOURS.findIndex(x => x % 24 === h);
+  const pts = hours.map(h => ({ ...h, i: slot(h.hour) })).filter(h => h.i >= 0).sort((a, b) => a.i - b.i);
+  const plotW = Math.max(0, width - AXIS_W - LABEL_W);
+  const x = (i: number) => AXIS_W + (SPARKLINE_HOURS.length > 1 ? (i / (SPARKLINE_HOURS.length - 1)) * plotW : 0);
+  const span = scale.max - scale.min || 1;
+  const y = (m: number) => PAD_TOP + (1 - (m - scale.min) / span) * (H - PAD_TOP - PAD_BOTTOM);
+  const step = span > 30 ? 10 : 5;
+  const ticks: number[] = [];
+  for (let t = Math.ceil(scale.min / step) * step; t <= scale.max; t += step) ticks.push(t);
+  // Runs of consecutive hours: lines and the band break where an hour has no trips.
+  const runs: (typeof pts)[] = [];
+  for (const p of pts) { const r = runs[runs.length - 1]; if (r && p.i === r[r.length - 1].i + 1) r.push(p); else runs.push([p]); }
+  const path = (r: typeof pts, f: (p: (typeof pts)[number]) => number) => r.map((p, k) => `${k ? 'L' : 'M'}${x(p.i)},${y(f(p))}`).join('');
+  // Lines are labelled where they end, at the last hour with enough trips; labels are spread so they never overlap.
+  const reliable = pts.filter(p => p.n >= minN);
+  const last = reliable[reliable.length - 1] ?? pts[pts.length - 1];
+  const ends = last ? spread([
+    { key: 'band', y: y(last.p90Min), h: 30, lines: ['1 in 10 trips take', 'longer than this'], color: 'var(--text-muted)', weight: 400 },
+    { key: 'usual', y: y(last.typicalMin), h: 15, lines: ['Usually'], color: 'var(--text-primary)', weight: 700 },
+    { key: 'sched', y: y(last.scheduledMin), h: 15, lines: ['Scheduled'], color: 'var(--text-secondary)', weight: 400 },
+  ], PAD_TOP - 8, H - PAD_BOTTOM) : [];
+  const tip = (p: (typeof pts)[number]) => `${clock(p.hour)}: scheduled ${Math.round(p.scheduledMin)} min, usually ${Math.round(p.typicalMin)} min, 1 in 10 over ${Math.round(p.p90Min)} min (${p.n.toLocaleString()} trips${p.n < minN ? ', too few to rely on' : ''})`;
+  const colW = plotW / Math.max(1, SPARKLINE_HOURS.length - 1);
+  return (
+    <figure className="m-0">
+      <div ref={ref} role="img" aria-label={ariaLabel} tabIndex={0} className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]">
+        {width > 0 && pts.length > 0 && (
+          <svg width={width} height={H} aria-hidden="true" className="block overflow-visible">
+            {ticks.map(t => (
+              <g key={t}>
+                <line x1={AXIS_W} x2={AXIS_W + plotW} y1={y(t)} y2={y(t)} stroke="var(--border-primary)" strokeWidth={1} />
+                <text x={AXIS_W - 6} y={y(t) + 4} textAnchor="end" fontSize={13} fill="var(--text-dim)">{t}</text>
+              </g>
+            ))}
+            <text x={0} y={10} fontSize={13} fill="var(--text-dim)">min</text>
+            {runs.map((r, k) => r.length > 1 && (
+              <path key={`band${k}`} d={`${path(r, p => p.p90Min)}${[...r].reverse().map(p => `L${x(p.i)},${y(p.typicalMin)}`).join('')}Z`} fill="var(--strip-delay-1)" opacity={0.18} />
+            ))}
+            {runs.map((r, k) => r.length > 1 && <path key={`s${k}`} d={path(r, p => p.scheduledMin)} fill="none" stroke="var(--text-secondary)" strokeWidth={1.5} strokeDasharray="4 3" />)}
+            {runs.map((r, k) => r.length > 1 && <path key={`u${k}`} d={path(r, p => p.typicalMin)} fill="none" stroke="var(--text-primary)" strokeWidth={2} strokeLinejoin="round" />)}
+            {pts.map(p => <circle key={p.i} cx={x(p.i)} cy={y(p.typicalMin)} r={3.5} fill="var(--text-primary)" stroke="var(--bg-primary)" strokeWidth={1.5} opacity={p.n >= minN ? 1 : 0.35} />)}
+            {last && ends.map(l => (
+              <line key={`lead${l.key}`} x1={x(last.i) + 6} y1={l.y} x2={AXIS_W + plotW + 6} y2={l.top + 7} stroke="var(--text-dim)" strokeWidth={1} opacity={0.5} />
+            ))}
+            {ends.map(l => l.lines.map((t, k) => (
+              <text key={`${l.key}${k}`} x={AXIS_W + plotW + 10} y={l.top + 11 + k * 14} fontSize={13} fontWeight={l.weight} fill={l.color}>{t}</text>
+            )))}
+            {SPARKLINE_HOURS.map((h, i) => SPARKLINE_HOUR_LABELS[h] && (
+              <text key={h} x={x(i)} y={H - 4} textAnchor="middle" fontSize={13} fill="var(--text-dim)">{SPARKLINE_HOUR_LABELS[h]}</text>
+            ))}
+            {pts.map(p => (
+              <rect key={`hit${p.i}`} x={x(p.i) - colW / 2} y={PAD_TOP} width={colW} height={H - PAD_TOP - PAD_BOTTOM} fill="transparent"><title>{tip(p)}</title></rect>
+            ))}
+          </svg>
+        )}
+        {width === 0 && <div style={{ height: H }} />}
+      </div>
+      <figcaption className="mt-1 text-xs text-[var(--text-dim)]">By the hour the trip starts. Faded dots are hours with fewer than {minN} trips.</figcaption>
+      <details className="mt-1 text-xs">
+        <summary className="cursor-pointer font-bold text-[var(--accent)]">Show as a table</summary>
+        <div className="mt-2 max-h-64 overflow-auto">
+          <DataTable
+            caption={ariaLabel}
+            rows={pts}
+            rowKey={p => p.hour}
+            columns={[
+              { key: 'hour', header: 'Starts at', rowHeader: true, className: 'font-normal', cell: p => clock(p.hour) },
+              { key: 'sched', header: 'Scheduled', cell: p => `${Math.round(p.scheduledMin)} min` },
+              { key: 'usual', header: 'Usually', cell: p => `${Math.round(p.typicalMin)} min` },
+              { key: 'p90', header: '1 in 10 over', cell: p => `${Math.round(p.p90Min)} min` },
+              { key: 'n', header: 'Trips', cell: p => p.n.toLocaleString() },
+            ]}
+          />
+        </div>
+      </details>
+    </figure>
+  );
+}

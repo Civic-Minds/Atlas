@@ -401,3 +401,19 @@ export function compareLines(w: NonNullable<LiveV3['weekly']>): Array<{ key: Com
     line('delivered', 'Service delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, x => `${m1(Math.round(x * 1000) / 10)}%`, x => `${m1(Math.round(x * 1000) / 10)}% of scheduled trips ran`, false),
   ];
 }
+
+/**
+ * One line above a run-time chart: the hour that runs furthest over (or under) the schedule, in whole minutes.
+ * Only hours with at least `minN` trips count.
+ */
+export function runTimeTakeaway(label: string, hours: ReadonlyArray<{ hour: number; n: number; scheduledMin: number; typicalMin: number }>, minN = 5): string {
+  const ok = hours.filter(h => h.n >= minN);
+  if (!ok.length) return `${label}: too few trips were measured to say.`;
+  const over = ok.reduce((a, h) => (h.typicalMin - h.scheduledMin > a.typicalMin - a.scheduledMin ? h : a));
+  const under = ok.reduce((a, h) => (h.typicalMin - h.scheduledMin < a.typicalMin - a.scheduledMin ? h : a));
+  const o = Math.round(over.typicalMin - over.scheduledMin);
+  const u = Math.round(under.scheduledMin - under.typicalMin);
+  if (o >= 1) return `${label} runs about ${o} min over schedule at ${hourName(over.hour)}.`;
+  if (u >= 1) return `${label} runs at or under schedule all day, about ${u} min under at ${hourName(under.hour)}.`;
+  return `${label} runs close to schedule all day.`;
+}
