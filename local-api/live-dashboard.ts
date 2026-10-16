@@ -29,8 +29,11 @@ async function handler(req: Request): Promise<Response> {
     if (!data.v3 || data.v3.schema !== 3) {
       return json({ status: 'no_analysis', reason: `The analysis file for ${cfg.displayRouteShortName} is from an older version. Rebuild it with "npm run live:analyze -- ${cfg.displayRouteShortName}".` });
     }
+    const routeTitle = await readFile(resolve(dir, `${cfg.slug}-agency.json`), 'utf8')
+      .then(t => (JSON.parse(t) as { routes?: Array<{ route: string; titleLabel?: string }> }).routes?.find(r => r.route === cfg.displayRouteShortName)?.titleLabel ?? null)
+      .catch(() => null);
     return json({
-      status: 'ready', agency: cfg.slug, route: cfg.displayRouteShortName, generatedAt: data.generatedAt,
+      status: 'ready', agency: cfg.slug, route: cfg.displayRouteShortName, routeTitle, generatedAt: data.generatedAt,
       replacementBuses: data.replacementBuses === true, v3: data.v3, note: LIVE_DASHBOARD_NOTES[`${cfg.slug}::${cfg.displayRouteShortName}`] ?? null,
       uncertainStart: [...(LIVE_DASHBOARD_UNCERTAIN_START[`${cfg.slug}::${cfg.displayRouteShortName}`] ?? [])],
     });

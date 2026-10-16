@@ -17,5 +17,17 @@ export function liveAgencyDataUrl(agency: string): string {
   return fromR2 ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/agency.json` : `/api/live-agency?agency=${encodeURIComponent(agency)}`;
 }
 
+/** What the report pages say outside dev when their data fails to load (wording approved by Ryan, 2026-10-16). */
+export const LIVE_REPORT_UNAVAILABLE = "This report isn't available right now.";
+
+/** Setup instructions ("npm run live", "npm run live:analyze") are for dev only; outside dev the approved line stands in. */
+export const devOnly = (devText: string): string => (fromR2 ? LIVE_REPORT_UNAVAILABLE : devText);
+
+/** Drops the trailing "Rebuild it with npm run live:analyze..." sentence outside dev, keeping what the text says about the data. */
+export const withoutDevHint = (text: string): string => (fromR2 ? text.replace(/\s+Rebuild(?:ing)? (?:it|them|the analysis) with .*$/s, '') : text);
+
+/** Page titles (approved): "504 King · Live · Atlas" and "TTC · Live · Atlas". */
+export const liveReportTitle = (name: string) => `${name} · Live · Atlas`;
+
 /** R2 answers a missing file with an error page, not JSON: read that as "no such route", the API's own answer. */
 export const liveDataMissing = (r: Response) => fromR2 && !r.ok;

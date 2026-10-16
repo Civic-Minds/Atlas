@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { FEATURES } from '../shared/config';
+import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { coverageText, type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
 import { dateRangeText, NOISE_RULE } from '../shared/liveDashboard';
 import type { LiveAgencyResponse } from '../local-api/live-agency';
-import { liveAgencyDataUrl, liveDataMissing } from './lib/liveReportData';
+import { devOnly, liveAgencyDataUrl, liveDataMissing, liveReportTitle, withoutDevHint } from './lib/liveReportData';
+import { applySeoToDocument } from './lib/seoDom';
+import { SITE_URL } from '../shared/seo';
 import { liveDashboardPath } from './hooks/useLiveDashboard';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { weekCaption, weekRangeLine } from './utils/liveKpi';
@@ -50,7 +52,7 @@ function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'error'; r
     fetch(liveAgencyDataUrl(agency))
       .then(r => (liveDataMissing(r) ? { status: 'unknown_agency', reason: `Live has no route analysis for ${agency}.` } as LiveAgencyResponse : r.json() as Promise<LiveAgencyResponse>))
       .then(data => { if (live) setState({ kind: 'done', data }); })
-      .catch(() => { if (live) setState({ kind: 'error', reason: 'The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.' }); });
+      .catch(() => { if (live) setState({ kind: 'error', reason: devOnly('The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.') }); });
     return () => { live = false; };
   }, [agency]);
   return state;
@@ -159,12 +161,16 @@ export default function LiveAgencyPage() {
   const { agency = '' } = useParams();
   // Live off: no request at all, only the notice.
   const state = useLiveAgency(FEATURES.liveReports ? agency : '');
+  useEffect(() => {
+    if (!agency) return;
+    applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agency]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const name = agency.toUpperCase();
   const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {name}…</p></PageShell>;
   if (state.kind === 'error' || state.data.status !== 'ready') {
-    const reason = state.kind === 'error' ? state.reason : (state.data as { reason: string }).reason;
+    const reason = state.kind === 'error' ? state.reason : state.data.status === 'no_analysis' ? devOnly(state.data.reason) : (state.data as { reason: string }).reason;
     return <PageShell variant="wide"><PageTitle className="mt-24">{name}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{reason}</p>{back}</PageShell>;
   }
   const s = state.data.summary;
@@ -190,7 +196,7 @@ export default function LiveAgencyPage() {
         <ErrorBoundary>
           {w && tiles.length
             ? <KpiTiles tiles={tiles} caption={weekRangeLine({ ...w, health: [] })} />
-            : <p className="mt-5 text-sm text-[var(--text-muted)]">This week against last week is not in the analysis files yet. Rebuild them with npm run live:analyze.</p>}
+            : <p className="mt-5 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in the analysis files yet. Rebuild them with npm run live:analyze.')}</p>}
         </ErrorBoundary>
 
         <Section id="agency-routes" title="Routes" intro="Every analysed route, worst first. Open a route for its own dashboard.">

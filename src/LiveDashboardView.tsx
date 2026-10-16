@@ -4,6 +4,7 @@ import { branchFigures, branchRunTimeLine, dateRangeText, rankStops, runTimeStre
 import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, weekRangeLine, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import DataTable from './components/ui/DataTable';
+import { withoutDevHint } from './lib/liveReportData';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import RouteStrip, { routeStripFromV3 } from './components/Live/RouteStrip';
@@ -39,7 +40,7 @@ function Delta({ k }: { k: Kpi }) {
 /** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
-  if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.</p>;
+  if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.')}</p>;
   return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), runTimeTileStretch(v3.runningTime?.stretch, n => shortStopName(titleCase(n))))} caption={weekRangeLine(w)} />;
 }
 
@@ -255,7 +256,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
   filters: ReactNode;
   toFull: (hash: string) => void;
 }) {
-  const bad = (what: string) => `${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`;
+  const bad = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
   return (
     <>
       <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>

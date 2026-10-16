@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
-import { FEATURES, periodKeyForHour } from '../shared/config';
+import { ATLAS_MODE, FEATURES, periodKeyForHour } from '../shared/config';
 import {
   LINK_LABELS, branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
+import { devOnly, liveReportTitle, withoutDevHint } from './lib/liveReportData';
+import { applySeoToDocument } from './lib/seoDom';
+import { SITE_URL } from '../shared/seo';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import { isMajorStop, shortStopName } from './utils/stopLabel';
@@ -347,11 +350,11 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
             <div key={d} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
               {runTimeStretchLabel(rt.stretch?.[String(d)], n => shortStopName(titleCase(n))) && <p className="text-sm text-[var(--text-muted)]">{runTimeStretchLabel(rt.stretch?.[String(d)], n => shortStopName(titleCase(n)))}</p>}
-              <p className="mt-1 text-sm leading-6">{runningTimeSentence(label, figures)}</p>
+              <p className="mt-1 text-sm leading-6">{withoutDevHint(runningTimeSentence(label, figures))}</p>
               {hours.length > 1 && (
                 <>
                   <p className="mt-1 text-sm font-bold">{runTimeTakeaway(label, hours)}</p>
-                  <div className="mt-2"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${runningTimeSentence(label, figures)}`} /></div>
+                  <div className="mt-2"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${withoutDevHint(runningTimeSentence(label, figures))}`} /></div>
                 </>
               )}
               {(rt.branches?.[String(d)] ?? []).length > 0 && (
@@ -493,7 +496,7 @@ function Method({ data }: { data: Ready }) {
   );
 }
 
-const BOUNDARY = (what: string) => `${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`;
+const BOUNDARY = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
 
 export default function LiveRoutePage() {
   const { agency = '', route = '' } = useParams();
@@ -511,6 +514,11 @@ export default function LiveRoutePage() {
     if (view !== 'analysis' || !window.location.hash) return;
     document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
   }, [view, state.kind]);
+  const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
+  useEffect(() => {
+    if (!agency || !route) return;
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agency.toUpperCase()} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agency, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agency.toUpperCase()} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
@@ -521,7 +529,7 @@ export default function LiveRoutePage() {
     return (
       <PageShell variant="wide">
         <PageTitle className="mt-24">{title}</PageTitle>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{data.reason}</p>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{data.status === 'no_analysis' ? devOnly(data.reason) : data.reason}</p>
         {back}
       </PageShell>
     );
@@ -544,7 +552,7 @@ export default function LiveRoutePage() {
         </div>
         {(() => {
           const f = freshness(v3, route, Date.now());
-          return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{f.text}</p> : null;
+          return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{withoutDevHint(f.text)}</p> : null;
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="View">
