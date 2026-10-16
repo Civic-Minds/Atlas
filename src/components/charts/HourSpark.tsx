@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import { liveChartHours } from '../../utils/sparklinePeriods';
 import DataTable from '../ui/DataTable';
+import DeparturesLine from './DeparturesLine';
 
 export interface HourValue {
   /** Hour of day, 0-23. */
@@ -20,7 +21,7 @@ const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 % 24 < 1
  * to every chart in a row so their bars compare. Values below zero hang under a dashed zero line. Hours with no data are
  * left empty, not drawn as zero. The whole chart is one focusable unit with a summary label, and a table view.
  */
-export default function HourSpark({ values, scale, color, format, ariaLabel, unit, valueHeader, minN = 30, hours, height = H, hoverLine }: {
+export default function HourSpark({ values, scale, color, format, ariaLabel, unit, valueHeader, minN = 30, hours, height = H, hoverLine, departures = false }: {
   values: readonly HourValue[];
   scale: { min: number; max: number };
   /** CSS colour (a token). */
@@ -33,6 +34,8 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
   minN?: number;
   /** The hover line for an hour, replacing the default "2 pm 5%, 167 departures" (the late charts: lateHourLine). */
   hoverLine?: (clock: string, v: HourValue) => string;
+  /** Draw the departures in each hour as a thin grey line over the bars (the late charts, CIV-282). */
+  departures?: boolean;
   /** Bar area height in px (taller when the chart has a whole row to itself). */
   height?: number;
   /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these values. */
@@ -55,6 +58,7 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
             {hover != null && byHour.get(hover) && (hoverLine ? hoverLine(clock(hover), byHour.get(hover)!) : <><span className="font-bold">{clock(hover)}</span> {format(byHour.get(hover)!.value)}, {byHour.get(hover)!.n.toLocaleString()} {unit}{byHour.get(hover)!.n < minN ? ' (too few to rely on)' : ''}</>)}
           </div>
           <div className="relative flex gap-px" style={{ height }}>
+            {departures && <DeparturesLine counts={axis.map(h => byHour.get(h % 24)?.n ?? null)} style={{ zIndex: 1 }} />}
             {scale.min < 0 && <div className="pointer-events-none absolute inset-x-0 border-t border-dashed border-[var(--text-dim)] opacity-60" style={{ bottom: zeroPx }} />}
             {axis.map(gtfsHour => {
               const v = byHour.get(gtfsHour % 24);

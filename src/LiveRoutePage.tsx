@@ -133,6 +133,7 @@ function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: numbe
               return (
                 <HourBars
                   hoverLine={(t, c) => lateHourLine(t, lateCount(c.parts[2], c.n), c.n)}
+                  departures
                   hours={axis}
                   key={k}
                   title={label}

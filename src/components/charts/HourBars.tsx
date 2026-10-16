@@ -3,6 +3,8 @@ import { HOUR_TO_PERIOD, hourAtOn, liveChartHours, periodBandsFor } from '../../
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import DataTable from '../ui/DataTable';
+import DeparturesLine from './DeparturesLine';
+import LegendItem from '../ui/LegendItem';
 
 export interface HourColumn {
   /** Hour of day, 0-23. */
@@ -32,7 +34,7 @@ const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 < 12 ? '
  * same way the route card's schedule sparkline does (shared bands in utils/sparklinePeriods), and the line under the
  * chart reads out that hour. `showKey`: the colour key and low-sample note (turn off for small multiples sharing one key).
  */
-export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey = true, title, hours, hoverLine }: { columns: readonly HourColumn[]; parts: readonly HourPart[]; ariaLabel: string; minN?: number; showKey?: boolean; title?: string; /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these columns. */ hours?: readonly number[]; /** The hover line for an hour, replacing the default share list (the late charts: lateHourLine). */ hoverLine?: (clock: string, c: HourColumn) => string }) {
+export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey = true, title, hours, hoverLine, departures = false }: { columns: readonly HourColumn[]; parts: readonly HourPart[]; ariaLabel: string; minN?: number; showKey?: boolean; title?: string; /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these columns. */ hours?: readonly number[]; /** The hover line for an hour, replacing the default share list (the late charts: lateHourLine). */ hoverLine?: (clock: string, c: HourColumn) => string; /** Draw the departures in each hour as a thin grey line over the bars (CIV-282). */ departures?: boolean }) {
   const tableId = useId();
   const [hour, setHour] = useState<number | null>(null);
   const period = hour != null ? HOUR_TO_PERIOD[hour] ?? null : null;
@@ -53,6 +55,7 @@ export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey
           <div key={i} className="pointer-events-none absolute bottom-0 top-5 rounded-sm bg-[var(--bg-btn-hover)]" style={{ left: `${band.left * 100}%`, width: `${band.width * 100}%` }} />
         ))}
         <div className="relative z-10 flex items-end gap-px" style={{ height: H }}>
+          {departures && <DeparturesLine counts={axis.map(h => byHour.get(h % 24)?.n ?? null)} style={{ zIndex: 1 }} />}
           {axis.map(gtfsHour => {
             const c = byHour.get(gtfsHour % 24);
             const enough = !!c && c.n >= minN;
@@ -80,6 +83,7 @@ export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey
       {showKey && <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs font-bold text-[var(--text-dim)]">
         <span className="font-normal">Paler bars rest on fewer than {minN} departures.</span>
         {parts.map(p => <span key={p.name} className="inline-flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-sm" style={{ background: p.color }} aria-hidden="true" />{p.name}</span>)}
+        {departures && <LegendItem kind="line" color="var(--text-dim)">Departures</LegendItem>}
       </div>}
       {/* The numbers behind the chart, for screen readers only: linked to the chart by aria-describedby. */}
       <div id={tableId} className="sr-only">

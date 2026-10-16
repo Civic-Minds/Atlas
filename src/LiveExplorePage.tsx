@@ -214,6 +214,7 @@ function Late({ data, dir, day, band, lateMin }: { data: DashboardBandData; dir:
       </div>
       <HourBars
                   hoverLine={(t, c) => lateHourLine(t, lateCount(c.parts[2], c.n), c.n)}
+                  departures
         ariaLabel={`${label}: share of departures ahead of the timetable, on time and late, by hour of the day. ${pct(c.lateShare)} late overall.`}
         parts={parts}
         columns={block.byHour.filter(h => band === 'all' || periodKeyForHour(h.hour) === band).map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}

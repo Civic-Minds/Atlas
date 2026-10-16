@@ -16,6 +16,7 @@ import { liveChartHours } from './utils/sparklinePeriods';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
+import LegendItem from './components/ui/LegendItem';
 import { SectionTitle } from './components/ui/PageTitle';
 import { lateCount, lateHourLine } from '../shared/liveWording';
 
@@ -109,7 +110,7 @@ function Days({ v3, data, band, dir, allOnly = false }: { v3: LiveV3; data: Dash
                 <div className="mt-1 text-2xl font-black tracking-tight" title={`${c.late.n.toLocaleString()} departures`}>{pct(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>
                 <div className="mt-2">
                   {c.hours.length ? (
-                    <HourSpark height={allOnly ? 120 : undefined} hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)} values={c.hours} hours={liveChartHours(h => cols.some(cc => (cc.hours.find(x => x.hour === h)?.n ?? 0) >= 30))} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
+                    <HourSpark departures height={allOnly ? 120 : undefined} hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)} values={c.hours} hours={liveChartHours(h => cols.some(cc => (cc.hours.find(x => x.hour === h)?.n ?? 0) >= 30))} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
                       ariaLabel={`${c.label}: share of departures late by hour of the day, ${pct(c.late.share)} late overall.`} />
                   ) : <p className="text-sm text-[var(--text-muted)]">No departures in this part of the day.</p>}
                 </div>
@@ -117,6 +118,10 @@ function Days({ v3, data, band, dir, allOnly = false }: { v3: LiveV3; data: Dash
             ) : <p className="mt-1 text-sm text-[var(--text-muted)]">No {c.label.toLowerCase()} with good recordings this week.</p>}
           </div>
         ))}
+      </div>
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
+        <LegendItem color="var(--status-negative-text)">Late %</LegendItem>
+        <LegendItem kind="line" color="var(--text-dim)">Departures</LegendItem>
       </div>
       {!allOnly && <p className="mt-2 text-xs text-[var(--text-dim)]">Faded bars are based on fewer than {MIN_N} departures. The percentages count only days with good recordings, as the tiles do; the hourly bars count every day of the week.</p>}
     </section>
