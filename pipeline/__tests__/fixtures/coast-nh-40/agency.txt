@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_email,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url
+2962,Cooperative Alliance for Seacoast Transportation (COAST),info@coastbus.org,http://www.coastbus.org/,America/New_York,en,603-743-5777,http://www.coastbus.org/fare-information/fares

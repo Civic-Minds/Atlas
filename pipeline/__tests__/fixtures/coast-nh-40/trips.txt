@@ -1,0 +1,49 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+3795,31581.84444,1152528,40 Downtown Portsmouth via Borthwick - Islington,,1,50541,66677,1,1
+3795,31581.84444,1152529,40 Downtown Portsmouth via Borthwick - Islington,,1,50541,66677,1,1
+3795,31581.84444,1152530,40 Downtown Portsmouth via Borthwick - Islington,,1,50541,66677,1,1
+3795,31581.84444,1152531,40 Downtown Portsmouth via Borthwick - Islington,,1,50541,66677,1,1
+3795,31581.84444,1152532,40 Downtown Portsmouth via Borthwick - Islington,,1,50541,66677,1,1
+3795,31581.84444,1152533,40 Downtown Portsmouth via Borthwick - Islington,,1,50541,66677,1,1
+3795,31581.84444,1152534,40 Downtown Portsmouth via Borthwick - Islington,,1,50541,66677,1,1
+3795,31581.84444,1152535,40 Downtown Portsmouth via Borthwick - Islington,,1,50541,66677,1,1
+3795,31581.84444,1152536,40 Downtown Portsmouth via Borthwick - Islington,,,50541,66677,0,0
+3795,31581.84444,1152537,40 Downtown Portsmouth via Borthwick - Islington,,,50541,66677,0,0
+3795,31581.84444,1152538,40 Downtown Portsmouth via Borthwick - Islington,,,50541,66677,0,0
+3795,31581.84444,1152539,40 Downtown Portsmouth via Borthwick - Islington,,,50541,66677,0,0
+3795,31581.107595,1152540,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152541,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152542,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152543,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152544,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152545,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152546,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152547,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152548,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152549,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152550,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.107595,1152551,40 Downtown Portsmouth via Borthwick - Islington,,,50542,66677,0,0
+3795,31581.84444,1152504,40 Borthwick Trolley Outbound via Islington,,0,50541,66729,1,2
+3795,31581.84444,1152505,40 Borthwick Trolley Outbound via Islington,,0,50541,66729,1,2
+3795,31581.84444,1152506,40 Borthwick Trolley Outbound via Islington,,0,50541,66729,1,2
+3795,31581.84444,1152507,40 Borthwick Trolley Outbound via Islington,,0,50541,66729,1,2
+3795,31581.84444,1152508,40 Borthwick Trolley Outbound via Islington,,0,50541,66729,1,2
+3795,31581.84444,1152509,40 Borthwick Trolley Outbound via Islington,,0,50541,66729,1,2
+3795,31581.84444,1152510,40 Borthwick Trolley Outbound via Islington,,0,50541,66729,1,2
+3795,31581.84444,1152511,40 Borthwick Trolley Outbound via Islington,,0,50541,66729,1,2
+3795,31581.84444,1152512,40 Borthwick Trolley Outbound via Islington,,,50541,66729,1,2
+3795,31581.84444,1152513,40 Borthwick Trolley Outbound via Islington,,,50541,66729,1,2
+3795,31581.84444,1152514,40 Borthwick Trolley Outbound via Islington,,,50541,66729,1,2
+3795,31581.84444,1152515,40 Borthwick Trolley Outbound via Islington,,,50541,66729,1,2
+3795,31581.107595,1152516,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2
+3795,31581.107595,1152517,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2
+3795,31581.107595,1152518,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2
+3795,31581.107595,1152519,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2
+3795,31581.107595,1152520,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2
+3795,31581.107595,1152521,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2
+3795,31581.107595,1152522,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2
+3795,31581.107595,1152523,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2
+3795,31581.107595,1152524,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2
+3795,31581.107595,1152525,40 Borthwick Trolley Outbound via Islington,,,50542,66729,0,0
+3795,31581.107595,1152526,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2
+3795,31581.107595,1152527,40 Borthwick Trolley Outbound via Islington,,,50542,66729,1,2

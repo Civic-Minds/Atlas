@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_color,route_text_color
+3795,2962,40,40 Islington / Borthwick Trolley,3,0C6B6D,FFFFFF
