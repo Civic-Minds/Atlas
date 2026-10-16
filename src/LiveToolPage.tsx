@@ -7,6 +7,11 @@ import type { DashboardBand, DashboardBandData, LiveV3 } from '../shared/liveDas
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { liveDashboardDataUrl } from './lib/liveReportData';
 import HourSpark from './components/charts/HourSpark';
+import LegendItem from './components/ui/LegendItem';
+import { TILE } from './pageStyles';
+import { liveChartHours } from './utils/sparklinePeriods';
+import { lateCount, lateHourLine } from '../shared/liveWording';
+import { periodKeyForHour } from '../shared/config';
 import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
@@ -85,6 +90,36 @@ function SegmentCard({ data, dir, fromStopId, toStopId, stops }: { data: Dashboa
   );
 }
 
+/** Late share by hour over the whole 5am–4am day, with the chosen time of day shaded, beside the route's late share. */
+function LateByHour({ v3, band }: { v3: LiveV3; band: DashboardBand }) {
+  const block = v3.bands.all.adherence.timepoints.all;
+  const c = block.overall;
+  if (!c || c.n === 0) return null;
+  const hours = block.byHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));
+  const max = Math.max(0.1, ...hours.filter(h => h.n >= 30).map(h => h.value));
+  return (
+    <div className="grid items-start gap-6 md:grid-cols-[13rem_minmax(0,1fr)]">
+      <div className={TILE}>
+        <div className="text-3xl font-bold tracking-tight">{pct(c.lateShare)}</div>
+        <div className="mt-1 text-xs text-[var(--text-dim)]">late, of {c.n.toLocaleString()}</div>
+      </div>
+      <div className="min-w-0">
+        <HourSpark
+          departures height={96} values={hours} scale={{ min: 0, max: Math.ceil(max * 10) / 10 }} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
+          hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= 30))}
+          shade={band === 'all' ? undefined : h => periodKeyForHour(h) === band}
+          hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)}
+          ariaLabel={`Share of departures late by hour of the day, ${pct(c.lateShare)} late overall.`}
+        />
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
+          <LegendItem color="var(--status-negative-text)">Late %</LegendItem>
+          <LegendItem kind="line" color="var(--text-dim)">Departures</LegendItem>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** The string-line view: one service day of one direction, over the chosen time of day. The days are the last three of the analysis window. */
 function StringsPane({ agency, route, v3, dir, band }: { agency: string; route: string; v3: LiveV3; dir: number; band: DashboardBand }) {
   const dates = v3.window.dates.slice(-3);
@@ -123,8 +158,9 @@ function Canvas({ data, v3, agency, view, route, dir, band, measure, pick, ancho
       </div>
       {hasChart && (
         <div className="max-h-[40%] shrink-0 overflow-y-auto border-t border-[var(--border-primary)] bg-[var(--bg-app)] px-6 pb-4">
+          <h2 className="pb-1 pt-3 text-sm font-bold">{measure === 'late' ? 'How well it keeps to its timetable' : 'Run time'}</h2>
           <ErrorBoundary label="This chart could not be drawn.">
-            {measure === 'late' ? <Late data={bandData} dir={dir} day="all" band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /> : <RunTime v3={v3} band={band} dir={dir} />}
+            {measure === 'late' ? <LateByHour v3={v3} band={band} /> : <RunTime v3={v3} band={band} dir={dir} />}
           </ErrorBoundary>
         </div>
       )}
