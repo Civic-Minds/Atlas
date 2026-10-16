@@ -55,7 +55,7 @@ export default function HourBars({ columns, parts, ariaLabel, minN = 30 }: { col
         </div>
       </div>
       <figcaption className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs font-bold text-[var(--text-dim)]">
-        <span className="font-normal">Faded bars are based on fewer than {minN} departures.</span>
+        <span className="font-normal">Paler bars rest on fewer than {minN} departures.</span>
         {parts.map(p => <span key={p.name} className="inline-flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-sm" style={{ background: p.color }} aria-hidden="true" />{p.name}</span>)}
       </figcaption>
       <details className="mt-2 text-xs">

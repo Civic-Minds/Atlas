@@ -157,17 +157,17 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
               <ProfileBars
                 ariaLabel={`${label}: typical delay at each stop along the route. ${buildupSentence(label, b)}`}
                 takeaway={buildupTakeaway(b, lessExactStops(b.directionId))}
-                axisTitle="Minutes late leaving the stop (below the line: early)"
+                axisTitle="Minutes late"
                 points={points}
                 formatY={axisMin}
                 unit="trips"
                 valueHeader="Typical delay"
-                caption="Each bar is the typical delay at a stop. The spread (1 in 10 earliest and latest) is in the table."
+                caption="How late vehicles usually leave each stop: above the line is late, below is early."
                 whiskers={false}
                 zero
                 zeroLabel="On time"
                 scale={scale}
-                lessExactNote="the first stops, where vehicle positions arrive less often (in the tunnel), so the delay there is less exact."
+                lessExactNote="the first stops are in the tunnel, where we see the vehicles less often, so these are rough."
                 marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
               />
               <div className="mt-3 overflow-x-auto">
@@ -264,8 +264,8 @@ function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: Das
                   formatY={y => pct(y)}
                   unit="gaps"
                   valueHeader="Gaps off the timetable"
-                  caption="Share of gaps between vehicles that are too close together or too far apart, stop by stop."
-                  axisTitle="Share of gaps off the timetable"
+                  caption="How often vehicles arrive too close together or too far apart, at each stop."
+                  axisTitle="Share of gaps"
                   scale={scale}
                   series={[{ name: 'Too close together', color: 'var(--status-negative-text)' }, { name: 'Too far apart', color: 'var(--status-caution-text)' }]}
                   marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? 'Forms here' : 'Biggest rise' }] : []}
@@ -361,8 +361,8 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
                   valueHeader="Typical trip time"
                   refHeader="Scheduled"
                   rowHeader="Starts at"
-                  caption="Each bar is the typical trip time for trips starting that hour, the black tick is the timetable, and the faint line reaches the time that 1 in 10 trips exceed."
-                  axisTitle="Minutes from first stop to last"
+                  caption="How long the whole trip usually takes, by the hour it starts. The black tick is what the timetable allows."
+                  axisTitle="Trip minutes"
                   scale={{ min: 0, max: scale.max }}
                 />
               )}
@@ -403,8 +403,8 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
                       formatY={y => `${num(y)} min`}
                       unit="gaps"
                       valueHeader="Extra wait"
-                      caption="Extra wait at each stop along the route."
-                      axisTitle="Extra minutes of waiting"
+                      caption="How much longer riders wait than the timetable says, at each stop."
+                      axisTitle="Extra minutes"
                       scale={scale}
                     />
                   )}
@@ -454,12 +454,12 @@ function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
             unit="trips"
             valueHeader="Ran"
             rowHeader="Day"
-            caption="Share of scheduled trips that ran, day by day."
+            caption="How many of the scheduled trips ran, each day."
             scale={{ min: 0.9, max: 1 }}
           />
         </div>
       )}
-      <p className="mt-2 text-xs text-[var(--text-dim)]">The bars start at 90%.{skipped.length > 0 && <> Not counted: {skipped.map(d => dateRangeText(d.date, d.date)).join(', ')} (gaps in our recordings).</>}</p>
+      <p className="mt-2 text-xs text-[var(--text-dim)]">{skipped.length > 0 && <>Not counted: {skipped.map(d => dateRangeText(d.date, d.date)).join(', ')} (gaps in our recordings).</>}</p>
     </Section>
   );
 }

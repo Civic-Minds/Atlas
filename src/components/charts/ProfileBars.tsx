@@ -200,7 +200,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
         </div>
       </div>
       <figcaption className="mt-1 text-xs text-[var(--text-dim)]">
-        {caption} Faded bars are based on fewer than {minN} {unit}.
+        {caption} Paler bars rest on fewer than {minN} {unit}.
         {runs.length > 0 && lessExactNote && <span className="mt-1 flex items-center gap-1"><span className="inline-block h-2 w-3 rounded-sm" style={{ background: stripe(color0) }} aria-hidden="true" />Striped bars: {lessExactNote}</span>}
         {series && series.length > 1 && (
           <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1">

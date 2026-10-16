@@ -103,9 +103,9 @@ describe('Live route dashboard', () => {
     expect(screen.queryByText(/RONCESVALLES/)).toBeNull();
     expect(screen.getAllByText(/Roncesvalles Ave at Queen St W/).length).toBeGreaterThan(0);
     // One plain caption per chart (no ranges), merged with what the bars are.
-    expect(screen.getByText('Faded bars are based on fewer than 30 departures.')).toBeTruthy();
-    expect(screen.getAllByText(/Faded bars are based on fewer than 30 trips\./).length).toBe(2);
-    expect(screen.getAllByText(/Faded bars are based on fewer than 30 gaps\./).length).toBe(2);
+    expect(screen.getByText('Paler bars rest on fewer than 30 departures.')).toBeTruthy();
+    expect(screen.getAllByText(/Paler bars rest on fewer than 30 trips\./).length).toBe(2);
+    expect(screen.getAllByText(/Paler bars rest on fewer than 30 gaps\./).length).toBe(2);
     expect(document.body.textContent).not.toMatch(/Each (bar|point) is \d/);
     expect(document.body.textContent).not.toMatch(/near here/);
     // Each figure is one focusable unit with a summary; each chart can be read as a table.
