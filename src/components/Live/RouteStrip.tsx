@@ -164,12 +164,12 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
 
   const legend = (
     // One line that wraps only where it runs out of room (phones): each key stays together.
-    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--text-legend)]">
+    <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-[var(--text-legend)]">
       {tracks.map(t => (
-        <span key={t.mode} className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
+        <span key={t.mode} className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
           <span className="font-bold text-[var(--text-secondary)]">{LEGEND_TITLE[t.mode]}:</span>
           {legendSteps(t.mode).map(step => (
-            <span key={step} className="inline-flex items-center gap-1.5"><Swatch mode={t.mode} step={step} />{stepLabel(t.mode, step)}</span>
+            <span key={step} className="inline-flex items-center gap-1"><Swatch mode={t.mode} step={step} />{stepLabel(t.mode, step)}</span>
           ))}
         </span>
       ))}
