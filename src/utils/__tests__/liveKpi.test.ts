@@ -24,8 +24,8 @@ describe('kpiTiles', () => {
   it('makes the five tiles with sample sizes and no colour for small moves', () => {
     const tiles = kpiTiles(w);
     expect(tiles.map(t => t.label)).toEqual(['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']);
-    expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: 'up from 20% last week', tone: 'same' } });
-    expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: 'down from 99.8% last week', tone: 'same' } });
+    expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: '▲ from 20% last week', tone: 'same' } });
+    expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: '▼ from 99.8% last week', tone: 'same' } });
   });
   it('drops the change chips when the weeks are not comparable', () => {
     expect(kpiTiles({ ...w, comparable: false }).every(t => t.delta == null)).toBe(true);
