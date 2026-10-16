@@ -96,7 +96,7 @@ function Days({ v3, data, band, dir, allOnly = false }: { v3: LiveV3; data: Dash
         How often cars leave 5.5+ minutes late {BAND_WORDS[band]}, by kind of day and hour, at stops where the timetable gives a time.
         {dir != null && ' Both directions: this view is not split by direction yet.'}
       </p>
-      <div className="mt-4 grid gap-x-8 gap-y-6 md:grid-cols-3">
+      <div className={`mt-4 grid gap-x-8 gap-y-6 ${allOnly ? '' : 'md:grid-cols-3'}`}>
         {cols.map(c => (
           <div key={c.kind} className="min-w-0">
             <div className="flex items-baseline justify-between gap-2">
@@ -108,7 +108,7 @@ function Days({ v3, data, band, dir, allOnly = false }: { v3: LiveV3; data: Dash
                 <div className="mt-1 text-2xl font-black tracking-tight" title={`${c.late.n.toLocaleString()} departures`}>{pct(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>
                 <div className="mt-2">
                   {c.hours.length ? (
-                    <HourSpark values={c.hours} hours={liveChartHours(h => cols.some(cc => (cc.hours.find(x => x.hour === h)?.n ?? 0) >= 30))} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
+                    <HourSpark height={allOnly ? 120 : undefined} values={c.hours} hours={liveChartHours(h => cols.some(cc => (cc.hours.find(x => x.hour === h)?.n ?? 0) >= 30))} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
                       ariaLabel={`${c.label}: share of departures late by hour of the day, ${pct(c.late.share)} late overall.`} />
                   ) : <p className="text-sm text-[var(--text-muted)]">No departures in this part of the day.</p>}
                 </div>
@@ -117,7 +117,7 @@ function Days({ v3, data, band, dir, allOnly = false }: { v3: LiveV3; data: Dash
           </div>
         ))}
       </div>
-      <p className="mt-2 text-xs text-[var(--text-dim)]">Faded bars are based on fewer than {MIN_N} departures. The percentages count only days with good recordings, as the tiles do; the hourly bars count every day of the week.</p>
+      {!allOnly && <p className="mt-2 text-xs text-[var(--text-dim)]">Faded bars are based on fewer than {MIN_N} departures. The percentages count only days with good recordings, as the tiles do; the hourly bars count every day of the week.</p>}
     </section>
   );
 }

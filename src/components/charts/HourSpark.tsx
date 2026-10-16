@@ -20,7 +20,7 @@ const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 % 24 < 1
  * to every chart in a row so their bars compare. Values below zero hang under a dashed zero line. Hours with no data are
  * left empty, not drawn as zero. The whole chart is one focusable unit with a summary label, and a table view.
  */
-export default function HourSpark({ values, scale, color, format, ariaLabel, unit, valueHeader, minN = 30, hours }: {
+export default function HourSpark({ values, scale, color, format, ariaLabel, unit, valueHeader, minN = 30, hours, height = H }: {
   values: readonly HourValue[];
   scale: { min: number; max: number };
   /** CSS colour (a token). */
@@ -31,6 +31,8 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
   unit: string;
   valueHeader: string;
   minN?: number;
+  /** Bar area height in px (taller when the chart has a whole row to itself). */
+  height?: number;
   /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these values. */
   hours?: readonly number[];
 }) {
@@ -38,7 +40,7 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
   const [hover, setHover] = useState<number | null>(null);
   const byHour = new Map(values.map(v => [v.hour, v]));
   const span = scale.max - scale.min || 1;
-  const pos = (v: number) => Math.max(0, Math.min(H, ((v - scale.min) / span) * H));
+  const pos = (v: number) => Math.max(0, Math.min(height, ((v - scale.min) / span) * height));
   const zeroPx = pos(0);
   const axis = hours ?? liveChartHours(h => (byHour.get(h)?.n ?? 0) >= minN);
   const ordered = axis.map(h => byHour.get(h % 24)).filter((v): v is HourValue => !!v);
@@ -50,7 +52,7 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
           <div className="h-5 truncate text-xs text-[var(--text-secondary)]">
             {hover != null && byHour.get(hover) && <><span className="font-bold">{clock(hover)}</span> {format(byHour.get(hover)!.value)}, {byHour.get(hover)!.n.toLocaleString()} {unit}{byHour.get(hover)!.n < minN ? ' (too few to rely on)' : ''}</>}
           </div>
-          <div className="relative flex gap-px" style={{ height: H }}>
+          <div className="relative flex gap-px" style={{ height }}>
             {scale.min < 0 && <div className="pointer-events-none absolute inset-x-0 border-t border-dashed border-[var(--text-dim)] opacity-60" style={{ bottom: zeroPx }} />}
             {axis.map(gtfsHour => {
               const v = byHour.get(gtfsHour % 24);
