@@ -23,7 +23,7 @@ import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type Run
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
-import { branchPatterns, mainStretchStops, reliableStretch, stationOrLoop } from '../shared/mainStretch.js';
+import { branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 
@@ -780,11 +780,19 @@ const swapsDropped = swapsInWindow.length - swapsReassigned;
 const tpMinutes = windowRuns.flatMap(r => r.stops.filter(s => s.timepoint).map(s => s.delaySec / 60));
 const nearCutoffShare = tpMinutes.length ? tpMinutes.filter(m => Math.abs(m - EARLY_AT_OR_BELOW_MIN) < 0.75 || Math.abs(m - LATE_AT_OR_ABOVE_MIN) < 0.75).length / tpMinutes.length : 0;
 const BANDS: (TimeBand | 'all')[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
+// B2 ranks only stops on a regular pattern (the main stretch's rule: 20%+ of the direction's trips), so a rare
+// diversion or odd pattern with a few late trips cannot top the list. Other stops are listed, not ranked.
+const regularStops = new Set<string>();
+for (const d of new Set([...patterns.values()].map(p => p.directionId))) {
+  const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
+  for (const p of regularPatterns(dirPatterns.map(q => ({ stops: q.stops.map(st => st.stopId), trips: tripsPerShape.get(q.id) ?? 0 })))) for (const st of p.stops) regularStops.add(`${d}|${st}`);
+}
 /** Stops (B2) and delay build-up (B3) for a set of runs. */
 function stopsAndBuildup(rs: readonly RunDelays[]) {
   const stops = stopDelayStats(rs).map(s => ({
     ...stopInfo(s.stopId), directionId: s.directionId, order: orderIndex(s.directionId, s.stopId), n: s.n,
-    medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare), ranked: s.ranked,
+    medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare),
+    ranked: s.ranked && regularStops.has(`${s.directionId}|${s.stopId}`),
   })).sort((a, b) => a.directionId - b.directionId || a.order - b.order);
   // B2 ranks by late share (5.5+ min late) among stops with enough departures; median and p90 sit beside it.
   for (const dir of new Set(stops.map(x => x.directionId))) {
