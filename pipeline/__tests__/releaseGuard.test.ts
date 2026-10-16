@@ -121,10 +121,11 @@ describe('tile rules fingerprint', () => {
   // left them out, so no tile value changes: hash only.
   // Step 5a adds the rv_/rr_ route filter keys and reads them first in the period filter: a tile
   // change, covered by the same version 5 bump (one bump for the whole focus branch).
+  // Step 6 adds routeAllDayHeadway and routeMiddayCap, read first by the all-day filter: same bump.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '6635d66fb292c721c7c1f18463caacec591e50c8dee11bfbbfdaad366382277c',
+      fingerprint: '4168c399ca67e5dae7bff48276cc82bc4a290f77f8df8f605af6437646c6f610',
     });
   });
 });

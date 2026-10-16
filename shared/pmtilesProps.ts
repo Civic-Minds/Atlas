@@ -71,6 +71,8 @@ export const TILE_ROUTE_SCALAR_KEYS: readonly string[] = [
   'serviceClass', 'tier', 'weekdayTierVariation', 'edgeGapAllowance',
   'headway', 'worstDirectionHeadway', 'minStopHeadway',
   'routeHasIrregularDirection', 'routeHasLimitedDirection', 'worstDirectionMiddayCap',
+  // Frequency focus step 6: the stretch selector's all-day filter value and #899 cap.
+  'routeAllDayHeadway', 'routeMiddayCap',
   'noRouteShape', 'frequentService', 'nightService', 'nightService30', 'nightService60',
 ];
 

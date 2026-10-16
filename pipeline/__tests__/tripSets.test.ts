@@ -515,3 +515,34 @@ describe('review fixes: partial night only where night service misses the main s
     }
   });
 });
+
+describe('step 6: the all-day filter, the midday cap and Frequent Service read the stretches', () => {
+  const filterable = (r: Run, route: string) => {
+    const features = r.rows.filter(p => p.routeShortName === route).map(p => ({ properties: JSON.parse(JSON.stringify(p)) }));
+    normalizeRouteFilterFeatures(features);
+    return features.map(f => f.properties);
+  };
+  it.each([
+    // [fixture, route, day, passes, fails, Frequent Service on some row]
+    ['ttc-94-weekday', '94', 'Weekday', 20, 15, false],
+    ['ttc-29-weekday', '29', 'Weekday', 10, 5, true],
+    ['ttc-507-weekday', '507', 'Weekday', 30, 20, false],
+    ['ttc-505-weekday', '505', 'Weekday', 10, 5, true],
+    ['cta-j14-saturday', 'J14', 'Saturday', 10, 5, false],
+    ['ttc-134-weekday', '134', 'Weekday', 15, 10, false],
+  ] as const)('%s all day passes %s, fails %s', async (name, route, day, pass, fail, frequent) => {
+    const r = await run(name);
+    const rows = filterable(r, route);
+    expect(routePassesHeadwayFilter(rows, 'all', day, pass)).toBe(true);
+    expect(routePassesHeadwayFilter(rows, 'all', day, fail)).toBe(false);
+    expect(rows.filter(p => p.day === day).some(p => p.frequentService === true)).toBe(frequent);
+  });
+  it('card rows: 505 names one row per direction (its Broadview Ave short turns are variants); 507 has a Long Branch and a Marine Parade tail', async () => {
+    const r505 = await run('ttc-505-weekday');
+    const roles505 = r505.rows.filter(p => p.day === 'Weekday').map(p => [p.directionId, p.headsign, p.stretchRole]);
+    expect(roles505.filter(([, h]) => h === 'Broadview Ave').every(([, , role]) => role === 'variant')).toBe(true);
+    const r507 = await run('ttc-507-weekday');
+    const tails = r507.rows.filter(p => p.day === 'Weekday' && p.directionId === 1 && p.stretchRole === 'tail').map(p => p.headsign).sort();
+    expect(tails).toEqual(['Long Branch', 'Marine Parade']);
+  });
+});

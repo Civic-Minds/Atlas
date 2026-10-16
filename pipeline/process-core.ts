@@ -3051,7 +3051,7 @@ export async function processGtfsBuffer(
     stampStretchShadow(features, stretchesByKey, feature => {
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
       return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
-    });
+    }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}));
     // A partial-weekday route-day (#710) keeps today's filter: its stretch reads one weekday, while
     // its service runs on others and continues on the next day's service after midnight.
     const partialRouteDays = new Set([...partialWeekdayFeatures].map(f => {
@@ -3064,6 +3064,18 @@ export async function processGtfsBuffer(
       delete feature.properties.routeFilterHeadwayByPeriod;
       delete feature.properties.routeRunsByPeriod;
       delete feature.properties.directionFilterHeadwayByPeriod;
+      delete feature.properties.routeAllDayHeadway;
+      delete feature.properties.routeMiddayCap;
+    }
+    // Step 6: Frequent Service reads the stretches: the route qualifies when every direction's main
+    // stretch and each tail running 7-19 do; its rows with midday service are lit.
+    for (const feature of features) {
+      const p = feature.properties;
+      if (p.routeFilterHeadwayByPeriod === undefined) continue;
+      const runsMidday = (p.periodCoverageHeadway as HeadwayByPeriod | undefined)?.midday != null;
+      p.frequentService = p.day === 'Weekday' && p.stretchFrequentService === true && runsMidday;
+      const research = p.stretchResearchFrequentService as { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean } | undefined;
+      if (research) p.researchFrequentService = runsMidday ? research : { daytime15: false, daytime30: false, extended15: false, extended30: false };
     }
     // Step 4: Night reads the stretches. A route qualifies when every direction it runs by day
     // passes at the middle of its main stretch (and each tail that runs at night passes), 2-5am;

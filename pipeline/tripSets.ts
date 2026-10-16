@@ -14,6 +14,7 @@
  */
 import { TIME_PERIODS, type PeriodKey } from '../shared/config.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
   computePeriodCoverageHeadways,
   computePeriodHeadways,
@@ -414,6 +415,8 @@ export interface DirectionRollup {
   allDay: number | null;
   /** Step 6 shadow: the main stretch's midday wait (#899 cap input), null with no midday service. */
   middayWait: number | null;
+  /** Step 6: the #899 cap. null: steady at midday, no cap; a number: its midday wait; Infinity: no midday departures. */
+  middayCap: number | null;
   /** Step 6 shadow: Frequent Service (7-19 every 15, no gap) on the main stretch and every tail running then. */
   frequent: boolean;
   research: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
@@ -484,6 +487,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',
     allDay: allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
     middayWait: main.midday.coverage,
+    middayCap: main.midday.sustained === true ? null : main.midday.coverage ?? Infinity,
     frequent: frequentStretches.every(st => hasSustainedFrequentService([...st.times])),
     research: {
       daytime15: researchOf.every(r => r.daytime15), daytime30: researchOf.every(r => r.daytime30),
@@ -509,6 +513,8 @@ export interface RouteRollup {
   allDay: number | null;
   /** Step 6 shadow: worst direction's midday wait (the #899 cap); null when any direction has no midday service. */
   middayWait: number | null;
+  /** Step 6: the #899 midday cap over the route's directions (only with two or more); null: no cap. */
+  middayCap: number | null;
   frequent: boolean;
   research: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
 }
@@ -551,6 +557,11 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     nightPartial60: complete && known.every(d => d.night60) && known.some(d => d.nightPartial60),
     allDay: complete && known.every(d => d.allDay != null) ? Math.max(...known.map(d => d.allDay!)) : null,
     middayWait: complete && known.every(d => d.middayWait != null) ? Math.max(...known.map(d => d.middayWait!)) : null,
+    middayCap: (() => {
+      if (!complete || known.length < 2) return null;
+      const caps = known.map(d => d.middayCap).filter((v): v is number => v != null);
+      return caps.length > 0 ? Math.max(...caps) : null;
+    })(),
     frequent: complete && known.every(d => d.frequent),
     research: {
       daytime15: complete && known.every(d => d.research.daytime15), daytime30: complete && known.every(d => d.research.daytime30),
@@ -576,6 +587,8 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchFrequentService',
   'stretchResearchFrequentService',
   'stretchMeta',
+  'stretchRole',
+  'stretchIndex',
   'headwayByPeriodSustainedMid',
 ] as const;
 
@@ -590,6 +603,8 @@ export function stampStretchShadow(
   features: readonly ShadowFeature[],
   byKey: ReadonlyMap<string, DirectionStretches>,
   slotOf: (feature: ShadowFeature) => { group: string; dirId: string; day: string } | null,
+  /** A feature's own drawn stops, for its stretch role (5b card rows). */
+  stopsOf: (feature: ShadowFeature) => readonly string[] = () => [],
 ): void {
   const rollups = new Map<string, DirectionRollup | null>();
   const rollupOf = (key: string): DirectionRollup | null => {
@@ -642,12 +657,32 @@ export function stampStretchShadow(
     p.stretchNightPartial60 = route.nightPartial60;
     // Step 6 shadow: nothing reads these yet.
     p.stretchAllDayHeadway = route.allDay;
+    // Step 6: the all-day filter value and the #899 cap from the stretches (tiles: scalars; a
+    // missing value or no midday service is the no-service sentinel, no cap is 0, so an MVT tile
+    // never drops them and falls back to today's fields).
+    p.routeAllDayHeadway = route.allDay ?? NO_PERIOD_SERVICE_TILE_VALUE;
+    p.routeMiddayCap = route.middayCap == null ? 0 : Number.isFinite(route.middayCap) ? route.middayCap : NO_PERIOD_SERVICE_TILE_VALUE;
     p.stretchMiddayWait = route.middayWait;
     p.stretchFrequentService = slot.day === 'Weekday' ? route.frequent : false;
     p.stretchResearchFrequentService = route.research;
     p.routeFilterHeadwayByPeriod = byPeriod(k => route.period[k].filterValue);
     p.directionFilterHeadwayByPeriod = byPeriod(k => dir.period[k].filterValue);
     p.routeRunsByPeriod = byPeriod(k => route.period[k].runs);
+    // Card rows (5b): which stretch this row stands for. A row whose own stops cover a whole tail
+    // stands for it (the longest such tail); else one covering the whole main stretch stands for
+    // the main stretch; else it is a variant (a short turn, a positioning trip, a pattern that only
+    // touches a branch) and names no destination row.
+    {
+      const own = new Set(stopsOf(feature));
+      const covers = (stops: readonly string[]) => stops.length > 0 && stops.every(stop => own.has(stop));
+      const tailIdx = stretches.tails
+        .map((t, i) => ({ t, i }))
+        .filter(({ t }) => covers(t.stops))
+        .sort((a, b) => b.t.stops.length - a.t.stops.length)[0]?.i;
+      if (tailIdx != null) { p.stretchRole = 'tail'; p.stretchIndex = tailIdx; }
+      else if (stretches.main && covers(stretches.main.stops)) { p.stretchRole = 'main'; p.stretchIndex = 0; }
+      else { p.stretchRole = 'variant'; delete p.stretchIndex; }
+    }
     p.stretchMeta = {
       main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount } : null,
       tails: stretches.tails.map(t => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount })),
@@ -667,5 +702,7 @@ export function stampStretchShadow(
     delete feature.properties.routeFilterHeadwayByPeriod;
     delete feature.properties.routeRunsByPeriod;
     delete feature.properties.directionFilterHeadwayByPeriod;
+    delete feature.properties.routeAllDayHeadway;
+    delete feature.properties.routeMiddayCap;
   }
 }

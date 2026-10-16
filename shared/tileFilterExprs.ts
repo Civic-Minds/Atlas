@@ -38,10 +38,13 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
   // This expression is the single definition of the frequency-filter rule: in-memory surfaces
   // evaluate it via shared/routeHeadwayFilter.ts. Worst direction decides. minStopHeadway (the
   // busiest stop) is deliberately not a fallback: a busy stretch must never make a route pass.
+  // Step 6: a route stamped by the stretch selector reads its all-day value (routeAllDayHeadway:
+  // every direction's main stretch and steady tails, 6-22h) first; span rows never pass.
   const allDay: unknown[] = [
-    'coalesce',
-    ['get', 'worstDirectionHeadway'],
-    ['get', 'headway'],
+    'case',
+    ['has', 'routeAllDayHeadway'],
+    ['case', ['==', ['get', 'tier'], 'span'], NO_PERIOD_SERVICE_TILE_VALUE, ['get', 'routeAllDayHeadway']],
+    ['coalesce', ['get', 'worstDirectionHeadway'], ['get', 'headway']],
   ];
   if (period && period !== 'all') {
     // wdph (worst-direction) must win: every direction has to meet the threshold, not just
@@ -157,7 +160,7 @@ export function buildTileHeadwayFilterClause(period: PeriodFilter | undefined, m
   // (worstDirection.ts; no midday service at all fails every threshold). A tile without the cap
   // behaves as before.
   if ((!period || period === 'all') && maxHeadway !== Infinity) {
-    return ['all', ['<=', ['coalesce', ['get', 'worstDirectionMiddayCap'], 0], threshold], clause];
+    return ['all', ['<=', ['coalesce', ['get', 'routeMiddayCap'], ['get', 'worstDirectionMiddayCap'], 0], threshold], clause];
   }
   return clause;
 }
