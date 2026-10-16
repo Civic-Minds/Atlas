@@ -186,16 +186,36 @@ describe('reference date clamp skips an expired newest period (RCT)', () => {
     expect(detectReferenceDate(calendar, [], undefined)).toBe('20270130');
   });
 
-  it('passes over a short period that is the newest started and still running when a long one runs (#921)', () => {
-    // A 2-week block running today (under MIN_RUNNING_PERIOD_DAYS) is a replacement or special
-    // timetable, not the feed's schedule: the long regular period running today wins. Before #921
-    // the block was kept (as before #734); Sound Transit's 2-day Link bus bridge then dropped the
-    // 1 Line and 2 Line.
+  it('keeps a short holiday period that is the newest started and still running', () => {
+    // A 2-week block running today is still the newest started period, as before #734;
+    // only an ended newest period, or a replacement block (#921, below), is replaced.
+    // Recorded so a change here is deliberate.
     const calendar = [
       cal('R-wk', '20250901', '20270630'), cal('R-sa', '20250901', '20270630', '0000010'),
       cal('H-wk', '20261005', '20261018'), cal('H-sa', '20261005', '20261018', '0000010'),
     ];
-    expect(detectReferenceDate(calendar, [], undefined)).toBe('20260731');
+    expect(detectReferenceDate(calendar, [], undefined)).toBe('20261011');
+  });
+
+  it('keeps a short newest period that runs the regular routes (Embark\'s Wednesday service)', () => {
+    const calendar = [
+      cal('R-wk', '20250901', '20270630'), cal('R-sa', '20250901', '20270630', '0000010'),
+      cal('H-wk', '20261005', '20261018'), cal('H-sa', '20261005', '20261018', '0000010'),
+    ];
+    const trips = ['R-wk', 'R-sa', 'H-wk', 'H-sa'].flatMap(service_id => ['1', '2', '3'].map(route_id => ({ service_id, route_id })));
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20261011');
+  });
+
+  it('passes over a short replacement block whose routes the long period does not run (#921)', () => {
+    const calendar = [
+      cal('R-wk', '20250901', '20270630'), cal('R-sa', '20250901', '20270630', '0000010'),
+      cal('H-wk', '20261005', '20261018'), cal('H-sa', '20261005', '20261018', '0000010'),
+    ];
+    const trips = [
+      ...['R-wk', 'R-sa'].flatMap(service_id => ['rail-1', 'rail-2'].map(route_id => ({ service_id, route_id }))),
+      ...['H-wk', 'H-sa'].map(service_id => ({ service_id, route_id: 'shuttle' })),
+    ];
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20260731');
   });
 
   it('keeps a short newest period when no long period is running', () => {
