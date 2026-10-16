@@ -43,4 +43,16 @@ describe('live-dashboard API: always a status and a reason, never a bare 404 or 
     expect(r.body).toMatchObject({ status: 'ready', route: '510', replacementBuses: false });
     expect(String(r.body.note)).toMatch(/about 2–3 min late/);
   });
+  it('serves any route whose analysis file is listed (a bus route), and holds one that fails the quality checks', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'live-dash-'));
+    process.env.LIVE_SEGMENTS_DIR = dir;
+    const v3 = (swap: number) => ({ schema: 3, window: { days: 7, dates: [] }, swaps: { rate: swap, reassigned: 0, dropped: 0 }, adherence: { timepoints: { all: { overall: { n: 900 } } } } });
+    writeFileSync(join(dir, 'ttc-29-segments.json'), JSON.stringify({ generatedAt: 'x', v3: v3(0.02) }));
+    writeFileSync(join(dir, 'ttc-35-segments.json'), JSON.stringify({ generatedAt: 'x', v3: v3(0.2) }));
+    expect((await get('agency=ttc&route=29')).body).toMatchObject({ status: 'ready', route: '29' });
+    const held = await get('agency=ttc&route=35');
+    expect(held.body.status).toBe('held');
+    expect(String(held.body.reason)).toMatch(/TTC 35 is held back: about 20% of its trips/);
+    expect((await get('agency=ttc&route=36')).body.status).toBe('unknown_route');
+  });
 });
