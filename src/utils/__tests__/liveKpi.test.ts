@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { dailyNoise, kpiDelta, kpiTiles, lateForDays, weekCaption } from '../liveKpi';
+import { kpiDelta, kpiTiles, lateForDays, weekCaption } from '../liveKpi';
+import { dailyNoise } from '../../../shared/liveDashboard';
 import type { LiveV3 } from '../../../shared/liveDashboard';
 
 describe('kpiDelta', () => {

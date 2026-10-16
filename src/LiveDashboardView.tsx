@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
-import { dateRangeText, rankStops, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { dateRangeText, rankStops, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import DataTable from './components/ui/DataTable';
@@ -51,11 +51,7 @@ function Delta({ k }: { k: Kpi }) {
 function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.</p>;
-  const ok = new Set(w.thisWeek.healthyDates);
-  const tiles = kpiTiles(w, {
-    late: v3.bands.all.adherence.timepoints.all.byDate.filter(d => ok.has(d.date) && d.n > 0).map(d => d.lateShare),
-    delivered: (v3.serviceDelivered?.byDay ?? []).flatMap(d => (ok.has(d.date) && d.share != null ? [d.share] : [])),
-  });
+  const tiles = kpiTiles(w, weekDailyValues(v3));
   return (
     <section aria-label="This week compared with last week" className="mt-5">
       <ul className={`grid grid-cols-2 gap-3 sm:grid-cols-3 ${tiles.length >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>

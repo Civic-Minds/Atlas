@@ -1,11 +1,10 @@
 /**
  * The five headline figures of the Live dashboard with their change from last week.
- * A change is coloured only when it is bigger than normal noise, so a wobble never looks like an alarm. Where the file
- * holds a value per day (late share, trips that ran), noise is measured: the change must exceed twice the standard error
- * of the difference between the two weekly means, from the day-to-day spread (`dailyNoise`). Elsewhere a fixed amount
- * stands in (FIXED_NOISE, provisional until the analysis stores daily values for those measures too).
+ * A change is coloured only when it is bigger than normal noise: the rule (weekChangeTone, dailyNoise, NOISE_RULE) lives
+ * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
-import { dateRangeText, type CompareKey, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
+import { dailyNoise, dateRangeText, weekChangeTone, type CompareKey, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
+export { NOISE_RULE } from '../../shared/liveDashboard';
 
 export type KpiTone = 'better' | 'worse' | 'same';
 
@@ -23,29 +22,6 @@ export interface Kpi {
   lastWeekText: string | null;
 }
 
-/** Shown under the tiles. Keep in step with dailyNoise and FIXED_NOISE below. */
-export const NOISE_RULE = 'A change is coloured only when it is bigger than usual day to day: for late and trips that ran, more than the spread between days would explain; for the others, more than 2 points (bunching), 1 minute (trip time) or half a minute (extra wait). Smaller changes stay grey.';
-
-/**
- * PROVISIONAL: smallest change that counts, in the figure's own unit (share as 0-1, or minutes), for measures without
- * daily values, and for late and delivered when too few days are recorded to measure the spread.
- */
-export const FIXED_NOISE: Record<CompareKey, number> = { late: 0.02, bunching: 0.02, delivered: 0.01, tripTime: 1, extraWait: 0.5 };
-
-/**
- * Noise for a week-over-week change measured from daily values: 2 x the standard error of the difference of two weekly
- * means. The file holds daily values for this week only, so their spread stands in for both weeks:
- * 2 * sd * sqrt(1/n1 + 1/n2). `null` with fewer than 3 days (no spread to measure).
- * TODO (planned day-split rebuild of the analysis): store last week's daily values too, so each week uses its own
- * spread: 2 * sqrt(sd1^2/n1 + sd2^2/n2).
- */
-export function dailyNoise(daily: readonly number[], nThis: number, nLast: number): number | null {
-  if (daily.length < 3 || nThis < 1 || nLast < 1) return null;
-  const mean = daily.reduce((a, x) => a + x, 0) / daily.length;
-  const sd = Math.sqrt(daily.reduce((a, x) => a + (x - mean) ** 2, 0) / (daily.length - 1));
-  return 2 * sd * Math.sqrt(1 / nThis + 1 / nLast);
-}
-
 const round1 = (x: number) => Math.round(x * 10) / 10;
 const clean = (x: number) => String(round1(x)).replace('-', '−');
 const pct0 = (x: number) => `${Math.round(x * 100)}%`;
@@ -59,9 +35,7 @@ export function kpiDelta(key: CompareKey, now: number | null, before: number | n
   const unit = isShare ? 'pt' : 'min';
   if (mag === 0) return { arrow: 'none', text: 'same', tone: 'same', spoken: 'same as last week' };
   const up = diff > 0;
-  const measured = noise != null;
-  const big = Math.abs(now - before) > (noise ?? FIXED_NOISE[key]);
-  const tone: KpiTone = !big ? 'same' : up !== lowerIsBetter ? 'better' : 'worse';
+  const { tone, big, measured } = weekChangeTone(key, now, before, lowerIsBetter, noise);
   const word = isShare ? (mag === 1 ? 'point' : 'points') : 'min';
   return {
     arrow: up ? 'up' : 'down',
