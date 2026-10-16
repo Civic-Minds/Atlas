@@ -71,8 +71,8 @@ interface DataTableProps<T> {
    */
   fixed?: boolean;
   /**
-   * Fixed layout that fills its container: the first column keeps its set width and the others share the rest equally,
-   * never narrower than their set widths. For a page whose other blocks span the full content width.
+   * Fixed layout that fills its container: the first column, and any column given a `width`, keep their set width; the
+   * others share the rest equally, never narrower than the default width. For a page whose other blocks span the full content width.
    */
   fill?: boolean;
   /** Current sort, for the sortable columns' arrow and aria-sort. */
@@ -99,7 +99,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
       {caption && <caption className="sr-only">{caption}</caption>}
       {fixed && (
         <colgroup>
-          {columns.map((col, i) => <col key={col.key} style={fill && i > 0 ? undefined : { width: `${widths[i]}rem` }} />)}
+          {columns.map((col, i) => <col key={col.key} style={fill && i > 0 && col.width == null ? undefined : { width: `${widths[i]}rem` }} />)}
         </colgroup>
       )}
       <thead className={v.thead}>
