@@ -1,3 +1,4 @@
+import './pipelineTimeZone.js';
 import { GtfsCalendar, GtfsCalendarDate, DayName } from '../types/gtfs';
 import { DAY_FIELD_MAP } from './transit-utils';
 

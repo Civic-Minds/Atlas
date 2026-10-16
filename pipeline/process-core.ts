@@ -2,6 +2,7 @@
  * Shared processing core: GTFS zip buffer → GeoJSON string + computed center.
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
+import './pipelineTimeZone.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
