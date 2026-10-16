@@ -192,7 +192,7 @@ export default function LiveAgencyPage() {
           <div className="min-w-0">
             <PageTitle>{name}: how the network is running</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {dates.length ? `${dateRangeText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
+              {dates.length ? `Week of ${dateRangeText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}

@@ -32,7 +32,6 @@ function Delta({ k }: { k: Kpi }) {
   return (
     <span className="flex flex-wrap items-baseline gap-x-2 text-xs">
       <span className={`whitespace-nowrap font-bold ${tone}`} aria-label={k.delta.spoken} title={k.delta.spoken}>{k.delta.text}</span>
-      {k.lastWeekText && <span className="whitespace-nowrap text-[var(--text-dim)]">last week {k.lastWeekText}</span>}
     </span>
   );
 }

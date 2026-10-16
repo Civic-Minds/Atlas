@@ -5,7 +5,8 @@
 import { runTimeOver, type AgencySummary } from '../../shared/liveAgency';
 import { kpiDelta, kpiTiles, type Kpi } from './liveKpi';
 
-const pctSigned = (x: number) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${Math.abs(Math.round(x * 100))}%`;
+/** Run time against the timetable, as the tile writes it: "5% faster", "3% slower". */
+const pctWord = (x: number) => `${Math.abs(Math.round(x * 100))}% ${x < 0 ? 'faster' : 'slower'}`;
 
 export function agencyKpiTiles(s: AgencySummary): Kpi[] {
   const w = s.weekly;
@@ -17,10 +18,10 @@ export function agencyKpiTiles(s: AgencySummary): Kpi[] {
     if (now == null) return k;
     return {
       ...k,
-      value: pctSigned(now),
-      sub: `${now >= 0 ? 'longer' : 'shorter'} than the timetable, the average trip`,
-      delta: w.comparable ? kpiDelta('tripTime', now, before, true, true) : null,
-      lastWeekText: before != null ? pctSigned(before) : null,
+      value: pctWord(now),
+      sub: 'than the timetable',
+      delta: w.comparable ? kpiDelta('tripTime', now, before, true, true, null, before != null ? pctWord(before) : null) : null,
+      lastWeekText: before != null ? pctWord(before) : null,
     };
   });
 }
