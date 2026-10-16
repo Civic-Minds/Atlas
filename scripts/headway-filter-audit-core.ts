@@ -110,6 +110,13 @@ function routeKeyOf(agency: string, p: Record<string, any>): string {
  * no such value.
  */
 function directionSustainedValue(features: Record<string, any>[], period: AuditPeriod): number | undefined {
+  // Frequency focus step 5a: a direction stamped by the stretch selector is read on its own filter
+  // value (the worst counting stretch of the direction at its middle stop); null means no regular
+  // service there.
+  if (period !== 'all') {
+    const stamped = features.find(p => p.directionFilterHeadwayByPeriod && Object.prototype.hasOwnProperty.call(p.directionFilterHeadwayByPeriod, period));
+    if (stamped) return stamped.directionFilterHeadwayByPeriod[period] ?? undefined;
+  }
   if (period === 'all') {
     const pool = features.filter(p => p.tier !== 'span' && p.headway != null);
     const regular = pool.filter(p => p.tier !== 'infrequent');

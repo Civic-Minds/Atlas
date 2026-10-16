@@ -518,6 +518,7 @@ export function stampStretchShadow(
     p.stretchNight30 = route.night30;
     p.stretchNight60 = route.night60;
     p.routeFilterHeadwayByPeriod = byPeriod(k => route.period[k].filterValue);
+    p.directionFilterHeadwayByPeriod = byPeriod(k => dir.period[k].filterValue);
     p.routeRunsByPeriod = byPeriod(k => route.period[k].runs);
     p.stretchMeta = {
       main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount } : null,
@@ -537,5 +538,6 @@ export function stampStretchShadow(
     if (slot && complete.get(`${slot.group}::${slot.day}`)) continue;
     delete feature.properties.routeFilterHeadwayByPeriod;
     delete feature.properties.routeRunsByPeriod;
+    delete feature.properties.directionFilterHeadwayByPeriod;
   }
 }

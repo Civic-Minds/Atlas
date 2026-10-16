@@ -25,10 +25,11 @@ The map reads PMTiles. A change to these rules reaches the live map only after a
 
 ## Checks
 
-- Real-route regression tests, using frozen copies of real data (`scripts/__fixtures__/headway-filter-routes.json`) in `src/utils/__tests__/routeHeadwayFilter.test.ts`:
+- Real-route regression tests, using frozen copies of real data (`scripts/__fixtures__/headway-filter-routes.json`) in `src/utils/__tests__/routeHeadwayFilter.test.ts`. Regenerate the copy with `npx tsx scripts/build-headway-filter-fixture.ts <reprocess output> "<source>"` whenever the fields the filter reads change, and check every changed expectation against the GTFS oracle before accepting it:
   - MiWay 3 overnight (weekday and Saturday) fails every-20.
-  - TTC 100 and LA Metro 51 AM Peak pass despite occasional extra trips.
-  - TransLink 99 AM Peak is a known case that still fails every-20 (#602).
+  - TTC 100 AM Peak passes: the occasional via-Linkwood trips do not slow the route.
+  - LA Metro 51 AM Peak fails every-20: the slower of its two regular branches decides (24).
+  - TransLink 99 AM Peak still fails every-20: its eastbound main stretch ramps up through 7:00 (gaps 16-19), so it reads its full-window wait. That is a steadiness question, not trip selection.
   - TTC 506, 63, 84 and 100 weekday, and CTA 77 midday, pass despite a rare variant with a long gap (#658).
 - Rule unit tests: `shared/__tests__/worstDirection.test.ts`.
 - All-agency audit (read-only): `npx tsx scripts/audit-headway-filter-consistency.ts`. Expect zero app/map disagreements.

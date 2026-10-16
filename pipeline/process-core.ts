@@ -3056,6 +3056,7 @@ export async function processGtfsBuffer(
       if (!slot || !partialRouteDays.has(`${slot.shortName}::${slot.day}`)) continue;
       delete feature.properties.routeFilterHeadwayByPeriod;
       delete feature.properties.routeRunsByPeriod;
+      delete feature.properties.directionFilterHeadwayByPeriod;
     }
     // Step 4: Night reads the stretches. A route qualifies when every direction it runs by day
     // passes at the middle of its main stretch (and each tail that runs at night passes), 2-5am;
