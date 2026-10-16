@@ -522,7 +522,7 @@ export default function LiveExplorePage() {
       </ErrorBoundary>
 
       <Section id="x-late" title="How well it keeps to its timetable">
-        <Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} />
+        <div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>
         <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Late data={bandData} dir={dir} day={day} band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
       </Section>
       <Section id="x-runtime" title="Run time">
