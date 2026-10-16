@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, onAgencyClick }: Props) {
-  const title = routeLabels({ shortName: routeShortName, longName: routeLongName, agencyName }).full;
+  const title = routeLabels({ shortName: routeShortName, longName: routeLongName, agencyName }).text;
   const displayAgency = agencyName ? shortenAgencyName(agencyName) : null;
   return (
     <SidebarCardHeader

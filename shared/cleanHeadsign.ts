@@ -260,7 +260,7 @@ export function routeLabelParts(shortName: string | null | undefined, longName: 
   if (lowerLong === `route ${lowerShort}` || lowerLong === lowerShort || normLong.startsWith(normShort + ' ') || lowerLong.includes(lowerShort + ' ')) {
     // "10 Bathurst" on route "10": the title is just the number, but the words after it are the route's name.
     const exactRepeat = lowerLong === `route ${lowerShort}` || lowerLong === lowerShort;
-    const prefixed = cleanedLong.match(new RegExp(`^\\s*(?:route\\s+)?${cleanShort.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+(.+)$`, 'i'))?.[1]?.trim();
+    const prefixed = cleanedLong.match(new RegExp(`^\\s*(?:route\\s+)?${cleanShort.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\s+[-–—]\\s+|:\\s*|\\s+)(.+)$`, 'i'))?.[1]?.trim();
     // Otherwise the long name only mentions the short one ("Green Line E" on route "E"): a list shows all of it.
     const after = exactRepeat ? undefined : prefixed ?? cleanedLong;
     return { primary: cleanShort, ...(after ? { afterShortName: after } : {}) };

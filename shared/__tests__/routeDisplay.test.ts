@@ -37,27 +37,38 @@ describe('shouldHideNumericRouteShortName', () => {
 });
 
 describe('routeDisplay', () => {
-  it('keeps the card title exactly as getRouteLabel writes it', () => {
-    for (const [s, l, a] of [['495', '4FUN: Shakopee-Savage', undefined], ['1', 'Line 1 (Yonge-University)', undefined], ['961', '757X - NORFOLK TO NNTC', undefined], ['MI', 'Milton', undefined], ['5', 'Ligne 5 - Bleue', 'STM (Montréal)']] as const) {
-      expect(d(s, l, 1, a ?? undefined).full).toBe(getRouteLabel(s, l, a));
-    }
+  it('keeps every cleaning rule of the old card title (arrows, via, zeros, brands, SMART), and now also the long name the old card dropped', () => {
+    expect(d('495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP', 3).text).toBe('495 — 4FUN');
+    expect(d('02', 'Main via Park', 3).text).toBe('2 — Main');
+    expect(d('3', 'North <> South <> East <> West', 3).text).toBe('3 — North ↔ West');
+    expect(d('', 'Main Line', 2, 'SMART (Sonoma-Marin)').text).toBe('SMART Train');
+    // The old card title was "1" and "E" here (the long name repeated the short one); it now matches the list.
+    expect(getRouteLabel('1', 'Line 1 (Yonge-University)')).toBe('1');
+    expect(d('1', 'Line 1 (Yonge-University)').text).toBe('Line 1 — Yonge-University');
+    expect(d('E', 'Green Line E', 0).text).toBe('E — Green Line E');
+  });
+  it('names a line from its long name even with no route type (cards have none)', () => {
+    expect(d('1', 'Line 1 (Yonge-University)')).toMatchObject({ primary: 'Line 1', secondary: 'Yonge-University' });
+    expect(d('5', 'Ligne 5 - Bleue', undefined, 'STM (Montréal)')).toMatchObject({ primary: 'Ligne 5', secondary: 'Bleue' });
+    expect(d('7', 'Route 7: Bathurst', 3)).toMatchObject({ primary: '7', secondary: 'Route 7: Bathurst' }); // unchanged from the old card title
+    expect(d('G', 'G-Line Rapid Ride', 3)).toMatchObject({ primary: 'G', secondary: 'G-Line Rapid Ride' });
   });
   it('shows a list row as a bold part and a lighter name, from the cleaned names', () => {
     expect(d('7', 'Bathurst', 3)).toMatchObject({ primary: '7', secondary: 'Bathurst', text: '7 — Bathurst' });
     expect(d('23', 'Ashmont Station - Ruggles Station via Washington Street', 3)).toMatchObject({ primary: '23', secondary: 'Ashmont Station - Ruggles Station' });
     expect(d('012', 'Main', 3).primary).toBe('12');
-    expect(d('1', 'Line 1 (Yonge-University)', 1)).toMatchObject({ primary: 'Line 1', secondary: 'Yonge-University', full: '1' });
+    expect(d('1', 'Line 1 (Yonge-University)', 1)).toMatchObject({ primary: 'Line 1', secondary: 'Yonge-University' });
     expect(d('2', 'Ligne 2 - Orange', 1, 'STM (Montréal)')).toMatchObject({ primary: 'Ligne 2', secondary: 'Orange' });
     expect(d('5', 'Line 5 Eglinton', 100)).toMatchObject({ primary: 'Line 5 Eglinton', secondary: undefined });
     expect(d('', 'Free Annapolis Downtown Shuttle')).toMatchObject({ primary: 'Free Annapolis Downtown Shuttle', secondary: undefined });
   });
   it('keeps a letter code as the bold part (GO: LE, Milton) and a streetcar number', () => {
-    expect(d('LE', 'Lakeshore East', 2)).toMatchObject({ primary: 'LE', secondary: 'Lakeshore East', full: 'Lakeshore East' });
+    expect(d('LE', 'Lakeshore East', 2)).toMatchObject({ primary: 'LE', secondary: 'Lakeshore East' });
     expect(d('501', 'Queen', 0)).toMatchObject({ primary: '501', secondary: 'Queen' });
   });
   it('keeps the words after a repeated number, and tells apart routes that share a public brand', () => {
-    expect(d('10', '10 Bathurst', 3)).toMatchObject({ primary: '10', secondary: 'Bathurst', full: '10' });
-    expect(d('961', '757X - NORFOLK TO NNTC', 3)).toMatchObject({ primary: '757X', secondary: 'NORFOLK TO NNTC', full: '757X' });
+    expect(d('10', '10 Bathurst', 3)).toMatchObject({ primary: '10', secondary: 'Bathurst' });
+    expect(d('961', '757X - NORFOLK TO NNTC', 3)).toMatchObject({ primary: '757X', secondary: 'NORFOLK TO NNTC' });
     expect(d('112', '757X - JEFFERSON AVE', 3).secondary).toBe('JEFFERSON AVE');
   });
   it('reads a number range as one name', () => {

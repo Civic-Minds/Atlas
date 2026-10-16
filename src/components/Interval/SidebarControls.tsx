@@ -768,9 +768,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
       })
       .filter((route, index, routes) => {
-        const displayKey = `${route.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: route.shortName, longName: route.longName, agencyName: route.agencyName }).full.trim().toLowerCase().replace(/\s+/g, ' ')}`;
+        const displayKey = `${route.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: route.shortName, longName: route.longName, agencyName: route.agencyName }).text.trim().toLowerCase().replace(/\s+/g, ' ')}`;
         return routes.findIndex(candidate => {
-          const candidateKey = `${candidate.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: candidate.shortName, longName: candidate.longName, agencyName: candidate.agencyName }).full.trim().toLowerCase().replace(/\s+/g, ' ')}`;
+          const candidateKey = `${candidate.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: candidate.shortName, longName: candidate.longName, agencyName: candidate.agencyName }).text.trim().toLowerCase().replace(/\s+/g, ' ')}`;
           return candidateKey === displayKey;
         }) === index;
       })

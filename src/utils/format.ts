@@ -229,15 +229,14 @@ export function routeLabelCase(part: string): string {
 }
 
 /**
- * A route's label for any surface: `{ primary, secondary, text, full }` (see shared/routeDisplay.ts). Lists, search, Nearby and
- * agency pages show primary bold and secondary lighter; `text` is both on one line; `full` is the card title (always title case,
- * unchanged).
+ * A route's label for any surface: `{ primary, secondary, text }` (see shared/routeDisplay.ts). Lists, search, Nearby and agency
+ * pages show primary bold and secondary lighter; cards and one-line lists show `text` (both, joined by " — "). One text everywhere.
  */
 export function routeLabels(input: { shortName: string | null | undefined; longName: string | null | undefined; routeType?: number; agencyName?: string | null }) {
   const d = routeDisplay(input);
   const primary = routeLabelCase(d.primary);
   const secondary = d.secondary ? routeLabelCase(d.secondary) : undefined;
-  return { primary, secondary, text: secondary ? `${primary} — ${secondary}` : primary, full: titleCase(d.full) };
+  return { primary, secondary, text: secondary ? `${primary} — ${secondary}` : primary };
 }
 
 /** Vehicle word for a GTFS route_type (0 tram, 1 metro, 2 rail, 3 bus, 4 ferry). */

@@ -392,7 +392,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           const agencyName = state.agencies.find(agency => agency.slug === agencySlug)?.name ?? null;
           const shortName = typeof props.routeShortName === 'string' ? props.routeShortName : null;
           const longName = typeof props.routeLongName === 'string' ? props.routeLongName : null;
-          const label = routeLabels({ shortName, longName, agencyName }).full;
+          const label = routeLabels({ shortName, longName, agencyName }).text;
           if (label) {
             routeLabel = label;
             routeShortName = shortName ?? longName;

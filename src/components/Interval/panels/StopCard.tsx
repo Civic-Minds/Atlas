@@ -153,7 +153,7 @@ export const StopCard: React.FC<StopCardProps> = ({
             return (
               <CardDirectionRow
                 key={rKey}
-                label={routeLabels({ shortName: routeShortName, longName: routeLongName, agencyName }).full}
+                label={routeLabels({ shortName: routeShortName, longName: routeLongName, agencyName }).text}
                 subLabel={`${nearestStopName} · ${Math.round(distanceMeters)} m away`}
                 headway={headway ?? undefined}
                 onClick={() => openRoute(rKey)}

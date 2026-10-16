@@ -3,9 +3,10 @@
  * reads the same way everywhere. It starts from the card title's cleaned names (`routeLabelParts`: arrows for "<>", first
  * and last terminus only, "via ..." stripped, leading zeros, brands) and adds the two list rules: a numeric id with a better
  * public name is hidden, and "Line 1 (Yonge-University)" splits into "Line 1" and "Yonge-University".
+ * The card title, list rows, search, Nearby and agency pages all show this: bold `primary`, lighter `secondary`, or `text` on one line.
  * Returns plain strings; the caller applies title case (`routeLabels` in src/utils/format.ts does).
  */
-import { joinRouteLabel, routeLabelParts, getRouteLabel } from './cleanHeadsign.js';
+import { joinRouteLabel, routeLabelParts } from './cleanHeadsign.js';
 
 export interface RouteDisplay {
   /** The bold part. */
@@ -14,8 +15,6 @@ export interface RouteDisplay {
   secondary?: string;
   /** primary and secondary on one line ("Line 1 — Yonge-University"). */
   text: string;
-  /** The card title text: unchanged from `getRouteLabel`, so card titles do not move. */
-  full: string;
 }
 
 /**
@@ -54,18 +53,22 @@ export function splitDesignator(name: string): { designator: string; rest: strin
 
 export function routeDisplay(input: { shortName: string | null | undefined; longName: string | null | undefined; routeType?: number; agencyName?: string | null }): RouteDisplay {
   const { shortName, longName, routeType, agencyName } = input;
-  const full = getRouteLabel(shortName, longName, agencyName);
   const blankShort = !shortName || !shortName.trim();
-  if (longName && (blankShort || shouldHideNumericRouteShortName(shortName, longName, routeType))) {
+  // "1" with "Line 1 (Yonge-University)": the long name already names the line, so the number is not shown twice (any route type).
+  const lineNamedByLongName = !!longName && !!shortName && /^\d+$/.test(shortName.trim()) && (() => {
+    const d = splitDesignator(longName);
+    return !!d && /^(?:Line|Ligne)\s+/i.test(d.designator) && d.designator.replace(/^\S+\s+/, '').toLowerCase() === shortName.trim().replace(/^0+(?=\d)/, '').toLowerCase();
+  })();
+  if (longName && (blankShort || lineNamedByLongName || shouldHideNumericRouteShortName(shortName, longName, routeType))) {
     const cleaned = routeLabelParts(null, longName, agencyName).primary.replace(/\s+via\s+.+$/i, '').trim();
     const d = splitDesignator(cleaned);
     const primary = d ? d.designator : cleaned;
-    return { primary, secondary: d?.rest, text: d ? `${d.designator} — ${d.rest}` : cleaned, full };
+    return { primary, secondary: d?.rest, text: d ? `${d.designator} — ${d.rest}` : cleaned };
   }
   const parts = routeLabelParts(shortName, longName, agencyName);
   // A letter code the card title leaves out ("MI" for Milton) stays as the bold part of a list row.
-  if (parts.shortCode) return { primary: parts.shortCode, secondary: parts.primary, text: joinRouteLabel({ primary: parts.shortCode, secondary: parts.primary }), full };
+  if (parts.shortCode) return { primary: parts.shortCode, secondary: parts.primary, text: joinRouteLabel({ primary: parts.shortCode, secondary: parts.primary }) };
   // "10 Bathurst" on route "10": the card title is just "10"; the list shows the name too.
   const secondary = parts.secondary ?? parts.afterShortName;
-  return { primary: parts.primary, secondary, text: joinRouteLabel({ primary: parts.primary, secondary }), full };
+  return { primary: parts.primary, secondary, text: joinRouteLabel({ primary: parts.primary, secondary }) };
 }

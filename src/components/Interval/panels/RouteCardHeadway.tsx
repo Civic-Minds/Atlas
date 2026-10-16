@@ -537,7 +537,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               onHourHover={setHoveredHour}
               allowExpand={FEATURES.sparklineExpand}
               reserveStackedLegendSpace={hasTrunkSparkline}
-              title={routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, agencyName: agencyDisplayName }).full}
+              title={routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, agencyName: agencyDisplayName }).text}
             />
           </>
         );

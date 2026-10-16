@@ -47,7 +47,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
                 <div className="min-w-0 flex-1 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
                   <span className={LIST_ROW_PRIMARY}>
-                    {routeLabels({ shortName: r.shortName, longName: r.longName, agencyName: r.agencyName }).full}
+                    {routeLabels({ shortName: r.shortName, longName: r.longName, agencyName: r.agencyName }).text}
                   </span>
                 </div>
               </ListRow>

@@ -36,7 +36,7 @@ export default function StopRouteGroup({
   showAgency,
   onOpenRoute,
 }: Props) {
-  const routeLabel = routeLabels({ shortName, longName, agencyName: showAgency ? agencyName : undefined }).full;
+  const routeLabel = routeLabels({ shortName, longName, agencyName: showAgency ? agencyName : undefined }).text;
   const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;
   const simpleBidirectional = hasMultipleDirections && branches.length === 2 &&
     new Set(branches.map(b => b.directionId)).size === 2;

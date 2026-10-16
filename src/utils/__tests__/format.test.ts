@@ -136,7 +136,7 @@ describe('routeLabels case', () => {
     for (const code of ['SL1', '34E', '1X', 'WCE', 'GO']) expect(routeLabelCase(code)).toBe(code);
   });
   it('gives the card title in title case and lists the cleaned names', () => {
-    expect(routeLabels({ shortName: '961', longName: '757X - NORFOLK TO NNTC', routeType: 3 })).toMatchObject({ primary: '757X', secondary: 'Norfolk to NNTC', full: '757x' });
+    expect(routeLabels({ shortName: '961', longName: '757X - NORFOLK TO NNTC', routeType: 3 })).toMatchObject({ primary: '757X', secondary: 'Norfolk to NNTC', text: '757X — Norfolk to NNTC' });
     expect(routeLabels({ shortName: 'SL1', longName: 'Logan Airport Terminals - South Station', routeType: 3 })).toMatchObject({ primary: 'SL1', secondary: 'Logan Airport Terminals - South Station' });
   });
 });

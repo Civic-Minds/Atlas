@@ -27,7 +27,7 @@ for (const slug of SLUGS) {
     const sugg = routeRowLabels(short, long);
     rows.push({
       slug, short, long, type,
-      card: l.full,
+      card: l.text,
       list: join(list.shortName, list.name),
       suggest: join(sugg.shortName, sugg.name),
       agencyPage: join(l.primary, l.secondary),
