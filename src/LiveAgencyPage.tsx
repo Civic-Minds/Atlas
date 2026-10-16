@@ -8,6 +8,8 @@ import { devOnly, liveAgencyDataUrl, liveDataMissing, liveReportTitle, withoutDe
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { liveDashboardPath } from './hooks/useLiveDashboard';
+import { routesByMode } from '../shared/agencyPages';
+import { RouteNameCell } from './pageParts';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { weekCaption, weekRangeLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
@@ -84,22 +86,25 @@ function RoutesTable({ s }: { s: AgencySummary }) {
         <span className="mr-1 text-sm text-[var(--text-muted)]">Worst first by</span>
         {SORTS.map(([k, label]) => <Pill key={k} size="segment" selected={sort === k} onClick={() => setSort(k)}>{label}</Pill>)}
       </div>
-      <div className="relative mt-3 overflow-x-auto">
-        <DataTable
-          variant="ruled"
-          caption={`${s.agency.toUpperCase()} routes with Live analysis, worst first by ${SORTS.find(([k]) => k === sort)![1].toLowerCase()}`}
-          rows={rows}
-          rowKey={r => r.route}
-          columns={[
-            { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteLink agency={s.agency} route={r.route} label={r.label} /> },
-            { key: 'late', header: 'Late', className: 'whitespace-nowrap', cell: r => <span title={`${r.lateN.toLocaleString()} departures at timepoints this week`}>{pct(r.lateShare)}</span> },
-            { key: 'lastWeek', header: 'Last week', className: 'whitespace-nowrap text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
-            { key: 'runTime', header: 'Run time', className: 'whitespace-nowrap', cell: r => pctSigned(r.runTimeOver) },
-            { key: 'bunching', header: 'Bunching', className: 'whitespace-nowrap', cell: r => pct(r.bunchingShare) },
-            { key: 'delivered', header: 'Delivered', className: 'whitespace-nowrap', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
-          ]}
-        />
-      </div>
+      {routesByMode(rows.map(r => ({ ...r, mode: r.mode ?? 3 }))).map(group => (
+        <div key={group.mode} className="mt-4 overflow-x-auto">
+          <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
+          <DataTable
+            caption={`${group.label} ${group.routes.length}`}
+            fixed
+            rows={group.routes}
+            rowKey={r => r.route}
+            columns={[
+              { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
+              { key: 'late', header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} departures at timepoints this week`}>{pct(r.lateShare)}</span> },
+              { key: 'lastWeek', header: 'Last week', className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
+              { key: 'runTime', header: 'Run time', cell: r => pctSigned(r.runTimeOver) },
+              { key: 'bunching', header: 'Bunching', cell: r => pct(r.bunchingShare) },
+              { key: 'delivered', header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
+            ]}
+          />
+        </div>
+      ))}
       <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">
         Late: departures 5.5+ minutes after the timetable, at stops where it gives a time. Run time: the typical trip over the main stretch against its scheduled time. Bunching: gaps under 2 minutes or over twice the scheduled gap. Delivered: scheduled trips that ran. All for this week.
       </p>

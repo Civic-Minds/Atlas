@@ -64,7 +64,7 @@ function main() {
     const label = titleCase(getRouteLabel(route, r?.route_long_name || null));
     const parts = routeLabelParts(route, r?.route_long_name || null);
     const titleLabel = titleCase([parts.primary, parts.secondary].filter(Boolean).join(' '));
-    routes.push({ route, label, titleLabel, v3, uncertainStart: LIVE_DASHBOARD_UNCERTAIN_START[`${agency}::${route}`] ?? [] });
+    routes.push({ route, label, titleLabel, mode: Number(r?.route_type ?? 3), longName: r?.route_long_name || null, v3, uncertainStart: LIVE_DASHBOARD_UNCERTAIN_START[`${agency}::${route}`] ?? [] });
   }
   const summary = agencySummary({ agency, totalRoutes, routes, held });
 

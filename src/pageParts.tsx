@@ -4,6 +4,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import LegendItem from './components/ui/LegendItem';
 import { plural } from '../shared/overflowText';
+import { routeLabels } from './utils/format';
 
 const BAND_PHRASES = [...FREQUENCY_BANDS.map(b => b.phrase), NO_MIDDAY_PHRASE];
 const BAND_SHORT = [...FREQUENCY_BANDS.map(b => b.short), NO_MIDDAY_SHORT];
@@ -53,4 +54,10 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
       </div>
     </div>
   );
+}
+
+/** A route's name cell in a routes table: the same cleaned names the map's lists show (bold part, then the lighter name). */
+export function RouteNameCell({ shortName, longName, mode, agencyName }: { shortName: string; longName?: string | null; mode: number; agencyName: string }) {
+  const label = routeLabels({ shortName, longName: longName ?? null, mode, agencyName });
+  return <><span className="font-black">{label.primary}</span>{label.secondary ? <span className="text-[var(--text-muted)]"> {label.secondary}</span> : null}</>;
 }
