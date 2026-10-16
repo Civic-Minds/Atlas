@@ -115,6 +115,8 @@ export interface LiveV3 {
   };
   stops: DashboardStop[];
   buildup: DashboardBuildup[];
+  /** Per direction, the regular patterns (20%+ of the direction's trips) as ordered stops, the main one first: the trunk and the branches. Older files: absent. */
+  patterns?: Record<string, Array<{ main: boolean; trips: number; stops: Array<{ stopId: string; name: string }> }>>;
   /** Running time against the timetable, by time of day then direction; `null` where no trip was measured. */
   runningTime?: {
     /** Per direction, the stops run time is measured between (older files measure the main pattern end to end). */
