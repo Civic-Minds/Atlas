@@ -79,6 +79,8 @@ interface DataTableProps<T> {
   sort?: DataTableSort;
   /** Called with a sortable column's key when its header is clicked (or Enter / Space on it). */
   onSort?: (key: string) => void;
+  /** Extra classes for a row (a picked row, say). Every row also carries data-row with its key, so a caller can scroll to it. */
+  rowClassName?: (row: T) => string;
 }
 
 /** Width of the first column in a fixed-layout table. One value for every table, so they all line up. */
@@ -87,7 +89,7 @@ export const FIXED_FIRST_COLUMN_REM = 16;
 export const FIXED_COLUMN_REM = 8;
 
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false, fill = false, sort, onSort }: DataTableProps<T>) {
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false, fill = false, sort, onSort, rowClassName }: DataTableProps<T>) {
   const v = VARIANTS[variant];
   const widths = columns.map((col, i) => col.width ?? (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
   const pad = (i: number) => (v.gap && i < columns.length - 1 ? ' pr-4' : '');
@@ -118,7 +120,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
       </thead>
       <tbody>
         {rows.map(row => (
-          <tr key={rowKey(row)} className={v.row}>
+          <tr key={rowKey(row)} data-row={String(rowKey(row))} className={rowClassName ? `${v.row} ${rowClassName(row)}` : v.row}>
             {columns.map((col, i) => {
               const className = `${v.td}${pad(i)}${fixed && i === 0 ? ' break-words' : ''}${col.className ? ` ${col.className}` : ''}`;
               return col.rowHeader

@@ -18,6 +18,7 @@ export default function SortableDataTable<T>({ columns, rows, defaultSort, ...re
   caption?: string;
   /** The column the rows start sorted by; omit to keep the incoming order until a header is clicked. */
   defaultSort?: string;
+  rowClassName?: (row: T) => string;
 }) {
   const [sort, setSort] = useState<{ key: string; reversed: boolean } | null>(defaultSort ? { key: defaultSort, reversed: false } : null);
   const col = sort ? columns.find(c => c.key === sort.key && c.worst) : undefined;
