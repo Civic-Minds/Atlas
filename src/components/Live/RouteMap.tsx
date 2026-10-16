@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { getMapStyle } from '../../lib/mapStyle';
 import type { MapMeasure, RouteMapModel } from './routeMapModel';
 
-export type MapPick = { kind: 'segment'; fromStopId: string; toStopId: string } | { kind: 'stop'; stopId: string };
+export type MapPick = { kind: 'segment'; fromStopId: string; toStopId: string; route?: string } | { kind: 'stop'; stopId: string };
 
 interface Props {
   model: RouteMapModel;
@@ -63,7 +63,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       type: 'FeatureCollection',
       features: m.segments.map(s => ({
         type: 'Feature' as const,
-        properties: { from: s.fromStopId, to: s.toStopId, color: stepColor(me, s.step), sel: sel?.kind === 'segment' && sel.fromStopId === s.fromStopId && sel.toStopId === s.toStopId ? 1 : 0 },
+        properties: { from: s.fromStopId, to: s.toStopId, route: s.route ?? '', off: s.offset ?? 0, color: stepColor(me, s.step), sel: sel?.kind === 'segment' && sel.fromStopId === s.fromStopId && sel.toStopId === s.toStopId ? 1 : 0 },
         geometry: { type: 'LineString' as const, coordinates: s.coordinates },
       })),
     });
@@ -75,7 +75,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
         geometry: { type: 'Point' as const, coordinates: s.lonLat },
       })),
     });
-    if (framed.current !== frameKey && m.stops.length) {
+    if (framed.current !== frameKey && (m.stops.length || m.segments.length)) {
       framed.current = frameKey;
       const b = new maplibregl.LngLatBounds();
       m.stops.forEach(s => b.extend(s.lonLat));
@@ -97,8 +97,8 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       const halo = light ? '#ffffff' : '#111827';
       map.addSource('segments', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addSource('stops', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-      map.addLayer({ id: 'seg-halo', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 12] } });
-      map.addLayer({ id: 'seg', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 8] } });
+      map.addLayer({ id: 'seg-halo', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 12] } });
+      map.addLayer({ id: 'seg', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 8] } });
       map.addLayer({ id: 'seg-sel', type: 'line', source: 'segments', filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 7, 15, 15], 'line-opacity': 0.35 } });
       map.addLayer({ id: 'stp', type: 'circle', source: 'stops', paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 15, 6], 'circle-stroke-color': halo, 'circle-stroke-width': 1.5 } });
       map.addLayer({ id: 'stp-sel', type: 'circle', source: 'stops', filter: ['==', ['get', 'sel'], 1], paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 6, 15, 11], 'circle-stroke-color': light ? '#111827' : '#ffffff', 'circle-stroke-width': 2 } });
@@ -110,7 +110,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       const stop = hit(['stp'])[0];
       if (stop) { pick.current({ kind: 'stop', stopId: String(stop.properties?.id) }, (stop.geometry as unknown as { coordinates: [number, number] }).coordinates); return; }
       const seg = hit(['seg'])[0];
-      if (seg) pick.current({ kind: 'segment', fromStopId: String(seg.properties?.from), toStopId: String(seg.properties?.to) }, [e.lngLat.lng, e.lngLat.lat]);
+      if (seg) pick.current({ kind: 'segment', fromStopId: String(seg.properties?.from), toStopId: String(seg.properties?.to), route: seg.properties?.route ? String(seg.properties.route) : undefined }, [e.lngLat.lng, e.lngLat.lat]);
       else pick.current(null, null);
     });
     map.on('mousemove', e => {

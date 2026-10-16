@@ -5,6 +5,8 @@ import { delayAmount, headwayAmount } from '../shared/headwayText';
 import type { AgencySummary } from '../shared/liveAgency';
 import type { DashboardBand, DashboardBandData, LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
+import { liveDashboardDataUrl } from './lib/liveReportData';
+import HourSpark from './components/charts/HourSpark';
 import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
@@ -13,10 +15,10 @@ import { shortStopName } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasBrand from './components/AtlasBrand';
-import RoutePicker, { orderRoutes } from './components/Live/RoutePicker';
+import RoutePicker from './components/Live/RoutePicker';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
-import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure } from './components/Live/routeMapModel';
+import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { STEP_LABELS } from './components/Live/routeStripModel';
 import { delayText } from './components/Live/routeStripModel';
 import { BANDS, Block, DetailPanel, Fact, Group, Late, Panel, RunTime, type Selection } from './LiveExplorePage';
@@ -114,6 +116,63 @@ function Canvas({ data, v3, route, dir, band, measure, pick, anchor, setPick }: 
   );
 }
 
+/** Every analysed route's analysis, fetched side by side; a route shows up on the network map as soon as its file arrives. */
+function useNetworkData(agency: string, routes: readonly string[]): Map<string, LiveV3> {
+  const [data, setData] = useState<Map<string, LiveV3>>(new Map());
+  const key = routes.join(',');
+  useEffect(() => {
+    let live = true;
+    setData(new Map());
+    for (const r of routes) {
+      fetch(liveDashboardDataUrl(agency, r))
+        .then(res => res.json())
+        .then((body: { status?: string; v3?: LiveV3 }) => { if (live && body.status === 'ready' && body.v3) setData(prev => new Map(prev).set(r, body.v3!)); })
+        .catch(() => undefined);
+    }
+    return () => { live = false; };
+  }, [agency, key]); // eslint-disable-line react-hooks/exhaustive-deps
+  return data;
+}
+
+/** The network's late share by hour, from each route's own by-hour shares weighted by their departures. */
+function NetworkLate({ s }: { s: AgencySummary }) {
+  const values = Array.from({ length: 24 }, (_, hour) => {
+    let n = 0, late = 0;
+    for (const r of s.routes) { const h = r.lateByHour.find(x => x.hour === hour); if (h) { n += h.n; late += h.value * h.n; } }
+    return { hour, value: n ? late / n : 0, n };
+  }).filter(x => x.n > 0);
+  if (!values.length) return null;
+  const max = Math.max(0.1, ...values.filter(v => v.n >= 30).map(v => v.value));
+  return (
+    <div className="px-6 pb-4 pt-4">
+      <HourSpark departures values={values} scale={{ min: 0, max: Math.ceil(max * 10) / 10 }} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late" ariaLabel="Share of departures late by hour of the day, across every route." />
+    </div>
+  );
+}
+
+/** The home screen: every analysed route on one map, coloured by the chosen measure and time of day. Clicking a route opens it. */
+function NetworkCanvas({ agency, s, band, measure, onRoute }: { agency: string; s: AgencySummary; band: DashboardBand; measure: MapMeasure; onRoute: (route: string) => void }) {
+  const routes = useMemo(() => s.routes.map(r => r.route), [s]);
+  const data = useNetworkData(agency, routes);
+  const model: RouteMapModel = useMemo(() => {
+    const segments: MapSegment[] = [];
+    for (const [route, v3] of data) {
+      const ids = Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b);
+      ids.forEach((d, k) => { for (const seg of routeMapModel(v3, d, band, measure).segments) segments.push({ ...seg, route, offset: ids.length > 1 ? (k === 0 ? 2.5 : -2.5) : 0 }); });
+    }
+    return { directionId: 0, segments, stops: [] };
+  }, [data, band, measure]);
+  return (
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="relative min-h-0 flex-1">
+        <RouteMap model={model} measure={measure} selected={null} onPick={p => { if (p?.kind === 'segment' && p.route) onRoute(p.route); }} frameKey={`network-${data.size === routes.length ? 'all' : 'loading'}`} />
+        <Key measure={measure} />
+      </div>
+      {measure === 'late' && <div className="shrink-0 border-t border-[var(--border-primary)] bg-[var(--bg-app)]"><NetworkLate s={s} /></div>}
+    </div>
+  );
+}
+
 function RouteCanvas({ agency, route, dir, setDir, band, measure, pick, anchor, setPick }: {
   agency: string; route: string; dir: number | null; setDir: (d: number) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; anchor: [number, number] | null; setPick: (p: MapPick | null, at: [number, number] | null) => void;
 }) {
@@ -160,8 +219,7 @@ export default function LiveToolPage() {
     return f && t ? { kind: 'segment', fromStopId: f, toStopId: t } : null;
   });
   const summary: AgencySummary | null = state.kind === 'done' && state.data.status === 'ready' ? state.data.summary : null;
-  const top = useMemo(() => { if (!summary) return null; const o = orderRoutes(summary); return (o.worse[0] ?? o.rest[0])?.r.route ?? null; }, [summary]);
-  const current = route ?? top;
+  const current = route;
   useEffect(() => {
     syncUrlParams({
       view: null, route, dir: dir == null ? null : String(dir), band: band === 'all' ? null : band, measure: measure === 'late' ? null : measure,
@@ -179,10 +237,12 @@ export default function LiveToolPage() {
     <>
       <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2">
         <a href="/" aria-label="Atlas by Civic Minds"><AtlasBrand /></a>
-        {current && <RoutePicker s={s} route={current} onPick={r => { setRoute(r); setPick(null, null); }} />}
+        <button type="button" onClick={() => { setRoute(null); setPick(null, null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
+        <RoutePicker s={s} route={current} onPick={r => { setRoute(r); setPick(null, null); }} />
         <Group label="Measure" value={measure} onChange={v => setMeasure(v as MapMeasure)} options={MEASURES} />
         <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
       </header>
+      {!current && <NetworkCanvas agency={agency} s={s} band={band} measure={measure} onRoute={r => { setRoute(r); setPick(null, null); }} />}
       {current && <RouteCanvas agency={agency} route={current} dir={dir} setDir={d => { setDir(d); setPick(null, null); }} band={band} measure={measure} pick={pick} anchor={anchor} setPick={setPick} />}
     </>,
   );

@@ -28,7 +28,8 @@ export const mapStep = (measure: MapMeasure, value: number | null): MapStep | nu
 };
 
 export interface MapStop { stopId: string; name: string; lonLat: [number, number]; value: number | null; step: MapStep | null; n: number }
-export interface MapSegment { fromStopId: string; toStopId: string; coordinates: [number, number][]; value: number | null; step: MapStep | null }
+/** `route` and `offset` are set when several routes share one map (the network): a click then picks the route, and the two directions are drawn side by side. */
+export interface MapSegment { fromStopId: string; toStopId: string; coordinates: [number, number][]; value: number | null; step: MapStep | null; route?: string; offset?: number }
 export interface RouteMapModel { directionId: number; segments: MapSegment[]; stops: MapStop[] }
 
 const key = (a: string, b: string) => `${a}>${b}`;
