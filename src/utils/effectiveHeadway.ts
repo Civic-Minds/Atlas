@@ -297,7 +297,9 @@ export function routeListSharedHeadway(features: readonly ShapeProperties[], per
  */
 export function routeListDisplayLimited(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   // No regular service (the filter's null) is its own wording, not "limited".
-  if (routeListNoRegularService(features, period)) return false;
+  // The filter's null (runs or not) means no number and no "limited" either.
+  const contract = routeContract(features, period);
+  if (contract != null && contract.filterValue == null) return false;
   return routeListDisplayHeadway(features, period) == null
     && features.some(feature => routeCardDisplayLimited(feature, period));
 }

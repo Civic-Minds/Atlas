@@ -306,7 +306,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     : null;
   const collapseGroups = allLackHeadsigns && directionGroups.length > 1 &&
     directionGroups.every(g => groupHeadway(g) === groupHeadway(directionGroups[0]));
-  const displayGroups = collapseGroups ? [directionGroups[0]] : directionGroups;
+  // The filter has no value and the route does not run in this period: no rows, no numbers, no "limited" (the map draws nothing).
+  const doesNotRun = contract != null && contract.filterValue == null && !contract.runs;
+  const displayGroups = doesNotRun ? [] : collapseGroups ? [directionGroups[0]] : directionGroups;
   const needsNumbered = allLackHeadsigns && !collapseGroups && directionGroups.length > 1;
   const showDirectionSections = shouldShowDirectionSections(displayGroups);
   const reportServiceLines = displayGroups.flatMap((group, gi) => {
@@ -598,8 +600,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         {selectedRouteOutOfFilter && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
-              {selectedPeriod && activePeriodRangeText
+              {doesNotRun
+                ? selectedRouteOutsideFilterNotice(Infinity)
+                : selectedPeriod && activePeriodRangeText
                 ? selectedRouteFilterNotice({
+                  headway: contract?.filterValue ?? null,
                   activeRange: activePeriodRangeText,
                   periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
                 })
@@ -714,11 +719,18 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const dimmed = maxHeadway !== Infinity && !featurePassesHeadwayFilter(d, period, maxHeadway);
                     return (() => {
                       const variantH = hoveredHour == null ? variantRowHeadway(d, period) : undefined;
-                      const displayH = variantH !== undefined
-                        ? variantH
-                        : hoveredHour != null
-                          ? branchDisplayHourHeadway(d, hoveredHour) ?? routeCardDisplayHeadway(d, period)
-                          : routeCardDisplayHeadway(d, period);
+                      // A stretch row the card cannot read a cadence for (its own gaps are uneven) takes its direction's filter value.
+                      const ownH = hoveredHour != null
+                        ? branchDisplayHourHeadway(d, hoveredHour) ?? routeCardDisplayHeadway(d, period)
+                        : routeCardDisplayHeadway(d, period);
+                      const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all'
+                        ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
+                        : undefined;
+                      const directionFallback = typeof directionH === 'number' ? directionH : undefined;
+                      const fallbackRange = directionFallback != null && contract?.range && contract.range[0] < directionFallback && contract.range[1] >= directionFallback
+                        ? headwayAboutRange(contract.range[0], directionFallback)
+                        : undefined;
+                      const displayH = variantH !== undefined ? variantH : directionFallback ?? ownH;
                       const label = branchLabel(group, d, gi);
                       if (!label && !collapseGroups && displayH == null) return null;
                       const trunkHw = hoveredHour == null && period !== 'all'
@@ -734,7 +746,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             headway={noRegularService && hoveredHour == null ? undefined : displayH ?? undefined}
                             limitedLabel={noRegularService && hoveredHour == null ? 'no regular service' : undefined}
                             colorHeadway={hoveredHour == null ? branchFilterHeadway : undefined}
-                            headwayLabel={hoveredHour == null && variantH === undefined ? routeCardCoverageText(d, period) : undefined}
+                            headwayLabel={hoveredHour == null && variantH === undefined ? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period)) : undefined}
                             trunkHeadway={trunkHw}
                             edgeGapAllowance={d.edgeGapAllowance}
                             onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}

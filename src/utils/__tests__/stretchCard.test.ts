@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { routeListDisplay, routeListDisplayLimited, routeListNoRegularService } from '../effectiveHeadway';
+import { selectedRouteFilterNotice } from '../../content/noticeCopy';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import { hasStretchRoles, routeContract, stretchRowFeatures, variantOnlyRow, variantRowHeadway } from '../stretchCard';
 
@@ -67,5 +69,26 @@ describe('variant-only direction (TTC 134 southbound)', () => {
   it('reads the direction value, never the pattern', () => {
     expect(variantRowHeadway(v(5, { headwayByPeriod: { midday: 231 } }), 'midday')).toBe(15);
     expect(variantRowHeadway(v(5), 'all')).toBeUndefined();
+  });
+});
+
+describe('no filter value for the period (YRT Viva overnight)', () => {
+  const route = (runs: boolean) => [f({ stretchRole: 'main', routeFilterHeadwayByPeriod: { overnight: null }, routeRunsByPeriod: { overnight: runs }, headwayByPeriod: { overnight: 13 }, tier: 'frequent' })];
+  it('is neither a number nor limited, whether or not the route runs', () => {
+    for (const runs of [true, false]) {
+      expect(routeListDisplayLimited(route(runs), 'overnight')).toBe(false);
+      expect(routeListDisplay(route(runs), 'overnight').headway).toBeNull();
+    }
+  });
+  it('says no regular service only when the route runs', () => {
+    expect(routeListNoRegularService(route(true), 'overnight')).toBe(true);
+    expect(routeListNoRegularService(route(false), 'overnight')).toBe(false);
+  });
+});
+
+describe('the outside-filter notice', () => {
+  it('uses the real value, not a fixed 30', () => {
+    expect(selectedRouteFilterNotice({ headway: 15, activeRange: '8 AM–3 PM', periodRange: '9 AM–3 PM' })).toContain('about every 15 min');
+    expect(selectedRouteFilterNotice({ headway: null, activeRange: '4–5 AM', periodRange: '2–6 AM' })).not.toContain('every');
   });
 });
