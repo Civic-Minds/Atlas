@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Live route pages: a new full-width analysis view (`?view=explore`)**: the route strip with a detail panel for any stop or stretch, one set of filters for direction and time of day, and every chart on one page; stop names in the worst-stops table open that stop in the panel.
 - Frequencies always read in minutes (e.g. 'every 120 min'), so a column of values no longer mixes hours and minutes.
 - **"On this page" highlights the section you are reading** on Docs, Terms, Privacy and Changelog, so you can see where you are in long pages.
 - **The top bar stays put while you scroll on agency, area and agencies pages**, as it already did on Docs, Terms and Privacy, so navigation is always one tap away.
