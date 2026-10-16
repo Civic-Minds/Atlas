@@ -40,6 +40,9 @@ const OBS_OUT = args['obs-out'];
 const RUNTIMES_OUT = args['runtimes-out'];
 /** Trips whose headsign contains this text (any case) are another service under the same route number (e.g. replacement buses): left out and counted. Plain text, not a pattern. */
 const EXCLUDE_HEADSIGN = args['exclude-headsign'] ? String(args['exclude-headsign']).toLowerCase() : null;
+// A separate service that shares the route number (the 507M shuttle): its own trips carry the name in the headsign; its
+// return trips do not, so they are known by starting, in the other direction, where its named trips end.
+const SEPARATE_SERVICE = args['separate-service'] ? String(args['separate-service']).toLowerCase() : null;
 /** A stop passage more than this far from the timetable is a wrong trip match or a bad fix, not a delay. */
 const MAX_DELAY_SEC = 3600;
 /** The departure moment: the car is this far past the stop. */
@@ -92,11 +95,24 @@ function serviceDayStart(date: string): number {
 const prevDate = (d: string) => new Date(Date.parse(`${d}T12:00:00Z`) - 86400_000).toISOString().slice(0, 10);
 
 // --- static GTFS ---
+function stopTimesFile() { return existsSync(join(GTFS, `${ROUTE}-stop_times.txt`)) ? join(GTFS, `${ROUTE}-stop_times.txt`) : join(GTFS, 'stop_times.txt'); }
 const allRouteTrips = readCsv(join(GTFS, 'trips.txt'), r => r.route_id === ROUTE);
 const excludedTripIds = new Set(allRouteTrips.filter(t => EXCLUDE_HEADSIGN != null && (t.trip_headsign ?? '').toLowerCase().includes(EXCLUDE_HEADSIGN)).map(t => t.trip_id));
+if (SEPARATE_SERVICE != null) {
+  const named = allRouteTrips.filter(t => (t.trip_headsign ?? '').toLowerCase().split(/\s+/).includes(SEPARATE_SERVICE));
+  const namedIds = new Set(named.map(t => t.trip_id));
+  const routeTripIds = new Set(allRouteTrips.map(t => t.trip_id));
+  const ends = readCsv(stopTimesFile(), r => routeTripIds.has(r.trip_id));
+  const byTrip = new Map<string, { seq: number; stopId: string }[]>();
+  for (const r of ends) { const l = byTrip.get(r.trip_id) ?? []; l.push({ seq: Number(r.stop_sequence), stopId: r.stop_id }); byTrip.set(r.trip_id, l); }
+  const first = (id: string) => { const l = byTrip.get(id) ?? []; return l.reduce((a, b) => (b.seq < a.seq ? b : a), l[0])?.stopId; };
+  const last = (id: string) => { const l = byTrip.get(id) ?? []; return l.reduce((a, b) => (b.seq > a.seq ? b : a), l[0])?.stopId; };
+  const turnBack = new Set(named.map(t => `${1 - Number(t.direction_id)}|${last(t.trip_id)}`));
+  for (const t of allRouteTrips) if (namedIds.has(t.trip_id) || turnBack.has(`${t.direction_id}|${first(t.trip_id)}`)) excludedTripIds.add(t.trip_id);
+}
 const trips = allRouteTrips.filter(t => !excludedTripIds.has(t.trip_id));
 const tripById = new Map(trips.map(t => [t.trip_id, t]));
-const stopTimesPath = existsSync(join(GTFS, `${ROUTE}-stop_times.txt`)) ? join(GTFS, `${ROUTE}-stop_times.txt`) : join(GTFS, 'stop_times.txt');
+const stopTimesPath = stopTimesFile();
 const timesByTrip = new Map<string, { stopId: string; seq: number; arr: number; dep: number; tp: boolean }[]>();
 for (const st of readCsv(stopTimesPath, r => tripById.has(r.trip_id))) {
   const list = timesByTrip.get(st.trip_id) ?? [];
