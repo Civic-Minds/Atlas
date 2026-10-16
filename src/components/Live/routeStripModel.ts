@@ -28,6 +28,8 @@ export interface RouteStripStop {
   bunchingN?: number;
   /** Measured poorly here (for example the 510's Union Station tunnel): drawn hatched and called less exact. */
   uncertain?: boolean;
+  /** False where the timetable's time is interpolated (not a timepoint): its delay is not shown, only hatched. */
+  timepoint?: boolean;
 }
 
 /** A marked stretch, by the stop ids at its two ends. */
@@ -60,6 +62,11 @@ export const LEGEND_TITLE: Record<RouteStripMode, string> = {
 
 /** The colour token for a step. The values live in styles/index.css, with their dark and colour-vision versions. */
 export const stepColor = (mode: RouteStripMode, step: Step) => `var(--strip-${mode}-${step})`;
+
+/** Delay is coloured only at timepoints: elsewhere the timetable's time is interpolated, so the stop is drawn hatched grey. */
+export const delayInterpolated = (stop: RouteStripStop): boolean => stop.timepoint === false;
+/** Drawn hatched ("Less exact") on this track. */
+export const lessExactOn = (stop: RouteStripStop, mode: RouteStripMode): boolean => !!stop.uncertain || (mode === 'delay' && delayInterpolated(stop));
 
 /** The steps a track's legend lists, in order: the delay track adds the early step first. */
 export const legendSteps = (mode: RouteStripMode): readonly Step[] => (mode === 'delay' ? ['early', 0, 1, 2] : [0, 1, 2]);
@@ -202,13 +209,15 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
   if (stops.length === 0) return `${directionLabel}: no stops measured.`;
   const counts = new Map<Step, number>();
   let missing = 0;
+  let interpolated = 0;
   for (const s of stops) {
+    if (mode === 'delay' && delayInterpolated(s)) { interpolated++; continue; }
     const step = stepFor(mode, stopValue(s, mode));
     if (step == null) missing++; else counts.set(step, (counts.get(step) ?? 0) + 1);
   }
   const what = mode === 'delay' ? 'Typical delay' : 'Share of gaps too short or too long';
   const steps = legendSteps(mode).filter(st => st !== 'early' || counts.has('early')).map(st => `${counts.get(st) ?? 0} ${stepLabel(mode, st).toLowerCase()}`).join(', ');
-  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${stops.length} stops: ${steps}${missing ? `, ${missing} not measured` : ''}.`];
+  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${stops.length} stops: ${steps}${interpolated ? `, ${interpolated} less exact` : ''}${missing ? `, ${missing} not measured` : ''}.`];
   if (stretch) parts.push(`${stretch.label} between ${stops[stretch.from].name} and ${stops[stretch.to].name}.`);
   parts.push('Use the left and right arrow keys to hear each stop.');
   return parts.join(' ');
@@ -217,7 +226,8 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
 /** The text for one stop on hover, focus or tap. */
 export function stopDetail(stop: RouteStripStop): { name: string; lines: string[] } {
   const lines: string[] = [];
-  if (stop.n > 0 && stop.delayMin != null) {
+  if (delayInterpolated(stop)) { /* No typical delay where the timetable's time is interpolated. */ }
+  else if (stop.n > 0 && stop.delayMin != null) {
     const usual = Math.abs(stop.delayMin) < 0.05 ? USUALLY_ON_TIME : usuallyOffBy(num(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
     lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(pct(stop.lateShare))}` : usual);
   } else lines.push('Delay not measured');
@@ -262,6 +272,7 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
         n: s.n,
         bunchingN: b?.n ?? 0,
         uncertain: s.order < lessExact,
+        timepoint: s.timepoint,
       };
     });
   const buildup = bandData.buildup.find(b => b.directionId === directionId);
