@@ -142,19 +142,20 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
   );
 }
 
-function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySummary; rows: AgencyHotspotStretch[]; caption: string; valueHeader: string; format: (v: number) => string }) {
+/** Without `valueHeader` the table has no value column and keeps the summary's order (largest first). */
+function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySummary; rows: AgencyHotspotStretch[]; caption: string; valueHeader?: string; format?: (v: number) => string }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stretch stands out on the analysed routes.</p>;
   return (
     <div className="relative mt-3 overflow-x-auto">
       <SortableDataTable
         caption={caption}
         rows={rows}
-        defaultSort="value"
+        defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
           { key: 'stretch', header: 'Stretch', rowHeader: true, className: 'font-normal', cell: r => `${stop(r.fromName)} to ${stop(r.toName)}` },
           { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} direction={r.direction} /> },
-          { key: 'value', header: valueHeader, worst: r => r.value, cell: r => format(r.value) },
+          ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),
         ]}
       />
     </div>
@@ -216,7 +217,7 @@ export default function LiveAgencyPage() {
         </Section>
 
         <Section id="agency-bunching" title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up, and by how much.">
-          <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" valueHeader="Rise" format={v => `+${Math.round(v * 100)} points`} />
+          <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" />
         </Section>
 
         <Section id="agency-method" title="How this is measured">
