@@ -235,12 +235,8 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
             rows={top}
             rowKey={s => `${s.stopId}-${s.directionId}`}
             columns={[
-              { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => (
-                <span title={`${s.n.toLocaleString()} departures, typically ${mins(s.medianMin)}`}>
-                  {s.name}
-                  {dir == null && <span className="block text-xs text-[var(--text-dim)]">{v3.directionLabels[String(s.directionId)]}</span>}
-                </span>
-              ) },
+              { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal truncate', cell: s => <span title={s.name}>{s.name}</span> },
+              ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
               { key: 'late', header: 'Late', worst: s => s.lateShare, cell: s => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
             ]}
           />
