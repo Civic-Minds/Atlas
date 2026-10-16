@@ -168,7 +168,14 @@ export function detectReferenceDate(
             .filter(s => s <= todayStr && groupEnd(s) >= todayStr && daysBetween(s, groupEnd(s)) >= MIN_RUNNING_PERIOD_DAYS)
             .pop()
         : undefined;
-    const runningStart = newestStarted != null && groupEnd(newestStarted) >= todayStr
+    // The newest started period still running today is kept unless it is short (under
+    // MIN_RUNNING_PERIOD_DAYS) while a long period is also running: a short block is a
+    // replacement or special-event timetable, not the feed's schedule. Sound Transit's
+    // Oct 17-18 Link bus bridge (2 services, replacing weekend rail) became the reference and
+    // the 1 Line and 2 Line, whose services are not in that block, dropped (#921).
+    const newestRunningIsShort = newestStarted != null && daysBetween(newestStarted, groupEnd(newestStarted)) < MIN_RUNNING_PERIOD_DAYS
+        && longRunningStarts.length > 0;
+    const runningStart = newestStarted != null && groupEnd(newestStarted) >= todayStr && !newestRunningIsShort
         ? newestStarted
         : longRunningStarts.length > 0
         ? longRunningStarts[longRunningStarts.length - 1]
