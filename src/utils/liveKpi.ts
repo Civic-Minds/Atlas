@@ -36,6 +36,8 @@ export const FIXED_NOISE: Record<CompareKey, number> = { late: 0.02, bunching: 0
  * Noise for a week-over-week change measured from daily values: 2 x the standard error of the difference of two weekly
  * means. The file holds daily values for this week only, so their spread stands in for both weeks:
  * 2 * sd * sqrt(1/n1 + 1/n2). `null` with fewer than 3 days (no spread to measure).
+ * TODO (planned day-split rebuild of the analysis): store last week's daily values too, so each week uses its own
+ * spread: 2 * sqrt(sd1^2/n1 + sd2^2/n2).
  */
 export function dailyNoise(daily: readonly number[], nThis: number, nLast: number): number | null {
   if (daily.length < 3 || nThis < 1 || nLast < 1) return null;
