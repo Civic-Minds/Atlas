@@ -565,6 +565,7 @@ function AnalysisPage() {
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         {view !== 'lite' && <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="View">
+          <Pill size="segment" selected={false} onClick={() => setView('lite')}>Summary</Pill>
           <Pill size="segment" selected={view === 'dashboard'} onClick={() => setView('dashboard')}>Dashboard</Pill>
           <Pill size="segment" selected={view === 'analysis'} onClick={() => setView('analysis')}>Full analysis</Pill>
         </div>}
