@@ -73,4 +73,38 @@ describe('stretch-departures.py', () => {
     expect(d0.main.max_gap).toBe(30);
     expect(d0.tails).toEqual([]);
   });
+
+  it('a pattern is regular by steadiness, not by its share of trips (#602, TransLink 99 Boundary Loop)', async () => {
+    // A-E every 10 min 07:00-19:00 (73 trips). B-E: 25 trips (26%) in two bunches, 10:00-11:00 and
+    // 17:30-18:30, so it runs through no period at its middle stop and is not regular.
+    const zip = new JSZip();
+    zip.file('routes.txt', 'route_id,route_short_name\nR,9\n');
+    zip.file('stops.txt', 'stop_id,stop_name\nA,Alpha\nB,Bravo\nC,Charlie\nD,Delta\nE,Echo\n');
+    zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nS,1,1,1,1,1,0,0,20260101,20261231\n');
+    const trips = ['trip_id,route_id,service_id,direction_id,trip_headsign'];
+    const times = ['trip_id,stop_sequence,stop_id,departure_time'];
+    const add = (id: string, stops: string[], start: number) => {
+      trips.push(`${id},R,S,0,X`);
+      stops.forEach((stop, i) => {
+        const t = start + i * 3;
+        times.push(`${id},${i + 1},${stop},${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}:00`);
+      });
+    };
+    for (let i = 0; i <= 72; i++) add(`m${i}`, ['A', 'B', 'C', 'D', 'E'], 420 + i * 10);
+    for (let i = 0; i < 12; i++) add(`p${i}`, ['B', 'C', 'D', 'E'], 600 + i * 5);
+    for (let i = 0; i < 13; i++) add(`q${i}`, ['B', 'C', 'D', 'E'], 1050 + i * 5);
+    zip.file('trips.txt', trips.join('\n'));
+    zip.file('stop_times.txt', times.join('\n'));
+    const path = join(mkdtempSync(join(tmpdir(), 'oracle-')), 'x.zip');
+    writeFileSync(path, await zip.generateAsync({ type: 'nodebuffer' }));
+    const at = (...extra: string[]) => execFileSync('python3', ['-I', SCRIPT, 'x', '9', 'Weekday', '6', '9', '--zip', path, '--date', '2026-10-14', '--at', 'mid', ...extra], { encoding: 'utf8' });
+    const spec = at();
+    expect(spec).toContain('2 patterns, 1 regular');
+    expect(spec).toContain('main stretch: 5 stops');
+    expect(spec).toContain('middle stop (served by more than half of the trips, index n // 2): Charlie (C)');
+    // The old share rule counts B-E as regular, shrinks the stretch to B-E and reads at D.
+    const old = at('--min-share', '0.2');
+    expect(old).toContain('main stretch: 4 stops');
+    expect(old).toContain('index n // 2): Delta (D)');
+  });
 });
