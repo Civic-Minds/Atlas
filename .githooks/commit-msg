@@ -17,6 +17,12 @@
 # coverage) and parseGtfs.ts (global shape-correction logic, high blast
 # radius) as structural risks of the same shape even without a confirmed
 # incident yet.
+#
+# List extended 2026-10-15 (frequency-focus-plan step 0) to the filter rule's own files:
+# shared/worstDirection.ts (the stamp), shared/routeHeadwayFilter.ts and shared/tileFilterExprs.ts
+# (the rule every surface reads), pipeline/releaseDiff.ts (the release gate) and pipeline/tripSets.ts
+# (the shared trip selector, once it exists). A test under shared/__tests__ or src/utils/__tests__
+# counts for those, as one under pipeline/__tests__ does for the pipeline files.
 
 msg_file="$1"
 
@@ -27,7 +33,12 @@ pipeline/transit-phase1.ts
 pipeline/transit-phase2.ts
 pipeline/shape-selection.ts
 pipeline/transit-corridors.ts
-pipeline/parseGtfs.ts'
+pipeline/parseGtfs.ts
+pipeline/releaseDiff.ts
+pipeline/tripSets.ts
+shared/worstDirection.ts
+shared/routeHeadwayFilter.ts
+shared/tileFilterExprs.ts'
 
 staged=$(git diff --cached --name-only)
 
@@ -41,7 +52,7 @@ done
 [ -z "$touched" ] && exit 0
 
 # Satisfied if a regression test changed alongside it...
-if echo "$staged" | grep -q '^pipeline/__tests__/'; then
+if echo "$staged" | grep -qE '^(pipeline|shared|src/utils)/__tests__/'; then
   exit 0
 fi
 
@@ -60,7 +71,7 @@ across 18 French cities before anyone noticed). This gate exists so that
 doesn't happen silently again.
 
 Add ONE of the following before committing:
-  1. A regression test under pipeline/__tests__/ covering the change, or
+  1. A regression test under pipeline/__tests__/ (or shared/__tests__/, src/utils/__tests__/) covering the change, or
   2. A "Validated:" line in the commit message, e.g.:
        Validated: TTC, Rennes, Bordeaux, Dijon
        Validated: n/a - pure refactor, no calculation change
