@@ -41,7 +41,7 @@ import { trackEvent } from '../../lib/analytics';
 import type { CompareRouteRow } from './compareTypes';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
-import { hasStretchRoles, stretchRowFeatures, variantOnlyRow } from '../../utils/stretchCard';
+import { hasRegularServiceInPeriod, hasStretchRoles, stretchRowFeatures, variantOnlyRow } from '../../utils/stretchCard';
 
 interface SidebarControlsProps {
   query: string;
@@ -610,7 +610,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
-        
+        // No cadence at the stop for a period the route card says has no regular service (#750).
+        if (!hasRegularServiceInPeriod(p, period)) continue;
+
         // Only include features whose shape actually covers any of the sibling stops.
         let stopHw: number | undefined = undefined;
         let matchingStopId: string | undefined = undefined;

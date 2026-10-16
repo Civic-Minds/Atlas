@@ -8,7 +8,8 @@ const SURFACE_TIERS = SURFACE_TIER_MAXES;
  * - Weekday: 07:00–22:00 · Saturday: 07:00–22:00 · Sunday: 09:00–21:00
  * - Grace: max(5 min, T × 15%) per tier — tier=60 gets 9 min, tighter tiers keep 5 min floor
  * - Internal near misses: 10% for 5–15-minute tiers and 5% for 20–60-minute
- *   tiers, with no minimum floor and a three-gap cap
+ *   tiers, with one near miss allowed once there are 8 or more gaps
+ *   (GRACE_FLOOR_MIN_GAPS) and a three-gap cap
  */
 export const DEFAULT_CRITERIA: AnalysisCriteria = {
     id: 'default',
