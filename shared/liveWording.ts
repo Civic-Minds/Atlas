@@ -16,3 +16,9 @@ export const lateHourLine = (clock: string, late: number, total: number): string
 
 /** Late departures in an hour, from its late share and its count (the share is that count over the total). */
 export const lateCount = (share: number, total: number): number => Math.round(share * total);
+
+/** The route strip's stop hover (CIV-281, approved by Ryan): "Usually 1.7 min early · 12% late", "7% bunched · 5% too long". */
+export const USUALLY_ON_TIME = 'Usually on time';
+export const usuallyOffBy = (minutes: string, side: 'early' | 'late'): string => `Usually ${minutes} min ${side}`;
+export const lateShareText = (pct: string): string => `${pct} late`;
+export const bunchedAndLong = (bunched: string, tooLong: string): string => `${bunched} bunched · ${tooLong} too long`;

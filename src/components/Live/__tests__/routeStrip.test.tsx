@@ -129,7 +129,7 @@ describe('RouteStrip', () => {
     fireEvent.keyDown(strip, { key: 'ArrowRight' });
     expect(strip.textContent).toContain('Spadina Ave at Street 0 South Side');
     fireEvent.keyDown(strip, { key: 'End' });
-    expect(strip.textContent).toContain('Typical delay +5.5 min late');
+    expect(strip.textContent).toContain('Usually 5.5 min late');
     expect(screen.getByText('Delays start')).toBeTruthy();
   });
 
@@ -156,7 +156,7 @@ describe('RouteStrip', () => {
     fireEvent.click(screen.getByRole('button', { name: `Show all ${STOPS.length} stops` }));
     for (const s of STOPS) expect(screen.getAllByText(s.name).length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByText(STOPS[3].name)[0]);
-    expect(screen.getByText('500 departures measured')).toBeTruthy();
+    expect(screen.getAllByText(/^Usually /).length).toBeGreaterThan(0);
   });
 
   it('draws delay on top and bunching underneath by default, each with its own legend and marker', () => {

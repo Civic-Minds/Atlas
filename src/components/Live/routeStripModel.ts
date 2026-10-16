@@ -5,6 +5,7 @@
  */
 import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/liveDashboard';
 import { titleCase } from '../../utils/format';
+import { USUALLY_ON_TIME, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -206,12 +207,13 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
 /** The text for one stop on hover, focus or tap. */
 export function stopDetail(stop: RouteStripStop): { name: string; lines: string[] } {
   const lines: string[] = [];
-  if (stop.n > 0 && stop.delayMin != null) lines.push(`Typical delay ${delayText(stop.delayMin)}${stop.lateShare != null ? `, ${pct(stop.lateShare)} of departures late` : ''}`);
-  else lines.push('Delay not measured');
+  if (stop.n > 0 && stop.delayMin != null) {
+    const usual = Math.abs(stop.delayMin) < 0.05 ? USUALLY_ON_TIME : usuallyOffBy(num(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
+    lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(pct(stop.lateShare))}` : usual);
+  } else lines.push('Delay not measured');
   const bn = stop.bunchingN ?? stop.n;
-  if (stop.bunchedShare != null && stop.gappedShare != null && bn > 0) lines.push(`${pct(stop.bunchedShare)} of gaps bunched, ${pct(stop.gappedShare)} too long (${bn.toLocaleString()} gaps)`);
-  else if (stop.bunchingShare != null && bn > 0) lines.push(`${pct(stop.bunchingShare)} of gaps too short or too long (${bn.toLocaleString()} gaps)`);
-  lines.push(`${stop.n.toLocaleString()} departures measured${stop.n < MIN_N ? ': too few to rely on' : ''}`);
+  if (stop.bunchedShare != null && stop.gappedShare != null && bn > 0) lines.push(bunchedAndLong(pct(stop.bunchedShare), pct(stop.gappedShare)));
+  else if (stop.bunchingShare != null && bn > 0) lines.push(`${pct(stop.bunchingShare)} of gaps too short or too long`);
   if (stop.uncertain) lines.push('Less exact here: vehicles report their location less often');
   return { name: stop.name, lines };
 }
