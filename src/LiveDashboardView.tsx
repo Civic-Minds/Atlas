@@ -6,7 +6,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import DataTable from './components/ui/DataTable';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
-import RouteStrip, { routeStripFromV3, type RouteStripMode } from './components/Live/RouteStrip';
+import RouteStrip, { routeStripFromV3 } from './components/Live/RouteStrip';
 import Pill from './components/ui/Pill';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
@@ -134,26 +134,42 @@ function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: num
 }
 
 /** Each direction as a line of stops coloured by typical delay or by bunching, with where it starts marked. */
-function AlongRoute({ v3, band, dir, uncertain }: { v3: LiveV3; band: DashboardBand; dir: number | null; uncertain: UncertainStart[] }) {
-  const [mode, setMode] = useState<RouteStripMode>(() => (new URLSearchParams(window.location.search).get('strip') === 'bunching' ? 'bunching' : 'delay'));
-  useEffect(() => { syncUrlParams({ strip: mode === 'bunching' ? 'bunching' : null }); }, [mode]);
-  const all = useMemo(() => dirsOf(v3, dir).map(d => routeStripFromV3(v3, d, band, uncertain)).filter(d => d.stops.length > 1), [v3, dir, band, uncertain]);
-  // Phones show one direction at a time, so the two lines are not stacked down a long page.
+const PERIODS: [DashboardBand, string][] = [['amPeak', 'AM peak'], ['midday', 'midday'], ['pmPeak', 'PM peak'], ['evening', 'evening']];
+/** A period's marked stretch counts as "elsewhere" when it ends this many stops or more from the all-day one. */
+const ELSEWHERE_STOPS = 3;
+
+/**
+ * One line when where delays start, or where bunching forms, is clearly somewhere else at some time of day than over
+ * the whole day; null when every period agrees (or names no single place). No toggle: the strip shows the whole day.
+ */
+export function periodNote(v3: LiveV3, directionId: number, uncertain: UncertainStart[], kind: 'delaysStart' | 'bunchingForms'): string | null {
+  const day = routeStripFromV3(v3, directionId, 'all', uncertain);
+  const at = (id: string | undefined) => (id ? day.stops.findIndex(s => s.stopId === id) : -1);
+  const dayEnd = at(day[kind]?.toStopId);
+  const parts = PERIODS.flatMap(([band, label]) => {
+    if (!v3.bands?.[band]) return [];
+    const p = routeStripFromV3(v3, directionId, band, uncertain)[kind];
+    const end = at(p?.toStopId);
+    if (end < 0 || (dayEnd >= 0 && Math.abs(end - dayEnd) < ELSEWHERE_STOPS)) return [];
+    return [`${label} near ${shortStopName(day.stops[end].name)}`];
+  });
+  if (!parts.length) return null;
+  return `${kind === 'delaysStart' ? 'Delays start' : 'Bunching forms'} elsewhere at some times of day: ${parts.join(', ')}.`;
+}
+
+/** Each direction as two lines of stops on the same positions: delay on top, bunching underneath. */
+function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; uncertain: UncertainStart[] }) {
+  const all = useMemo(() => dirsOf(v3, dir).map(d => routeStripFromV3(v3, d, 'all', uncertain)).filter(d => d.stops.length > 1), [v3, dir, uncertain]);
+  // Phones show one direction at a time, so the two strips are not stacked down a long page.
   const phone = useMediaQuery('(max-width: 479px)');
   const [phoneDir, setPhoneDir] = useState(0);
   const pickable = phone && all.length > 1;
   const dirs = pickable ? [all[Math.min(phoneDir, all.length - 1)]] : all;
   return (
     <section aria-labelledby="dash-strip" className="mt-10">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 id="dash-strip" className="text-xl font-black tracking-tight">Along the route</h2>
-        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Colour the stops by">
-          <Pill size="segment" selected={mode === 'delay'} onClick={() => setMode('delay')}>Delay</Pill>
-          <Pill size="segment" selected={mode === 'bunching'} onClick={() => setMode('bunching')}>Bunching</Pill>
-        </div>
-      </div>
+      <h2 id="dash-strip" className="text-xl font-black tracking-tight">Along the route</h2>
       <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
-        {mode === 'delay' ? 'Each stop coloured by how late cars typically leave it' : 'Each stop coloured by the share of gaps between cars that are too close or too far apart'} {BAND_WORDS[band]}. Hover or tap a stop for its figures.
+        Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.
       </p>
       {pickable && (
         <div className="mt-3 flex flex-wrap gap-1.5" role="group" aria-label="Direction shown">
@@ -161,15 +177,19 @@ function AlongRoute({ v3, band, dir, uncertain }: { v3: LiveV3; band: DashboardB
         </div>
       )}
       {dirs.length ? (
-        <div className="mt-4 grid gap-x-8 gap-y-8">
-          {dirs.map(d => (
-            <div key={d.directionId} className="min-w-0">
-              {!pickable && <h3 className="text-base font-black">{d.label}</h3>}
-              <RouteStrip className="mt-2" stops={d.stops} mode={mode} directionLabel={d.label} delaysStart={d.delaysStart} bunchingForms={d.bunchingForms} />
-            </div>
-          ))}
+        <div className="mt-4 grid gap-x-8 gap-y-10">
+          {dirs.map(d => {
+            const notes = (['delaysStart', 'bunchingForms'] as const).map(k => periodNote(v3, d.directionId, uncertain, k)).filter((x): x is string => !!x);
+            return (
+              <div key={d.directionId} className="min-w-0">
+                {!pickable && <h3 className="text-base font-black">{d.label}</h3>}
+                <RouteStrip className="mt-2" stops={d.stops} directionLabel={d.label} delaysStart={d.delaysStart} bunchingForms={d.bunchingForms} />
+                {notes.map(n => <p key={n} className="mt-2 max-w-3xl text-sm text-[var(--text-secondary)]">{n}</p>)}
+              </div>
+            );
+          })}
         </div>
-      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">No stops were measured for this choice.</p>}
+      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">No stops were measured.</p>}
     </section>
   );
 }
@@ -216,7 +236,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
         <p className="mt-3 text-sm text-[var(--text-muted)]">The direction you pick changes everything below. The figures above are the whole week, both directions.</p>
         {filters}
       </div>
-      <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} band={band} dir={dir} uncertain={uncertain} /></ErrorBoundary>
+      <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad('Run time')}><TripTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
       <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
       <section className="mt-10 max-w-xl" aria-label="The stops most often late">

@@ -123,7 +123,7 @@ describe('RouteStrip', () => {
 
   it('is one focusable unit with a summary label, and arrow keys announce each stop', () => {
     setWidth(900);
-    render(<RouteStrip stops={STOPS} mode="delay" directionLabel="Southbound" delaysStart={{ fromStopId: 'S3', toStopId: 'S5' }} />);
+    render(<RouteStrip stops={STOPS} modes={["delay"]} directionLabel="Southbound" delaysStart={{ fromStopId: 'S3', toStopId: 'S5' }} />);
     const strip = screen.getByRole('group', { name: /Typical delay, southbound/ });
     expect(strip.tabIndex).toBe(0);
     fireEvent.keyDown(strip, { key: 'ArrowRight' });
@@ -133,35 +133,45 @@ describe('RouteStrip', () => {
     expect(screen.getByText('Delays start')).toBeTruthy();
   });
 
-  it('shows the legend in one line, with less exact and faded entries only when they apply', () => {
+  it('shows a legend line per track, with less exact and faded entries only when they apply', () => {
     setWidth(900);
-    const { rerender } = render(<RouteStrip stops={STOPS} mode="delay" directionLabel="Southbound" />);
+    const { rerender } = render(<RouteStrip stops={STOPS} modes={["delay"]} directionLabel="Southbound" />);
     expect(screen.getByText('On time or early')).toBeTruthy();
     expect(screen.queryByText('Less exact')).toBeNull();
-    rerender(<RouteStrip stops={[stop(0, { uncertain: true }), stop(1, { n: 12 }), ...STOPS.slice(2)]} mode="delay" directionLabel="Southbound" />);
+    rerender(<RouteStrip stops={[stop(0, { uncertain: true }), stop(1, { n: 12 }), ...STOPS.slice(2)]} modes={["delay"]} directionLabel="Southbound" />);
     expect(screen.getByText('Less exact')).toBeTruthy();
-    expect(screen.getByText('Fewer than 30 departures')).toBeTruthy();
+    expect(screen.getByText('Fewer than 30 departures or gaps')).toBeTruthy();
   });
 
   it('switches its colours and legend to bunching', () => {
     setWidth(900);
-    render(<RouteStrip stops={STOPS} mode="bunching" directionLabel="Southbound" bunchingForms={{ fromStopId: 'S6', toStopId: 'S8' }} />);
+    render(<RouteStrip stops={STOPS} modes={["bunching"]} directionLabel="Southbound" bunchingForms={{ fromStopId: 'S6', toStopId: 'S8' }} />);
     expect(screen.getByText('Gaps too short or too long:')).toBeTruthy();
     expect(screen.getByText('Bunching forms')).toBeTruthy();
   });
 
   it('becomes a compact vertical line when narrow, with a switch to the full list of every stop', () => {
     setWidth(300);
-    render(<RouteStrip stops={STOPS} mode="delay" directionLabel="Southbound" />);
+    render(<RouteStrip stops={STOPS} modes={["delay"]} directionLabel="Southbound" />);
     fireEvent.click(screen.getByRole('button', { name: `Show all ${STOPS.length} stops` }));
     for (const s of STOPS) expect(screen.getAllByText(s.name).length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByText(STOPS[3].name)[0]);
     expect(screen.getByText('500 departures measured')).toBeTruthy();
   });
 
+  it('draws delay on top and bunching underneath by default, each with its own legend and marker', () => {
+    setWidth(900);
+    render(<RouteStrip stops={STOPS} directionLabel="Southbound" delaysStart={{ fromStopId: 'S2', toStopId: 'S3' }} bunchingForms={{ fromStopId: 'S6', toStopId: 'S8' }} />);
+    expect(screen.getByText('Typical delay:')).toBeTruthy();
+    expect(screen.getByText('Gaps too short or too long:')).toBeTruthy();
+    expect(screen.getAllByText(/^Delays start/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^Bunching forms/).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('button', { name: 'Bunching' })).toBeNull();
+  });
+
   it('has a screen-reader table with the same figures, linked to the strip', () => {
     setWidth(900);
-    render(<RouteStrip stops={STOPS} mode="delay" directionLabel="Southbound" />);
+    render(<RouteStrip stops={STOPS} modes={["delay"]} directionLabel="Southbound" />);
     expect(screen.queryByText('Show as a table')).toBeNull();
     const table = screen.getByRole('table');
     expect(table.closest('.sr-only')?.id).toBe(document.querySelector('[aria-roledescription="route strip"]')?.getAttribute('aria-describedby'));
