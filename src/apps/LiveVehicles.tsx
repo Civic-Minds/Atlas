@@ -7,7 +7,7 @@ import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
-import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_EMPTY, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors } from '../utils/colors';
@@ -15,9 +15,10 @@ import { useColorVision } from '../context/ColorVisionContext';
 import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
+import { plural } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../utils/liveGrouping';
-import { CHIP } from '../pageStyles';
+import Tag from '../components/ui/Tag';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, delayAmount, headwayAbout, headwayEvery } from '../utils/headwayText';
@@ -26,6 +27,10 @@ import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
 import { useLiveCardMapLink, useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import { useSegmentDelay } from '../hooks/useSegmentDelay';
+import PanelEmpty from '../components/ui/PanelEmpty';
+import AgencyName from '../components/ui/AgencyName';
+import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
+import { loadingText } from '../content/stateCopy';
 
 interface Props {
   agencies: Agency[];
@@ -449,10 +454,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       return (
         <React.Fragment key={key}>
           {showAgencyHeader && (
-            <div className={`${PANEL_SECTION_HEAD} ${agencyHeaderIndex++ > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
-              {agencyName}
-              {agencyPlace && <span className="font-normal text-[var(--text-dim)]"> · {agencyPlace}</span>}
-            </div>
+            <AgencyGroupHeader rule={agencyHeaderIndex++ > 0 ? 'above' : 'below'}>
+              <AgencyName primary={agencyName} secondary={agencyPlace} />
+            </AgencyGroupHeader>
           )}
           <RouteListRow
             shortName={cleanRouteShortName(g.routeShortName)}
@@ -651,7 +655,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
           {/* Content */}
           <PanelBody>
-            {requestedRouteNote && <p className={PANEL_EMPTY}>{requestedRouteNote}</p>}
+            {requestedRouteNote && <PanelEmpty>{requestedRouteNote}</PanelEmpty>}
             {selectedGroup ? (
               <>
               <div className="px-4 pt-4">
@@ -686,7 +690,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 )}
                 {/* Match static route cards: destinations first, live vehicles second. */}
                 {selectedGroup.vehicles.length === 0 ? (
-                  <p className={`${PANEL_EMPTY} text-center`}>No vehicles on this route</p>
+                  <PanelEmpty>No vehicles on this route</PanelEmpty>
                 ) : canGroupByDirection && !selectedDirection ? (
                   <SidebarCardListRows>
                     {[...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => {
@@ -746,7 +750,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     variant="spaced"
                     onClick={() => handlePlaceClick(p.slug)}
                     subtitle={(
-                      <span className={`${CHIP} inline-block mt-1.5 whitespace-nowrap`}>{p.withPerformance ? 'Vehicles + performance' : 'Vehicles'}</span>
+                      <Tag size="md" className="inline-block mt-1.5 whitespace-nowrap">{p.withPerformance ? 'Vehicles + performance' : 'Vehicles'}</Tag>
                     )}
                     right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
                   />
@@ -754,10 +758,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <BrowseLiveAgenciesLink onInfoOpen={onInfoOpen} />
               </>
             ) : isLoading && totalVehicles === 0 ? (
-              <div className="flex items-center justify-center gap-2 px-4 py-6">
-                <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
-                <span className="text-xs font-bold text-[var(--text-muted)]">Loading feed…</span>
-              </div>
+              <PanelEmpty kind="loading">{loadingText('feed')}</PanelEmpty>
             ) : hasAnyError ? (
               <div className="py-6 text-center px-4 flex flex-col items-center gap-3">
                 <WifiOff className="w-5 h-5 text-[var(--text-dim)]" />
@@ -792,7 +793,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               </div>
             ) : displayedRouteGroups.length === 0 && routeGroups.length === 0 ? (
               query ? (
-                <p className={`${PANEL_EMPTY} text-center`}>No routes match your search.</p>
+                <PanelEmpty>No routes match your search.</PanelEmpty>
               ) : (
                 <div className="py-5 px-4 flex flex-col gap-3">
                   <div className="text-center">
@@ -836,7 +837,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 )}
                 {offScreenOnly && !query && (
                   <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
-                    Outside this view · {totalVehicles} vehicle{totalVehicles === 1 ? '' : 's'}
+                    Outside this view · {totalVehicles} {plural(totalVehicles, 'vehicle')}
                   </div>
                 )}
                 {renderRouteGroupList(sidebarRouteGroups)}

@@ -16,6 +16,13 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `SEGMENT_COLOURS_ENABLED` | Route lines drawn in segments coloured by the pooled per-stop tier (`route-segments` layers in `MapCanvas.tsx`, `src/utils/routeSegments.ts`) | off | on (follows `beta`/`dev` mode) | New map reading ([#690](https://github.com/Civic-Minds/Atlas/issues/690)): the public map keeps one colour per route line from the route-level tier until the segment colours have been reviewed on real routes. |
 | `SHARE_UTM_ENABLED` | Shared links and shared map images carry `utm` tags so analytics can count shared visits (`shared/config.ts`) | off | on (follows `beta`/`dev` mode) | Not env-driven; tried on beta until it is seen working end to end. |
 | `COLLAPSE_MODE_TABS_ENABLED` | While Live, History or Compare is on, the other top-bar mode tabs shrink to icons (`App.tsx`) | off | on (follows `beta`/`dev` mode) | Not env-driven; layout is tried on beta first. |
+| `FEATURES.persistedSettings` | Saved Settings: hide low-quality routes, persistent legend and data saver, remembered between visits (`App.tsx`, `FilterPanel.tsx`) | off | on (follows `beta`/`dev` mode) | Was a plain `FEATURES.beta` check; named so it can graduate alone. |
+| `FEATURES.updateBanner` | "New version available" banner (`App.tsx`) | off | on (follows `beta`/`dev` mode) | Same: named stand-in for `FEATURES.beta`. |
+| `FEATURES.mapContext`, `FEATURES.matchPercentage` | Map-context readout and match percentage in the map's status badge (`Interval.tsx`) | off | on (follows `beta`/`dev` mode) | Same: named stand-ins for `FEATURES.beta`. |
+| `FEATURES.feedQuality` | Feed-quality notes on route and agency cards | off | on (follows `beta`/`dev` mode) | Same: named stand-in for `FEATURES.beta`. |
+| `FEATURES.outdatedFilter` | "Outdated" choice in the agency list filter (`InfoPanel.tsx`) | off | on (follows `beta`/`dev` mode) | Same: named stand-in for `FEATURES.beta`. |
+| `FEATURES.whatsNewBetaItems` | Beta-only entries in "What's new" (`ChangelogPage.tsx`, `MapAttribution.tsx`) | off | on (follows `beta`/`dev` mode) | Same: named stand-in for `FEATURES.beta`. |
+| `FEATURES.routeVariants`, `FEATURES.runningTimes`, `FEATURES.sparklineExpand` | "Includes variants" line, trip running times and the expand control on the route card's frequency chart (`RouteCardHeadway.tsx`) | off | on (follows `beta`/`dev` mode) | Same: named stand-ins for `FEATURES.beta`. |
 | `ATLAS_MODE=preview` | Preview title and research-app visibility | off | not configured for the stable domains | Stable Preview uses the Beta project's production deployment; there is no separate Preview project or verified `preview` mode. |
 
 ## How it works
@@ -31,7 +38,7 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 
 **Why env vars, not a `const true`/`false`:** Public and Beta use the same repository, while their Vercel project environments decide which features are exposed. Configure deployment-specific values in Vercel, not in source control.
 
-`MOBILE_ROUTE_SHEET_ENABLED`, `SHARE_UTM_ENABLED`, `COLLAPSE_MODE_TABS_ENABLED` and the research apps (Night Service at `/research/night`, Frequent Service, the `/research` page) are not env flags: they follow the Atlas mode and are on in `beta` and `dev` only. All of them read through the `FEATURES` registry in `shared/config.ts`.
+`MOBILE_ROUTE_SHEET_ENABLED`, `SHARE_UTM_ENABLED`, `COLLAPSE_MODE_TABS_ENABLED` and the research apps (Night Service at `/research/night`, Frequent Service, the `/research` page) are not env flags: they follow the Atlas mode and are on in `beta` and `dev` only. All of them read through the `FEATURES` registry in `shared/config.ts`. The `FEATURES.*` rows in the table above are named stand-ins for what used to be bare `FEATURES.beta` checks: each equals the beta build today (pinned by `src/__tests__/betaStandInFlags.test.tsx`) and can now graduate on its own with a one-line change. `FEATURES.beta` is still read directly for beta data hosts and agency visibility, the Night Service mount in `App.tsx`, and the About docs text.
 
 Live is unset/false in every deployment. Do not add a beta override until the Live feature is intentionally re-enabled.
 

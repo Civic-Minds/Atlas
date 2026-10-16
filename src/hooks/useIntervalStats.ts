@@ -38,6 +38,7 @@ export interface LimitedServiceRoute {
   agencyName: string;
   routeShortName: string;
   routeLongName?: string | null;
+  routeType?: number;
 }
 
 export const routeKey = (p: ShapeProperties) => buildRouteKey(
@@ -372,6 +373,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
         agencyName: p.agencyName ?? p.agencySlug ?? '',
         routeShortName: p.routeShortName ?? '',
         routeLongName: p.routeLongName ?? null,
+        routeType: p.routeType,
       });
     }
 

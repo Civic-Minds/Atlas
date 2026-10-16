@@ -8,11 +8,14 @@ import {
 import { agencyPagePath } from '../shared/agencyPages';
 import { areaPagePath } from '../shared/areas';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
+import { plural } from '../shared/overflowText';
 import historyAgencies from '../shared/data/history-agencies.json';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { isLiveEligibleSlug } from '../shared/livePollingConfig';
 import { applySeoToDocument } from './lib/seoDom';
-import { TAG, LINK } from './pageStyles';
+import { LINK } from './pageStyles';
+import Tag from './components/ui/Tag';
+import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import PageShell from './components/ui/PageShell';
 
 /** Read this page's data from the JSON the prerender embedded next to the app root. */
@@ -38,8 +41,8 @@ const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAg
 function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
   return (
     <>
-      {live && <span className={`${TAG} ml-1.5 inline-block`}>Live</span>}
-      {history && <span className={`${TAG} ml-1 inline-block`}>History</span>}
+      {live && <Tag className="ml-1.5 inline-block">Live</Tag>}
+      {history && <Tag className="ml-1 inline-block">History</Tag>}
     </>
   );
 }
@@ -71,12 +74,12 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
     <PageShell variant="wide">
 
         <article className="pb-16 pt-10 sm:pt-14">
-          <h1 className="text-2xl font-black tracking-tight sm:text-3xl">All agencies and regions</h1>
+          <PageTitle>All agencies and regions</PageTitle>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{agencyIndexDescription(data)}</p>
 
           {areas.length > 0 && (
             <section className="mt-12" aria-labelledby="index-regions">
-              <h2 id="index-regions" className="text-xl font-black tracking-tight">Regions</h2>
+              <SectionTitle id="index-regions">Regions</SectionTitle>
               <ul className="mt-3 text-sm sm:columns-2 lg:columns-3 sm:gap-x-8">
                 {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={`${LINK} underline underline-offset-2`} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
               </ul>
@@ -85,13 +88,13 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
 
           {groups.map(g => (
             <section key={g.country} className="mt-12" aria-labelledby={`index-${g.country}`}>
-              <h2 id={`index-${g.country}`} className="text-xl font-black tracking-tight">{g.country}</h2>
+              <SectionTitle id={`index-${g.country}`}>{g.country}</SectionTitle>
               {g.regions.map(r => (
                 <div key={r.region} className="mt-5">
                   {r.region !== g.country && <h3 className="text-base font-black">{r.region}</h3>}
                   <ul className="mt-2 text-sm sm:columns-2 sm:gap-x-8">
                     {r.agencies.map(a => {
-                      const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{a.routes === 1 ? 'route' : 'routes'}</span>;
+                      const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{plural(a.routes, 'route')}</span>;
                       const live = FEATURES.live && isLiveEligibleSlug(a.slug);
                       const history = FEATURES.history && HISTORY_SLUGS.has(a.slug);
                       if (live || history) {

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { routeKey } from './useIntervalStats';
 import type { ShapeProperties, DayType, TimePeriod } from './useIntervalStats';
 import { routeListDisplay } from '../utils/effectiveHeadway';
-import { shouldHideNumericRouteShortName } from '../utils/format';
+import { routeLabels } from '../utils/format';
 
 const NEARBY_RADIUS_M = 500;
 const EARTH_R = 6371000;
@@ -106,13 +106,13 @@ export function useNearbyRoutes(
         const { headway, limited, sharedHeadway } = routeListDisplay(routeFeatures, period);
 
         if (!routeMap.has(mapKey)) {
+          const label = routeLabels({ shortName: p.routeShortName, longName: p.routeLongName as string | null, routeType: p.routeType, agencySlug: slug, agencyName: p.agencyName });
           routeMap.set(mapKey, {
             rKey: rk,
             routeShortName: shortName,
-            displayShortName: shouldHideNumericRouteShortName(p.routeShortName, p.routeLongName, p.routeType)
-              ? null
-              : p.routeShortName || null,
-            routeLongName: (p.routeLongName as string | null) ?? null,
+            // The same cleaned names as every other list: bold part, then the lighter name; a lone name is shown as the bold part.
+            displayShortName: label.secondary ? label.primary : null,
+            routeLongName: label.secondary ?? (label.primary || null),
             agencyName: p.agencyName || slug,
             agencySlug: slug,
             headway,

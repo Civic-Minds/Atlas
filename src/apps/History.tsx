@@ -3,6 +3,7 @@ import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyCo
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp, History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
+import { plural } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { FLOATING_CARD, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, AGENCY_LIST_PRIMARY, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
@@ -21,6 +22,8 @@ import ListRow from '../components/ui/ListRow';
 import Pill from '../components/ui/Pill';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
+import PanelEmpty from '../components/ui/PanelEmpty';
+import { loadingText, loadErrorText, RETRY_HINT } from '../content/stateCopy';
 
 export interface RouteSnapshot {
   label: string;
@@ -455,9 +458,7 @@ function HistoryAgencyPanel({
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {visibleRouteRows.length === 0 && (
-          <p className="text-xs text-[var(--text-dim)] px-4 py-3">
-            {routeQuery || activeFilter ? 'No routes match.' : 'No data for this period.'}
-          </p>
+          <PanelEmpty>{routeQuery || activeFilter ? 'No routes match.' : 'No data for this period.'}</PanelEmpty>
         )}
         {visibleRouteRows.map(({ route }) => (
           <RouteListRow
@@ -854,21 +855,18 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                 </div>
               )}
               {historyData === null && (
-                <p className="text-xs text-[var(--text-dim)] px-4 py-3">Loading…</p>
+                <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
               )}
               {historyData !== null && historyLoadFailed && (
-                <div className="px-4 py-3">
-                  <p className="text-xs text-[var(--text-dim)]">Couldn't load history data. Check your connection and try again.</p>
-                  <button
-                    onClick={loadHistoryConfig}
-                    className="mt-2 text-xs font-medium text-[var(--accent)] hover:underline"
-                  >
-                    Retry
-                  </button>
-                </div>
+                <PanelEmpty
+                  kind="error"
+                  action={<button onClick={loadHistoryConfig} className="shrink-0 text-xs font-black text-[var(--accent)] hover:underline">Retry</button>}
+                >
+                  {loadErrorText('history data')} {RETRY_HINT}
+                </PanelEmpty>
               )}
               {historyData !== null && !historyLoadFailed && agenciesByRegion.length === 0 && (
-                <p className="text-xs text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
+                <PanelEmpty>No agencies match.</PanelEmpty>
               )}
               {agenciesByRegion.map(([region, agencies]) => (
                 <div key={region}>
@@ -886,7 +884,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                       <span className="min-w-0">
                         <span className={AGENCY_LIST_PRIMARY} title={agency.name}>{shortenAgencyName(agency.name)}</span>
                         <span className="block text-xs text-[var(--text-muted)]">
-                          {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
+                          {agency.routes.length} {plural(agency.routes.length, 'route')}
                         </span>
                       </span>
                       <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />

@@ -4,10 +4,12 @@ import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
+import { splitRouteKey } from '../../utils/routeKey';
 import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
 import type { AreaSearchResult } from '../../../shared/areaSearch';
+import { plural } from '../../../shared/overflowText';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -95,7 +97,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
 }) => {
   const areaBlock = areaResults.length > 0 && onSelectArea ? (
     <SearchSplitList
-      headLabel={`Areas · ${areaResults.length} ${areaResults.length === 1 ? 'match' : 'matches'}`}
+      headLabel={`Areas · ${areaResults.length} ${plural(areaResults.length, 'match', 'matches')}`}
       inView={areaResults}
       elsewhere={[]}
       itemKey={(a: AreaSearchResult) => a.slug}
@@ -111,7 +113,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
           }}
           right={(
             <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
-              {a.agencyCount} {a.agencyCount === 1 ? 'agency' : 'agencies'}
+              {a.agencyCount} {plural(a.agencyCount, 'agency', 'agencies')}
             </span>
           )}
         />
@@ -154,7 +156,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={routeSections.elsewhere}
       itemKey={(r: RouteSearchResult) => r.key}
       renderItem={(r: RouteSearchResult) => {
-        const labels = routeRowLabels(r.routeShortName ?? '', r.routeLongName, r.routeType);
+        const labels = routeRowLabels({ shortName: r.routeShortName ?? '', longName: r.routeLongName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
         const name = r.variantCount && r.variantCount > 1
           ? `${labels.name ? `${labels.name} · ` : ''}${r.variantCount} variants`
           : labels.name;

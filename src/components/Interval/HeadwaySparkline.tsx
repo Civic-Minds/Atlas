@@ -10,6 +10,7 @@ import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
+import LegendItem from '../ui/LegendItem';
 import { delayAmount, headwayEvery } from '../../utils/headwayText';
 import { TripTimeStrip } from './TripTimeStrip';
 import type { TripTimeSeries } from '../../utils/tripTime';
@@ -309,10 +310,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
       {(stackedLegend.length > 0 || reserveStackedLegendSpace) && (
         <div className={`flex min-h-[10px] flex-col items-start gap-y-0.5 mt-1 text-xs font-bold text-[var(--text-dim)] leading-tight`}>
           {stackedLegend.map(segment => (
-            <span key={segment.label} className="inline-flex items-center gap-1">
-              <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: segment.color }} />
-              {segment.label}
-            </span>
+            <LegendItem key={segment.label} color={segment.color}>{segment.label}</LegendItem>
           ))}
         </div>
       )}
@@ -343,10 +341,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs font-bold text-[var(--text-dim)]" data-testid="sparkline-legend">
           <span className="text-[var(--text-muted)]">Numbers = minutes between trips. Taller bar = more trips that hour. Colour:</span>
           {tierLegend.map(tier => (
-            <span key={tier.label} className="inline-flex items-center gap-1">
-              <span className="inline-block h-2 w-2 rounded-sm" style={{ background: tier.color }} />
-              {tier.label}
-            </span>
+            <LegendItem key={tier.label} color={tier.color}>{tier.label}</LegendItem>
           ))}
         </div>
       )}

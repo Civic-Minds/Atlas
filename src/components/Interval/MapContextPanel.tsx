@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels } from './SearchSuggestionsPanel';
 import RegionFilterPills from '../RegionFilterPills';
 import Panel, { PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
+import AgencyGroupHeader from '../ui/AgencyGroupHeader';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -95,9 +96,9 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
         ) : (
           filteredRouteGroups.length > 0 ? filteredRouteGroups.map(group => (
             <section key={group.agencyName}>
-              <div className={`${PANEL_SECTION_HEAD.replace('tracking-wide', '')} pt-2 pb-1`}>{group.agencyName}</div>
+              <AgencyGroupHeader rule="none">{group.agencyName}</AgencyGroupHeader>
               {group.routes.map((route: MapContextRoute) => {
-                const labels = routeRowLabels(route.shortName, route.longName, route.routeType);
+                const labels = routeRowLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: group.agencyName });
                 return (
                   <RouteListRow
                     key={route.key}

@@ -1,3 +1,5 @@
+import { plural } from './overflowText';
+
 export type FeedQualityStatus = 'healthy' | 'review' | 'degraded' | 'unusable';
 
 export interface FeedQualityMetrics {
@@ -22,15 +24,15 @@ export interface FeedQualityInput extends FeedQualityMetrics {
 }
 
 export function feedQualityReasonForValidationWarnings(count: number): string {
-  return `${count} minor schedule ${count === 1 ? 'issue' : 'issues'} found while reading the feed.`;
+  return `${count} minor schedule ${plural(count, 'issue')} found while reading the feed.`;
 }
 
 export function feedQualityReasonForShapeAnomalies(count: number): string {
-  return `${count} route ${count === 1 ? 'shape needed' : 'shapes needed'} adjustment before display.`;
+  return `${count} route ${plural(count, 'shape needed', 'shapes needed')} adjustment before display.`;
 }
 
 export function feedQualityReasonForHeadwayMismatches(count: number): string {
-  return `${count} route ${count === 1 ? 'has' : 'have'} stops whose frequency differs from the overall route schedule.`;
+  return `${count} route ${plural(count, 'has', 'have')} stops whose frequency differs from the overall route schedule.`;
 }
 
 export const FEED_QUALITY_EXPIRED_REASON = 'The schedule dates in this feed have passed.';
@@ -113,14 +115,14 @@ export function presentFeedQualityReason(reason: string): string {
   const shapeMatch = reason.match(/^(\d+) map lines? (?:was|were) repaired — Atlas fixed unusual route geometry before displaying it\.$/);
   if (shapeMatch) {
     const count = Number(shapeMatch[1]);
-    return `${count} route ${count === 1 ? 'shape needed' : 'shapes needed'} adjustment before display.`;
+    return `${count} route ${plural(count, 'shape needed', 'shapes needed')} adjustment before display.`;
   }
 
   const frequencyMatch = reason.match(/^\d+ route (?:frequency needs|frequencies need) checking — some stops appear to have more frequent service than the route's overall schedule suggests\.$/);
   if (frequencyMatch) {
     const countMatch = reason.match(/^(\d+)/);
     const count = Number(countMatch?.[1] ?? 0);
-    return `${count} route ${count === 1 ? 'has' : 'have'} stops whose frequency differs from the overall route schedule.`;
+    return `${count} route ${plural(count, 'has', 'have')} stops whose frequency differs from the overall route schedule.`;
   }
 
   if (reason === 'No route features were produced.') return FEED_QUALITY_NO_ROUTES_REASON;

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 // Tables, pills, list rows and panel shells come from src/components/ui/. This fails when a screen
 // hand-rolls one again, so the look cannot drift screen by screen. To fix a failure, use the shared
-// component (DataTable, Pill, ListRow, Panel). If a new variant is needed, add it to the shared component.
+// component (DataTable, Pill, ListRow, Panel, LinkCard, Tag, ArrowLink, PanelEmpty, AgencyName, PageTitle, SectionTitle, EmptyPage). If a new variant is needed, add it to the shared component.
 const SRC = resolve(__dirname, '../../..');
 
 function files(dir: string): string[] {
@@ -22,6 +22,24 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'panel shell constants', pattern: /\b(PANEL_SHELL|PANEL_TITLE_BAR|PANEL_BODY)\b/, use: 'Panel, PanelTitleBar, PanelBody' },
   { name: 'hand-rolled option pill', pattern: /px-2(\.5)? py-0\.5 rounded-full/, use: 'Pill' },
   { name: 'hand-rolled switch', pattern: /role="switch"/, use: 'Toggle' },
+  { name: 'hand-rolled spinner', pattern: /border-t-transparent rounded-full animate-spin/, use: 'Spinner' },
+  { name: 'hand-rolled link card', pattern: /px-3 py-2 rounded-xl bg-\[var\(--bg-app\)\] border border-\[var\(--border-primary\)\] hover:border-\[var\(--accent\)\]/, use: 'LinkCard' },
+  { name: 'hand-rolled tag', pattern: /px-1\.5 py-(0\.5|px)[^"`']*rounded-full|rounded-full[^"`']*px-1\.5 py-(0\.5|px)/, use: 'Tag' },
+  { name: 'typed arrow in a link', pattern: />[^<>{}]*[^\s<>{}][^<>{}]* →\s*</, use: 'ArrowLink' },
+  { name: 'panel empty style', pattern: /\bPANEL_EMPTY\b/, use: 'PanelEmpty' },
+  { name: 'hand-rolled agency place', pattern: /· \{(secondary|agencyPlace|agency\.region)\}/, use: 'AgencyName' },
+  { name: 'hand-rolled page heading', pattern: /<h1[ >]/, use: 'PageTitle' },
+  { name: 'hand-rolled section heading', pattern: /<h2 [^>]*className="[^"]*text-(xl|base) font-black/, use: 'SectionTitle' },
+  { name: 'route label written by hand', pattern: /\b(getRouteLabel|shouldHideNumericRouteShortName|routeListCompanionName)\(/, use: 'routeLabels (utils/format.ts, one helper in shared/routeDisplay.ts)' },
+  // A short and a long name joined by hand for display ("${short} — ${long}", "{shortName} {longName}", [short, long].join(' ')).
+  // Keys joined with '::' or '-' are not labels and do not match.
+  { name: 'route label joined by hand', pattern: /\$\{[^}\n]*[sS]hortName[^}\n]*\}(?:\s*[—–·|]\s*|\s+-\s+|\s+)\$\{[^}\n]*[lL]ongName|[sS]hortName[^\n`]{0,40}\}\$\{[^}\n]*[lL]ongName[^}\n]*\?\s*`\s*[—–·|-]|\{[^{}\n]*[sS]hortName\}(?:\s*[—–·|]\s*|\s+-\s+|\s+)\{[^{}\n]*[lL]ongName\}|\[[^\]\n]*[sS]hortName[^\]\n]*[lL]ongName[^\]\n]*\]\s*\.filter\(Boolean\)\s*\.join\(\s*['"`](?!::)|[sS]hortName\s*\+\s*['"`][\s—–·|-]{1,5}['"`]\s*\+\s*[\w.?]*[lL]ongName/, use: 'routeLabels (utils/format.ts)' },
+  { name: 'hand-rolled frequency picker', pattern: /HEADWAY_TIERS\.map\(\(\{ max/, use: 'FrequencyPicker or useFrequencyOptions (Interval/pickers.tsx)' },
+  { name: 'hand-rolled day buttons', pattern: /flex-1 h-7 flex items-center justify-center/, use: 'DayPicker' },
+  { name: 'hand-rolled legend swatch', pattern: /shrink-0 rounded(-full|-sm)?" style=\{\{ background/, use: 'LegendItem' },
+  { name: 'legend reading the default palette', pattern: /import \{[^}]*\bHEADWAY_TIERS\b[^}]*\} from '[^']*shared\/config'/, use: 'useHeadwayTiers (colour-vision aware)' },
+  { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
+  { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP|CARD_NOTICE_ACTION)\b/, use: 'ArrowLink, Tag' },
   { name: 'hand-rolled page frame', pattern: /<main className="min-h-screen bg-\[var\(--bg-app\)\] px-/, use: 'PageShell' },
 ];
 
@@ -29,8 +47,15 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
 // control styles with Pill but are not pills.
 const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
-  'components/Interval/FilterPanel.tsx': ['option pill classes'],
+  'components/Interval/pickers.tsx': ['hand-rolled frequency picker'],
   'apps/History.tsx': ['option pill classes'],
+  // Live is local-only and its route groups carry no route type; it still names routes its own way (audit R8).
+  'apps/LiveVehicles.tsx': ['route label written by hand', 'route label joined by hand'],
+  // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
+  'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
+  'components/Interval/HeadwaySparkline.tsx': ['hand-rolled section heading'],
+  // A filled call-to-action button (not a link) that ends in an arrow.
+  'apps/FrequentServiceStory.tsx': ['hand-rolled arrow link', 'hand-rolled page heading'],
 };
 
 describe('shared UI components', () => {

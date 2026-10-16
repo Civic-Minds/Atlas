@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { ArrowRight } from 'lucide-react';
 import { agencyPagePath } from '../shared/agencyPages';
 import {
   AREA_DATA_SCRIPT_ID,
@@ -14,9 +13,12 @@ import {
 } from '../shared/areaPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
-import { LINK, PAGE_ACTION } from './pageStyles';
+import { LINK } from './pageStyles';
 import { FrequencyBar } from './pageParts';
 import PageShell from './components/ui/PageShell';
+import ArrowLink from './components/ui/ArrowLink';
+import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -54,11 +56,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
 
   if (!data) {
     return (
-      <PageShell variant="wide">
-          <h1 className="mt-24 text-3xl font-black tracking-tight">No page for this region</h1>
-          <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Atlas has no frequency page at this address.</p>
-          <a href="/" className={`mt-6 inline-flex items-center gap-2 text-sm font-black ${LINK}`}>Open the Atlas map <ArrowRight className="h-4 w-4" /></a>
-      </PageShell>
+      <EmptyPage title="No page for this region" body="Atlas has no frequency page at this address." action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
     );
   }
 
@@ -69,22 +67,18 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
         <article className="pb-16 pt-10 sm:pt-14">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{areaPageH1(data)}</h1>
+              <PageTitle>{areaPageH1(data)}</PageTitle>
               <p className="mt-1 text-sm text-[var(--text-muted)]">{areaSubtitle(data)}</p>
             </div>
-            <a href={areaMapHref(data)} className={PAGE_ACTION}>
-              View on map <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </a>
+            <ArrowLink href={areaMapHref(data)}>View on map</ArrowLink>
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{areaAboutParagraph(data)}</p>
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}
 
           <section className="mt-14" aria-labelledby="agencies-heading">
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-              <h2 id="agencies-heading" className="text-xl font-black tracking-tight">Agencies and weekday frequency</h2>
-              <a href="/agencies" className={PAGE_ACTION}>
-                See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
+              <SectionTitle id="agencies-heading">Agencies and weekday frequency</SectionTitle>
+              <ArrowLink href="/agencies">See all agencies</ArrowLink>
             </div>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={data.bands} mapHref={areaMapHref(data)} />

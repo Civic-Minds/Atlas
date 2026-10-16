@@ -3,18 +3,22 @@ import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
 import {
   PANEL_TITLE,
-  PANEL_EMPTY,
-  PANEL_SECTION_HEAD,
   LIST_ROW_PRIMARY,
   LIST_ROW_DIM,
 } from '../styles';
 import { R2_PUBLIC_URL } from '../../shared/config';
+import { plural } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { nightServiceKey } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
+import PanelEmpty from '../components/ui/PanelEmpty';
+import AgencyName from '../components/ui/AgencyName';
+import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
+import { loadingText, loadErrorText } from '../content/stateCopy';
+import { routeLabels } from '../utils/format';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -30,6 +34,8 @@ interface NightServiceRouteSummary {
   routeId: string | null;
   routeShortName: string | null;
   routeLongName: string | null;
+  /** GTFS route_type, from the map's route features (needed to decide whether a numeric id is hidden). */
+  routeType?: number;
   destinations: string[];
 }
 
@@ -40,6 +46,7 @@ interface NightServiceFeatureProperties {
   routeId?: string | null;
   routeShortName?: string | null;
   routeLongName?: string | null;
+  routeType?: number;
   headsign?: string | null;
   agencyName?: string | null;
 }
@@ -137,6 +144,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
         routeId: properties.routeId ?? null,
         routeShortName: properties.routeShortName ?? indexed?.routeShortName ?? null,
         routeLongName: properties.routeLongName ?? indexed?.routeLongName ?? null,
+        routeType: properties.routeType,
         destinations: [],
       };
       const headsign = properties.headsign ?? indexed?.headsign;
@@ -171,18 +179,18 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
         </PanelTitleBar>
 
         <PanelBody>
-          {loadState === 'loading' && <p className={PANEL_EMPTY}>Loading…</p>}
-          {loadState === 'error' && <p className={PANEL_EMPTY}>Couldn't load night service data.</p>}
+          {loadState === 'loading' && <PanelEmpty kind="loading">{loadingText('night service')}</PanelEmpty>}
+          {loadState === 'error' && <PanelEmpty kind="error">{loadErrorText('night service data')}</PanelEmpty>}
           {loadState === 'ready' && agencies.length === 0 && (
-            <p className={PANEL_EMPTY}>No agencies match that search.</p>
+            <PanelEmpty>No agencies match that search.</PanelEmpty>
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>
-              <div className={`${PANEL_SECTION_HEAD} ${agencyIndex > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
-                {agency.agencyName}
-                {agency.region && <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.region}</span>}
-                <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.routes.length} {agency.routes.length === 1 ? 'route' : 'routes'}</span>
-              </div>
+              <AgencyGroupHeader rule={agencyIndex > 0 ? 'above' : 'below'}>
+                <AgencyName primary={agency.agencyName} secondary={agency.region ?? undefined}>
+                  <span className="font-normal text-[var(--text-dim)]"> · {agency.routes.length} {plural(agency.routes.length, 'route')}</span>
+                </AgencyName>
+              </AgencyGroupHeader>
               {agency.routes.map(route => (
                 <ListRow
                   key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`}
@@ -191,9 +199,11 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
                   className="disabled:cursor-default"
                 >
                   <div className="min-w-0 flex-1">
-                  <div className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={[route.routeShortName, route.routeLongName].filter(Boolean).join(" — ")}>
-                    {route.routeShortName || route.routeLongName || 'Unnamed route'}
-                    {route.routeShortName && route.routeLongName && <span className={`font-normal ${LIST_ROW_DIM}`}> — {route.routeLongName}</span>}
+                  <div className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName }).text}>
+                    {(() => {
+                      const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName });
+                      return <>{label.primary || 'Unnamed route'}{label.secondary && <span className={`font-normal ${LIST_ROW_DIM}`}> — {label.secondary}</span>}</>;
+                    })()}
                   </div>
                   {route.destinations.length > 0 && (
                     <div className={`mt-0.5 ${LIST_ROW_DIM} truncate`} title={route.destinations.join(' · ')}>

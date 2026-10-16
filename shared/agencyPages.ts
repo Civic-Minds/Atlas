@@ -10,7 +10,7 @@ import { areaRegionName, areaRegionTitle } from './areaRegions';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { SITE_URL } from './seo';
-import { andOthers } from './overflowText';
+import { andOthers, joinList, plural } from './overflowText';
 
 export { headwayEvery };
 export const MAX_NEARBY = 8;
@@ -49,7 +49,7 @@ export interface AgencyConnection {
   slug: string;
   /** Short name, e.g. "GO Transit". */
   name: string;
-  /** Route labels as the map lists them (see getRouteLabel), natural order. */
+  /** Route labels, natural order. Written by hand in the connection config (nothing generates them from getRouteLabel). */
   routes: string[];
   /** The other agency is beta-only: dropped from public pages. */
   betaOnly?: true;
@@ -120,7 +120,7 @@ export const CONNECTS_WITH = ' and connects with ';
 
 /** "A", "A and B", "A, B and C", "A, B, C and 4 other agencies": the first three named, the rest counted. */
 export function namesList(names: readonly string[], named = 3): string {
-  if (names.length <= named) return names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+  if (names.length <= named) return joinList(names);
   const rest = names.length - named;
   return `${names.slice(0, named).join(', ')} ${andOthers(rest, 'agency', 'agencies')}`;
 }
@@ -139,7 +139,7 @@ export function agencyIntroSentence(
   const n = a.routes.length;
   if (n === 0) return `${a.name} has no weekday routes in the data.`;
   let s = `${introLead(a, place, modes)}${place}`;
-  if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${a.stops === 1 ? 'stop' : 'stops'}`;
+  if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${plural(a.stops, 'stop')}`;
   if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
   return `${s}.`;
 }
@@ -160,7 +160,7 @@ export function introLead(
   modes: ReadonlyArray<{ label: string; routes: number }> = [],
 ): string {
   const n = a.routes.length;
-  return `${introName(a.name, place)} operates ${n.toLocaleString('en-US')} ${n === 1 ? 'route' : 'routes'}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
+  return `${introName(a.name, place)} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -218,14 +218,15 @@ export { modeLabel };
 
 /** Weekday-midday frequency bands, best first; the last one is routes with no regular midday service. */
 export const FREQUENCY_BANDS = [
-  { key: 'b10', phrase: 'every 10 min or better', test: (m: number) => m <= 10 },
-  { key: 'b15', phrase: 'every 11–15 min', test: (m: number) => m <= 15 },
-  { key: 'b20', phrase: 'every 16–20 min', test: (m: number) => m <= 20 },
-  { key: 'b30', phrase: 'every 21–30 min', test: (m: number) => m <= 30 },
-  { key: 'b60', phrase: 'every 31–60 min', test: (m: number) => m <= 60 },
-  { key: 'b60plus', phrase: 'less often than every 60 min', test: () => true },
+  { key: 'b10', phrase: 'every 10 min or better', short: '≤10', test: (m: number) => m <= 10 },
+  { key: 'b15', phrase: 'every 11–15 min', short: '11–15', test: (m: number) => m <= 15 },
+  { key: 'b20', phrase: 'every 16–20 min', short: '16–20', test: (m: number) => m <= 20 },
+  { key: 'b30', phrase: 'every 21–30 min', short: '21–30', test: (m: number) => m <= 30 },
+  { key: 'b60', phrase: 'every 31–60 min', short: '31–60', test: (m: number) => m <= 60 },
+  { key: 'b60plus', phrase: 'less often than every 60 min', short: '60+', test: () => true },
 ] as const;
 export const NO_MIDDAY_PHRASE = 'with no regular midday service';
+export const NO_MIDDAY_SHORT = 'no midday';
 
 /** Route counts per band (same order as FREQUENCY_BANDS), then routes with no midday cadence last. */
 export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>): number[] {
@@ -287,7 +288,7 @@ export function weekendLabel(sat: boolean | undefined, sun: boolean | undefined)
 /** One sentence that stands alone: "210 weekday routes." */
 export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string {
   const n = a.routes.length;
-  return `${n} weekday ${n === 1 ? 'route' : 'routes'}.`;
+  return `${n} weekday ${plural(n, 'route')}.`;
 }
 
 /** The fuller sentence for structured data: the intro plus what the page is. */

@@ -1,18 +1,23 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import Pill from '../ui/Pill';
 import Toggle from '../ui/Toggle';
-import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
-import { DAY_TYPES } from '../../../shared/dayTypes';
-import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
+import type { DayType } from '../../../shared/dayTypes';
+import type { TimePeriod } from '../../hooks/useIntervalStats';
+import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
+import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
-import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
+import { agencyDisplayParts, formatStoredDate, routeLabels } from '../../utils/format';
 import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
+import ArrowLink from '../ui/ArrowLink';
+import PanelEmpty from '../ui/PanelEmpty';
+import AgencyName from '../ui/AgencyName';
+import { loadingText } from '../../content/stateCopy';
 
 
 interface FilterPanelProps {
@@ -68,6 +73,7 @@ export interface HiddenRoute {
   region?: string | null;
   routeShortName: string;
   routeLongName?: string | null;
+  routeType?: number;
 }
 
 export function getHiddenFeedAgencies(agencies: Agency[]): Agency[] {
@@ -434,13 +440,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </div>
                   </div>
                   {hiddenRoutesLoading && !limitedView ? (
-                    <p className="px-5 py-4 text-xs text-[var(--text-muted)]">Loading hidden routes…</p>
+                    <PanelEmpty kind="loading">{loadingText('hidden routes')}</PanelEmpty>
                   ) : filteredHiddenRoutes.length === 0 ? (
-                    <p className="px-5 py-4 text-xs text-[var(--text-muted)]">
+                    <PanelEmpty>
                       {listRoutes.length === 0
                         ? (limitedView ? 'No limited-service routes in view.' : 'The hidden-route list is unavailable right now.')
                         : (limitedView ? 'No limited-service routes match your search.' : 'No hidden routes match your search.')}
-                    </p>
+                    </PanelEmpty>
                   ) : (
                     <div className="px-5 pb-4">
                       {hiddenRoutesByAgency.map(([agencySlug, group]) => {
@@ -448,20 +454,22 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         return (
                         <div key={agencySlug}>
                           <p className="pt-2 pb-1 text-xs font-bold text-[var(--text-primary)]">
-                            {primary}
-                            {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
+                            <AgencyName primary={primary} secondary={secondary} />
                           </p>
                           <div className="divide-y divide-[var(--border-primary)]">
-                            {group.routes.map(route => (
-                              <div key={route.key} className="py-2.5">
-                                <div className="flex items-baseline justify-between gap-3">
-                                  <p className="text-xs font-bold text-[var(--text-primary)] line-clamp-2 break-words" title={route.routeShortName}>{route.routeShortName}</p>
+                            {group.routes.map(route => {
+                              const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug, agencyName: group.agencyName });
+                              return (
+                                <div key={route.key} className="py-2.5">
+                                  <div className="flex items-baseline justify-between gap-3">
+                                    <p className="text-xs font-bold text-[var(--text-primary)] line-clamp-2 break-words" title={label.text}>{label.primary}</p>
+                                  </div>
+                                  {label.secondary && (
+                                    <p className="text-xs text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5" title={label.secondary}>{label.secondary}</p>
+                                  )}
                                 </div>
-                                {route.routeLongName && route.routeLongName !== route.routeShortName && (
-                                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5" title={route.routeLongName}>{route.routeLongName}</p>
-                                )}
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
                         );
@@ -525,8 +533,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">
                             <p className="text-xs font-bold text-[var(--text-primary)] min-w-0">
-                              {primary}
-                              {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
+                              <AgencyName primary={primary} secondary={secondary} />
                             </p>
                             {quality.reasons.length > 0 && (
                               <ul className="mt-1.5 space-y-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
@@ -569,7 +576,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </div>
               </div>
 
-              {FEATURES.beta && (
+              {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
                     <p className="text-xs font-bold text-[var(--text-dim)]">Map</p>
@@ -588,7 +595,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </>
               )}
 
-              {FEATURES.beta && (
+              {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
                     <p className="text-xs font-bold text-[var(--text-dim)]">Data &amp; performance</p>
@@ -623,30 +630,21 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
                         {id === 'span' && (
                           <>
-                            <button
-                              onClick={() => setView('hidden-routes')}
-                              className="mt-1 text-xs text-[var(--accent)] hover:underline"
-                            >
-                              See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'} →
-                            </button>
+                            <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('hidden-routes')} className="mt-1">
+                              See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'}
+                            </ArrowLink>
                           </>
                         )}
                         {id === 'limited' && limitedServiceRouteCount != null && (
-                          <button
-                            onClick={() => setView('limited-routes')}
-                            className="mt-1 text-xs text-[var(--accent)] hover:underline"
-                          >
-                            {limitedServiceRouteCount.toLocaleString()} {limitedServiceRouteCount === 1 ? 'route' : 'routes'} affected →
-                          </button>
+                          <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('limited-routes')} className="mt-1">
+                            {limitedServiceRouteCount.toLocaleString()} {plural(limitedServiceRouteCount, 'route')} affected
+                          </ArrowLink>
                         )}
                         {id === 'quality' && (
-                          <button
-                            onClick={() => setView('degraded-feeds')}
-                            className="mt-1 text-xs text-[var(--accent)] hover:underline"
-                          >
+                          <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('degraded-feeds')} className="mt-1">
                             {hideLowQuality ? 'See hidden feeds' : 'Review degraded feeds'}
-                            {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''} →
-                          </button>
+                            {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''}
+                          </ArrowLink>
                         )}
                       </div>
                     </div>
@@ -661,69 +659,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {/* Mobile-only Core Filters */}
               {isFilters && maxHeadway !== undefined && (
                 <div className="block sm:hidden pb-4">
-                  {/* Frequency */}
-                  <div className="px-5 pt-4 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Frequency</p>
-                  </div>
-                  <div className="px-5 pb-3 flex flex-wrap gap-1.5">
-                    {HEADWAY_TIERS.map(({ max, label }) => {
-                      const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
-                      const active = maxHeadway === max;
-                      return (
-                        <Pill
-                          key={label}
-                          onClick={() => setMaxHeadway?.(max)}
-                          size="segment"
-                          selected={active}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
-                          {label === 'Infrequent' ? 'All routes' : label}
-                        </Pill>
-                      );
-                    })}
-                  </div>
-
-                  {/* Day of Service */}
-                  <div className="px-5 pt-2 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Day of service</p>
-                  </div>
-                  <div className="px-5 pb-3 flex gap-1.5">
-                    {DAY_TYPES.map(dayType => {
-                      const active = day === dayType;
-                      return (
-                        <button
-                          key={dayType}
-                          onClick={() => setDay?.(dayType)}
-                          aria-pressed={active}
-                          className={`flex-1 h-7 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
-                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
-                          }`}
-                        >
-                          {dayType}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Time Period */}
-                  <div className="px-5 pt-2 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Time period</p>
-                  </div>
-                  <div className="px-5 pb-3 flex flex-wrap gap-1.5">
-                    {Object.entries(PERIOD_LABELS).map(([key, label]) => {
-                      const active = period === key;
-                      return (
-                        <Pill
-                          key={key}
-                          onClick={() => setPeriod?.(key)}
-                          size="segment"
-                          selected={active}
-                        >
-                          {label}
-                        </Pill>
-                      );
-                    })}
-                  </div>
+                  <PickerSection title="Frequency" className="px-5 pt-4 pb-3"><FrequencyPicker value={maxHeadway} onChange={max => setMaxHeadway?.(max)} /></PickerSection>
+                  <PickerSection title="Day of service" className="px-5 pt-2 pb-3"><DayPicker fill value={day as DayType} onChange={d => setDay?.(d)} /></PickerSection>
+                  <PickerSection title="Time period" className="px-5 pt-2 pb-3"><PeriodPicker includeAll value={period as TimePeriod} onChange={p => setPeriod?.(p)} /></PickerSection>
 
                   {compare?.side && (
                     <div className="px-5 pt-2 pb-3">

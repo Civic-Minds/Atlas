@@ -21,6 +21,7 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
 import { ON_DEMAND_MODE } from '../../shared/modes';
 import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
+import { plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareOtherPhrase } from '../utils/compareSides';
@@ -41,6 +42,8 @@ import ResearchLegend from '../components/Interval/ResearchLegend';
 import { selectFrequentServiceFeatures, selectNightServiceFeatures } from '../components/Interval/map/useOverlaySources';
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
+import Spinner from '../components/ui/Spinner';
+import { loadingText } from '../content/stateCopy';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -1050,9 +1053,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8`}>
-              <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
+              <Spinner />
               <span className={MAP_BADGE_LABEL}>
-                {isLoading ? `${loadedCount}/${requestedCount} networks` : 'Loading map...'}
+                {isLoading ? `${loadedCount}/${requestedCount} networks` : loadingText('map')}
               </span>
             </div>
           )}
@@ -1071,11 +1074,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             <div className="hidden sm:flex gap-2">
               <div className={`${MAP_BADGE} h-8`}>
                 <span className={MAP_BADGE_COUNT}>{researchCounts.routes}</span>
-                <span className={MAP_BADGE_LABEL}>{researchCounts.routes === 1 ? 'route' : 'routes'}</span>
+                <span className={MAP_BADGE_LABEL}>{plural(researchCounts.routes, 'route')}</span>
               </div>
               <div className={`${MAP_BADGE} h-8`}>
                 <span className={MAP_BADGE_COUNT}>{researchCounts.agencies}</span>
-                <span className={MAP_BADGE_LABEL}>{researchCounts.agencies === 1 ? 'agency' : 'agencies'}</span>
+                <span className={MAP_BADGE_LABEL}>{plural(researchCounts.agencies, 'agency', 'agencies')}</span>
               </div>
             </div>
           )}

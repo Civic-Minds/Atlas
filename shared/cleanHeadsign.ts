@@ -172,7 +172,27 @@ export function formatRemDisplay(shortName: string | null | undefined, longName:
   return `${shortName} — ${cleaned}`;
 }
 
-export function getRouteLabel(shortName: string | null | undefined, longName: string | null | undefined, agencyName?: string | null): string {
+/** A route's label as a bold primary part and an optional lighter secondary part ("495" and "4FUN"; "Line 1" and "Yonge-University"). */
+export interface RouteLabelParts {
+  primary: string;
+  secondary?: string;
+  /**
+   * Set when the long name starts with the short name ("10 Bathurst" on route "10"). The card title drops the long name then,
+   * but a list row can still show what follows the number, so it is kept here.
+   */
+  afterShortName?: string;
+  /** Set when the short name is a code that the card title leaves out ("MI" for Milton). A list row can keep it as the bold part. */
+  shortCode?: string;
+}
+
+/** The text a card title shows for parts: primary, then " — " and the secondary part when there is one. */
+export const joinRouteLabel = (parts: RouteLabelParts) => (parts.secondary ? `${parts.primary} — ${parts.secondary}` : parts.primary);
+
+/**
+ * Splits a route into the pieces its card title is made of. `getRouteLabel` is these pieces joined, so every surface that
+ * shows a route (cards, lists, search, Nearby, agency pages) starts from the same cleaned names.
+ */
+export function routeLabelParts(shortName: string | null | undefined, longName: string | null | undefined, agencyName?: string | null): RouteLabelParts {
   // Some French feeds (e.g. Divia/Dijon) encode bidirectional termini in route_long_name
   // as literal "<>" ("Longvic <> Toison D'or") — render as a proper arrow, not raw brackets.
   if (longName) longName = longName.replace(/\s*<>\s*/g, ' ↔ ');
@@ -188,10 +208,10 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
 
   // SMART Train (Sonoma-Marin): long name is just "Main Line", combine with agency name
   if (agencyName && /smart/i.test(agencyName) && longName && /Main Line/i.test(longName)) {
-    return 'SMART Train';
+    return { primary: 'SMART Train' };
   }
 
-  if (!shortName) return longName || '';
+  if (!shortName) return { primary: longName || '' };
 
   // Clean leading zeros from shortName
   const cleanShort = shortName.length > 1 && shortName.startsWith('0') && /^\d+$/.test(shortName)
@@ -199,19 +219,26 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
     : shortName;
 
   const rem = formatRemDisplay(cleanShort, longName);
-  if (rem && rem !== cleanShort) return rem;
+  if (rem && rem !== cleanShort) {
+    const at = rem.indexOf(' — ');
+    return at < 0 ? { primary: rem } : { primary: rem.slice(0, at), secondary: rem.slice(at + 3) };
+  }
 
-  if (!longName) return cleanShort;
+  if (!longName) return { primary: cleanShort };
 
   // Branded corridor list: "4FUN: Shakopee-Savage-Burnsville-MOA-MSP" → "495 — 4FUN"
   const brandPrefix = longName.match(/^([A-Za-z0-9]+):\s*.+$/);
   if (brandPrefix && brandPrefix[1].toUpperCase() === brandPrefix[1] && brandPrefix[1].length <= 8) {
-    return `${cleanShort} — ${brandPrefix[1]}`;
+    return { primary: cleanShort, secondary: brandPrefix[1] };
   }
 
   // HRT 757X etc.: public brand in long_name; short_name is internal (967).
   const brand = longName.match(/^(\d{3}X)\b/i);
-  if (brand && /^\d+$/.test(cleanShort)) return brand[1].toUpperCase();
+  if (brand && /^\d+$/.test(cleanShort)) {
+    // The words after the brand ("757X - Norfolk to NNTC") tell the routes apart in a list.
+    const rest = longName.replace(/^\d{3}X\b\s*[-–—:]?\s*/i, '').trim();
+    return { primary: brand[1].toUpperCase(), ...(rest ? { afterShortName: rest } : {}) };
+  }
 
   let cleanedLong = longName;
 
@@ -231,13 +258,22 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
   const normLong = lowerLong.replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
   const normShort = lowerShort.replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
   if (lowerLong === `route ${lowerShort}` || lowerLong === lowerShort || normLong.startsWith(normShort + ' ') || lowerLong.includes(lowerShort + ' ')) {
-    return cleanShort;
+    // "10 Bathurst" on route "10": the title is just the number, but the words after it are the route's name.
+    const exactRepeat = lowerLong === `route ${lowerShort}` || lowerLong === lowerShort;
+    const prefixed = cleanedLong.match(new RegExp(`^\\s*(?:route\\s+)?${cleanShort.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\s+[-–—]\\s+|:\\s*|\\s+)(.+)$`, 'i'))?.[1]?.trim();
+    // Otherwise the long name only mentions the short one ("Green Line E" on route "E"): a list shows all of it.
+    const after = exactRepeat ? undefined : prefixed ?? cleanedLong;
+    return { primary: cleanShort, ...(after ? { afterShortName: after } : {}) };
   }
 
-  if (!cleanedLong) return cleanShort;
+  if (!cleanedLong) return { primary: cleanShort };
 
   // Pure-letter short names (e.g. "LW", "LE", "KI") are acronyms of the long name — redundant to show both
-  if (/^[A-Za-z]+$/.test(cleanShort)) return cleanedLong;
+  if (/^[A-Za-z]+$/.test(cleanShort)) return { primary: cleanedLong, shortCode: cleanShort };
 
-  return `${cleanShort} — ${cleanedLong}`;
+  return { primary: cleanShort, secondary: cleanedLong };
+}
+
+export function getRouteLabel(shortName: string | null | undefined, longName: string | null | undefined, agencyName?: string | null): string {
+  return joinRouteLabel(routeLabelParts(shortName, longName, agencyName));
 }

@@ -3,6 +3,7 @@ import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
 import { FILTER_MODES } from '../../shared/modes';
+import { joinList } from '../../shared/overflowText';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { agencyDisplayParts, formatStoredDate } from './format';
@@ -105,11 +106,6 @@ const FREQUENT_WINDOW_LABELS: Record<FrequentServiceWindow, string> = {
   daytime: '7am–7pm',
   extended: '7am–midnight',
 };
-
-function joinList(items: string[]): string {
-  if (items.length <= 1) return items.join('');
-  return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
-}
 
 /** The highest headway tier the map draws at this zoom (the app hides less frequent routes when zoomed out). */
 function zoomCeiling(zoom: number): number {

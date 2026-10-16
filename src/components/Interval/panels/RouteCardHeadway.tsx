@@ -4,7 +4,7 @@ import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
-import { titleCase, getRouteLabel, shortenAgencyName, resolveBranchLabel, formatBranchLabel } from '../../../utils/format';
+import { routeLabels, shortenAgencyName, resolveBranchLabel, formatBranchLabel } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import { getCachedAgencyGeo } from '../../../lib/agencyGeo';
 import { tripTimeSeriesFor, type PublishedRunningTimes } from '../../../utils/tripTime';
@@ -169,6 +169,9 @@ export interface DirectionGroup {
 export interface CurrentRouteData {
   routeShortName: string | null;
   routeLongName: string | null;
+  /** The feed's route_type and agency slug, so the title names the route the same way lists and agency pages do. */
+  routeType?: number | string | null;
+  agencySlug?: string;
   directions: ShapeProperties[];
 }
 
@@ -390,12 +393,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       `  stopHeadways (${period}): ${formatMetricMap(selectedPeriodStopHeadways, 'stopId', 'typicalGapMinutes', '\n    ')}`,
     ].join('\n');
   }).join('\n\n');
+  // One route name for the title, the sparkline and the issue report (shared/routeDisplay.ts).
+  const routeTitle = routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName }).text;
   const reportPeriod = selectedPeriod
     ? `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`
     : 'All day';
   const reportDetails = [
     `**Agency:** ${routeAgency?.name ?? routeSlug ?? 'Unknown'}`,
-    `**Route:** ${currentRoute.routeShortName ?? 'Unknown'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`,
+    `**Route:** ${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`,
     `**Period:** ${reportPeriod}`,
     `**Agency data refreshed:** ${routeAgency?.lastRefreshedAt ?? 'unknown'}`,
     `**Feed expiry:** ${routeAgency?.lastFeedExpiry ?? 'unknown'}`,
@@ -417,13 +422,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <RouteCardTitle
               routeShortName={currentRoute.routeShortName}
               routeLongName={currentRoute.routeLongName}
+              routeType={currentRoute.routeType ?? currentRoute.directions[0]?.routeType}
+              agencySlug={currentRoute.agencySlug ?? routeSlug}
               agencyName={agencyDisplayName}
               onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
             />
           </div>
           <CardReportButton
             ref={reportRef}
-            title={`${routeAgency?.name ?? agencyDisplayName} ${currentRoute.routeShortName ?? 'Unknown route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
+            title={`${routeAgency?.name ?? agencyDisplayName} ${routeTitle || 'Unknown route'}`}
             details={reportDetails}
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
@@ -442,7 +449,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {patternLabel && (
         <p className="text-xs font-bold text-[var(--text-dim)] -mt-1 mb-3 truncate" data-testid="route-pattern-label">{patternLabel}</p>
       )}
-      {FEATURES.beta && variantFamily && (
+      {FEATURES.routeVariants && variantFamily && (
         <p className="text-xs text-[var(--text-dim)] -mt-1 mb-3">
           Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
         </p>
@@ -507,7 +514,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           currentRoute.routeLongName ?? '',
         );
         // Beta only, and only from data already in the agency file: the full-day view's trip time.
-        const runningTimes = FEATURES.beta && routeSlug
+        const runningTimes = FEATURES.runningTimes && routeSlug
           ? (getCachedAgencyGeo(routeSlug) as { runningTimes?: PublishedRunningTimes } | undefined)?.runningTimes
           : undefined;
         const tripTimeFor = (group: DirectionGroup) => {
@@ -535,9 +542,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               period={period}
               onPeriodChange={p => setPeriod(p as TimePeriod)}
               onHourHover={setHoveredHour}
-              allowExpand={FEATURES.beta}
+              allowExpand={FEATURES.sparklineExpand}
               reserveStackedLegendSpace={hasTrunkSparkline}
-              title={titleCase(getRouteLabel(currentRoute.routeShortName, currentRoute.routeLongName, agencyDisplayName))}
+              title={routeTitle}
             />
           </>
         );

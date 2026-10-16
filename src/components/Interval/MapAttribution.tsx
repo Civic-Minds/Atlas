@@ -70,7 +70,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
       </div>
     </div>
     {whatsNewEnabled && whatsNewOpen && (
-      <WhatsNewPanel onClose={closeWhatsNew} includeBeta={FEATURES.beta} />
+      <WhatsNewPanel onClose={closeWhatsNew} includeBeta={FEATURES.whatsNewBetaItems} />
     )}
     </>
   );

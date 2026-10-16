@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fmtHeadway, getRouteLabel, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
+import { fmtHeadway, getRouteLabel, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -117,6 +117,29 @@ describe('titleCase', () => {
 
   it('hides internal numeric IDs for named rail lines', () => {
     expect(shouldHideNumericRouteShortName('30053', 'Expo Line', 1)).toBe(true);
+  });
+});
+
+describe('titleCase and accented first letters', () => {
+  it('does not split a word after an accented first letter', () => {
+    expect(titleCase('ÎLE-DES-SOEURS')).toBe('Île-Des-Soeurs');
+    expect(titleCase('Île-des-Soeurs')).toBe('Île-Des-Soeurs');
+    expect(titleCase('ÉCOLE SECONDAIRE')).toBe('École Secondaire');
+  });
+});
+
+describe('routeLabels case', () => {
+  it('title-cases a shouting feed, and leaves a feed\'s own mixed-case spelling and short codes alone', () => {
+    expect(routeLabelCase('STAMFORD/CT STATE')).toBe('Stamford/Ct State');
+    expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
+    expect(routeLabelCase('Île-des-Soeurs')).toBe('Île-des-Soeurs');
+    for (const code of ['SL1', '34E', '1X', 'WCE', 'GO', 'SU 43', 'RT 5']) expect(routeLabelCase(code)).toBe(code);
+    expect(routeLabels({ shortName: 'SSSF', longName: 'Sausalito - San Francisco Ferry', routeType: 4 }).primary).toBe('SSSF');
+    expect(routeLabels({ shortName: 'RWXP', longName: 'Ridgway Express', routeType: 3 }).text).toBe('RWXP — Ridgway Express');
+  });
+  it('gives the card title in title case and lists the cleaned names', () => {
+    expect(routeLabels({ shortName: '961', longName: '757X - NORFOLK TO NNTC', routeType: 3 })).toMatchObject({ primary: '757X', secondary: 'Norfolk to NNTC', text: '757X — Norfolk to NNTC' });
+    expect(routeLabels({ shortName: 'SL1', longName: 'Logan Airport Terminals - South Station', routeType: 3 })).toMatchObject({ primary: 'SL1', secondary: 'Logan Airport Terminals - South Station' });
   });
 });
 
