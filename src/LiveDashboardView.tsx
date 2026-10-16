@@ -3,7 +3,7 @@ import { periodKeyForHour } from '../shared/config';
 import { branchFigures, branchRunTimeLine, dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, weekRangeLine, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
-import DataTable from './components/ui/DataTable';
+import SortableDataTable from './components/ui/SortableDataTable';
 import { withoutDevHint } from './lib/liveReportData';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
@@ -229,8 +229,9 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
       <SectionTitle>Stops most often late</SectionTitle>
       {top.length ? (
         <div className="mt-3">
-          <DataTable
+          <SortableDataTable
             caption="The five stops with the highest share of late departures"
+            defaultSort="late"
             rows={top}
             rowKey={s => `${s.stopId}-${s.directionId}`}
             columns={[
@@ -240,7 +241,7 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
                   {dir == null && <span className="block text-xs text-[var(--text-dim)]">{v3.directionLabels[String(s.directionId)]}</span>}
                 </span>
               ) },
-              { key: 'late', header: 'Late', className: 'w-16 whitespace-nowrap text-right', cell: s => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
+              { key: 'late', header: 'Late', worst: s => s.lateShare, cell: s => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
             ]}
           />
         </div>

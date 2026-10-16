@@ -18,6 +18,7 @@ import { shortStopName } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
+import SortableDataTable from './components/ui/SortableDataTable';
 import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
@@ -68,8 +69,10 @@ function Section({ id, title, intro, children }: { id: string; title: string; in
   );
 }
 
-function RouteLink({ agency, route, label }: { agency: string; route: string; label: string }) {
-  return <a href={liveDashboardPath(agency, route)} className="font-bold text-[var(--accent)] hover:underline">{label}</a>;
+/** A hotspot's route, in the Routes table's name style, then its direction. */
+function HotspotRoute({ s, route, direction }: { s: AgencySummary; route: string; direction: string }) {
+  const r = s.routes.find(x => x.route === route);
+  return <><a href={liveDashboardPath(s.agency, route)} className="hover:underline"><RouteNameCell shortName={route} longName={r?.longName} mode={r?.mode ?? 3} agencyName={s.agency.toUpperCase()} /></a> <span className="text-[var(--text-muted)]">{titleCase(direction)}</span></>;
 }
 
 function RoutesTable({ s }: { s: AgencySummary }) {
@@ -117,21 +120,21 @@ function RoutesTable({ s }: { s: AgencySummary }) {
   );
 }
 
-function StopsTable({ agency, rows }: { agency: string; rows: AgencyHotspotStop[] }) {
+function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank yet.</p>;
   return (
     <div className="relative mt-3 overflow-x-auto">
-      <DataTable
-        variant="ruled"
+      <SortableDataTable
         caption="Stops where the most cars leave late, all analysed routes"
         rows={rows}
+        defaultSort="late"
         rowKey={r => `${r.route}-${r.directionId}-${r.stopId}`}
         columns={[
           { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: r => stop(r.name) },
-          { key: 'route', header: 'Route', cell: r => <RouteLink agency={agency} route={r.route} label={`${r.route} ${titleCase(r.direction)}`} /> },
-          { key: 'late', header: 'Late', className: 'whitespace-nowrap', cell: r => pct(r.lateShare) },
-          { key: 'typical', header: 'Typical', className: 'whitespace-nowrap', cell: r => mins(r.medianMin) },
-          { key: 'p90', header: '1 in 10 later than', className: 'whitespace-nowrap', cell: r => mins(r.p90Min) },
+          { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} direction={r.direction} /> },
+          { key: 'late', header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
+          { key: 'typical', header: 'Typical', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
+          { key: 'p90', header: '1 in 10 later than', worst: r => r.p90Min, cell: r => mins(r.p90Min) },
           { key: 'n', header: 'Departures', cell: r => r.n.toLocaleString() },
         ]}
       />
@@ -139,19 +142,19 @@ function StopsTable({ agency, rows }: { agency: string; rows: AgencyHotspotStop[
   );
 }
 
-function StretchTable({ agency, rows, caption, valueHeader, format }: { agency: string; rows: AgencyHotspotStretch[]; caption: string; valueHeader: string; format: (v: number) => string }) {
+function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySummary; rows: AgencyHotspotStretch[]; caption: string; valueHeader: string; format: (v: number) => string }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stretch stands out on the analysed routes.</p>;
   return (
     <div className="relative mt-3 overflow-x-auto">
-      <DataTable
-        variant="ruled"
+      <SortableDataTable
         caption={caption}
         rows={rows}
+        defaultSort="value"
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
           { key: 'stretch', header: 'Stretch', rowHeader: true, className: 'font-normal', cell: r => `${stop(r.fromName)} to ${stop(r.toName)}` },
-          { key: 'route', header: 'Route', cell: r => <RouteLink agency={agency} route={r.route} label={`${r.route} ${titleCase(r.direction)}`} /> },
-          { key: 'value', header: valueHeader, className: 'whitespace-nowrap', cell: r => format(r.value) },
+          { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} direction={r.direction} /> },
+          { key: 'value', header: valueHeader, worst: r => r.value, cell: r => format(r.value) },
         ]}
       />
     </div>
@@ -205,15 +208,15 @@ export default function LiveAgencyPage() {
         </Section>
 
         <Section id="agency-stops" title="Stops where the most cars leave late" intro={`The ${s.worstStops.length} stops with the highest share of departures 5.5+ minutes late, across all analysed routes (stops with at least 30 departures, at most 3 from one route direction).`}>
-          <StopsTable agency={s.agency} rows={s.worstStops} />
+          <StopsTable s={s} rows={s.worstStops} />
         </Section>
 
         <Section id="agency-delay" title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there. Directions where delay builds slowly have no single place and are left out.">
-          <StretchTable agency={s.agency} rows={s.delayStarts} caption="Stretches that add the most delay" valueHeader="Added" format={mins} />
+          <StretchTable s={s} rows={s.delayStarts} caption="Stretches that add the most delay" valueHeader="Added" format={mins} />
         </Section>
 
         <Section id="agency-bunching" title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up, and by how much.">
-          <StretchTable agency={s.agency} rows={s.bunchingForms} caption="Stretches where bunching rises the most" valueHeader="Rise" format={v => `+${Math.round(v * 100)} points`} />
+          <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" valueHeader="Rise" format={v => `+${Math.round(v * 100)} points`} />
         </Section>
 
         <Section id="agency-method" title="How this is measured">

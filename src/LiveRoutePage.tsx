@@ -14,7 +14,7 @@ import { titleCase } from './utils/format';
 import { isMajorStop, shortStopName } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
-import DataTable from './components/ui/DataTable';
+import SortableDataTable from './components/ui/SortableDataTable';
 import Pill from './components/ui/Pill';
 import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
@@ -192,15 +192,15 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
                 })}
               />
               <div className="mt-3 overflow-x-auto">
-                <DataTable
-                  fixed
+                <SortableDataTable
                   caption={`${label}: the stretches that add the most delay`}
+                  defaultSort="added"
                   rows={worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={[
                     { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => `${s.fromName} to ${s.toName}` },
-                    { key: 'added', header: 'Typical added', cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: 'Trips where it grows', cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
+                    { key: 'added', header: 'Typical added', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
+                    { key: 'grows', header: 'Trips where it grows', worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ]}
                 />
               </div>
@@ -223,22 +223,22 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
       <p className="mt-2 text-sm text-[var(--text-muted)]">Stops ranked by how often vehicles leave {v3.thresholds.lateAtOrAboveMin}+ minutes late (stops with 30+ departures).</p>
       {top.length ? (
         <div className="mt-4 overflow-x-auto">
-          <DataTable
-            fixed
+          <SortableDataTable
             caption="Stops ranked by the share of late departures"
+            defaultSort="late"
             rows={top}
             rowKey={s => `${s.stopId}-${s.directionId}`}
             columns={[
               { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
               ...(both ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-              { key: 'late', header: 'Late', cell: s => (
+              { key: 'late', header: 'Late', worst: s => s.lateShare, cell: s => (
                 <span className="inline-flex items-center gap-2">
                   <span className="block h-2 w-20 rounded-sm bg-[var(--control-inactive-bg)]" aria-hidden="true"><span className="block h-full rounded-sm bg-[var(--accent)] opacity-90" style={{ width: `${Math.max(2, s.lateShare * 100)}%` }} /></span>
                   {pct(s.lateShare)}
                 </span>
               ) },
-              { key: 'median', header: 'Typical delay', cell: s => mins(s.medianMin) },
-              { key: 'p90', header: '1 in 10 later than', cell: s => mins(s.p90Min) },
+              { key: 'median', header: 'Typical delay', worst: s => s.medianMin, cell: s => mins(s.medianMin) },
+              { key: 'p90', header: '1 in 10 later than', worst: s => s.p90Min, cell: s => mins(s.p90Min) },
               { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
             ]}
           />
@@ -413,15 +413,15 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
           </div>
           {worst.length > 0 && (
             <div className="mt-5 overflow-x-auto">
-              <DataTable
-                fixed
+              <SortableDataTable
                 caption="Stops where riders wait longest compared with the timetable"
+                defaultSort="extra"
                 rows={worst}
                 rowKey={s => `${s.stopId}-${s.directionId}`}
                 columns={[
                   { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
                   ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-                  { key: 'extra', header: 'Extra wait', cell: s => `${num(s.extraWaitMin)} min` },
+                  { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => `${num(s.extraWaitMin)} min` },
                   { key: 'sched', header: 'Scheduled every', cell: s => `${num(s.scheduledGapMin)} min` },
                   { key: 'n', header: 'Gaps', cell: s => s.gaps.toLocaleString() },
                 ]}
