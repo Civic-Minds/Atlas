@@ -218,14 +218,15 @@ export { modeLabel };
 
 /** Weekday-midday frequency bands, best first; the last one is routes with no regular midday service. */
 export const FREQUENCY_BANDS = [
-  { key: 'b10', phrase: 'every 10 min or better', test: (m: number) => m <= 10 },
-  { key: 'b15', phrase: 'every 11–15 min', test: (m: number) => m <= 15 },
-  { key: 'b20', phrase: 'every 16–20 min', test: (m: number) => m <= 20 },
-  { key: 'b30', phrase: 'every 21–30 min', test: (m: number) => m <= 30 },
-  { key: 'b60', phrase: 'every 31–60 min', test: (m: number) => m <= 60 },
-  { key: 'b60plus', phrase: 'less often than every 60 min', test: () => true },
+  { key: 'b10', phrase: 'every 10 min or better', short: '≤10', test: (m: number) => m <= 10 },
+  { key: 'b15', phrase: 'every 11–15 min', short: '11–15', test: (m: number) => m <= 15 },
+  { key: 'b20', phrase: 'every 16–20 min', short: '16–20', test: (m: number) => m <= 20 },
+  { key: 'b30', phrase: 'every 21–30 min', short: '21–30', test: (m: number) => m <= 30 },
+  { key: 'b60', phrase: 'every 31–60 min', short: '31–60', test: (m: number) => m <= 60 },
+  { key: 'b60plus', phrase: 'less often than every 60 min', short: '60+', test: () => true },
 ] as const;
 export const NO_MIDDAY_PHRASE = 'with no regular midday service';
+export const NO_MIDDAY_SHORT = 'no midday';
 
 /** Route counts per band (same order as FREQUENCY_BANDS), then routes with no midday cadence last. */
 export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>): number[] {

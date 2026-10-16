@@ -3,11 +3,8 @@ import { Columns2 } from 'lucide-react';
 import { MAP_BADGE } from '../../styles';
 import Pill from '../ui/Pill';
 import { FilterChips } from './FilterChips';
-import { DAY_TYPES } from '../../../shared/dayTypes';
-import { HEADWAY_TIERS } from '../../utils/colors';
-import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
+import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
-import { headwayFilterLabel } from '../../utils/headwayText';
 import { plural } from '../../../shared/overflowText';
 
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
@@ -20,43 +17,14 @@ export function SideBadge({ side }: { side: 'A' | 'B' }) {
   );
 }
 
-const PERIOD_OPTIONS = ['all', ...PERIOD_KEYS] as TimePeriod[];
-const frequencyOptionLabel = (max: number) => (max === Infinity ? 'All routes' : headwayFilterLabel(max));
 
 /** Frequency, day and time buttons for one compare side (the phone filter panel uses this for B). */
 export function CompareSidePicker({ side, onChange }: { side: CompareSide; onChange: (side: CompareSide) => void }) {
   return (
     <div className="flex flex-col gap-3">
-      <div>
-        <p className="mb-1.5 text-xs font-black text-[var(--text-dim)]">Frequency</p>
-        <div className="flex flex-wrap gap-1">
-          {HEADWAY_TIERS.map(({ max }) => (
-            <Pill size="segment" key={max} onClick={() => onChange({ ...side, maxHeadway: max })} selected={side.maxHeadway === max}>
-              {frequencyOptionLabel(max)}
-            </Pill>
-          ))}
-        </div>
-      </div>
-      <div>
-        <p className="mb-1.5 text-xs font-black text-[var(--text-dim)]">Day</p>
-        <div className="flex gap-1">
-          {DAY_TYPES.map(day => (
-            <Pill size="segment" key={day} onClick={() => onChange({ ...side, day })} selected={side.day === day}>
-              {day}
-            </Pill>
-          ))}
-        </div>
-      </div>
-      <div>
-        <p className="mb-1.5 text-xs font-black text-[var(--text-dim)]">Time</p>
-        <div className="flex flex-wrap gap-1">
-          {PERIOD_OPTIONS.map(period => (
-            <Pill size="segment" key={period} onClick={() => onChange({ ...side, period })} selected={side.period === period}>
-              {PERIOD_LABELS[period]}
-            </Pill>
-          ))}
-        </div>
-      </div>
+      <PickerSection title="Frequency"><FrequencyPicker value={side.maxHeadway} onChange={maxHeadway => onChange({ ...side, maxHeadway })} /></PickerSection>
+      <PickerSection title="Day"><DayPicker value={side.day} onChange={day => onChange({ ...side, day })} /></PickerSection>
+      <PickerSection title="Time"><PeriodPicker includeAll value={side.period} onChange={period => onChange({ ...side, period })} /></PickerSection>
     </div>
   );
 }

@@ -16,6 +16,8 @@ import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../s
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
+import LegendItem from '../ui/LegendItem';
+import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { headwayAmount, headwayBandLabel, headwayFilterLabel, headwayTierLabel } from '../../utils/headwayText';
@@ -339,6 +341,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     );
   }
 
+  const frequencyOptions = useFrequencyOptions();
   const frequencyChip = (className: string) => (
     <div className={`relative ${className}`}>
       <button onClick={() => toggle('frequency')} className={chipClass(maxHeadway !== Infinity)}>
@@ -346,20 +349,18 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <Dot show={maxHeadway !== Infinity} />
       </button>
       {openChip === 'frequency' && (
-        <div className={`${PANEL} w-36`}>
-          {HEADWAY_TIERS.map(({ max, label }) => {
-            const isSelected = maxHeadway === max;
-            const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
+        <div className={`${PANEL} w-52`}>
+          {frequencyOptions.map(o => {
+            const isSelected = maxHeadway === o.max;
             return (
               <button
-                key={label}
-                onClick={() => { setMaxHeadway(max); setOpenChip(null); }}
+                key={o.key}
+                onClick={() => { setMaxHeadway(o.max); setOpenChip(null); }}
                 className={rowBtn(isSelected)}
                 aria-pressed={isSelected}
-                aria-label={max === Infinity ? 'Show all routes' : `${headwayFilterLabel(max)}`}
+                aria-label={o.max === Infinity ? 'Show all routes' : o.label}
               >
-                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                {label === 'Infrequent' ? 'All' : label}
+                <LegendItem color={o.color}>{o.label}</LegendItem>
               </button>
             );
           })}
@@ -498,42 +499,11 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         {openChip === 'compact' && (
           <div className={`absolute top-10 right-0 ${FLOATING_CARD} p-3 w-72 ${PANEL_ENTER_TOP} flex flex-col gap-3`}>
             {/* Frequency */}
-            <div>
-              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Frequency</p>
-              <div className="flex flex-wrap gap-1">
-                {HEADWAY_TIERS.map(({ max, label }) => {
-                  const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
-                  return (
-                    <Pill size="segment" key={label} onClick={() => setMaxHeadway(max)} selected={maxHeadway === max}>
-                      <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
-                      {label === 'Infrequent' ? 'All routes' : label}
-                    </Pill>
-                  );
-                })}
-              </div>
-            </div>
+            <PickerSection title="Frequency"><FrequencyPicker value={maxHeadway} onChange={setMaxHeadway} /></PickerSection>
             {/* Day */}
-            <div>
-              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Day</p>
-              <div className="flex gap-1">
-                {DAY_TYPES.map(d => (
-                  <Pill size="segment" key={d} onClick={() => setDay(d)} selected={day === d}>
-                    {d === 'Saturday' ? 'Sat' : d === 'Sunday' ? 'Sun' : 'Weekday'}
-                  </Pill>
-                ))}
-              </div>
-            </div>
+            <PickerSection title="Day"><DayPicker value={day} onChange={setDay} /></PickerSection>
             {/* Time */}
-            <div>
-              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Time</p>
-              <div className="flex flex-wrap gap-1">
-                {PERIOD_KEYS.map(p => (
-                  <Pill size="segment" key={p} onClick={() => setPeriod(p)} selected={period === p}>
-                    {PERIOD_LABELS[p]}
-                  </Pill>
-                ))}
-              </div>
-            </div>
+            <PickerSection title="Time"><PeriodPicker value={period} onChange={setPeriod} /></PickerSection>
             {/* Mode */}
             <div>
               <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Mode</p>
