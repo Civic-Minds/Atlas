@@ -34,7 +34,8 @@ function Delta({ k }: { k: Kpi }) {
   );
 }
 
-function KpiRow({ v3 }: { v3: LiveV3 }) {
+/** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
+export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.</p>;
   const tiles = kpiTiles(w, weekDailyValues(v3));

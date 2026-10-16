@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
+  LINK_LABELS, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -18,6 +18,7 @@ import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
 import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts/ProfileBars';
 import HourBars from './components/charts/HourBars';
+import { KpiRow } from './LiveDashboardView';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { PAGE_ACTION, TILE } from './pageStyles';
 
@@ -317,36 +318,10 @@ const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? '
 
 /** This week against last week: five tiles, each a number, a label and a change chip coloured only beyond normal noise. */
 function WeekCompare({ v3 }: { v3: LiveV3 }) {
-  const w = v3.weekly;
-  if (!w) return null;
-  const range = (dates: string[]) => (dates.length ? dateRangeText(dates[0], dates[dates.length - 1]) : 'no days');
-  const chip = {
-    better: 'bg-[var(--status-positive-bg,transparent)] text-[var(--status-positive-text)] border-[var(--status-positive-text)]',
-    worse: 'bg-[var(--status-negative-bg,transparent)] text-[var(--status-negative-text)] border-[var(--status-negative-text)]',
-    same: 'text-[var(--text-muted)] border-[var(--border-primary)]',
-    unknown: 'text-[var(--text-dim)] border-[var(--border-primary)]',
-  } as const;
-  const word = { better: 'better', worse: 'worse', same: 'about the same', unknown: '' } as const;
+  // The dashboard's own tiles (labels, change chips, noise rule), so the two views always match.
   return (
     <Section id="week" title="This week compared with last week">
-      {w.comparable ? (
-        <>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">{range(w.thisWeek.dates)} against {range(w.lastWeek.dates)}. Coloured only where the change is bigger than usual day to day.</p>
-          <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-            {compareTiles(w, weekDailyValues(v3)).map(t => (
-              <li key={t.key} className={`${TILE} !p-3`} aria-label={`${t.label}: ${t.value}${t.before ? `, last week ${t.before}, ${word[t.direction]}` : ''}`}>
-                <div className="text-2xl font-black tracking-tight">{t.value}</div>
-                <div className="mt-0.5 text-xs font-bold text-[var(--text-muted)]">{t.label}</div>
-                {t.delta && (
-                  <span className={`mt-2 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold ${chip[t.direction]}`} title={`Last week ${t.before}: ${t.why}`}>
-                    {t.delta}{t.direction === 'same' ? ' · same' : ''}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : <p className="mt-2 max-w-2xl text-sm text-[var(--text-muted)]">Not enough days of good recordings to compare two weeks: each week needs at least {w.minHealthyDays}.</p>}
+      <KpiRow v3={v3} />
     </Section>
   );
 }

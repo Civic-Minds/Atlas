@@ -354,48 +354,6 @@ export function weekChangeTone(key: CompareKey, now: number, before: number, low
   return { tone: !big ? 'same' : (now > before) !== lowerIsBetter ? 'better' : 'worse', big, measured: noise != null };
 }
 
-export interface CompareTile {
-  key: CompareKey;
-  label: string;
-  /** This week's value, formatted. */
-  value: string;
-  /** Change from last week, formatted ("+2 pts", "−1 min"), or null when there is nothing to compare. */
-  delta: string | null;
-  /** better / worse only when the change is bigger than the noise (weekChangeTone); otherwise same. */
-  direction: 'better' | 'worse' | 'same' | 'unknown';
-  /** Last week's value, formatted, for the tooltip and screen readers. */
-  before: string | null;
-  /** Why the chip is or is not coloured, for the hover ("a bigger change than usual day to day"). */
-  why?: string;
-}
-
-/** This week against last week as five tiles: a number, a label and a change chip coloured only beyond normal noise. */
-export function compareTiles(w: NonNullable<LiveV3['weekly']>, daily: { late: readonly number[]; delivered: readonly number[] } = { late: [], delivered: [] }): CompareTile[] {
-  const t = w.thisWeek, l = w.lastWeek;
-  const nThis = t.healthyDates.length, nLast = l.healthyDates.length;
-  const noiseFor: Partial<Record<CompareKey, number | null>> = { late: dailyNoise(daily.late, nThis, nLast), delivered: dailyNoise(daily.delivered, nThis, nLast) };
-  // A change that rounds to nothing reads ±0, never −0.
-  const signed = (r: number, unit: string) => `${r > 0 ? '+' : r < 0 ? '−' : '±'}${m1(Math.abs(r))} ${unit}`;
-  const points = (r: number) => signed(r, Math.abs(r) === 1 ? 'pt' : 'pts');
-  const minutes = (x: number) => signed(Math.round(x * 10) / 10, 'min');
-  const pts = (x: number) => points(Math.round(x * 100));
-  const tile = (key: CompareKey, label: string, now: number | null, before: number | null, fmt: (x: number) => string, delta: (d: number) => string, lowerIsBetter: boolean): CompareTile => {
-    if (now == null) return { key, label, value: '–', delta: null, direction: 'unknown', before: null };
-    if (before == null) return { key, label, value: fmt(now), delta: null, direction: 'unknown', before: null };
-    const { tone, big, measured } = weekChangeTone(key, now, before, lowerIsBetter, noiseFor[key] ?? null);
-    const why = big ? (measured ? 'a bigger change than usual day to day' : 'a change bigger than the usual swing') : (measured ? 'within the usual day-to-day change' : 'a small change');
-    return { key, label, value: fmt(now), delta: delta(now - before), direction: tone, before: fmt(before), why };
-  };
-  const pct0 = (x: number) => `${Math.round(x * 100)}%`;
-  return [
-    tile('late', 'Late', t.late?.share ?? null, l.late?.share ?? null, pct0, pts, true),
-    tile('tripTime', 'Typical trip', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, x => `${Math.round(x)} min`, minutes, true),
-    tile('extraWait', 'Extra wait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, x => `${m1(x)} min`, minutes, true),
-    tile('bunching', 'Bunched or gapped', t.bunching?.share ?? null, l.bunching?.share ?? null, pct0, pts, true),
-    tile('delivered', 'Trips that ran', t.delivered?.share ?? null, l.delivered?.share ?? null, x => `${m1(Math.round(x * 1000) / 10)}%`, d => points(Math.round(d * 1000) / 10), false),
-  ];
-}
-
 export function compareLines(w: NonNullable<LiveV3['weekly']>): Array<{ key: CompareKey; label: string; text: string; direction: 'better' | 'worse' | 'same' | 'unknown' }> {
   const t = w.thisWeek, l = w.lastWeek;
   const pct0 = (x: number) => `${Math.round(x * 100)}%`;
