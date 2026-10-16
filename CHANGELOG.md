@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Live hour charts end cleanly after midnight (local only)**: run time, late by hour and the hour sparklines run 5 am to 4 am in one line and stop at the last hour with enough trips, so no stray marks float past 12a or under the line labels; charts side by side share one axis.
 - Frequencies always read in minutes (e.g. 'every 120 min'), so a column of values no longer mixes hours and minutes.
 - **"On this page" highlights the section you are reading** on Docs, Terms, Privacy and Changelog, so you can see where you are in long pages.
 - **The top bar stays put while you scroll on agency, area and agencies pages**, as it already did on Docs, Terms and Privacy, so navigation is always one tap away.

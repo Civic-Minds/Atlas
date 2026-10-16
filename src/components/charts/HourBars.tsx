@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
-import { HOUR_TO_PERIOD, PERIOD_BANDS, sparklineHourAt } from '../../utils/sparklinePeriods';
+import { HOUR_TO_PERIOD, hourAtOn, liveChartHours, periodBandsFor } from '../../utils/sparklinePeriods';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
-import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
+import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import DataTable from '../ui/DataTable';
 
 export interface HourColumn {
@@ -32,14 +32,16 @@ const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 < 12 ? '
  * same way the route card's schedule sparkline does (shared bands in utils/sparklinePeriods), and the line under the
  * chart reads out that hour. `showKey`: the colour key and low-sample note (turn off for small multiples sharing one key).
  */
-export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey = true, title }: { columns: readonly HourColumn[]; parts: readonly HourPart[]; ariaLabel: string; minN?: number; showKey?: boolean; title?: string }) {
+export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey = true, title, hours }: { columns: readonly HourColumn[]; parts: readonly HourPart[]; ariaLabel: string; minN?: number; showKey?: boolean; title?: string; /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these columns. */ hours?: readonly number[] }) {
   const tableId = useId();
   const [hour, setHour] = useState<number | null>(null);
   const period = hour != null ? HOUR_TO_PERIOD[hour] ?? null : null;
-  const pick = (e: React.MouseEvent<HTMLDivElement>) => setHour(sparklineHourAt(e.clientX, e.currentTarget.getBoundingClientRect()));
   const byHour = new Map(columns.map(c => [c.hour, c]));
+  const axis = hours ?? liveChartHours(h => (byHour.get(h)?.n ?? 0) >= minN);
+  const bands = periodBandsFor(axis);
+  const pick = (e: React.MouseEvent<HTMLDivElement>) => setHour(hourAtOn(axis, e.clientX, e.currentTarget.getBoundingClientRect()));
   const text = (c: HourColumn) => `${clock(c.hour)}: ${c.parts.map((p, i) => `${parts[i].name} ${Math.round(p * 100)}%`).join(', ')} (${c.n.toLocaleString()} departures)`;
-  const ordered = SPARKLINE_HOURS.map(h => byHour.get(h % 24)).filter((c): c is HourColumn => !!c);
+  const ordered = axis.map(h => byHour.get(h % 24)).filter((c): c is HourColumn => !!c);
   return (
     <figure className="m-0">
       {title && <figcaption className="mb-1 text-sm font-bold">{title}</figcaption>}
@@ -47,11 +49,11 @@ export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey
         <div aria-hidden="true">
         <div className="relative cursor-pointer select-none pt-5" onMouseMove={pick} onClick={pick} onMouseLeave={() => setHour(null)}>
         {period && <span className="pointer-events-none absolute right-0 top-0 text-xs font-bold text-[var(--text-dim)]">{PERIOD_LABELS[period as keyof typeof PERIOD_LABELS]}</span>}
-        {period && PERIOD_BANDS[period]?.map((band, i) => (
+        {period && bands[period]?.map((band, i) => (
           <div key={i} className="pointer-events-none absolute bottom-0 top-5 rounded-sm bg-[var(--bg-btn-hover)]" style={{ left: `${band.left * 100}%`, width: `${band.width * 100}%` }} />
         ))}
         <div className="relative z-10 flex items-end gap-px" style={{ height: H }}>
-          {SPARKLINE_HOURS.map(gtfsHour => {
+          {axis.map(gtfsHour => {
             const c = byHour.get(gtfsHour % 24);
             const enough = !!c && c.n >= minN;
             const muted = period != null && HOUR_TO_PERIOD[gtfsHour] !== period;
@@ -68,7 +70,7 @@ export default function HourBars({ columns, parts, ariaLabel, minN = 30, showKey
         </div>
         </div>
         <div className="mt-1 flex gap-px">
-          {SPARKLINE_HOURS.map(h => (
+          {axis.map(h => (
             <div key={h} className="min-w-0 flex-1 text-center"><span className="text-xs text-[var(--text-dim)]">{SPARKLINE_HOUR_LABELS[h]}</span></div>
           ))}
         </div>

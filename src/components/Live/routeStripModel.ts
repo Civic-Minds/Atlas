@@ -18,6 +18,9 @@ export interface RouteStripStop {
   lateShare: number | null;
   /** Share of gaps that are too short or too long (0-1). Null when not measured. */
   bunchingShare: number | null;
+  /** The two parts of `bunchingShare`: gaps under 2 min (bunched) and over twice the scheduled gap (too long). */
+  bunchedShare?: number | null;
+  gappedShare?: number | null;
   /** Departures measured here (the delay figures). */
   n: number;
   /** Gaps measured here (the bunching figures). Defaults to `n`. */
@@ -206,7 +209,8 @@ export function stopDetail(stop: RouteStripStop): { name: string; lines: string[
   if (stop.n > 0 && stop.delayMin != null) lines.push(`Typical delay ${delayText(stop.delayMin)}${stop.lateShare != null ? `, ${pct(stop.lateShare)} of departures late` : ''}`);
   else lines.push('Delay not measured');
   const bn = stop.bunchingN ?? stop.n;
-  if (stop.bunchingShare != null && bn > 0) lines.push(`${pct(stop.bunchingShare)} of gaps too short or too long (${bn.toLocaleString()} gaps)`);
+  if (stop.bunchedShare != null && stop.gappedShare != null && bn > 0) lines.push(`${pct(stop.bunchedShare)} of gaps bunched, ${pct(stop.gappedShare)} too long (${bn.toLocaleString()} gaps)`);
+  else if (stop.bunchingShare != null && bn > 0) lines.push(`${pct(stop.bunchingShare)} of gaps too short or too long (${bn.toLocaleString()} gaps)`);
   lines.push(`${stop.n.toLocaleString()} departures measured${stop.n < MIN_N ? ': too few to rely on' : ''}`);
   if (stop.uncertain) lines.push('Less exact here: vehicles report their location less often');
   return { name: stop.name, lines };
@@ -241,6 +245,8 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
         delayMin: s.n > 0 ? s.medianMin : null,
         lateShare: s.n > 0 ? s.lateShare : null,
         bunchingShare: b && b.n > 0 ? b.badShare : null,
+        bunchedShare: b && b.n > 0 ? b.bunchedShare : null,
+        gappedShare: b && b.n > 0 ? b.gappedShare : null,
         n: s.n,
         bunchingN: b?.n ?? 0,
         uncertain: s.order < lessExact,
