@@ -176,7 +176,7 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
   const dirs = dirsOf(v3, dir);
   const strips = useMemo(() => dirs.map(d => routeStripFromV3(v3, d, band, uncertain)), [v3, band, uncertain, dir]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+    <div id="x-strip" className="mt-6 scroll-mt-4 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
       <div className="min-w-0 space-y-8">
         {strips.map(d => (
           <div key={d.directionId} className="min-w-0">
@@ -299,7 +299,7 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
   );
 }
 
-function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[] }) {
+function WorstStops({ v3, data, dir, uncertain, onPick, canPick }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; onPick: (directionId: number, stopId: string) => void; canPick: (directionId: number, stopId: string) => boolean }) {
   const top = useMemo(() => rankStops(data.stops, dir, uncertain).slice(0, 10), [data, dir, uncertain]);
   if (!top.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank.</p>;
   return (
@@ -310,7 +310,7 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
         rows={top}
         rowKey={s => `${s.stopId}-${s.directionId}`}
         columns={[
-          { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
+          { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline">{s.name}</button> },
           ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
           { key: 'late', header: 'Late', worst: s => s.lateShare, cell: s => (
             <span className="inline-flex items-center gap-2">
@@ -492,6 +492,16 @@ export default function LiveExplorePage() {
     return picked;
   })();
 
+  // A stop picked in a table opens in the panel, and the strip scrolls into view.
+  // Stops off the strip's usual pattern are not on it, so their names stay plain text.
+  const stripIndex = (d: number, stopId: string) => routeStripFromV3(v3, d, band, uncertain).stops.findIndex(s => s.stopId === stopId);
+  const pickStop = (d: number, stopId: string) => {
+    const index = stripIndex(d, stopId);
+    if (index < 0) return;
+    setPicked({ dir: d, kind: 'stop', index });
+    document.getElementById('x-strip')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return shell(
     <article className="pb-16 pt-10 sm:pt-14">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -541,7 +551,7 @@ export default function LiveExplorePage() {
         <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
       </Section>
       <Section id="x-stops" title="Stops with the most delay">
-        <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} onPick={pickStop} canPick={(d, id) => stripIndex(d, id) >= 0} /></ErrorBoundary>
       </Section>
       <ErrorBoundary label="How this is measured could not be drawn."><Method data={data} /></ErrorBoundary>
     </article>,
