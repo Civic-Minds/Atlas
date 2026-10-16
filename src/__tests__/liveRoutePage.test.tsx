@@ -73,26 +73,25 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
   });
 
-  it('applies the time of day to every section and keeps the filters in the address', async () => {
+  it('has no time-of-day toggle: the whole day, a per-period list where the answer differs, and the direction in the address', async () => {
     renderPage(ready);
     await screen.findByRole('heading', { name: /how it is running/ });
-    fireEvent.click(screen.getByRole('button', { name: 'AM peak' }));
-    expect(within(screen.getByRole('region', { name: /How well it keeps/ })).getByText('All days', { selector: 'div' }).nextElementSibling!.textContent).toBe('30%');
+    expect(screen.queryByRole('button', { name: 'AM peak' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Weekends' })).toBeNull();
+    // All days, weekdays and weekends: three hourly charts side by side.
+    const b1 = screen.getByRole('region', { name: /How well it keeps/ });
+    expect(within(b1).getAllByRole('img').length).toBe(3);
+    expect(screen.getAllByText('By time of day').length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'Westbound' }));
-    expect(screen.queryByText(/Eastbound: delay builds up/)).toBeNull();
-    expect(new URLSearchParams(window.location.search).get('band')).toBe('amPeak');
+    expect(screen.queryByText(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3/)).toBeNull();
     expect(new URLSearchParams(window.location.search).get('dir')).toBe('1');
-    fireEvent.click(screen.getByRole('button', { name: 'Weekends' }));
-    expect(new URLSearchParams(window.location.search).get('day')).toBe('weekend');
   });
 
-  it('opens on the view in the address', async () => {
-    window.history.replaceState(null, '', '/apps/live/ttc/505?band=amPeak&dir=0&day=weekday');
+  it('opens on the direction in the address', async () => {
+    window.history.replaceState(null, '', '/apps/live/ttc/505?dir=0');
     renderPage(ready);
     await screen.findByRole('heading', { name: /how it is running/ });
-    expect(screen.getByRole('button', { name: 'AM peak' }).getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByRole('button', { name: 'Eastbound' }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('button', { name: 'Weekdays' }).getAttribute('aria-pressed')).toBe('true');
   });
 
   it('shows names in normal case, one caption per chart, counts on each bar and a table view', async () => {
@@ -140,7 +139,7 @@ describe('Live route dashboard', () => {
     expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();
     expect(screen.getByText('Westbound: no trip was measured from end to end.')).toBeTruthy();
     expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
-    expect(screen.getByText('97% of scheduled trips ran (194 of 200 that we can judge).')).toBeTruthy();
+    expect(screen.getByText('97% of scheduled trips ran (194 of 200).')).toBeTruthy();
     expect(screen.getByText(/Not counted: Oct 14/)).toBeTruthy();
   });
 

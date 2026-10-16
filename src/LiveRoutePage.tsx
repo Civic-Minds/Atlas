@@ -69,7 +69,7 @@ function Tile({ label, value, sub }: { label: string; value: string; sub: string
   );
 }
 
-function Filters({ v3, band, setBand, dir, setDir }: { v3: LiveV3; band: DashboardBand; setBand: (b: DashboardBand) => void; dir: number | null; setDir: (d: number | null) => void }) {
+function Filters({ v3, dir, setDir }: { v3: LiveV3; dir: number | null; setDir: (d: number | null) => void }) {
   const dirs = Object.keys(v3.directionLabels).map(Number).sort();
   return (
     <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3" role="group" aria-label="Filters">
@@ -77,28 +77,34 @@ function Filters({ v3, band, setBand, dir, setDir }: { v3: LiveV3; band: Dashboa
         <Pill size="segment" selected={dir == null} onClick={() => setDir(null)}>Both directions</Pill>
         {dirs.map(d => <Pill key={d} size="segment" selected={dir === d} onClick={() => setDir(d)}>{v3.directionLabels[String(d)]}</Pill>)}
       </div>
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Time of day">
-        {BANDS.map(([k, label]) => <Pill key={k} size="segment" selected={band === k} onClick={() => setBand(k)}>{label}</Pill>)}
-      </div>
     </div>
   );
 }
 
+/** A section's answer for each time of day, as a compact list (no toggle): "AM peak: builds up by King St West". */
+function PerPeriod({ title, rows }: { title: string; rows: Array<{ key: string; label: string; text: string }> }) {
+  if (!rows.length) return null;
+  return (
+    <div className="mt-3">
+      <h4 className="text-sm font-black">{title}</h4>
+      <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 text-sm">
+        {rows.map(r => <div key={r.key} className="contents"><dt className="text-[var(--text-muted)]">{r.label}</dt><dd className="m-0">{r.text}</dd></div>)}
+      </dl>
+    </div>
+  );
+}
+const PERIOD_BANDS_ONLY = BANDS.filter(([k]) => k !== 'all');
+
 /** B1: how well the route keeps to its timetable, at timepoints (where the timetable really schedules a time). */
-function Adherence({ data, band, dir, lateMin }: { data: DashboardBandData; band: DashboardBand; dir: number | null; lateMin: number }) {
-  const v3Late = lateMin;
-  const [day, setDay] = useState<Day>(() => { const d = new URLSearchParams(window.location.search).get('day'); return d === 'weekday' || d === 'weekend' ? d : 'all'; });
-  useEffect(() => { syncUrlParams({ day: day === 'all' ? null : day }); }, [day]);
-  const block = data.adherence.timepoints[day];
+function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: number | null; lateMin: number }) {
   const countsFor = (d: Day) => { const b = data.adherence.timepoints[d]; return dir == null ? b.overall : b.byDirection[String(dir)]; };
-  const counts = countsFor(day);
   const all = countsFor('all');
-  // Hours are only drawn for the chosen time of day: the others have no departures in this view.
+  const parts = [{ name: 'Ahead', color: 'var(--status-caution-text)' }, { name: 'On time', color: 'var(--status-positive-text)' }, { name: 'Late', color: 'var(--status-negative-text)' }];
   return (
     <Section id="b1" title="How well it keeps to its timetable">
       {all && all.n > 0 ? (
         <>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">Share of departures {v3Late}+ minutes late, at the stops where the timetable gives a time.</p>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">Share of departures {lateMin}+ minutes late, at the stops where the timetable gives a time.</p>
           <div className="mt-3 grid max-w-2xl grid-cols-3 gap-2">
             {DAYS.map(([k, label]) => {
               const c = countsFor(k);
@@ -107,19 +113,25 @@ function Adherence({ data, band, dir, lateMin }: { data: DashboardBandData; band
                 : <Tile key={k} label={label} value="–" sub="too few departures" />;
             })}
           </div>
-          <div className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-2">
-            <h3 className="text-base font-black">By hour of the day</h3>
-            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Days for the hourly chart">
-              {DAYS.map(([k, label]) => <Pill key={k} size="segment" selected={day === k} onClick={() => setDay(k)}>{label}</Pill>)}
-            </div>
+          <h3 className="mt-6 text-base font-black">By hour of the day</h3>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">How many departures are ahead, on time or late in each hour. Hover over an hour to see its time of day.</p>
+          <div className="mt-3 grid gap-6 md:grid-cols-3">
+            {DAYS.map(([k, label]) => {
+              const c = countsFor(k);
+              return (
+                <HourBars
+                  key={k}
+                  title={label}
+                  showKey={k === 'weekend'}
+                  ariaLabel={`${label}: share of departures ahead of the timetable, on time and late, by hour of the day. ${c ? pct(c.lateShare) : '–'} late overall.`}
+                  parts={parts}
+                  columns={data.adherence.timepoints[k].byHour.map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
+                />
+              );
+            })}
           </div>
-          <HourBars
-            ariaLabel={`Share of departures ahead of the timetable, on time and late, by hour of the day. ${counts ? pct(counts.lateShare) : '–'} late overall.`}
-            parts={[{ name: 'Ahead', color: 'var(--status-caution-text)' }, { name: 'On time', color: 'var(--status-positive-text)' }, { name: 'Late', color: 'var(--status-negative-text)' }]}
-            columns={block.byHour.filter(h => band === 'all' || h.n > 0).map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
-          />
         </>
-      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time for this choice.</p>}
+      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time.</p>}
     </Section>
   );
 }
@@ -161,6 +173,15 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
                 scale={scale}
                 lessExactNote="the first stops are in the tunnel, where we see the vehicles less often, so these are rough."
                 marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
+              />
+              <PerPeriod
+                title="By time of day"
+                rows={PERIOD_BANDS_ONLY.flatMap(([k, name]) => {
+                  const pb = v3.bands[k]?.buildup.find(x => x.directionId === b.directionId);
+                  if (!pb) return [];
+                  const text = pb.kind === 'forms' && pb.forms ? `builds up by ${shortStopName(pb.forms.toName)} (${mins(pb.forms.medianAddedMin)})` : pb.kind === 'gradual' ? 'builds slowly, no single stretch' : pb.kind === 'none' ? 'stays about level' : 'too few trips';
+                  return [{ key: k, label: name, text }];
+                })}
               />
               <div className="mt-3 overflow-x-auto">
                 <DataTable
@@ -273,6 +294,15 @@ function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: Das
                   <p className="mt-1 text-xs text-[var(--text-dim)]">Linked means it was measured in this stretch, not that it is the cause.</p>
                 </>
               )}
+              <PerPeriod
+                title="By time of day"
+                rows={PERIOD_BANDS_ONLY.flatMap(([k, name]) => {
+                  const pb = b.bands[k];
+                  if (!pb || pb.kind == null) return [];
+                  const text = pb.kind === 'forms' && pb.forms ? `forms by ${shortStopName(pb.forms.toName)}` : pb.kind === 'gradual' ? 'builds slowly, no single stretch' : 'stays close to the timetable';
+                  return [{ key: k, label: name, text }];
+                })}
+              />
             </div>
           );
         })}
@@ -448,7 +478,7 @@ function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
           />
         </div>
       )}
-      <p className="mt-2 text-xs text-[var(--text-dim)]">{skipped.length > 0 && <>Not counted: {skipped.map(d => dateRangeText(d.date, d.date)).join(', ')} (gaps in our recordings).</>}</p>
+      <p className="mt-2 text-xs text-[var(--text-dim)]">Trips during gaps in our recordings aren't counted.{skipped.length > 0 && <> Not counted: {skipped.map(d => dateRangeText(d.date, d.date)).join(', ')} (gaps in our recordings).</>}</p>
     </Section>
   );
 }
@@ -490,10 +520,12 @@ const BOUNDARY = (what: string) => `${what} could not be drawn: the analysis fil
 export default function LiveRoutePage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(agency, route);
-  const [band, setBand] = useState<DashboardBand>(() => { const b = new URLSearchParams(window.location.search).get('band'); return BANDS.some(x => x[0] === b) ? (b as DashboardBand) : 'all'; });
+  // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
+  // whose answer differs by period list it per period.
+  const band: DashboardBand = 'all';
   const [dir, setDir] = useState<number | null>(() => { const d = new URLSearchParams(window.location.search).get('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   // The filters live in the address, so a link reopens the same view.
-  useEffect(() => { syncUrlParams({ band: band === 'all' ? null : band, dir: dir == null ? null : String(dir) }); }, [band, dir]);
+  useEffect(() => { syncUrlParams({ band: null, day: null, dir: dir == null ? null : String(dir) }); }, [dir]);
   if (!FEATURES.live) return <LiveOffNotice />;
   const title = `${agency.toUpperCase()} ${route}`;
   const back = <a href="/apps/live" className={`${PAGE_ACTION} mt-6`}>Open Live <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>;
@@ -530,9 +562,9 @@ export default function LiveRoutePage() {
           return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{f.text}</p> : null;
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
-        <Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} />
+        <Filters v3={v3} dir={dir} setDir={setDir} />
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} band={band} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('How long the trip takes')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>

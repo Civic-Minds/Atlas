@@ -92,7 +92,7 @@ describe('running time, extra wait, service delivered', () => {
     expect(extraWaitSentence([], 'Northbound')).toBeNull();
   });
   it('says how many scheduled trips ran, among those we can judge', () => {
-    expect(deliveredSentence({ seen: 960, notSeen: 40, unknown: 5, share: 0.96 })).toBe('96% of scheduled trips ran (960 of 1,000 that we can judge).');
+    expect(deliveredSentence({ seen: 960, notSeen: 40, unknown: 5, share: 0.96 })).toBe('96% of scheduled trips ran (960 of 1,000).');
     expect(deliveredSentence({ seen: 0, notSeen: 0, unknown: 3, share: null }, 'Eastbound')).toMatch(/not enough days of recordings/);
   });
   it('compares this week with last with one rule: plain up or down, and better or worse by which way is good', () => {
