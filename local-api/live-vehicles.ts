@@ -5,6 +5,7 @@ import {
   isLiveApiServable,
 } from '../shared/livePollingConfig.js';
 import { delayMinFromDelaySec, explicitTripDelaySec } from '../shared/liveVehicleDelay.js';
+import { delayStatus } from '../shared/liveDelayStatus.js';
 
 const FEED_TIMEOUT_MS = 15_000;
 const USER_AGENT = 'atlas-local-live/1.0 (https://transitatlas.fyi)';
@@ -97,9 +98,7 @@ function failureMessage(reason: FeedFailure): string {
 
 function statusForDelay(delayMin: number | null): 'no_data' | 'early' | 'late' | 'on_time' {
   if (delayMin == null) return 'no_data';
-  if (delayMin <= -1.5) return 'early';
-  if (delayMin >= 5.5) return 'late';
-  return 'on_time';
+  return delayStatus(delayMin);
 }
 
 async function fetchHandler(request: Request): Promise<Response> {

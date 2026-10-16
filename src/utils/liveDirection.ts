@@ -85,12 +85,18 @@ export function inferLiveDirection(
   }
 
   const best = candidates[0];
-  const second = candidates.find(candidate =>
-    candidate.directionId !== best.directionId || candidate.headsign !== best.headsign,
+  const tied = candidates.filter(candidate =>
+    candidate.score - best.score < 75
+    && (candidate.directionId !== best.directionId || candidate.headsign !== best.headsign),
   );
   // Do not label a vehicle when two directional shapes are effectively tied.
-  if (second && second.score - best.score < 75) {
+  if (tied.some(candidate => candidate.directionId !== best.directionId)) {
     return { directionId: vehicle.directionId, headsign: vehicle.headsign };
+  }
+  // Same direction, different destination (a full route and its short turn share track): the direction is
+  // certain, the destination is not, so keep the direction and leave the destination for the route's main one.
+  if (tied.length > 0) {
+    return { directionId: vehicle.directionId ?? best.directionId, headsign: vehicle.headsign };
   }
   return {
     directionId: vehicle.directionId ?? best.directionId,

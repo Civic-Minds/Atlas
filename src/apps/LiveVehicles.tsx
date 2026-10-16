@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Info, Moon, Sun, WifiOff, ArrowLeft, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, hasLiveAnalysis, agencyHasLiveAnalysis } from '../../shared/livePollingConfig';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute, hasLiveAnalysis, agencyHasLiveAnalysis } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
@@ -15,8 +15,9 @@ import { useColorVision } from '../context/ColorVisionContext';
 import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
-import { andOthers, plural } from '../../shared/overflowText';
+import { plural } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
+import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../utils/liveGrouping';
 import Tag from '../components/ui/Tag';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
@@ -73,6 +74,18 @@ function delayLabel(v: LiveVehicle): string {
   if (v.delayMin <= -1.5) return `${delayAmount(Math.round(Math.abs(v.delayMin)))} early`;
   if (v.delayMin >= 5.5) return `${delayAmount(Math.round(v.delayMin))} late`;
   return 'On time';
+}
+
+function pluralModeWord(modeWord: string): string {
+  const w = modeWord.toLowerCase();
+  return w === 'bus' ? 'buses' : w === 'ferry' ? 'ferries' : `${w}s`;
+}
+
+/** One-line summary of a destination's vehicles: "10 streetcars · 2 late". */
+function directionSummary(vehicles: LiveVehicle[], modeWord: string): string {
+  const count = `${vehicles.length} ${vehicles.length === 1 ? modeWord.toLowerCase() : pluralModeWord(modeWord)}`;
+  const late = vehicles.filter(v => v.delayMin != null && v.delayMin >= 5.5).length;
+  return late > 0 ? `${count} · ${late} late` : count;
 }
 
 function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
@@ -507,18 +520,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return vehicleModeWord((feature?.properties as any)?.routeType);
   }, [selectedGroup, layers, localLayers]);
 
-  // Direction label lookup from GeoJSON features (headsign per directionId)
+  // Direction label lookup from GeoJSON features: the route's main destination per direction, i.e. the
+  // headsign of its longest shape (a short turn like Roncesvalles must not rename the Humber direction).
   const directionLabels = useMemo(() => {
     if (!selectedGroup) return new Map<number, string>();
     const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
-    if (!fc) return new Map<number, string>();
-    const map = new Map<number, string>();
-    for (const f of fc.features) {
-      const p = f.properties as any;
-      if (!p || p.routeShortName !== selectedGroup.routeShortName) continue;
-      if (p.directionId != null && p.headsign) map.set(Number(p.directionId), String(p.headsign));
-    }
-    return map;
+    return fc ? routeDirectionLabels(fc.features, selectedGroup.routeShortName) : new Map<number, string>();
   }, [selectedGroup, layers, localLayers]);
 
   // Direction drill-down within a route
@@ -532,45 +539,19 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     },
   });
 
-  // Group vehicles by headsign if available, else by directionId
-  const vehiclesByDirection = useMemo(() => {
-    if (!selectedGroup) return null;
-    const useHeadsign = selectedGroup.vehicles.some(v => v.headsign);
-    const map = new Map<string, LiveVehicle[]>();
-    for (const v of selectedGroup.vehicles) {
-      // A car whose direction can't be told is left out of the groups (no "Unknown" group).
-      const key = useHeadsign ? v.headsign : v.directionId != null ? String(v.directionId) : null;
-      if (!key) continue;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(v);
-    }
-    return map;
-  }, [selectedGroup]);
-
-  // True when we can actually show meaningful direction groups (more than one, or one with a real label)
-  const canGroupByDirection = useMemo(() => {
-    if (!vehiclesByDirection) return false;
-    if (vehiclesByDirection.size === 0) return false;
-    if (vehiclesByDirection.size > 1) return true;
-    const [soleKey] = [...vehiclesByDirection.keys()];
-    const useHeadsign = selectedGroup?.vehicles.some(v => v.headsign) ?? false;
-    if (!useHeadsign) {
-      const label = directionLabels.get(parseInt(soleKey));
-      if (!label) return false; // no label from GeoJSON either — not useful
-    }
-    return true;
-  }, [vehiclesByDirection, directionLabels, selectedGroup]);
-
-  const useHeadsignGrouping = useMemo(
-    () => selectedGroup?.vehicles.some(v => v.headsign) ?? false,
-    [selectedGroup]
+  // Group vehicles by destination; every vehicle lands in a group (see groupVehiclesByDirection).
+  const vehiclesByDirection = useMemo(
+    () => (selectedGroup ? groupVehiclesByDirection(selectedGroup.vehicles, directionLabels) : null),
+    [selectedGroup, directionLabels],
   );
 
-  const getDirectionLabel = (key: string): string => {
-    if (useHeadsignGrouping) return key;
-    const dirId = parseInt(key);
-    return directionLabels.get(dirId) ?? (dirId === 0 ? 'Outbound' : 'Inbound');
-  };
+  // Worth showing groups when there is more than one, or the one group has a real destination name.
+  const canGroupByDirection = useMemo(() => {
+    if (!vehiclesByDirection || vehiclesByDirection.size === 0) return false;
+    if (vehiclesByDirection.size > 1) return true;
+    const [soleKey] = [...vehiclesByDirection.keys()];
+    return soleKey !== 'Outbound' && soleKey !== 'Inbound';
+  }, [vehiclesByDirection]);
 
   // Observed vs scheduled headway line for the selected route ("Every ~7 min · scheduled every 6 min")
   const selectedRouteHeadwayLine = useMemo((): string | null => {
@@ -600,6 +581,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       ? `${capitalizeFirst(headwayAbout(gap))} · scheduled ${headwayEvery(Math.round(scheduled))}`
       : capitalizeFirst(headwayAbout(gap));
   }, [selectedGroup, headwaysBySlug, layers, localLayers]);
+
+  // A route picked (from a link or the address) that has no card: say why, never show nothing.
+  const requestedRouteNote = useMemo((): string | null => {
+    if (!selectedRoute || selectedGroup || isLoading) return null;
+    const [slug, routeShortName] = selectedRoute.split('::');
+    const agencyName = shortenAgencyName(agencies.find(a => a.slug === slug)?.name ?? slug);
+    if (!getPolledRoute(slug, routeShortName)) {
+      const followed = LIVE_POLLING_ROUTES.filter(r => r.slug === slug).map(r => r.displayRouteShortName);
+      return followed.length > 0
+        ? `Live does not follow ${agencyName} ${routeShortName}. It follows ${agencyName} routes ${followed.join(', ')}.`
+        : `Live does not follow any ${agencyName} routes.`;
+    }
+    return `No ${agencyName} ${routeShortName} vehicles are running right now. Live checks again every few seconds.`;
+  }, [selectedRoute, selectedGroup, isLoading, agencies]);
 
   if (!active) return null;
 
@@ -660,6 +655,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
           {/* Content */}
           <PanelBody>
+            {requestedRouteNote && <PanelEmpty>{requestedRouteNote}</PanelEmpty>}
             {selectedGroup ? (
               <>
               <div className="px-4 pt-4">
@@ -687,9 +683,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               )}
               {!detailsOpen && (!performance || vehiclesOpen) && (
               <div className="px-4 py-4">
-                {!performance && (
-                  <div className="text-xs font-bold text-[var(--text-muted)] mb-3">Route performance isn't available for this route</div>
-                )}
                 {selectedRouteHeadwayLine && (
                   <div className="text-xs font-black text-[var(--text-dim)] mb-4">
                     {selectedRouteHeadwayLine}
@@ -701,16 +694,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 ) : canGroupByDirection && !selectedDirection ? (
                   <SidebarCardListRows>
                     {[...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => {
-                      const label = getDirectionLabel(dirKey);
-                      const preview = vehicles.slice(0, 3);
-                      const extra = vehicles.length - preview.length;
                       return (
                         <div key={dirKey} className="relative pr-4">
                           <CardDirectionRow
-                            label={label}
-                            subLabel={preview.some(v => delayLabel(v))
-                              ? `${preview.map(delayLabel).filter(Boolean).join(' · ')}${extra > 0 ? ` · ${andOthers(extra, 'vehicle')}` : ''}`
-                              : `${vehicles.length} ${plural(vehicles.length, 'vehicle')}`}
+                            label={dirKey}
+                            subLabel={dirKey === DIRECTION_UNCLEAR ? `${directionSummary(vehicles, selectedRouteModeWord)} · on track both directions share` : directionSummary(vehicles, selectedRouteModeWord)}
                             onClick={() => setSelectedDirection(dirKey)}
                           />
                           <ChevronRight className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--text-dim)]" />

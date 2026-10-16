@@ -21,6 +21,7 @@ import { isInternalTestSession } from './lib/internalTest';
 import { findSeoRoute } from '../shared/seo';
 
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
+const LiveRoutePage = React.lazy(() => import('./LiveRoutePage'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 const AreaPage = React.lazy(() => import('./AreaPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
@@ -75,6 +76,8 @@ ReactDOM.createRoot(rootElement).render(
               <Route path="/dev/diagnostics/performance" element={<DiagnosticsPerformancePage />} />
             </>
           )}
+          {/* Live is local-only: the route dashboard exists only where Live can run. */}
+          {(FEATURES.live || import.meta.env.DEV) && <Route path="/apps/live/:agency/:route" element={<LiveRoutePage />} />}
           <Route path="/apps/night" element={<NightServiceRedirect />} />
           <Route path="/docs" element={<DocsRedirect />} />
           {RETIRED_APP_PATHS.map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}
