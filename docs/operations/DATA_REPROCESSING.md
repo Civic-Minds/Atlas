@@ -65,11 +65,24 @@ gh workflow run rebuild-release.yml -f ref=<branch or SHA> -f mode=dry-run
 gh workflow run rebuild-release.yml -f ref=main -f mode=publish -f allow="communitytransit:drop"
 ```
 
-- **Inputs:** `ref` (default `main`), `mode` (`dry-run` default, or `publish`), `allow` (space-separated `<slug>:<flag>`, passed to the reprocess and to `publish-data-release`), `concurrency` (agencies in parallel, 1-4, default 2), `start_at` (publish only).
-- **Dry run:** uploads `tmp/derived-reprocess/report.json` and the release diff (`tmp/release-diff/*.md`, `*.json`) as the run's `rebuild-report-*` artifact. Read it before publishing, then repeat each reviewed `--allow` in the publish run.
-- **Publish:** refuses unless `ref` is the current tip of main. It also opens the same two small pull requests the weekly refresh does (feed expiry stamps, agency pages) and auto-merges the agency pages one.
+- **Inputs:** `ref` (default `main`), `mode` (`dry-run` default, or `publish`), `allow` (space-separated `<slug>:<flag>`, passed to the reprocess and to `publish-data-release`), `concurrency` (agencies in parallel, 1-4, default 2), `start_at` and `resume_run_id` (publish only, see Resuming).
+- **Dry run:** runs the code of any branch, so it never sees a write-capable credential. It uses a read-only R2 token (repository secrets `R2_RO_ACCESS_KEY_ID` and `R2_RO_SECRET_ACCESS_KEY`: an R2 API token with Object Read only, scoped to the data and archive buckets) and a read-only GitHub token with no stored login. It fails at the start, with a message, if those two secrets are missing. It uploads `tmp/derived-reprocess/report.json` and the release diff (`tmp/release-diff/*.md`, `*.json`) as the `rebuild-report-dry-run-*` artifact. Read it before publishing, then repeat each reviewed `--allow` in the publish run.
+- **Publish:** a separate job with the write keys. It refuses unless `ref` is the current tip of main. It opens the same two small pull requests the weekly refresh does (feed expiry stamps, agency pages) and auto-merges the agency pages one. If the reprocess exits with an error (an agency was refused) after uploading the others, the expiry stamps still go into their pull request, and then the run stops before any tiles are built.
 - **No overlap:** it shares the `atlas-data-release` concurrency group with the weekly refresh, so the two queue behind each other and never run at once. Do not start a publish run close to Monday 06:00 UTC.
-- **Time:** one job with a 345 minute limit (GitHub's cap is 360). The last local full run was about 55 minutes of reprocess plus the tile build. If a run ever stops part way, run it again with `start_at`: `pmtiles` (agency artifacts are already in R2), `history`, or `publish`. Every stage is safe to repeat.
+- **Time:** one job with a 345 minute limit (GitHub's cap is 360). The last local full run was about 55 minutes of reprocess plus the tile build; the tile build and history timings on a runner are not measured yet.
+
+### Resuming a publish run
+
+The runner is thrown away at the end of a run, so a run saves what a later stage needs as artifacts (kept 14 days): `rebuild-stamps-<run id>` (the feed expiry stamps and the commit) and `rebuild-manifest-<run id>` (the release manifest that `verify-pmtiles-remote` and `publish-data-release` read, and the commit). To resume, run again with `mode=publish`, `ref=main`, `start_at` and `resume_run_id=<the earlier run id>`:
+
+| `start_at` | Starts at | Needs | Notes |
+|---|---|---|---|
+| `reprocess` | the beginning | nothing | Rewrites every agency's artifacts in R2. |
+| `pmtiles` | `build-pmtiles` | optional `resume_run_id` (for the stamps) | Agency artifacts are already in R2. Builds a new release id each time; an unpublished one is just an unused upload. |
+| `history` | `build-history` | `resume_run_id` of a run that finished `build-pmtiles` | Reuses that run's release manifest. |
+| `publish` | `publish-data-release` | `resume_run_id` of a run that finished `build-pmtiles` | Reuses that run's manifest. |
+
+A resume refuses when main has moved past the commit the earlier run built, because the manifest and the stamps belong to that build; start again from `reprocess` then. Not every stage is free to repeat: `build-history` writes `atlas/history-config.json` to the live bucket as soon as it runs, before the release is published.
 
 ## Release diff gate
 
