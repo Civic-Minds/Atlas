@@ -29,13 +29,16 @@ const stop = (name: string) => shortStopName(titleCase(name));
 
 type Sort = 'late' | 'runTime' | 'bunching' | 'delivered';
 const SORTS: [Sort, string][] = [['late', 'Late'], ['runTime', 'Run time'], ['bunching', 'Bunching'], ['delivered', 'Service delivered']];
-const sortValue: Record<Sort, (r: AgencyRouteRow) => number> = {
-  late: r => r.lateShare ?? -1,
-  runTime: r => r.runTimeOver ?? -Infinity,
-  bunching: r => r.bunchingShare ?? -1,
-  // Fewest trips delivered first.
-  delivered: r => -(r.deliveredShare ?? 2),
-};
+/** The value a route is sorted by, highest first. A switch, not an object lookup, so no outside value picks a method. */
+function sortValue(sort: Sort, r: AgencyRouteRow): number {
+  switch (sort) {
+    case 'runTime': return r.runTimeOver ?? -Infinity;
+    case 'bunching': return r.bunchingShare ?? -1;
+    // Fewest trips delivered first.
+    case 'delivered': return -(r.deliveredShare ?? 2);
+    default: return r.lateShare ?? -1;
+  }
+}
 
 /** Fetches nothing while `agency` is empty (Live switched off). */
 function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse } {
@@ -72,7 +75,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
     return SORTS.some(([k]) => k === v) ? v as Sort : 'late';
   });
   useEffect(() => { syncUrlParams({ sort: sort === 'late' ? null : sort }); }, [sort]);
-  const rows = [...s.routes].sort((a, b) => sortValue[sort](b) - sortValue[sort](a) || a.route.localeCompare(b.route, undefined, { numeric: true }));
+  const rows = [...s.routes].sort((a, b) => sortValue(sort, b) - sortValue(sort, a) || a.route.localeCompare(b.route, undefined, { numeric: true }));
   const lateMax = Math.max(0.1, ...s.routes.flatMap(r => r.lateByHour.filter(h => h.n >= 30).map(h => h.value)));
   const scale = { min: 0, max: Math.ceil(lateMax * 10) / 10 };
   return (
