@@ -1,3 +1,4 @@
+import './pipelineTimeZone.js';
 import JSZip from 'jszip';
 import Papa from 'papaparse';
 import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, GtfsAgency, GtfsFareAttribute, GtfsFareRule, GtfsFareProduct, GtfsRiderCategory, GtfsFareLegRule, ShapeAnomaly } from '../types/gtfs';
