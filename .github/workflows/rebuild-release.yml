@@ -377,6 +377,40 @@ jobs:
           CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
           GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
 
+      # reprocess-derived-artifacts exits 1 when any agency is refused (expired or older-than-live
+      # zip, or a release gate flag such as GRT mode-lost). Those agencies keep their live data and
+      # are a normal outcome, as in the dry run. Only a crash (no report) or a "failed" agency is
+      # a real error that stops the run.
+      - name: Check the reprocess outcome
+        id: reprocess-check
+        if: always() && inputs.start_at == 'reprocess' && steps.reprocess.outcome != 'skipped'
+        run: |
+          python3 - <<'PY'
+          import json, os
+          out = os.environ['GITHUB_OUTPUT']
+          md = os.environ['GITHUB_STEP_SUMMARY']
+          path = 'tmp/derived-reprocess/report.json'
+          lines = ['## Rebuild publish: reprocess', '']
+          fatal = ''
+          if not os.path.exists(path):
+              lines.append('No report was written: the reprocess crashed before it finished. See the log.')
+              fatal = 'the reprocess crashed before writing a report'
+          else:
+              rep = json.load(open(path))
+              t = rep.get('totals', {})
+              rows = rep.get('agencies', [])
+              lines.append(f"**{t.get('processed', 0)} written**, {t.get('refused', 0)} refused (live data kept), {t.get('failed', 0)} failed, {t.get('skipped', 0)} skipped (of {t.get('targets', len(rows))} agencies).")
+              for status, title in (('failed', 'Failed (errors)'), ('refused', 'Refused (live data kept)')):
+                  sel = [r for r in rows if r.get('status') == status]
+                  if sel:
+                      lines += ['', f'### {title}: {len(sel)}', '', '| Agency | Reason |', '|---|---|']
+                      lines += [f"| {r['slug']} | {str(r.get('reason', '')).replace('|', '/')} |" for r in sel]
+              if t.get('failed', 0) > 0:
+                  fatal = f"{t['failed']} agencies failed"
+          open(md, 'a').write('\n'.join(lines) + '\n')
+          open(out, 'a').write(f'fatal={fatal}\n')
+          PY
+
       # --write stamps each rebuilt agency's feed expiry in public/data/index.json and
       # config/agencies/<slug>.json. Save them as a patch (a resumed run reapplies it) before the
       # pull request step moves them.
@@ -414,11 +448,14 @@ jobs:
           delete-branch: true
           labels: data-quality,pipeline
 
-      # Re-raise the reprocess failure now that its stamps are saved: nothing after this runs.
-      - name: Stop when the reprocess did not finish cleanly
-        if: always() && steps.reprocess.outcome == 'failure'
+      # Re-raise a real reprocess error now that its stamps are saved: nothing after this runs.
+      # A run where every agency was written or refused is clean and goes on to the tiles.
+      - name: Stop when the reprocess had a real error
+        if: always() && steps.reprocess-check.outputs.fatal != ''
+        env:
+          FATAL: ${{ steps.reprocess-check.outputs.fatal }}
         run: |
-          echo "The reprocess exited with an error (an agency was probably refused; see the log)."
+          echo "Real error: $FATAL"
           echo "Agencies it already wrote stay in R2, and their stamps are in the pull request. No release was built."
           exit 1
 
