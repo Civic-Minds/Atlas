@@ -2,7 +2,7 @@ import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, typ
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
-  LEGEND_TITLE, MIN_N, STEP_LABELS, delayText, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopN, stopValue, stretchSpan, stripSummary,
+  LEGEND_TITLE, MIN_N, delayText, legendSteps, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
 } from './routeStripModel';
 
@@ -168,8 +168,8 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
       {tracks.map(t => (
         <span key={t.mode} className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="font-bold text-[var(--text-secondary)]">{LEGEND_TITLE[t.mode]}:</span>
-          {([0, 1, 2] as const).map(step => (
-            <span key={step} className="inline-flex items-center gap-1.5"><Swatch mode={t.mode} step={step} />{STEP_LABELS[t.mode][step]}</span>
+          {legendSteps(t.mode).map(step => (
+            <span key={step} className="inline-flex items-center gap-1.5"><Swatch mode={t.mode} step={step} />{stepLabel(t.mode, step)}</span>
           ))}
         </span>
       ))}

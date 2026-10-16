@@ -36,16 +36,21 @@ export interface RouteStripStretch {
   toStopId: string;
 }
 
-export type Step = 0 | 1 | 2;
+/** 'early': the delay track's step for cars that typically leave 1+ min early (CIV-283). */
+export type Step = 'early' | 0 | 1 | 2;
 
 /** Delay steps use the same cutoffs as the map's delay colours: up to 1 min is on time, up to 3 min is a little late. */
 export const DELAY_STEP_LIMITS = [1, 3] as const;
+/** A typical departure this many minutes early or more is its own (blue) step, not "on time". */
+export const EARLY_STEP_MIN = 1;
+/** The early step's legend label (approved by Ryan, CIV-283). */
+export const EARLY_STEP_LABEL = '1+ min early';
 /** Bunching steps: share of gaps too short or too long. */
 export const BUNCHING_STEP_LIMITS = [0.15, 0.25] as const;
 export const MIN_N = 30;
 
 export const STEP_LABELS: Record<RouteStripMode, readonly [string, string, string]> = {
-  delay: ['On time or early', '1–3 min late', '3+ min late'],
+  delay: ['On time', '1–3 min late', '3+ min late'],
   bunching: ['Under 15%', '15–25%', '25% or more'],
 };
 export const LEGEND_TITLE: Record<RouteStripMode, string> = {
@@ -55,6 +60,10 @@ export const LEGEND_TITLE: Record<RouteStripMode, string> = {
 
 /** The colour token for a step. The values live in styles/index.css, with their dark and colour-vision versions. */
 export const stepColor = (mode: RouteStripMode, step: Step) => `var(--strip-${mode}-${step})`;
+
+/** The steps a track's legend lists, in order: the delay track adds the early step first. */
+export const legendSteps = (mode: RouteStripMode): readonly Step[] => (mode === 'delay' ? ['early', 0, 1, 2] : [0, 1, 2]);
+export const stepLabel = (mode: RouteStripMode, step: Step): string => (step === 'early' ? EARLY_STEP_LABEL : STEP_LABELS[mode][step]);
 
 /** The stop's value in this mode, or null when it was not measured. */
 export function stopValue(stop: RouteStripStop, mode: RouteStripMode): number | null {
@@ -68,6 +77,7 @@ export function stopN(stop: RouteStripStop, mode: RouteStripMode): number {
 
 export function stepFor(mode: RouteStripMode, value: number | null): Step | null {
   if (value == null || !Number.isFinite(value)) return null;
+  if (mode === 'delay' && value <= -EARLY_STEP_MIN) return 'early';
   const [a, b] = mode === 'delay' ? DELAY_STEP_LIMITS : BUNCHING_STEP_LIMITS;
   return value <= a ? 0 : value <= b ? 1 : 2;
 }
@@ -190,15 +200,15 @@ export function stretchSpan(stops: readonly RouteStripStop[], s: RouteStripStret
 /** One sentence for screen readers: the direction, its ends, how many stops fall in each step, and the marked stretch. */
 export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripMode, directionLabel: string, stretch: StretchSpan | null): string {
   if (stops.length === 0) return `${directionLabel}: no stops measured.`;
-  const counts = [0, 0, 0];
+  const counts = new Map<Step, number>();
   let missing = 0;
   for (const s of stops) {
     const step = stepFor(mode, stopValue(s, mode));
-    if (step == null) missing++; else counts[step]++;
+    if (step == null) missing++; else counts.set(step, (counts.get(step) ?? 0) + 1);
   }
-  const [l0, l1, l2] = STEP_LABELS[mode];
   const what = mode === 'delay' ? 'Typical delay' : 'Share of gaps too short or too long';
-  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${stops.length} stops: ${counts[0]} ${l0.toLowerCase()}, ${counts[1]} ${l1.toLowerCase()}, ${counts[2]} ${l2.toLowerCase()}${missing ? `, ${missing} not measured` : ''}.`];
+  const steps = legendSteps(mode).filter(st => st !== 'early' || counts.has('early')).map(st => `${counts.get(st) ?? 0} ${stepLabel(mode, st).toLowerCase()}`).join(', ');
+  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${stops.length} stops: ${steps}${missing ? `, ${missing} not measured` : ''}.`];
   if (stretch) parts.push(`${stretch.label} between ${stops[stretch.from].name} and ${stops[stretch.to].name}.`);
   parts.push('Use the left and right arrow keys to hear each stop.');
   return parts.join(' ');

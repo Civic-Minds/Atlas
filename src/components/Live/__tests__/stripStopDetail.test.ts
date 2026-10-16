@@ -16,3 +16,14 @@ describe('stopDetail bunching line', () => {
     expect(stopDetail(base).lines).toContain('12% of gaps too short or too long');
   });
 });
+
+describe('early step (CIV-283)', () => {
+  it('gives a stop 1+ min early its own step, and keeps up to 1 min either way as on time', async () => {
+    const { stepFor } = await import('../routeStripModel');
+    expect(stepFor('delay', -1.7)).toBe('early');
+    expect(stepFor('delay', -1)).toBe('early');
+    expect(stepFor('delay', -0.9)).toBe(0);
+    expect(stepFor('delay', 0.8)).toBe(0);
+    expect(stepFor('bunching', -0.5)).toBe(0);
+  });
+});
