@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { routeListDisplay, routeListDisplayLimited, routeListNoRegularService } from '../effectiveHeadway';
 import { selectedRouteFilterNotice } from '../../content/noticeCopy';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
-import { hasStretchRoles, routeContract, stretchRowFeatures, variantOnlyRow, variantRowHeadway } from '../stretchCard';
+import { hasStretchRoles, routeContract, stretchRowFeatures, variantOnlyRow, variantRowHeadway, hasRegularServiceInPeriod } from '../stretchCard';
 
 const f = (over: Record<string, unknown>) => ({ routeId: 'r', directionId: 0, tier: 'frequent', headway: 6, routeShortName: '1', routeLongName: null, ...over }) as unknown as ShapeProperties;
 
@@ -119,5 +119,22 @@ describe('list rows, All day (frequency focus step 7)', () => {
 
   it('data without the field keeps today\'s rule', () => {
     expect(routeListDisplay([row(0, {}), row(1, {})], 'all').headway).toBe(8);
+  });
+});
+
+describe('hasRegularServiceInPeriod (#750)', () => {
+  // SF Muni 8AX outbound: per-pattern headwayByPeriod says evening 8, the filter says no regular service.
+  const outbound = { directionId: 0, headwayByPeriod: { pmPeak: 8, evening: 8 }, directionFilterHeadwayByPeriod: { amPeak: null, midday: null, pmPeak: 8, evening: null }, routeFilterHeadwayByPeriod: { amPeak: 10, pmPeak: 8, evening: null } } as unknown as ShapeProperties;
+  it('follows the direction filter the route card rows read', () => {
+    expect(hasRegularServiceInPeriod(outbound, 'pmPeak')).toBe(true);
+    expect(hasRegularServiceInPeriod(outbound, 'evening')).toBe(false);
+    expect(hasRegularServiceInPeriod(outbound, 'amPeak')).toBe(false); // the route runs in the AM, this direction does not
+    expect(hasRegularServiceInPeriod(outbound, 'all')).toBe(true);
+  });
+  it('falls back to the route filter, and to true for older data without filter fields', () => {
+    const routeOnly = { routeFilterHeadwayByPeriod: { evening: null, midday: 12 } } as unknown as ShapeProperties;
+    expect(hasRegularServiceInPeriod(routeOnly, 'evening')).toBe(false);
+    expect(hasRegularServiceInPeriod(routeOnly, 'midday')).toBe(true);
+    expect(hasRegularServiceInPeriod({ headwayByPeriod: { evening: 8 } } as unknown as ShapeProperties, 'evening')).toBe(true);
   });
 });

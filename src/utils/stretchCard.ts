@@ -87,3 +87,17 @@ export function routeContract(features: readonly ShapeProperties[], period: Time
     range: range && range.length === 2 && range[0] !== range[1] ? [Math.min(range[0], range[1]), Math.max(range[0], range[1])] : null,
   };
 }
+
+/**
+ * Whether a route direction has regular service in the period, by the same filter values the route card's rows and the
+ * route lists read: the direction's filter value when the data has it, else the route's (routeContract). True for all
+ * day and for older data without the filter fields. The stop card uses it so a stop never shows a cadence for a period
+ * the route card says has no regular service (#750: SF Muni 8AX/8BX midday and evening, and outbound in the AM).
+ */
+export function hasRegularServiceInPeriod(f: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all') return true;
+  const byDirection = f.directionFilterHeadwayByPeriod;
+  if (byDirection && Object.prototype.hasOwnProperty.call(byDirection, period)) return typeof byDirection[period as PeriodKey] === 'number';
+  const contract = routeContract([f], period);
+  return contract == null || contract.filterValue != null;
+}
