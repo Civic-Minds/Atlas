@@ -472,3 +472,14 @@ describe('step 6 shadow: headline, midday wait and Frequent Service on the stret
     expect(p.stretchFrequentService).toBe(day === 'Weekday' ? frequent : false);
   });
 });
+
+describe('runs through the period: the settled checks catch a straggler before the next service', () => {
+  it.each([['ttc-900-weekday', '900'], ['ttc-102-weekday', '102']])('%s overnight is not drawn under All and has no value', async (name, route) => {
+    // TTC 900: 26:11-26:41, then nothing until 29:19 (typical 15). TTC 102: 26:02-26:16 then 29:10
+    // (typical 12), and 26:43 then 29:13 the other way.
+    const r = await run(name);
+    const p = row(r, route, 'Weekday');
+    expect(p.routeRunsByPeriod.overnight).toBe(false);
+    expect(p.routeFilterHeadwayByPeriod.overnight).toBeNull();
+  });
+});

@@ -17,10 +17,12 @@ import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import {
   computePeriodCoverageHeadways,
   computePeriodHeadways,
+  BOUNDARY_DOMINANT_RATIO,
   computePeriodSustained,
   computeResearchFrequentService,
   forCrossMidnightWindow,
   hasSustainedFrequentService,
+  medianHeadwayInWindow,
   sustainedMedianHeadwayInWindow,
   hasSustainedServiceInWindow,
   nightServiceDepartureTimes,
@@ -426,7 +428,22 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     const mid = (start + end) / 2;
     const timesIn = (s: Stretch) => [...new Set(forCrossMidnightWindow([...s.times], end))].filter(t => t >= start && t <= end);
     const throughMidpoint = (s: Stretch) => { const t = timesIn(s); return t.some(x => x < mid) && t.some(x => x >= mid); };
-    const runs = throughMidpoint(d.main);
+    // The settled period checks (#567-#571, PR #584) decide whether a period that has departures
+    // on both sides of its midpoint really runs through it: when it is not steady and its longest
+    // wait, edges included, is more than BOUNDARY_DOMINANT_RATIO times its typical gap, the
+    // departures are a straggler and the first trips of the next service, not service through
+    // the period (TTC 900 overnight: 26:11-26:41, then nothing until 29:19).
+    const dominantHole = (s: Stretch) => {
+      if (main[key].sustained !== false) return false;
+      const dt = forCrossMidnightWindow([...s.times], end);
+      const median = medianHeadwayInWindow(dt, start, end, 3);
+      if (median == null || median <= 0) return false;
+      const t = timesIn(s).sort((a, b) => a - b);
+      let longest = Math.max(t[0] - start, end - t[t.length - 1]);
+      for (let i = 1; i < t.length; i++) longest = Math.max(longest, t[i] - t[i - 1]);
+      return longest / median > BOUNDARY_DOMINANT_RATIO;
+    };
+    const runs = throughMidpoint(d.main) && !dominantHole(d.main);
     const filterOf = (p: StretchPeriod) => (p.sustained === true && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage);
     const counting = [main[key], ...tails.map(t => t[key])].filter((p, i) => p.counts && (i === 0 ? runs : true));
     const values = counting.map(filterOf).filter((v): v is number => v != null);
