@@ -711,6 +711,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         ? headwayAboutRange(contract.range[0], directionFallback)
                         : undefined;
                       const displayH = variantH !== undefined ? variantH : directionFallback ?? ownH;
+                      // #934: the main stretch's row names a late start or early end instead of the long wait.
+                      const edgeText = hoveredHour == null && variantH === undefined && allDayH == null && d.stretchRole === 'main'
+                        ? routeCardEdgeText(d, period)
+                        : undefined;
                       const label = branchLabel(group, d, gi);
                       if (!label && !collapseGroups && displayH == null) return null;
                       const trunkHw = hoveredHour == null && period !== 'all'
@@ -735,7 +739,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             headway={rowNoRegular ? undefined : displayH ?? undefined}
                             limitedLabel={rowNoRegular ? noRegularLabel : undefined}
                             colorHeadway={hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined}
-                            headwayLabel={hoveredHour == null && variantH === undefined ? (directionFallback != null ? (allDayH == null ? routeCardEdgeText(d, period) : undefined) ?? fallbackRange : routeCardCoverageText(d, period)) : undefined}
+                            headwayLabel={hoveredHour == null && variantH === undefined ? (edgeText ?? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period))) : undefined}
                             trunkHeadway={trunkHw}
                             edgeGapAllowance={d.edgeGapAllowance}
                             onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}
