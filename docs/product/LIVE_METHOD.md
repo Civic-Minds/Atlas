@@ -32,13 +32,14 @@ This is how the Live route page (the dashboard and the full analysis at `/apps/l
 - **Same limits as the Live map**, so the page and the map never disagree (`thresholds` in the analysis file).
 - **History of the numbers.** They came in with the first Live map (commit 947d00de, 2026-06-27) with no stated reason. They are most likely the TTC's own on-time window (1 minute early to 5 minutes late) plus half a minute for rounding.
 - **Lateness is the reliable figure.** Vehicles often wait to leave on time, so the headline is the share late (or not late). "Ahead" is shown as a quieter note.
-- **Timepoints.** The headline counts only timepoints: the stops where the timetable really gives a time. Times between timepoints are interpolated by the agency, so the every-stop figure is shown only in the method notes.
+- **The headline counts trips leaving the end of the line.** Late is the share of trips that left their first stop (the end of the line) 5.5+ minutes after the timetable, the TTC's own measure: its Daily Customer Service Report counts "on time departures from end terminals", from 1 minute early to 5 minutes late (pw.ttc.ca, checked 2026-10-16). By hour, it is the hour the trip starts.
+- **Why not every stop, or the timepoints.** On the TTC almost every timepoint is a trip's first or last stop, and every other stop's time is marked approximate. A delay against those approximate times is not a real measure of keeping to the timetable (on 504 most in-between stops look 1-2 min early; against a straight-line schedule most of that goes away). Per-stop figures (the route strip, the stop tables) still show delay at every stop, but they show "1+ min early" only at timepoints, and early elsewhere as on time. Details: `_reports/live-timepoint-method.md`.
 
 ## The questions the page answers
 
 ### How well it keeps to its timetable (B1)
 
-- The share of departures late, at timepoints, for all days, weekdays and weekends side by side.
+- The share of trips that left the end of the line late, for all days, weekdays and weekends side by side.
 - Below that, an hourly chart for each kind of day: the share of departures ahead, on time and late in each hour.
 
 ### Stops with the most delay (B2)

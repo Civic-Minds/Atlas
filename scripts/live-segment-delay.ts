@@ -360,7 +360,8 @@ for (const [key, samples] of runs) {
         const depByStop = new Map<string, number>();
         const tpByStop = new Map<string, boolean>();
         for (const st of tt) if (!depByStop.has(st.stopId)) { depByStop.set(st.stopId, st.dep); tpByStop.set(st.stopId, st.tp); }
-        return observed.filter(p => depByStop.has(p.stopId)).map(p => ({ p, delaySec: p.t - (base + depByStop.get(p.stopId)!), timepoint: tpByStop.get(p.stopId) === true }));
+        const firstStop = tt[0]?.stopId;
+        return observed.filter(p => depByStop.has(p.stopId)).map(p => ({ p, delaySec: p.t - (base + depByStop.get(p.stopId)!), timepoint: tpByStop.get(p.stopId) === true, tripStart: p.stopId === firstStop }));
       };
       let assigned = tripId;
       let rows = delaysFor(tripId);
@@ -399,7 +400,7 @@ for (const [key, samples] of runs) {
       const stopsOut: RunStopDelay[] = [];
       for (const r of rows) {
         if (Math.abs(r.delaySec) > MAX_DELAY_SEC) { delaysExcluded++; continue; }
-        stopsOut.push({ stopId: r.p.stopId, t: r.p.t, hour: hourOf(r.p.t), delaySec: r.delaySec, timepoint: r.timepoint });
+        stopsOut.push({ stopId: r.p.stopId, t: r.p.t, hour: hourOf(r.p.t), delaySec: r.delaySec, timepoint: r.timepoint, tripStart: r.tripStart });
       }
       if (stopsOut.length) runDelays.push({ date: svcDate, directionId: pattern.directionId, tripId: assigned, stops: stopsOut });
     }
@@ -793,7 +794,7 @@ const leftOutInWindow = (reason: 'excluded' | 'no_timetable_trip') => leftOutRun
 const swapsInWindow = swapLog.filter(x => inWindow.has(x.date));
 const swapsReassigned = swapsInWindow.filter(x => x.outcome === 'reassigned').length;
 const swapsDropped = swapsInWindow.length - swapsReassigned;
-const tpMinutes = windowRuns.flatMap(r => r.stops.filter(s => s.timepoint).map(s => s.delaySec / 60));
+const tpMinutes = windowRuns.flatMap(r => r.stops.filter(s => s.tripStart).map(s => s.delaySec / 60));
 const nearCutoffShare = tpMinutes.length ? tpMinutes.filter(m => Math.abs(m - EARLY_AT_OR_BELOW_MIN) < 0.75 || Math.abs(m - LATE_AT_OR_ABOVE_MIN) < 0.75).length / tpMinutes.length : 0;
 const BANDS: (TimeBand | 'all')[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
 // B2 ranks only stops on a regular pattern (the main stretch's rule: 20%+ of the direction's trips), so a rare
@@ -843,9 +844,9 @@ function stopsAndBuildup(rs: readonly RunDelays[]) {
 }
 const adherenceFor = (rs: readonly RunDelays[]) => ({
   timepoints: {
-    all: adherenceReport(rs, { timepointsOnly: true }),
-    weekday: adherenceReport(rs.filter(r => !isWeekend(r.date)), { timepointsOnly: true }),
-    weekend: adherenceReport(rs.filter(r => isWeekend(r.date)), { timepointsOnly: true }),
+    all: adherenceReport(rs, { tripStartsOnly: true }),
+    weekday: adherenceReport(rs.filter(r => !isWeekend(r.date)), { tripStartsOnly: true }),
+    weekend: adherenceReport(rs.filter(r => isWeekend(r.date)), { tripStartsOnly: true }),
   },
   allStops: {
     all: adherenceReport(rs),
@@ -1001,7 +1002,7 @@ const allValidDates = [...new Set(runDelays.map(r => r.date))].filter(d => sched
 const weeks = weekSplit(allValidDates, healthV3);
 function weekMetrics(days: readonly string[]) {
   const ds = new Set(days);
-  const tp = adherenceReport(runDelays.filter(r => ds.has(r.date)), { timepointsOnly: true }).overall;
+  const tp = adherenceReport(runDelays.filter(r => ds.has(r.date)), { tripStartsOnly: true }).overall;
   let ewtSum = 0, ewtW = 0, bad = 0, gaps = 0;
   for (const [key, m] of headwayByStop) {
     const wins = (m.get('all') ?? []).filter(w => ds.has(w.date));
@@ -1069,7 +1070,8 @@ const v3 = {
   uncertainty: { nearCutoffShare: r3(nearCutoffShare), withinMin: 0.75, note: 'Share of timepoint departures within 0.75 min of an on-time cutoff; positions are about a minute apart, so those can land on either side.' },
   totals: { runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded },
   directionLabels,
-  // The headline adherence counts timepoints only (where the timetable really schedules a time); allStops counts every stop.
+  // The headline adherence counts each trip's departure from the end of the line (its first stop), as the TTC does; the
+  // key stays 'timepoints' for older readers. allStops counts every stop.
   adherence: bandsV3.all.adherence,
   // Everything above filtered to one time of day (keys: all, amPeak, midday, pmPeak, evening); `adherence`, `stops` and `buildup` are the 'all' entry.
   bands: bandsV3,

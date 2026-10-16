@@ -3,7 +3,7 @@ import type { AgencySummary } from './liveAgency';
 
 /**
  * The link preview of a Live report page (og:title, og:description): the approved page title, and the week's late share
- * in the Late tile's words with the subtitle's week ("9% of departures left more than 5½ min late · Week of Oct 8–14").
+ * in the Late tile's words with the subtitle's week ("9% of trips left the end of the line more than 5 min late · Week of Oct 8–14").
  */
 export function liveLinkPreview(agency: string, route: string | null, summary: AgencySummary | null): { title: string; description: string } {
   const pct = (x: number) => `${Math.round(x * 100)}%`;
