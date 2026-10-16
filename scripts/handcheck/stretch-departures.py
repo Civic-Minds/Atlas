@@ -5,8 +5,11 @@ It shares no code with the pipeline, so it can judge it. Use it to build or chec
 table (FREQUENCY_RULES, frequency-focus-plan step 0).
 
 usage: stretch-departures.py <slug> <route> <day> <start> <end> [options]
-  slug      agency slug; the zip is found as <feeds>/<slug>.zip, <feeds>/<slug>/*.zip (newest),
-            or Atlas-worktrees/_live-data/gtfs/<slug>.zip. Or pass --zip PATH.
+  slug      agency slug. The zip is the exact one the reprocess reads: the R2 archive zip
+            (gtfs/archive/<slug>/<date>-<hash>.zip), chosen by the pipeline's own selection code and
+            downloaded read-only into Atlas-worktrees/_feeds/archive-cache/. The zip used is printed.
+            Pass --zip PATH to use a file, or --feeds DIR to look in a folder of feeds instead
+            (<feeds>/<slug>.zip, <feeds>/<slug>/*.zip newest, _live-data/gtfs/<slug>.zip).
   route     route_short_name (or route_id)
   day       Weekday | Saturday | Sunday
   start end window, "HH:MM" or hours ("2", "6"): 2 6 is the Night window. A window that ends by 06:00
@@ -15,8 +18,8 @@ options:
   --stop ID        measure at this stop_id instead of the stretch's dispatch end
   --date YYYY-MM-DD   service date (default: the first matching weekday on or after today inside the
                    feed's calendar, else the last one inside it); calendar_dates exceptions apply
-  --zip PATH       feed zip
-  --feeds DIR      folder of feeds (default: Atlas-worktrees/_feeds)
+  --zip PATH       feed zip (overrides the archive lookup)
+  --feeds DIR      look for <slug>.zip in this folder of feeds instead of the R2 archive
   --min-share X    a pattern is "regular" when it has at least this share of the direction's trips
                    (default 0.2); the main stretch is the stops every regular pattern serves
   --stops N        also summarize N evenly spaced main-stretch stops per direction (default 3)
@@ -33,7 +36,7 @@ in the window with: count, max gap, gap from window start to the first departure
 last departure to the window end. The measuring stop is the first main-stretch stop, in travel
 order, that more than half of the direction's trips serve (its dispatch end).
 """
-import argparse, collections, csv, datetime, glob, io, json, math, os, sys, zipfile
+import argparse, collections, csv, datetime, glob, io, json, math, os, subprocess, sys, zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ATLAS_WT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))  # .../Atlas-worktrees when run from a worktree
@@ -55,6 +58,19 @@ def find_zip(slug, feeds):
         if os.path.exists(c):
             return c
     sys.exit(f'no feed zip for {slug}; tried {cands}. Use --zip PATH.')
+
+def archive_zip(slug):
+    """The zip the reprocess reads for this slug (scripts/handcheck/resolve-archive-zip.ts)."""
+    repo = os.path.abspath(os.path.join(HERE, '..', '..'))
+    try:
+        out = subprocess.run(['npx', 'tsx', 'scripts/handcheck/resolve-archive-zip.ts', slug], cwd=repo, capture_output=True, text=True, check=True)
+        info = json.loads(out.stdout.strip().splitlines()[-1])
+    except subprocess.CalledProcessError as e:
+        sys.exit(f'could not resolve the archive zip for {slug}: {(e.stderr or e.stdout).strip()[-400:]}\nUse --zip PATH or --feeds DIR.')
+    except (ValueError, IndexError):
+        sys.exit(f'could not read the archive zip answer for {slug}: {out.stdout[-300:]}')
+    sys.stderr.write(f"zip: {info['zip']}  ({info.get('key') or info['source']}; {info['reason']})\n")
+    return info['zip']
 
 def read(z, name):
     if name not in z.namelist():
@@ -167,12 +183,12 @@ def find_tails(patterns, regular, common, coords):
 def main():
     ap = argparse.ArgumentParser(add_help=True, usage='stretch-departures.py <slug> <route> <day> <start> <end> [options]', description=__doc__.split('options:')[0], formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('slug'); ap.add_argument('route'); ap.add_argument('day', choices=list(DOW)); ap.add_argument('start'); ap.add_argument('end')
-    ap.add_argument('--stop'); ap.add_argument('--date'); ap.add_argument('--zip'); ap.add_argument('--feeds', default=os.path.join(ATLAS_WT, '_feeds'))
+    ap.add_argument('--stop'); ap.add_argument('--date'); ap.add_argument('--zip'); ap.add_argument('--feeds')
     ap.add_argument('--min-share', type=float, default=0.2); ap.add_argument('--stops', type=int, default=3)
     ap.add_argument('--at', choices=['dispatch', 'mid'], default='dispatch'); ap.add_argument('--tails', action='store_true'); ap.add_argument('--json', action='store_true')
     a = ap.parse_args()
     start, end = clock(a.start), clock(a.end)
-    zpath = a.zip or find_zip(a.slug, a.feeds)
+    zpath = a.zip or (find_zip(a.slug, a.feeds) if a.feeds else archive_zip(a.slug))
     z = zipfile.ZipFile(zpath)
     stops_rows = read(z, 'stops.txt')
     routes = read(z, 'routes.txt'); trips = read(z, 'trips.txt'); stops = {r['stop_id']: r['stop_name'] for r in stops_rows}
