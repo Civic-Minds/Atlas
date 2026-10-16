@@ -501,12 +501,13 @@ export interface StretchPeriodEdge {
 
 /**
  * The edge reading of one period at a stretch's reference stop, or null. Only when `value` (the
- * direction's filter value) is that stretch's full-window wait, an edge gap sets it, and the gaps
+ * direction's filter value) is over PERIOD_COVERAGE_MAX_HEADWAY, is that stretch's full-window wait, an edge gap sets it, and the gaps
  * between departures pass the steadiness gap test: the card can then say when service starts or
  * ends instead of "every 77". Read like computePeriodCoverageHeadways' window.
  */
 export function periodEdge(stretchTimes: readonly number[], start: number, end: number, value: number | null): StretchPeriodEdge | null {
-  if (value == null) return null;
+  // Only a wait past PERIOD_COVERAGE_MAX_HEADWAY: a shorter one already reads as a plain spacing.
+  if (value == null || value <= PERIOD_COVERAGE_MAX_HEADWAY) return null;
   const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
   if (t.length < 3) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);

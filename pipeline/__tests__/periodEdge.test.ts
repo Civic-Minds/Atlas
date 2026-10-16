@@ -22,6 +22,9 @@ describe('periodEdge (#934)', () => {
     const t = [437, 445, 453, 483, 491, 499, 507, 515, 523, 531];
     expect(periodEdge(t, 360, 540, 77)).toBeNull();
   });
+  it('none at 60 or less: a short start gap already reads as a plain spacing', () => {
+    expect(periodEdge([372, 382, 392, 402, 412, 422, 432, 442, 452, 462, 472, 482, 492, 502, 512, 522, 532], 360, 540, 12)).toBeNull();
+  });
   it('none with fewer than 3 departures', () => {
     expect(periodEdge([437, 445], 360, 540, 95)).toBeNull();
   });
