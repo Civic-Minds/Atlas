@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { displayNameFor, primaryCity, summarize } from './build-agency-page-summaries';
+import { bandCounts, FREQUENCY_BANDS } from '../shared/agencyPages';
 
 function line(name: string, directionId: number, midday: number | null, extra: Record<string, unknown> = {}) {
   return {
@@ -51,10 +52,10 @@ describe('night routes and weekend service', () => {
     expect(s.routes.find(r => r.name === '301')).toMatchObject({ midday: null, am: null, pm: null, evening: null, overnight: 30 });
   });
 
-  it('shows an unsustained daytime cadence like the card, and also records the overnight cadence', () => {
+  it('shows the map\'s number for unsustained daytime periods (CIV-237), and also records the overnight cadence', () => {
     const l = line('46', 0, 19, { headwayByPeriodSustained: { midday: false, amPeak: false, pmPeak: false }, headwayByPeriod: { midday: 19, amPeak: 13, pmPeak: 13, overnight: 17 } });
     const r = summarize([l], 'x', null).routes[0];
-    expect([r.midday, r.am, r.pm, r.overnight]).toEqual([19, 13, 13, 17]);
+    expect([r.midday, r.am, r.pm, r.overnight]).toEqual([19, 19, 19, 17]);
   });
 
   it('leaves every period empty for a route with no service at all', () => {
@@ -95,5 +96,34 @@ describe('names', () => {
     expect(displayNameFor({ ...base, displayArea: 'Toronto', shortName: 'TTC' })).toBe('TTC (Toronto)');
     expect(displayNameFor({ ...base, displayArea: 'Toronto' })).toBe('Toronto Transit Commission');
     expect(displayNameFor({ slug: 'h', name: 'Halifax Transit', displayArea: 'Halifax' })).toBe('Halifax Transit');
+  });
+});
+
+describe('stretch filter fields (frequency focus step 7)', () => {
+  const stretch = (name: string, dir: number, own: number, filter: Record<string, number | null>, range: Record<string, [number, number] | null>, extra: Record<string, unknown> = {}) =>
+    line(name, dir, own, { routeFilterHeadwayByPeriod: filter, routeRunsByPeriod: Object.fromEntries(Object.keys(filter).map(k => [k, true])), stretchPeriodRange: range, ...extra });
+
+  it('a route with a slower branch (TTC 507-style: main every 8, branch every 25) records the filter value with the range, in the 21-30 band', () => {
+    const f = { amPeak: 25, midday: 25, pmPeak: 25, evening: null, late: null, overnight: null };
+    const rg = { amPeak: [8, 25] as [number, number], midday: [8, 25] as [number, number], pmPeak: [8, 25] as [number, number] };
+    const r = summarize([stretch('507', 0, 8, f, rg), stretch('507', 1, 8, f, rg)], 'x', null).routes[0];
+    expect([r.midday, r.am, r.pm]).toEqual([25, 25, 25]);
+    expect(r.shared?.midday).toBe(8);
+    expect(bandCounts([r])[FREQUENCY_BANDS.findIndex(b => b.key === 'b30')]).toBe(1);
+  });
+
+  it('a route whose own rows read slower than its filter value (TTC 134-style) records the filter value 15', () => {
+    const f = { amPeak: 15, midday: 15, pmPeak: 15, evening: null, late: null, overnight: null };
+    const r = summarize([stretch('134', 0, 40, f, {}), stretch('134', 1, 40, f, {})], 'x', null).routes[0];
+    expect(r.midday).toBe(15);
+    expect(r.shared?.midday).toBeUndefined();
+    expect(bandCounts([r])[FREQUENCY_BANDS.findIndex(b => b.key === 'b15')]).toBe(1);
+  });
+
+  it('a period the filter calls no regular service records no number and is not limited', () => {
+    const f = { amPeak: 20, midday: null, pmPeak: 20, evening: null, late: null, overnight: null };
+    const r = summarize([stretch('X', 0, 20, f, {}), stretch('X', 1, 20, f, {})], 'x', null).routes[0];
+    expect(r.midday).toBeNull();
+    expect(r.limited ?? []).not.toContain('midday');
   });
 });

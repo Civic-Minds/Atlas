@@ -71,6 +71,8 @@ export interface RouteProperties {
    * service there ("no regular service", never a number).
    */
   routeFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
+  /** The route's all-day filter value (step 6); NO_PERIOD_SERVICE_TILE_VALUE when it has none (limited, or no regular service). */
+  routeAllDayHeadway?: number;
   /** Whether the route runs in the period at all (the "All" level). */
   routeRunsByPeriod?: Partial<Record<PeriodKey, boolean>>;
   /** Each direction's own filter value. */

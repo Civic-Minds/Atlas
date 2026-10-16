@@ -46,9 +46,9 @@ describe('paired-trip period floor (#761)', () => {
   });
 
   it('route lists and search no longer show every 2m', () => {
-    // Lists show the slower direction (#821): midday 60 (dir 1) over 58, AM 55 (dir 0) over 30.
+    // Lists show the map's number (CIV-237, slower direction #821): midday 60, AM 60.
     expect(routeListDisplayHeadway([niagara105Dir0, niagara105Dir1], 'midday')).toBe(60);
-    expect(routeListDisplayHeadway([niagara105Dir0, niagara105Dir1], 'amPeak')).toBe(55);
+    expect(routeListDisplayHeadway([niagara105Dir0, niagara105Dir1], 'amPeak')).toBe(60);
   });
 
   it('raises hourly chart values inside the affected period only', () => {

@@ -701,6 +701,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     };
 
     const seen = new Map<string, TransferEntry>();
+    const connectionRows = new Map<string, ShapeProperties[]>();
 
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       // Find stops in the transfer band (beyond sibling radius, within walking radius)
@@ -741,15 +742,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             agencyName: shortenAgencyName(facts.agencyName),
             agencySlug: slug,
             routeType: facts.routeType,
-            headway: routeCardDisplayHeadway(p, period),
+            headway: null,
             nearestStopName: closest.stopName,
             distanceMeters: closest.dist,
           });
+          connectionRows.set(mapKey, [p]);
         } else {
-          const headway = routeCardDisplayHeadway(p, period);
-          if (headway != null && (existing.headway === null || headway < existing.headway)) {
-            existing.headway = headway;
-          }
+          connectionRows.get(mapKey)!.push(p);
           if (closest.dist < existing.distanceMeters) {
             existing.distanceMeters = closest.dist;
             existing.nearestStopName = closest.stopName;
@@ -764,6 +763,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         departingKeys.add(branch.rKey);
       }
     }
+
+    // The same number the lists and the map use: the slower direction's filter value, not the best branch.
+    for (const [mapKey, rows] of connectionRows) seen.get(mapKey)!.headway = routeListDisplay(rows, period).headway;
 
     return Array.from(seen.values())
       .filter(conn => !departingKeys.has(conn.rKey))
