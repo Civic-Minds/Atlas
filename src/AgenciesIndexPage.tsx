@@ -34,6 +34,9 @@ function readEmbeddedData(): AgencyIndexData | null {
  * without scripts. The dev server (no prerendered
  * HTML) loads from the summary file instead (dead code in production builds).
  */
+/** Shared multi-column layout for the Regions list and every country's agency list. */
+const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
+
 /** Beta only: agencies with 10+ years of schedule history, from the small list build-history writes. */
 const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAgencyList).slugs);
 
@@ -80,7 +83,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
           {areas.length > 0 && (
             <section className="mt-12" aria-labelledby="index-regions">
               <SectionTitle id="index-regions">Regions</SectionTitle>
-              <ul className="mt-3 text-sm sm:columns-2 lg:columns-3 sm:gap-x-8">
+              <ul className={`mt-3 text-sm ${INDEX_COLUMNS}`}>
                 {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={`${LINK} underline underline-offset-2`} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
               </ul>
             </section>
@@ -92,7 +95,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
               {g.regions.map(r => (
                 <div key={r.region} className="mt-5">
                   {r.region !== g.country && <h3 className="text-base font-black">{r.region}</h3>}
-                  <ul className="mt-2 text-sm sm:columns-2 sm:gap-x-8">
+                  <ul className={`mt-2 text-sm ${INDEX_COLUMNS}`}>
                     {r.agencies.map(a => {
                       const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{plural(a.routes, 'route')}</span>;
                       const live = FEATURES.live && isLiveEligibleSlug(a.slug);
