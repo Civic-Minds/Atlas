@@ -1,0 +1,79 @@
+name: Live yesterday
+
+# Nightly Live analysis of yesterday's TTC streetcar service (CIV-278): copy the last 8 service dates of archived
+# vehicle positions from R2, get the timetable they run on from the GTFS archive (refused when its trip ids don't match
+# the positions), then build and publish (npm run live:yesterday).
+on:
+  workflow_dispatch:
+  # Off until the manual runs are reviewed. 09:15 UTC = 05:15 Toronto (EDT), after the 4 a.m. end of the service date.
+  # schedule:
+  # - cron: '15 9 * * *'
+
+permissions:
+  contents: read
+
+# Date math (Toronto service dates) is pinned to the zone the analysis was reviewed on.
+env:
+  TZ: America/Toronto
+
+concurrency:
+  group: live-yesterday
+  cancel-in-progress: false
+
+jobs:
+  yesterday:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+      # The GTFS zip archive is a separate private bucket (pipeline/r2.ts reads it from this name).
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # Same layout scripts/live-analyze.sh reads: $LIVE_DATA/archive and $LIVE_DATA/gtfs/candidates/surface.
+      # Absolute, because the analysis script changes into the repo root first.
+      - name: Set up the work folder
+        id: day
+        run: |
+          echo "LIVE_DATA=$RUNNER_TEMP/live-data" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/live-data/archive" "$RUNNER_TEMP/live-data/gtfs/candidates/surface"
+          echo "day=$(date +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore archived positions
+        id: archive-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/live-data/archive
+          key: live-archive-${{ steps.day.outputs.day }}
+          restore-keys: live-archive-
+
+      - name: Fetch archived positions (last 8 service dates)
+        run: >-
+          npx tsx scripts/live-fetch-archive.ts --days 8 --out "$LIVE_DATA/archive" --prune
+          --routes 501,503,504,505,506,507,509,510,511,512
+
+      # Saved even when a later step fails, so a failed night doesn't throw away the fetched days.
+      - name: Save archived positions
+        if: always() && steps.archive-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/live-data/archive
+          key: live-archive-${{ steps.day.outputs.day }}
+
+      - name: Get the timetable for yesterday and check it matches the positions
+        run: npx tsx scripts/live-gtfs-for-date.ts --target "$LIVE_DATA/gtfs/candidates/surface" --archive "$LIVE_DATA/archive"
+
+      - name: Build and publish yesterday
+        run: npm run live:yesterday
