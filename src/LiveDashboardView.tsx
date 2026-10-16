@@ -89,8 +89,8 @@ function Days({ v3, data, band, dir }: { v3: LiveV3; data: DashboardBandData; ba
     <section aria-labelledby="dash-days" className="mt-10">
       <h2 id="dash-days" className="text-xl font-black tracking-tight">Late, by day and hour</h2>
       <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
-        Share of departures 5.5+ minutes late {BAND_WORDS[band]}, at stops where the timetable gives a time.
-        {dir != null && ' Both directions: this view is not split by direction yet.'} Bars run from 0 to {pct(scale.max)}.
+        How often cars leave 5.5+ minutes late {BAND_WORDS[band]}, by kind of day and hour, at stops where the timetable gives a time.
+        {dir != null && ' Both directions: this view is not split by direction yet.'}
       </p>
       <div className="mt-4 grid gap-x-8 gap-y-6 md:grid-cols-3">
         {cols.map(c => (
