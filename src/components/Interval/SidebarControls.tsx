@@ -5,7 +5,7 @@ import { useColorVision } from '../../context/ColorVisionContext';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { getRouteLabel, shortenAgencyName, searchOverlayHidesPanel, titleCase } from '../../utils/format';
+import { routeLabels, shortenAgencyName, searchOverlayHidesPanel } from '../../utils/format';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -148,7 +148,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }>>([]);
+  const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number; headway?: number }>>([]);
   const [showAllSearchResults, setShowAllSearchResults] = useState(false);
 
   const selectRoute = useCallback((key: string | null) => {
@@ -189,7 +189,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
       const rRecents = localStorage.getItem('atlas_recently_viewed_routes');
       if (rRecents) {
-        const parsed: Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }> = JSON.parse(rRecents);
+        const parsed: Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number; headway?: number }> = JSON.parse(rRecents);
         // Defends against a stale localStorage entry saved by an older, buggy build (e.g. the
         // raw "agencySlug::routeId" key leaking into shortName instead of a real display name)
         // -- a code fix can't retroactively clean up what's already sitting in a browser's own
@@ -258,13 +258,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
       try {
         const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
-        const recents: Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }> = recentsRaw ? JSON.parse(recentsRaw) : [];
+        const recents: Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number; headway?: number }> = recentsRaw ? JSON.parse(recentsRaw) : [];
         const filtered = recents.filter(r => r.key !== selectedRoute);
         filtered.unshift({
           key: selectedRoute,
           shortName,
           longName,
           agencyName,
+          routeType: facts.routeType,
           headway: routeCardDisplayHeadway(feat.properties as ShapeProperties, period) ?? undefined,
         });
         const limited = filtered.slice(0, 5);
@@ -281,7 +282,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // quadratic in route features and reran on every layer update (froze Live zooming, CIV-218).
   const notableRoutes = useMemo(() => {
     if (!searchFocused) return [];
-    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number; limited: boolean; sharedHeadway?: number }>();
+    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; sharedHeadway?: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -306,7 +307,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const agencyName = shortenAgencyName(facts.agencyName);
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, headway, limited, sharedHeadway });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, sharedHeadway });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) {
@@ -575,7 +576,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!currentStop) return [];
     const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
 
-    const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
+    const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
     type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; directionId: number };
     // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
     const sharedIndexBySlug = new Map(Object.entries(nonCorridorLayers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
@@ -616,6 +617,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             shortName: routeShortName,
             longName: facts.longName || '',
             agencyName: shortenAgencyName(facts.agencyName),
+            agencySlug: slug,
+            routeType: facts.routeType,
             branches: new Map(),
           });
         }
@@ -643,6 +646,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         shortName: v.shortName,
         longName: v.longName,
         agencyName: v.agencyName,
+        agencySlug: v.agencySlug,
+        routeType: v.routeType,
         branches: Array.from(v.branches.values())
           .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
           .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, directionId: b.directionId })),
@@ -672,6 +677,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       routeShortName: string;
       routeLongName: string;
       agencyName: string;
+      agencySlug: string;
+      routeType?: number;
       headway: number | null;
       nearestStopName: string;
       distanceMeters: number;
@@ -716,6 +723,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             routeShortName: facts.shortName,
             routeLongName: facts.longName || '',
             agencyName: shortenAgencyName(facts.agencyName),
+            agencySlug: slug,
+            routeType: facts.routeType,
             headway: routeCardDisplayHeadway(p, period),
             nearestStopName: closest.stopName,
             distanceMeters: closest.dist,
@@ -762,15 +771,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           if (f) {
             const p = f.properties as any;
             const facts = buildRouteFacts(p, slug);
-            return { key: facts.key, shortName: facts.shortName, longName: facts.longName ?? '', agencyName: shortenAgencyName(facts.agencyName), color: getTierColor(p.tier, colorMode) };
+            return { key: facts.key, shortName: facts.shortName, longName: facts.longName ?? '', agencyName: shortenAgencyName(facts.agencyName), agencySlug: slug, routeType: facts.routeType, color: getTierColor(p.tier, colorMode) };
           }
         }
-        return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
+        return { key, shortName: key, longName: '', agencyName: '', agencySlug: undefined as string | undefined, routeType: undefined as number | undefined, color: 'var(--text-dim)' };
       })
       .filter((route, index, routes) => {
-        const displayKey = `${route.agencyName.trim().toLowerCase()}::${titleCase(getRouteLabel(route.shortName, route.longName, route.agencyName)).trim().toLowerCase().replace(/\s+/g, ' ')}`;
+        const displayKey = `${route.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: route.agencyName }).text.trim().toLowerCase().replace(/\s+/g, ' ')}`;
         return routes.findIndex(candidate => {
-          const candidateKey = `${candidate.agencyName.trim().toLowerCase()}::${titleCase(getRouteLabel(candidate.shortName, candidate.longName, candidate.agencyName)).trim().toLowerCase().replace(/\s+/g, ' ')}`;
+          const candidateKey = `${candidate.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: candidate.shortName, longName: candidate.longName, routeType: candidate.routeType, agencySlug: candidate.agencySlug, agencyName: candidate.agencyName }).text.trim().toLowerCase().replace(/\s+/g, ' ')}`;
           return candidateKey === displayKey;
         }) === index;
       })
@@ -783,6 +792,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       });
     return details;
   }, [disambiguationRoutes, nonCorridorLayers, colorMode]);
+
+  // A recent route saved by an older build has no route type; read it from the loaded route so the row names the route like every other list.
+  const recentlyViewedWithType = useMemo(() => recentlyViewed.map(r => {
+    if (r.routeType != null) return r;
+    const { agencySlug, routeId } = splitRouteKey(r.key);
+    const f = nonCorridorLayers[agencySlug]?.features.find(feat => (feat.properties as ShapeProperties | null)?.routeId === routeId);
+    const routeType = (f?.properties as ShapeProperties | undefined)?.routeType;
+    return routeType == null ? r : { ...r, routeType };
+  }), [recentlyViewed, nonCorridorLayers]);
 
   const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0;
 
@@ -985,7 +1003,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           recentSearches={recentSearches}
           clearRecentSearches={clearRecentSearches}
           setQuery={setQuery}
-          recentlyViewed={recentlyViewed}
+          recentlyViewed={recentlyViewedWithType}
           suggestedRoutes={suggestedRoutes}
           pickRoute={pickRoute}
           displayForRouteKey={displayForRouteKey}

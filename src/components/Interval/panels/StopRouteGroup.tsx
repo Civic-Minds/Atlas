@@ -1,6 +1,6 @@
 import React from 'react';
 import { isLivePollingRoute } from '../../../utils/livePolling';
-import { titleCase, getRouteLabel, resolveBranchLabel } from '../../../utils/format';
+import { routeLabels, resolveBranchLabel } from '../../../utils/format';
 import { metricValueForPeriod } from '../../../utils/routeFacts';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import {
@@ -20,6 +20,8 @@ interface Props {
   shortName: string;
   longName: string;
   agencyName: string;
+  agencySlug?: string;
+  routeType?: number;
   branches: StopBranch[];
   period: TimePeriod;
   showAgency: boolean;
@@ -31,12 +33,14 @@ export default function StopRouteGroup({
   shortName,
   longName,
   agencyName,
+  agencySlug,
+  routeType,
   branches,
   period,
   showAgency,
   onOpenRoute,
 }: Props) {
-  const routeLabel = titleCase(getRouteLabel(shortName, longName, showAgency ? agencyName : undefined));
+  const routeLabel = routeLabels({ shortName, longName, routeType, agencySlug, agencyName: showAgency ? agencyName : undefined }).text;
   const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;
   const simpleBidirectional = hasMultipleDirections && branches.length === 2 &&
     new Set(branches.map(b => b.directionId)).size === 2;

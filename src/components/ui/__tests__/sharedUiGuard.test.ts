@@ -30,6 +30,10 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled agency place', pattern: /· \{(secondary|agencyPlace|agency\.region)\}/, use: 'AgencyName' },
   { name: 'hand-rolled page heading', pattern: /<h1[ >]/, use: 'PageTitle' },
   { name: 'hand-rolled section heading', pattern: /<h2 [^>]*className="[^"]*text-(xl|base) font-black/, use: 'SectionTitle' },
+  { name: 'route label written by hand', pattern: /\b(getRouteLabel|shouldHideNumericRouteShortName|routeListCompanionName)\(/, use: 'routeLabels (utils/format.ts, one helper in shared/routeDisplay.ts)' },
+  // A short and a long name joined by hand for display ("${short} — ${long}", "{shortName} {longName}", [short, long].join(' ')).
+  // Keys joined with '::' or '-' are not labels and do not match.
+  { name: 'route label joined by hand', pattern: /\$\{[^}\n]*[sS]hortName[^}\n]*\}(?:\s*[—–·|]\s*|\s+-\s+|\s+)\$\{[^}\n]*[lL]ongName|[sS]hortName[^\n`]{0,40}\}\$\{[^}\n]*[lL]ongName[^}\n]*\?\s*`\s*[—–·|-]|\{[^{}\n]*[sS]hortName\}(?:\s*[—–·|]\s*|\s+-\s+|\s+)\{[^{}\n]*[lL]ongName\}|\[[^\]\n]*[sS]hortName[^\]\n]*[lL]ongName[^\]\n]*\]\s*\.filter\(Boolean\)\s*\.join\(\s*['"`](?!::)|[sS]hortName\s*\+\s*['"`][\s—–·|-]{1,5}['"`]\s*\+\s*[\w.?]*[lL]ongName/, use: 'routeLabels (utils/format.ts)' },
   { name: 'hand-rolled frequency picker', pattern: /HEADWAY_TIERS\.map\(\(\{ max/, use: 'FrequencyPicker or useFrequencyOptions (Interval/pickers.tsx)' },
   { name: 'hand-rolled day buttons', pattern: /flex-1 h-7 flex items-center justify-center/, use: 'DayPicker' },
   { name: 'hand-rolled legend swatch', pattern: /shrink-0 rounded(-full|-sm)?" style=\{\{ background/, use: 'LegendItem' },
@@ -45,6 +49,8 @@ const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
   'components/Interval/pickers.tsx': ['hand-rolled frequency picker'],
   'apps/History.tsx': ['option pill classes'],
+  // Live is local-only and its route groups carry no route type; it still names routes its own way (audit R8).
+  'apps/LiveVehicles.tsx': ['route label written by hand', 'route label joined by hand'],
   // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
   'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
   'components/Interval/HeadwaySparkline.tsx': ['hand-rolled section heading'],

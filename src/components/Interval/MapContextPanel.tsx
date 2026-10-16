@@ -98,7 +98,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
             <section key={group.agencyName}>
               <AgencyGroupHeader rule="none">{group.agencyName}</AgencyGroupHeader>
               {group.routes.map((route: MapContextRoute) => {
-                const labels = routeRowLabels(route.shortName, route.longName, route.routeType);
+                const labels = routeRowLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: group.agencyName });
                 return (
                   <RouteListRow
                     key={route.key}

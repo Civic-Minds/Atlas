@@ -49,7 +49,7 @@ export interface AgencyConnection {
   slug: string;
   /** Short name, e.g. "GO Transit". */
   name: string;
-  /** Route labels as the map lists them (see getRouteLabel), natural order. */
+  /** Route labels, natural order. Written by hand in the connection config (nothing generates them from getRouteLabel). */
   routes: string[];
   /** The other agency is beta-only: dropped from public pages. */
   betaOnly?: true;

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **A route is named the same way everywhere**: route cards, lists, search, recents, Nearby, Night, the stop card, the agency card, agency pages and Settings now share one naming rule. Before, about 3,500 routes across all agencies read differently from one place to another. Light rail and ferry ids stay hidden everywhere (UTA "Blue Line", HRT "Light Rail Tide"), numbered buses keep their number, and short codes such as "SU 43" keep their capitals.
 - **Area and agency tables use one column width**: every mode column on an area page (and every frequency column on agency pages) is the same fixed width, so Toronto and Dallas line up and spare space stays empty on the right instead of stretching the columns.
 - **Frequency bar legend is keyboard-reachable**: legend items and bar segments show the pointer cursor (not the text cursor), and Tab now highlights a legend item the same way hover does.
 - **"And N others" now says what the others are**: agency pages read "and 3 other agencies" (and "1 other agency") instead of a bare "and 3 others", and the live vehicle list reads "and 2 other vehicles" instead of "+2 more"; one shared helper builds all of them.
