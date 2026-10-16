@@ -803,6 +803,16 @@ for (const d of new Set([...patterns.values()].map(p => p.directionId))) {
   const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
   for (const p of regularPatterns(dirPatterns.map(q => ({ stops: q.stops.map(st => st.stopId), trips: tripsPerShape.get(q.id) ?? 0 })))) for (const st of p.stops) regularStops.add(`${d}|${st}`);
 }
+// One place listed twice: a pattern with two consecutive stop ids under 30 m apart (TTC 501 "Queen St East at
+// Parliament St" then "QUEEN ST. E. AT PARLIAMENT AVE.", 16 m and 9 s apart). B2 ranks the place once, under the first id.
+const SAME_PLACE_M = 30;
+const repeatedStops = new Set<string>();
+for (const p of patterns.values()) {
+  for (let i = 1; i < p.stops.length; i++) {
+    const a = stopsById.get(p.stops[i - 1].stopId), b = stopsById.get(p.stops[i].stopId);
+    if (a && b && a.stop_id !== b.stop_id && haversineM(Number(a.stop_lat), Number(a.stop_lon), Number(b.stop_lat), Number(b.stop_lon)) < SAME_PLACE_M) repeatedStops.add(`${p.directionId}|${b.stop_id}`);
+  }
+}
 /** Stops (B2) and delay build-up (B3) for a set of runs. */
 function stopsAndBuildup(rs: readonly RunDelays[]) {
   // B2 also needs the stop measured on enough of the runs the timetable sends there (the run-time stretch's coverage
@@ -813,7 +823,7 @@ function stopsAndBuildup(rs: readonly RunDelays[]) {
   const stops = stopDelayStats(rs).map(s => ({
     ...stopInfo(s.stopId), directionId: s.directionId, order: orderIndex(s.directionId, s.stopId), n: s.n,
     medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare),
-    ranked: s.ranked && regularStops.has(`${s.directionId}|${s.stopId}`) && covered(s.directionId, s.stopId, s.n),
+    ranked: s.ranked && regularStops.has(`${s.directionId}|${s.stopId}`) && !repeatedStops.has(`${s.directionId}|${s.stopId}`) && covered(s.directionId, s.stopId, s.n),
   })).sort((a, b) => a.directionId - b.directionId || a.order - b.order);
   // B2 ranks by late share (5.5+ min late) among stops with enough departures; median and p90 sit beside it.
   for (const dir of new Set(stops.map(x => x.directionId))) {
