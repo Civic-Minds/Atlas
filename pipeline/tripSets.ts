@@ -18,7 +18,10 @@ import {
   computePeriodCoverageHeadways,
   computePeriodHeadways,
   computePeriodSustained,
+  computeResearchFrequentService,
   forCrossMidnightWindow,
+  hasSustainedFrequentService,
+  sustainedMedianHeadwayInWindow,
   hasSustainedServiceInWindow,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
@@ -391,6 +394,13 @@ export interface DirectionRollup {
   /** Passes only on the night version of the direction (part of the route, or a night path). */
   nightPartial30: boolean;
   nightPartial60: boolean;
+  /** Step 6 shadow: the all-day (6-22h) headline, the worst of the main stretch and each steady tail. */
+  allDay: number | null;
+  /** Step 6 shadow: the main stretch's midday wait (#899 cap input), null with no midday service. */
+  middayWait: number | null;
+  /** Step 6 shadow: Frequent Service (7-19 every 15, no gap) on the main stretch and every tail running then. */
+  frequent: boolean;
+  research: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
 }
 
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
@@ -428,7 +438,23 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   // loop at 4:47 and 4:57) or only ends it there does not run at night, and drops out.
   const v30 = directionNightVerdict(d, 30);
   const v60 = directionNightVerdict(d, 60);
-  return { period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial' };
+  // Step 6 shadow values. Tails count when they run steadily through some daytime period.
+  const steadyTails = d.tails.filter((t, i) => (['amPeak', 'midday', 'pmPeak', 'evening'] as const).some(k => tails[i][k].counts));
+  const allDayOf = (st: Stretch) => sustainedMedianHeadwayInWindow([...st.times], 360, 1320, 3, undefined, true);
+  const allDays = [d.main, ...steadyTails].map(allDayOf);
+  const runsDaytime = (st: Stretch) => { const t = st.times.filter(x => x >= 420 && x <= 1140); return t.some(x => x < 780) && t.some(x => x >= 780); };
+  const frequentStretches = [d.main, ...d.tails.filter(runsDaytime)];
+  const researchOf = frequentStretches.map(st => computeResearchFrequentService([...st.times]));
+  return {
+    period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',
+    allDay: allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
+    middayWait: main.midday.coverage,
+    frequent: frequentStretches.every(st => hasSustainedFrequentService([...st.times])),
+    research: {
+      daytime15: researchOf.every(r => r.daytime15), daytime30: researchOf.every(r => r.daytime30),
+      extended15: researchOf.every(r => r.extended15), extended30: researchOf.every(r => r.extended30),
+    },
+  };
 }
 
 export interface RouteRollup {
@@ -444,6 +470,12 @@ export interface RouteRollup {
   /** The route qualifies only on the night version of some direction: drawn on the part it runs. */
   nightPartial30: boolean;
   nightPartial60: boolean;
+  /** Step 6 shadow: worst direction's all-day headline; null when any direction has none. */
+  allDay: number | null;
+  /** Step 6 shadow: worst direction's midday wait (the #899 cap); null when any direction has no midday service. */
+  middayWait: number | null;
+  frequent: boolean;
+  research: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
 }
 
 /**
@@ -478,6 +510,13 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     night60: complete && known.every(d => d.night60),
     nightPartial30: complete && known.every(d => d.night30) && known.some(d => d.nightPartial30),
     nightPartial60: complete && known.every(d => d.night60) && known.some(d => d.nightPartial60),
+    allDay: complete && known.every(d => d.allDay != null) ? Math.max(...known.map(d => d.allDay!)) : null,
+    middayWait: complete && known.every(d => d.middayWait != null) ? Math.max(...known.map(d => d.middayWait!)) : null,
+    frequent: complete && known.every(d => d.frequent),
+    research: {
+      daytime15: complete && known.every(d => d.research.daytime15), daytime30: complete && known.every(d => d.research.daytime30),
+      extended15: complete && known.every(d => d.research.extended15), extended30: complete && known.every(d => d.research.extended30),
+    },
   };
 }
 
@@ -493,6 +532,10 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchNight60',
   'stretchNightPartial30',
   'stretchNightPartial60',
+  'stretchAllDayHeadway',
+  'stretchMiddayWait',
+  'stretchFrequentService',
+  'stretchResearchFrequentService',
   'stretchMeta',
   'headwayByPeriodSustainedMid',
 ] as const;
@@ -558,6 +601,11 @@ export function stampStretchShadow(
     p.stretchNight60 = route.night60;
     p.stretchNightPartial30 = route.nightPartial30;
     p.stretchNightPartial60 = route.nightPartial60;
+    // Step 6 shadow: nothing reads these yet.
+    p.stretchAllDayHeadway = route.allDay;
+    p.stretchMiddayWait = route.middayWait;
+    p.stretchFrequentService = slot.day === 'Weekday' ? route.frequent : false;
+    p.stretchResearchFrequentService = route.research;
     p.routeFilterHeadwayByPeriod = byPeriod(k => route.period[k].filterValue);
     p.directionFilterHeadwayByPeriod = byPeriod(k => dir.period[k].filterValue);
     p.routeRunsByPeriod = byPeriod(k => route.period[k].runs);

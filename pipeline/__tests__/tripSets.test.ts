@@ -346,6 +346,12 @@ describe('route roll-up (rule 1)', () => {
     period: Object.fromEntries(['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'].map(k => [k, { value, coverage: value, sustained: true, sustainedMid: true, mainValue: value }])),
     night30: true,
     night60: true,
+    nightPartial30: false,
+    nightPartial60: false,
+    allDay: value,
+    middayWait: value,
+    frequent: false,
+    research: { daytime15: false, daytime30: false, extended15: false, extended30: false },
   }) as any;
   it('a direction with no stretch data leaves the route with no value, never the other direction alone', () => {
     const route = rollupRoute([dir(10), null]);
@@ -448,5 +454,21 @@ describe('step 5a: the frequency filter reads the stretch selector (rv_)', () =>
       expect(passes(r, route, 'Weekday', 'overnight', Infinity), route).toBe(false);
       expect(passes(r, route, 'Weekday', 'overnight', 60), route).toBe(false);
     }
+  });
+});
+
+describe('step 6 shadow: headline, midday wait and Frequent Service on the stretches', () => {
+  it.each([
+    // [fixture, route, day, all-day headline, Frequent Service]
+    ['ttc-94-weekday', '94', 'Weekday', 20, false], // the Harbord tail every 20 decides (D1)
+    ['ttc-29-weekday', '29', 'Weekday', 8, true], // one main stretch every 8 (today 16 per origin)
+    ['cta-j14-saturday', 'J14', 'Saturday', 10, false],
+    ['ttc-507-weekday', '507', 'Weekday', 25, false], // the Marine Parade tail every 25 decides (D1)
+    ['ttc-505-weekday', '505', 'Weekday', 6, true],
+  ] as const)('%s: all-day %s', async (name, route, day, allDay, frequent) => {
+    const r = await run(name);
+    const p = row(r, route, day);
+    expect(p.stretchAllDayHeadway).toBe(allDay);
+    expect(p.stretchFrequentService).toBe(day === 'Weekday' ? frequent : false);
   });
 });
