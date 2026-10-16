@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
-import { coverageText, type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
-import { dateRangeText, NOISE_RULE } from '../shared/liveDashboard';
+import { type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
+import { dateRangeText } from '../shared/liveDashboard';
 import type { LiveAgencyResponse } from '../local-api/live-agency';
 import { devOnly, liveAgencyDataUrl, liveDataMissing, liveReportTitle, withoutDevHint } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
@@ -11,7 +11,7 @@ import { liveDashboardPath } from './hooks/useLiveDashboard';
 import { routesByMode } from '../shared/agencyPages';
 import { RouteNameCell } from './pageParts';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
-import { weekCaption, weekRangeLine } from './utils/liveKpi';
+import { weekNotComparableLine, weekWindowLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import { shortStopName } from './utils/stopLabel';
@@ -23,10 +23,11 @@ import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles, YesterdayTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { weekOfText, dayComparedWith, dayText, PERIOD_PILLS } from '../shared/liveWording';
+import { builtText, coveredRoutesText, liveSubtitle, METHOD_GROUPS, dayComparedWith, dayText, estimatedNote, PERIOD_PILLS } from '../shared/liveWording';
 import { useLiveYesterday } from './hooks/useLiveYesterday';
 import Pill from './components/ui/Pill';
-import MethodFootnote from './components/Live/MethodFootnote';
+import MethodFootnote, { Term } from './components/Live/MethodFootnote';
+import { bunchingLine, colourLine, deliveredLine, extraWaitLine, lateAtStopLine, lateLine, positionsLine, recordingGapsLine, runTimeLine, tripMatchLine } from './components/Live/methodLines';
 
 const MINUS = '−';
 const pct = (x: number | null) => (x == null ? '–' : `${Math.round(x * 100)}%`);
@@ -186,7 +187,7 @@ export default function LiveAgencyPage() {
     return <PageShell variant="wide"><PageTitle className="mt-24">{name}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{reason}</p>{back}</PageShell>;
   }
   const s = state.data.summary;
-  const coverage = coverageText(s);
+  const coverage = coveredRoutesText(s.agency, s.routes);
   const w = s.weekly;
   const dates = w?.thisWeek.dates ?? [];
   const tiles = agencyKpiTiles(s);
@@ -198,7 +199,7 @@ export default function LiveAgencyPage() {
           <div className="min-w-0">
             <PageTitle>{name}: how the network is running</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {shown ? `${shown.weekly.comparable ? dayComparedWith(shown.date, shown.compareDate) : dayText(shown.date)} · ` : dates.length ? `${weekOfText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
+              {shown ? `${shown.weekly.comparable ? dayComparedWith(shown.date, shown.compareDate) : dayText(shown.date)} · ${coverage} · ${estimatedNote(agency)}` : liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency })}
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
@@ -209,7 +210,7 @@ export default function LiveAgencyPage() {
         </div>
         <ErrorBoundary>
           {shown ? <YesterdayTiles y={shown} tiles={agencyKpiTiles({ ...s, weekly: shown.weekly, daily: shown.daily })} /> : w && tiles.length
-            ? <KpiTiles tiles={tiles} caption={weekRangeLine({ ...w, health: [] })} />
+            ? <KpiTiles tiles={tiles} caption={weekNotComparableLine({ ...w, health: [] })} />
             : <p className="mt-5 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in the analysis files yet. Rebuild them with npm run live:analyze.')}</p>}
         </ErrorBoundary>
 
@@ -229,16 +230,28 @@ export default function LiveAgencyPage() {
           <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" />
         </Section>
 
-        <MethodFootnote id="agency-method">
-            <li>Late: trips that left the end of the line more than 5 min late. Run time: the typical trip over the main stretch against its scheduled time. Bunching: gaps under 2 minutes or over twice the scheduled gap. Delivered: scheduled trips that ran. All for this week.</li>
-            <li>Stops: at least 30 departures, at most 3 from one route direction.</li>
-            <li>Directions where delay builds slowly have no single place and are left out.</li>
-            <li>Each route is measured the same way as on its own page: delay is when the car left each stop against the timetable, worked out from where it was seen about once a minute.</li>
-            <li>Network figures add up every departure, trip or gap on the analysed routes; they are not an average of route figures, so busy routes weigh more than quiet ones.</li>
-            {w && <li>This week compared with last week: {weekCaption({ ...w, health: [] })} {NOISE_RULE}</li>}
-            <li>Covered: {coverage}. {s.held.length ? `Held back: ${s.held.map(h => `${h.route} (${h.reason})`).join(' ')}` : ''}</li>
-            <li>Built {new Date(s.generatedAt).toLocaleString()}.</li>
-        </MethodFootnote>
+        <MethodFootnote id="agency-method" groups={[
+          { label: METHOD_GROUPS.numbers, items: [
+            lateLine,
+            lateAtStopLine(),
+            runTimeLine(),
+            extraWaitLine,
+            bunchingLine(),
+            deliveredLine(),
+            <Term t="Where delays start">the stretch where delay jumps and stays up; directions where delay builds slowly have no single place and are left out.</Term>,
+          ] },
+          { label: METHOD_GROUPS.data, items: [
+            w && weekWindowLine({ ...w, health: [] }),
+            positionsLine,
+            tripMatchLine(),
+            <Term t="Covered">{coverage}{s.held.length ? ` (${s.held.map(h => h.route).join(', ')} not included)` : ''}.</Term>,
+            <Term t="Network figures">every departure, trip or gap on the covered routes added up, not an average of route figures, so busy routes weigh more.</Term>,
+            <Term t="Stops">at least 30 departures, at most 3 from one route direction.</Term>,
+            builtText(s.generatedAt) + '.',
+          ] },
+          { label: METHOD_GROUPS.colours, items: [w && colourLine] },
+          { label: METHOD_GROUPS.limits, items: [recordingGapsLine] },
+        ]} />
       </article>
     </PageShell>
   );

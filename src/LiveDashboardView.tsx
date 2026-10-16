@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
 import { branchFigures, branchRunTimeLine, dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
-import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, weekRangeLine, type DayKind, type Kpi } from './utils/liveKpi';
+import { kpiTiles, lateForDays, weekNotComparableLine, weekWindowLine, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import SortableDataTable from './components/ui/SortableDataTable';
 import { withoutDevHint } from './lib/liveReportData';
@@ -18,10 +18,11 @@ import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import LegendItem from './components/ui/LegendItem';
 import { SectionTitle } from './components/ui/PageTitle';
-import { lateCount, lateHourLine } from '../shared/liveWording';
+import { lateCount, lateHourLine, METHOD_GROUPS } from '../shared/liveWording';
 import MethodFootnote from './components/Live/MethodFootnote';
 import type { LiveYesterday } from '../shared/liveYesterday';
 import { NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText } from '../shared/liveWording';
+import { colourLine, recordingGapsLine } from './components/Live/methodLines';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', '−');
@@ -61,21 +62,24 @@ export const yesterdayHours = (y: LiveYesterday) => ({
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.')}</p>;
-  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3))} caption={weekRangeLine(w)} />;
+  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3))} caption={weekNotComparableLine(w)} />;
 }
 
 /** The week comparison explained, at the bottom of the page (the tiles carry only the two date ranges). */
 function WeekMethod({ v3, toFull }: { v3: LiveV3; toFull: (hash: string) => void }) {
   if (!v3.weekly) return null;
   return (
-    <MethodFootnote id="dash-method" collapsible after={<p className="mt-2 text-xs"><ArrowLink href="?view=analysis#method" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('method'); }}>The full method, in Full analysis</ArrowLink></p>}>
-      <li>{weekCaption(v3.weekly)} {NOISE_RULE}</li>
-    </MethodFootnote>
+    <MethodFootnote id="dash-method" collapsible after={<p className="mt-2 text-xs"><ArrowLink href="?view=analysis#method" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('method'); }}>The full method, in Full analysis</ArrowLink></p>}
+    groups={[
+      { label: METHOD_GROUPS.data, items: [weekWindowLine(v3.weekly)] },
+      { label: METHOD_GROUPS.colours, items: [colourLine] },
+      { label: METHOD_GROUPS.limits, items: [recordingGapsLine] },
+    ]} />
   );
 }
 
 /** The tiles row itself: the route dashboard and the agency dashboard show their figures the same way. */
-export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption: string }) {
+export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption?: string | null }) {
   return (
     <section aria-label="This week compared with last week" className="mt-5">
       <ul className={`grid grid-cols-2 gap-3 sm:grid-cols-3 ${tiles.length >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>

@@ -50,7 +50,7 @@ function main() {
   const totalRoutes = byShort.size;
 
   const keys = LIVE_ANALYSIS_ROUTES.filter(k => k.startsWith(`${agency}::`)).map(k => k.slice(agency.length + 2));
-  const held = Object.entries(LIVE_DASHBOARD_HOLD).filter(([k]) => k.startsWith(`${agency}::`)).map(([k, reason]) => ({ route: k.slice(agency.length + 2), reason }));
+  const held = Object.entries(LIVE_DASHBOARD_HOLD).filter(([k]) => k.startsWith(`${agency}::`)).map(([k]) => ({ route: k.slice(agency.length + 2) }));
   const routes: AgencyRouteInput[] = [];
   const missing: string[] = [];
   for (const route of keys) {
