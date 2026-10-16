@@ -26,17 +26,20 @@ type Props = {
     }
 );
 
-/** The one layout for docs-style pages: page shell, optional section menu, content width and section spacing. */
+/**
+ * The one layout for docs-style pages: page shell, optional section menu, content width and section spacing.
+ * The site header stays pinned to the top while scrolling on every page that uses it.
+ */
 export default function DocsPageLayout({ width = 'reading', contents, articleClassName = '', children }: Props) {
   if (width === 'wide') {
     return (
-      <PageShell variant="wide">
+      <PageShell variant="wide" stickyHeader>
         <article className={`pb-16 pt-10 sm:pt-14 ${articleClassName}`.trim()}>{children}</article>
       </PageShell>
     );
   }
   return (
-    <PageShell stickyHeader={!!contents}>
+    <PageShell stickyHeader>
       <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
         {contents && <PageContents title={contents.title} items={contents.items} />}
         <article className={`space-y-8 ${contents ? '' : 'lg:col-start-2'} ${articleClassName}`.replace(/\s+/g, ' ').trim()}>{children}</article>
