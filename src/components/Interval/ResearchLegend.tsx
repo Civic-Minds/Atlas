@@ -2,6 +2,7 @@ import { getNightServiceColor, getTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { headwayBandLabel, headwayTierLabel } from '../../utils/headwayText';
 import { MAP_BADGE, MAP_BADGE_LABEL } from '../../styles';
+import LegendItem from '../ui/LegendItem';
 import type { FrequentServiceFrequency } from '../../../shared/frequentService';
 
 /**
@@ -12,18 +13,15 @@ import type { FrequentServiceFrequency } from '../../../shared/frequentService';
 export default function ResearchLegend({ view, frequentFrequency }: { view: 'night' | 'frequent'; frequentFrequency: FrequentServiceFrequency }) {
   const { colorVisionFriendly } = useColorVision();
   const mode = colorVisionFriendly ? 'friendly' : 'default';
-  const swatch = (color: string, thick: boolean) => (
-    <span aria-hidden="true" className={`inline-block rounded-full ${thick ? 'h-1' : 'h-0.5'}`} style={{ background: color, width: 12 }} />
-  );
   return (
     <div className={`${MAP_BADGE} h-8`} role="group" aria-label="Map colours">
       {view === 'night' ? (
-        <span className="flex items-center gap-1.5">{swatch(getNightServiceColor(mode), true)}<span className={MAP_BADGE_LABEL}>Night service</span></span>
+        <LegendItem kind="line" color={getNightServiceColor(mode)}><span className={MAP_BADGE_LABEL}>Night service</span></LegendItem>
       ) : (
         <>
-          <span className="flex items-center gap-1.5">{swatch(getTierColor('15', mode), true)}<span className={MAP_BADGE_LABEL}>{headwayTierLabel(15)}</span></span>
+          <LegendItem kind="line" color={getTierColor('15', mode)}><span className={MAP_BADGE_LABEL}>{headwayTierLabel(15)}</span></LegendItem>
           {frequentFrequency === 30 && (
-            <span className="flex items-center gap-1.5">{swatch(getTierColor('30', mode), false)}<span className={MAP_BADGE_LABEL}>{headwayBandLabel(16, 30)}</span></span>
+            <LegendItem kind="line" color={getTierColor('30', mode)}><span className={MAP_BADGE_LABEL}>{headwayBandLabel(16, 30)}</span></LegendItem>
           )}
         </>
       )}

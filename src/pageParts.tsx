@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE, allRoutesMapHref } from '../shared/agencyPages';
+import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE, NO_MIDDAY_SHORT, allRoutesMapHref } from '../shared/agencyPages';
 import ArrowLink from './components/ui/ArrowLink';
-import { HEADWAY_TIERS } from '../shared/config';
+import { useHeadwayTiers } from './hooks/useHeadwayTiers';
+import LegendItem from './components/ui/LegendItem';
 import { plural } from '../shared/overflowText';
 
 const BAND_PHRASES = [...FREQUENCY_BANDS.map(b => b.phrase), NO_MIDDAY_PHRASE];
-const BAND_SHORT = ['≤10', '11–15', '16–20', '21–30', '31–60', '60+', 'no midday'];
-/** The map's own frequency colours (HEADWAY_TIERS, same bands and edges as the filters), then the neutral no-service grey. */
-const BAND_FILLS = [...HEADWAY_TIERS.map(t => t.color), 'var(--control-inactive-bg)'];
+const BAND_SHORT = [...FREQUENCY_BANDS.map(b => b.short), NO_MIDDAY_SHORT];
+/** The map's own frequency colours (same bands and edges as the filters, in the colour-vision palette), then the neutral no-service grey. */
+const NO_SERVICE_FILL = 'var(--control-inactive-bg)';
 
 /**
  * One flat stacked bar of route counts per weekday-midday frequency band. The legend is one short wrapping line.
@@ -16,6 +17,7 @@ const BAND_FILLS = [...HEADWAY_TIERS.map(t => t.color), 'var(--control-inactive-
  */
 export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The page's map link: the one link under the bar opens the map with these routes (Weekday midday). The bar itself is not clickable. */ mapHref?: string }) {
   const [active, setActive] = useState<number | null>(null);
+  const BAND_FILLS = [...useHeadwayTiers().map(t => t.color), NO_SERVICE_FILL];
   const total = counts.reduce((a, b) => a + b, 0);
   if (total === 0) return null;
   const shown = counts.map((n, i) => ({ n, i })).filter(x => x.n > 0);
@@ -43,8 +45,7 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
               className="-mx-1.5 flex cursor-pointer select-none items-center gap-1.5 whitespace-nowrap rounded-md px-1.5 py-0.5 outline-offset-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
               style={active === x.i ? { background: 'var(--bg-btn-hover)' } : undefined}
               onMouseEnter={() => setActive(x.i)} onMouseLeave={() => setActive(null)} onFocus={() => setActive(x.i)} onBlur={() => setActive(null)} onClick={() => setActive(a => (a === x.i ? null : x.i))}>
-              <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: BAND_FILLS[x.i] }} />
-              <span><span className="font-black">{x.n}</span> {BAND_SHORT[x.i]}{x.i === unitBand ? ' min' : ''}</span>
+              <LegendItem color={BAND_FILLS[x.i]}><span><span className="font-black">{x.n}</span> {BAND_SHORT[x.i]}{x.i === unitBand ? ' min' : ''}</span></LegendItem>
             </li>
           ))}
         </ul>

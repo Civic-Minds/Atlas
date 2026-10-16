@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import Pill from '../ui/Pill';
 import Toggle from '../ui/Toggle';
-import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
-import { DAY_TYPES } from '../../../shared/dayTypes';
-import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
+import type { DayType } from '../../../shared/dayTypes';
+import type { TimePeriod } from '../../hooks/useIntervalStats';
+import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
@@ -659,69 +659,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {/* Mobile-only Core Filters */}
               {isFilters && maxHeadway !== undefined && (
                 <div className="block sm:hidden pb-4">
-                  {/* Frequency */}
-                  <div className="px-5 pt-4 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Frequency</p>
-                  </div>
-                  <div className="px-5 pb-3 flex flex-wrap gap-1.5">
-                    {HEADWAY_TIERS.map(({ max, label }) => {
-                      const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
-                      const active = maxHeadway === max;
-                      return (
-                        <Pill
-                          key={label}
-                          onClick={() => setMaxHeadway?.(max)}
-                          size="segment"
-                          selected={active}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
-                          {label === 'Infrequent' ? 'All routes' : label}
-                        </Pill>
-                      );
-                    })}
-                  </div>
-
-                  {/* Day of Service */}
-                  <div className="px-5 pt-2 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Day of service</p>
-                  </div>
-                  <div className="px-5 pb-3 flex gap-1.5">
-                    {DAY_TYPES.map(dayType => {
-                      const active = day === dayType;
-                      return (
-                        <button
-                          key={dayType}
-                          onClick={() => setDay?.(dayType)}
-                          aria-pressed={active}
-                          className={`flex-1 h-7 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
-                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
-                          }`}
-                        >
-                          {dayType}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Time Period */}
-                  <div className="px-5 pt-2 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Time period</p>
-                  </div>
-                  <div className="px-5 pb-3 flex flex-wrap gap-1.5">
-                    {Object.entries(PERIOD_LABELS).map(([key, label]) => {
-                      const active = period === key;
-                      return (
-                        <Pill
-                          key={key}
-                          onClick={() => setPeriod?.(key)}
-                          size="segment"
-                          selected={active}
-                        >
-                          {label}
-                        </Pill>
-                      );
-                    })}
-                  </div>
+                  <PickerSection title="Frequency" className="px-5 pt-4 pb-3"><FrequencyPicker value={maxHeadway} onChange={max => setMaxHeadway?.(max)} /></PickerSection>
+                  <PickerSection title="Day of service" className="px-5 pt-2 pb-3"><DayPicker fill value={day as DayType} onChange={d => setDay?.(d)} /></PickerSection>
+                  <PickerSection title="Time period" className="px-5 pt-2 pb-3"><PeriodPicker includeAll value={period as TimePeriod} onChange={p => setPeriod?.(p)} /></PickerSection>
 
                   {compare?.side && (
                     <div className="px-5 pt-2 pb-3">
