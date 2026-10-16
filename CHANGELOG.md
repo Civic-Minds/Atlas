@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Frequencies always read in minutes (e.g. 'every 120 min'), so a column of values no longer mixes hours and minutes.
 - **"On this page" highlights the section you are reading** on Docs, Terms, Privacy and Changelog, so you can see where you are in long pages.
 - **The top bar stays put while you scroll on agency, area and agencies pages**, as it already did on Docs, Terms and Privacy, so navigation is always one tap away.
 - **Agencies page: country lists use the same three-column layout as Regions on wide screens.**
