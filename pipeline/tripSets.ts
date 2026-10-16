@@ -477,11 +477,12 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   const v30 = directionNightVerdict(d, 30);
   const v60 = directionNightVerdict(d, 60);
   // Step 6 shadow values. Tails count when they run steadily through some daytime period.
-  const steadyTails = d.tails.filter((t, i) => (['amPeak', 'midday', 'pmPeak', 'evening'] as const).some(k => tails[i][k].counts));
+  // Tails that run steadily through midday are all-day branches; a peak-only tail (CTA 9's Beverly
+  // tail, a 313-minute midday hole) is limited and takes no part in the all-day value or Frequent.
+  const allDayTails = d.tails.filter((t, i) => tails[i].midday.counts);
   const allDayOf = (st: Stretch) => sustainedMedianHeadwayInWindow([...st.times], 360, 1320, 3, undefined, true);
-  const allDays = [d.main, ...steadyTails].map(allDayOf);
-  const runsDaytime = (st: Stretch) => { const t = st.times.filter(x => x >= 420 && x <= 1140); return t.some(x => x < 780) && t.some(x => x >= 780); };
-  const frequentStretches = [d.main, ...d.tails.filter(runsDaytime)];
+  const allDays = [d.main, ...allDayTails].map(allDayOf);
+  const frequentStretches = [d.main, ...allDayTails];
   const researchOf = frequentStretches.map(st => computeResearchFrequentService([...st.times]));
   return {
     period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',

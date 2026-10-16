@@ -530,6 +530,9 @@ describe('step 6: the all-day filter, the midday cap and Frequent Service read t
     ['ttc-505-weekday', '505', 'Weekday', 10, 5, true],
     ['cta-j14-saturday', 'J14', 'Saturday', 10, 5, false],
     ['ttc-134-weekday', '134', 'Weekday', 15, 10, false],
+    // The 8-stop Beverly tail runs only at the peaks (a 313-minute midday hole): limited, so it takes
+    // no part; the route is every 10 all day and Frequent Service.
+    ['cta-9-weekday', '9', 'Weekday', 10, 5, true],
   ] as const)('%s all day passes %s, fails %s', async (name, route, day, pass, fail, frequent) => {
     const r = await run(name);
     const rows = filterable(r, route);

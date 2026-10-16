@@ -1,0 +1,241 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_station,wheelchair_boarding
+51,51,Ashland & Van Buren,"Ashland & Van Buren, Northbound, Northeast Corner",41.87655943,-87.66652097,0,,1
+903,903,North Ave & Bosworth,"North Ave & Bosworth, Eastbound, Southeast Corner",41.91057765,-87.66629267,0,,1
+910,910,North Ave & Sheffield,"North Ave & Sheffield, Eastbound, Southwest Corner",41.91077612,-87.65315265,0,,1
+913,913,North Ave & Clybourn/Halsted (Red Line),"North Ave & Clybourn/Halsted (Red Line), Eastbound, Southeast Corner",41.91084571,-87.64898165,0,,1
+915,915,North Ave & Orchard,"North Ave & Orchard, Eastbound, Southside of the Street",41.9109109,-87.645936,0,,1
+916,916,North Ave & Larrabee,"North Ave & Larrabee, Eastbound, Southwest Corner",41.91093,-87.64362808,0,,1
+918,918,North Ave & Sedgwick (Brown Line),"North Ave & Sedgwick (Brown Line), Eastbound, Southwest Corner",41.91100629,-87.63878333,0,,1
+919,919,North Ave & North Park,"North Ave & North Park, Eastbound, Southwest Corner",41.91103594,-87.63679637,0,,1
+920,920,North Ave & Wells,"North Ave & Wells, Eastbound, Southwest Corner",41.91105777,-87.63487966,0,,1
+923,923,North Ave & Clark Terminal,"North Ave & Clark Terminal, Southwestbound, Bus Terminal",41.91128786,-87.63120075,0,,1
+924,924,North Ave & Clark,"North Ave & Clark, Westbound, Northwest Corner",41.91124235,-87.6320275,0,,1
+926,926,North Ave & Wells,"North Ave & Wells, Westbound, Northeast Corner",41.91119444,-87.63453312,0,,1
+927,927,North Ave & Sedgwick (Brown Line),"North Ave & Sedgwick (Brown Line), Westbound, Northeast Corner",41.91123097,-87.63842484,0,,1
+928,928,North Ave & Cleveland,"North Ave & Cleveland, Westbound, Northeast Corner",41.91120497,-87.6407641,0,,1
+929,929,North Ave & Larrabee,"North Ave & Larrabee, Westbound, Northwest Corner",41.91107624,-87.64383664,0,,1
+933,933,North Ave & Fremont,"North Ave & Fremont, Westbound, Northside of the Street",41.91095093,-87.65101951,0,,1
+934,934,North Ave & Kingsbury,"North Ave & Kingsbury, Westbound, Northeast Corner",41.91087431,-87.6540524,0,,1
+939,939,North Ave & Bosworth,"North Ave & Bosworth, Westbound, Northeast Corner",41.91070508,-87.66624828,0,,1
+3455,3455,95th Street & Princeton,"95th Street & Princeton, Westbound, Northside of the Street",41.72174583,-87.63120274,0,,1
+3456,3456,95th Street & Eggleston,"95th Street & Eggleston, Westbound, Northeast Corner",41.72167783,-87.63322074,0,,1
+3457,3457,95th Street & Normal,"95th Street & Normal, Westbound, Northeast Corner",41.72167245,-87.63585812,0,,1
+3458,3458,95th Street & Wallace,"95th Street & Wallace, Westbound, Northeast Corner",41.72162583,-87.63819074,0,,1
+3459,3459,95th Street & Union,"95th Street & Union, Westbound, Northeast Corner",41.72160083,-87.64057374,0,,1
+3461,3461,95th Street & Peoria,"95th Street & Peoria, Westbound, Northeast Corner",41.72153783,-87.64544274,0,,1
+3462,3462,95th Street & Morgan,"95th Street & Morgan, Westbound, Northeast Corner",41.72150483,-87.64787874,0,,1
+3463,3463,95th Street & Vincennes (Metra Station),"95th Street & Vincennes (Metra Station), Westbound, Northeast Corner",41.72148283,-87.64993374,0,,1
+3464,3464,95th Street & Vincennes,"95th Street & Vincennes, Westbound, Northwest Corner",41.72147669,-87.65111467,0,,1
+3465,3465,95th Street & Racine,"95th Street & Racine, Westbound, Northeast Corner",41.72144283,-87.65278274,0,,1
+3466,3466,95th Street & Throop,"95th Street & Throop, Westbound, Northeast Corner",41.72140983,-87.65518374,0,,1
+3467,3467,95th Street & Loomis,"95th Street & Loomis, Westbound, Northeast Corner",41.72134483,-87.65757274,0,,1
+3468,3468,95th Street & Bishop,"95th Street & Bishop, Westbound, Northeast Corner",41.72138283,-87.65883074,0,,1
+3469,3469,95th Street & Laflin,"95th Street & Laflin, Westbound, Northeast Corner",41.72136083,-87.66007074,0,,1
+3497,3497,95th Street & Winston,"95th Street & Winston, Eastbound, Southwest Corner",41.72114983,-87.66082874,0,,1
+3498,3498,95th Street & Bishop,"95th Street & Bishop, Eastbound, Southwest Corner",41.72116083,-87.65926874,0,,1
+3500,3500,95th Street & Throop,"95th Street & Throop, Eastbound, Southwest Corner",41.72120974,-87.65548553,0,,1
+3501,3501,95th Street & Racine,"95th Street & Racine, Eastbound, Southwest Corner",41.72124048,-87.65305365,0,,1
+3502,3502,95th Street & Vincennes,"95th Street & Vincennes, Eastbound, Southwest Corner",41.72125489,-87.65093904,0,,1
+3503,3503,95th Street & Morgan,"95th Street & Morgan, Eastbound, Southside of the Street",41.72131014,-87.64811853,0,,1
+3504,3504,95th Street & Peoria,"95th Street & Peoria, Eastbound, Southwest Corner",41.72132922,-87.6457488,0,,1
+3506,3506,95th Street & Union,"95th Street & Union, Eastbound, Southwest Corner",41.72139483,-87.64093774,0,,1
+3507,3507,95th Street & Wallace,"95th Street & Wallace, Eastbound, Southwest Corner",41.72142483,-87.63851274,0,,1
+3508,3508,95th Street & Normal,"95th Street & Normal, Eastbound, Southwest Corner",41.72146583,-87.63610374,0,,1
+3509,3509,95th Street & Eggleston,"95th Street & Eggleston, Eastbound, Southwest Corner",41.72149783,-87.63411073,0,,1
+3510,3510,95th Street & Princeton,"95th Street & Princeton, Eastbound, Southwest Corner",41.72152487,-87.63121677,0,,1
+3511,3511,95th Street & Wentworth,"95th Street & Wentworth, Eastbound, Southwest Corner",41.72155799,-87.62877741,0,,1
+3765,3765,Lawrence & Ashland,"Lawrence & Ashland, Eastbound, Southwest Corner",41.96880386,-87.66960938,0,,1
+4164,4164,Ashland Orange Line Station,"Ashland Orange Line Station, Northbound, Bus Terminal",41.83910954,-87.66543279,0,,1
+4948,4948,Wilson & Ashland,"Wilson & Ashland, Westbound, Northwest Corner",41.96529593,-87.66970398,0,,1
+5995,5995,Ashland & Irving Park,"Ashland & Irving Park, Southbound, Southwest Corner",41.95409882,-87.66917809,0,,1
+6009,6009,Ashland & Wrightwood,"Ashland & Wrightwood, Southbound, Northwest Corner",41.92885735,-87.66841178,0,,1
+6011,6011,Ashland & Fullerton,"Ashland & Fullerton, Southbound, Northwest Corner",41.92526991,-87.66830329,0,,1
+6013,6013,Ashland & Webster,"Ashland & Webster, Southbound, Southwest Corner",41.92113213,-87.66870701,0,,1
+6015,6015,Ashland & Elston,"Ashland & Elston, Southbound, Northwest Corner",41.91905986,-87.66839258,0,,1
+6016,6016,Ashland & Cortland,"Ashland & Cortland, Southbound, Northwest Corner",41.91631182,-87.66793824,0,,1
+6019,6019,Ashland & North Ave,"Ashland & North Ave, Southbound, Northwest Corner",41.91074212,-87.66784719,0,,1
+6024,6024,Ashland & Division (Blue Line),"Ashland & Division (Blue Line), Southbound, Northwest Corner",41.90351822,-87.66766329,0,,1
+6034,6034,Ashland & Fulton,"Ashland & Fulton, Southbound, Northwest Corner",41.88699437,-87.66728081,0,,1
+6035,6035,Ashland & Lake (Green & Pink Lines),"Ashland & Lake (Green & Pink Lines), Southbound, Southwest Corner",41.88510285,-87.66705476,0,,1
+6040,6040,Ashland & Adams,"Ashland & Adams, Southbound, Northwest Corner",41.87897678,-87.66688528,0,,1
+6041,6041,Ashland & Jackson,"Ashland & Jackson, Southbound, Southwest Corner",41.87736866,-87.66684301,0,,1
+6043,6043,Ashland & Harrison,"Ashland & Harrison, Southbound, Southwest Corner",41.87396408,-87.66674615,0,,1
+6046,6046,Ashland & Roosevelt,"Ashland & Roosevelt, Southbound, Northwest Corner",41.8671167,-87.66655755,0,,1
+6049,6049,Ashland & 15th Street,"Ashland & 15th Street, Southbound, Northwest Corner",41.86154538,-87.66638776,0,,1
+6054,6054,Ashland & Cullerton,"Ashland & Cullerton, Southbound, Northwest Corner",41.85515613,-87.66619475,0,,1
+6057,6057,Ashland & Cermak/Blue Island,"Ashland & Cermak/Blue Island, Southbound, Northwest Corner",41.85249152,-87.66617869,0,,1
+6059,6059,2450 S Ashland,"2450 S Ashland, Southbound, Westside of the Street",41.8475193,-87.66607992,0,,1
+6063,6063,Ashland & Archer,"Ashland & Archer, Southbound, Northwest Corner",41.83779212,-87.66590328,0,,1
+6066,6066,Ashland & 33rd Street,"Ashland & 33rd Street, Southbound, Northwest Corner",41.83428954,-87.66579386,0,,1
+6068,6068,Ashland & 35th Street,"Ashland & 35th Street, Southbound, Northwest Corner",41.83063964,-87.66571882,0,,1
+6075,6075,Ashland & 42nd Street,"Ashland & 42nd Street, Southbound, Northwest Corner",41.81781718,-87.66527079,0,,1
+6076,6076,Ashland & 43rd Street,"Ashland & 43rd Street, Southbound, Northwest Corner",41.81592907,-87.66523843,0,,1
+6082,6082,Ashland & 49th Street,"Ashland & 49th Street, Southbound, Northwest Corner",41.8050484,-87.66500203,0,,1
+6084,6084,Ashland & 51st Street,"Ashland & 51st Street, Southbound, Northwest Corner",41.80144988,-87.66492837,0,,1
+6085,6085,Ashland & 52nd Street,"Ashland & 52nd Street, Southbound, Northwest Corner",41.79957976,-87.66486308,0,,1
+6089,6089,Ashland & Garfield,"Ashland & Garfield, Southbound, Southwest Corner",41.79350883,-87.66472933,0,,1
+6091,6091,Ashland & 57th Street,"Ashland & 57th Street, Southbound, Northwest Corner",41.79046337,-87.6646389,0,,1
+6093,6093,Ashland & 59th Street,"Ashland & 59th Street, Southbound, Northwest Corner",41.78691975,-87.66455052,0,,1
+6100,6100,Ashland & 65th Street,"Ashland & 65th Street, Southbound, Northwest Corner",41.77594006,-87.66425704,0,,1
+6101,6101,Ashland & 66th Street,"Ashland & 66th Street, Southbound, Northwest Corner",41.77412637,-87.66420637,0,,1
+6105,6105,Ashland & 70th Street,"Ashland & 70th Street, Southbound, Westside of the Street",41.76688148,-87.66397423,0,,1
+6108,6108,Ashland & 73rd Street,"Ashland & 73rd Street, Southbound, Northwest Corner",41.76137383,-87.66375575,0,,1
+6109,6109,Ashland & 74th Street,"Ashland & 74th Street, Southbound, Southwest Corner",41.75919889,-87.66376892,0,,1
+6111,6111,Ashland & 76th Street,"Ashland & 76th Street, Southbound, Northwest Corner",41.75593531,-87.66370928,0,,1
+6112,6112,Ashland & 77th Street,"Ashland & 77th Street, Southbound, Northwest Corner",41.75412123,-87.66361593,0,,1
+6114,6114,Ashland & 79th Street,"Ashland & 79th Street, Southbound, Northwest Corner",41.75045294,-87.66358649,0,,1
+6115,6115,Ashland & 80th Street,"Ashland & 80th Street, Southbound, Northwest Corner",41.74859863,-87.66350426,0,,1
+6116,6116,Ashland & 81st Street,"Ashland & 81st Street, Southbound, Northwest Corner",41.74678788,-87.66348368,0,,1
+6117,6117,Ashland & 82nd Street,"Ashland & 82nd Street, Southbound, Northwest Corner",41.74501462,-87.66343872,0,,1
+6118,6118,Ashland & 83rd Street,"Ashland & 83rd Street, Southbound, Northwest Corner",41.74325441,-87.66340578,0,,1
+6120,6120,Ashland & 85th Street,"Ashland & 85th Street, Southbound, Northwest Corner",41.73952444,-87.663293,0,,1
+6124,6124,Ashland & 89th Street,"Ashland & 89th Street, Southbound, Northwest Corner",41.73223367,-87.66309588,0,,1
+6126,6126,Ashland & 91st Street,"Ashland & 91st Street, Southbound, Northwest Corner",41.72854803,-87.66298216,0,,1
+6128,6128,Ashland & 93rd Street,"Ashland & 93rd Street, Southbound, Northwest Corner",41.72495345,-87.66292714,0,,1
+6129,6129,Ashland & 94th Street,"Ashland & 94th Street, Southbound, Westside of the Street",41.72310905,-87.66283408,0,,1
+6130,6130,Ashland & 95th Street,"Ashland & 95th Street, Southbound, Northwest Corner",41.72138684,-87.66284598,0,,1
+6131,6131,Ashland & 95th Street Terminal,"Ashland & 95th Street Terminal, Eastbound, Bus Terminal",41.72059822,-87.66298609,0,,1
+6132,6132,9653 S Beverly,"9653 S Beverly, Southbound, Westside of the Street",41.71897739,-87.66221132,0,,1
+6133,6133,9700 S Beverly,"9700 S Beverly, Southbound, Westside of the Street",41.71744116,-87.66139212,0,,1
+6134,6134,9800 S Beverly,"9800 S Beverly, Southbound, Westside of the Street",41.71597298,-87.66075839,0,,1
+6136,6136,Beverly & 100th Place,"Beverly & 100th Place, Southbound, Northwest Corner",41.71142666,-87.65842506,0,,1
+6137,6137,10112 S Beverly,"10112 S Beverly, Southbound, Westside of the Street",41.70982848,-87.65759616,0,,1
+6138,6138,Beverly & 103rd/Vincennes,"Beverly & 103rd/Vincennes, Southbound, Northwest Corner",41.70696443,-87.65617066,0,,1
+6140,6140,Beverly & 103rd/Vincennes,"Beverly & 103rd/Vincennes, Northbound, Northeast Corner",41.70733454,-87.65615126,0,,1
+6141,6141,10113 S Beverly,"10113 S Beverly, Northbound, Eastside of the Street",41.70976057,-87.65739803,0,,1
+6142,6142,Beverly & 100th Place,"Beverly & 100th Place, Northbound, Southeast Corner",41.71130582,-87.65810874,0,,1
+6143,6143,Beverly & 99th Street,"Beverly & 99th Street, Northbound, Southeast Corner",41.7139303,-87.65945818,0,,1
+6144,6144,9800 S Beverly,"9800 S Beverly, Northbound, Eastside of the Street",41.71587495,-87.6604059,0,,1
+6145,6145,9653 S Beverly,"9653 S Beverly, Northbound, Eastside of the Street",41.71733471,-87.66122889,0,,1
+6146,6146,9600 S Beverly,"9600 S Beverly, Northbound, Eastside of the Street",41.7190873,-87.66208324,0,,1
+6147,6147,Ashland & 95th Street,"Ashland & 95th Street, Northbound, Northeast Corner",41.7214905,-87.6625485,0,,1
+6148,6148,Ashland & 94th Street,"Ashland & 94th Street, Northbound, Southeast Corner",41.72293183,-87.66254674,0,,1
+6149,6149,Ashland & 93rd Street,"Ashland & 93rd Street, Northbound, Southeast Corner",41.72477522,-87.66263981,0,,1
+6153,6153,Ashland & 89th Street,"Ashland & 89th Street, Northbound, Southeast Corner",41.73194022,-87.66282105,0,,1
+6155,6155,Ashland & 87th Street,"Ashland & 87th Street, Northbound, Southeast Corner",41.73564625,-87.66292034,0,,1
+6159,6159,Ashland & 83rd Street,"Ashland & 83rd Street, Northbound, Southeast Corner",41.74294014,-87.66310797,0,,1
+6160,6160,Ashland & 82nd Street,"Ashland & 82nd Street, Northbound, Southeast Corner",41.74476422,-87.6631933,0,,1
+6162,6162,Ashland & 80th Street,"Ashland & 80th Street, Northbound, Southeast Corner",41.74846193,-87.66326598,0,,1
+6163,6163,Ashland & 79th Street,"Ashland & 79th Street, Northbound, Southeast Corner",41.75023996,-87.66328925,0,,1
+6165,6165,Ashland & 77th Street,"Ashland & 77th Street, Northbound, Southeast Corner",41.75383283,-87.66345675,0,,1
+6166,6166,Ashland & 76th Street,"Ashland & 76th Street, Northbound, Southeast Corner",41.75571024,-87.66345307,0,,1
+6168,6168,Ashland & 74th Street,"Ashland & 74th Street, Northbound, Southeast Corner",41.75937146,-87.66351784,0,,1
+6169,6169,Ashland & 73rd Street,"Ashland & 73rd Street, Northbound, Southeast Corner",41.76120883,-87.66357575,0,,1
+6171,6171,Ashland & 71st Street,"Ashland & 71st Street, Northbound, Southeast Corner",41.76478668,-87.66364647,0,,1
+6176,6176,Ashland & 66th Street,"Ashland & 66th Street, Northbound, Southeast Corner",41.77396177,-87.66396927,0,,1
+6177,6177,Ashland & 65th Street,"Ashland & 65th Street, Northbound, Southeast Corner",41.77576377,-87.66401827,0,,1
+6179,6179,Ashland/63rd Green Line Station,"Ashland/63rd Green Line Station, Northbound, Eastside of the Street",41.77887301,-87.66405438,0,,1
+6182,6182,Ashland & 61st Street,"Ashland & 61st Street, Northbound, Southeast Corner",41.78298475,-87.66418724,0,,1
+6186,6186,Ashland & 57th Street,"Ashland & 57th Street, Northbound, Southeast Corner",41.79026083,-87.66434822,0,,1
+6189,6189,Ashland & Garfield,"Ashland & Garfield, Northbound, Northeast Corner",41.79415671,-87.66443813,0,,1
+6191,6191,Ashland & 53rd Street,"Ashland & 53rd Street, Northbound, Southeast Corner",41.79760674,-87.66455319,0,,1
+6192,6192,Ashland & 52nd Street,"Ashland & 52nd Street, Northbound, Southeast Corner",41.79939884,-87.66460575,0,,1
+6195,6195,Ashland & 49th Street,"Ashland & 49th Street, Northbound, Northeast Corner",41.80507918,-87.66475519,0,,1
+6202,6202,Ashland & 42nd Street,"Ashland & 42nd Street, Northbound, Eastside of the Street",41.8180086,-87.66499363,0,,1
+6205,6205,Ashland & Pershing,"Ashland & Pershing, Northbound, Northeast Corner",41.82343406,-87.66527057,0,,1
+6209,6209,Ashland & 35th Street,"Ashland & 35th Street, Northbound, Southeast Corner",41.83039426,-87.6654264,0,,1
+6213,6213,Ashland & Archer,"Ashland & Archer, Northbound, Southeast Corner",41.83760221,-87.66560389,0,,1
+6215,6215,2700 S Ashland,"2700 S Ashland, Northbound, Eastside of the Street",41.84326127,-87.66570766,0,,1
+6217,6217,2451 S Ashland,"2451 S Ashland, Northbound, Eastside of the Street",41.84779948,-87.66581575,0,,1
+6227,6227,Ashland & 15th Street,"Ashland & 15th Street, Northbound, Northeast Corner",41.86163916,-87.66612351,0,,1
+6228,6228,Ashland & 14th Street,"Ashland & 14th Street, Northbound, Southeast Corner",41.86316533,-87.66616702,0,,1
+6230,6230,Ashland & Roosevelt,"Ashland & Roosevelt, Northbound, Southeast Corner",41.86668798,-87.66624272,0,,1
+6233,6233,Ashland & Harrison,"Ashland & Harrison, Northbound, Southeast Corner",41.87402183,-87.66644453,0,,1
+6241,6241,Ashland & Carroll,"Ashland & Carroll, Northbound, Northeast Corner",41.88744861,-87.66688871,0,,1
+6245,6245,Ashland & Erie,"Ashland & Erie, Northbound, Southeast Corner",41.89326836,-87.66708687,0,,1
+6252,6252,Ashland & Milwaukee (Blue Line),"Ashland & Milwaukee (Blue Line), Northbound, Southeast Corner",41.90374186,-87.66737076,0,,1
+6259,6259,Ashland & Cortland,"Ashland & Cortland, Northbound, Southeast Corner",41.91603186,-87.66770228,0,,1
+6260,6260,Ashland & Armitage,"Ashland & Armitage, Northbound, Southeast Corner",41.91783586,-87.66779977,0,,1
+6262,6262,Ashland & Webster,"Ashland & Webster, Northbound, Southeast Corner",41.92136829,-87.66847679,0,,1
+6266,6266,Ashland & Wrightwood,"Ashland & Wrightwood, Northbound, Southeast Corner",41.92871796,-87.66814059,0,,1
+6270,6270,Ashland & Wellington,"Ashland & Wellington, Northbound, Southeast Corner",41.93596786,-87.66845577,0,,1
+6274,6274,Ashland & Roscoe,"Ashland & Roscoe, Northbound, Southeast Corner",41.94317678,-87.66862211,0,,1
+6278,6278,Ashland & Grace,"Ashland & Grace, Northbound, Southeast Corner",41.95056186,-87.66888577,0,,1
+12351,12351,Ashland & Marquette Rd,"Ashland & Marquette Rd, Northbound, Northeast Corner",41.77240733,-87.66389579,0,,1
+12352,12352,Vincennes & 104th Street,"Vincennes & 104th Street, Southbound, Northwest Corner",41.70505193,-87.65679372,0,,1
+14428,14428,North Ave & Clybourn/Halsted (Red Line),"North Ave & Clybourn/Halsted (Red Line), Westbound, Northwest Corner",41.91099645,-87.64851025,0,,1
+14476,14476,Ashland Orange Line Station,"Ashland Orange Line Station, Southbound, Bus Terminal",41.839043,-87.66539215,0,,1
+14499,14499,Ashland & Cermak,"Ashland & Cermak, Northbound, Northeast Corner",41.85257542,-87.66587443,0,,1
+14536,14536,Ashland & Augusta,"Ashland & Augusta, Northbound, Northeast Corner",41.89987845,-87.66727245,0,,1
+14537,14537,Ashland & Blackhawk,"Ashland & Blackhawk, Northbound, Northeast Corner",41.90712143,-87.66748326,0,,1
+14618,14618,Ashland & Wellington,"Ashland & Wellington, Southbound, Southwest Corner",41.93596577,-87.66863545,0,,1
+14619,14619,Ashland & Blackhawk,"Ashland & Blackhawk, Southbound, Southwest Corner",41.90693734,-87.66769058,0,,1
+14779,14779,Ashland & Augusta,"Ashland & Augusta, Southbound, Southwest Corner",41.89954076,-87.66752242,0,,1
+14781,14781,Ashland & 91st Street,"Ashland & 91st Street, Northbound, Northeast Corner",41.72867678,-87.66272955,0,,1
+14782,14782,Ashland & 33rd Street,"Ashland & 33rd Street, Northbound, Northeast Corner",41.83440617,-87.66552521,0,,1
+14783,14783,Ashland & Lake (Green Line),"Ashland & Lake (Green Line), Northbound, Southeast Corner",41.88522775,-87.66677825,0,,1
+14864,14864,Ashland & 69th Street,"Ashland & 69th Street, Northbound, Northeast Corner",41.76871193,-87.66379638,0,,1
+14894,14894,Ashland & Addison,"Ashland & Addison, Northbound, Northeast Corner",41.94722721,-87.66872093,0,,1
+15026,15026,95th Street & Halsted,"95th Street & Halsted, Eastbound, Southeast Corner",41.7213629,-87.64280691,0,,1
+15027,15027,95th Street & Loomis,"95th Street & Loomis, Eastbound, Southeast Corner",41.72122124,-87.65756957,0,,1
+15145,15145,Ashland & 53rd Street,"Ashland & 53rd Street, Southbound, Southwest Corner",41.79749163,-87.6648123,0,,1
+15160,15160,95th Street & Wentworth,"95th Street & Wentworth, Westbound, Northwest Corner",41.72176327,-87.62918487,0,,1
+15211,15211,95th Street & Ashland,,41.72112602,-87.66232084,0,,1
+15243,15243,Ashland & Diversey,"Ashland & Diversey, Northbound, Northeast Corner",41.93271079,-87.66826281,0,,1
+15249,15249,Ashland & 87th Street,"Ashland & 87th Street, Southbound, Southwest Corner",41.73549049,-87.66321007,0,,1
+15276,15276,North Ave & LaSalle,"North Ave & LaSalle, Eastbound, Southeast Corner",41.91109254,-87.63280464,0,,1
+15375,15375,North Ave & Elston,"North Ave & Elston, Eastbound, Southeast Corner",41.91065828,-87.66165912,0,,1
+15376,15376,North Ave & Fremont,"North Ave & Fremont, Eastbound, Southeast Corner",41.91081917,-87.65084675,0,,1
+15397,15397,North Ave & Elston,"North Ave & Elston, Westbound, Northwest Corner",41.9107774,-87.66252845,0,,1
+15455,15455,Ashland & 85th Street,"Ashland & 85th Street, Northbound, Northeast Corner",41.73964803,-87.66304159,0,,1
+15456,15456,Ashland & 81st Street,"Ashland & 81st Street, Northbound, Northeast Corner",41.74693258,-87.66322235,0,,1
+15475,15475,2700 S Ashland,"2700 S Ashland, Southbound, Southwest Corner",41.84311484,-87.6660208,0,,1
+15793,15793,Ashland & Polk,"Ashland & Polk, Northbound, Northeast Corner",41.8719224,-87.66639154,0,,1
+15795,15795,Ashland & Diversey,"Ashland & Diversey, Southbound, Southwest Corner",41.93218015,-87.66853283,0,,1
+15842,15842,Ashland & Chicago,"Ashland & Chicago, Southbound, Southwest Corner",41.89591705,-87.66743444,0,,1
+15843,15843,Ashland & Chicago,"Ashland & Chicago, Northbound, Northeast Corner",41.89628703,-87.66715321,0,,1
+15944,15944,Ashland & 69th Street,"Ashland & 69th Street, Southbound, Southwest Corner",41.76836488,-87.6640177,0,,1
+15970,15970,Ashland & 37th Street,"Ashland & 37th Street, Northbound, Northeast Corner",41.8270409,-87.66535954,0,,1
+15971,15971,Ashland & 37th Street,"Ashland & 37th Street, Southbound, Southwest Corner",41.82671171,-87.66561401,0,,1
+16142,16142,North Ave & Orchard,"North Ave & Orchard, Westbound, Northeast Corner",41.9110334,-87.64572013,0,,1
+17061,17061,Ashland & Taylor,"Ashland & Taylor, Northbound, Northeast Corner",41.86955203,-87.66632615,0,,1
+17063,17063,Ashland & Taylor,"Ashland & Taylor, Southbound, Southwest Corner",41.86900107,-87.66660483,0,,1
+17076,17076,Ashland & Madison,"Ashland & Madison, Northbound, Northeast Corner",41.88162116,-87.66667244,0,,1
+17077,17077,Ashland & Madison,"Ashland & Madison, Southbound, Southwest Corner",41.88132127,-87.66694556,0,,1
+17126,17126,North Ave & Throop,"North Ave & Throop, Eastbound, Southeast Corner",41.91067908,-87.66017384,0,,1
+17127,17127,North Ave & Throop,"North Ave & Throop, Westbound, Northwest Corner",41.91080525,-87.66062473,0,,1
+17177,17177,Ashland & Adams,"Ashland & Adams, Northbound, Northeast Corner",41.87910802,-87.66658905,0,,1
+17179,17179,Ashland & Grand,"Ashland & Grand, Northbound, Northeast Corner",41.89118427,-87.66703231,0,,1
+17180,17180,Ashland & North Ave,"Ashland & North Ave, Northbound, Northeast Corner",41.91080054,-87.66754589,0,,1
+17181,17181,Ashland & Erie,"Ashland & Erie, Southbound, Southwest Corner",41.89323655,-87.66733631,0,,1
+17183,17183,Ashland & Polk,"Ashland & Polk, Southbound, Southwest Corner",41.87148294,-87.66668088,0,,1
+17226,17226,Ashland & 14th Street,"Ashland & 14th Street, Southbound, Southwest Corner",41.86312845,-87.66643266,0,,1
+17227,17227,Ashland & 18th Street,"Ashland & 18th Street, Southbound, Southwest Corner",41.85760264,-87.66627313,0,,1
+17229,17229,Ashland & 18th Street,"Ashland & 18th Street, Northbound, Northeast Corner",41.85807394,-87.66600735,0,,1
+17252,17252,Ashland & Addison,"Ashland & Addison, Southbound, Southwest Corner",41.94682798,-87.66900526,0,,1
+17256,17256,Ashland & 47th Street,"Ashland & 47th Street, Northbound, Northeast Corner",41.80900898,-87.66484324,0,,1
+17257,17257,Ashland & 45th Street,"Ashland & 45th Street, Northbound, Northeast Corner",41.81245167,-87.66494095,0,,1
+17260,17260,Ashland & 47th Street,"Ashland & 47th Street, Southbound, Southwest Corner",41.8083993,-87.66510826,0,,1
+17392,17392,Ashland & Fullerton,"Ashland & Fullerton, Northbound, Northeast Corner",41.92531647,-87.66801338,0,,1
+17433,17433,95th Street & Halsted,"95th Street & Halsted, Westbound, Northwest Corner",41.72156727,-87.64355915,0,,1
+17488,17488,Ashland & Montrose,"Ashland & Montrose, Northbound, Northeast Corner",41.96191119,-87.66914105,0,,1
+17489,17489,Ashland & Wilson,"Ashland & Wilson, Southbound, Southwest Corner",41.96500945,-87.66948527,0,,1
+17521,17521,Ashland & 63rd Street,"Ashland & 63rd Street, Southbound, Southwest Corner",41.77925711,-87.6643695,0,,1
+17997,17997,Ashland & 45th Street,"Ashland & 45th Street, Southbound, Southwest Corner",41.81203439,-87.66519234,0,,1
+17998,17998,Ashland & 48th Street,"Ashland & 48th Street, Southbound, Southwest Corner",41.80651959,-87.66504894,0,,1
+18000,18000,Ashland & 61st Street,"Ashland & 61st Street, Southbound, Southwest Corner",41.78285964,-87.66443398,0,,1
+18001,18001,Ashland & 59th Street,"Ashland & 59th Street, Northbound, Northeast Corner",41.78703374,-87.66426391,0,,1
+18002,18002,Ashland & 51st Street,"Ashland & 51st Street, Northbound, Northeast Corner",41.8015747,-87.66464405,0,,1
+18004,18004,Ashland & 48th Street,"Ashland & 48th Street, Northbound, Northeast Corner",41.8069386,-87.6648044,0,,1
+18020,18020,Ashland & Pershing,"Ashland & Pershing, Southbound, Southwest Corner",41.8224284,-87.66559049,0,,1
+18079,18079,Beverly & 99th Street,"Beverly & 99th Street, Southbound, Southwest Corner",41.71359705,-87.65952899,0,,1
+18180,18180,Ashland & Marquette Rd,"Ashland & Marquette Rd, Southbound, Southwest Corner",41.77199001,-87.66416413,0,,1
+18181,18181,Ashland & 71st Street,"Ashland & 71st Street, Southbound, Southwest Corner",41.76465647,-87.66393461,0,,1
+18338,18338,Ashland & Grace,"Ashland & Grace, Southbound, Southwest Corner",41.95039915,-87.66908624,0,,1
+18390,18390,95th Red Line Station,"95th Red Line Station, Southbound, Bus Terminal",41.72159783,-87.62413073,0,,1
+18473,18473,Ashland & 70th Street,"Ashland & 70th Street, Northbound, Northeast Corner",41.76685058,-87.66372453,0,,1
+18621,18621,Ashland & Cullerton,"Ashland & Cullerton, Northbound, Northeast Corner",41.85516297,-87.6659101,0,,1
+18622,18622,North Ave & Cleveland,"North Ave & Cleveland, Eastbound, Southeast Corner",41.91099355,-87.64082837,0,,1
+18625,18625,Ashland & Grand,"Ashland & Grand, Southbound, Southwest Corner",41.89073521,-87.66727294,0,,1
+18632,18632,Ashland & Belmont/Lincoln,"Ashland & Belmont/Lincoln, Southbound, Southwest Corner",41.9393663,-87.66879706,0,,1
+18636,18636,Ashland & Belmont/Lincoln,"Ashland & Belmont/Lincoln, Northbound, Northeast Corner",41.94002983,-87.66855039,0,,1
+18637,18637,Ashland & Roscoe,"Ashland & Roscoe, Southbound, Southwest Corner",41.94313248,-87.66890298,0,,1
+18676,18676,Ashland & 46th Street,"Ashland & 46th Street, Northbound, Northeast Corner",41.81060612,-87.66488695,0,,1
+18683,18683,Ashland & 43rd Street,"Ashland & 43rd Street, Northbound, Northeast Corner",41.81617101,-87.66498326,0,,1
+18684,18684,Ashland & 46th Street,"Ashland & 46th Street, Southbound, Southwest Corner",41.81027968,-87.66513865,0,,1
+18712,18712,Ravenswood (west Leg) & Leland,"Ravenswood (west Leg) & Leland, Northbound, Northeast Corner",41.96756365,-87.67411645,0,,1
+18725,18725,Ashland & Irving Park,"Ashland & Irving Park, Northbound, Southeast Corner",41.9547264,-87.66891188,0,,1
+18726,18726,Ashland & Berteau,"Ashland & Berteau, Northbound, Northeast Corner",41.95825532,-87.669034,0,,1
+18727,18727,Wilson & Hermitage,"Wilson & Hermitage, Westbound, Northeast Corner",41.96528377,-87.67224362,0,,1
+18729,18729,Ashland & Montrose,"Ashland & Montrose, Southbound, Southwest Corner",41.96119907,-87.66938228,0,,1
+18730,18730,Ashland & Berteau,"Ashland & Berteau, Southbound, Southwest Corner",41.95761116,-87.66926322,0,,1
