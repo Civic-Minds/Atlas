@@ -28,7 +28,7 @@ import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { weekOfText, lateCount, lateHourLine, dayText, PERIOD_PILLS } from '../shared/liveWording';
+import { weekOfText, lateCount, lateHourLine, dayComparedWith, PERIOD_PILLS } from '../shared/liveWording';
 import { useLiveYesterday } from './hooks/useLiveYesterday';
 import MethodFootnote from './components/Live/MethodFootnote';
 
@@ -564,7 +564,7 @@ function AnalysisPage() {
           <div className="min-w-0">
             <PageTitle>{title}: how it is running</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {shownYesterday ? `${dayText(shownYesterday.date)} · ${(shownYesterday.weekly.thisWeek.late?.n ?? 0).toLocaleString()} trips · ` : v3.window.dates.length ? `${weekOfText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ${v3.totals.runs.toLocaleString()} trips · ` : `${v3.totals.runs.toLocaleString()} trips · `}estimated from where vehicles were, not reported by {agency.toUpperCase()}
+              {shownYesterday ? `${dayComparedWith(shownYesterday.date, shownYesterday.compareDate)} · ${(shownYesterday.weekly.thisWeek.late?.n ?? 0).toLocaleString()} trips · ` : v3.window.dates.length ? `${weekOfText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ${v3.totals.runs.toLocaleString()} trips · ` : `${v3.totals.runs.toLocaleString()} trips · `}estimated from where vehicles were, not reported by {agency.toUpperCase()}
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}

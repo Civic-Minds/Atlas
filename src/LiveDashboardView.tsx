@@ -21,7 +21,7 @@ import { SectionTitle } from './components/ui/PageTitle';
 import { lateCount, lateHourLine } from '../shared/liveWording';
 import MethodFootnote from './components/Live/MethodFootnote';
 import type { LiveYesterday } from '../shared/liveYesterday';
-import { NOT_ENOUGH_YESTERDAY, againstLastWeekday, changesComparedWithSameDay, dayText } from '../shared/liveWording';
+import { NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText } from '../shared/liveWording';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', '−');
@@ -47,7 +47,8 @@ function Delta({ k }: { k: Kpi }) {
 export function YesterdayTiles({ y, tiles }: { y: LiveYesterday; tiles?: Kpi[] }) {
   if (!y.weekly.thisWeek.healthyDates.length) return <p className="mt-5 text-sm text-[var(--text-muted)]">{NOT_ENOUGH_YESTERDAY}</p>;
   const ks = (tiles ?? kpiTiles(y.weekly, y.daily)).map(k => (k.delta ? { ...k, delta: { ...k.delta, text: againstLastWeekday(k.delta.text, y.compareDate) } } : k));
-  return <KpiTiles tiles={ks} caption={y.weekly.comparable ? changesComparedWithSameDay(y.compareDate) : NOT_ENOUGH_YESTERDAY} />;
+  // The comparison is named in the page subtitle ("Thursday, Oct 15, compared with Thursday, Oct 8"), not under the tiles.
+  return <KpiTiles tiles={ks} caption={y.weekly.comparable ? '' : NOT_ENOUGH_YESTERDAY} />;
 }
 
 /** The Yesterday view's late-by-hour, for Days. */
@@ -90,7 +91,7 @@ export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption: string }) 
           );
         })}
       </ul>
-      <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">{caption}</p>
+      {caption && <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">{caption}</p>}
     </section>
   );
 }

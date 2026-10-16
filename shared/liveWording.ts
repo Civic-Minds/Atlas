@@ -32,4 +32,6 @@ export const dayText = (date: string): string => `${weekdayOf(date)}, ${dateRang
 /** A tile's change line against the same weekday a week before: "▲ from 9% last week" becomes "▲ from 9% last Thursday". */
 export const againstLastWeekday = (line: string, compareDate: string): string => line.replace(/last week$/, `last ${weekdayOf(compareDate)}`);
 export const changesComparedWithSameDay = (compareDate: string): string => `Changes compared with the same day last week (${dayText(compareDate)})`;
+/** The Yesterday subtitle's opening, like the week's "Week of Oct 8–14, compared with Oct 1–7": "Thursday, Oct 15, compared with Thursday, Oct 8". */
+export const dayComparedWith = (date: string, compareDate: string): string => `${dayText(date)}, compared with ${dayText(compareDate)}`;
 export const NOT_ENOUGH_YESTERDAY = 'Not enough recordings yesterday to compare.';

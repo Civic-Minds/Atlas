@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { agencyYesterday, yesterdayFromV3 } from '../liveYesterday';
-import { againstLastWeekday, changesComparedWithSameDay, dayText } from '../liveWording';
+import { againstLastWeekday, dayComparedWith, dayText } from '../liveWording';
 import type { LiveV3 } from '../liveDashboard';
 
 const day = (late: number, healthy = true) => ({ healthy, days: 1, late: { share: late, n: 100 }, tripTime: null, extraWait: null, bunching: null, delivered: { share: 0.99, seen: 99, notSeen: 1, unknown: 0 }, lateByHour: [{ hour: 8, n: 20, lateShare: late }] });
@@ -26,6 +26,6 @@ describe('Yesterday wording', () => {
   it('names the day and the weekday it is compared with', () => {
     expect(dayText('2026-10-15')).toBe('Thursday, Oct 15');
     expect(againstLastWeekday('▲ from 9% last week', '2026-10-08')).toBe('▲ from 9% last Thursday');
-    expect(changesComparedWithSameDay('2026-10-08')).toBe('Changes compared with the same day last week (Thursday, Oct 8)');
+    expect(dayComparedWith('2026-10-15', '2026-10-08')).toBe('Thursday, Oct 15, compared with Thursday, Oct 8');
   });
 });
