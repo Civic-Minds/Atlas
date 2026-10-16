@@ -264,7 +264,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
   // The lite view (?view=lite), made to share: the week's tiles, the route strip, late by hour and a way into the rest.
   if (lite) return (
     <>
-      <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} branchLines /></ErrorBoundary>
+      <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={null} allOnly /></ErrorBoundary>
       <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
