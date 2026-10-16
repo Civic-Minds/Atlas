@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
+  LINK_LABELS, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -51,13 +51,6 @@ const axisMin = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 
 type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 
-function downloadCsv(filename: string, text: string) {
-  const url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-}
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
@@ -78,7 +71,7 @@ function Tile({ label, value, sub }: { label: string; value: string; sub: string
   );
 }
 
-function Filters({ v3, band, setBand, dir, setDir, bands = true }: { v3: LiveV3; band: DashboardBand; setBand: (b: DashboardBand) => void; dir: number | null; setDir: (d: number | null) => void; /** The dashboard shows the whole day: direction only. */ bands?: boolean }) {
+function Filters({ v3, dir, setDir }: { v3: LiveV3; dir: number | null; setDir: (d: number | null) => void }) {
   const dirs = Object.keys(v3.directionLabels).map(Number).sort();
   return (
     <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3" role="group" aria-label="Filters">
@@ -86,28 +79,34 @@ function Filters({ v3, band, setBand, dir, setDir, bands = true }: { v3: LiveV3;
         <Pill size="segment" selected={dir == null} onClick={() => setDir(null)}>Both directions</Pill>
         {dirs.map(d => <Pill key={d} size="segment" selected={dir === d} onClick={() => setDir(d)}>{v3.directionLabels[String(d)]}</Pill>)}
       </div>
-      {bands && <div className="flex flex-wrap gap-1.5" role="group" aria-label="Time of day">
-        {BANDS.map(([k, label]) => <Pill key={k} size="segment" selected={band === k} onClick={() => setBand(k)}>{label}</Pill>)}
-      </div>}
     </div>
   );
 }
 
+/** A section's answer for each time of day, as a compact list (no toggle): "AM peak: builds up by King St West". */
+function PerPeriod({ title, rows }: { title: string; rows: Array<{ key: string; label: string; text: string }> }) {
+  if (!rows.length) return null;
+  return (
+    <div className="mt-3">
+      <h4 className="text-sm font-black">{title}</h4>
+      <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 text-sm">
+        {rows.map(r => <div key={r.key} className="contents"><dt className="text-[var(--text-muted)]">{r.label}</dt><dd className="m-0">{r.text}</dd></div>)}
+      </dl>
+    </div>
+  );
+}
+const PERIOD_BANDS_ONLY = BANDS.filter(([k]) => k !== 'all');
+
 /** B1: how well the route keeps to its timetable, at timepoints (where the timetable really schedules a time). */
-function Adherence({ data, band, dir, lateMin }: { data: DashboardBandData; band: DashboardBand; dir: number | null; lateMin: number }) {
-  const v3Late = lateMin;
-  const [day, setDay] = useState<Day>(() => { const d = new URLSearchParams(window.location.search).get('day'); return d === 'weekday' || d === 'weekend' ? d : 'all'; });
-  useEffect(() => { syncUrlParams({ day: day === 'all' ? null : day }); }, [day]);
-  const block = data.adherence.timepoints[day];
+function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: number | null; lateMin: number }) {
   const countsFor = (d: Day) => { const b = data.adherence.timepoints[d]; return dir == null ? b.overall : b.byDirection[String(dir)]; };
-  const counts = countsFor(day);
   const all = countsFor('all');
-  // Hours are only drawn for the chosen time of day: the others have no departures in this view.
+  const parts = [{ name: 'Ahead', color: 'var(--status-caution-text)' }, { name: 'On time', color: 'var(--status-positive-text)' }, { name: 'Late', color: 'var(--status-negative-text)' }];
   return (
     <Section id="b1" title="How well it keeps to its timetable">
       {all && all.n > 0 ? (
         <>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">Share of departures {v3Late}+ minutes late, at the stops where the timetable gives a time.</p>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">Share of departures {lateMin}+ minutes late, at the stops where the timetable gives a time.</p>
           <div className="mt-3 grid max-w-2xl grid-cols-3 gap-2">
             {DAYS.map(([k, label]) => {
               const c = countsFor(k);
@@ -116,19 +115,25 @@ function Adherence({ data, band, dir, lateMin }: { data: DashboardBandData; band
                 : <Tile key={k} label={label} value="–" sub="too few departures" />;
             })}
           </div>
-          <div className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-2">
-            <h3 className="text-base font-black">By hour of the day</h3>
-            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Days for the hourly chart">
-              {DAYS.map(([k, label]) => <Pill key={k} size="segment" selected={day === k} onClick={() => setDay(k)}>{label}</Pill>)}
-            </div>
+          <h3 className="mt-6 text-base font-black">By hour of the day</h3>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">How many departures are ahead, on time or late in each hour. Hover over an hour to see its time of day.</p>
+          <div className="mt-3 grid gap-6 md:grid-cols-3">
+            {DAYS.map(([k, label]) => {
+              const c = countsFor(k);
+              return (
+                <HourBars
+                  key={k}
+                  title={label}
+                  showKey={k === 'weekend'}
+                  ariaLabel={`${label}: share of departures ahead of the timetable, on time and late, by hour of the day. ${c ? pct(c.lateShare) : '–'} late overall.`}
+                  parts={parts}
+                  columns={data.adherence.timepoints[k].byHour.map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
+                />
+              );
+            })}
           </div>
-          <HourBars
-            ariaLabel={`Share of departures ahead of the timetable, on time and late, by hour of the day. ${counts ? pct(counts.lateShare) : '–'} late overall.`}
-            parts={[{ name: 'Ahead', color: 'var(--status-caution-text)' }, { name: 'On time', color: 'var(--status-positive-text)' }, { name: 'Late', color: 'var(--status-negative-text)' }]}
-            columns={block.byHour.filter(h => band === 'all' || h.n > 0).map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
-          />
         </>
-      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time for this choice.</p>}
+      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time.</p>}
     </Section>
   );
 }
@@ -143,7 +148,6 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
     y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n,
   }));
   const scale = sharedScale(rows.map(pointsOf));
-  const csvRows = rows.flatMap(b => b.stretches.map(s => [v3.directionLabels[String(b.directionId)], s.fromName, s.toName, s.medianAddedMin, s.growShare, s.medianDelayMin, s.n]));
   return (
     <Section id="b3" title="Where delays build up">
       <p className="mt-2 text-sm text-[var(--text-muted)]">How late vehicles leave each stop along the route, and where that delay jumps and stays up.</p>
@@ -159,28 +163,38 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
               <ProfileBars
                 ariaLabel={`${label}: typical delay at each stop along the route. ${buildupSentence(label, b)}`}
                 takeaway={buildupTakeaway(b, lessExactStops(b.directionId))}
-                axisTitle="Minutes late leaving the stop (below the line: early)"
+                axisTitle="Minutes late"
                 points={points}
                 formatY={axisMin}
                 unit="trips"
                 valueHeader="Typical delay"
-                caption="Each bar is the typical delay at a stop. The spread (1 in 10 earliest and latest) is in the table."
+                caption="How late vehicles usually leave each stop: above the line is late, below is early."
                 whiskers={false}
                 zero
                 zeroLabel="On time"
                 scale={scale}
-                lessExactNote="the first stops, where vehicle positions arrive less often (in the tunnel), so the delay there is less exact."
+                lessExactNote="the first stops are in the tunnel, where we see the vehicles less often, so these are rough."
                 marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
+              />
+              <PerPeriod
+                title="By time of day"
+                rows={PERIOD_BANDS_ONLY.flatMap(([k, name]) => {
+                  const pb = v3.bands[k]?.buildup.find(x => x.directionId === b.directionId);
+                  if (!pb) return [];
+                  const text = pb.kind === 'forms' && pb.forms ? `builds up by ${shortStopName(pb.forms.toName)} (${mins(pb.forms.medianAddedMin)})` : pb.kind === 'gradual' ? 'builds slowly, no single stretch' : pb.kind === 'none' ? 'stays about level' : 'too few trips';
+                  return [{ key: k, label: name, text }];
+                })}
               />
               <div className="mt-3 overflow-x-auto">
                 <DataTable
+                  fixed
                   caption={`${label}: the stretches that add the most delay`}
                   rows={worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={[
                     { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => `${s.fromName} to ${s.toName}` },
-                    { key: 'added', header: 'Typical added', className: 'whitespace-nowrap', cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: 'Trips where it grows', className: 'whitespace-nowrap', cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
+                    { key: 'added', header: 'Typical added', cell: s => mins(s.medianAddedMin) },
+                    { key: 'grows', header: 'Trips where it grows', cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ]}
                 />
               </div>
@@ -188,9 +202,6 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
           );
         })}
       </div>
-      {csvRows.length > 0 && (
-        <p className="mt-3"><Pill tone="outline" onClick={() => downloadCsv('delay-by-stretch.csv', toCsv(['Direction', 'From', 'To', 'Typical added delay (min)', 'Share of trips where delay grows 30+ s', 'Typical delay at the end of the stretch (min)', 'Trips'], csvRows))}>Download the stretches as CSV</Pill></p>
-      )}
     </Section>
   );
 }
@@ -207,20 +218,21 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
       {top.length ? (
         <div className="mt-4 overflow-x-auto">
           <DataTable
+            fixed
             caption="Stops ranked by the share of late departures"
             rows={top}
             rowKey={s => `${s.stopId}-${s.directionId}`}
             columns={[
               { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
-              ...(both ? [{ key: 'dir', header: 'Direction', className: 'whitespace-nowrap', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-              { key: 'late', header: 'Late', className: 'whitespace-nowrap', cell: s => (
+              ...(both ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
+              { key: 'late', header: 'Late', cell: s => (
                 <span className="inline-flex items-center gap-2">
                   <span className="block h-2 w-20 rounded-sm bg-[var(--control-inactive-bg)]" aria-hidden="true"><span className="block h-full rounded-sm bg-[var(--accent)] opacity-90" style={{ width: `${Math.max(2, s.lateShare * 100)}%` }} /></span>
                   {pct(s.lateShare)}
                 </span>
               ) },
-              { key: 'median', header: 'Typical delay', className: 'whitespace-nowrap', cell: s => mins(s.medianMin) },
-              { key: 'p90', header: '1 in 10 later than', className: 'whitespace-nowrap', cell: s => mins(s.p90Min) },
+              { key: 'median', header: 'Typical delay', cell: s => mins(s.medianMin) },
+              { key: 'p90', header: '1 in 10 later than', cell: s => mins(s.p90Min) },
               { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
             ]}
           />
@@ -230,9 +242,6 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
         <p className="mt-2 max-w-2xl text-xs text-[var(--text-dim)]">
           Not ranked: the first {hidden[0].stops} stops {hidden.length === 1 ? v3.directionLabels[String(hidden[0].directionId)].toLowerCase() : 'in some directions'}, where delay is less exact (see the note above).
         </p>
-      )}
-      {top.length > 0 && (
-        <p className="mt-3"><Pill tone="outline" onClick={() => downloadCsv('stops-by-late-share.csv', toCsv(['Stop', 'Direction', 'Share of departures late', 'Typical delay (min)', 'Delay 1 in 10 exceed (min)', 'Departures'], ranked.map(s => [s.name, v3.directionLabels[String(s.directionId)], s.lateShare, s.medianMin, s.p90Min, s.n])))}>Download the stops as CSV</Pill></p>
       )}
     </Section>
   );
@@ -266,8 +275,8 @@ function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: Das
                   formatY={y => pct(y)}
                   unit="gaps"
                   valueHeader="Gaps off the timetable"
-                  caption="Share of gaps between vehicles that are too close together or too far apart, stop by stop."
-                  axisTitle="Share of gaps off the timetable"
+                  caption="How often vehicles arrive too close together or too far apart, at each stop."
+                  axisTitle="Share of gaps"
                   scale={scale}
                   series={[{ name: 'Too close together', color: 'var(--status-negative-text)' }, { name: 'Too far apart', color: 'var(--status-caution-text)' }]}
                   marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? 'Forms here' : 'Biggest rise' }] : []}
@@ -287,6 +296,15 @@ function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: Das
                   <p className="mt-1 text-xs text-[var(--text-dim)]">Linked means it was measured in this stretch, not that it is the cause.</p>
                 </>
               )}
+              <PerPeriod
+                title="By time of day"
+                rows={PERIOD_BANDS_ONLY.flatMap(([k, name]) => {
+                  const pb = b.bands[k];
+                  if (!pb || pb.kind == null) return [];
+                  const text = pb.kind === 'forms' && pb.forms ? `forms by ${shortStopName(pb.forms.toName)}` : pb.kind === 'gradual' ? 'builds slowly, no single stretch' : 'stays close to the timetable';
+                  return [{ key: k, label: name, text }];
+                })}
+              />
             </div>
           );
         })}
@@ -396,8 +414,8 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
                       formatY={y => `${num(y)} min`}
                       unit="gaps"
                       valueHeader="Extra wait"
-                      caption="Extra wait at each stop along the route."
-                      axisTitle="Extra minutes of waiting"
+                      caption="How much longer riders wait than the timetable says, at each stop."
+                      axisTitle="Extra minutes"
                       scale={scale}
                     />
                   )}
@@ -408,14 +426,15 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
           {worst.length > 0 && (
             <div className="mt-5 overflow-x-auto">
               <DataTable
+                fixed
                 caption="Stops where riders wait longest compared with the timetable"
                 rows={worst}
                 rowKey={s => `${s.stopId}-${s.directionId}`}
                 columns={[
                   { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
-                  ...(dir == null ? [{ key: 'dir', header: 'Direction', className: 'whitespace-nowrap', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-                  { key: 'extra', header: 'Extra wait', className: 'whitespace-nowrap', cell: s => `${num(s.extraWaitMin)} min` },
-                  { key: 'sched', header: 'Scheduled every', className: 'whitespace-nowrap', cell: s => `${num(s.scheduledGapMin)} min` },
+                  ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
+                  { key: 'extra', header: 'Extra wait', cell: s => `${num(s.extraWaitMin)} min` },
+                  { key: 'sched', header: 'Scheduled every', cell: s => `${num(s.scheduledGapMin)} min` },
                   { key: 'n', header: 'Gaps', cell: s => s.gaps.toLocaleString() },
                 ]}
               />
@@ -447,12 +466,12 @@ function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
             unit="trips"
             valueHeader="Ran"
             rowHeader="Day"
-            caption="Share of scheduled trips that ran, day by day."
+            caption="How many of the scheduled trips ran, each day."
             scale={{ min: 0.9, max: 1 }}
           />
         </div>
       )}
-      <p className="mt-2 text-xs text-[var(--text-dim)]">The bars start at 90%.{skipped.length > 0 && <> Not counted: {skipped.map(d => dateRangeText(d.date, d.date)).join(', ')} (gaps in our recordings).</>}</p>
+      <p className="mt-2 text-xs text-[var(--text-dim)]">Trips during gaps in our recordings aren't counted.{skipped.length > 0 && <> Not counted: {skipped.map(d => dateRangeText(d.date, d.date)).join(', ')} (gaps in our recordings).</>}</p>
     </Section>
   );
 }
@@ -494,10 +513,12 @@ const BOUNDARY = (what: string) => `${what} could not be drawn: the analysis fil
 export default function LiveRoutePage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(agency, route);
-  const [band, setBand] = useState<DashboardBand>(() => { const b = new URLSearchParams(window.location.search).get('band'); return BANDS.some(x => x[0] === b) ? (b as DashboardBand) : 'all'; });
+  // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
+  // whose answer differs by period list it per period.
+  const band: DashboardBand = 'all';
   const [dir, setDir] = useState<number | null>(() => { const d = new URLSearchParams(window.location.search).get('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   // The filters live in the address, so a link reopens the same view.
-  useEffect(() => { syncUrlParams({ band: band === 'all' ? null : band, dir: dir == null ? null : String(dir) }); }, [band, dir]);
+  useEffect(() => { syncUrlParams({ band: null, day: null, dir: dir == null ? null : String(dir) }); }, [dir]);
   // The dashboard is the default; ?view=analysis is the full page.
   const [view, setView] = useState<'dashboard' | 'analysis'>(() => (new URLSearchParams(window.location.search).get('view') === 'analysis' ? 'analysis' : 'dashboard'));
   useEffect(() => { syncUrlParams({ view: view === 'analysis' ? 'analysis' : null }); }, [view]);
@@ -547,12 +568,12 @@ export default function LiveRoutePage() {
         </div>
         {view === 'dashboard' ? (
           <LiveDashboardView v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}
-            filters={<Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} bands={false} />}
+            filters={<Filters v3={v3} dir={dir} setDir={setDir} />}
             toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
         ) : (<>
-        <Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} />
+        <Filters v3={v3} dir={dir} setDir={setDir} />
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} band={band} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Run time vs schedule')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>

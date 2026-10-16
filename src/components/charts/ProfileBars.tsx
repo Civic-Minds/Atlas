@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import DataTable from '../ui/DataTable';
 import { pickAxisLabels } from '../../utils/stopLabel';
 
@@ -69,7 +69,7 @@ interface ProfileBarsProps {
   valueHeader: string;
   /** Header for the reference column of the table view (when points carry `ref`). */
   refHeader?: string;
-  /** What the "Show as a table" first column holds (default Stop). */
+  /** What the data table's first column holds (default Stop). */
   rowHeader?: string;
 }
 
@@ -114,10 +114,11 @@ function usePlotWidth() {
  * One bar per stop along the route, in the same shape as the route card's schedule sparkline: narrow rounded bars at
  * 90% opacity with a small gap. It has a real value axis with units, a solid zero line when values go below zero, a few
  * stop names that never overlap (the ends, the marked stretch, major stops), and a shaded, striped look for points that
- * are measured less exactly. The values are also available as a table.
+ * are measured less exactly. The values are also in a table for screen readers.
  */
 export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
   const [plotRef, plotWidth] = usePlotWidth();
+  const tableId = useId();
   if (points.length < 2) return null;
   const own = scale ?? sharedScale([points]);
   const axis = niceAxis(own.min, own.max);
@@ -145,7 +146,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
   return (
     <figure className="m-0">
       {takeaway && <p className="mt-2 text-sm font-bold leading-6">{takeaway}</p>}
-      <div role="img" aria-label={ariaLabel} tabIndex={0} className="mt-2">
+      <div role="img" aria-label={ariaLabel} tabIndex={0} aria-describedby={tableId} className="mt-2">
         {axisTitle && <div className="mb-1 pl-16 text-xs text-[var(--text-dim)]" aria-hidden="true">{axisTitle}</div>}
         <div className={`flex gap-2 ${marks.length ? 'pt-5' : ''}`} aria-hidden="true">
           <div className="relative w-14 shrink-0 text-right text-xs text-[var(--text-dim)]" style={{ height: H }}>
@@ -200,7 +201,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
         </div>
       </div>
       <figcaption className="mt-1 text-xs text-[var(--text-dim)]">
-        {caption} Faded bars are based on fewer than {minN} {unit}.
+        {caption} Paler bars rest on fewer than {minN} {unit}.
         {runs.length > 0 && lessExactNote && <span className="mt-1 flex items-center gap-1"><span className="inline-block h-2 w-3 rounded-sm" style={{ background: stripe(color0) }} aria-hidden="true" />Striped bars: {lessExactNote}</span>}
         {series && series.length > 1 && (
           <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
@@ -208,10 +209,11 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
           </span>
         )}
       </figcaption>
-      <details className="mt-2 text-xs">
-        <summary className="cursor-pointer font-bold text-[var(--accent)]">Show as a table</summary>
-        <div className="mt-2 max-h-64 overflow-auto">
+      {/* The numbers behind the chart, for screen readers only: linked to the chart by aria-describedby. */}
+      <div id={tableId} className="sr-only">
+        <div>
           <DataTable
+            fixed
             caption={ariaLabel}
             rows={points.map((p, i) => ({ p, i }))}
             rowKey={r => `${r.p.label}-${r.i}`}
@@ -224,7 +226,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
             ]}
           />
         </div>
-      </details>
+      </div>
     </figure>
   );
 }

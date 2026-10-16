@@ -301,7 +301,7 @@ export function extraWaitSentence(stops: ReadonlyArray<{ name: string; extraWait
 /** "96% of scheduled trips ran" with how it was counted, in plain words. */
 export function deliveredSentence(d: DeliveredFigures, label?: string): string {
   if (d.share == null) return `${label ? `${label}: ` : ''}not enough days of recordings to say how many scheduled trips ran.`;
-  return `${label ? `${label}: ` : ''}${m1(Math.round(d.share * 1000) / 10)}% of scheduled trips ran (${d.seen.toLocaleString()} of ${(d.seen + d.notSeen).toLocaleString()} that we can judge).`;
+  return `${label ? `${label}: ` : ''}${m1(Math.round(d.share * 1000) / 10)}% of scheduled trips ran (${d.seen.toLocaleString()} of ${(d.seen + d.notSeen).toLocaleString()}).`;
 }
 
 export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered';

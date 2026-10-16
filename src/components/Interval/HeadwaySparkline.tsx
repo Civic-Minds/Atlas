@@ -15,6 +15,7 @@ import { TripTimeStrip } from './TripTimeStrip';
 import type { TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
+import { HOUR_TO_PERIOD, PERIOD_BANDS, PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
 
 const HOURS = SPARKLINE_HOURS;
 
@@ -69,33 +70,6 @@ export function slowerDirectionKey(options: { key: string; byHour: HeadwayByHour
   }
   return best?.key ?? options?.[0]?.key ?? null;
 }
-
-const HOUR_TO_PERIOD: Record<number, string> = Object.fromEntries(
-  HOURS.map(h => [h, periodKeyForHour(h)]).filter(([, p]) => p != null),
-) as Record<number, string>;
-
-// Contiguous hover bands per period (overnight tail: 2 AM, 3 AM, 4 AM, 5 AM)
-const PERIOD_BANDS: Record<string, { left: number; width: number }[]> = (() => {
-  const result: Record<string, { left: number; width: number }[]> = {};
-  let i = 0;
-  while (i < HOURS.length) {
-    const p = HOUR_TO_PERIOD[HOURS[i]];
-    if (!p) { i++; continue; }
-    const start = i;
-    while (i < HOURS.length && HOUR_TO_PERIOD[HOURS[i]] === p) i++;
-    (result[p] ??= []).push({ left: start / HOURS.length, width: (i - start) / HOURS.length });
-  }
-  return result;
-})();
-
-const PERIOD_OVERVIEW_BANDS = TIME_PERIODS.map(period => {
-  const bands = PERIOD_BANDS[period.key] ?? [];
-  const first = bands[0];
-  const last = bands[bands.length - 1];
-  return first && last
-    ? { ...period, left: first.left, width: last.left + last.width - first.left }
-    : null;
-}).filter((band): band is (typeof TIME_PERIODS)[number] & { left: number; width: number } => band != null);
 
 interface HourlySparklineProps {
   byHour: HeadwayByHour;

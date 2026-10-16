@@ -73,26 +73,25 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
   });
 
-  it('applies the time of day to every section and keeps the filters in the address', async () => {
+  it('has no time-of-day toggle: the whole day, a per-period list where the answer differs, and the direction in the address', async () => {
     renderPage(ready);
     await screen.findByRole('heading', { name: /how it is running/ });
-    fireEvent.click(screen.getByRole('button', { name: 'AM peak' }));
-    expect(within(screen.getByRole('region', { name: /How well it keeps/ })).getByText('All days', { selector: 'div' }).nextElementSibling!.textContent).toBe('30%');
+    expect(screen.queryByRole('button', { name: 'AM peak' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Weekends' })).toBeNull();
+    // All days, weekdays and weekends: three hourly charts side by side.
+    const b1 = screen.getByRole('region', { name: /How well it keeps/ });
+    expect(within(b1).getAllByRole('img').length).toBe(3);
+    expect(screen.getAllByText('By time of day').length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'Westbound' }));
-    expect(screen.queryByText(/Eastbound: delay builds up/)).toBeNull();
-    expect(new URLSearchParams(window.location.search).get('band')).toBe('amPeak');
+    expect(screen.queryByText(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3/)).toBeNull();
     expect(new URLSearchParams(window.location.search).get('dir')).toBe('1');
-    fireEvent.click(screen.getByRole('button', { name: 'Weekends' }));
-    expect(new URLSearchParams(window.location.search).get('day')).toBe('weekend');
   });
 
-  it('opens on the view in the address', async () => {
-    window.history.replaceState(null, '', '/apps/live/ttc/505?view=analysis&band=amPeak&dir=0&day=weekday');
+  it('opens on the view and direction in the address', async () => {
+    window.history.replaceState(null, '', '/apps/live/ttc/505?view=analysis&dir=0');
     renderPage(ready);
     await screen.findByRole('heading', { name: /how it is running/ });
-    expect(screen.getByRole('button', { name: 'AM peak' }).getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByRole('button', { name: 'Eastbound' }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('button', { name: 'Weekdays' }).getAttribute('aria-pressed')).toBe('true');
   });
 
   it('shows names in normal case, one caption per chart, counts on each bar and a table view', async () => {
@@ -103,14 +102,18 @@ describe('Live route dashboard', () => {
     expect(screen.queryByText(/RONCESVALLES/)).toBeNull();
     expect(screen.getAllByText(/Roncesvalles Ave at Queen St W/).length).toBeGreaterThan(0);
     // One plain caption per chart (no ranges), merged with what the bars are.
-    expect(screen.getByText('Faded bars are based on fewer than 30 departures.')).toBeTruthy();
-    expect(screen.getAllByText(/Faded bars are based on fewer than 30 trips\./).length).toBe(2);
-    expect(screen.getAllByText(/Faded bars are based on fewer than 30 gaps\./).length).toBe(2);
+    expect(screen.getByText('Paler bars rest on fewer than 30 departures.')).toBeTruthy();
+    expect(screen.getAllByText(/Paler bars rest on fewer than 30 trips\./).length).toBe(2);
+    expect(screen.getAllByText(/Paler bars rest on fewer than 30 gaps\./).length).toBe(2);
     expect(document.body.textContent).not.toMatch(/Each (bar|point) is \d/);
     expect(document.body.textContent).not.toMatch(/near here/);
     // Each figure is one focusable unit with a summary; each chart can be read as a table.
     for (const chart of screen.getAllByRole('img')) expect(chart.getAttribute('tabindex')).toBe('0');
-    expect(screen.getAllByText('Show as a table').length).toBe(5);
+    // No visible table toggles: each chart's numbers are a screen-reader table linked by aria-describedby.
+    expect(screen.queryByText('Show as a table')).toBeNull();
+    for (const chart of screen.getAllByRole('img')) expect(document.getElementById(chart.getAttribute('aria-describedby')!)?.querySelector('table')).toBeTruthy();
+    // No downloads on the Live page.
+    expect(screen.queryByRole('button', { name: /CSV/ })).toBeNull();
   });
 
   it('shows trip time, extra wait, service delivered and this week against last week, in plain words', async () => {
@@ -136,7 +139,7 @@ describe('Live route dashboard', () => {
     expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();
     expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
     expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
-    expect(screen.getByText('97% of scheduled trips ran (194 of 200 that we can judge).')).toBeTruthy();
+    expect(screen.getByText('97% of scheduled trips ran (194 of 200).')).toBeTruthy();
     expect(screen.getByText(/Not counted: Oct 14/)).toBeTruthy();
   });
 
@@ -156,12 +159,6 @@ describe('Live route dashboard', () => {
     expect(within(b2).queryAllByText('Westbound').length).toBe(0);
   });
 
-  it('offers the stop and stretch tables as CSV', async () => {
-    renderPage(ready);
-    await screen.findByRole('heading', { name: /how it is running/ });
-    expect(screen.getByRole('button', { name: 'Download the stops as CSV' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Download the stretches as CSV' })).toBeTruthy();
-  });
 
   it('shows how fresh the data is and warns when it is old', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
