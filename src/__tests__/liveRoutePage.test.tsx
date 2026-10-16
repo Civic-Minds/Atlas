@@ -51,14 +51,15 @@ describe('Live route dashboard', () => {
     expect(await screen.findByRole('heading', { name: /TTC 505: how it is running/ })).toBeTruthy();
     // U9: a link is shown as a link, never as a verdict.
     expect(document.body.textContent).not.toMatch(/caused by|because of/i);
-    // B1: one headline number, "late", with its count; ahead is a quiet note.
+    // B1: all days, weekdays and weekends side by side, each the share late with its count; no pill swaps a number.
     const b1 = screen.getByRole('region', { name: /How well it keeps to its timetable/ });
-    expect(within(b1).getByText('Late', { selector: 'div' }).nextElementSibling!.textContent).toBe('9%');
-    expect(within(b1).getByText('90 of 1,000 departures were 5.5+ minutes late')).toBeTruthy();
-    expect(within(b1).queryByText('Not late')).toBeNull();
-    // B3: sentence with the consistency, and the table of stretches.
-    expect(screen.getAllByText(/Eastbound: delay builds up between Stop 2 and Stop 3: \+2\.4 min added there.*grows by 30\+ seconds on 75% of 300 trips/)).toBeTruthy();
-    expect(screen.getByText('Westbound: delay does not build up along the route.')).toBeTruthy();
+    expect(within(b1).getByText('All days', { selector: 'div' }).nextElementSibling!.textContent).toBe('9%');
+    expect(within(b1).getAllByText(/late, of 1,000/).length).toBeGreaterThan(0);
+    expect(within(b1).getByText('Weekdays', { selector: 'div' })).toBeTruthy();
+    expect(within(b1).getByText('Weekends', { selector: 'div' })).toBeTruthy();
+    // B3: one takeaway line per chart that says what the chart shows, and the table of stretches.
+    expect(screen.getByText(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3, and stays up/)).toBeTruthy();
+    expect(screen.getByText(/^Delay stays about the same from end to end/)).toBeTruthy();
     // B2: ranked by late share, one table, with the sample size.
     const b2 = screen.getByRole('region', { name: /Stops with the most delay/ });
     expect(within(b2).getAllByRole('row').length).toBeGreaterThan(2);
@@ -76,7 +77,7 @@ describe('Live route dashboard', () => {
     renderPage(ready);
     await screen.findByRole('heading', { name: /how it is running/ });
     fireEvent.click(screen.getByRole('button', { name: 'AM peak' }));
-    expect(within(screen.getByRole('region', { name: /How well it keeps/ })).getByText('Late', { selector: 'div' }).nextElementSibling!.textContent).toBe('30%');
+    expect(within(screen.getByRole('region', { name: /How well it keeps/ })).getByText('All days', { selector: 'div' }).nextElementSibling!.textContent).toBe('30%');
     fireEvent.click(screen.getByRole('button', { name: 'Westbound' }));
     expect(screen.queryByText(/Eastbound: delay builds up/)).toBeNull();
     expect(new URLSearchParams(window.location.search).get('band')).toBe('amPeak');
@@ -124,14 +125,19 @@ describe('Live route dashboard', () => {
     };
     renderPage({ ...ready, v3: rich });
     await screen.findByRole('heading', { name: /how it is running/ });
-    expect(screen.getByText('9% late, down from 12%.')).toBeTruthy();
-    expect(screen.getByText('96% of scheduled trips ran, down from 99%.')).toBeTruthy();
-    expect(screen.getByText(/Days when our recordings have gaps are left out of both/)).toBeTruthy();
+    // This week against last week: tiles with a change chip, coloured only beyond normal week-to-week noise.
+    const weekRegion = screen.getByRole('region', { name: /This week compared with last week/ });
+    const lateTile = within(weekRegion).getByLabelText(/^Late: 9%, last week 12%, better$/);
+    expect(within(lateTile).getByText(/3 pts/)).toBeTruthy();
+    expect(within(weekRegion).getByLabelText(/^Trips that ran: 96%, last week 99%, worse$/)).toBeTruthy();
+    // Bunched 20% both weeks: about the same, not coloured.
+    expect(within(weekRegion).getByLabelText(/^Bunched or gapped: 20%, last week 20%, about the same$/)).toBeTruthy();
+    expect(screen.getByText(/left out of both weeks/)).toBeTruthy();
     expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();
     expect(screen.getByText('Westbound: no trip was measured from end to end.')).toBeTruthy();
     expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
     expect(screen.getByText('97% of scheduled trips ran (194 of 200 that we can judge).')).toBeTruthy();
-    expect(screen.getByText(/Days when our recordings have gaps are not counted.*Oct 14/)).toBeTruthy();
+    expect(screen.getByText(/Not counted: Oct 14/)).toBeTruthy();
   });
 
   it('says how many runs were left out and why, so the figures are honest about what they cover', async () => {
@@ -179,7 +185,7 @@ describe('Live route dashboard', () => {
     renderPage(broken);
     expect(await screen.findByText(/Where delays build up could not be drawn/)).toBeTruthy();
     expect(screen.getByRole('region', { name: /How well it keeps to its timetable/ })).toBeTruthy();
-    expect(screen.getByRole('region', { name: /How this is measured/ })).toBeTruthy();
+    expect(screen.getByText('How this is measured')).toBeTruthy();
     vi.restoreAllMocks();
   });
 

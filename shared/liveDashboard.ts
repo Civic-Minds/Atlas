@@ -148,6 +148,18 @@ export function buildupSentence(label: string, b: DashboardBuildup): string {
   return `${label}: too few trips to say where delay builds up.`;
 }
 
+/** B3's one-line takeaway above the chart: what the bars show, in the chart's own terms. */
+export function buildupTakeaway(b: DashboardBuildup, lessExactStops = 0): string {
+  // The start is read at the first stop measured well (510 northbound's first stops are in the tunnel).
+  const first = b.stretches.find((s, i) => s.n >= 30 && i >= Math.max(0, lessExactStops - 1)) ?? b.stretches[0];
+  const last = [...b.stretches].reverse().find(s => s.n >= 30) ?? b.stretches[b.stretches.length - 1];
+  const ends = first && last ? ` (${min(first.medianDelayMin)} at the start, ${min(last.medianDelayMin)} at the end)` : '';
+  if (b.kind === 'forms' && b.forms) return `Delay jumps by ${min(b.forms.medianAddedMin)} between ${b.forms.fromName} and ${b.forms.toName}, and stays up${ends}.`;
+  if (b.kind === 'gradual') return `Delay builds slowly along the route; no single stretch stands out${ends}.`;
+  if (b.kind === 'none') return `Delay stays about the same from end to end${ends}.`;
+  return 'Too few trips to say where delay builds up.';
+}
+
 /** B4: one sentence per direction and period. "Linked to", never "caused by". */
 export function bunchingSentence(label: string, b: DashboardBunchingBand): string {
   if (b.kind == null) return `${label}: too few measured stops to say where bunching forms.`;
@@ -284,6 +296,57 @@ export function deliveredSentence(d: DeliveredFigures, label?: string): string {
 export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered';
 
 /** One comparison line per measure, this week against last, with a plain up or down. The same rule for every measure. */
+/**
+ * The smallest week-to-week change that counts as a real change for each measure. Two weeks of the same route move by
+ * about this much on their own (a different mix of weekdays, one bad afternoon), so a smaller change reads "about the
+ * same" and is not coloured: 20% to 21% bunched is noise, not a worse week.
+ */
+export const WEEK_NOISE: Record<CompareKey, number> = {
+  late: 0.03,        // 3 percentage points
+  tripTime: 2,       // 2 minutes
+  extraWait: 0.5,    // half a minute
+  bunching: 0.03,    // 3 percentage points
+  delivered: 0.01,   // 1 percentage point
+};
+
+export interface CompareTile {
+  key: CompareKey;
+  label: string;
+  /** This week's value, formatted. */
+  value: string;
+  /** Change from last week, formatted ("+2 pts", "−1 min"), or null when there is nothing to compare. */
+  delta: string | null;
+  /** better / worse only when the change is bigger than WEEK_NOISE; otherwise same. */
+  direction: 'better' | 'worse' | 'same' | 'unknown';
+  /** Last week's value, formatted, for the tooltip and screen readers. */
+  before: string | null;
+}
+
+/** This week against last week as five tiles: a number, a label and a change chip coloured only beyond normal noise. */
+export function compareTiles(w: NonNullable<LiveV3['weekly']>): CompareTile[] {
+  const t = w.thisWeek, l = w.lastWeek;
+  // A change that rounds to nothing reads ±0, never −0.
+  const signed = (r: number, unit: string) => `${r > 0 ? '+' : r < 0 ? '−' : '±'}${m1(Math.abs(r))} ${unit}`;
+  const points = (r: number) => signed(r, Math.abs(r) === 1 ? 'pt' : 'pts');
+  const minutes = (x: number) => signed(Math.round(x * 10) / 10, 'min');
+  const pts = (x: number) => points(Math.round(x * 100));
+  const tile = (key: CompareKey, label: string, now: number | null, before: number | null, fmt: (x: number) => string, delta: (d: number) => string, lowerIsBetter: boolean): CompareTile => {
+    if (now == null) return { key, label, value: '–', delta: null, direction: 'unknown', before: null };
+    if (before == null) return { key, label, value: fmt(now), delta: null, direction: 'unknown', before: null };
+    const d = now - before;
+    const direction = Math.abs(d) < WEEK_NOISE[key] - 1e-9 ? 'same' : (d < 0) === lowerIsBetter ? 'better' : 'worse';
+    return { key, label, value: fmt(now), delta: delta(d), direction, before: fmt(before) };
+  };
+  const pct0 = (x: number) => `${Math.round(x * 100)}%`;
+  return [
+    tile('late', 'Late', t.late?.share ?? null, l.late?.share ?? null, pct0, pts, true),
+    tile('tripTime', 'Typical trip', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, x => `${Math.round(x)} min`, minutes, true),
+    tile('extraWait', 'Extra wait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, x => `${m1(x)} min`, minutes, true),
+    tile('bunching', 'Bunched or gapped', t.bunching?.share ?? null, l.bunching?.share ?? null, pct0, pts, true),
+    tile('delivered', 'Trips that ran', t.delivered?.share ?? null, l.delivered?.share ?? null, x => `${m1(Math.round(x * 1000) / 10)}%`, d => points(Math.round(d * 1000) / 10), false),
+  ];
+}
+
 export function compareLines(w: NonNullable<LiveV3['weekly']>): Array<{ key: CompareKey; label: string; text: string; direction: 'better' | 'worse' | 'same' | 'unknown' }> {
   const t = w.thisWeek, l = w.lastWeek;
   const pct0 = (x: number) => `${Math.round(x * 100)}%`;
