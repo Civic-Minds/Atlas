@@ -14,10 +14,10 @@ const GUTTER = {
   wide: 'px-6 py-8 sm:px-10 lg:px-16',
 } as const;
 
-export default function PageShell({ variant = 'docs', stickyHeader = false, footer = true, children }: { variant?: keyof typeof GUTTER; stickyHeader?: boolean; footer?: boolean; children: ReactNode }) {
+export default function PageShell({ variant = 'docs', stickyHeader = false, footer = true, maxWidth = 'max-w-5xl', children }: { variant?: keyof typeof GUTTER; stickyHeader?: boolean; footer?: boolean; /** Tailwind max-width class for the column (default max-w-5xl). */ maxWidth?: string; children: ReactNode }) {
   return (
     <main className={`flex min-h-screen flex-col bg-[var(--bg-app)] text-[var(--text-primary)] ${GUTTER[variant]}`}>
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col">
+      <div className={`mx-auto flex w-full ${maxWidth} flex-1 flex-col`}>
         {stickyHeader ? (
           <div className="sticky top-0 z-30 -my-3 bg-[var(--bg-app)] py-3">
             <SiteHeader />

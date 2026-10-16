@@ -25,6 +25,14 @@ export interface RouteStripProps {
   /** The strip becomes a vertical list on phones (screens under 480px wide), or when its own column is narrower than this (px). Default 360. */
   verticalBelow?: number;
   className?: string;
+  /** A stop the parent has picked (by position): drawn marked, and kept when the pointer leaves. Optional: without it the strip only shows hover. */
+  selected?: number | null;
+  /** Called with the stop's position when a stop is clicked, tapped, or chosen with Enter. */
+  onSelect?: (index: number) => void;
+  /** The track whose marked stretch is picked, drawn marked. */
+  selectedStretch?: RouteStripMode | null;
+  /** Called when a marked stretch's bracket is clicked. */
+  onSelectStretch?: (mode: RouteStripMode) => void;
 }
 
 const INSET = 10;
@@ -83,7 +91,7 @@ interface Track {
  * named, and a "Show all stops" switch for the full list. The strip is one focusable unit: its label sums it up, the
  * arrow keys step through the stops, and the same figures are in a table for screen readers.
  */
-export default function RouteStrip({ stops, modes = ['delay', 'bunching'], directionLabel, delaysStart, bunchingForms, minN = MIN_N, verticalBelow = 360, className = '' }: RouteStripProps) {
+export default function RouteStrip({ stops, modes = ['delay', 'bunching'], directionLabel, delaysStart, bunchingForms, minN = MIN_N, verticalBelow = 360, className = '', selected = null, onSelect, selectedStretch = null, onSelectStretch }: RouteStripProps) {
   const [ref, width] = useWidth();
   const [active, setActive] = useState<number | null>(null);
   const [allStops, setAllStops] = useState(false);
@@ -116,7 +124,10 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
     else if (e.key === 'Home') next(0);
     else if (e.key === 'End') next(count - 1);
     else if (e.key === 'Escape') setActive(null);
-  }, [active, count, vertical]);
+    else if ((e.key === 'Enter' || e.key === ' ') && active != null && onSelect) { e.preventDefault(); onSelect(active); }
+  }, [active, count, vertical, onSelect]);
+  // Vertical lists only call this on a click or tap, so it is where a pick is reported.
+  const pickStop = useCallback((i: number | null) => { setActive(i); if (i != null) onSelect?.(i); }, [onSelect]);
 
   const activeStop = active != null ? stops[active] : null;
   const announce = activeStop ? `${activeStop.name}. ${stopDetail(activeStop).lines.join('. ')}.` : '';
@@ -146,7 +157,9 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
     if (count === 0) return;
     const x = e.clientX - e.currentTarget.getBoundingClientRect().left;
     const i = Math.round(((x - GUTTER - INSET) / (inner || 1)) * (count - 1));
-    setActive(Math.max(0, Math.min(count - 1, i)));
+    const at = Math.max(0, Math.min(count - 1, i));
+    setActive(at);
+    if (e.type === 'pointerdown') onSelect?.(at);
   };
 
   const legend = (
@@ -203,8 +216,8 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
         <span id={liveId} className="sr-only" aria-live="polite">{announce}</span>
         {vertical ? (
           allStops
-            ? <VerticalList stops={stops} tracks={tracks} active={active} setActive={setActive} />
-            : <CompactList stops={stops} tracks={tracks} active={active} setActive={setActive} />
+            ? <VerticalList stops={stops} tracks={tracks} active={active ?? selected} setActive={pickStop} />
+            : <CompactList stops={stops} tracks={tracks} active={active ?? selected} setActive={pickStop} showDetail={!onSelect} />
         ) : width > 0 && count > 0 ? (
           <div
             className="relative touch-pan-y select-none"
@@ -215,12 +228,17 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
             aria-hidden="true"
           >
             {active != null && <div className="pointer-events-none absolute rounded-md bg-[var(--bg-btn-hover)] opacity-60" style={{ left: xs[active] - Math.max(8, spacing / 2), width: Math.max(16, spacing), top: MARK_H - 4, height: labelsTop - MARK_H + 8 }} />}
+            {selected != null && xs[selected] != null && <div className="pointer-events-none absolute rounded-md bg-[var(--accent-selected-bg)]" style={{ left: xs[selected] - Math.max(8, spacing / 2), width: Math.max(16, spacing), top: MARK_H - 4, height: labelsTop - MARK_H + 8 }} />}
             {tracks.map((t, k) => (
               <Fragment key={t.mode}>
                 <span className="absolute left-0 text-xs font-bold text-[var(--text-secondary)]" style={{ top: lineY(k) - 8, width: GUTTER - 8 }}>{TRACK_NAME[t.mode]}</span>
                 {t.stretch && (
-                  <div className="pointer-events-none absolute" style={{ left: xs[t.stretch.from] - 7, width: xs[t.stretch.to] - xs[t.stretch.from] + 14, top: trackTop(k) + 4, height: MARK_H - 4 }}>
-                    <div className="absolute inset-x-0 bottom-0 h-2 rounded-t-sm border-x-2 border-t-2 border-[var(--text-secondary)]" />
+                  <div
+                    className={`absolute ${onSelectStretch ? 'cursor-pointer' : 'pointer-events-none'}`}
+                    style={{ left: xs[t.stretch.from] - 7, width: xs[t.stretch.to] - xs[t.stretch.from] + 14, top: trackTop(k) + 4, height: MARK_H - 4 }}
+                    onPointerDown={onSelectStretch ? e => { e.stopPropagation(); onSelectStretch(t.mode); } : undefined}
+                  >
+                    <div className={`absolute inset-x-0 bottom-0 h-2 rounded-t-sm border-x-2 border-t-2 ${selectedStretch === t.mode ? 'border-[var(--accent)]' : 'border-[var(--text-secondary)]'}`} />
                     <span
                       className="absolute bottom-3 whitespace-nowrap text-xs font-bold text-[var(--text-primary)]"
                       style={xs[t.stretch.from] < GUTTER + plotW / 2 ? { left: 0 } : { right: 0 }}
@@ -369,11 +387,13 @@ const ROW_NAMED = 22;
  * Phones: a vertical line per track, side by side, with only the key stops named (both ends, the marked stretches, a
  * few stations); the stops between are small unnamed dots. Tap anywhere on the lines to pick the nearest stop.
  */
-function CompactList({ stops, tracks, active, setActive }: {
+function CompactList({ stops, tracks, active, setActive, showDetail = true }: {
   stops: readonly RouteStripStop[];
   tracks: readonly Track[];
   active: number | null;
   setActive: (i: number | null) => void;
+  /** Off when the parent shows the picked stop's figures itself. */
+  showDetail?: boolean;
 }) {
   const named = useMemo(() => {
     const keep = new Set<number>();
@@ -412,7 +432,7 @@ function CompactList({ stops, tracks, active, setActive }: {
           );
         })}
       </div>
-      {activeStop && (
+      {showDetail && activeStop && (
         <div className="mt-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-2 text-xs">
           <div className="font-bold text-[var(--text-primary)]">{stopDetail(activeStop).name}</div>
           {stopDetail(activeStop).lines.map(l => <div key={l} className="mt-0.5 text-[var(--text-secondary)]">{l}</div>)}

@@ -18,6 +18,7 @@ import SortableDataTable from './components/ui/SortableDataTable';
 import Pill from './components/ui/Pill';
 import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
+import LiveExplorePage from './LiveExplorePage';
 import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts/ProfileBars';
 import HourBars from './components/charts/HourBars';
 import { KpiRow } from './LiveDashboardView';
@@ -33,7 +34,7 @@ const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 'AM pea
 const MINUS = '−';
 
 /** Stop names come upper-case or mixed from the feed; show them the way the map does. */
-function withNiceNames(v3: LiveV3): LiveV3 {
+export function withNiceNames(v3: LiveV3): LiveV3 {
   const t = titleCase;
   const stretch = <S extends { fromName: string; toName: string }>(x: S | null): S | null => (x ? { ...x, fromName: t(x.fromName), toName: t(x.toName) } : x);
   const bandData = (b: DashboardBandData): DashboardBandData => ({
@@ -55,7 +56,7 @@ const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 /** Axis value with its unit, with a real minus sign. */
 const axisMin = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 
-type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
+export type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
@@ -464,7 +465,7 @@ function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
   );
 }
 
-function Method({ data }: { data: Ready }) {
+export function Method({ data }: { data: Ready }) {
   const { v3 } = data;
   const [first, last] = [v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1]];
   return (
@@ -496,9 +497,9 @@ function Method({ data }: { data: Ready }) {
   );
 }
 
-const BOUNDARY = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
+export const BOUNDARY = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
 
-export default function LiveRoutePage() {
+function AnalysisPage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
   // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
@@ -578,4 +579,10 @@ export default function LiveRoutePage() {
       </article>
     </PageShell>
   );
+}
+
+/** ?view=explore opens the new full-analysis view (beta); everything else is the page above. */
+export default function LiveRoutePage() {
+  const [explore] = useState(() => new URLSearchParams(window.location.search).get('view') === 'explore');
+  return explore ? <LiveExplorePage /> : <AnalysisPage />;
 }
