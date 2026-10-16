@@ -61,7 +61,7 @@ export function Group({ label, options, value, onChange }: { label: string; opti
   );
 }
 
-function Fact({ label, value, sub }: { label: string; value: string; sub?: string }) {
+export function Fact({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-[var(--border-primary)] py-2 last:border-b-0">
       <dt className="text-sm text-[var(--text-muted)]">{label}</dt>
@@ -73,7 +73,7 @@ function Fact({ label, value, sub }: { label: string; value: string; sub?: strin
   );
 }
 
-function Block({ title, children }: { title?: string; children: ReactNode }) {
+export function Block({ title, children }: { title?: string; children: ReactNode }) {
   return (
     <div className="mt-4 first:mt-0">
       {title && <h4 className="text-sm font-black">{title}</h4>}
@@ -161,7 +161,7 @@ export function DetailPanel({ v3, band, sel, stops, data, docked = false, kicker
 }
 
 /** `docked`: a column of its own (header, then figures) for the planner screen; otherwise the floating card. `kicker`: why the panel opened on this (when nothing was picked). */
-function Panel({ title, sub, children, docked = false, kicker = null }: { title: string; sub: string; children: ReactNode; docked?: boolean; kicker?: string | null }) {
+export function Panel({ title, sub, children, docked = false, kicker = null }: { title: string; sub: string; children: ReactNode; docked?: boolean; kicker?: string | null }) {
   if (docked) {
     return (
       <aside className="flex min-h-0 min-w-0 flex-col" aria-live="polite">
