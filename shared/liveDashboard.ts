@@ -148,6 +148,18 @@ export function buildupSentence(label: string, b: DashboardBuildup): string {
   return `${label}: too few trips to say where delay builds up.`;
 }
 
+/** B3's one-line takeaway above the chart: what the bars show, in the chart's own terms. */
+export function buildupTakeaway(b: DashboardBuildup, lessExactStops = 0): string {
+  // The start is read at the first stop measured well (510 northbound's first stops are in the tunnel).
+  const first = b.stretches.find((s, i) => s.n >= 30 && i >= Math.max(0, lessExactStops - 1)) ?? b.stretches[0];
+  const last = [...b.stretches].reverse().find(s => s.n >= 30) ?? b.stretches[b.stretches.length - 1];
+  const ends = first && last ? ` (${min(first.medianDelayMin)} at the start, ${min(last.medianDelayMin)} at the end)` : '';
+  if (b.kind === 'forms' && b.forms) return `Delay jumps by ${min(b.forms.medianAddedMin)} between ${b.forms.fromName} and ${b.forms.toName}, and stays up${ends}.`;
+  if (b.kind === 'gradual') return `Delay builds slowly along the route; no single stretch stands out${ends}.`;
+  if (b.kind === 'none') return `Delay stays about the same from end to end${ends}.`;
+  return 'Too few trips to say where delay builds up.';
+}
+
 /** B4: one sentence per direction and period. "Linked to", never "caused by". */
 export function bunchingSentence(label: string, b: DashboardBunchingBand): string {
   if (b.kind == null) return `${label}: too few measured stops to say where bunching forms.`;
@@ -284,6 +296,95 @@ export function deliveredSentence(d: DeliveredFigures, label?: string): string {
 export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered';
 
 /** One comparison line per measure, this week against last, with a plain up or down. The same rule for every measure. */
+/**
+ * The week-change colouring rule, shared by the dashboard (src/utils/liveKpi.ts) and the full analysis page, so both
+ * always agree. A change is coloured only when it is bigger than normal noise. Where the file holds a value per day
+ * (late share, trips that ran), the noise is measured: twice the standard error of the difference of the two weekly
+ * means, from the day-to-day spread (dailyNoise). Elsewhere a fixed amount stands in (FIXED_NOISE, provisional until the
+ * analysis stores daily values for those measures too).
+ */
+export const NOISE_RULE = 'A change is coloured only when it is bigger than usual day to day: for late and trips that ran, more than the spread between days would explain; for the others, more than 2 points (bunching), 1 minute (trip time) or half a minute (extra wait). Smaller changes stay grey.';
+
+/**
+ * PROVISIONAL: smallest change that counts, in the figure's own unit (share as 0-1, or minutes), for measures without
+ * daily values, and for late and delivered when too few days are recorded to measure the spread.
+ */
+export const FIXED_NOISE: Record<CompareKey, number> = { late: 0.02, bunching: 0.02, delivered: 0.01, tripTime: 1, extraWait: 0.5 };
+
+/**
+ * Noise for a week-over-week change measured from daily values: 2 x the standard error of the difference of two weekly
+ * means. The file holds daily values for this week only, so their spread stands in for both weeks:
+ * 2 * sd * sqrt(1/n1 + 1/n2). `null` with fewer than 3 days (no spread to measure).
+ * TODO (planned day-split rebuild of the analysis): store last week's daily values too, so each week uses its own
+ * spread: 2 * sqrt(sd1^2/n1 + sd2^2/n2).
+ */
+export function dailyNoise(daily: readonly number[], nThis: number, nLast: number): number | null {
+  if (daily.length < 3 || nThis < 1 || nLast < 1) return null;
+  const mean = daily.reduce((a, x) => a + x, 0) / daily.length;
+  const sd = Math.sqrt(daily.reduce((a, x) => a + (x - mean) ** 2, 0) / (daily.length - 1));
+  return 2 * sd * Math.sqrt(1 / nThis + 1 / nLast);
+}
+
+/** This week's daily values on days with good recordings, where the file has them (late share, trips that ran). */
+export function weekDailyValues(v3: LiveV3): { late: number[]; delivered: number[] } {
+  const ok = new Set(v3.weekly?.thisWeek.healthyDates ?? []);
+  return {
+    late: v3.bands.all.adherence.timepoints.all.byDate.filter(d => ok.has(d.date) && d.n > 0).map(d => d.lateShare),
+    delivered: (v3.serviceDelivered?.byDay ?? []).flatMap(d => (ok.has(d.date) && d.share != null ? [d.share] : [])),
+  };
+}
+
+/**
+ * The one colouring decision: 'better' or 'worse' only when the change is bigger than the noise (measured when given,
+ * else FIXED_NOISE), otherwise 'same'. `measured` says which noise was used, for the hover text.
+ */
+export function weekChangeTone(key: CompareKey, now: number, before: number, lowerIsBetter: boolean, noise: number | null = null): { tone: 'better' | 'worse' | 'same'; big: boolean; measured: boolean } {
+  const big = Math.abs(now - before) > (noise ?? FIXED_NOISE[key]);
+  return { tone: !big ? 'same' : (now > before) !== lowerIsBetter ? 'better' : 'worse', big, measured: noise != null };
+}
+
+export interface CompareTile {
+  key: CompareKey;
+  label: string;
+  /** This week's value, formatted. */
+  value: string;
+  /** Change from last week, formatted ("+2 pts", "−1 min"), or null when there is nothing to compare. */
+  delta: string | null;
+  /** better / worse only when the change is bigger than the noise (weekChangeTone); otherwise same. */
+  direction: 'better' | 'worse' | 'same' | 'unknown';
+  /** Last week's value, formatted, for the tooltip and screen readers. */
+  before: string | null;
+  /** Why the chip is or is not coloured, for the hover ("a bigger change than usual day to day"). */
+  why?: string;
+}
+
+/** This week against last week as five tiles: a number, a label and a change chip coloured only beyond normal noise. */
+export function compareTiles(w: NonNullable<LiveV3['weekly']>, daily: { late: readonly number[]; delivered: readonly number[] } = { late: [], delivered: [] }): CompareTile[] {
+  const t = w.thisWeek, l = w.lastWeek;
+  const nThis = t.healthyDates.length, nLast = l.healthyDates.length;
+  const noiseFor: Partial<Record<CompareKey, number | null>> = { late: dailyNoise(daily.late, nThis, nLast), delivered: dailyNoise(daily.delivered, nThis, nLast) };
+  // A change that rounds to nothing reads ±0, never −0.
+  const signed = (r: number, unit: string) => `${r > 0 ? '+' : r < 0 ? '−' : '±'}${m1(Math.abs(r))} ${unit}`;
+  const points = (r: number) => signed(r, Math.abs(r) === 1 ? 'pt' : 'pts');
+  const minutes = (x: number) => signed(Math.round(x * 10) / 10, 'min');
+  const pts = (x: number) => points(Math.round(x * 100));
+  const tile = (key: CompareKey, label: string, now: number | null, before: number | null, fmt: (x: number) => string, delta: (d: number) => string, lowerIsBetter: boolean): CompareTile => {
+    if (now == null) return { key, label, value: '–', delta: null, direction: 'unknown', before: null };
+    if (before == null) return { key, label, value: fmt(now), delta: null, direction: 'unknown', before: null };
+    const { tone, big, measured } = weekChangeTone(key, now, before, lowerIsBetter, noiseFor[key] ?? null);
+    const why = big ? (measured ? 'a bigger change than usual day to day' : 'a change bigger than the usual swing') : (measured ? 'within the usual day-to-day change' : 'a small change');
+    return { key, label, value: fmt(now), delta: delta(now - before), direction: tone, before: fmt(before), why };
+  };
+  const pct0 = (x: number) => `${Math.round(x * 100)}%`;
+  return [
+    tile('late', 'Late', t.late?.share ?? null, l.late?.share ?? null, pct0, pts, true),
+    tile('tripTime', 'Typical trip', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, x => `${Math.round(x)} min`, minutes, true),
+    tile('extraWait', 'Extra wait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, x => `${m1(x)} min`, minutes, true),
+    tile('bunching', 'Bunched or gapped', t.bunching?.share ?? null, l.bunching?.share ?? null, pct0, pts, true),
+    tile('delivered', 'Trips that ran', t.delivered?.share ?? null, l.delivered?.share ?? null, x => `${m1(Math.round(x * 1000) / 10)}%`, d => points(Math.round(d * 1000) / 10), false),
+  ];
+}
+
 export function compareLines(w: NonNullable<LiveV3['weekly']>): Array<{ key: CompareKey; label: string; text: string; direction: 'better' | 'worse' | 'same' | 'unknown' }> {
   const t = w.thisWeek, l = w.lastWeek;
   const pct0 = (x: number) => `${Math.round(x * 100)}%`;

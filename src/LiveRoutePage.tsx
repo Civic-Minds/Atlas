@@ -3,12 +3,13 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, bunchingSentence, compareLines, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
+  LINK_LABELS, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
+import { isMajorStop, shortStopName } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
@@ -97,25 +98,31 @@ function Adherence({ data, band, dir, lateMin }: { data: DashboardBandData; band
   const [day, setDay] = useState<Day>(() => { const d = new URLSearchParams(window.location.search).get('day'); return d === 'weekday' || d === 'weekend' ? d : 'all'; });
   useEffect(() => { syncUrlParams({ day: day === 'all' ? null : day }); }, [day]);
   const block = data.adherence.timepoints[day];
-  const counts = dir == null ? block.overall : block.byDirection[String(dir)];
-  const all = data.adherence.allStops[day];
+  const countsFor = (d: Day) => { const b = data.adherence.timepoints[d]; return dir == null ? b.overall : b.byDirection[String(dir)]; };
+  const counts = countsFor(day);
+  const all = countsFor('all');
   // Hours are only drawn for the chosen time of day: the others have no departures in this view.
   return (
     <Section id="b1" title="How well it keeps to its timetable">
-      <div className="mt-3 flex flex-wrap gap-1.5" role="group" aria-label="Days">
-        {DAYS.map(([k, label]) => <Pill key={k} size="segment" selected={day === k} onClick={() => setDay(k)}>{label}</Pill>)}
-      </div>
-      {counts && counts.n > 0 ? (
+      {all && all.n > 0 ? (
         <>
-          <div className="mt-4 max-w-sm">
-            <Tile label="Late" value={pct(counts.lateShare)} sub={`${counts.late.toLocaleString()} of ${counts.n.toLocaleString()} departures were ${v3Late}+ minutes late`} />
+          <p className="mt-2 text-sm text-[var(--text-muted)]">Share of departures {v3Late}+ minutes late, at the stops where the timetable gives a time.</p>
+          <div className="mt-3 grid max-w-2xl grid-cols-3 gap-2">
+            {DAYS.map(([k, label]) => {
+              const c = countsFor(k);
+              return c && c.n > 0
+                ? <Tile key={k} label={label} value={pct(c.lateShare)} sub={`late, of ${c.n.toLocaleString()} · ${pct(c.earlyShare)} ahead`} />
+                : <Tile key={k} label={label} value="–" sub="too few departures" />;
+            })}
           </div>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-            {pct(counts.earlyShare)} left 1.5+ minutes ahead of the timetable. Counted at the stops where the timetable gives a time. Counting every stop, {pct(all.overall.lateShare)} of {all.overall.n.toLocaleString()} departures are late, but the times between those stops are only estimated.
-          </p>
-          <h3 className="mt-6 text-base font-black">By hour of the day</h3>
+          <div className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+            <h3 className="text-base font-black">By hour of the day</h3>
+            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Days for the hourly chart">
+              {DAYS.map(([k, label]) => <Pill key={k} size="segment" selected={day === k} onClick={() => setDay(k)}>{label}</Pill>)}
+            </div>
+          </div>
           <HourBars
-            ariaLabel={`Share of departures ahead of the timetable, on time and late, by hour of the day. ${pct(counts.lateShare)} late overall.`}
+            ariaLabel={`Share of departures ahead of the timetable, on time and late, by hour of the day. ${counts ? pct(counts.lateShare) : '–'} late overall.`}
             parts={[{ name: 'Ahead', color: 'var(--status-caution-text)' }, { name: 'On time', color: 'var(--status-positive-text)' }, { name: 'Late', color: 'var(--status-negative-text)' }]}
             columns={block.byHour.filter(h => band === 'all' || h.n > 0).map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
           />
@@ -126,16 +133,19 @@ function Adherence({ data, band, dir, lateMin }: { data: DashboardBandData; band
 }
 
 /** B3: where delays build up. One chart per direction, on a shared scale. */
-function Buildup({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: number | null }) {
+function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[] }) {
   const rows = data.buildup.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
-  const pointsOf = (b: (typeof rows)[number]): ProfilePoint[] => b.stretches.filter(s => s.n >= 10).map(s => ({ label: s.toName, y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n }));
+  // Stops at the start of a direction that are measured poorly (510 northbound under Union Station) are drawn as less exact.
+  const lessExactStops = (d: number) => uncertain.find(u => u.directionId === d)?.stops ?? 0;
+  const pointsOf = (b: (typeof rows)[number]): ProfilePoint[] => b.stretches.filter(s => s.n >= 10).map((s, i) => ({
+    label: s.toName, short: shortStopName(s.toName), major: isMajorStop(s.toName), lessExact: i < lessExactStops(b.directionId) - 1,
+    y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n,
+  }));
   const scale = sharedScale(rows.map(pointsOf));
   const csvRows = rows.flatMap(b => b.stretches.map(s => [v3.directionLabels[String(b.directionId)], s.fromName, s.toName, s.medianAddedMin, s.growShare, s.medianDelayMin, s.n]));
   return (
     <Section id="b3" title="Where delays build up">
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-        Delay at each stop is how late the vehicle left it compared with the timetable. Delay builds up where the biggest jump in delay holds for the next few stops (3 stops or about 1 km).
-      </p>
+      <p className="mt-2 text-sm text-[var(--text-muted)]">How late vehicles leave each stop along the route, and where that delay jumps and stays up.</p>
       <div className={`mt-4 grid gap-6 ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {rows.map(b => {
           const label = v3.directionLabels[String(b.directionId)];
@@ -145,19 +155,21 @@ function Buildup({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
           return (
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
-              <p className="mt-1 text-sm leading-6">{buildupSentence(label, b)}</p>
               <ProfileBars
                 ariaLabel={`${label}: typical delay at each stop along the route. ${buildupSentence(label, b)}`}
+                takeaway={buildupTakeaway(b, lessExactStops(b.directionId))}
+                axisTitle="Minutes late leaving the stop (below the line: early)"
                 points={points}
                 formatY={axisMin}
                 unit="trips"
                 valueHeader="Typical delay"
-                caption="Each bar is the typical delay at a stop; the thin line shows where most trips fall (all but the earliest and latest 1 in 10)."
+                caption="Each bar is the typical delay at a stop. The spread (1 in 10 earliest and latest) is in the table."
+                whiskers={false}
                 zero
+                zeroLabel="On time"
                 scale={scale}
-                marks={marked >= 0 ? [{ index: marked, label: 'Delay builds up' }] : []}
-                startLabel={b.stretches[0]?.fromName}
-                endLabel={b.stretches[b.stretches.length - 1]?.toName}
+                lessExactNote="the first stops, where vehicle positions arrive less often (in the tunnel), so the delay there is less exact."
+                marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
               />
               <div className="mt-3 overflow-x-auto">
                 <DataTable
@@ -190,9 +202,7 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
   const hidden = uncertain.filter(u => dir == null || u.directionId === dir);
   return (
     <Section id="b2" title="Stops with the most delay">
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-        Stops ranked by the share of departures {v3.thresholds.lateAtOrAboveMin}+ minutes late. Only stops with at least 30 departures are ranked; the typical delay and the delay that 1 in 10 departures exceed sit beside it.
-      </p>
+      <p className="mt-2 text-sm text-[var(--text-muted)]">Stops ranked by how often vehicles leave {v3.thresholds.lateAtOrAboveMin}+ minutes late (stops with 30+ departures).</p>
       {top.length ? (
         <div className="mt-4 overflow-x-auto">
           <DataTable
@@ -230,13 +240,11 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
 /** B4: where and why bunching forms. "Linked to", never "caused by". Too-close and too-far gaps are shown separately. */
 function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: DashboardBand }) {
   const rows = v3.bunching.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
-  const pointsOf = (data: DashboardBunchingBand): ProfilePoint[] => data.stops.filter(s => s.n >= 10).map(s => ({ label: s.name, y: s.bunchedShare, y2: s.gappedShare, n: s.n }));
+  const pointsOf = (data: DashboardBunchingBand): ProfilePoint[] => data.stops.filter(s => s.n >= 10).map(s => ({ label: s.name, short: shortStopName(s.name), major: isMajorStop(s.name), y: s.bunchedShare, y2: s.gappedShare, n: s.n }));
   const scale = sharedScale(rows.flatMap(b => (b.bands[band] ? [pointsOf(b.bands[band])] : [])));
   return (
     <Section id="b4" title="Where bunching forms">
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-        Bunching is vehicles arriving too close together (gaps under {Math.round(v3.thresholds.bunchedGapSec / 60)} minutes) or too far apart (more than twice the timetable's gap). The chart shows both at each stop along the route; it forms where the share steps up and stays up.
-      </p>
+      <p className="mt-2 text-sm text-[var(--text-muted)]">How often vehicles come too close together or too far apart, stop by stop, and where that starts.</p>
       <div className={`mt-4 grid gap-6 ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {rows.map(b => {
           const label = v3.directionLabels[String(b.directionId)];
@@ -257,12 +265,11 @@ function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: Das
                   formatY={y => pct(y)}
                   unit="gaps"
                   valueHeader="Gaps off the timetable"
-                  caption="Share of gaps that are too close together or too far apart, stop by stop."
+                  caption="Share of gaps between vehicles that are too close together or too far apart, stop by stop."
+                  axisTitle="Share of gaps off the timetable"
                   scale={scale}
                   series={[{ name: 'Too close together', color: 'var(--status-negative-text)' }, { name: 'Too far apart', color: 'var(--status-caution-text)' }]}
                   marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? 'Forms here' : 'Biggest rise' }] : []}
-                  startLabel={points[0]?.label}
-                  endLabel={points[points.length - 1]?.label}
                 />
               )}
               {stretch && (
@@ -289,22 +296,38 @@ function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: Das
 
 const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'a' : 'p'}`;
 
-/** This week against last week for the headline measures, with a plain up or down. One rule for all of them. */
+/** This week against last week: five tiles, each a number, a label and a change chip coloured only beyond normal noise. */
 function WeekCompare({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return null;
   const range = (dates: string[]) => (dates.length ? dateRangeText(dates[0], dates[dates.length - 1]) : 'no days');
-  const tone = { better: 'text-[var(--status-positive-text)]', worse: 'text-[var(--status-negative-text)]', same: 'text-[var(--text-muted)]', unknown: 'text-[var(--text-dim)]' } as const;
+  const chip = {
+    better: 'bg-[var(--status-positive-bg,transparent)] text-[var(--status-positive-text)] border-[var(--status-positive-text)]',
+    worse: 'bg-[var(--status-negative-bg,transparent)] text-[var(--status-negative-text)] border-[var(--status-negative-text)]',
+    same: 'text-[var(--text-muted)] border-[var(--border-primary)]',
+    unknown: 'text-[var(--text-dim)] border-[var(--border-primary)]',
+  } as const;
+  const word = { better: 'better', worse: 'worse', same: 'about the same', unknown: '' } as const;
   return (
     <Section id="week" title="This week compared with last week">
       {w.comparable ? (
-        <ul className="mt-3 max-w-2xl space-y-1.5 text-sm">
-          {compareLines(w).map(l => <li key={l.key} className={tone[l.direction]}>{l.text}</li>)}
-        </ul>
-      ) : <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">Not enough days of good recordings to compare two weeks: each week needs at least {w.minHealthyDays}.</p>}
-      <p className="mt-3 max-w-2xl text-xs text-[var(--text-dim)]">
-        This week is {range(w.thisWeek.dates)} and last week is {range(w.lastWeek.dates)}. Days when our recordings have gaps are left out of both (this week {w.thisWeek.healthyDates.length} of {w.thisWeek.dates.length} days counted, last week {w.lastWeek.healthyDates.length} of {w.lastWeek.dates.length}), and both weeks are counted the same way.
-      </p>
+        <>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">{range(w.thisWeek.dates)} against {range(w.lastWeek.dates)}. Coloured only where the change is bigger than usual day to day.</p>
+          <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+            {compareTiles(w, weekDailyValues(v3)).map(t => (
+              <li key={t.key} className={`${TILE} !p-3`} aria-label={`${t.label}: ${t.value}${t.before ? `, last week ${t.before}, ${word[t.direction]}` : ''}`}>
+                <div className="text-2xl font-black tracking-tight">{t.value}</div>
+                <div className="mt-0.5 text-xs font-bold text-[var(--text-muted)]">{t.label}</div>
+                {t.delta && (
+                  <span className={`mt-2 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold ${chip[t.direction]}`} title={`Last week ${t.before}: ${t.why}`}>
+                    {t.delta}{t.direction === 'same' ? ' · same' : ''}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : <p className="mt-2 max-w-2xl text-sm text-[var(--text-muted)]">Not enough days of good recordings to compare two weeks: each week needs at least {w.minHealthyDays}.</p>}
     </Section>
   );
 }
@@ -320,9 +343,7 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
   const scale = sharedScale(dirs.map(d => pointsOf(d).map(p => ({ ...p, y: Math.max(p.y, p.hi ?? 0, p.ref ?? 0) }))));
   return (
     <Section id="runtime" title="How long the trip takes">
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-        From leaving the first stop to reaching the last, against the timetable. Only trips on the main route that we saw at both ends are counted (short turns are left out).
-      </p>
+      <p className="mt-2 text-sm text-[var(--text-muted)]">End-to-end trip time by the hour the trip starts, against the timetable.</p>
       <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {dirs.map(d => {
           const label = v3.directionLabels[String(d)];
@@ -341,10 +362,9 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
                   valueHeader="Typical trip time"
                   refHeader="Scheduled"
                   rowHeader="Starts at"
-                  caption="Each bar is the typical trip time for trips starting that hour, the tick is the timetable, and the thin line reaches the time that 1 in 10 trips exceed."
+                  caption="Each bar is the typical trip time for trips starting that hour, the black tick is the timetable, and the faint line reaches the time that 1 in 10 trips exceed."
+                  axisTitle="Minutes from first stop to last"
                   scale={{ min: 0, max: scale.max }}
-                  startLabel={points[0].label}
-                  endLabel={points[points.length - 1].label}
                 />
               )}
             </div>
@@ -360,14 +380,12 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
   const all = v3.extraWait?.[band];
   if (!all) return null;
   const dirs = Object.keys(v3.directionLabels).map(Number).sort().filter(d => dir == null || d === dir);
-  const pointsOf = (d: number): ProfilePoint[] => all.filter(s => s.directionId === d).map(s => ({ label: s.name, y: Math.max(0, s.extraWaitMin), n: s.gaps }));
+  const pointsOf = (d: number): ProfilePoint[] => all.filter(s => s.directionId === d).map(s => ({ label: s.name, short: shortStopName(s.name), major: isMajorStop(s.name), y: Math.max(0, s.extraWaitMin), n: s.gaps }));
   const scale = sharedScale(dirs.map(pointsOf));
   const worst = all.filter(s => (dir == null || s.directionId === dir) && s.gaps >= 30).sort((a, b) => b.extraWaitMin - a.extraWaitMin).slice(0, 10);
   return (
     <Section id="wait" title="Extra wait">
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-        How much longer riders wait than the timetable promises. It is worked out from the gaps between vehicles at each stop, so it grows when vehicles bunch or leave long gaps. Shown only where the timetable has a vehicle every 15 minutes or better.
-      </p>
+      <p className="mt-2 text-sm text-[var(--text-muted)]">How much longer riders wait than the timetable promises, where a vehicle is due every 15 minutes or better.</p>
       {all.length === 0 ? <p className="mt-3 text-sm text-[var(--text-muted)]">No stop on this route has a vehicle every 15 minutes or better in this time of day.</p> : (
         <>
           <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
@@ -387,9 +405,8 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
                       unit="gaps"
                       valueHeader="Extra wait"
                       caption="Extra wait at each stop along the route."
+                      axisTitle="Extra minutes of waiting"
                       scale={scale}
-                      startLabel={points[0].label}
-                      endLabel={points[points.length - 1].label}
                     />
                   )}
                 </div>
@@ -428,10 +445,7 @@ function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
   const points: ProfilePoint[] = days.map(d => ({ label: dateRangeText(d.date, d.date), y: dir == null ? d.share ?? 0 : d.byDirection[String(dir)] ?? 0, n: d.seen + d.notSeen }));
   return (
     <Section id="delivered" title="Service delivered">
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-        The share of scheduled trips that ran. A trip counts as run when a vehicle was seen under its trip number.
-      </p>
-      {overall && <p className="mt-2 text-sm leading-6">{deliveredSentence(overall, dir == null ? undefined : v3.directionLabels[String(dir)])}</p>}
+      {overall && <p className="mt-2 text-sm">{deliveredSentence(overall, dir == null ? undefined : v3.directionLabels[String(dir)])}</p>}
       {points.length > 1 && (
         <div className="mt-4 max-w-2xl">
           <ProfileBars
@@ -443,16 +457,10 @@ function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
             rowHeader="Day"
             caption="Share of scheduled trips that ran, day by day."
             scale={{ min: 0.9, max: 1 }}
-            startLabel={points[0].label}
-            endLabel={points[points.length - 1].label}
           />
         </div>
       )}
-      <p className="mt-3 max-w-2xl text-xs text-[var(--text-dim)]">
-        {skipped.length > 0 && <>Days when our recordings have gaps are not counted, because a trip missing from them may just be missing data ({skipped.map(d => dateRangeText(d.date, d.date)).join(', ')}). </>}
-        {overall && overall.unknown > 0 && <>{overall.unknown.toLocaleString()} trips could not be judged (the feed was down, or other vehicles covered their slot) and are left out. </>}
-        The bars start at 90%.
-      </p>
+      <p className="mt-2 text-xs text-[var(--text-dim)]">The bars start at 90%.{skipped.length > 0 && <> Not counted: {skipped.map(d => dateRangeText(d.date, d.date)).join(', ')} (gaps in our recordings).</>}</p>
     </Section>
   );
 }
@@ -461,8 +469,15 @@ function Method({ data }: { data: Ready }) {
   const { v3 } = data;
   const [first, last] = [v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1]];
   return (
-    <Section id="method" title="How this is measured">
+    <details className="mt-12 group" id="method">
+      <summary className="cursor-pointer text-xl font-black tracking-tight">How this is measured</summary>
       <ul className="mt-3 max-w-3xl list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--text-muted)]">
+        <li>Counted at timepoints: the stops where the timetable gives a time. Times between them are estimated, so the share late counting every stop is shown only here: {pct(v3.bands.all.adherence.allStops.all.overall.lateShare)} of {v3.bands.all.adherence.allStops.all.overall.n.toLocaleString()} departures.</li>
+        <li>Delay builds up where the biggest jump in delay holds for the next few stops (3 stops or about 1 km).</li>
+        <li>Bunching: gaps under {Math.round(v3.thresholds.bunchedGapSec / 60)} minutes count as too close together; gaps more than twice the timetable's count as too far apart. "Linked to" means measured in the same stretch, not the cause.</li>
+        <li>Trip time counts only trips on the main route seen at both ends (short turns are left out). Extra wait is worked out from the gaps between vehicles at each stop.</li>
+        <li>Service delivered: a trip counts as run when a vehicle was seen under its trip number. Days with gaps in our recordings are left out{v3.serviceDelivered && v3.serviceDelivered.overall.unknown > 0 ? `, and ${v3.serviceDelivered.overall.unknown.toLocaleString()} trips that could not be judged are left out` : ''}.</li>
+        {v3.weekly && <li>This week compared with last week: days with gaps in our recordings are left out of both weeks (this week {v3.weekly.thisWeek.healthyDates.length} of {v3.weekly.thisWeek.dates.length} days, last week {v3.weekly.lastWeek.healthyDates.length} of {v3.weekly.lastWeek.dates.length}). {NOISE_RULE}</li>}
         <li>Window: the last {v3.window.days} service days ({first} to {last}); {v3.totals.runs.toLocaleString()} trips and {v3.totals.stopPassages.toLocaleString()} stop departures. Built {data.generatedAt.slice(0, 10)}.</li>
         <li>Delay at a stop is how late the vehicle left it compared with the timetable. The agency does not report delays, so we work them out from where each vehicle was seen (about once a minute) and estimate the moment it left the stop.</li>
         <li>Vehicles are matched to timetable trips by trip number. If a trip is 15+ minutes off its own slot but another trip fits within 3 minutes at most stops, it is counted as that trip; otherwise it is left out.</li>
@@ -478,7 +493,7 @@ function Method({ data }: { data: Ready }) {
         <li>{pct(v3.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</li>
         {data.replacementBuses && <li>This route is run by replacement buses in this timetable, so every figure describes the buses.</li>}
       </ul>
-    </Section>
+    </details>
   );
 }
 
@@ -547,7 +562,7 @@ export default function LiveRoutePage() {
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} band={band} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('How long the trip takes')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWait v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} /></ErrorBoundary>
