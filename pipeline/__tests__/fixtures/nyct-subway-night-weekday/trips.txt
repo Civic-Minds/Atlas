@@ -1,0 +1,1517 @@
+route_id,trip_id,service_id,trip_headsign,direction_id,shape_id
+3,ASP26GEN-3094-Weekday-00_000450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_002450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_004450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_004550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_006450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_006550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_008450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_008550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_010450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_010550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_012450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_012550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_014450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_014550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_016450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_016550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_018450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_018550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_020450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_020550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_022450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_022550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_024450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_024550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_026450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_026550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_028450_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_028550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_030150_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_030550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_031000_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_031750_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_032550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_033000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_033850_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_034000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_034550_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_034750_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_035850_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_035950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_036900_3..N42R,Weekday,Harlem-148 St,0,3..N42R
+3,ASP26GEN-3094-Weekday-00_037200_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_037350_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_038000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_038500_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_038900_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_039300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_039900_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_040150_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_040600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_040700_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_041300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_041300_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_042000_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_042050_3..S07R,Weekday,New Lots Av,1,3..S07R
+3,ASP26GEN-3094-Weekday-00_042500_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_042800_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_043100_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_043850_3..S07R,Weekday,New Lots Av,1,3..S07R
+3,ASP26GEN-3094-Weekday-00_043900_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_044300_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_044800_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_044850_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_045450_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_045450_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_045950_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_046050_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_046800_3..S07R,Weekday,New Lots Av,1,3..S07R
+3,ASP26GEN-3094-Weekday-00_046850_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_047200_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_047500_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_048000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_048300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_048800_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_048900_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_049400_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_049600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_049800_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_050400_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_050400_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_051000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_051300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_051600_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_052000_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_052250_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_052800_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_053100_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_053600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_054000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_054300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_054700_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_055150_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_055400_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_056050_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_056100_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_056700_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_056800_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_057300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_057400_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_058250_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_058400_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_059050_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_059100_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_059850_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_059950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_060600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_060600_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_061300_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_061600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_062100_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_062400_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_062950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_063300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_063750_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_064000_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_064550_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_064800_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_065350_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_065700_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_066150_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_066400_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_066850_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_067100_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_067750_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_067900_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_068550_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_068700_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_069350_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_069500_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_070150_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_070300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_070950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_071150_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_071750_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_071950_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_072550_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_072750_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_073350_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_073550_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_074150_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_074350_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_074950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_075150_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_075750_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_075950_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_076550_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_076750_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_077350_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_077550_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_078150_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_078350_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_078950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_079150_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_079750_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_079950_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_080550_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_080750_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_081350_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_081550_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_082150_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_082350_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_082950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_083150_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_083750_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_083950_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_084550_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_084750_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_085350_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_085550_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_086150_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_086350_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_086950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_087050_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_087650_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_087850_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_088500_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_088650_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_089400_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_089500_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_090200_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_090400_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_090900_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_091200_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_091600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_092000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_092300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_092300_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_093000_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_093000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_093800_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_093850_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_094500_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_094600_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_095100_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_095250_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_095900_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_096100_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_096900_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_096950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_097600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_097650_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_098200_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_098650_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_098700_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_099300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_099500_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_099950_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_100100_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_100500_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_100800_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_101000_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_101500_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_101700_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_102100_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_102400_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_102700_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_102950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_103250_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_104000_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_104000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_104600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_104800_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_105200_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_105600_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_105900_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_106300_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_106500_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_106950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_107200_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_107800_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_107800_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_108400_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_108500_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_109100_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_109300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_109750_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_110000_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_110400_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_110800_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_111050_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_111700_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_111750_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_112450_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_112550_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_113150_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_113200_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_113850_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_114000_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_114650_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_114700_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_115300_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_115400_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_116050_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_116100_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_116700_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_116700_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_117400_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_117500_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_118050_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_118250_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_118950_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_118950_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_119650_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_119800_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_120450_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_120900_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_121350_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_121600_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_122300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_122300_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_123000_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_123100_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_123900_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_124000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_124550_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_125000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_125300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_126000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_126300_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_127200_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_127200_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_127950_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_128400_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_128700_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_129600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_129700_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_130600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_131000_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_131600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_132300_3..S06R,Weekday,New Lots Av,1,3..S06R
+3,ASP26GEN-3094-Weekday-00_132600_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_133550_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_134300_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_134550_3..N01R,Weekday,Harlem-148 St,0,3..N01R
+3,ASP26GEN-3094-Weekday-00_136100_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_138750_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_139600_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_141250_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_142000_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_143050_3..S88R,Weekday,34 St-Penn Station,1,3..S88R
+3,ASP26GEN-3094-Weekday-00_144500_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+3,ASP26GEN-3094-Weekday-00_146500_3..N90R,Weekday,Harlem-148 St,0,3..N90R
+5,ASP26GEN-5114-Weekday-00_000200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_002200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_002300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_004200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_004300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_006200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_006300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_008200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_008300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_010200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_010300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_012200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_012300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_014200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_014300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_016200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_016300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_018200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_018300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_020200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_020300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_022200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_022300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_024200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_024300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_026200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_026300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_028200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_028300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_029900_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_030300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_031000_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_031250_5..S02R,Weekday,Flatbush Av-Brooklyn College,1,5..S02R
+5,ASP26GEN-5114-Weekday-00_031800_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_032300_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+5,ASP26GEN-5114-Weekday-00_032600_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_033050_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_033800_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_034300_5..N05R,Weekday,Eastchester-Dyre Av,0,5..N05R
+5,ASP26GEN-5114-Weekday-00_034650_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_034750_5..N60R,Weekday,Eastchester-Dyre Av,0,5..N60R
+5,ASP26GEN-5114-Weekday-00_035150_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_036100_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_036300_5..N05R,Weekday,Eastchester-Dyre Av,0,5..N05R
+5,ASP26GEN-5114-Weekday-00_036400_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_036600_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_037200_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_037600_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_037850_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_037950_5..S09R,Weekday,Flatbush Av-Brooklyn College,1,5..S09R
+5,ASP26GEN-5114-Weekday-00_038300_5..N05R,Weekday,Eastchester-Dyre Av,0,5..N05R
+5,ASP26GEN-5114-Weekday-00_038650_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_038850_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_039050_5..S09R,Weekday,Flatbush Av-Brooklyn College,1,5..S09R
+5,ASP26GEN-5114-Weekday-00_039600_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_039750_5..S09R,Weekday,Flatbush Av-Brooklyn College,1,5..S09R
+5,ASP26GEN-5114-Weekday-00_039950_5..S06R,Weekday,Crown Hts-Utica Av,1,5..S06R
+5,ASP26GEN-5114-Weekday-00_040300_5..N01R,Weekday,Eastchester-Dyre Av,0,5..N01R
+5,ASP26GEN-5114-Weekday-00_040450_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_040500_5..S09R,Weekday,Flatbush Av-Brooklyn College,1,5..S09R
+5,ASP26GEN-5114-Weekday-00_040700_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_041050_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_041850_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_041850_5..S15R,Weekday,Crown Hts-Utica Av,1,5..S15R
+5,ASP26GEN-5114-Weekday-00_041950_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_042450_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_042600_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_042700_5..S15R,Weekday,Crown Hts-Utica Av,1,5..S15R
+5,ASP26GEN-5114-Weekday-00_043200_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_043550_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_043650_5..N62R,Weekday,Eastchester-Dyre Av,0,5..N62R
+5,ASP26GEN-5114-Weekday-00_043750_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_043750_5..S09R,Weekday,Flatbush Av-Brooklyn College,1,5..S09R
+5,ASP26GEN-5114-Weekday-00_044500_5..N84R,Weekday,E 180 St,0,5..N84R
+5,ASP26GEN-5114-Weekday-00_044550_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_044650_5..S09R,Weekday,Flatbush Av-Brooklyn College,1,5..S09R
+5,ASP26GEN-5114-Weekday-00_045100_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_045450_5..S06R,Weekday,Crown Hts-Utica Av,1,5..S06R
+5,ASP26GEN-5114-Weekday-00_045750_5..S09R,Weekday,Flatbush Av-Brooklyn College,1,5..S09R
+5,ASP26GEN-5114-Weekday-00_045900_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_046300_5..S09R,Weekday,Flatbush Av-Brooklyn College,1,5..S09R
+5,ASP26GEN-5114-Weekday-00_046350_5..S06R,Weekday,Crown Hts-Utica Av,1,5..S06R
+5,ASP26GEN-5114-Weekday-00_046500_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_047050_5..N84R,Weekday,E 180 St,0,5..N84R
+5,ASP26GEN-5114-Weekday-00_047250_5..S14R,Weekday,Bowling Green,1,5..S14R
+5,ASP26GEN-5114-Weekday-00_047300_5..S09R,Weekday,Flatbush Av-Brooklyn College,1,5..S09R
+5,ASP26GEN-5114-Weekday-00_047450_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_047800_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_048050_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_048350_5..S09R,Weekday,Flatbush Av-Brooklyn College,1,5..S09R
+5,ASP26GEN-5114-Weekday-00_048800_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_049300_5..S04R,Weekday,Flatbush Av-Brooklyn College,1,5..S04R
+5,ASP26GEN-5114-Weekday-00_049450_5..N33R,Weekday,Gun Hill Rd,0,5..N33R
+5,ASP26GEN-5114-Weekday-00_049450_5..N65R,Weekday,E 180 St,0,5..N65R
+5,ASP26GEN-5114-Weekday-00_049950_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_050300_5..S14R,Weekday,Bowling Green,1,5..S14R
+5,ASP26GEN-5114-Weekday-00_050650_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_051000_5..S45R,Weekday,Flatbush Av-Brooklyn College,1,5..S45R
+5,ASP26GEN-5114-Weekday-00_051300_5..N65R,Weekday,E 180 St,0,5..N65R
+5,ASP26GEN-5114-Weekday-00_051400_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_051650_5..S45R,Weekday,Flatbush Av-Brooklyn College,1,5..S45R
+5,ASP26GEN-5114-Weekday-00_052050_5..N63R,Weekday,Eastchester-Dyre Av,0,5..N63R
+5,ASP26GEN-5114-Weekday-00_052150_5..S45R,Weekday,Flatbush Av-Brooklyn College,1,5..S45R
+5,ASP26GEN-5114-Weekday-00_052300_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_052600_5..S45R,Weekday,Flatbush Av-Brooklyn College,1,5..S45R
+5,ASP26GEN-5114-Weekday-00_053000_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_053600_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_053700_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_054050_5..S44R,Weekday,Flatbush Av-Brooklyn College,1,5..S44R
+5,ASP26GEN-5114-Weekday-00_054500_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_054700_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_054800_5..N85R,Weekday,Gun Hill Rd,0,5..N85R
+5,ASP26GEN-5114-Weekday-00_055200_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_055900_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_055950_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_056500_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_057050_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_057100_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_057600_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_057900_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_058450_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_058750_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_058900_5..N85R,Weekday,Gun Hill Rd,0,5..N85R
+5,ASP26GEN-5114-Weekday-00_059350_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_059550_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_060100_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_060250_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_060900_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_060900_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_061350_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_061650_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_061900_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_062450_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_062500_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_062950_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_063200_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_064000_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_064050_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_064750_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_064900_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_065500_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_065550_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_066300_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_066350_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_067050_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_067150_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_067800_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_067950_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_068650_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_068800_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_069500_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_069600_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_070200_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_070450_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_071000_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_071250_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_071900_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_072050_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_072550_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_072850_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_073400_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_073650_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_074200_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_074450_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_075000_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_075250_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_075800_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_076050_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_076600_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_077250_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_077400_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_078050_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_078200_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_078850_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_079000_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_079650_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_079800_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_080450_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_080600_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_081300_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_081400_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_082100_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_082200_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_082900_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_083000_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_083650_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_083800_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_084450_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_084600_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_085050_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_085400_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_085450_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_086250_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_086350_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_087050_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_087100_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_087900_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_088100_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_088700_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_089000_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_089500_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_089600_5..S07R,Weekday,Crown Hts-Utica Av,1,5..S07R
+5,ASP26GEN-5114-Weekday-00_090050_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_090200_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_090650_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_091000_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_091000_5..S07R,Weekday,Crown Hts-Utica Av,1,5..S07R
+5,ASP26GEN-5114-Weekday-00_091550_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_091850_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_092000_5..N66R,Weekday,Eastchester-Dyre Av,0,5..N66R
+5,ASP26GEN-5114-Weekday-00_092350_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_092500_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_093250_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_093350_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_093950_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_094350_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_094700_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_094700_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_095100_5..S12R,Weekday,Bowling Green,1,5..S12R
+5,ASP26GEN-5114-Weekday-00_095550_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_095750_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_096300_5..S02R,Weekday,Flatbush Av-Brooklyn College,1,5..S02R
+5,ASP26GEN-5114-Weekday-00_096500_5..S07R,Weekday,Crown Hts-Utica Av,1,5..S07R
+5,ASP26GEN-5114-Weekday-00_096550_5..N76R,Weekday,Nereid Av,0,5..N76R
+5,ASP26GEN-5114-Weekday-00_096700_5..S12R,Weekday,Bowling Green,1,5..S12R
+5,ASP26GEN-5114-Weekday-00_096900_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_096950_5..N87R,Weekday,Eastchester-Dyre Av,0,5..N87R
+5,ASP26GEN-5114-Weekday-00_096950_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_097550_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_097900_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_098100_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_098600_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_098650_5..N86R,Weekday,Nereid Av,0,5..N86R
+5,ASP26GEN-5114-Weekday-00_099250_5..S07R,Weekday,Crown Hts-Utica Av,1,5..S07R
+5,ASP26GEN-5114-Weekday-00_099500_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_099550_5..N76R,Weekday,Nereid Av,0,5..N76R
+5,ASP26GEN-5114-Weekday-00_100000_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_100150_5..N87R,Weekday,Eastchester-Dyre Av,0,5..N87R
+5,ASP26GEN-5114-Weekday-00_100450_5..S07R,Weekday,Crown Hts-Utica Av,1,5..S07R
+5,ASP26GEN-5114-Weekday-00_100550_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_101150_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_101200_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_101200_5..S02R,Weekday,Flatbush Av-Brooklyn College,1,5..S02R
+5,ASP26GEN-5114-Weekday-00_101400_5..N70R,Weekday,Nereid Av,0,5..N70R
+5,ASP26GEN-5114-Weekday-00_101450_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_102050_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_102150_5..N93R,Weekday,Gun Hill Rd,0,5..N93R
+5,ASP26GEN-5114-Weekday-00_102700_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_102750_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_103100_5..N92R,Weekday,Gun Hill Rd,0,5..N92R
+5,ASP26GEN-5114-Weekday-00_103250_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_103750_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_104000_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_104150_5..N86R,Weekday,Nereid Av,0,5..N86R
+5,ASP26GEN-5114-Weekday-00_104200_5..N76R,Weekday,Nereid Av,0,5..N76R
+5,ASP26GEN-5114-Weekday-00_104750_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_104950_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_105900_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_106050_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_106250_5..N86R,Weekday,Nereid Av,0,5..N86R
+5,ASP26GEN-5114-Weekday-00_106450_5..N76R,Weekday,Nereid Av,0,5..N76R
+5,ASP26GEN-5114-Weekday-00_107050_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_107100_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_107500_5..N76R,Weekday,Nereid Av,0,5..N76R
+5,ASP26GEN-5114-Weekday-00_108100_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_108400_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_108700_5..N87R,Weekday,Eastchester-Dyre Av,0,5..N87R
+5,ASP26GEN-5114-Weekday-00_108900_5..N76R,Weekday,Nereid Av,0,5..N76R
+5,ASP26GEN-5114-Weekday-00_109000_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_109500_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_109700_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_110300_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_110850_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_110900_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_111250_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_111850_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_111850_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_112500_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_112600_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_113650_5..N88R,Weekday,Eastchester-Dyre Av,0,5..N88R
+5,ASP26GEN-5114-Weekday-00_113750_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_114300_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_114850_5..S03R,Weekday,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_115300_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_115850_5..S07R,Weekday,Crown Hts-Utica Av,1,5..S07R
+5,ASP26GEN-5114-Weekday-00_116000_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_116950_5..S07R,Weekday,Crown Hts-Utica Av,1,5..S07R
+5,ASP26GEN-5114-Weekday-00_117000_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_117850_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_118050_5..S07R,Weekday,Crown Hts-Utica Av,1,5..S07R
+5,ASP26GEN-5114-Weekday-00_118800_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_118800_5..S08R,Weekday,Bowling Green,1,5..S08R
+5,ASP26GEN-5114-Weekday-00_119600_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_120100_5..S08R,Weekday,Bowling Green,1,5..S08R
+5,ASP26GEN-5114-Weekday-00_120900_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_121500_5..S08R,Weekday,Bowling Green,1,5..S08R
+5,ASP26GEN-5114-Weekday-00_121800_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_122500_5..S08R,Weekday,Bowling Green,1,5..S08R
+5,ASP26GEN-5114-Weekday-00_122850_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_123500_5..S08R,Weekday,Bowling Green,1,5..S08R
+5,ASP26GEN-5114-Weekday-00_123750_5..N71R,Weekday,Eastchester-Dyre Av,0,5..N71R
+5,ASP26GEN-5114-Weekday-00_124500_5..S08R,Weekday,Bowling Green,1,5..S08R
+5,ASP26GEN-5114-Weekday-00_125650_5..S08R,Weekday,Bowling Green,1,5..S08R
+5,ASP26GEN-5114-Weekday-00_126400_5..S08R,Weekday,Bowling Green,1,5..S08R
+5,ASP26GEN-5114-Weekday-00_127000_5..N73R,Weekday,Eastchester-Dyre Av,0,5..N73R
+5,ASP26GEN-5114-Weekday-00_127400_5..S01R,Weekday,E 180 St,1,5..S01R
+5,ASP26GEN-5114-Weekday-00_127450_5..N73R,Weekday,Eastchester-Dyre Av,0,5..N73R
+5,ASP26GEN-5114-Weekday-00_128350_5..N73R,Weekday,Eastchester-Dyre Av,0,5..N73R
+5,ASP26GEN-5114-Weekday-00_128450_5..S01R,Weekday,E 180 St,1,5..S01R
+5,ASP26GEN-5114-Weekday-00_129300_5..N73R,Weekday,Eastchester-Dyre Av,0,5..N73R
+5,ASP26GEN-5114-Weekday-00_129650_5..S01R,Weekday,E 180 St,1,5..S01R
+5,ASP26GEN-5114-Weekday-00_130400_5..N73R,Weekday,Eastchester-Dyre Av,0,5..N73R
+5,ASP26GEN-5114-Weekday-00_130850_5..S01R,Weekday,E 180 St,1,5..S01R
+5,ASP26GEN-5114-Weekday-00_131400_5..N73R,Weekday,Eastchester-Dyre Av,0,5..N73R
+5,ASP26GEN-5114-Weekday-00_132100_5..S01R,Weekday,E 180 St,1,5..S01R
+5,ASP26GEN-5114-Weekday-00_132400_5..N73R,Weekday,Eastchester-Dyre Av,0,5..N73R
+5,ASP26GEN-5114-Weekday-00_133400_5..N73R,Weekday,Eastchester-Dyre Av,0,5..N73R
+5,ASP26GEN-5114-Weekday-00_133900_5..S01R,Weekday,E 180 St,1,5..S01R
+5,ASP26GEN-5114-Weekday-00_135650_5..S01R,Weekday,E 180 St,1,5..S01R
+5,ASP26GEN-5114-Weekday-00_137450_5..S01R,Weekday,E 180 St,1,5..S01R
+5,ASP26GEN-5114-Weekday-00_138300_5..N01R,Weekday,Eastchester-Dyre Av,0,5..N01R
+5,ASP26GEN-5114-Weekday-00_138950_5..S01R,Weekday,E 180 St,1,5..S01R
+5,ASP26GEN-5114-Weekday-00_139850_5..N01R,Weekday,Eastchester-Dyre Av,0,5..N01R
+5,ASP26GEN-5114-Weekday-00_140450_5..S01R,Weekday,E 180 St,1,5..S01R
+5,ASP26GEN-5114-Weekday-00_141350_5..N01R,Weekday,Eastchester-Dyre Av,0,5..N01R
+5,ASP26GEN-5114-Weekday-00_142200_5..S32R,Weekday,E 180 St,1,5..S32R
+5,ASP26GEN-5114-Weekday-00_142700_5..N01R,Weekday,Eastchester-Dyre Av,0,5..N01R
+5,ASP26GEN-5114-Weekday-00_144400_5..N32R,Weekday,Eastchester-Dyre Av,0,5..N32R
+M,BSP26GEN-M094-Weekday-00_000000_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_001500_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_002400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_003000_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_004400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_004500_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_006200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_006400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_008200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_008400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_010200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_010400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_012200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_012400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_014200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_014400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_016200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_016400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_018200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_018400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_020200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_020400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_022200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_022400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_024200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_024400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_026200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_026400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_028200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_028400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_030200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_030400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_031100_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_031400_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_032200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_032300_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_032400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_032650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_033300_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_033650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_034200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_034300_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_034400_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_034650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_035200_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_035300_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_036200_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_036250_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_036300_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_037400_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_037450_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_038400_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_038550_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_039300_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_039650_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_040200_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_040500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_040850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_041500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_041800_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_042150_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_042650_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_042700_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_043350_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_043500_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_043950_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_044250_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_044550_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_045100_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_045150_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_045750_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_046100_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_046350_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_046800_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_047300_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_047300_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_047950_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_048300_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_048500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_048950_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_049250_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_049750_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_049800_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_050300_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_050400_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_050750_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_051150_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_051450_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_052050_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_052150_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_052950_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_052950_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_053650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_053850_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_054450_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_054650_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_055250_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_055450_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_056050_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_056250_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_056850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_057100_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_057650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_057900_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_058450_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_058700_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_059250_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_059500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_059950_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_060300_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_060750_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_061100_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_061550_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_061900_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_062350_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_062700_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_063150_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_063500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_063950_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_064250_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_064700_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_065050_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_065650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_065900_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_066350_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_066700_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_067150_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_067500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_067950_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_068250_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_068750_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_069000_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_069550_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_069750_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_070350_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_070500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_071150_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_071300_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_072000_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_072150_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_072800_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_073100_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_073600_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_073900_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_074400_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_074700_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_075200_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_075500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_076000_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_076300_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_077000_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_077050_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_077800_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_077850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_078650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_078650_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_079450_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_079500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_080250_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_080300_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_081050_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_081100_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_081850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_081900_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_082650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_082700_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_083450_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_083500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_084250_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_084300_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_085050_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_085100_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_085850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_085900_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_086600_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_086650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_087400_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_087450_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_088200_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_088250_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_089000_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_089050_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_089650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_089850_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_090450_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_090550_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_091250_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_091250_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_092100_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_092150_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_092850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_093050_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_093650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_093850_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_094450_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_094600_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_095250_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_095450_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_096100_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_096400_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_096850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_097100_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_097600_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_097850_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_098400_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_098600_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_099250_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_099500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_100200_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_100250_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_100800_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_101000_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_101650_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_102000_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_102200_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_102900_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_103000_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_103750_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_103950_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_104150_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_104550_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_104750_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_105350_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_105500_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_105950_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_106350_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_106500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_107200_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_107350_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_108050_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_108200_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_108750_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_108850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_109400_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_109700_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_109950_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_110250_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_110850_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_111050_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_111650_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_111950_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_112450_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_112850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_113250_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_113750_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_114050_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_114850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_114850_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_115650_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_115850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_116450_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_116850_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_117450_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_117900_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_118450_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_118900_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_119400_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_119800_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_120400_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_120500_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_121350_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_121550_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_122400_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_122600_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_123600_M..S24R,Weekday,Middle Village-Metropolitan Av,1,M..S24R
+M,BSP26GEN-M094-Weekday-00_123800_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_125050_M..N24R,Weekday,Forest Hills-71 Av,0,M..N24R
+M,BSP26GEN-M094-Weekday-00_125950_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_126850_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_127800_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_128800_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_129250_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_129500_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_130150_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_130700_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_131150_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_131700_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_132150_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_132700_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_133150_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_133700_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_134300_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_134800_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_135350_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_135600_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_136150_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_136800_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_137300_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_137900_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_138150_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_139000_M..N25R,Weekday,Delancey St-Essex St,0,M..N25R
+M,BSP26GEN-M094-Weekday-00_139350_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_140000_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_140400_M..S25R,Weekday,Middle Village-Metropolitan Av,1,M..S25R
+M,BSP26GEN-M094-Weekday-00_141500_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_142500_M..S30R,Weekday,Middle Village-Metropolitan Av,1,M..S30R
+M,BSP26GEN-M094-Weekday-00_143000_M..N30R,Weekday,Myrtle Av,0,M..N30R
+M,BSP26GEN-M094-Weekday-00_144600_M..N30R,Weekday,Myrtle Av,0,M..N30R
+N,BSP26GEN-N102-Weekday-00_001050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_003050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_005050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_007050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_009050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_011050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_011650_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_013050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_013650_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_015050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_015650_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_017050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_017650_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_019050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_019650_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_021050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_021650_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_023050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_023650_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_025050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_025650_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_027050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_027650_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_029050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_029650_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_031050_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_031700_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_032350_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_033000_N..S31R,Weekday,Coney Island-Stillwell Av,1,N..S31R
+N,BSP26GEN-N102-Weekday-00_033500_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_034500_N..S31R,Weekday,Coney Island-Stillwell Av,1,N..S31R
+N,BSP26GEN-N102-Weekday-00_035250_N..N35R,Weekday,Astoria-Ditmars Blvd,0,N..N35R
+N,BSP26GEN-N102-Weekday-00_035650_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_035700_N..S31R,Weekday,Coney Island-Stillwell Av,1,N..S31R
+N,BSP26GEN-N102-Weekday-00_036700_N..S31R,Weekday,Coney Island-Stillwell Av,1,N..S31R
+N,BSP26GEN-N102-Weekday-00_037050_N..N35R,Weekday,Astoria-Ditmars Blvd,0,N..N35R
+N,BSP26GEN-N102-Weekday-00_037650_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_037700_N..S31R,Weekday,Coney Island-Stillwell Av,1,N..S31R
+N,BSP26GEN-N102-Weekday-00_038650_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_038900_N..N35R,Weekday,Astoria-Ditmars Blvd,0,N..N35R
+N,BSP26GEN-N102-Weekday-00_039400_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_039800_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_040500_N..N35R,Weekday,Astoria-Ditmars Blvd,0,N..N35R
+N,BSP26GEN-N102-Weekday-00_040700_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_040900_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_041600_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_041800_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_042700_N..N35R,Weekday,Astoria-Ditmars Blvd,0,N..N35R
+N,BSP26GEN-N102-Weekday-00_042850_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_042900_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_043800_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_044050_N..N35R,Weekday,Astoria-Ditmars Blvd,0,N..N35R
+N,BSP26GEN-N102-Weekday-00_044250_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_044950_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_045400_N..N35R,Weekday,Astoria-Ditmars Blvd,0,N..N35R
+N,BSP26GEN-N102-Weekday-00_045600_N..N16R,Weekday,96 St,0,N..N16R
+N,BSP26GEN-N102-Weekday-00_045850_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_046250_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_046700_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_046850_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_047550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_047700_N..N35R,Weekday,Astoria-Ditmars Blvd,0,N..N35R
+N,BSP26GEN-N102-Weekday-00_047900_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_048550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_048950_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_049350_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_049650_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_050100_N..N16R,Weekday,96 St,0,N..N16R
+N,BSP26GEN-N102-Weekday-00_050300_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_050650_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_051000_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_051550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_051700_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_052400_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_052450_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_052550_N..S16R,Weekday,Coney Island-Stillwell Av,1,N..S16R
+N,BSP26GEN-N102-Weekday-00_053100_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_053500_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_053750_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_054400_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_054550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_054850_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_055450_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_055550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_056550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_056750_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_056850_N..S16R,Weekday,Coney Island-Stillwell Av,1,N..S16R
+N,BSP26GEN-N102-Weekday-00_057550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_057550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_058400_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_058550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_059250_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_059500_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_060250_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_060400_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_060950_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_061050_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_061650_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_061900_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_062400_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_062550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_063200_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_063650_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_064150_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_064550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_064600_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_065500_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_065550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_066300_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_066500_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_067150_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_067400_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_068000_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_068450_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_068900_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_069250_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_069650_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_069800_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_070550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_070550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_071250_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_071500_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_071950_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_072350_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_073050_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_073400_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_073700_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_073750_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_074350_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_074650_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_075250_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_075450_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_075950_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_076450_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_077100_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_077250_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_077700_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_077900_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_078350_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_078800_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_079150_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_079600_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_079950_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_080500_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_081050_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_081250_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_081700_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_081750_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_082350_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_082550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_083150_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_083600_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_084200_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_084450_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_084800_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_085250_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_085650_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_085700_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_086400_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_086450_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_087250_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_087400_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_088150_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_088400_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_088950_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_089250_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_089850_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_090050_N..N16R,Weekday,96 St,0,N..N16R
+N,BSP26GEN-N102-Weekday-00_090550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_090800_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_091350_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_091600_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_092250_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_092600_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_092750_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_093100_N..N16R,Weekday,96 St,0,N..N16R
+N,BSP26GEN-N102-Weekday-00_093750_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_094100_N..N35R,Weekday,Astoria-Ditmars Blvd,0,N..N35R
+N,BSP26GEN-N102-Weekday-00_094250_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_094550_N..N16R,Weekday,96 St,0,N..N16R
+N,BSP26GEN-N102-Weekday-00_094600_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_095350_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_095550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_095950_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_096450_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_096500_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_097300_N..S16R,Weekday,Coney Island-Stillwell Av,1,N..S16R
+N,BSP26GEN-N102-Weekday-00_097450_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_097650_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_098350_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_098650_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_099100_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_099550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_099700_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_100200_N..N16R,Weekday,96 St,0,N..N16R
+N,BSP26GEN-N102-Weekday-00_100200_N..S16R,Weekday,Coney Island-Stillwell Av,1,N..S16R
+N,BSP26GEN-N102-Weekday-00_101100_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_101150_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_101300_N..S16R,Weekday,Coney Island-Stillwell Av,1,N..S16R
+N,BSP26GEN-N102-Weekday-00_101600_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_101900_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_102200_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_102850_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_102900_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_103500_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_103850_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_104200_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_104650_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_105150_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_105550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_106100_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_106450_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_106750_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_106950_N..S16R,Weekday,Coney Island-Stillwell Av,1,N..S16R
+N,BSP26GEN-N102-Weekday-00_107050_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_107650_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_107850_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_108550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_108650_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_109550_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_109600_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_110300_N..N33R,Weekday,Astoria-Ditmars Blvd,0,N..N33R
+N,BSP26GEN-N102-Weekday-00_110400_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_110850_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_110900_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_111500_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_112150_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_112300_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_113300_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_113300_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_114350_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_114400_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_114900_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_115550_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_115750_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_116550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_117050_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_117550_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_118050_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_118350_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_119150_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_119350_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_120400_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_121000_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_122000_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_122400_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_123150_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_123350_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_124050_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_124450_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_125150_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_125900_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_126450_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_127350_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_127700_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_128200_N..S34R,Weekday,Coney Island-Stillwell Av,1,N..S34R
+N,BSP26GEN-N102-Weekday-00_128700_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_129600_N..S42R,Weekday,Coney Island-Stillwell Av,1,N..S42R
+N,BSP26GEN-N102-Weekday-00_130150_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_130950_N..S42R,Weekday,Coney Island-Stillwell Av,1,N..S42R
+N,BSP26GEN-N102-Weekday-00_131450_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_132300_N..S42R,Weekday,Coney Island-Stillwell Av,1,N..S42R
+N,BSP26GEN-N102-Weekday-00_132550_N..N31R,Weekday,Astoria-Ditmars Blvd,0,N..N31R
+N,BSP26GEN-N102-Weekday-00_133300_N..N23R,Weekday,Astoria-Ditmars Blvd,0,N..N23R
+N,BSP26GEN-N102-Weekday-00_133300_N..S42R,Weekday,Coney Island-Stillwell Av,1,N..S42R
+N,BSP26GEN-N102-Weekday-00_134400_N..S42R,Weekday,Coney Island-Stillwell Av,1,N..S42R
+N,BSP26GEN-N102-Weekday-00_134600_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_135500_N..S42R,Weekday,Coney Island-Stillwell Av,1,N..S42R
+N,BSP26GEN-N102-Weekday-00_136200_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_136750_N..S42R,Weekday,Coney Island-Stillwell Av,1,N..S42R
+N,BSP26GEN-N102-Weekday-00_137600_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_137900_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_138950_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_139100_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_140200_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_140300_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_141550_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_141700_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_143400_N..S20R,Weekday,Coney Island-Stillwell Av,1,N..S20R
+N,BSP26GEN-N102-Weekday-00_143700_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_145600_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_147600_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_149600_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_151600_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_153600_N..N20R,Weekday,Astoria-Ditmars Blvd,0,N..N20R
+R,BSP26GEN-R097-Weekday-00_001500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_003500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_005500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_006500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_007500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_008500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_009500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_010500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_011500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_012500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_013500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_014500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_015500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_016500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_017500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_018500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_019500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_020500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_021500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_022500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_023500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_024500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_025500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_026500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_027500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_028500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_029500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_030500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_031500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_031650_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_031850_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_032500_R..S36R,Weekday,Bay Ridge-95 St,1,R..S36R
+R,BSP26GEN-R097-Weekday-00_033000_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_033350_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_033500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_034000_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_034450_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_034500_R..S36R,Weekday,Bay Ridge-95 St,1,R..S36R
+R,BSP26GEN-R097-Weekday-00_034900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_035500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_035600_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_035950_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_036550_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_037050_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_037550_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_037750_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_038250_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_038500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_038850_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_039350_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_039400_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_039950_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_040300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_040800_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_041200_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_041750_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_041900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_042350_R..N76R,Weekday,96 St,0,R..N76R
+R,BSP26GEN-R097-Weekday-00_042950_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_043150_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_043700_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_044000_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_044250_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_044700_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_044900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_045350_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_045450_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_046050_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_046150_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_046600_R..S96R,Weekday,Bay Pkwy,1,R..S96R
+R,BSP26GEN-R097-Weekday-00_046750_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_047050_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_047350_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_047650_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_047900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_048250_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_048450_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_049000_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_049100_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_049500_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_049700_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_050100_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_050300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_050750_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_050950_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_051600_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_051700_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_052450_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_052550_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_053200_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_053500_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_054000_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_054400_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_054700_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_055150_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_055500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_055900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_056300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_056700_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_057100_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_057500_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_057850_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_058250_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_058600_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_059100_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_059400_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_059900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_060300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_060700_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_061100_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_061500_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_061900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_062300_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_062550_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_063100_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_063500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_063900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_064200_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_064700_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_065050_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_065500_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_065750_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_066300_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_066550_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_067200_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_067500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_067900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_068300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_068550_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_069100_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_069400_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_069900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_070200_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_070700_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_071000_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_071500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_071800_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_072300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_072600_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_073100_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_073400_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_073900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_074200_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_074600_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_075100_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_075500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_075800_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_076300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_076650_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_077100_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_077400_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_077900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_078350_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_078600_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_079200_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_079500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_079800_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_080300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_080650_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_081100_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_081400_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_081900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_082250_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_082750_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_083100_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_083500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_083800_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_084300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_084600_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_085100_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_085450_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_085900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_086200_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_086700_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_086900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_087500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_087700_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_088300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_088500_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_089100_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_089300_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_089900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_090250_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_090650_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_090800_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_091500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_091500_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_091550_R..N96R,Weekday,Forest Hills-71 Av,0,R..N96R
+R,BSP26GEN-R097-Weekday-00_092250_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_092400_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_093000_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_093300_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_094000_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_094100_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_094700_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_094700_R..N96R,Weekday,Forest Hills-71 Av,0,R..N96R
+R,BSP26GEN-R097-Weekday-00_095050_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_095400_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_095750_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_096200_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_096300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_096900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_097000_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_097600_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_097650_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_098200_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_098300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_098800_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_099100_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_099250_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_099850_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_099900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_100550_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_100750_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_101250_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_101300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_101850_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_102000_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_102500_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_102800_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_103200_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_103400_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_103700_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_104300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_104300_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_104850_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_105100_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_105500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_106200_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_106200_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_106900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_106900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_107600_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_107650_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_108350_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_108450_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_109150_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_109250_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_110150_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_110200_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_110900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_111150_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_111550_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_111850_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_112400_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_112900_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_112900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_113550_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_113700_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_114300_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_114400_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_115100_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_115200_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_115850_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_116300_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_116900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_117250_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_117900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_118150_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_118900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_119050_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_119800_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_120000_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_120800_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_120900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_121400_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_121900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_122550_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_122900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_123500_R..N93R,Weekday,Forest Hills-71 Av,0,R..N93R
+R,BSP26GEN-R097-Weekday-00_123900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_124100_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_124900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_125000_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_125800_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_125900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_126900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_127100_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_127900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_128450_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_128900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_129650_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_130000_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_130900_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_130900_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_131850_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_132300_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_132950_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_133550_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_134150_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_134850_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_135450_R..S71R,Weekday,Bay Ridge-95 St,1,R..S71R
+R,BSP26GEN-R097-Weekday-00_136300_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_137200_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_137700_R..N78R,Weekday,Queens Plaza,0,R..N78R
+R,BSP26GEN-R097-Weekday-00_138500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_140500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_141500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_142500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_143500_R..S27R,Weekday,Bay Ridge-95 St,1,R..S27R
+R,BSP26GEN-R097-Weekday-00_144500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_146500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R
+R,BSP26GEN-R097-Weekday-00_148500_R..N27R,Weekday,Whitehall St-South Ferry,0,R..N27R

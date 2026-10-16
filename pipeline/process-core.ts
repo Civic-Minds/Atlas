@@ -43,7 +43,7 @@ import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { directionStretches, periodSustainedMid, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { directionStretches, nightOnlyTrips, periodSustainedMid, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
@@ -1845,6 +1845,7 @@ export async function processGtfsBuffer(
   };
 
   const rowRunsAtNight = new Map<GeoJsonFeature, boolean>();
+  const rowNightStops = new Map<GeoJsonFeature, string[]>();
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
     // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
     feature.properties.frequentService = false;
@@ -2036,8 +2037,9 @@ export async function processGtfsBuffer(
       const own = nightShapeStops.map(({ stopId }) => stopId);
       const atNight = own.filter(stopId => runsAcrossNightMidpoint(
         nightServiceDepartureTimes(stopMap.get(stopId) ?? [], stopDepsByGroupNight.get(gKey)?.get(stopId) ?? []),
-      )).length;
-      rowRunsAtNight.set(feature, own.length > 0 && atNight * 2 > own.length);
+      ));
+      rowRunsAtNight.set(feature, own.length > 0 && atNight.length * 2 > own.length);
+      rowNightStops.set(feature, atNight);
     }
 
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
@@ -3035,10 +3037,15 @@ export async function processGtfsBuffer(
         limited: tripIsLimited(tripId, dayType) || undefined,
         visits: [...visits].sort((a, b) => a.seq - b.seq).map(({ stopId, minutes, overnightOnly, counted }) => ({ stopId, minutes, overnightOnly, counted })),
       }));
-      stretchesByKey.set(gKey, directionStretches(gKey, directionTrips, stopId => {
+      const coord = (stopId: string): [number, number] | undefined => {
         const stop = stopsById.get(stopId);
         return stop ? [stop.lat, stop.lon] : undefined;
-      }));
+      };
+      const stretches = directionStretches(gKey, directionTrips, coord);
+      // The night version (Ryan, 2026-10-15): the same direction from its 2-5am trips only.
+      const nightTrips = nightOnlyTrips(directionTrips);
+      if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips);
+      stretchesByKey.set(gKey, stretches);
     }
     options?.onStretches?.({ stretches: stretchesByKey, stopDepsByGroup });
     stampStretchShadow(features, stretchesByKey, feature => {
@@ -3064,10 +3071,22 @@ export async function processGtfsBuffer(
     for (const feature of features) {
       if (!featureStopHeadwaySlots.has(feature)) continue;
       const p = feature.properties;
-      const runs = rowRunsAtNight.get(feature) === true;
+      // A route that qualifies only on its night version (part of the route, or a night path)
+      // lights every row its night service runs on, and lists the stops it runs at, so the map
+      // draws and the card names only that part.
+      const nightStops = rowNightStops.get(feature) ?? [];
+      const partial = p.stretchNightPartial60 === true;
+      const runs = partial ? nightStops.length >= 2 : rowRunsAtNight.get(feature) === true;
       p.nightService30 = p.stretchNight30 === true && runs;
       p.nightService60 = p.stretchNight60 === true && runs;
       p.nightService = p.nightService60;
+      if (p.nightService60 && partial) {
+        p.nightServicePartOfRoute = true;
+        p.nightServiceStops = nightStops;
+      } else {
+        delete p.nightServicePartOfRoute;
+        delete p.nightServiceStops;
+      }
     }
   }
 

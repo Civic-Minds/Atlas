@@ -300,12 +300,28 @@ describe('night on disconnected pieces (NYC subway S)', () => {
   });
 });
 
-describe('night-only patterns do not shape the stretches (CTA 87)', () => {
-  it('the owl covers part of the route, so 87 fails Night: the trunk\'s middle stop opens at 4:10', async () => {
-    // Oracle at the middle stop of the daytime main stretch, 2-5: 3 departures, start gap 130.
+describe('night service on part of the route counts, on the part it runs (Ryan, 2026-10-15)', () => {
+  it('CTA 87: the owl covers part of the route; it qualifies at 60 as part of the route, and fails 30', async () => {
+    // The daytime main stretch's middle stop opens at 4:10 (no night service there), so the night
+    // version decides. Oracle at its middle stops, 2-5: 14540 (dir 0) 9 departures, max gap 30;
+    // 14778 (dir 1) 8 departures, max gap 31.
     const r = await run('cta-87-weekday');
     expect(r.stretches.get('87::0::Weekday')!.main!.stops.length).toBeGreaterThan(13);
-    expect(row(r, '87', 'Weekday').stretchNight60).toBe(false);
+    const rows = r.rows.filter(p => p.routeShortName === '87' && p.day === 'Weekday');
+    expect(rows.every(p => p.stretchNight60 === true && p.stretchNightPartial60 === true)).toBe(true);
+    expect(rows.every(p => p.stretchNight30 === false)).toBe(true);
+    const lit = rows.filter(p => p.nightService60);
+    expect(lit.length).toBeGreaterThan(0);
+    expect(lit.every(p => p.nightServicePartOfRoute === true && p.nightServiceStops.length >= 2)).toBe(true);
+  });
+  it('NYC subway 3, 5, M, N and R run a shorter night route: each qualifies at 30 and 60 as part of the route', async () => {
+    // Oracle at each night middle stop, 2-5: every 20 (227S/226N, 504S/503N, M06S/M08N, R27S, R35S/R35N).
+    const r = await run('nyct-subway-night-weekday', 'nyct');
+    for (const route of ['3', '5', 'M', 'N', 'R']) {
+      const rows = r.rows.filter(p => p.routeShortName === route && p.day === 'Weekday');
+      expect(rows.every(p => p.stretchNight30 === true && p.stretchNight60 === true), route).toBe(true);
+      expect(rows.some(p => p.nightServicePartOfRoute === true), route).toBe(true);
+    }
   });
 });
 
@@ -378,9 +394,9 @@ describe('Night flags read the stretches (step 4 switch)', () => {
     for (const dir of [0, 1]) expect(rows.some(p => p.directionId === dir && p.nightService60 === true), `dir ${dir}`).toBe(true);
     expect(rows.every(p => p.nightService === p.nightService60)).toBe(true);
   });
-  it('a route that fails keeps every row dark (CTA 87)', async () => {
+  it('a route that fails keeps every row dark (CTA 87 at 30)', async () => {
     const r = await run('cta-87-weekday');
-    expect(r.rows.filter(p => p.routeShortName === '87' && p.day === 'Weekday').some(p => p.nightService60 || p.nightService30)).toBe(false);
+    expect(r.rows.filter(p => p.routeShortName === '87' && p.day === 'Weekday').some(p => p.nightService30)).toBe(false);
   });
   it('TTC 337 rows pass 60 and not 30, as the route does', async () => {
     const r = await run('ttc-337-373-night');

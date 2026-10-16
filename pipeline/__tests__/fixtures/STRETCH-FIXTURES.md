@@ -19,6 +19,7 @@ Each folder is one route's trips on the services active on one date, cut from th
 | cta-77-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 77 |
 | cta-93-sunday | `_feeds/cta/20261130-fresh.zip` | 2026-10-18 | 93 |
 | cta-87-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 87 |
+| nyct-subway-night-weekday | `_feeds/nyct-subway/20261031-fresh.zip` | 2026-10-21 | 3, 5, M, N, R |
 | nyct-subway-s-weekday | `_feeds/nyct-subway/20261031-fresh.zip` | 2026-10-21 | S (FS, GS, H) |
 | septa-66-weekday | `_feeds/septa/20270220-fresh.zip` | 2026-10-21 | 66 |
 | translink-044-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | 044 |
