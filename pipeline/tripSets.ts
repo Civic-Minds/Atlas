@@ -584,12 +584,9 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     night60: complete && known.every(d => d.night60),
     nightPartial30: complete && known.every(d => d.night30) && known.some(d => d.nightPartial30),
     nightPartial60: complete && known.every(d => d.night60) && known.some(d => d.nightPartial60),
-    // A limited direction (#720) is skipped, as a rush-hour-only direction beside an all-day one
-    // never decides the route; a route with only limited directions has no all-day value.
-    allDay: (() => {
-      const allDayDirs = known.filter(d => !d.limitedOnly);
-      return complete && allDayDirs.length > 0 && allDayDirs.every(d => d.allDay != null) ? Math.max(...allDayDirs.map(d => d.allDay!)) : null;
-    })(),
+    // A limited direction (#720) has no all-day value, so neither has its route: every direction
+    // must run all day (#899), and the other direction alone never passes for it.
+    allDay: complete && known.every(d => d.allDay != null) ? Math.max(...known.map(d => d.allDay!)) : null,
     middayWait: complete && known.every(d => d.middayWait != null) ? Math.max(...known.map(d => d.middayWait!)) : null,
     middayCap: (() => {
       // #899 as worstDirection.ts applies it: some directions run at midday and some do not, the

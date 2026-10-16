@@ -372,6 +372,11 @@ describe('route roll-up (rule 1)', () => {
     expect(rollupRoute([dir(10), stray]).period.midday.filterValue).toBeNull();
     expect(rollupRoute([dir(10), none]).period.midday.filterValue).toBe(10);
   });
+  it('all day: a limited direction (#720) leaves the route with no all-day value, never the other direction alone (#899; GO 43 read every 30)', () => {
+    const limited = { ...dir(55), allDay: null, limitedOnly: true };
+    expect(rollupRoute([dir(30), limited]).allDay).toBeNull();
+    expect(rollupRoute([dir(30), dir(55)]).allDay).toBe(55);
+  });
 });
 
 describe('night tails (D3 with the D8 midpoint)', () => {
