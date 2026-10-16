@@ -170,11 +170,35 @@ export function dashboardHold(agency: string, route: string): string | null {
   return LIVE_DASHBOARD_HOLD[`${agency}::${route}`] ?? null;
 }
 
-/** Why the dashboard has nothing for this route, or null when it should. */
-export function dashboardUnavailable(agency: string, route: string): { status: 'held' | 'no_analysis' | 'unknown_route'; reason: string } | null {
+/**
+ * Quality checks every analysed route must pass before it is shown (the 512 rule, applied to all routes):
+ * - trip numbers that do not fit their timetable slot ("swapped") on more than 10% of trips: the delays cannot be trusted;
+ * - fewer than 300 departures at stops with a scheduled time in the week: too few to say how late it runs;
+ * - more than half the vehicles under trip numbers that are not on the timetable: the figures would describe a minority.
+ * Calibrated on the 10 streetcars: 512 has 15% swaps (held), the rest 0-6%; 501's 35% unlisted runs stay shown.
+ */
+export const QUALITY_MAX_SWAP_RATE = 0.1;
+export const QUALITY_MIN_TIMEPOINT_DEPARTURES = 300;
+export const QUALITY_MAX_UNLISTED_SHARE = 0.5;
+export function qualityHold(v3: LiveV3): string | null {
+  // A file without these blocks cannot be judged here; the page says what is missing section by section.
+  if (!v3.swaps || !v3.adherence?.timepoints?.all?.overall) return null;
+  if (v3.swaps.rate > QUALITY_MAX_SWAP_RATE) return `About ${Math.round(v3.swaps.rate * 100)}% of its trips ran under a trip number that does not match the timetable, so its delays cannot be trusted yet.`;
+  const n = v3.adherence.timepoints.all.overall.n;
+  if (n < QUALITY_MIN_TIMEPOINT_DEPARTURES) return n === 0
+    ? 'Its timetable gives no stop times to compare with, so how late it runs cannot be measured.'
+    : `Only ${n.toLocaleString()} departures at stops with a scheduled time were measured this week, too few to say how late it runs.`;
+  const lo = v3.leftOut;
+  const seen = lo ? lo.kept + lo.noTimetableTrip + lo.excluded : 0;
+  if (lo && seen > 0 && lo.noTimetableTrip / seen > QUALITY_MAX_UNLISTED_SHARE) return `${Math.round((lo.noTimetableTrip / seen) * 100)}% of its vehicles ran under trip numbers that are not on the timetable, so the figures would describe only a minority of its service.`;
+  return null;
+}
+
+/** Why the dashboard has nothing for this route, or null when it should. `analysed`: an analysis file exists for it. */
+export function dashboardUnavailable(agency: string, route: string, analysed = hasLiveAnalysis(agency, route)): { status: 'held' | 'no_analysis' | 'unknown_route'; reason: string } | null {
   const hold = dashboardHold(agency, route);
   if (hold) return { status: 'held', reason: hold };
-  if (!hasLiveAnalysis(agency, route)) {
+  if (!analysed) {
     return { status: 'no_analysis', reason: `No analysis is built for ${agency.toUpperCase()} ${route} yet. It needs saved vehicle locations and the timetable for the route; build it with "npm run live:analyze -- ${route}".` };
   }
   return null;

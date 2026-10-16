@@ -171,3 +171,16 @@ describe('branch lines follow the time of day', () => {
     expect(branchFigures(base, 'pmPeak')).toBeNull();
   });
 });
+
+describe('qualityHold', () => {
+  const v3 = (swap: number, n: number, unlisted = 0) => ({ swaps: { rate: swap, reassigned: 0, dropped: 0 }, adherence: { timepoints: { all: { overall: { n } } } }, leftOut: { kept: 100 - unlisted, noTimetableTrip: unlisted, excluded: 0, excludedLabel: null } }) as unknown as LiveV3;
+  it('holds a route the way the 512 is held, and passes the shown streetcars', async () => {
+    const { qualityHold } = await import('../liveDashboard');
+    expect(qualityHold(v3(0.152, 1554))).toMatch(/15% of its trips ran under a trip number/);
+    expect(qualityHold(v3(0.06, 2434))).toBeNull();
+    expect(qualityHold(v3(0.033, 3126, 35))).toBeNull(); // 501: 35% unlisted runs, still shown
+    expect(qualityHold(v3(0, 120))).toMatch(/Only 120 departures/);
+    expect(qualityHold(v3(0, 0))).toMatch(/gives no stop times/);
+    expect(qualityHold(v3(0, 900, 60))).toMatch(/60% of its vehicles/);
+  });
+});
