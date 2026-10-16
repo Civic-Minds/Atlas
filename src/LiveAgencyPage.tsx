@@ -114,9 +114,6 @@ function RoutesTable({ s }: { s: AgencySummary }) {
           />
         </div>
       ))}
-      <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">
-        Late: trips that left the end of the line more than 5 min late. Run time: the typical trip over the main stretch against its scheduled time. Bunching: gaps under 2 minutes or over twice the scheduled gap. Delivered: scheduled trips that ran. All for this week.
-      </p>
     </>
   );
 }
@@ -208,20 +205,23 @@ export default function LiveAgencyPage() {
           <RoutesTable s={s} />
         </Section>
 
-        <Section id="agency-stops" title="Stops where the most cars leave late" intro={`The ${s.worstStops.length} stops with the highest share of departures 5.5+ minutes late, across all analysed routes (stops with at least 30 departures, at most 3 from one route direction).`}>
+        <Section id="agency-stops" title="Stops where the most cars leave late" intro={`The ${s.worstStops.length} stops with the highest share of departures 5.5+ minutes late, across all analysed routes.`}>
           <StopsTable s={s} rows={s.worstStops} />
         </Section>
 
-        <Section id="agency-delay" title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there. Directions where delay builds slowly have no single place and are left out.">
+        <Section id="agency-delay" title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there.">
           <StretchTable s={s} rows={s.delayStarts} caption="Stretches that add the most delay" valueHeader="Added" format={mins} />
         </Section>
 
-        <Section id="agency-bunching" title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up, and by how much.">
+        <Section id="agency-bunching" title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up.">
           <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" />
         </Section>
 
         <Section id="agency-method" title="How this is measured">
           <ul className="mt-3 max-w-3xl list-disc space-y-1 pl-5 text-sm leading-6 text-[var(--text-muted)]">
+            <li>Late: trips that left the end of the line more than 5 min late. Run time: the typical trip over the main stretch against its scheduled time. Bunching: gaps under 2 minutes or over twice the scheduled gap. Delivered: scheduled trips that ran. All for this week.</li>
+            <li>Stops: at least 30 departures, at most 3 from one route direction.</li>
+            <li>Directions where delay builds slowly have no single place and are left out.</li>
             <li>Each route is measured the same way as on its own page: delay is when the car left each stop against the timetable, worked out from where it was seen about once a minute.</li>
             <li>Network figures add up every departure, trip or gap on the analysed routes; they are not an average of route figures, so busy routes weigh more than quiet ones.</li>
             {w && <li>This week compared with last week: {weekCaption({ ...w, health: [] })} {NOISE_RULE}</li>}
