@@ -4,7 +4,7 @@ import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
-import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange } from './headwayText';
+import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
 import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
 import { clockText } from '../content/researchRules';
 
@@ -140,19 +140,22 @@ export function routeCardCoverageText(p: ShapeProperties, period: TimePeriod): s
 }
 
 /**
- * #934: a period whose value is only a late start or an early end around steady service reads
- * "from 7:17am, every 9 min" or "until 5:40pm, every 10 min" on the card, not "every 77".
+ * #934 and D6: the main stretch's row names a late start or early end ("from 7:17am, every 9 min")
+ * or one gap inside steady service ("every 5 min, with a 169 min gap") instead of a long wait or
+ * "limited". Wording: headwayPeriodShape.
  */
-export function routeCardEdgeText(p: ShapeProperties, period: TimePeriod): string | undefined {
+export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod): string | undefined {
   if (period === 'all') return undefined;
   const edge = p.stretchPeriodEdge?.[period];
-  if (!edge) return undefined;
-  const parts = [
-    edge.from != null ? `from ${clockText(edge.from)}` : null,
-    edge.until != null ? `until ${clockText(edge.until)}` : null,
-    headwayEvery(edge.every),
-  ].filter(Boolean);
-  return parts.length > 1 ? parts.join(', ') : undefined;
+  if (edge && (edge.from != null || edge.until != null)) {
+    return headwayPeriodShape({
+      from: edge.from != null ? clockText(edge.from) : undefined,
+      until: edge.until != null ? clockText(edge.until) : undefined,
+      every: edge.every,
+    });
+  }
+  const gap = p.stretchPeriodGap?.[period];
+  return gap ? headwayPeriodShape({ every: gap.every, gap: gap.gap }) : undefined;
 }
 
 export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): string | undefined {

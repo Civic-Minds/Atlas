@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { periodEdge } from '../tripSets';
+import { periodEdge, periodOneGap, periodPartialEdge } from '../tripSets';
 
 // #934: SF Muni 8BX AM at Bryant St & 5th St (13724), the oracle's departures (6:00-9:00).
 const BX_AM = [437, 445, 455, 463, 473, 481, 491, 499, 510, 518, 527, 537];
@@ -27,5 +27,32 @@ describe('periodEdge (#934)', () => {
   });
   it('none with fewer than 3 departures', () => {
     expect(periodEdge([437, 445], 360, 540, 95)).toBeNull();
+  });
+});
+
+describe('periodPartialEdge (#934: part of the period, D8)', () => {
+  it('service only after the midpoint reads from the first departure', () => {
+    expect(periodPartialEdge([465, 475, 485, 495, 505, 515, 525, 535], 360, 540)).toEqual({ from: 465, every: 10 });
+  });
+  it('service only before the midpoint reads until the last departure (CTA 134 midday: 9:02-9:37)', () => {
+    expect(periodPartialEdge([542, 552, 565, 577], 540, 900)).toEqual({ until: 577, every: 12 });
+  });
+  it('none when service is on both sides of the midpoint, or uneven, or under 3 departures', () => {
+    expect(periodPartialEdge([370, 380, 470, 480], 360, 540)).toBeNull();
+    expect(periodPartialEdge([465, 470, 475, 505, 510], 360, 540)).toBeNull();
+    expect(periodPartialEdge([500, 510], 360, 540)).toBeNull();
+  });
+});
+
+describe('periodOneGap (narrow D6)', () => {
+  // TTC 504 weekday overnight, dir 0 at King St West at John St (the oracle, 2:00-6:00 as 26:00-30:00).
+  const T504 = [1560, 1565, 1570, 1575, 1576, 1580, 1585, 1590, 1595, 1600, 1769, 1779, 1789, 1794, 1799];
+  it('steady but for one gap inside: the median and the gap', () => {
+    expect(periodOneGap(T504, 1560, 1800)).toEqual({ every: 5, gap: 169 });
+  });
+  it('none for steady service, two big gaps, or service on one side of the midpoint', () => {
+    expect(periodOneGap([540, 550, 560, 570, 580, 590], 540, 900)).toBeNull();
+    expect(periodOneGap([540, 545, 550, 650, 655, 660, 760, 765, 770], 540, 900)).toBeNull();
+    expect(periodOneGap([540, 545, 550, 650, 655], 540, 900)).toBeNull();
   });
 });

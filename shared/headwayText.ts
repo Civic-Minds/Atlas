@@ -101,6 +101,20 @@ export function delayAmount(minutes: number | null | undefined): string {
   return isUsable(minutes) ? `${num(minutes)} min` : MISSING;
 }
 
+/**
+ * A period's service where it runs, for the route card's time-of-day rows (#934, D6; Ryan,
+ * 2026-10-16). `from` and `until` are clock text already formatted for the app:
+ * "from 7:17am, every 9 min", "until 5:40pm, every 10 min", "every 5 min, with a 169 min gap".
+ */
+export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number }): string {
+  const parts = [
+    shape.from != null ? `from ${shape.from}` : null,
+    shape.until != null ? `until ${shape.until}` : null,
+    shape.gap != null ? `${headwayEvery(shape.every)}, with a ${delayAmount(shape.gap)} gap` : headwayEvery(shape.every),
+  ].filter((part): part is string => part != null);
+  return parts.join(', ');
+}
+
 export function capitalizeFirst(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
