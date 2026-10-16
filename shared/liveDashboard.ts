@@ -297,17 +297,51 @@ export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'deliv
 
 /** One comparison line per measure, this week against last, with a plain up or down. The same rule for every measure. */
 /**
- * The smallest week-to-week change that counts as a real change for each measure. Two weeks of the same route move by
- * about this much on their own (a different mix of weekdays, one bad afternoon), so a smaller change reads "about the
- * same" and is not coloured: 20% to 21% bunched is noise, not a worse week.
+ * The week-change colouring rule, shared by the dashboard (src/utils/liveKpi.ts) and the full analysis page, so both
+ * always agree. A change is coloured only when it is bigger than normal noise. Where the file holds a value per day
+ * (late share, trips that ran), the noise is measured: twice the standard error of the difference of the two weekly
+ * means, from the day-to-day spread (dailyNoise). Elsewhere a fixed amount stands in (FIXED_NOISE, provisional until the
+ * analysis stores daily values for those measures too).
  */
-export const WEEK_NOISE: Record<CompareKey, number> = {
-  late: 0.03,        // 3 percentage points
-  tripTime: 2,       // 2 minutes
-  extraWait: 0.5,    // half a minute
-  bunching: 0.03,    // 3 percentage points
-  delivered: 0.01,   // 1 percentage point
-};
+export const NOISE_RULE = 'A change is coloured only when it is bigger than usual day to day: for late and trips that ran, more than the spread between days would explain; for the others, more than 2 points (bunching), 1 minute (trip time) or half a minute (extra wait). Smaller changes stay grey.';
+
+/**
+ * PROVISIONAL: smallest change that counts, in the figure's own unit (share as 0-1, or minutes), for measures without
+ * daily values, and for late and delivered when too few days are recorded to measure the spread.
+ */
+export const FIXED_NOISE: Record<CompareKey, number> = { late: 0.02, bunching: 0.02, delivered: 0.01, tripTime: 1, extraWait: 0.5 };
+
+/**
+ * Noise for a week-over-week change measured from daily values: 2 x the standard error of the difference of two weekly
+ * means. The file holds daily values for this week only, so their spread stands in for both weeks:
+ * 2 * sd * sqrt(1/n1 + 1/n2). `null` with fewer than 3 days (no spread to measure).
+ * TODO (planned day-split rebuild of the analysis): store last week's daily values too, so each week uses its own
+ * spread: 2 * sqrt(sd1^2/n1 + sd2^2/n2).
+ */
+export function dailyNoise(daily: readonly number[], nThis: number, nLast: number): number | null {
+  if (daily.length < 3 || nThis < 1 || nLast < 1) return null;
+  const mean = daily.reduce((a, x) => a + x, 0) / daily.length;
+  const sd = Math.sqrt(daily.reduce((a, x) => a + (x - mean) ** 2, 0) / (daily.length - 1));
+  return 2 * sd * Math.sqrt(1 / nThis + 1 / nLast);
+}
+
+/** This week's daily values on days with good recordings, where the file has them (late share, trips that ran). */
+export function weekDailyValues(v3: LiveV3): { late: number[]; delivered: number[] } {
+  const ok = new Set(v3.weekly?.thisWeek.healthyDates ?? []);
+  return {
+    late: v3.bands.all.adherence.timepoints.all.byDate.filter(d => ok.has(d.date) && d.n > 0).map(d => d.lateShare),
+    delivered: (v3.serviceDelivered?.byDay ?? []).flatMap(d => (ok.has(d.date) && d.share != null ? [d.share] : [])),
+  };
+}
+
+/**
+ * The one colouring decision: 'better' or 'worse' only when the change is bigger than the noise (measured when given,
+ * else FIXED_NOISE), otherwise 'same'. `measured` says which noise was used, for the hover text.
+ */
+export function weekChangeTone(key: CompareKey, now: number, before: number, lowerIsBetter: boolean, noise: number | null = null): { tone: 'better' | 'worse' | 'same'; big: boolean; measured: boolean } {
+  const big = Math.abs(now - before) > (noise ?? FIXED_NOISE[key]);
+  return { tone: !big ? 'same' : (now > before) !== lowerIsBetter ? 'better' : 'worse', big, measured: noise != null };
+}
 
 export interface CompareTile {
   key: CompareKey;
@@ -316,15 +350,19 @@ export interface CompareTile {
   value: string;
   /** Change from last week, formatted ("+2 pts", "−1 min"), or null when there is nothing to compare. */
   delta: string | null;
-  /** better / worse only when the change is bigger than WEEK_NOISE; otherwise same. */
+  /** better / worse only when the change is bigger than the noise (weekChangeTone); otherwise same. */
   direction: 'better' | 'worse' | 'same' | 'unknown';
   /** Last week's value, formatted, for the tooltip and screen readers. */
   before: string | null;
+  /** Why the chip is or is not coloured, for the hover ("a bigger change than usual day to day"). */
+  why?: string;
 }
 
 /** This week against last week as five tiles: a number, a label and a change chip coloured only beyond normal noise. */
-export function compareTiles(w: NonNullable<LiveV3['weekly']>): CompareTile[] {
+export function compareTiles(w: NonNullable<LiveV3['weekly']>, daily: { late: readonly number[]; delivered: readonly number[] } = { late: [], delivered: [] }): CompareTile[] {
   const t = w.thisWeek, l = w.lastWeek;
+  const nThis = t.healthyDates.length, nLast = l.healthyDates.length;
+  const noiseFor: Partial<Record<CompareKey, number | null>> = { late: dailyNoise(daily.late, nThis, nLast), delivered: dailyNoise(daily.delivered, nThis, nLast) };
   // A change that rounds to nothing reads ±0, never −0.
   const signed = (r: number, unit: string) => `${r > 0 ? '+' : r < 0 ? '−' : '±'}${m1(Math.abs(r))} ${unit}`;
   const points = (r: number) => signed(r, Math.abs(r) === 1 ? 'pt' : 'pts');
@@ -333,9 +371,9 @@ export function compareTiles(w: NonNullable<LiveV3['weekly']>): CompareTile[] {
   const tile = (key: CompareKey, label: string, now: number | null, before: number | null, fmt: (x: number) => string, delta: (d: number) => string, lowerIsBetter: boolean): CompareTile => {
     if (now == null) return { key, label, value: '–', delta: null, direction: 'unknown', before: null };
     if (before == null) return { key, label, value: fmt(now), delta: null, direction: 'unknown', before: null };
-    const d = now - before;
-    const direction = Math.abs(d) < WEEK_NOISE[key] - 1e-9 ? 'same' : (d < 0) === lowerIsBetter ? 'better' : 'worse';
-    return { key, label, value: fmt(now), delta: delta(d), direction, before: fmt(before) };
+    const { tone, big, measured } = weekChangeTone(key, now, before, lowerIsBetter, noiseFor[key] ?? null);
+    const why = big ? (measured ? 'a bigger change than usual day to day' : 'a change bigger than the usual swing') : (measured ? 'within the usual day-to-day change' : 'a small change');
+    return { key, label, value: fmt(now), delta: delta(now - before), direction: tone, before: fmt(before), why };
   };
   const pct0 = (x: number) => `${Math.round(x * 100)}%`;
   return [

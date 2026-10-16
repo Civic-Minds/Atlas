@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, bunchingSentence, buildupTakeaway, compareTiles, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
+  LINK_LABELS, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -311,14 +311,14 @@ function WeekCompare({ v3 }: { v3: LiveV3 }) {
     <Section id="week" title="This week compared with last week">
       {w.comparable ? (
         <>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">{range(w.thisWeek.dates)} against {range(w.lastWeek.dates)}. Coloured only where the change is bigger than a normal week-to-week swing.</p>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">{range(w.thisWeek.dates)} against {range(w.lastWeek.dates)}. Coloured only where the change is bigger than usual day to day.</p>
           <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-            {compareTiles(w).map(t => (
+            {compareTiles(w, weekDailyValues(v3)).map(t => (
               <li key={t.key} className={`${TILE} !p-3`} aria-label={`${t.label}: ${t.value}${t.before ? `, last week ${t.before}, ${word[t.direction]}` : ''}`}>
                 <div className="text-2xl font-black tracking-tight">{t.value}</div>
                 <div className="mt-0.5 text-xs font-bold text-[var(--text-muted)]">{t.label}</div>
                 {t.delta && (
-                  <span className={`mt-2 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold ${chip[t.direction]}`} title={`Last week ${t.before}`}>
+                  <span className={`mt-2 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold ${chip[t.direction]}`} title={`Last week ${t.before}: ${t.why}`}>
                     {t.delta}{t.direction === 'same' ? ' · same' : ''}
                   </span>
                 )}
@@ -476,7 +476,7 @@ function Method({ data }: { data: Ready }) {
         <li>Bunching: gaps under {Math.round(v3.thresholds.bunchedGapSec / 60)} minutes count as too close together; gaps more than twice the timetable's count as too far apart. "Linked to" means measured in the same stretch, not the cause.</li>
         <li>Trip time counts only trips on the main route seen at both ends (short turns are left out). Extra wait is worked out from the gaps between vehicles at each stop.</li>
         <li>Service delivered: a trip counts as run when a vehicle was seen under its trip number. Days with gaps in our recordings are left out{v3.serviceDelivered && v3.serviceDelivered.overall.unknown > 0 ? `, and ${v3.serviceDelivered.overall.unknown.toLocaleString()} trips that could not be judged are left out` : ''}.</li>
-        {v3.weekly && <li>This week compared with last week: days with gaps in our recordings are left out of both weeks (this week {v3.weekly.thisWeek.healthyDates.length} of {v3.weekly.thisWeek.dates.length} days, last week {v3.weekly.lastWeek.healthyDates.length} of {v3.weekly.lastWeek.dates.length}). A change is coloured only when it is bigger than a normal week-to-week swing: 3 points for late and bunched shares, 2 minutes of trip time, half a minute of extra wait, 1 point of trips that ran.</li>}
+        {v3.weekly && <li>This week compared with last week: days with gaps in our recordings are left out of both weeks (this week {v3.weekly.thisWeek.healthyDates.length} of {v3.weekly.thisWeek.dates.length} days, last week {v3.weekly.lastWeek.healthyDates.length} of {v3.weekly.lastWeek.dates.length}). {NOISE_RULE}</li>}
         <li>Window: the last {v3.window.days} service days ({first} to {last}); {v3.totals.runs.toLocaleString()} trips and {v3.totals.stopPassages.toLocaleString()} stop departures. Built {data.generatedAt.slice(0, 10)}.</li>
         <li>Delay at a stop is how late the vehicle left it compared with the timetable. The agency does not report delays, so we work them out from where each vehicle was seen (about once a minute) and estimate the moment it left the stop.</li>
         <li>Vehicles are matched to timetable trips by trip number. If a trip is 15+ minutes off its own slot but another trip fits within 3 minutes at most stops, it is counted as that trip; otherwise it is left out.</li>

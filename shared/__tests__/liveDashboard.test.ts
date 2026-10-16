@@ -107,3 +107,21 @@ describe('running time, extra wait, service delivered', () => {
     expect(lines.find(l => l.key === 'bunching')!.text).toBe('20% of gaps too close or too far apart, unchanged from last week.');
   });
 });
+
+describe('week-change colouring (one rule for the dashboard and the full analysis)', () => {
+  it('measures noise as 2 x the standard error of the difference of two weekly means', async () => {
+    const { dailyNoise } = await import('../liveDashboard');
+    // sd of [0.1, 0.2, 0.3] is 0.1; 2 * 0.1 * sqrt(1/3 + 1/3)
+    expect(dailyNoise([0.1, 0.2, 0.3], 3, 3)).toBeCloseTo(0.1633, 4);
+    expect(dailyNoise([0.1, 0.2], 2, 2)).toBeNull();
+  });
+  it('greys a change inside the noise and colours one outside it', async () => {
+    const { dailyNoise, weekChangeTone } = await import('../liveDashboard');
+    const noisy = dailyNoise([0.07, 0.33, 0.1, 0.11, 0.13, 0.1], 6, 7)!;
+    expect(weekChangeTone('late', 0.25, 0.2, true, noisy)).toMatchObject({ tone: 'same', measured: true });
+    expect(weekChangeTone('late', 0.25, 0.2, true, 0.02)).toMatchObject({ tone: 'worse', big: true });
+    // No daily values: the fixed provisional amount (bunching 2 points), so 20% to 21% stays grey.
+    expect(weekChangeTone('bunching', 0.21, 0.2, true)).toMatchObject({ tone: 'same', measured: false });
+    expect(weekChangeTone('delivered', 0.96, 0.99, false)).toMatchObject({ tone: 'worse' });
+  });
+});
