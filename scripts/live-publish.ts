@@ -5,6 +5,7 @@
  * Each file is exactly what the local API answers (local-api/live-dashboard.ts, live-agency.ts), so dev and the
  * published pages read the same thing. manifest.json holds when the data was built and which weeks it covers.
  */
+import '../pipeline/loadEnv.js';
 import { mkdirSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import dashboard from '../local-api/live-dashboard';

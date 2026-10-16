@@ -136,6 +136,22 @@
       "destination": "/index.html"
     },
     {
+      "source": "/apps/live/:agency",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/:agency/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/:agency/:route",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/:agency/:route/",
+      "destination": "/index.html"
+    },
+    {
       "source": "/docs",
       "destination": "/index.html"
     },
