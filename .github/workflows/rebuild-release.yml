@@ -424,7 +424,7 @@ jobs:
           PY
 
       # --write stamps each rebuilt agency's feed expiry in public/data/index.json and
-      # config/agencies/<slug>.json. Save them as a patch (a resumed run reapplies it) before the
+      # config/agencies/<slug>.json (the index and catalogs are regenerated first). Save them as a patch (a resumed run reapplies it) before the
       # pull request step moves them.
       - name: Save the stamped files
         id: stamps
@@ -432,6 +432,9 @@ jobs:
         run: |
           mkdir -p tmp/rebuild-state
           git rev-parse HEAD > tmp/rebuild-state/sha.txt
+          # The stamps change config/agencies; index.json and the catalogs are generated from it, and CI
+          # checks they match (check:agency-index). A failed build must not lose the stamps themselves.
+          npm run build:agency-index && npm run build:agency-catalog || echo "::warning::index/catalog rebuild failed; the stamp PR may fail the drift check"
           git add -A
           git diff --cached --binary > tmp/rebuild-state/stamps.patch
           git reset --quiet
