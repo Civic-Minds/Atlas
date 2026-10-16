@@ -134,7 +134,7 @@ describe('Live route dashboard', () => {
     expect(within(weekRegion).getByLabelText(/^Bunched or gapped: 20%, last week 20%, about the same$/)).toBeTruthy();
     expect(screen.getByText(/left out of both weeks/)).toBeTruthy();
     expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();
-    expect(screen.getByText('Westbound: no trip was measured from end to end.')).toBeTruthy();
+    expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
     expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
     expect(screen.getByText('97% of scheduled trips ran (194 of 200 that we can judge).')).toBeTruthy();
     expect(screen.getByText(/Not counted: Oct 14/)).toBeTruthy();

@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
+  LINK_LABELS, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -78,7 +78,7 @@ function Tile({ label, value, sub }: { label: string; value: string; sub: string
   );
 }
 
-function Filters({ v3, band, setBand, dir, setDir }: { v3: LiveV3; band: DashboardBand; setBand: (b: DashboardBand) => void; dir: number | null; setDir: (d: number | null) => void }) {
+function Filters({ v3, band, setBand, dir, setDir, bands = true }: { v3: LiveV3; band: DashboardBand; setBand: (b: DashboardBand) => void; dir: number | null; setDir: (d: number | null) => void; /** The dashboard shows the whole day: direction only. */ bands?: boolean }) {
   const dirs = Object.keys(v3.directionLabels).map(Number).sort();
   return (
     <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3" role="group" aria-label="Filters">
@@ -86,9 +86,9 @@ function Filters({ v3, band, setBand, dir, setDir }: { v3: LiveV3; band: Dashboa
         <Pill size="segment" selected={dir == null} onClick={() => setDir(null)}>Both directions</Pill>
         {dirs.map(d => <Pill key={d} size="segment" selected={dir === d} onClick={() => setDir(d)}>{v3.directionLabels[String(d)]}</Pill>)}
       </div>
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Time of day">
+      {bands && <div className="flex flex-wrap gap-1.5" role="group" aria-label="Time of day">
         {BANDS.map(([k, label]) => <Pill key={k} size="segment" selected={band === k} onClick={() => setBand(k)}>{label}</Pill>)}
-      </div>
+      </div>}
     </div>
   );
 }
@@ -342,7 +342,7 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
   const scale = runTimeScale(dirs.map(hoursOf));
   return (
     <Section id="runtime" title="Run time vs schedule">
-      <p className="mt-2 text-sm text-[var(--text-muted)]">Minutes from the first stop to the last, by the hour the trip starts, against the schedule.</p>
+      <p className="mt-2 text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, by the hour it starts, over the stops every regular trip serves, so short turns count too.</p>
       <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {dirs.map(d => {
           const label = v3.directionLabels[String(d)];
@@ -351,6 +351,7 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
           return (
             <div key={d} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
+              {runTimeStretchLabel(rt.stretch?.[String(d)], n => shortStopName(titleCase(n))) && <p className="text-sm text-[var(--text-muted)]">{runTimeStretchLabel(rt.stretch?.[String(d)], n => shortStopName(titleCase(n)))}</p>}
               <p className="mt-1 text-sm leading-6">{runningTimeSentence(label, figures)}</p>
               {hours.length > 1 && (
                 <>
@@ -545,8 +546,8 @@ export default function LiveRoutePage() {
           <Pill size="segment" selected={view === 'analysis'} onClick={() => setView('analysis')}>Full analysis</Pill>
         </div>
         {view === 'dashboard' ? (
-          <LiveDashboardView v3={v3} data={bandData} band={band} dir={dir} uncertain={uncertain} note={data.note} title={title}
-            filters={<Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} />}
+          <LiveDashboardView v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}
+            filters={<Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} bands={false} />}
             toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
         ) : (<>
         <Filters v3={v3} band={band} setBand={setBand} dir={dir} setDir={setDir} />

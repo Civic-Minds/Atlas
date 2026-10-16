@@ -36,6 +36,12 @@ export interface DashboardBuildup {
   climbMin: number | null;
   start: DashboardStretch | null; biggest: DashboardStretch | null; stretches: DashboardStretch[];
 }
+/** The run of stops every regular pattern serves, trimmed to stops measured reliably; short turns count. */
+export interface RunTimeStretch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; fullRoute: boolean; mainPatternTrips: number; trips: number }
+/** "Run time from Spadina Station to Queens Quay, all trips", or null for an older file. */
+export function runTimeStretchLabel(s: RunTimeStretch | undefined, nice: (name: string) => string = x => x): string | null {
+  return s ? `Run time from ${nice(s.fromName)} to ${nice(s.toName)}, all trips` : null;
+}
 export interface RunTimeFigures { n: number; scheduledMin: number; typicalMin: number; p90Min: number; overMin: number }
 export interface WeekMetrics {
   days: number;
@@ -87,7 +93,12 @@ export interface LiveV3 {
   stops: DashboardStop[];
   buildup: DashboardBuildup[];
   /** Running time against the timetable, by time of day then direction; `null` where no trip was measured. */
-  runningTime?: { bands: Record<DashboardBand, Record<string, RunTimeFigures | null>>; byHour: Record<string, Array<{ hour: number } & RunTimeFigures>> };
+  runningTime?: {
+    /** Per direction, the stops run time is measured between (older files measure the main pattern end to end). */
+    stretch?: Record<string, RunTimeStretch>;
+    bands: Record<DashboardBand, Record<string, RunTimeFigures | null>>;
+    byHour: Record<string, Array<{ hour: number } & RunTimeFigures>>;
+  };
   /** Extra wait at stops where service is every 15 minutes or better, by time of day. */
   extraWait?: Record<DashboardBand, Array<{ directionId: number; stopId: string; name: string; order: number; scheduledGapMin: number; extraWaitMin: number; gaps: number }>>;
   serviceDelivered?: {
@@ -273,7 +284,7 @@ const hourName = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'a
 
 /** "Scheduled 22 min · usually 27 · 1 in 10 over 34 min" (with the hour when one is given). */
 export function runningTimeSentence(label: string, r: RunTimeFigures | null | undefined, atHour?: number): string {
-  if (!r) return `${label}: no trip was measured from end to end.`;
+  if (!r) return `${label}: too few trips were measured over the main stretch to say. Rebuilding the analysis with npm run live:analyze measures them.`;
   if (r.n < 30) return `${label}: too few trips (${r.n}) were measured from end to end to say.`;
   return `${label}: scheduled ${Math.round(r.scheduledMin)} min · usually ${Math.round(r.typicalMin)} · 1 in 10 over ${Math.round(r.p90Min)} min${atHour != null ? ` at ${hourName(atHour)}` : ''}.`;
 }

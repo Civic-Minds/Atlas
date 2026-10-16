@@ -23,6 +23,8 @@ import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type Run
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
+import { mainStretchStops, reliableStretch } from '../shared/mainStretch.js';
+import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
@@ -243,6 +245,8 @@ const leftOutRuns: { date: string; reason: 'excluded' | 'no_timetable_trip' }[] 
 const keptRuns: string[] = [];
 /** End-to-end trip time per run: first-stop departure to last-stop arrival, against the timetable's. */
 const runTimes: { date: string; directionId: number; startHour: number; schedSec: number; actualSec: number; tripId: string; patternId: string }[] = [];
+/** Per run: when it left each stop (25 m past) and reached each stop, and the timetable's times there, for run time over the main stretch. */
+const stretchRuns: { date: string; directionId: number; dep: Map<string, number>; arr: Map<string, number>; sched: Map<string, { dep: number; arr: number }>; base: number }[] = [];
 /** One entry per scheduled trip: did a vehicle run it, was it not seen, or can't we tell (data gap)? */
 const tripOutcomes: { date: string; directionId: number; outcome: 'seen' | 'not_seen' | 'unknown' }[] = [];
 let runsWithDelays = 0;
@@ -369,6 +373,11 @@ for (const [key, samples] of runs) {
           const actualSec = arrN.t - dep0.t;
           if (schedSec > 0 && actualSec > 0 && Math.abs(actualSec - schedSec) <= 3600) runTimes.push({ date: svcDate, directionId: pattern.directionId, startHour: Math.floor(tt[0].dep / 3600), schedSec, actualSec, tripId: assigned, patternId: pattern.id });
         }
+        const dep = new Map<string, number>(), arr = new Map<string, number>(), sched = new Map<string, { dep: number; arr: number }>();
+        for (const p of observed) dep.set(p.stopId, p.t);
+        for (const p of legs.flat()) if (!arr.has(p.stopId)) arr.set(p.stopId, p.t);
+        for (const st of tt) if (!sched.has(st.stopId)) sched.set(st.stopId, { dep: st.dep, arr: st.arr });
+        stretchRuns.push({ date: svcDate, directionId: pattern.directionId, dep, arr, sched, base });
       }
       const stopsOut: RunStopDelay[] = [];
       for (const r of rows) {
@@ -840,11 +849,45 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
 // Only trips on each direction's main pattern: short turns and other partial patterns have a different length and would blur the typical time.
 const mainPatternId = new Map<number, string>();
 for (const p of busiest) if (!mainPatternId.has(p.directionId)) mainPatternId.set(p.directionId, p.id);
-const mainRunTimes = runTimes.filter(r => mainPatternId.get(r.directionId) === r.patternId);
+const mainPatternRunTimes = runTimes.filter(r => mainPatternId.get(r.directionId) === r.patternId);
+// Run time over each direction's main stretch (the stops every regular pattern serves, so short turns count too),
+// trimmed at either end to stops whose departures are measured reliably, against the timetable over the same stops.
+const stretchInfo: Record<string, { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; fullRoute: boolean; mainPatternTrips: number; trips: number }> = {};
+const mainRunTimes: RunTimeRow[] = [];
+for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
+  const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
+  const main = mainStretchStops(dirPatterns.map(p => ({ stops: p.stops.map(s => s.stopId), trips: tripsPerShape.get(p.id) ?? 0 })));
+  const runs = stretchRuns.filter(r => r.directionId === d && inWindow.has(r.date));
+  // The first stops of the route that are known to be measured poorly (the 510's tunnel) never end a stretch.
+  const poorFirst = LIVE_DASHBOARD_UNCERTAIN_START[`ttc::${ROUTE}`]?.find(u => u.directionId === d)?.stops ?? 0;
+  const coverage = (stopId: string) => {
+    if (orderIndex(d, stopId) >= 0 && orderIndex(d, stopId) < poorFirst) return 0;
+    const due = runs.filter(r => r.sched.has(stopId));
+    return due.length ? due.filter(r => r.dep.has(stopId) || r.arr.has(stopId)).length / due.length : 0;
+  };
+  const stretch = reliableStretch(main, coverage);
+  if (!stretch) continue;
+  const a = stretch[0], b = stretch[stretch.length - 1];
+  for (const r of stretchRuns.filter(x => x.directionId === d)) {
+    const sa = r.sched.get(a), sb = r.sched.get(b), ta = r.dep.get(a), tb = r.arr.get(b) ?? r.dep.get(b);
+    if (!sa || !sb || ta == null || tb == null) continue;
+    const schedSec = sb.arr - sa.dep, actualSec = tb - ta;
+    if (schedSec > 0 && actualSec > 0 && Math.abs(actualSec - schedSec) <= 3600) mainRunTimes.push({ date: r.date, directionId: d, startHour: Math.floor(sa.dep / 3600), schedSec, actualSec });
+  }
+  const longest = dirPatterns.reduce<Pattern | null>((x, y) => (!x || y.stops.length > x.stops.length ? y : x), null);
+  stretchInfo[String(d)] = {
+    fromStopId: a, toStopId: b, fromName: stopInfo(a).name, toName: stopInfo(b).name, stops: stretch.length,
+    fullRoute: !!longest && longest.stops[0]?.stopId === a && longest.stops[longest.stops.length - 1]?.stopId === b,
+    mainPatternTrips: mainPatternRunTimes.filter(r => r.directionId === d && inWindow.has(r.date)).length,
+    trips: mainRunTimes.filter(r => r.directionId === d && inWindow.has(r.date)).length,
+  };
+}
+console.log(`runtime stretch: ${Object.entries(stretchInfo).map(([d, x]) => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) trips ${x.mainPatternTrips} -> ${x.trips}`).join('; ')}`);
 const windowRunTimes = mainRunTimes.filter(r => inWindow.has(r.date));
 const directionsSeen = [...new Set(windowRunTimes.map(r => r.directionId))].sort();
 const rtFor = (rows: readonly RunTimeRow[]) => runTimeStat(rows);
 const runningTimeV3 = {
+  stretch: stretchInfo,
   bands: Object.fromEntries(BANDS.map(band => [band, Object.fromEntries(directionsSeen.map(d => [String(d), rtFor(windowRunTimes.filter(r => r.directionId === d && (band === 'all' || bandForHour(r.startHour) === band)))]))])),
   byHour: Object.fromEntries(directionsSeen.map(d => [String(d), [...new Set(windowRunTimes.filter(r => r.directionId === d).map(r => r.startHour % 24))].sort((a, b) => a - b)
     .map(h => ({ hour: h, ...rtFor(windowRunTimes.filter(r => r.directionId === d && r.startHour % 24 === h))! }))])),

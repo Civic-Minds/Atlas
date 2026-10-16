@@ -83,7 +83,7 @@ describe('running time, extra wait, service delivered', () => {
     expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27.2, p90Min: 34.4, overMin: 5 })).toBe('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.');
     expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 }, 17)).toMatch(/at 5pm\.$/);
     expect(runningTimeSentence('Eastbound', { n: 10, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 })).toMatch(/too few trips \(10\)/);
-    expect(runningTimeSentence('Eastbound', null)).toMatch(/no trip was measured/);
+    expect(runningTimeSentence('Eastbound', null)).toMatch(/too few trips were measured over the main stretch/);
   });
   it('names the stop where riders wait longest, in half minutes, or says waits match the timetable', () => {
     const stops = [{ name: 'Spadina & Queens Quay', extraWaitMin: 2.1, gaps: 500 }, { name: 'Other', extraWaitMin: 0.4, gaps: 500 }, { name: 'Thin', extraWaitMin: 9, gaps: 5 }];

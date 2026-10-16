@@ -23,7 +23,7 @@ describe('kpiTiles', () => {
   const w: NonNullable<LiveV3['weekly']> = { minHealthyDays: 5, health: [], thisWeek: week(0.21, 0.997, ['2026-10-08', '2026-10-14']), lastWeek: week(0.2, 0.998, ['2026-10-01', '2026-10-07']), comparable: true };
   it('makes the five tiles with sample sizes and no colour for small moves', () => {
     const tiles = kpiTiles(w);
-    expect(tiles.map(t => t.label)).toEqual(['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']);
+    expect(tiles.map(t => t.label)).toEqual(['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']);
     expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: '▲ 1 pt', tone: 'same' } });
     expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: '▼ 0.1 pt', tone: 'same' } });
   });

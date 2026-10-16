@@ -159,11 +159,12 @@ describe('RouteStrip', () => {
     expect(screen.getByText('500 departures measured')).toBeTruthy();
   });
 
-  it('has a table with the same figures', () => {
+  it('has a screen-reader table with the same figures, linked to the strip', () => {
     setWidth(900);
     render(<RouteStrip stops={STOPS} mode="delay" directionLabel="Southbound" />);
-    expect(screen.getByText('Show as a table')).toBeTruthy();
-    expect(screen.getByRole('table')).toBeTruthy();
+    expect(screen.queryByText('Show as a table')).toBeNull();
+    const table = screen.getByRole('table');
+    expect(table.closest('.sr-only')?.id).toBe(document.querySelector('[aria-roledescription="route strip"]')?.getAttribute('aria-describedby'));
   });
 });
 

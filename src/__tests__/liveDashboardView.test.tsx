@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { LiveV3 } from '../../shared/liveDashboard';
-import LiveDashboardView, { summaryText } from '../LiveDashboardView';
+import LiveDashboardView from '../LiveDashboardView';
 
 const counts = (late: number) => ({ n: 1000, early: 100, onTime: 1000 - 100 - Math.round(1000 * late), late: Math.round(1000 * late), earlyShare: 0.1, onTimeShare: 0.9 - late, lateShare: late, notLateShare: 1 - late });
 const block = (late: number) => ({ overall: counts(late), byHour: [{ hour: 8, ...counts(late) }], byDate: [], byDirection: { '0': counts(late), '1': counts(late) } });
@@ -19,9 +19,6 @@ const v3 = {
 describe('Live dashboard view', () => {
   beforeEach(() => {
     vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
-  });
-  it('writes one plain line from the week figures: late share, and where delay and bunching start', () => {
-    expect(summaryText(v3, 'TTC 510')).toBe('TTC 510, Oct 1–7: 21% of departures were late. Delay builds up northbound near Stop 2. Bunching starts northbound near Stop 2.');
   });
   it('shows five tiles with grey chips for small changes, and the top five stops', () => {
     render(<LiveDashboardView v3={v3} data={one} band="all" dir={null} uncertain={[]} note={null} title="TTC 510" filters={<div>filters</div>} toFull={() => {}} />);

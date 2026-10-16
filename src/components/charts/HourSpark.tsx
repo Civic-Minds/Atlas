@@ -1,3 +1,4 @@
+import { useId, useState } from 'react';
 import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import DataTable from '../ui/DataTable';
 
@@ -30,6 +31,8 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
   valueHeader: string;
   minN?: number;
 }) {
+  const tableId = useId();
+  const [hover, setHover] = useState<number | null>(null);
   const byHour = new Map(values.map(v => [v.hour, v]));
   const span = scale.max - scale.min || 1;
   const pos = (v: number) => Math.max(0, Math.min(H, ((v - scale.min) / span) * H));
@@ -37,8 +40,12 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
   const ordered = SPARKLINE_HOURS.map(h => byHour.get(h % 24)).filter((v): v is HourValue => !!v);
   return (
     <figure className="m-0">
-      <div role="img" aria-label={ariaLabel} tabIndex={0} className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]">
-        <div aria-hidden="true">
+      <div role="img" aria-label={ariaLabel} aria-describedby={tableId} tabIndex={0} className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]">
+        <div aria-hidden="true" onPointerLeave={() => setHover(null)}>
+          {/* The hovered hour's figures, in the sparkline's way: a highlight behind the bar and one line above. */}
+          <div className="h-5 truncate text-xs text-[var(--text-secondary)]">
+            {hover != null && byHour.get(hover) && <><span className="font-bold">{clock(hover)}</span> {format(byHour.get(hover)!.value)}, {byHour.get(hover)!.n.toLocaleString()} {unit}{byHour.get(hover)!.n < minN ? ' (too few to rely on)' : ''}</>}
+          </div>
           <div className="relative flex gap-px" style={{ height: H }}>
             {scale.min < 0 && <div className="pointer-events-none absolute inset-x-0 border-t border-dashed border-[var(--text-dim)] opacity-60" style={{ bottom: zeroPx }} />}
             {SPARKLINE_HOURS.map(gtfsHour => {
@@ -47,7 +54,7 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
               const top = pos(Math.max(v.value, 0));
               const bottom = pos(Math.min(v.value, 0));
               return (
-                <div key={gtfsHour} className="relative h-full min-w-0 flex-1" title={`${clock(v.hour)}: ${format(v.value)} (${v.n.toLocaleString()} ${unit})`}>
+                <div key={gtfsHour} className={`relative h-full min-w-0 flex-1 rounded-sm ${hover === v.hour ? 'bg-[var(--bg-btn-hover)]' : ''}`} onPointerEnter={() => setHover(v.hour)} onPointerDown={() => setHover(v.hour)}>
                   <div
                     className={`absolute left-1/2 w-[60%] max-w-[12px] min-w-[3px] -translate-x-1/2 rounded-sm ${v.n >= minN ? 'opacity-90' : 'opacity-35'}`}
                     style={{ bottom, height: Math.max(2, top - bottom), background: color }}
@@ -63,9 +70,7 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
           </div>
         </div>
       </div>
-      <details className="mt-1 text-xs">
-        <summary className="cursor-pointer font-bold text-[var(--accent)]">Show as a table</summary>
-        <div className="mt-2 max-h-64 overflow-auto">
+      <div id={tableId} className="sr-only">
           <DataTable
             caption={ariaLabel}
             rows={ordered}
@@ -76,8 +81,7 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
               { key: 'n', header: unit.charAt(0).toUpperCase() + unit.slice(1), cell: v => v.n.toLocaleString() },
             ]}
           />
-        </div>
-      </details>
+      </div>
     </figure>
   );
 }

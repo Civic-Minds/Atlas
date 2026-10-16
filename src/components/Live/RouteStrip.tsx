@@ -77,6 +77,7 @@ export default function RouteStrip({ stops, mode, directionLabel, delaysStart, b
   const [active, setActive] = useState<number | null>(null);
   const [allStops, setAllStops] = useState(false);
   const liveId = useId();
+  const tableId = useId();
   const stretch: StretchSpan | null = useMemo(
     () => (mode === 'delay' ? stretchSpan(stops, delaysStart, 'delaysStart') : stretchSpan(stops, bunchingForms, 'bunchingForms')),
     [mode, stops, delaysStart, bunchingForms],
@@ -143,9 +144,7 @@ export default function RouteStrip({ stops, mode, directionLabel, delaysStart, b
   );
 
   const table = (
-    <details className="mt-2 text-xs">
-      <summary className="cursor-pointer font-bold text-[var(--accent)]">Show as a table</summary>
-      <div className="mt-2 max-h-72 overflow-auto">
+    <div id={tableId} className="sr-only">
         <DataTable
           caption={`${directionLabel}: delay and bunching at each stop`}
           rows={stops.map((s, i) => ({ s, i }))}
@@ -159,8 +158,7 @@ export default function RouteStrip({ stops, mode, directionLabel, delaysStart, b
             { key: 'note', header: 'Note', cell: r => [r.s.uncertain ? 'less exact' : '', r.s.n < minN ? 'few departures' : ''].filter(Boolean).join(', ') },
           ]}
         />
-      </div>
-    </details>
+    </div>
   );
 
   return (
@@ -170,6 +168,7 @@ export default function RouteStrip({ stops, mode, directionLabel, delaysStart, b
         role="group"
         aria-roledescription="route strip"
         aria-label={summary}
+        aria-describedby={tableId}
         tabIndex={0}
         onKeyDown={onKey}
         onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setActive(null); }}

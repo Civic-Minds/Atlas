@@ -57,13 +57,13 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   const tiles = [
     mk('late', 'Late', t.late ? pct0(t.late.share) : '–', 'of departures 5.5+ min late', t.late?.n ?? 0, 'departures', l.late?.n ?? null,
       compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, dailyNoise(daily.late, nThis, nLast)) : null, l.late ? pct0(l.late.share) : null),
-    mk('tripTime', 'Trip time', t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : '–', t.tripTime ? `timetable ${Math.round(t.tripTime.scheduledMin)} min` : 'no full trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
+    mk('tripTime', 'Run time', t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : '–', t.tripTime ? `timetable ${Math.round(t.tripTime.scheduledMin)} min` : 'no full trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
       compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false) : null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null),
     mk('extraWait', 'Extra wait', t.extraWait ? `${clean(t.extraWait.minutes)} min` : '–', 'longer than scheduled', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
       compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),
     mk('bunching', 'Bunching', t.bunching ? pct0(t.bunching.share) : '–', 'of gaps too close or too far apart', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
       compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true) : null, l.bunching ? pct0(l.bunching.share) : null),
-    mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
+    mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', t.delivered ? `of scheduled trips ran (${t.delivered.seen.toLocaleString()} of ${(t.delivered.seen + t.delivered.notSeen).toLocaleString()})` : 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
       compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, dailyNoise(daily.delivered, nThis, nLast)) : null, l.delivered?.share != null ? pct1(l.delivered.share) : null),
   ];
   return tiles.filter(k => k.value !== '–');
@@ -72,7 +72,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
 /** The small caption under the tiles: which days each week is, and which were left out. */
 export function weekCaption(w: NonNullable<LiveV3['weekly']>): string {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
-  const base = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}. Days with gaps in our recordings are left out of both (${w.thisWeek.healthyDates.length} of ${w.thisWeek.dates.length} days counted this week, ${w.lastWeek.healthyDates.length} of ${w.lastWeek.dates.length} last week).`;
+  const base = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}. Days with gaps in our recordings are left out of both, and trips during gaps in our recordings aren't counted (${w.thisWeek.healthyDates.length} of ${w.thisWeek.dates.length} days counted this week, ${w.lastWeek.healthyDates.length} of ${w.lastWeek.dates.length} last week).`;
   return w.comparable ? base : `Not enough days of good recordings to compare two weeks: each needs at least ${w.minHealthyDays}. ${base}`;
 }
 

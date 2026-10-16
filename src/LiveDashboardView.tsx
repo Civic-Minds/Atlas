@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
-import { dateRangeText, rankStops, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { dateRangeText, rankStops, runTimeStretchLabel, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import DataTable from './components/ui/DataTable';
@@ -9,6 +9,8 @@ import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import RouteStrip, { routeStripFromV3, type RouteStripMode } from './components/Live/RouteStrip';
 import Pill from './components/ui/Pill';
 import { syncUrlParams } from './utils/syncUrlParams';
+import { titleCase } from './utils/format';
+import { shortStopName } from './utils/stopLabel';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { PAGE_ACTION, TILE } from './pageStyles';
 
@@ -20,24 +22,6 @@ const BAND_WORDS: Record<DashboardBand, string> = { all: 'all day', amPeak: 'in 
 const DAY_KINDS: [DayKind, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
 
 const dirsOf = (v3: LiveV3, dir: number | null) => Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b).filter(d => dir == null || d === dir);
-
-/**
- * One plain line at the top, for the whole week, both directions and all day (the same figures as the tiles): how late
- * it ran, and where delay and bunching build up, if anywhere.
- */
-export function summaryText(v3: LiveV3, title: string): string {
-  const w = v3.weekly?.thisWeek;
-  const all = v3.bands.all;
-  const dirs = dirsOf(v3, null);
-  const label = (d: number) => v3.directionLabels[String(d)].toLowerCase();
-  const range = w?.healthyDates.length ? dateRangeText(w.healthyDates[0], w.healthyDates[w.healthyDates.length - 1]) : null;
-  const lead = w?.late ? `${title}, ${range}: ${pct(w.late.share)} of departures were late.` : `${title}: too few departures to say how late it ran.`;
-  const delays = dirs.flatMap(d => { const b = all.buildup.find(x => x.directionId === d); return b?.kind === 'forms' && b.forms ? [`${label(d)} near ${b.forms.toName}`] : []; });
-  const bunch = dirs.flatMap(d => { const b = v3.bunching.find(x => x.directionId === d)?.bands.all; return b?.kind === 'forms' && b.forms ? [`${label(d)} near ${b.forms.toName}`] : []; });
-  const delaySentence = delays.length ? `Delay builds up ${delays.join(' and ')}.` : 'Delay builds up gradually, with no single place it starts.';
-  const bunchSentence = bunch.length ? `Bunching starts ${bunch.join(' and ')}.` : 'Bunching grows gradually along the route, with no single place it starts.';
-  return `${lead} ${delaySentence} ${bunchSentence}`;
-}
 
 function Delta({ k }: { k: Kpi }) {
   if (!k.delta) return <span className="text-xs text-[var(--text-dim)]">No comparison with last week</span>;
@@ -130,17 +114,18 @@ function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: num
   return (
     <section aria-labelledby="dash-runtime" className="mt-10">
       <h2 id="dash-runtime" className="text-xl font-black tracking-tight">Run time vs schedule</h2>
-      <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">Minutes from the first stop to the last, {BAND_WORDS[band]}.</p>
+      <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, {BAND_WORDS[band]}, over the stops every regular trip serves, so short turns count too.</p>
       <div className={`mt-4 grid gap-x-10 gap-y-8 ${groups.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {groups.map(g => (
           <div key={g.d} className="min-w-0">
             <h3 className="text-base font-black">{g.label}</h3>
+            {runTimeStretchLabel(rt?.stretch?.[String(g.d)], n => shortStopName(titleCase(n))) && <p className="text-sm text-[var(--text-muted)]">{runTimeStretchLabel(rt?.stretch?.[String(g.d)], n => shortStopName(titleCase(n)))}</p>}
             {g.hours.length > 1 ? (
               <>
                 <p className="mt-1 text-sm font-bold">{runTimeTakeaway(g.label, g.hours)}</p>
                 <div className="mt-2"><RunTimeChart hours={g.hours} scale={scale} ariaLabel={`${g.label}: run time against the schedule by the hour the trip starts. ${runTimeTakeaway(g.label, g.hours)}`} /></div>
               </>
-            ) : <p className="mt-1 text-sm text-[var(--text-muted)]">No trip was measured from end to end for this choice.</p>}
+            ) : <p className="mt-1 text-sm text-[var(--text-muted)]">Too few trips were measured {BAND_WORDS[band]} to draw this.</p>}
           </div>
         ))}
       </div>
@@ -223,14 +208,12 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
   filters: ReactNode;
   toFull: (hash: string) => void;
 }) {
-  const summary = useMemo(() => { try { return summaryText(v3, title); } catch { return null; } }, [v3, title]);
   const bad = (what: string) => `${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`;
   return (
     <>
-      {summary && <p className="mt-6 max-w-3xl text-lg font-bold leading-7">{summary}</p>}
       <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
       <div className="mt-8 border-t border-[var(--border-primary)] pt-2">
-        <p className="mt-3 text-sm text-[var(--text-muted)]">Everything below follows these choices. The figures above are the whole week, both directions, all day.</p>
+        <p className="mt-3 text-sm text-[var(--text-muted)]">The direction you pick changes everything below. The figures above are the whole week, both directions.</p>
         {filters}
       </div>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} band={band} dir={dir} uncertain={uncertain} /></ErrorBoundary>
