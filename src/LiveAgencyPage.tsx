@@ -4,6 +4,7 @@ import { FEATURES } from '../shared/config';
 import { coverageText, type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
 import { dateRangeText, NOISE_RULE } from '../shared/liveDashboard';
 import type { LiveAgencyResponse } from '../local-api/live-agency';
+import { liveAgencyDataUrl, liveDataMissing } from './lib/liveReportData';
 import { liveDashboardPath } from './hooks/useLiveDashboard';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { weekCaption, weekRangeLine } from './utils/liveKpi';
@@ -46,8 +47,8 @@ function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'error'; r
   useEffect(() => {
     if (!agency) return;
     let live = true;
-    fetch(`/api/live-agency?agency=${encodeURIComponent(agency)}`)
-      .then(r => r.json() as Promise<LiveAgencyResponse>)
+    fetch(liveAgencyDataUrl(agency))
+      .then(r => (liveDataMissing(r) ? { status: 'unknown_agency', reason: `Live has no route analysis for ${agency}.` } as LiveAgencyResponse : r.json() as Promise<LiveAgencyResponse>))
       .then(data => { if (live) setState({ kind: 'done', data }); })
       .catch(() => { if (live) setState({ kind: 'error', reason: 'The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.' }); });
     return () => { live = false; };
@@ -157,10 +158,10 @@ function StretchTable({ agency, rows, caption, valueHeader, format }: { agency: 
 export default function LiveAgencyPage() {
   const { agency = '' } = useParams();
   // Live off: no request at all, only the notice.
-  const state = useLiveAgency(FEATURES.live ? agency : '');
-  if (!FEATURES.live) return <LiveOffNotice />;
+  const state = useLiveAgency(FEATURES.liveReports ? agency : '');
+  if (!FEATURES.liveReports) return <LiveOffNotice />;
   const name = agency.toUpperCase();
-  const back = <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink>;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {name}…</p></PageShell>;
   if (state.kind === 'error' || state.data.status !== 'ready') {
     const reason = state.kind === 'error' ? state.reason : (state.data as { reason: string }).reason;
@@ -181,7 +182,7 @@ export default function LiveAgencyPage() {
               {dates.length ? `${dateRangeText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
             </p>
           </div>
-          <ArrowLink href="/apps/live">View on Live map</ArrowLink>
+          {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
         </div>
         <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">
           These figures cover only the {s.covered.length} routes Live has analysed so far ({s.covered.join(', ')}), not the whole network.

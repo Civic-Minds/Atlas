@@ -497,7 +497,7 @@ const BOUNDARY = (what: string) => `${what} could not be drawn: the analysis fil
 
 export default function LiveRoutePage() {
   const { agency = '', route = '' } = useParams();
-  const state = useLiveDashboard(agency, route);
+  const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
   // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
   // whose answer differs by period list it per period.
   const band: DashboardBand = 'all';
@@ -511,9 +511,9 @@ export default function LiveRoutePage() {
     if (view !== 'analysis' || !window.location.hash) return;
     document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
   }, [view, state.kind]);
-  if (!FEATURES.live) return <LiveOffNotice />;
+  if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agency.toUpperCase()} ${route}`;
-  const back = <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink>;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p></PageShell>;
   if (state.kind === 'error') return <PageShell variant="wide"><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{state.reason}</p>{back}</PageShell>;
   const data = state.data;
@@ -540,7 +540,7 @@ export default function LiveRoutePage() {
               {v3.window.dates.length ? `${dateRangeText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} trips · estimated from where vehicles were, not reported by {agency.toUpperCase()}
             </p>
           </div>
-          <ArrowLink href="/apps/live">View on Live map</ArrowLink>
+          {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
         </div>
         {(() => {
           const f = freshness(v3, route, Date.now());

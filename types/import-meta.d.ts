@@ -3,6 +3,7 @@ interface ImportMetaEnv {
   readonly VITE_R2_PUBLIC_URL?: string;
   readonly VITE_BETA_R2_PUBLIC_URL?: string;
   readonly VITE_LIVE_ENABLED?: string;
+  readonly VITE_LIVE_REPORTS_ENABLED?: string;
   readonly VITE_HISTORY_ENABLED?: string;
   readonly VITE_BETA_BUILD?: string;
   readonly VITE_PREVIEW_BUILD?: string;
