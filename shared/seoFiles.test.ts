@@ -51,8 +51,8 @@ describe('vercel.json routing', () => {
     }
   });
 
-  it('sends each published Live report page to the app by its exact address, so other /apps/live paths stay 404', () => {
-    for (const path of liveReportPaths()) expect(vercel.rewrites.find(r => r.source === path)?.destination, path).toBe('/index.html');
+  it('sends each published Live report page to its own prerendered file by its exact address, so other /apps/live paths stay 404', () => {
+    for (const path of liveReportPaths()) expect(vercel.rewrites.find(r => r.source === path)?.destination, path).toBe(`${path.replace(/\/$/, '')}/index.html`);
   });
 
   it('serves the agency index from its own prerendered file', () => {

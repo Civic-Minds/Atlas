@@ -6,7 +6,7 @@
 import type { ReactElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
-import { ATLAS_MODE, seoFlags } from '../shared/config';
+import { ATLAS_MODE, seoFlags, FEATURES } from '../shared/config';
 import type { AgencyPageData } from '../shared/agencyPages';
 import type { SeoFlags } from '../shared/seo';
 import AboutDocsPage from './AboutDocsPage';
@@ -30,6 +30,9 @@ const PAGES: Record<string, () => ReactElement> = {
 export const BUILD_MODE = ATLAS_MODE;
 
 export const BUILD_FLAGS: SeoFlags = seoFlags();
+
+/** The Live report pages are in this build (their link-preview pages are written by scripts/prerender-routes.ts). */
+export const BUILD_LIVE_REPORTS = FEATURES.liveReports;
 
 export function renderPage(path: string): string {
   const page = PAGES[path];

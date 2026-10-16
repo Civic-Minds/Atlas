@@ -28,6 +28,7 @@ import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import { weekOfText } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -512,9 +513,9 @@ function AnalysisPage() {
   const [dir, setDir] = useState<number | null>(() => { const d = new URLSearchParams(window.location.search).get('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   // The filters live in the address, so a link reopens the same view.
   useEffect(() => { syncUrlParams({ band: null, day: null, dir: dir == null ? null : String(dir) }); }, [dir]);
-  // The dashboard is the default; ?view=analysis is the full page.
-  const [view, setView] = useState<'dashboard' | 'analysis'>(() => (new URLSearchParams(window.location.search).get('view') === 'analysis' ? 'analysis' : 'dashboard'));
-  useEffect(() => { syncUrlParams({ view: view === 'analysis' ? 'analysis' : null }); }, [view]);
+  // The dashboard is the default; ?view=analysis is the full page; ?view=lite is the one-screen view to share.
+  const [view, setView] = useState<'dashboard' | 'analysis' | 'lite'>(() => { const v = new URLSearchParams(window.location.search).get('view'); return v === 'analysis' || v === 'lite' ? v : 'dashboard'; });
+  useEffect(() => { syncUrlParams({ view: view === 'dashboard' ? null : view }); }, [view]);
   useEffect(() => {
     if (view !== 'analysis' || !window.location.hash) return;
     document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
@@ -550,7 +551,7 @@ function AnalysisPage() {
           <div className="min-w-0">
             <PageTitle>{title}: how it is running</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {v3.window.dates.length ? `Week of ${dateRangeText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} trips · estimated from where vehicles were, not reported by {agency.toUpperCase()}
+              {v3.window.dates.length ? `${weekOfText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} trips · estimated from where vehicles were, not reported by {agency.toUpperCase()}
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
@@ -560,12 +561,12 @@ function AnalysisPage() {
           return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{withoutDevHint(f.text)}</p> : null;
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
-        <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="View">
+        {view !== 'lite' && <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="View">
           <Pill size="segment" selected={view === 'dashboard'} onClick={() => setView('dashboard')}>Dashboard</Pill>
           <Pill size="segment" selected={view === 'analysis'} onClick={() => setView('analysis')}>Full analysis</Pill>
-        </div>
-        {view === 'dashboard' ? (
-          <LiveDashboardView v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}
+        </div>}
+        {view !== 'analysis' ? (
+          <LiveDashboardView lite={view === 'lite'} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}
             filters={<Filters v3={v3} dir={dir} setDir={setDir} />}
             toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
         ) : (<>

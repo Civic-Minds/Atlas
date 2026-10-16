@@ -79,9 +79,9 @@ export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption: string }) 
 }
 
 /** Late share and lateness by hour for all days, weekdays and weekends, side by side on one scale. */
-function Days({ v3, data, band, dir }: { v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null }) {
+function Days({ v3, data, band, dir, allOnly = false }: { v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; /** The lite view: the All days chart only. */ allOnly?: boolean }) {
   const healthy = v3.weekly?.thisWeek.healthyDates ?? v3.window.dates;
-  const cols = DAY_KINDS.map(([kind, label]) => {
+  const cols = DAY_KINDS.filter(([kind]) => !allOnly || kind === 'all').map(([kind, label]) => {
     const block = data.adherence.timepoints[kind];
     const late = lateForDays(block.byDate, healthy, kind);
     const hours: HourValue[] = block.byHour.filter(h => h.n > 0 && (band === 'all' || periodKeyForHour(h.hour) === band)).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));
@@ -247,13 +247,24 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
   );
 }
 
-export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, toFull }: {
+export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, toFull, lite = false }: {
   v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[]; note: string | null; title: string;
   /** The direction and time-of-day pills: they sit below the week figures, above the parts they change. */
   filters: ReactNode;
   toFull: (hash: string) => void;
+  /** The lite view: tiles, strip, late by hour and the Full analysis link only. */
+  lite?: boolean;
 }) {
   const bad = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
+  // The lite view (?view=lite), made to share: the week's tiles, the route strip, late by hour and a way into the rest.
+  if (lite) return (
+    <>
+      <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
+      <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
+      <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={null} allOnly /></ErrorBoundary>
+      <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
+    </>
+  );
   return (
     <>
       <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
