@@ -15,7 +15,7 @@
 import { TIME_PERIODS, type PeriodKey } from '../shared/config.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
-import { BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, computeHeadwayStats } from './transit-phase2.js';
+import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, computeHeadwayStats } from './transit-phase2.js';
 import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
@@ -507,7 +507,17 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   // runs, so the slower branch decides as by day (TTC 300: the Bloor trunk every 8, its branches
   // every 15 and 16).
   const overnightFallback = d.main.times.filter(x => x >= grading.start && x <= grading.end).length < 2;
-  const allDayTails = d.tails.filter((t, i) => (overnightFallback ? tails[i].overnight : tails[i].midday).counts);
+  // By day a branch takes part in the all-day value and Frequent Service only when it runs at
+  // midday and across the all-day window by #720's coverage test (its own departures span at least
+  // ALL_DAY_MIN_COVERAGE of the grading window). A part-day branch still sets its own periods (D1),
+  // not the all-day value: TTC 76B (every 30 at midday), SEPTA T3's 12-trip Darby branch.
+  const spansWindow = (st: Stretch) => {
+    const t = st.times.filter(x => x >= grading.start && x <= grading.end);
+    return t.length >= 2 && (Math.max(...t) - Math.min(...t)) / (grading.end - grading.start) >= ALL_DAY_MIN_COVERAGE;
+  };
+  const allDayTails = d.tails.filter((t, i) => (overnightFallback
+    ? tails[i].overnight.counts
+    : tails[i].midday.counts && spansWindow(t)));
   const allDayOf = (st: Stretch) => {
     // Phase 2's overnight fallback: with fewer than two departures in the window (a night route),
     // the stretch reads all of its departures.

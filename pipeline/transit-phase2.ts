@@ -64,6 +64,8 @@ export const GRACE_FLOOR_MIN_GAPS = 8;
 export const BURST_MAX_SPAN_MINUTES = 90;
 /** A rush-hour block needs this many departures to hold a tier of its own (#720). */
 export const MIN_PEAK_BLOCK_DEPARTURES = 4;
+/** #720: service spanning less than this share of the grading window is limited (time-limited), not all-day. */
+export const ALL_DAY_MIN_COVERAGE = 0.4;
 /** ...and this many minutes from first to last departure, at least. */
 export const MIN_PEAK_BLOCK_SPAN_MINUTES = 60;
 
@@ -589,7 +591,7 @@ export function applyAnalysisCriteria(
         // regular/infrequent. Counted over all of the direction's patterns that day, so a feed that
         // splits a timetable over many shapes (CapMetro, TriMet) keeps its classes.
         const fewTripsADay = (routeDirDayDepartures.get(`${raw.route}::${raw.dir}::${raw.day}`) ?? 0) <= 2;
-        const isLimitedService = isSplitPeakService || spanMins <= BURST_MAX_SPAN_MINUTES || (!isOvernightFallback && coverage < 0.4);
+        const isLimitedService = isSplitPeakService || spanMins <= BURST_MAX_SPAN_MINUTES || (!isOvernightFallback && coverage < ALL_DAY_MIN_COVERAGE);
         const tierDetail = tierDeterminer === determineTierWithEdgeGapAllowance
             ? determineTierWithEdgeGapAllowanceDetail(
                 analysisGaps,

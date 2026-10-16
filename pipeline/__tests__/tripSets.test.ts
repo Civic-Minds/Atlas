@@ -578,8 +578,9 @@ describe('step 6: a time-limited or rush-hour-only route has no all-day value (#
 });
 
 describe('step 6 review: all-day value and limited service from the stretch, not phase 2 per-shape classes', () => {
-  const routeRows = (r: Run, route: string) => {
-    const rows = r.rows.filter(p => p.routeShortName === route && p.day === 'Weekday');
+  const routeRows = (r: Run, route: string) => r_(r, route, 'Weekday');
+  const r_ = (r: Run, route: string, day: string) => {
+    const rows = r.rows.filter(p => p.routeShortName === route && p.day === day);
     expect(rows.length).toBeGreaterThan(0);
     // A fixture cut to one weekday is partial-weekday and silently keeps today's fields.
     expect(rows.every(p => p.routeFilterHeadwayByPeriod !== undefined)).toBe(true);
@@ -624,5 +625,29 @@ describe('step 6 review: all-day value and limited service from the stretch, not
     expect(rows[0].routeFilterHeadwayByPeriod.midday).toBe(15);
     expect(rows.some(p => p.serviceClass === 'time-limited')).toBe(true);
     expect(rows.some(p => isLimitedService(p))).toBe(false);
+  });
+  // Branches that are not phase 2 regular now count (D1). Oracle at each tail's middle stop.
+  it('TTC 76: the 76B branch, northbound every 20-36 from 7:00 to 21:46, decides all day (25) and fails Frequent Service', async () => {
+    const rows = routeRows(await run('ttc-76-weekday', 'ttc'), '76');
+    expect(rows[0].routeAllDayHeadway).toBe(25);
+    expect(rows.some(p => p.frequentService)).toBe(false);
+  });
+  it('SEPTA T3 Saturday: the 12-trip Darby branch, spread over about 12 hours, decides all day', async () => {
+    const rows = r_(await run('septa-t3-saturday', 'septa'), 'T3', 'Saturday');
+    expect(rows[0].routeAllDayHeadway).toBe(91);
+  });
+  it('MiWay 45: the 45-only stretch to Meadowvale runs every 30 and decides; the peak-only 45A Hadwen tail (311-min midday gap) does not', async () => {
+    const rows = routeRows(await run('miway-45-weekday', 'miway'), '45');
+    expect(rows[0].routeAllDayHeadway).toBe(32);
+  });
+  it('SEPTA 113 and 44: branches every 60 (113 to Chester and Claymont) and every 45 (44 by Montgomery Av) decide', async () => {
+    const r = await run('septa-113-44-weekday', 'septa');
+    expect(routeRows(r, '113')[0].routeAllDayHeadway).toBe(60);
+    expect(routeRows(r, '44')[0].routeAllDayHeadway).toBe(42);
+  });
+  it('TransLink 321: every 10 all day, but not Frequent Service: its White Rock end starts 7:20 and has a 16-minute gap', async () => {
+    const rows = routeRows(await run('translink-321-weekday', 'translink'), '321');
+    expect(rows[0].routeAllDayHeadway).toBe(10);
+    expect(rows.some(p => p.frequentService)).toBe(false);
   });
 });

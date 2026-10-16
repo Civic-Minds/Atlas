@@ -1,0 +1,3 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color,route_sort_order,network_id,route_color_dark,route_text_color_dark
+44,1,44,Front-Market to Ardmore,3,https://www.septa.org/schedules/44,1A1818,FFFFFF,20440,bus_metro,1A1818,FFFFFF
+113,1,113,Claymont TC to 69th St Transit Ctr,3,https://www.septa.org/schedules/113,EF3340,FFFFFF,21130,bus_metro,E21220,FFFFFF

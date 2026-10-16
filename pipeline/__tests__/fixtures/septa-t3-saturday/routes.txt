@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color,route_sort_order,network_id,route_color_dark,route_text_color_dark
+T3,1,T3,13th St to Yeadon or Darby TC,0,https://www.septa.org/schedules/T3,5A960A,FFFFFF,10033,bus_metro,4E850B,FFFFFF
