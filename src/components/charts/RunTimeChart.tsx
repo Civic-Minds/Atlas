@@ -12,10 +12,10 @@ export interface RunTimeHour {
   p90Min: number;
 }
 
-const PAD_TOP = 22;
-const PAD_BOTTOM = 22;
-const AXIS_W = 40;
-const LABEL_W = 118;
+const PAD_TOP_FULL = 22;
+const PAD_BOTTOM_FULL = 22;
+const AXIS_W_FULL = 40;
+const LABEL_W_FULL = 118;
 const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 % 24 < 12 ? 'am' : 'pm'}`;
 
 /** The minute range every chart in a row should share, with a little headroom, on whole 5-minute steps. */
@@ -61,7 +61,7 @@ function spread(labels: EndLabel[], min: number, max: number): Array<EndLabel & 
  * line is labelled where it ends; hours with few trips are faded. The whole chart is one focusable unit with a summary
  * label, each hour shows its figures on hover, and the same figures are available as a table.
  */
-export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height: H = 240, axis: axisProp, shade, caption = true }: {
+export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height: H = 240, axis: axisProp, shade, caption = true, compact = false }: {
   hours: readonly RunTimeHour[];
   scale: { min: number; max: number };
   ariaLabel: string;
@@ -74,7 +74,10 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
   shade?: (hour: number) => boolean;
   /** The line under the chart saying what the hours are and what faded dots mean (default yes). */
   caption?: boolean;
+  /** A sparkline: the lines, band and dots over the hours, with no minute scale or end labels (hover still reads the figures). */
+  compact?: boolean;
 }) {
+  const PAD_TOP = compact ? 6 : PAD_TOP_FULL, PAD_BOTTOM = compact ? 18 : PAD_BOTTOM_FULL, AXIS_W = compact ? 4 : AXIS_W_FULL, LABEL_W = compact ? 4 : LABEL_W_FULL;
   const tableId = useId();
   const [hover, setHover] = useState<number | null>(null);
   const [ref, width] = useWidth();
@@ -112,23 +115,23 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
           <svg onPointerLeave={() => setHover(null)} width={width} height={H} aria-hidden="true" className="block overflow-visible">
             {shade && axis.map((h, i) => (shade(h % 24) ? <rect key={`shade${h}`} x={x(i) - colW / 2} y={PAD_TOP - 6} width={colW} height={H - PAD_TOP - PAD_BOTTOM + 6} rx={3} fill="var(--bg-btn-hover)" /> : null))}
             {hover != null && <rect x={x(hover) - colW / 2} y={PAD_TOP - 6} width={colW} height={H - PAD_TOP - PAD_BOTTOM + 6} rx={3} fill="var(--bg-btn-hover)" />}
-            {ticks.map(t => (
+            {!compact && ticks.map(t => (
               <g key={t}>
                 <line x1={AXIS_W} x2={AXIS_W + plotW} y1={y(t)} y2={y(t)} stroke="var(--border-primary)" strokeWidth={1} />
                 <text x={AXIS_W - 6} y={y(t) + 4} textAnchor="end" fontSize={13} fill="var(--text-dim)">{t}</text>
               </g>
             ))}
-            <text x={0} y={10} fontSize={13} fill="var(--text-dim)">min</text>
+            {!compact && <text x={0} y={10} fontSize={13} fill="var(--text-dim)">min</text>}
             {runs.map((r, k) => r.length > 1 && (
               <path key={`band${k}`} d={`${path(r, p => p.p90Min)}${[...r].reverse().map(p => `L${x(p.i)},${y(p.typicalMin)}`).join('')}Z`} fill="var(--strip-delay-1)" opacity={0.18} />
             ))}
             {runs.map((r, k) => r.length > 1 && <path key={`s${k}`} d={path(r, p => p.scheduledMin)} fill="none" stroke="var(--text-secondary)" strokeWidth={1.5} strokeDasharray="4 3" />)}
             {runs.map((r, k) => r.length > 1 && <path key={`u${k}`} d={path(r, p => p.typicalMin)} fill="none" stroke="var(--text-primary)" strokeWidth={2} strokeLinejoin="round" />)}
             {pts.map(p => <circle key={p.i} cx={x(p.i)} cy={y(p.typicalMin)} r={3.5} fill="var(--text-primary)" stroke="var(--bg-primary)" strokeWidth={1.5} opacity={p.n >= minN ? 1 : 0.35} />)}
-            {last && ends.map(l => (
+            {!compact && last && ends.map(l => (
               <line key={`lead${l.key}`} x1={x(last.i) + 6} y1={l.y} x2={AXIS_W + plotW + 6} y2={l.top + 7} stroke="var(--text-dim)" strokeWidth={1} opacity={0.5} />
             ))}
-            {ends.map(l => l.lines.map((t, k) => (
+            {!compact && ends.map(l => l.lines.map((t, k) => (
               <text key={`${l.key}${k}`} x={AXIS_W + plotW + 10} y={l.top + 11 + k * 14} fontSize={13} fontWeight={l.weight} fill={l.color}>{t}</text>
             )))}
             {axis.map((h, i) => SPARKLINE_HOUR_LABELS[h] && (
