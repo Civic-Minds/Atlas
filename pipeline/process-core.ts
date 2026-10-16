@@ -3091,7 +3091,7 @@ export async function processGtfsBuffer(
       const stretches = directionStretches(gKey, directionTrips, coord);
       // The night version (Ryan, 2026-10-15): the same direction from its 2-5am trips only.
       const nightTrips = nightOnlyTrips(directionTrips);
-      if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips);
+      if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
       stretchesByKey.set(gKey, stretches);
     }
     options?.onStretches?.({ stretches: stretchesByKey, stopDepsByGroup });

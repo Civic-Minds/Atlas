@@ -16,6 +16,9 @@ Each folder is one route's trips on the services active on one date, cut from th
 | ttc-63-weekday | same | 2026-10-21 | 63 |
 | ttc-25-weekday | same | 2026-10-21 | 25 |
 | ttc-900-weekday | same | 2026-10-21 | 900 |
+| ttc-353-395-weekday | same | 2026-10-21 | 353, 395 |
+| lacmta-105-weekday | `_feeds/lacmta/20270401-fresh.zip` | 2026-10-21 | 105 |
+| cta-134-143-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 134, 143 |
 | ttc-300-weekday-night | same | 2026-10-21 | 300 |
 | cta-77-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 77 |
 | cta-93-sunday | `_feeds/cta/20261130-fresh.zip` | 2026-10-18 | 93 |

@@ -153,6 +153,13 @@ export function directionStretches(
   stopCoord: (stopId: string) => Coord | undefined,
   /** The trips whose departures are read at each stretch's middle stop; the shaping trips by default. */
   measureTrips: readonly DirectionTrip[] = trips,
+  /**
+   * 'shared': the main stretch is the stops every regular pattern serves (the daytime rule).
+   * 'mostVisits': the regular pattern with the most stop visits (trips times stops), the rule the
+   * daytime uses when regular patterns share no stop. The night version uses it, so a short owl
+   * hop with many trips (TTC 353's 3-stop Tapscott hop) cannot become the night route.
+   */
+  mainBy: 'shared' | 'mostVisits' = 'shared',
 ): DirectionStretches {
   const withVisits = trips.filter(trip => trip.visits.length > 0);
   const patterns = new Map<string, { stops: string[]; trips: DirectionTrip[] }>();
@@ -194,9 +201,9 @@ export function directionStretches(
   const tripStops = withVisits.map(trip => new Set(trip.visits.map(v => v.stopId)));
   // Main stretch: the stops every regular pattern serves, in the longest regular pattern's order.
   const longestRegular = regular.reduce((x, y) => (y.stops.length > x.stops.length ? y : x));
-  let mainStops = longestRegular.stops.filter(stop => regular.every(p => p.stops.includes(stop)));
-  const disconnected = mainStops.length === 0;
-  if (disconnected) {
+  let mainStops = mainBy === 'shared' ? longestRegular.stops.filter(stop => regular.every(p => p.stops.includes(stop))) : [];
+  const disconnected = mainBy === 'shared' && mainStops.length === 0;
+  if (mainStops.length === 0) {
     // Regular patterns that share no stop (a route run as two halves meeting at a hub, TTC 25
     // at Don Mills Station; two routes drawn as one group): the regular pattern with the most stop
     // visits (trips times stops) is the main stretch, and the others' own runs are its tails. Not
@@ -362,6 +369,11 @@ function fullNightVerdict(d: DirectionStretches, gap: 30 | 60): boolean {
 }
 export function directionNightVerdict(d: DirectionStretches, gap: 30 | 60): NightVerdict {
   if (fullNightVerdict(d, gap)) return 'pass';
+  // Partial only when night service does not reach the daytime main stretch's middle stop (no
+  // departures on both sides of 3:30 there): the night route runs elsewhere or on part of the
+  // route. A main stretch that runs at night but fails the gap test (TTC 353: 3:06-4:36 every 30,
+  // a 66-minute opening gap) is a fail, whatever a short owl hop on it does.
+  if (d.main && !d.disconnected && runsAcrossNightMidpoint(d.main.nightTimes)) return 'fail';
   if (d.night && fullNightVerdict(d.night, gap)) return 'partial';
   return 'fail';
 }
@@ -390,6 +402,8 @@ export interface DirectionRollup {
     filterValue: number | null;
     /** The main stretch runs through the period (departures on both sides of its midpoint). */
     runs: boolean;
+    /** The main stretch has any departure in the period. A direction with none is skipped by the route (a one-way peak route). */
+    hasService: boolean;
   }>;
   night30: boolean;
   night60: boolean;
@@ -421,6 +435,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       mainValue: main[key].counts ? main[key].value : null,
       filterValue: null,
       runs: false,
+      hasService: false,
     };
   }
   // Step 5a: the filter value and whether the direction runs, per period.
@@ -430,7 +445,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     const throughMidpoint = (s: Stretch) => { const t = timesIn(s); return t.some(x => x < mid) && t.some(x => x >= mid); };
     // The settled period checks (#567-#571, PR #584) decide whether a period that has departures
     // on both sides of its midpoint really runs through it: when it is not steady and its longest
-    // wait, edges included, is more than BOUNDARY_DOMINANT_RATIO times its typical gap, the
+    // gap between two departures is more than BOUNDARY_DOMINANT_RATIO times its typical gap, the
     // departures are a straggler and the first trips of the next service, not service through
     // the period (TTC 900 overnight: 26:11-26:41, then nothing until 29:19).
     const dominantHole = (s: Stretch) => {
@@ -438,8 +453,10 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       const dt = forCrossMidnightWindow([...s.times], end);
       const median = medianHeadwayInWindow(dt, start, end, 3);
       if (median == null || median <= 0) return false;
+      // Internal gaps only: a late start or an early end is the edge rules' business (CTA 134 PM
+      // runs every 9 from 16:14), a hole between two runs of service is this one's.
       const t = timesIn(s).sort((a, b) => a - b);
-      let longest = Math.max(t[0] - start, end - t[t.length - 1]);
+      let longest = 0;
       for (let i = 1; i < t.length; i++) longest = Math.max(longest, t[i] - t[i - 1]);
       return longest / median > BOUNDARY_DOMINANT_RATIO;
     };
@@ -448,6 +465,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     const counting = [main[key], ...tails.map(t => t[key])].filter((p, i) => p.counts && (i === 0 ? runs : true));
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     period[key].runs = runs;
+    period[key].hasService = timesIn(d.main).length > 0;
     period[key].filterValue = runs && values.length > 0 ? Math.max(...values) : null;
   }
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
@@ -512,12 +530,16 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     const mains = known.map(d => d.period[key].mainValue).filter((v): v is number => v != null);
     const coverages = known.map(d => d.period[key].coverage);
     const low = mains.length === known.length && mains.length > 0 ? Math.max(...mains) : null;
-    const filterValues = known.map(d => d.period[key].filterValue);
+    // A direction with no departure at all in the period does not run in it and is skipped (a
+    // one-way peak route: CTA 134 runs only outbound in the PM); one whose departures are only
+    // stray or part-day trips leaves the route with no value (rule 3).
+    const serving = known.filter(d => d.period[key].hasService);
+    const filterValues = serving.map(d => d.period[key].filterValue);
     period[key] = {
       value,
       coverage: value != null && coverages.every(v => v != null) ? Math.max(...(coverages as number[])) : null,
       range: value != null && low != null && low !== value ? [Math.min(low, value), value] : null,
-      filterValue: complete && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
+      filterValue: complete && serving.length > 0 && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
       runs: known.some(d => d.period[key].runs),
     };
   }

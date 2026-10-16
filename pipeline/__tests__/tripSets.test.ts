@@ -343,7 +343,7 @@ describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
 
 describe('route roll-up (rule 1)', () => {
   const dir = (value: number | null) => ({
-    period: Object.fromEntries(['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'].map(k => [k, { value, coverage: value, sustained: true, sustainedMid: true, mainValue: value }])),
+    period: Object.fromEntries(['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'].map(k => [k, { value, coverage: value, sustained: true, sustainedMid: true, mainValue: value, filterValue: value, runs: value != null, hasService: value != null }])),
     night30: true,
     night60: true,
     nightPartial30: false,
@@ -361,6 +361,14 @@ describe('route roll-up (rule 1)', () => {
   it('a direction with no value in a period leaves the route with none in that period', () => {
     expect(rollupRoute([dir(10), dir(null)]).period.midday.value).toBeNull();
     expect(rollupRoute([dir(10), dir(20)]).period.midday.value).toBe(20);
+  });
+  it('filter value: a direction with only stray trips nulls the route; one with no service at all is skipped (one-way peak)', () => {
+    const stray = dir(10);
+    stray.period.midday = { ...stray.period.midday, filterValue: null, runs: false, hasService: true };
+    const none = dir(10);
+    none.period.midday = { ...none.period.midday, filterValue: null, runs: false, hasService: false };
+    expect(rollupRoute([dir(10), stray]).period.midday.filterValue).toBeNull();
+    expect(rollupRoute([dir(10), none]).period.midday.filterValue).toBe(10);
   });
 });
 
@@ -481,5 +489,29 @@ describe('runs through the period: the settled checks catch a straggler before t
     const p = row(r, route, 'Weekday');
     expect(p.routeRunsByPeriod.overnight).toBe(false);
     expect(p.routeFilterHeadwayByPeriod.overnight).toBeNull();
+  });
+});
+
+describe('review fixes: partial night only where night service misses the main stretch; holes are internal gaps', () => {
+  it('TTC 353 and 395 run at night on their corridor with a 66-67 minute opening gap: they fail Night, as their overnight value says', async () => {
+    const r = await run('ttc-353-395-weekday');
+    for (const [route, wait] of [['353', 66], ['395', 67]] as const) {
+      const p = row(r, route, 'Weekday');
+      expect([p.stretchNight30, p.stretchNight60, p.stretchNightPartial60], route).toEqual([false, false, false]);
+      expect(p.routeFilterHeadwayByPeriod.overnight, route).toBe(wait);
+    }
+  });
+  it('LA Metro 105: the Vernon owl stays a real part-of-route night service', async () => {
+    const r = await run('lacmta-105-weekday');
+    const p = row(r, '105', 'Weekday');
+    expect([p.stretchNight60, p.stretchNightPartial60]).toEqual([true, true]);
+  });
+  it('CTA 134 and 143 PM: one-way peak service that starts at 16:14 still runs in the PM (drawn under All), read on its full-window wait', async () => {
+    const r = await run('cta-134-143-weekday');
+    for (const route of ['134', '143']) {
+      const p = row(r, route, 'Weekday');
+      expect(p.routeRunsByPeriod.pmPeak, route).toBe(true);
+      expect(p.routeFilterHeadwayByPeriod.pmPeak, route).not.toBeNull();
+    }
   });
 });
