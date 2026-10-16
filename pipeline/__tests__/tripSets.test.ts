@@ -4,6 +4,7 @@ import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
+import { isLimitedService } from '../../shared/irregularRoutes';
 import { directionStretches, rollupDirection, rollupRoute, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
@@ -573,5 +574,55 @@ describe('step 6: a time-limited or rush-hour-only route has no all-day value (#
     expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 60)).toBe(false);
     // Its peak service still reads.
     expect(routePassesHeadwayFilter(rows, 'pmPeak', 'Weekday', 30)).toBe(true);
+  });
+});
+
+describe('step 6 review: all-day value and limited service from the stretch, not phase 2 per-shape classes', () => {
+  const routeRows = (r: Run, route: string) => {
+    const rows = r.rows.filter(p => p.routeShortName === route && p.day === 'Weekday');
+    expect(rows.length).toBeGreaterThan(0);
+    // A fixture cut to one weekday is partial-weekday and silently keeps today's fields.
+    expect(rows.every(p => p.routeFilterHeadwayByPeriod !== undefined)).toBe(true);
+    return rows;
+  };
+  it('CapMetro 7 (every 16, 7:00-22:00 both ways, a shape per trip) keeps its all-day value and is not limited', async () => {
+    const rows = routeRows(await run('capmetro-7-weekday'), '7');
+    expect(rows[0].routeAllDayHeadway).toBe(17);
+    expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 30)).toBe(true);
+    expect(rows.some(p => isLimitedService(p))).toBe(false);
+  });
+  it('CTA 108 and X9 (rush hour only, a 4-5 hour midday gap both ways) have no all-day value and are limited', async () => {
+    const r = await run('cta-108-x9-weekday', 'cta');
+    for (const route of ['108', 'X9']) {
+      const rows = routeRows(r, route);
+      expect(rows[0].routeAllDayHeadway).toBe(999999);
+      expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 60)).toBe(false);
+      expect(rows.every(p => isLimitedService(p))).toBe(true);
+    }
+  });
+  it('TTC 119 (every 30 at midday both ways on the shared stretch, alternating branches) reads its midday and passes all day', async () => {
+    const rows = routeRows(await run('ttc-119-133-336-weekday', 'ttc'), '119');
+    expect(rows[0].routeFilterHeadwayByPeriod.midday).toBe(30);
+    expect(rows[0].routeMiddayCap).toBe(0);
+    expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 30)).toBe(true);
+    expect(rows.some(p => isLimitedService(p))).toBe(false);
+  });
+  it('TTC 133 is not Frequent Service: southbound at Centenary starts 9:04, northbound the Centenary tail ends 14:53', async () => {
+    const rows = routeRows(await run('ttc-119-133-336-weekday', 'ttc'), '133');
+    expect(rows[0].stretchFrequentService).toBe(false);
+    expect(rows.some(p => p.frequentService)).toBe(false);
+  });
+  it('night routes keep an all-day value by phase 2\'s overnight fallback, the slower branch deciding (TTC 300, 336, 337)', async () => {
+    const r = await run('ttc-119-133-336-weekday', 'ttc');
+    expect(routeRows(r, '336')[0].routeAllDayHeadway).toBe(20);
+    expect(routeRows(r, '337')[0].routeAllDayHeadway).toBe(30);
+    // Bloor trunk every 8 at night; its branches every 15 and 16.
+    expect(routeRows(await run('ttc-300-weekday-night', 'ttc'), '300')[0].routeAllDayHeadway).toBe(15);
+  });
+  it('TTC 134 (every 15 at midday) is not limited service, though some of its patterns read time-limited', async () => {
+    const rows = routeRows(await run('ttc-134-weekday', 'ttc'), '134');
+    expect(rows[0].routeFilterHeadwayByPeriod.midday).toBe(15);
+    expect(rows.some(p => p.serviceClass === 'time-limited')).toBe(true);
+    expect(rows.some(p => isLimitedService(p))).toBe(false);
   });
 });

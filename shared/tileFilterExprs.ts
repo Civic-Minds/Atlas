@@ -5,11 +5,15 @@ import { buildEffectiveModeExpression, ON_DEMAND_MODE } from './modes.js';
 
 type PeriodFilter = PeriodKey | 'all';
 
-/** MapLibre expression matching the explicit time-limited service class only. */
+/** MapLibre expression for isLimitedService (shared/irregularRoutes.ts): same rule on tiles. */
 export function tileLimitedServiceExpr(): unknown[] {
-  return ['any',
-    ['==', ['get', 'serviceClass'], 'time-limited'],
+  return ['case',
+    ['has', 'routeAllDayHeadway'],
     ['==', ['coalesce', ['get', 'routeHasLimitedDirection'], false], true],
+    ['any',
+      ['==', ['get', 'serviceClass'], 'time-limited'],
+      ['==', ['coalesce', ['get', 'routeHasLimitedDirection'], false], true],
+    ],
   ];
 }
 

@@ -3015,35 +3015,11 @@ export async function processGtfsBuffer(
     for (const [feature, { shortName }] of featureStopHeadwaySlots) {
       if (gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) synthesizedGroups.add(shortName);
     }
-    // Patterns phase 2 classes part-time or limited (#720 / CIV-220) are never branches.
-    const limitedPatterns = new Set<string>();
-    for (const result of results) {
-      if (result.serviceClass === 'regular' && !result.rushHourOnly) continue;
-      limitedPatterns.add(`${result.route}::${result.dir}::${result.day}::${result.headsign ?? ''}::${result.shapeId ?? ''}`);
-    }
-    // A direction phase 2 classes with no regular pattern is limited throughout (OC Transpo 226:
-    // 11 peak trips) and gets no all-day value.
-    const classedDirs = new Set<string>();
-    const regularDirs = new Set<string>();
-    for (const result of results) {
-      const dirKey = `${result.route}::${result.dir}::${result.day}`;
-      classedDirs.add(dirKey);
-      if (result.serviceClass === 'regular' && !result.rushHourOnly) regularDirs.add(dirKey);
-    }
-    const tripIsLimited = (tripKey: string, dayType: string): boolean => {
-      const trip = tripById.get(tripKey.split('@')[0]);
-      if (!trip) return false;
-      const lastStopId = lastStopByTrip.get(trip.trip_id);
-      const headsign = trip.trip_headsign?.trim() || (lastStopId ? stopNameById.get(lastStopId) : undefined) || '';
-      return limitedPatterns.has(`${trip.route_id}::${String(trip.direction_id ?? '0').trim() || '0'}::${dayType}::${headsign}::${trip.shape_id || ''}`);
-    };
     const stretchesByKey = new Map<string, DirectionStretches>();
     for (const [gKey, trips] of stretchVisitsByGroup) {
       if (synthesizedGroups.has(gKey.slice(0, gKey.indexOf('::')))) continue;
-      const dayType = gKey.slice(gKey.lastIndexOf('::') + 2);
       const directionTrips = [...trips].map(([tripId, visits]) => ({
         tripId,
-        limited: tripIsLimited(tripId, dayType) || undefined,
         visits: [...visits].sort((a, b) => a.seq - b.seq).map(({ stopId, minutes, overnightOnly, counted }) => ({ stopId, minutes, overnightOnly, counted })),
       }));
       const coord = (stopId: string): [number, number] | undefined => {
@@ -3051,11 +3027,6 @@ export async function processGtfsBuffer(
         return stop ? [stop.lat, stop.lon] : undefined;
       };
       const stretches = directionStretches(gKey, directionTrips, coord);
-      const dirKeys = new Set(directionTrips.map(t => {
-        const trip = tripById.get(t.tripId.split('@')[0]);
-        return trip ? `${trip.route_id}::${String(trip.direction_id ?? '0').trim() || '0'}::${dayType}` : null;
-      }).filter((k): k is string => k != null && classedDirs.has(k)));
-      if (dirKeys.size > 0 && [...dirKeys].every(k => !regularDirs.has(k))) stretches.limitedOnly = true;
       // The night version (Ryan, 2026-10-15): the same direction from its 2-5am trips only.
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
@@ -3080,6 +3051,16 @@ export async function processGtfsBuffer(
       delete feature.properties.directionFilterHeadwayByPeriod;
       delete feature.properties.routeAllDayHeadway;
       delete feature.properties.routeMiddayCap;
+    }
+    // Step 6: "limited service" (the hide-limited toggle, routeHasLimitedDirection) reads the
+    // stretches, as the all-day value does: a route has a limited direction only when a direction's
+    // main stretch does not run at midday. Phase 2's per-pattern class marked TTC 134 limited (a
+    // part-day variant), which hid it at midday while it runs every 15.
+    for (const feature of features) {
+      const p = feature.properties;
+      if (p.routeFilterHeadwayByPeriod === undefined) continue;
+      if (p.stretchRouteLimited === true) p.routeHasLimitedDirection = true;
+      else delete p.routeHasLimitedDirection;
     }
     // Step 6: Frequent Service reads the stretches: the route qualifies when every direction's main
     // stretch and each tail running 7-19 do; its rows with midday service are lit.

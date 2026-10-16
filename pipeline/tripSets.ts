@@ -15,7 +15,7 @@
 import { TIME_PERIODS, type PeriodKey } from '../shared/config.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
-import { computeHeadwayStats } from './transit-phase2.js';
+import { BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, computeHeadwayStats } from './transit-phase2.js';
 import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
@@ -56,12 +56,6 @@ export interface TripVisit {
 export interface DirectionTrip {
   tripId: string;
   visits: readonly TripVisit[];
-  /**
-   * Phase 2 classes the trip's pattern part-time or limited (#720 / CIV-220: time-limited,
-   * irregular or rush-hour-only). Such a pattern is never a branch: its trips count where they
-   * serve, as a variant's do.
-   */
-  limited?: boolean;
 }
 
 export interface Stretch {
@@ -93,12 +87,6 @@ export interface DirectionStretches {
    * only the pieces that run at night must pass.
    */
   disconnected?: boolean;
-  /**
-   * Phase 2 classes every pattern of the direction limited (#720: time-limited, rush-hour-only), so
-   * it has no all-day value. Set by the caller: phase 2 classes a direction's main patterns only,
-   * and its variant trips carry no class of their own.
-   */
-  limitedOnly?: boolean;
   /**
    * The same direction built from only the trips that run in the 2-5am window (nightOnlyTrips):
    * the night version of the route, judged when the daytime main stretch has no night service
@@ -188,7 +176,15 @@ export function directionStretches(
   // route) is a variant by day, so it cannot shrink the main stretch to its own stops and leave the
   // rest of the route as tails that drop out at night. A route with no steady daytime pattern
   // (a night route) is shaped by the patterns that run steadily in any period.
-  const eligible = all.filter(p => !p.trips.every(t => t.limited));
+  // #720's minimum evidence for a timetable, on the pattern's own trips (not phase 2's per-shape
+  // class, which a feed giving each trip its own shape defeats): fewer than
+  // MIN_PEAK_BLOCK_DEPARTURES trips, or all of them within BURST_MAX_SPAN_MINUTES, is a burst and
+  // never a branch (TransLink 044's 3-trip Dundarave Express).
+  const eligible = all.filter(p => {
+    if (p.trips.length < MIN_PEAK_BLOCK_DEPARTURES) return false;
+    const starts = p.trips.map(t => t.visits[0].minutes);
+    return Math.max(...starts) - Math.min(...starts) > BURST_MAX_SPAN_MINUTES;
+  });
   const steadyIn = (periods: readonly PeriodKey[]) => eligible.filter(p => runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)], periods));
   let regular = steadyIn(DAYTIME_PERIODS);
   if (regular.length === 0) regular = steadyIn(ALL_PERIODS);
@@ -488,12 +484,17 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   // Step 6 shadow values. Tails count when they run steadily through some daytime period.
   // Tails that run steadily through midday are all-day branches; a peak-only tail (CTA 9's Beverly
   // tail, a 313-minute midday hole) is limited and takes no part in the all-day value or Frequent.
-  const allDayTails = d.tails.filter((t, i) => tails[i].midday.counts);
   // The all-day value reads like phase 2's headline (computeHeadwayStats over the day's grading
   // window, 07-22 or Sunday 09-21), not the 4x dominant-gap check: one 32-minute evening gap on an
   // every-7 trunk (LA Metro 51) must not void the route's all-day value.
   const dayType = d.key.slice(d.key.lastIndexOf('::') + 2) as 'Weekday' | 'Saturday' | 'Sunday';
   const grading = DEFAULT_CRITERIA.dayTypes[dayType]?.timeWindow ?? { start: 420, end: 1320 };
+  // Phase 2's overnight fallback: a main stretch with under two departures in the grading window
+  // is a night route, read over all its departures. Its branches are judged overnight, where it
+  // runs, so the slower branch decides as by day (TTC 300: the Bloor trunk every 8, its branches
+  // every 15 and 16).
+  const overnightFallback = d.main.times.filter(x => x >= grading.start && x <= grading.end).length < 2;
+  const allDayTails = d.tails.filter((t, i) => (overnightFallback ? tails[i].overnight : tails[i].midday).counts);
   const allDayOf = (st: Stretch) => {
     // Phase 2's overnight fallback: with fewer than two departures in the window (a night route),
     // the stretch reads all of its departures.
@@ -502,21 +503,27 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     return t.length >= 2 ? Math.round(computeHeadwayStats(t).median) : null;
   };
   const allDays = [d.main, ...allDayTails].map(allDayOf);
+  // The #899 rule unchanged: a midday reading with a wait under three hours, or a wait of at most
+  // ALL_DAY_MIDDAY_MAX_WAIT, means the direction runs at midday.
+  const middayWait = main.midday.coverage;
+  const middayHasReading = main.midday.headway != null && middayWait != null && middayWait < 3 * 60;
+  const middayRuns = middayHasReading || (middayWait != null && middayWait <= ALL_DAY_MIDDAY_MAX_WAIT);
+  // Limited (#720): a direction whose main stretch does not run at midday by that rule has no
+  // all-day value: rush-hour-only (OC Transpo 226) or evening-only service, and a median that
+  // steps over a 5-hour midday hole (CTA 108: every 20 at the peaks) is not every N all day. Read
+  // from the stretch, not phase 2's per-shape class, which a feed giving each trip its own shape
+  // (CapMetro 7, every 16 all day) defeats. Phase 2's overnight fallback is the one exception: a
+  // night route with under two main-stretch departures in the grading window has no midday by
+  // design and keeps its value (TTC 300, 336, 337).
+  const limitedOnly = !overnightFallback && !middayRuns;
   const frequentStretches = [d.main, ...allDayTails];
   const researchOf = frequentStretches.map(st => computeResearchFrequentService([...st.times]));
   return {
     period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',
-    // A direction phase 2 classes time-limited or rush-hour-only (#720) has no all-day value.
-    allDay: !d.limitedOnly && allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
-    limitedOnly: d.limitedOnly === true,
-    middayWait: main.midday.coverage,
-    midday: (() => {
-      // The #899 rule unchanged: a midday reading with a wait under three hours, or a wait of at
-      // most ALL_DAY_MIDDAY_MAX_WAIT, means the direction runs at midday.
-      const wait = main.midday.coverage;
-      const hasReading = main.midday.headway != null && wait != null && wait < 3 * 60;
-      return { hasReading, runs: hasReading || (wait != null && wait <= ALL_DAY_MIDDAY_MAX_WAIT), wait };
-    })(),
+    allDay: !limitedOnly && allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
+    limitedOnly,
+    middayWait,
+    midday: { hasReading: middayHasReading, runs: middayRuns, wait: middayWait },
     frequent: frequentStretches.every(st => hasSustainedFrequentService([...st.times])),
     research: {
       daytime15: researchOf.every(r => r.daytime15), daytime30: researchOf.every(r => r.daytime30),
@@ -539,6 +546,8 @@ export interface RouteRollup {
   nightPartial30: boolean;
   nightPartial60: boolean;
   /** Step 6 shadow: worst direction's all-day headline; null when any direction has none. */
+  /** Some direction is limited (#720): its main stretch does not run at midday (rollupDirection). */
+  limited: boolean;
   allDay: number | null;
   /** Step 6 shadow: worst direction's midday wait (the #899 cap); null when any direction has no midday service. */
   middayWait: number | null;
@@ -586,6 +595,7 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     nightPartial60: complete && known.every(d => d.night60) && known.some(d => d.nightPartial60),
     // A limited direction (#720) has no all-day value, so neither has its route: every direction
     // must run all day (#899), and the other direction alone never passes for it.
+    limited: known.some(d => d.limitedOnly),
     allDay: complete && known.every(d => d.allDay != null) ? Math.max(...known.map(d => d.allDay!)) : null,
     middayWait: complete && known.every(d => d.middayWait != null) ? Math.max(...known.map(d => d.middayWait!)) : null,
     middayCap: (() => {
@@ -609,6 +619,7 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
 
 /** Shadow keys stamped by stampStretchShadow. JSON only: tiles leave them out (prepareAgencyRoutesForTiles). */
 export const STRETCH_SHADOW_KEYS = [
+  'stretchRouteLimited',
   'stretchPeriodHeadway',
   'stretchPeriodCoverage',
   'stretchPeriodSustained',
@@ -694,6 +705,7 @@ export function stampStretchShadow(
     p.stretchNightPartial60 = route.nightPartial60;
     // Step 6 shadow: nothing reads these yet.
     p.stretchAllDayHeadway = route.allDay;
+    p.stretchRouteLimited = route.limited;
     // Step 6: the all-day filter value and the #899 cap from the stretches (tiles: scalars; a
     // missing value or no midday service is the no-service sentinel, no cap is 0, so an MVT tile
     // never drops them and falls back to today's fields).

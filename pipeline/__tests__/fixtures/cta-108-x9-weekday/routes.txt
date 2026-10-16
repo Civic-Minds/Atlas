@@ -1,0 +1,3 @@
+agency_id,route_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color
+50066,X9,X9,Ashland Express,3,http://www.transitchicago.com/bus/X9/,b71234,ffffff
+50066,108,108,Halsted/95th,3,http://www.transitchicago.com/bus/108/,99999C,ffffff
