@@ -17,6 +17,7 @@ import { useMediaQuery } from './hooks/useMediaQuery';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { SectionTitle } from './components/ui/PageTitle';
+import { lateCount, lateHourLine } from '../shared/liveWording';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', '−');
@@ -108,7 +109,7 @@ function Days({ v3, data, band, dir, allOnly = false }: { v3: LiveV3; data: Dash
                 <div className="mt-1 text-2xl font-black tracking-tight" title={`${c.late.n.toLocaleString()} departures`}>{pct(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>
                 <div className="mt-2">
                   {c.hours.length ? (
-                    <HourSpark height={allOnly ? 120 : undefined} values={c.hours} hours={liveChartHours(h => cols.some(cc => (cc.hours.find(x => x.hour === h)?.n ?? 0) >= 30))} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
+                    <HourSpark height={allOnly ? 120 : undefined} hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)} values={c.hours} hours={liveChartHours(h => cols.some(cc => (cc.hours.find(x => x.hour === h)?.n ?? 0) >= 30))} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
                       ariaLabel={`${c.label}: share of departures late by hour of the day, ${pct(c.late.share)} late overall.`} />
                   ) : <p className="text-sm text-[var(--text-muted)]">No departures in this part of the day.</p>}
                 </div>

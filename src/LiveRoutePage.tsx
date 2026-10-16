@@ -28,7 +28,7 @@ import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { weekOfText } from '../shared/liveWording';
+import { weekOfText, lateCount, lateHourLine } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -132,6 +132,7 @@ function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: numbe
               const axis = liveChartHours(h => DAYS.some(([d]) => (data.adherence.timepoints[d].byHour.find(x => x.hour === h)?.n ?? 0) >= 30));
               return (
                 <HourBars
+                  hoverLine={(t, c) => lateHourLine(t, lateCount(c.parts[2], c.n), c.n)}
                   hours={axis}
                   key={k}
                   title={label}

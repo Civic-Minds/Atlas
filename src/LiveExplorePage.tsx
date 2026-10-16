@@ -27,7 +27,7 @@ import RouteStrip, { routeStripFromV3, type RouteStripMode } from './components/
 import { delayText, type RouteStripDirection } from './components/Live/routeStripModel';
 import { KpiRow } from './LiveDashboardView';
 import { BOUNDARY, Method, withNiceNames } from './LiveRoutePage';
-import { weekOfText } from '../shared/liveWording';
+import { weekOfText, lateCount, lateHourLine } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -213,6 +213,7 @@ function Late({ data, dir, day, band, lateMin }: { data: DashboardBandData; dir:
         <div className="mt-1 text-xs text-[var(--text-dim)]">{lateMin}+ min</div>
       </div>
       <HourBars
+                  hoverLine={(t, c) => lateHourLine(t, lateCount(c.parts[2], c.n), c.n)}
         ariaLabel={`${label}: share of departures ahead of the timetable, on time and late, by hour of the day. ${pct(c.lateShare)} late overall.`}
         parts={parts}
         columns={block.byHour.filter(h => band === 'all' || periodKeyForHour(h.hour) === band).map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
