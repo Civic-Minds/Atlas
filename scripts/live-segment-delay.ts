@@ -1034,6 +1034,18 @@ const weeklyV3 = {
   comparable: weeks.thisHealthy.length >= MIN_HEALTHY_DAYS && weeks.lastHealthy.length >= MIN_HEALTHY_DAYS,
 };
 
+// Regular patterns per direction (20%+ of the direction's trips), each as its ordered stops, so the page can draw the
+// trunk and where a route forks into branches (504A/504B). `main` marks the pattern whose order the stops' `order` follows.
+const patternsV3: Record<string, Array<{ main: boolean; trips: number; stops: Array<{ stopId: string; name: string }> }>> = {};
+for (const d of [...stopOrder.keys()].sort((a, b) => a - b)) {
+  const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
+  const regular = regularPatterns(dirPatterns.map(q => ({ stops: q.stops.map(st => st.stopId), trips: tripsPerShape.get(q.id) ?? 0 })));
+  const mainStops = stopOrder.get(d)!;
+  patternsV3[String(d)] = regular
+    .map(q => ({ main: q.stops.length === mainStops.length && q.stops.every((id, i) => id === mainStops[i]), trips: q.trips, stops: q.stops.map(id => ({ stopId: id, name: stopsById.get(id)?.stop_name ?? id })) }))
+    .sort((a, b) => Number(b.main) - Number(a.main) || b.trips - a.trips);
+}
+
 const v3 = {
   schema: 3,
   window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS },
@@ -1056,6 +1068,7 @@ const v3 = {
   // Everything above filtered to one time of day (keys: all, amPeak, midday, pmPeak, evening); `adherence`, `stops` and `buildup` are the 'all' entry.
   bands: bandsV3,
   runningTime: runningTimeV3,
+  patterns: patternsV3,
   extraWait: extraWaitV3,
   serviceDelivered: serviceDeliveredV3,
   weekly: weeklyV3,
