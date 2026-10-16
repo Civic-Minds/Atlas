@@ -2,7 +2,7 @@ import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, typ
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
-  LEGEND_TITLE, MIN_N, STEP_LABELS, delayText, keyStops, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopN, stopValue, stretchSpan, stripSummary,
+  LEGEND_TITLE, MIN_N, STEP_LABELS, delayText, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
 } from './routeStripModel';
 
@@ -119,6 +119,10 @@ export default function RouteStrip({ stops, mode, directionLabel, delaysStart, b
     return pickLabels({ xs, widths: labelText.map(t => labelWidth(t)), width, priority: stretch ? [stretch.from, stretch.to] : [], majors });
   }, [vertical, width, xs, labelText, stretch]);
 
+  // Labels wrap to show the full name, so the label row grows with the longest one shown.
+  const LABEL_LINE = 16;
+  const labelRows = Math.max(1, ...labels.map(i => labelLines(labelText[i])));
+
   const pickAt = (e: PointerEvent<HTMLDivElement>) => {
     if (count === 0) return;
     const x = e.clientX - e.currentTarget.getBoundingClientRect().left;
@@ -179,7 +183,7 @@ export default function RouteStrip({ stops, mode, directionLabel, delaysStart, b
         ) : width > 0 && count > 0 ? (
           <div
             className="relative touch-pan-y select-none"
-            style={{ height: MARK_H + LINE_H + 20 }}
+            style={{ height: MARK_H + LINE_H + 4 + labelRows * LABEL_LINE }}
             onPointerMove={e => { if (e.pointerType === 'mouse') pickAt(e); }}
             onPointerDown={pickAt}
             onPointerLeave={e => { if (e.pointerType === 'mouse') setActive(null); }}
@@ -216,12 +220,12 @@ export default function RouteStrip({ stops, mode, directionLabel, delaysStart, b
               return (
                 <span
                   key={i}
-                  className={`absolute truncate text-xs ${end ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-dim)]'} ${i === 0 ? 'text-left' : i === count - 1 ? 'text-right' : 'text-center'}`}
+                  className={`absolute whitespace-normal break-words text-xs leading-4 ${end ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-dim)]'} ${i === 0 ? 'text-left' : i === count - 1 ? 'text-right' : 'text-center'}`}
                   style={{ left, width: w, top: MARK_H + LINE_H }}
                 >{labelText[i]}</span>
               );
             })}
-            {activeStop && active != null && <Tooltip stop={activeStop} x={xs[active]} width={width} top={MARK_H + LINE_H + 22} />}
+            {activeStop && active != null && <Tooltip stop={activeStop} x={xs[active]} width={width} top={MARK_H + LINE_H + 6 + labelRows * LABEL_LINE} />}
           </div>
         ) : null}
       </div>
@@ -319,13 +323,13 @@ function CompactList({ stops, mode, steps, stretch, active, setActive, faded }: 
 }) {
   const named = useMemo(() => new Set(keyStops(stops, stretch)), [stops, stretch]);
   const last = stops.length - 1;
-  // Each row's top, so a tap maps to the nearest stop.
-  const tops = useMemo(() => { let y = 0; return stops.map((_, i) => { const t = y; y += named.has(i) ? ROW_NAMED : ROW_DOT; return t; }); }, [stops, named]);
   const height = (i: number) => (named.has(i) ? ROW_NAMED : ROW_DOT);
+  // A tap picks the stop whose row centre is nearest (rows with long names wrap, so measure them).
   const pick = (e: PointerEvent<HTMLDivElement>) => {
-    const y = e.clientY - e.currentTarget.getBoundingClientRect().top;
+    const y = e.clientY;
+    const rows = [...e.currentTarget.children].map(el => el.getBoundingClientRect());
     let best = 0;
-    tops.forEach((t, i) => { if (Math.abs(t + height(i) / 2 - y) < Math.abs(tops[best] + height(best) / 2 - y)) best = i; });
+    rows.forEach((r, i) => { if (Math.abs(r.top + r.height / 2 - y) < Math.abs(rows[best].top + rows[best].height / 2 - y)) best = i; });
     setActive(active === best ? null : best);
   };
   const activeStop = active != null ? stops[active] : null;
@@ -337,7 +341,7 @@ function CompactList({ stops, mode, steps, stretch, active, setActive, faded }: 
           const inStretch = stretch != null && i >= stretch.from && i <= stretch.to;
           const dot = isNamed ? 11 : 5;
           return (
-            <div key={`${s.stopId}-${i}`} className="relative flex items-center" style={{ height: height(i) }}>
+            <div key={`${s.stopId}-${i}`} className="relative flex items-center" style={{ minHeight: height(i) }}>
               <span className="pointer-events-none absolute left-[19px] w-0.5 bg-[var(--text-dim)] opacity-40" style={{ top: i === 0 ? '50%' : 0, bottom: i === last ? '50%' : 0 }} />
               {inStretch && <span className="pointer-events-none absolute left-0 w-0.5 bg-[var(--text-secondary)]" style={{ top: i === stretch!.from ? '50%' : 0, bottom: i === stretch!.to ? '50%' : 0 }} />}
               {inStretch && (i === stretch!.from || i === stretch!.to) && <span className="pointer-events-none absolute left-0 top-1/2 h-0.5 w-3 bg-[var(--text-secondary)]" />}
@@ -347,7 +351,7 @@ function CompactList({ stops, mode, steps, stretch, active, setActive, faded }: 
               />
               {isNamed && (
                 <span className="ml-10 flex min-w-0 flex-1 items-baseline gap-2">
-                  <span className={`min-w-0 flex-1 truncate text-sm ${i === 0 || i === last || inStretch ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>
+                  <span className={`min-w-0 flex-1 break-words py-0.5 text-sm leading-5 ${i === 0 || i === last || inStretch ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>
                   <span className={`shrink-0 text-xs ${faded(s) ? 'text-[var(--text-dim)]' : 'text-[var(--text-secondary)]'}`}>{valueText(s, mode)}</span>
                 </span>
               )}

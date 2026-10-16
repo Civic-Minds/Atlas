@@ -88,9 +88,14 @@ export function shortStopName(name: string): string {
   return s;
 }
 
-/** Rough width of a label in px at 12px Inter, capped at `maxPx` (longer labels are cut with an ellipsis). */
+/** Rough width of a label in px at 12px Inter, capped at `maxPx` (longer labels wrap onto more lines, see labelLines). */
 export function labelWidth(text: string, maxPx = 120): number {
   return Math.min(maxPx, Math.ceil(text.length * 6.4) + 4);
+}
+
+/** How many lines a label takes when wrapped at `maxPx` (rough: words do not split evenly, so allow a little slack). */
+export function labelLines(text: string, maxPx = 120): number {
+  return Math.max(1, Math.ceil((Math.ceil(text.length * 6.4) + 4) / (maxPx - 12)));
 }
 
 export interface LabelCandidate {
