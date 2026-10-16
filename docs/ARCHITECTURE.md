@@ -67,6 +67,8 @@ are no longer in the repository.
 
 ## Live polling: current and planned surfaces
 
+How the Live route page measures delay, bunching, run time and the rest: [product/LIVE_METHOD.md](product/LIVE_METHOD.md).
+
 ### 1. Live UI and feed configuration (currently gated off)
 
 The Live Vehicles UI and agency feed configuration remain in the repository, but the
