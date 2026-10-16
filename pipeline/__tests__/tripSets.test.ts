@@ -351,6 +351,7 @@ describe('route roll-up (rule 1)', () => {
     allDay: value,
     middayWait: value,
     midday: { hasReading: true, runs: true, wait: value },
+    limitedOnly: false,
     frequent: false,
     research: { daytime15: false, daytime30: false, extended15: false, extended30: false },
   }) as any;
@@ -555,5 +556,17 @@ describe('step 6: a night route keeps an all-day value (phase 2 overnight fallba
   it('TTC 320 Weekday night reads its overnight cadence all day, as its headline does', async () => {
     const r = await run('ttc-320-weekday-night');
     expect(row(r, '320', 'Weekday').routeAllDayHeadway).toBeLessThan(60);
+  });
+});
+
+describe('step 6: a time-limited or rush-hour-only route has no all-day value (#720 classes)', () => {
+  it('OC Transpo 226 (11 peak trips) reads no all-day value instead of every 18', async () => {
+    const r = await run('octranspo-226-weekday');
+    const rows = r.rows.filter(p => p.routeShortName === '226' && p.day === 'Weekday');
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.every(p => p.routeAllDayHeadway === 999999)).toBe(true);
+    expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 60)).toBe(false);
+    // Its peak service still reads.
+    expect(routePassesHeadwayFilter(rows, 'pmPeak', 'Weekday', 30)).toBe(true);
   });
 });

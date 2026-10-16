@@ -90,9 +90,12 @@ describe('a day whose only service is the previous night\'s tail (#718)', () => 
     // A tail day publishes no stop metrics of its own: the feature stays in partialWeekdayFeatures
     // (a misbound else in #720 dropped it, and the stop pass then wrote stop coverage for Sunday).
     expect(sunday[0].stopPeriodCoverageHeadways).toBeUndefined();
-    // Saturday has its own evening service and keeps its tier.
+    // Saturday has its own evening service and keeps its tier. It runs 17:00-23:59 only, so phase 2
+    // classes it time-limited and it has no all-day value (step 6, OC Transpo 226 rule): it passes
+    // the evening at 30, not all day.
     expect(features.find(p => p.day === 'Saturday').tier).toBe('30');
-    expect(passes(features, 'Saturday', 'all', 30)).toBe(true);
+    expect(passes(features, 'Saturday', 'evening', 30)).toBe(true);
+    expect(passes(features, 'Saturday', 'all', 30)).toBe(false);
   });
 
   it('leaves a 24-hour route alone', async () => {

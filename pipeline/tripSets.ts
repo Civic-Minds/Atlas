@@ -94,6 +94,12 @@ export interface DirectionStretches {
    */
   disconnected?: boolean;
   /**
+   * Phase 2 classes every pattern of the direction limited (#720: time-limited, rush-hour-only), so
+   * it has no all-day value. Set by the caller: phase 2 classes a direction's main patterns only,
+   * and its variant trips carry no class of their own.
+   */
+  limitedOnly?: boolean;
+  /**
    * The same direction built from only the trips that run in the 2-5am window (nightOnlyTrips):
    * the night version of the route, judged when the daytime main stretch has no night service
    * (Ryan, 2026-10-15: night service on part of the route counts, on the part it runs).
@@ -417,6 +423,7 @@ export interface DirectionRollup {
   allDay: number | null;
   /** Step 6 shadow: the main stretch's midday wait (#899 cap input), null with no midday service. */
   middayWait: number | null;
+  limitedOnly: boolean;
   /** Step 6: the #899 inputs, as worstDirection.ts reads them, on the main stretch. */
   midday: { hasReading: boolean; runs: boolean; wait: number | null };
   /** Step 6 shadow: Frequent Service (7-19 every 15, no gap) on the main stretch and every tail running then. */
@@ -499,7 +506,9 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   const researchOf = frequentStretches.map(st => computeResearchFrequentService([...st.times]));
   return {
     period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',
-    allDay: allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
+    // A direction phase 2 classes time-limited or rush-hour-only (#720) has no all-day value.
+    allDay: !d.limitedOnly && allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
+    limitedOnly: d.limitedOnly === true,
     middayWait: main.midday.coverage,
     midday: (() => {
       // The #899 rule unchanged: a midday reading with a wait under three hours, or a wait of at
@@ -575,7 +584,12 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     night60: complete && known.every(d => d.night60),
     nightPartial30: complete && known.every(d => d.night30) && known.some(d => d.nightPartial30),
     nightPartial60: complete && known.every(d => d.night60) && known.some(d => d.nightPartial60),
-    allDay: complete && known.every(d => d.allDay != null) ? Math.max(...known.map(d => d.allDay!)) : null,
+    // A limited direction (#720) is skipped, as a rush-hour-only direction beside an all-day one
+    // never decides the route; a route with only limited directions has no all-day value.
+    allDay: (() => {
+      const allDayDirs = known.filter(d => !d.limitedOnly);
+      return complete && allDayDirs.length > 0 && allDayDirs.every(d => d.allDay != null) ? Math.max(...allDayDirs.map(d => d.allDay!)) : null;
+    })(),
     middayWait: complete && known.every(d => d.middayWait != null) ? Math.max(...known.map(d => d.middayWait!)) : null,
     middayCap: (() => {
       // #899 as worstDirection.ts applies it: some directions run at midday and some do not, the

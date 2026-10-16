@@ -3021,6 +3021,15 @@ export async function processGtfsBuffer(
       if (result.serviceClass === 'regular' && !result.rushHourOnly) continue;
       limitedPatterns.add(`${result.route}::${result.dir}::${result.day}::${result.headsign ?? ''}::${result.shapeId ?? ''}`);
     }
+    // A direction phase 2 classes with no regular pattern is limited throughout (OC Transpo 226:
+    // 11 peak trips) and gets no all-day value.
+    const classedDirs = new Set<string>();
+    const regularDirs = new Set<string>();
+    for (const result of results) {
+      const dirKey = `${result.route}::${result.dir}::${result.day}`;
+      classedDirs.add(dirKey);
+      if (result.serviceClass === 'regular' && !result.rushHourOnly) regularDirs.add(dirKey);
+    }
     const tripIsLimited = (tripKey: string, dayType: string): boolean => {
       const trip = tripById.get(tripKey.split('@')[0]);
       if (!trip) return false;
@@ -3042,6 +3051,11 @@ export async function processGtfsBuffer(
         return stop ? [stop.lat, stop.lon] : undefined;
       };
       const stretches = directionStretches(gKey, directionTrips, coord);
+      const dirKeys = new Set(directionTrips.map(t => {
+        const trip = tripById.get(t.tripId.split('@')[0]);
+        return trip ? `${trip.route_id}::${String(trip.direction_id ?? '0').trim() || '0'}::${dayType}` : null;
+      }).filter((k): k is string => k != null && classedDirs.has(k)));
+      if (dirKeys.size > 0 && [...dirKeys].every(k => !regularDirs.has(k))) stretches.limitedOnly = true;
       // The night version (Ryan, 2026-10-15): the same direction from its 2-5am trips only.
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
