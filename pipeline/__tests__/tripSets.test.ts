@@ -608,10 +608,12 @@ describe('step 6 review: all-day value and limited service from the stretch, not
     expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 30)).toBe(true);
     expect(rows.some(p => isLimitedService(p))).toBe(false);
   });
-  it('TTC 133 is not Frequent Service: southbound at Centenary starts 9:04, northbound the Centenary tail ends 14:53', async () => {
-    const rows = routeRows(await run('ttc-119-133-336-weekday', 'ttc'), '133');
-    expect(rows[0].stretchFrequentService).toBe(false);
-    expect(rows.some(p => p.frequentService)).toBe(false);
+  it('TTC 133 is Frequent Service on the published feed: every main stretch and tail runs at least every 14, 7:00-19:00', async () => {
+    // Cut from the R2 archive the reprocess reads (ttc 20261031-79294c53): southbound the main stretch
+    // is read at Neilson and Ellesmere (1379), its Centenary pattern has no Centenary Hospital Loop.
+    const rows = routeRows(await run('ttc-133-weekday-r2', 'ttc'), '133');
+    expect(rows[0].stretchFrequentService).toBe(true);
+    expect(rows.some(p => p.frequentService)).toBe(true);
   });
   it('night routes keep an all-day value by phase 2\'s overnight fallback, the slower branch deciding (TTC 300, 336, 337)', async () => {
     const r = await run('ttc-119-133-336-weekday', 'ttc');
@@ -654,5 +656,13 @@ describe('step 6 review: all-day value and limited service from the stretch, not
     const rows = r_(await run('go-88-saturday', 'go'), '88', 'Saturday');
     expect(rows.some(p => p.routeHasLimitedDirection === true)).toBe(false);
     expect(rows[0].routeAllDayHeadway).toBeLessThan(999999);
+  });
+  it('TransLink 748 Weekday and 749 Saturday (about every 2 h, three midday trips each way) both keep an all-day value', async () => {
+    const weekday = routeRows(await run('translink-748-weekday', 'translink'), '748');
+    expect(weekday.some(p => p.routeHasLimitedDirection === true)).toBe(false);
+    expect(weekday[0].routeAllDayHeadway).toBeLessThan(999999);
+    const saturday = r_(await run('translink-749-saturday', 'translink'), '749', 'Saturday');
+    expect(saturday.some(p => p.routeHasLimitedDirection === true)).toBe(false);
+    expect(saturday[0].routeAllDayHeadway).toBeLessThan(999999);
   });
 });

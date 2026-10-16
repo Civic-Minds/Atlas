@@ -29,6 +29,9 @@ Each folder is one route's trips on the services active on one date, cut from th
 | miway-45-weekday | `_feeds/miway/20261220-fresh.zip` | 2026-10-21 | 45 |
 | translink-321-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | 321 |
 | go-88-saturday | `_feeds/go/20261127-fresh.zip` | 2026-10-24 | 88 |
+| ttc-133-weekday-r2 | R2 `gtfs/archive/ttc/20261031-79294c53420b9859.zip` (the reprocess source; differs from `_feeds/ttc/20261031-fresh.zip`) | 2026-10-21 | 133 |
+| translink-748-weekday | R2 `gtfs/archive/translink/20270103-ac5f83a35d4c7906.zip` | 2026-10-21 | 748 |
+| translink-749-saturday | same | 2026-10-24 | 749 |
 | octranspo-226-weekday | `_feeds/octranspo/20261109-fresh.zip` | 2026-10-21 | 226 |
 | cta-9-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 9 |
 | cta-77-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 77 |
