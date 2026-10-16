@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
-import { dateRangeText, rankStops, runTimeStretchLabel, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import DataTable from './components/ui/DataTable';
@@ -40,7 +40,7 @@ function Delta({ k }: { k: Kpi }) {
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.</p>;
-  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3))} caption={`${weekCaption(w)} ${NOISE_RULE}`} />;
+  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), runTimeTileStretch(v3.runningTime?.stretch, n => shortStopName(titleCase(n))))} caption={`${weekCaption(w)} ${NOISE_RULE}`} />;
 }
 
 /** The tiles row itself: the route dashboard and the agency dashboard show their figures the same way. */

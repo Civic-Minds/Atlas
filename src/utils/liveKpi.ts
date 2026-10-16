@@ -49,7 +49,8 @@ export function kpiDelta(key: CompareKey, now: number | null, before: number | n
 export interface DailyValues { late: readonly number[]; delivered: readonly number[] }
 
 /** The tiles that have a figure this week (a measure with nothing behind it is left out, not shown as a dash). */
-export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = { late: [], delivered: [] }): Kpi[] {
+/** `runStretch`: what the run-time tile measures ("over 7 stops, Humber Loop to Park Lawn"); null for an older file. */
+export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = { late: [], delivered: [] }, runStretch: string | null = null): Kpi[] {
   const t = w.thisWeek, l = w.lastWeek;
   const nThis = t.healthyDates.length, nLast = l.healthyDates.length;
   const mk = (key: CompareKey, label: string, value: string, sub: string, n: number, unit: string, nLast: number | null, delta: Kpi['delta'], last: string | null): Kpi => ({ key, label, value, sub, n, unit, nLastWeek: nLast, delta, lastWeekText: last });
@@ -57,7 +58,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   const tiles = [
     mk('late', 'Late', t.late ? pct0(t.late.share) : '–', 'of departures 5.5+ min late', t.late?.n ?? 0, 'departures', l.late?.n ?? null,
       compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, dailyNoise(daily.late, nThis, nLast)) : null, l.late ? pct0(l.late.share) : null),
-    mk('tripTime', 'Run time', t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : '–', t.tripTime ? `timetable ${Math.round(t.tripTime.scheduledMin)} min` : 'no full trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
+    mk('tripTime', 'Run time', t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : '–', t.tripTime ? `${runStretch ? `${runStretch}; ` : ''}timetable ${Math.round(t.tripTime.scheduledMin)} min` : 'too few trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
       compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false) : null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null),
     mk('extraWait', 'Extra wait', t.extraWait ? `${clean(t.extraWait.minutes)} min` : '–', 'longer than scheduled', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
       compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),

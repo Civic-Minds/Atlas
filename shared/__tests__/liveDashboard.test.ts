@@ -125,3 +125,14 @@ describe('week-change colouring (one rule for the dashboard and the full analysi
     expect(weekChangeTone('delivered', 0.96, 0.99, false)).toMatchObject({ tone: 'worse' });
   });
 });
+
+describe('run-time stretch wording', () => {
+  const st = (stops: number, from: string, to: string) => ({ fromStopId: 'a', toStopId: 'b', fromName: from, toName: to, stops, fullRoute: false, mainPatternTrips: 0, trips: 10 });
+  it('names the stretch on the tile and the section, so it never reads as the whole route', async () => {
+    const { runTimeTileStretch, runTimeStretchLabel } = await import('../liveDashboard');
+    expect(runTimeTileStretch({ '0': st(7, 'Humber Loop', 'Park Lawn'), '1': st(5, 'Park Lawn', 'Stephen Dr') })).toBe('over 5–7 stops, Humber Loop to Park Lawn');
+    expect(runTimeTileStretch({ '0': st(22, 'Sackville', 'Dufferin') })).toBe('over 22 stops, Sackville to Dufferin');
+    expect(runTimeTileStretch(undefined)).toBeNull();
+    expect(runTimeStretchLabel(st(7, 'Humber Loop', 'Park Lawn'))).toBe('Run time over 7 stops, Humber Loop to Park Lawn, all trips');
+  });
+});

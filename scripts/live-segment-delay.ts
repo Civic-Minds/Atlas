@@ -23,7 +23,7 @@ import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type Run
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
-import { mainStretchStops, reliableStretch } from '../shared/mainStretch.js';
+import { mainStretchStops, reliableStretch, stationOrLoop } from '../shared/mainStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 
 const args: Record<string, string> = {};
@@ -679,6 +679,19 @@ for (const { svcDate, trip, base } of tripInstanceList) {
     statusByStop.set(k, m);
   });
 }
+// Any pattern (however few trips) that ends at a station or loop makes every stop of that station or loop a terminal,
+// so a car waiting in another bay of the same station is never read as delay or a hold.
+const terminalPlaces = new Set<string>();
+for (const p of patterns.values()) {
+  for (const st of [p.stops[0], p.stops[p.stops.length - 1]]) {
+    const place = st ? stationOrLoop(stopsById.get(st.stopId)?.stop_name ?? '') : null;
+    if (place) terminalPlaces.add(place);
+  }
+}
+for (const p of patterns.values()) for (const st of p.stops) {
+  const place = stationOrLoop(stopsById.get(st.stopId)?.stop_name ?? '');
+  if (place && terminalPlaces.has(place)) terminalStops.add(st.stopId);
+}
 // Ends of minor scheduled patterns (e.g. "to Roncesvalles and Queen"): waits there are
 // planned layovers, not holds, so they're flagged separately from the main terminals.
 const turnbackStops = new Set<string>();
@@ -852,7 +865,7 @@ for (const p of busiest) if (!mainPatternId.has(p.directionId)) mainPatternId.se
 const mainPatternRunTimes = runTimes.filter(r => mainPatternId.get(r.directionId) === r.patternId);
 // Run time over each direction's main stretch (the stops every regular pattern serves, so short turns count too),
 // trimmed at either end to stops whose departures are measured reliably, against the timetable over the same stops.
-const stretchInfo: Record<string, { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; fullRoute: boolean; mainPatternTrips: number; trips: number }> = {};
+const stretchInfo: Record<string, { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; routeStops: number; fullRoute: boolean; mainPatternTrips: number; trips: number }> = {};
 const mainRunTimes: RunTimeRow[] = [];
 for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
@@ -876,7 +889,7 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   }
   const longest = dirPatterns.reduce<Pattern | null>((x, y) => (!x || y.stops.length > x.stops.length ? y : x), null);
   stretchInfo[String(d)] = {
-    fromStopId: a, toStopId: b, fromName: stopInfo(a).name, toName: stopInfo(b).name, stops: stretch.length,
+    fromStopId: a, toStopId: b, fromName: stopInfo(a).name, toName: stopInfo(b).name, stops: stretch.length, routeStops: longest?.stops.length ?? stretch.length,
     fullRoute: !!longest && longest.stops[0]?.stopId === a && longest.stops[longest.stops.length - 1]?.stopId === b,
     mainPatternTrips: mainPatternRunTimes.filter(r => r.directionId === d && inWindow.has(r.date)).length,
     trips: mainRunTimes.filter(r => r.directionId === d && inWindow.has(r.date)).length,

@@ -37,10 +37,22 @@ export interface DashboardBuildup {
   start: DashboardStretch | null; biggest: DashboardStretch | null; stretches: DashboardStretch[];
 }
 /** The run of stops every regular pattern serves, trimmed to stops measured reliably; short turns count. */
-export interface RunTimeStretch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; fullRoute: boolean; mainPatternTrips: number; trips: number }
+export interface RunTimeStretch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; /** Stops on the longest pattern (older files: absent). */ routeStops?: number; fullRoute: boolean; mainPatternTrips: number; trips: number }
 /** "Run time from Spadina Station to Queens Quay, all trips", or null for an older file. */
 export function runTimeStretchLabel(s: RunTimeStretch | undefined, nice: (name: string) => string = x => x): string | null {
-  return s ? `Run time from ${nice(s.fromName)} to ${nice(s.toName)}, all trips` : null;
+  return s ? `Run time over ${s.stops} stops, ${nice(s.fromName)} to ${nice(s.toName)}, all trips` : null;
+}
+/**
+ * The run-time tile's subject, so it never reads as the whole route: "over 7 stops, Humber Loop to Park Lawn".
+ * Both directions in one tile: the first direction's ends, and the stop count of each when they differ.
+ */
+export function runTimeTileStretch(stretch: Record<string, RunTimeStretch> | undefined, nice: (name: string) => string = x => x): string | null {
+  const dirs = Object.keys(stretch ?? {}).sort();
+  if (!stretch || !dirs.length) return null;
+  const first = stretch[dirs[0]];
+  const counts = [...new Set(dirs.map(d => stretch[d].stops))].sort((a, b) => a - b);
+  const n = counts.length > 1 ? `${counts[0]}–${counts[counts.length - 1]}` : String(counts[0]);
+  return `over ${n} stops, ${nice(first.fromName)} to ${nice(first.toName)}`;
 }
 export interface RunTimeFigures { n: number; scheduledMin: number; typicalMin: number; p90Min: number; overMin: number }
 export interface WeekMetrics {

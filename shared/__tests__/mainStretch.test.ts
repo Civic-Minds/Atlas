@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mainStretchStops, reliableStretch } from '../mainStretch';
+import { mainStretchStops, reliableStretch, stationOrLoop } from '../mainStretch';
 
 describe('mainStretchStops', () => {
   it('keeps the stops every regular pattern serves, so a common short turn sets the stretch', () => {
@@ -24,5 +24,15 @@ describe('reliableStretch', () => {
   });
   it('gives null when fewer than two stops are left', () => {
     expect(reliableStretch(['A', 'E'], s => cov[s])).toBeNull();
+  });
+});
+
+describe('stationOrLoop', () => {
+  it('puts every bay of a station, and a loop, under one place; ordinary stops are none', () => {
+    expect(stationOrLoop('St Clair West Station at Bay 3')).toBe('st clair west station');
+    expect(stationOrLoop('St Clair West Station at Bay 4')).toBe('st clair west station');
+    expect(stationOrLoop('Exhibition Loop at Manitoba Dr')).toBe('exhibition loop');
+    expect(stationOrLoop('Dundas St West at University Ave - St Patrick Station')).toBeNull();
+    expect(stationOrLoop('Queen St East at Neville Park Blvd')).toBeNull();
   });
 });

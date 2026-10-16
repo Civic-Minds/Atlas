@@ -46,3 +46,13 @@ export function reliableStretch(stops: readonly string[], coverage: (stopId: str
   while (b > a && coverage(stops[b]) < minShare) b--;
   return b > a ? stops.slice(a, b + 1) : null;
 }
+
+/**
+ * The station or loop a stop belongs to ("St Clair West Station at Bay 3" -> "st clair west station"), or null when
+ * the stop is not at a station or loop. Every stop of a station or loop that ends any pattern is a terminal: bays of
+ * the same station count, so a car waiting in another bay is never read as delay.
+ */
+export function stationOrLoop(stopName: string): string | null {
+  const place = stopName.split(/\s+at\s+/i)[0].trim().toLowerCase();
+  return /\b(station|loop)\b/.test(place) ? place : null;
+}
