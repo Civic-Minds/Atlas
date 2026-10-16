@@ -6,7 +6,7 @@ import { dateRangeText, NOISE_RULE } from '../shared/liveDashboard';
 import type { LiveAgencyResponse } from '../local-api/live-agency';
 import { liveDashboardPath } from './hooks/useLiveDashboard';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
-import { weekCaption } from './utils/liveKpi';
+import { weekCaption, weekRangeLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import { shortStopName } from './utils/stopLabel';
@@ -37,9 +37,11 @@ const sortValue: Record<Sort, (r: AgencyRouteRow) => number> = {
   delivered: r => -(r.deliveredShare ?? 2),
 };
 
+/** Fetches nothing while `agency` is empty (Live switched off). */
 function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse } {
   const [state, setState] = useState<{ kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse }>({ kind: 'loading' });
   useEffect(() => {
+    if (!agency) return;
     let live = true;
     fetch(`/api/live-agency?agency=${encodeURIComponent(agency)}`)
       .then(r => r.json() as Promise<LiveAgencyResponse>)
@@ -151,7 +153,8 @@ function StretchTable({ agency, rows, caption, valueHeader, format }: { agency: 
 
 export default function LiveAgencyPage() {
   const { agency = '' } = useParams();
-  const state = useLiveAgency(agency);
+  // Live off: no request at all, only the notice.
+  const state = useLiveAgency(FEATURES.live ? agency : '');
   if (!FEATURES.live) return <LiveOffNotice />;
   const name = agency.toUpperCase();
   const back = <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink>;
@@ -182,7 +185,7 @@ export default function LiveAgencyPage() {
         </p>
         <ErrorBoundary>
           {w && tiles.length
-            ? <KpiTiles tiles={tiles} caption={`Each figure counts every departure, trip or gap on these routes, so busy routes weigh more than quiet ones. ${weekCaption({ ...w, health: [] })} ${NOISE_RULE}`} />
+            ? <KpiTiles tiles={tiles} caption={weekRangeLine({ ...w, health: [] })} />
             : <p className="mt-5 text-sm text-[var(--text-muted)]">This week against last week is not in the analysis files yet. Rebuild them with npm run live:analyze.</p>}
         </ErrorBoundary>
 
@@ -205,7 +208,8 @@ export default function LiveAgencyPage() {
         <Section id="agency-method" title="How this is measured">
           <ul className="mt-3 max-w-3xl list-disc space-y-1 pl-5 text-sm leading-6 text-[var(--text-muted)]">
             <li>Each route is measured the same way as on its own page: delay is when the car left each stop against the timetable, worked out from where it was seen about once a minute.</li>
-            <li>Network figures add up every departure, trip or gap on the analysed routes; they are not an average of route figures.</li>
+            <li>Network figures add up every departure, trip or gap on the analysed routes; they are not an average of route figures, so busy routes weigh more than quiet ones.</li>
+            {w && <li>This week compared with last week: {weekCaption({ ...w, health: [] })} {NOISE_RULE}</li>}
             <li>Covered: {coverage}. {s.held.length ? `Held back: ${s.held.map(h => `${h.route} (${h.reason})`).join(' ')}` : ''}</li>
             <li>Built {new Date(s.generatedAt).toLocaleString()}.</li>
           </ul>

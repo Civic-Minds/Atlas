@@ -142,6 +142,8 @@ export interface Stretch {
   growShare: number;
   /** Median delay at the second stop and its 10th-90th percentile range, minutes. */
   medianDelayMin: number;
+  /** Touches a terminal: drawn, but left out of where delay builds up and of the climb (loop and layover time). */
+  terminal?: boolean;
   p10DelayMin: number;
   p90DelayMin: number;
 }
@@ -197,10 +199,11 @@ export function delayBuildup(runs: readonly RunDelays[], order: ReadonlyMap<numb
         medianAddedMin: median(added)!, addedShare: added.filter(x => x > ADDED_DELAY_MIN).length / added.length,
         growShare: added.filter(x => x >= GROW_MIN).length / added.length,
         medianDelayMin: median(atB)!, p10DelayMin: percentile(atB, 0.1)!, p90DelayMin: percentile(atB, 0.9)!,
+        ...(atTerminal(a) || atTerminal(b) ? { terminal: true } : {}),
       });
     }
     const enough = stretches.filter(s => s.n >= MIN_SAMPLES);
-    const nameable = enough.filter(s => !atTerminal(s.fromStopId) && !atTerminal(s.toStopId));
+    const nameable = enough.filter(s => !s.terminal);
     // The delay before each stretch is what the previous stretch left it at (or the route's starting delay).
     let forms: Stretch | null = null;
     for (const s of nameable) {
@@ -213,8 +216,13 @@ export function delayBuildup(runs: readonly RunDelays[], order: ReadonlyMap<numb
       const after = stretches.slice(i + 1, end);
       if (after.every(f => f.n < MIN_SAMPLES || f.medianDelayMin >= before + 0.5 * s.medianAddedMin) && (!forms || s.medianAddedMin > forms.medianAddedMin)) forms = s;
     }
-    const startDelay = first.length >= MIN_SAMPLES ? median(first)! : enough.length ? enough[0].medianDelayMin - enough[0].medianAddedMin : null;
-    const lastStretch = enough.length ? enough[enough.length - 1] : null;
+    // The climb runs from where the first non-terminal stretch starts to where the last one ends: the run out of and into
+    // a terminal is loop and layover time, not delay.
+    const firstStretch = nameable.length ? nameable[0] : null;
+    const startDelay = firstStretch && (firstStretch !== enough[0] || first.length < MIN_SAMPLES)
+      ? firstStretch.medianDelayMin - firstStretch.medianAddedMin
+      : first.length >= MIN_SAMPLES ? median(first)! : null;
+    const lastStretch = nameable.length ? nameable[nameable.length - 1] : null;
     const climbMin = startDelay != null && lastStretch ? lastStretch.medianDelayMin - startDelay : null;
     out.push({
       kind: climbMin == null && !forms ? null : forms ? 'forms' : (climbMin ?? 0) >= GRADUAL_MIN ? 'gradual' : 'none',

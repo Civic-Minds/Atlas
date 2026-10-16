@@ -82,6 +82,10 @@ describe('delayBuildup (B3)', () => {
     expect(d.start).toBeNull();
     expect(d.biggest?.toStopId).not.toBe('D');
     expect(d.stretches).toHaveLength(3);
+    // The terminal stretch is drawn but flagged, and left out of the climb: this route does not build up delay.
+    expect(d.stretches[2].terminal).toBe(true);
+    expect(d.climbMin).toBeCloseTo(0.4);
+    expect(d.kind).toBe('none');
   });
 
   it('counts only runs seen at both stops of a stretch', () => {

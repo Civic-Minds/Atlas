@@ -130,9 +130,22 @@ describe('run-time stretch wording', () => {
   const st = (stops: number, from: string, to: string) => ({ fromStopId: 'a', toStopId: 'b', fromName: from, toName: to, stops, fullRoute: false, mainPatternTrips: 0, trips: 10 });
   it('names the stretch on the tile and the section, so it never reads as the whole route', async () => {
     const { runTimeTileStretch, runTimeStretchLabel } = await import('../liveDashboard');
-    expect(runTimeTileStretch({ '0': st(7, 'Humber Loop', 'Park Lawn'), '1': st(5, 'Park Lawn', 'Stephen Dr') })).toBe('over 5–7 stops, Humber Loop to Park Lawn');
+    expect(runTimeTileStretch({ '0': st(7, 'Humber Loop', 'Park Lawn'), '1': st(5, 'Park Lawn', 'Stephen Dr') })).toBe('over 5–7 stops: Humber Loop to Park Lawn; Park Lawn to Stephen Dr');
     expect(runTimeTileStretch({ '0': st(22, 'Sackville', 'Dufferin') })).toBe('over 22 stops, Sackville to Dufferin');
     expect(runTimeTileStretch(undefined)).toBeNull();
     expect(runTimeStretchLabel(st(7, 'Humber Loop', 'Park Lawn'))).toBe('Run time over 7 stops, Humber Loop to Park Lawn, all trips');
+  });
+});
+
+describe('build-up label with a terminal stretch', () => {
+  it('reads "stays about the same" when the only jump is the run into the end loop, with start and end figures from inside the route', async () => {
+    const { delayBuildup } = await import('../stopDelay');
+    const { buildupTakeaway } = await import('../liveDashboard');
+    const runs = Array.from({ length: 40 }, (_, k) => ({ date: '2026-10-01', directionId: 0, tripId: `t${k}`, stops: [0, 0.2, 0.4, 7.4].map((m, i) => ({ stopId: 'ABCD'[i], t: 0, hour: 8, delaySec: Math.round(m * 60) })) }));
+    const [d] = delayBuildup(runs, new Map([[0, ['A', 'B', 'C', 'D']]]), undefined, stop => stop === 'D');
+    const named = { ...d, forms: null, start: null, biggest: null, stretches: d.stretches.map(s => ({ ...s, fromName: s.fromStopId, toName: s.toStopId })) };
+    const text = buildupTakeaway(named as never);
+    expect(text).toMatch(/^Delay stays about the same from end to end/);
+    expect(text).not.toMatch(/7\.4/);
   });
 });

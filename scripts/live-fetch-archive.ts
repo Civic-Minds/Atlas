@@ -21,6 +21,11 @@ import { mapWithConcurrency } from '../local-api/concurrency';
 const BUCKET = 'atlas-live';
 
 /** Dates from --days, or every date from --from to --to (inclusive). */
+/** Letters, digits, dot, dash and underscore only, so a feed value can never reach outside the archive folder. */
+export function fileSafe(s: string): string {
+  return s.replace(/[^A-Za-z0-9._-]/g, '_').replace(/^\.+/, '');
+}
+
 export function datesFromArgs(args: Record<string, string | undefined>): string[] {
   if (args.days) return args.days.split(',').map(d => d.trim()).filter(Boolean);
   if (!args.from || !args.to) return [];
@@ -61,7 +66,7 @@ async function main() {
   mkdirSync(dir, { recursive: true });
 
   for (const day of days) {
-    const marker = resolve(dir, `.${agency}-${day}.all`);
+    const marker = resolve(dir, `.${fileSafe(agency)}-${fileSafe(day)}.all`);
     if (only == null && existsSync(marker) && args.force !== 'true') { console.log('skip', day); continue; }
     const keys: string[] = [];
     let token: string | undefined;
@@ -86,7 +91,8 @@ async function main() {
       if (!p) { failed++; continue; }
       for (const [route, line] of p) { const l = lines.get(route) ?? []; l.push(line); lines.set(route, l); }
     }
-    for (const [route, l] of lines) writeFileSync(resolve(dir, `${route}-${day}.jsonl`), l.join('\n'));
+    // Route ids and the day come from the feed and the command line: keep only safe characters in file names.
+    for (const [route, l] of lines) { const safe = fileSafe(route); if (safe) writeFileSync(resolve(dir, `${safe}-${fileSafe(day)}.jsonl`), l.join('\n')); }
     if (only == null && failed === 0) writeFileSync(marker, new Date().toISOString());
     console.log(day, keys.length, 'snapshots,', lines.size, 'routes', failed ? `, ${failed} snapshots failed (day not marked done)` : '', new Date().toISOString());
   }
