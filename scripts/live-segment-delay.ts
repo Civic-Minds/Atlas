@@ -819,11 +819,17 @@ function stopsAndBuildup(rs: readonly RunDelays[]) {
   // bar, RELIABLE_STOP_MIN_SHARE): where vehicles leave the drawn shape, only a few odd runs are timed and would rank.
   const due = new Map<string, number>();
   for (const r of rs) for (const st of new Set((timesByTrip.get(r.tripId) ?? []).map(x => x.stopId))) due.set(`${r.directionId}|${st}`, (due.get(`${r.directionId}|${st}`) ?? 0) + 1);
+  const tpCount = new Map<string, [number, number]>();
+  for (const r of rs) for (const st of r.stops) { const k = `${r.directionId}|${st.stopId}`; const c = tpCount.get(k) ?? [0, 0]; c[1]++; if (st.timepoint) c[0]++; tpCount.set(k, c); }
+  const tpShare = new Map([...tpCount].map(([k, [tp, all]]) => [k, all ? tp / all : 0]));
   const covered = (dir: number, stopId: string, n: number) => n >= RELIABLE_STOP_MIN_SHARE * (due.get(`${dir}|${stopId}`) ?? Infinity);
   const stops = stopDelayStats(rs).map(s => ({
     ...stopInfo(s.stopId), directionId: s.directionId, order: orderIndex(s.directionId, s.stopId), n: s.n,
     medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare),
     ranked: s.ranked && regularStops.has(`${s.directionId}|${s.stopId}`) && !repeatedStops.has(`${s.directionId}|${s.stopId}`) && covered(s.directionId, s.stopId, s.n),
+    // Where the timetable really schedules a time (most departures here are at timepoints); elsewhere its times are
+    // interpolated, so a delay there is not a measure of running against the timetable (LIVE_METHOD).
+    timepoint: (tpShare.get(`${s.directionId}|${s.stopId}`) ?? 0) >= 0.5,
   })).sort((a, b) => a.directionId - b.directionId || a.order - b.order);
   // B2 ranks by late share (5.5+ min late) among stops with enough departures; median and p90 sit beside it.
   for (const dir of new Set(stops.map(x => x.directionId))) {

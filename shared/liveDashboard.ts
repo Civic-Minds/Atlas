@@ -19,6 +19,8 @@ export interface AdherenceBlock {
 export interface DashboardStop {
   stopId: string; name: string; directionId: number; order: number; n: number;
   medianMin: number; p90Min: number; lateShare: number; earlyShare: number; ranked: boolean; lateRank?: number;
+  /** Most departures here are at a timepoint (the timetable's own time). Absent in older files. */
+  timepoint?: boolean;
 }
 export interface DashboardStretch {
   fromStopId: string; toStopId: string; fromName: string; toName: string;
