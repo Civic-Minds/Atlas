@@ -28,6 +28,8 @@ export interface RouteStripStop {
   bunchingN?: number;
   /** Measured poorly here (for example the 510's Union Station tunnel): drawn hatched and called less exact. */
   uncertain?: boolean;
+  /** False where the timetable's time is only approximate (not a timepoint; on the TTC, every stop but the trip ends). */
+  timepoint?: boolean;
 }
 
 /** A marked stretch, by the stop ids at its two ends. */
@@ -80,6 +82,15 @@ export function stepFor(mode: RouteStripMode, value: number | null): Step | null
   if (mode === 'delay' && value <= -EARLY_STEP_MIN) return 'early';
   const [a, b] = mode === 'delay' ? DELAY_STEP_LIMITS : BUNCHING_STEP_LIMITS;
   return value <= a ? 0 : value <= b ? 1 : 2;
+}
+
+/**
+ * A stop's step on this track. Early is shown only where the timetable really schedules a time (timepoints): elsewhere
+ * its times are approximate, so leaving before them is not early running and reads as on time (live-timepoint-method).
+ */
+export function stopStep(stop: RouteStripStop, mode: RouteStripMode): Step | null {
+  const step = stepFor(mode, stopValue(stop, mode));
+  return step === 'early' && stop.timepoint === false ? 0 : step;
 }
 
 const MINUS = '−';
@@ -203,7 +214,7 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
   const counts = new Map<Step, number>();
   let missing = 0;
   for (const s of stops) {
-    const step = stepFor(mode, stopValue(s, mode));
+    const step = stopStep(s, mode);
     if (step == null) missing++; else counts.set(step, (counts.get(step) ?? 0) + 1);
   }
   const what = mode === 'delay' ? 'Typical delay' : 'Share of gaps too short or too long';
@@ -218,7 +229,7 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
 export function stopDetail(stop: RouteStripStop): { name: string; lines: string[] } {
   const lines: string[] = [];
   if (stop.n > 0 && stop.delayMin != null) {
-    const usual = Math.abs(stop.delayMin) < 0.05 ? USUALLY_ON_TIME : usuallyOffBy(num(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
+    const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(num(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
     lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(pct(stop.lateShare))}` : usual);
   } else lines.push('Delay not measured');
   const bn = stop.bunchingN ?? stop.n;
@@ -262,6 +273,7 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
         n: s.n,
         bunchingN: b?.n ?? 0,
         uncertain: s.order < lessExact,
+        timepoint: s.timepoint,
       };
     });
   const buildup = bandData.buildup.find(b => b.directionId === directionId);

@@ -27,3 +27,16 @@ describe('early step (CIV-283)', () => {
     expect(stepFor('bunching', -0.5)).toBe(0);
   });
 });
+
+describe('early only at timed stops', () => {
+  it('shows 1+ min early as early at a timepoint, and as on time where the timetable time is approximate', async () => {
+    const { stopStep, stopDetail } = await import('../routeStripModel');
+    const s = { stopId: 'x', name: 'X', delayMin: -1.8, lateShare: 0.05, bunchingShare: null, n: 500 };
+    expect(stopStep({ ...s, timepoint: true }, 'delay')).toBe('early');
+    expect(stopStep({ ...s, timepoint: false }, 'delay')).toBe(0);
+    expect(stopStep({ ...s }, 'delay')).toBe('early'); // older files without the flag keep the early step
+    expect(stopStep({ ...s, delayMin: 4, timepoint: false }, 'delay')).toBe(2);
+    expect(stopDetail({ ...s, timepoint: false }).lines[0]).toBe('Usually on time · 5% late');
+    expect(stopDetail({ ...s, timepoint: true }).lines[0]).toBe('Usually 1.8 min early · 5% late');
+  });
+});

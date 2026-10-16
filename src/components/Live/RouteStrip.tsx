@@ -2,7 +2,7 @@ import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, typ
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
-  LEGEND_TITLE, MIN_N, delayText, legendSteps, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopN, stopValue, stretchSpan, stripSummary,
+  LEGEND_TITLE, MIN_N, delayText, legendSteps, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
 } from './routeStripModel';
 
@@ -99,7 +99,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
   const tableId = useId();
   const tracks: Track[] = useMemo(() => modes.map(mode => ({
     mode,
-    steps: stops.map(s => stepFor(mode, stopValue(s, mode))),
+    steps: stops.map(s => stopStep(s, mode)),
     stretch: mode === 'delay' ? stretchSpan(stops, delaysStart, 'delaysStart') : stretchSpan(stops, bunchingForms, 'bunchingForms'),
     faded: (s: RouteStripStop) => stopN(s, mode) > 0 && stopN(s, mode) < minN,
   })), [modes, stops, delaysStart, bunchingForms, minN]);
