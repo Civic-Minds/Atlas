@@ -52,9 +52,14 @@ export function kpiDelta(key: CompareKey, now: number | null, before: number | n
 /** Daily values for this week's days with good recordings, where the file has them. */
 export interface DailyValues { late: readonly number[]; delivered: readonly number[] }
 
+/** "2 min faster than the timetable", from the same whole minutes the tile and the Run time section show. */
+function runTimeCaption(typicalMin: number, scheduledMin: number): string {
+  const diff = Math.round(typicalMin) - Math.round(scheduledMin);
+  return diff === 0 ? 'same as the timetable' : `${Math.abs(diff)} min ${diff < 0 ? 'faster' : 'slower'} than the timetable`;
+}
+
 /** The tiles that have a figure this week (a measure with nothing behind it is left out, not shown as a dash). */
-/** `runStretch`: what the run-time tile measures ("over 7 stops, Humber Loop to Park Lawn"); null for an older file. */
-export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = { late: [], delivered: [] }, runStretch: string | null = null): Kpi[] {
+export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = { late: [], delivered: [] }): Kpi[] {
   const t = w.thisWeek, l = w.lastWeek;
   const nThis = t.healthyDates.length, nLast = l.healthyDates.length;
   const mk = (key: CompareKey, label: string, value: string, sub: string, n: number, unit: string, nLast: number | null, delta: Kpi['delta'], last: string | null): Kpi => ({ key, label, value, sub, n, unit, nLastWeek: nLast, delta, lastWeekText: last });
@@ -62,7 +67,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   const tiles = [
     mk('late', 'Late', t.late ? pct0(t.late.share) : '–', 'of departures left more than 5½ min late', t.late?.n ?? 0, 'departures', l.late?.n ?? null,
       compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, dailyNoise(daily.late, nThis, nLast), l.late ? pct0(l.late.share) : null) : null, l.late ? pct0(l.late.share) : null),
-    mk('tripTime', 'Run time', t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : '–', t.tripTime ? `${runStretch ? `${runStretch}; ` : ''}timetable ${Math.round(t.tripTime.scheduledMin)} min` : 'too few trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
+    mk('tripTime', 'Run time', t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : '–', t.tripTime ? runTimeCaption(t.tripTime.typicalMin, t.tripTime.scheduledMin) : 'too few trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
       compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false, null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null) : null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null),
     mk('extraWait', 'Extra wait', t.extraWait ? `${clean(t.extraWait.minutes)} min` : '–', 'longer wait than the timetable promises', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
       compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false, null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),

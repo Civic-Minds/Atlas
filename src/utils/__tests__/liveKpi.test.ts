@@ -27,6 +27,12 @@ describe('kpiTiles', () => {
     expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: 'up from 20% last week', tone: 'same' } });
     expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: 'down from 99.8% last week', tone: 'same' } });
   });
+  it('says how far the typical run time is from the timetable, in whole minutes', () => {
+    const run = (typicalMin: number, scheduledMin: number) => kpiTiles({ ...w, thisWeek: { ...w.thisWeek, tripTime: { n: 40, scheduledMin, typicalMin, overMin: 0 } } })[1].sub;
+    expect(run(30, 32)).toBe('2 min faster than the timetable');
+    expect(run(34.4, 32)).toBe('2 min slower than the timetable');
+    expect(run(32.2, 31.8)).toBe('same as the timetable');
+  });
   it('drops the change chips when the weeks are not comparable', () => {
     expect(kpiTiles({ ...w, comparable: false }).every(t => t.delta == null)).toBe(true);
     expect(weekCaption({ ...w, comparable: false })).toMatch(/Not enough days/);

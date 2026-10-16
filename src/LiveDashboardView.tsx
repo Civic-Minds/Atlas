@@ -41,7 +41,7 @@ function Delta({ k }: { k: Kpi }) {
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.')}</p>;
-  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), runTimeTileStretch(v3.runningTime?.stretch, n => shortStopName(titleCase(n))))} caption={weekRangeLine(w)} />;
+  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3))} caption={weekRangeLine(w)} />;
 }
 
 /** The week comparison explained, at the bottom of the page (the tiles carry only the two date ranges). */
