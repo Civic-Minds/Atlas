@@ -23,6 +23,7 @@ import { findSeoRoute } from '../shared/seo';
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
 const LiveRoutePage = React.lazy(() => import('./LiveRoutePage'));
 const LiveAgencyPage = React.lazy(() => import('./LiveAgencyPage'));
+const LiveToolPage = React.lazy(() => import('./LiveToolPage'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 const AreaPage = React.lazy(() => import('./AreaPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
@@ -78,6 +79,7 @@ ReactDOM.createRoot(rootElement).render(
             </>
           )}
           {/* Live is local-only: the route dashboard exists only where Live can run. */}
+          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency/tool" element={<LiveToolPage />} />}
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency/:route" element={<LiveRoutePage />} />}
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency" element={<LiveAgencyPage />} />}
           <Route path="/apps/night" element={<NightServiceRedirect />} />
