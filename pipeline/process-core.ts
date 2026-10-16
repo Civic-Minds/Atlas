@@ -3065,6 +3065,20 @@ export async function processGtfsBuffer(
       delete feature.properties.routeAllDayHeadway;
       delete feature.properties.routeMiddayCap;
     }
+    // D8: a period the route only covers part of (the feature's own first departure after the period's
+    // midpoint, or its last before it) is not steady, so the card stops reading an "every N" there.
+    // Only for route-days whose filter reads the stretch rollups (they apply the same midpoint test
+    // and ignore this flag); a partial-weekday route-day keeps today's flag, which its filter reads.
+    for (const feature of features) {
+      const p = feature.properties;
+      if (p.routeFilterHeadwayByPeriod === undefined) continue;
+      const steady = p.headwayByPeriodSustained as HeadwayByPeriodSustained | undefined;
+      const mid = p.headwayByPeriodSustainedMid as HeadwayByPeriodSustained | undefined;
+      if (!steady || !mid) continue;
+      for (const pk of Object.keys(steady) as PeriodKey[]) {
+        if (steady[pk] === true && mid[pk] === false) steady[pk] = false;
+      }
+    }
     // Step 6: "limited service" (the hide-limited toggle, routeHasLimitedDirection) reads the
     // stretches, as the all-day value does: a route has a limited direction only when a direction's
     // main stretch does not run at midday. Phase 2's per-pattern class marked TTC 134 limited (a

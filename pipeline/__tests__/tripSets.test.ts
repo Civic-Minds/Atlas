@@ -327,7 +327,7 @@ describe('night service on part of the route counts, on the part it runs (Ryan, 
 });
 
 describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
-  it('a dead start before about 4:09 is never sustained at the midpoint; today\'s flags are untouched', async () => {
+  it('a dead start before about 4:09 is never sustained at the midpoint; the row flag applies the midpoint test (D8)', async () => {
     const r = await run('yrt-viva-weekday', 'yrt');
     for (const route of ['blue', 'purple', 'orange', 'yellow']) {
       for (const dir of [0, 1]) {
@@ -338,7 +338,8 @@ describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
     }
     expect(row(r, 'yellow', 'Weekday', 0).headwayByPeriodSustained.overnight).not.toBe(true);
     expect(row(r, 'orange', 'Weekday', 1).headwayByPeriodSustained.overnight).toBe(true);
-    expect(row(r, 'purple', 'Weekday', 1).headwayByPeriodSustained.overnight).toBe(true);
+    // D8: the row's own flag now applies the midpoint test: purple dir 1's overnight starts too late.
+    expect(row(r, 'purple', 'Weekday', 1).headwayByPeriodSustained.overnight).toBe(false);
   });
 });
 
