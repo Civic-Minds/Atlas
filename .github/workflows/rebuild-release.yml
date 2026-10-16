@@ -113,7 +113,12 @@ jobs:
       - name: Install tippecanoe
         run: sudo apt-get install -y tippecanoe
 
+      # reprocess-derived-artifacts exits 1 when any agency is refused (expired or older-than-live
+      # zip, or a release gate flag), which is a normal outcome. continue-on-error keeps the run
+      # going; the summary step below decides whether anything really failed.
       - name: Reprocess every agency (dry run)
+        id: reprocess
+        continue-on-error: true
         run: |
           allow_args=()
           for pair in $ALLOW_INPUT; do allow_args+=(--allow "$pair"); done
@@ -129,7 +134,56 @@ jobs:
           CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
           GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
 
+      # Refused agencies are normal; only a crash (no report) or a "failed" agency is an error.
+      - name: Summarize the reprocess
+        id: summary
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import glob, json, os
+          out = os.environ['GITHUB_OUTPUT']
+          md = os.environ['GITHUB_STEP_SUMMARY']
+          path = 'tmp/derived-reprocess/report.json'
+          lines = ['## Rebuild dry run', '']
+          fatal = ''
+          if not os.path.exists(path):
+              lines.append('No report was written: the reprocess crashed before it finished. See the log.')
+              fatal = 'the reprocess crashed before writing a report'
+              open(out, 'a').write('report=false\n')
+          else:
+              open(out, 'a').write('report=true\n')
+              rep = json.load(open(path))
+              t = rep.get('totals', {})
+              rows = rep.get('agencies', [])
+              lines.append(f"**{t.get('processed', 0)} processed**, {t.get('refused', 0)} refused, {t.get('failed', 0)} failed, {t.get('skipped', 0)} skipped (of {t.get('targets', len(rows))} agencies).")
+              lines.append('')
+              lines.append('A refused agency keeps its live data: its zip is expired or older than live, or a release gate flag blocked it. That is a normal outcome. A failed agency is a real error.')
+              for status, title in (('failed', 'Failed (errors)'), ('refused', 'Refused (live data kept)')):
+                  sel = [r for r in rows if r.get('status') == status]
+                  if sel:
+                      lines += ['', f'### {title}: {len(sel)}', '', '| Agency | Reason |', '|---|---|']
+                      lines += [f"| {r['slug']} | {str(r.get('reason', '')).replace('|', '/')} |" for r in sel]
+              if t.get('failed', 0) > 0:
+                  fatal = f"{t['failed']} agencies failed"
+              flags = []
+              for f in sorted(glob.glob('tmp/release-diff/*.json')):
+                  try:
+                      flags += json.load(open(f)).get('flags', [])
+                  except Exception:
+                      pass
+              red = [x for x in flags if x.get('level') == 'red']
+              yellow = [x for x in flags if x.get('level') == 'yellow']
+              lines += ['', f'### Release gate: {len(red)} red, {len(yellow)} yellow flags', '']
+              if red:
+                  lines += ['| Agency | Flag | Detail | Allowed |', '|---|---|---|---|']
+                  lines += [f"| {x['slug']} | {x['flag']} | {str(x.get('message', '')).replace('|', '/')} | {'yes' if x.get('allowed') else 'no'} |" for x in red]
+              lines += ['', 'Yellow flags and the full diff are in the uploaded release-diff report.']
+          open(md, 'a').write('\n'.join(lines) + '\n')
+          open(out, 'a').write(f'fatal={fatal}\n')
+          PY
+
       - name: Build PMTiles from the reprocessed data (dry run)
+        if: always() && steps.summary.outputs.report == 'true'
         run: npm run build-pmtiles -- --dry-run
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
@@ -151,6 +205,15 @@ jobs:
             tmp/release-diff/*.json
           if-no-files-found: warn
           retention-days: 30
+
+      # Last, so the tile build and the report upload always happen first.
+      - name: Fail on real errors
+        if: always() && steps.summary.outputs.fatal != ''
+        env:
+          FATAL: ${{ steps.summary.outputs.fatal }}
+        run: |
+          echo "Real error: $FATAL"
+          exit 1
 
   # ---------------------------------------------------------------------------------------
   # Publish. Only ever builds the tip of main, with the write-capable keys.
