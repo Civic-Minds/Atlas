@@ -7,6 +7,7 @@ import type { DashboardBand, DashboardBandData, LiveV3 } from '../shared/liveDas
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { liveDashboardDataUrl } from './lib/liveReportData';
 import HourSpark from './components/charts/HourSpark';
+import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import LegendItem from './components/ui/LegendItem';
 import { TILE } from './pageStyles';
 import { liveChartHours } from './utils/sparklinePeriods';
@@ -120,6 +121,22 @@ function LateByHour({ v3, band }: { v3: LiveV3; band: DashboardBand }) {
   );
 }
 
+/** Run time by the hour a trip starts, one chart per direction over the whole day with the chosen time of day shaded. */
+function RunTimeByHour({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number }) {
+  const rt = v3.runningTime;
+  const hours = (rt?.byHour[String(dir)] ?? []).filter(h => h.n >= 1);
+  if (!rt || hours.length < 2) return null;
+  const f = rt.bands[band]?.[String(dir)];
+  return (
+    <div className="min-w-0">
+      {f && <div className="text-sm text-[var(--text-muted)]">Usually {Math.round(f.typicalMin)} min · timetable {Math.round(f.scheduledMin)} · 1 in 10 over {Math.round(f.p90Min)}</div>}
+      <RunTimeChart hours={hours} scale={runTimeScale([hours])} height={180} caption={false}
+        shade={band === 'all' ? undefined : h => periodKeyForHour(h) === band}
+        ariaLabel={`${v3.directionLabels[String(dir)]}: run time against the schedule by the hour the trip starts.`} />
+    </div>
+  );
+}
+
 /** The string-line view: one service day of one direction, over the chosen time of day. The days are the last three of the analysis window. */
 function StringsPane({ agency, route, v3, dir, band }: { agency: string; route: string; v3: LiveV3; dir: number; band: DashboardBand }) {
   const dates = v3.window.dates.slice(-3);
@@ -160,7 +177,7 @@ function Canvas({ data, v3, agency, view, route, dir, band, measure, pick, ancho
         <div className="max-h-[40%] shrink-0 overflow-y-auto border-t border-[var(--border-primary)] bg-[var(--bg-app)] px-6 pb-4">
           <h2 className="pb-1 pt-3 text-sm font-bold">{measure === 'late' ? 'How well it keeps to its timetable' : 'Run time'}</h2>
           <ErrorBoundary label="This chart could not be drawn.">
-            {measure === 'late' ? <LateByHour v3={v3} band={band} /> : <RunTime v3={v3} band={band} dir={dir} />}
+            {measure === 'late' ? <LateByHour v3={v3} band={band} /> : <RunTimeByHour v3={v3} band={band} dir={dir} />}
           </ErrorBoundary>
         </div>
       )}

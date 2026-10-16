@@ -61,7 +61,7 @@ function spread(labels: EndLabel[], min: number, max: number): Array<EndLabel & 
  * line is labelled where it ends; hours with few trips are faded. The whole chart is one focusable unit with a summary
  * label, each hour shows its figures on hover, and the same figures are available as a table.
  */
-export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height: H = 240, axis: axisProp }: {
+export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height: H = 240, axis: axisProp, shade, caption = true }: {
   hours: readonly RunTimeHour[];
   scale: { min: number; max: number };
   ariaLabel: string;
@@ -70,6 +70,10 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
   height?: number;
   /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these hours. */
   axis?: readonly number[];
+  /** Hours (0-23) to shade behind the lines: a chosen time of day drawn over the whole day. */
+  shade?: (hour: number) => boolean;
+  /** The line under the chart saying what the hours are and what faded dots mean (default yes). */
+  caption?: boolean;
 }) {
   const tableId = useId();
   const [hover, setHover] = useState<number | null>(null);
@@ -106,6 +110,7 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
         </div>
         {width > 0 && pts.length > 0 && (
           <svg onPointerLeave={() => setHover(null)} width={width} height={H} aria-hidden="true" className="block overflow-visible">
+            {shade && axis.map((h, i) => (shade(h % 24) ? <rect key={`shade${h}`} x={x(i) - colW / 2} y={PAD_TOP - 6} width={colW} height={H - PAD_TOP - PAD_BOTTOM + 6} rx={3} fill="var(--bg-btn-hover)" /> : null))}
             {hover != null && <rect x={x(hover) - colW / 2} y={PAD_TOP - 6} width={colW} height={H - PAD_TOP - PAD_BOTTOM + 6} rx={3} fill="var(--bg-btn-hover)" />}
             {ticks.map(t => (
               <g key={t}>
@@ -136,7 +141,7 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
         )}
         {width === 0 && <div style={{ height: H }} />}
       </div>
-      <figcaption className="mt-1 text-xs text-[var(--text-dim)]">By the hour the trip starts. Faded dots are hours with fewer than {minN} trips.</figcaption>
+      {caption && <figcaption className="mt-1 text-xs text-[var(--text-dim)]">By the hour the trip starts. Faded dots are hours with fewer than {minN} trips.</figcaption>}
       <div id={tableId} className="sr-only">
           <DataTable
             caption={ariaLabel}
