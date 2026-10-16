@@ -1843,13 +1843,15 @@ export async function processGtfsBuffer(
     directionMiddayWaitByKey.set(key, best);
     return best;
   };
-  // The same best-served stop's midday reading (a typical midday gap there), for the stretch
-  // selector's limited decision and midday cap (step 6): one #899 input for both.
+  // #899's inputs for the stretch selector's limited decision and midday cap (step 6), as main
+  // reads them: that wait, and whether the direction has a midday reading (a typical midday gap)
+  // at any of its stops, as main takes it from any drawn line. Not only at the best-served stop:
+  // TransLink 748's least-wait stop has two midday trips, and no reading, while its route stops
+  // read every 122.
   const directionMidday899 = (key: string): { wait: number | null; hasReading: boolean } => {
     const wait = directionMiddayWait(key);
     if (wait == null) return { wait, hasReading: false };
-    const hasReading = [...(stopDepsByGroup.get(key)?.values() ?? [])].some(times =>
-      computePeriodCoverageHeadways(times).midday === wait && computePeriodHeadways(times).midday != null);
+    const hasReading = [...(stopDepsByGroup.get(key)?.values() ?? [])].some(times => computePeriodHeadways(times).midday != null);
     return { wait, hasReading };
   };
 
