@@ -35,7 +35,7 @@ function Delta({ k }: { k: Kpi }) {
   if (!k.delta) return <span className="text-xs text-[var(--text-dim)]">No comparison with last week</span>;
   const tone = k.delta.tone === 'better' ? 'text-[var(--status-positive-text)]' : k.delta.tone === 'worse' ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-muted)]';
   return (
-    <span className="flex items-baseline text-[11px]">
+    <span className="flex items-baseline text-xs tracking-tight">
       <span className={`whitespace-nowrap font-bold ${tone}`} aria-label={k.delta.spoken} title={k.delta.spoken}>{k.delta.text}</span>
     </span>
   );
@@ -62,7 +62,7 @@ function WeekMethod({ v3, toFull }: { v3: LiveV3; toFull: (hash: string) => void
 export function KpiTile({ k, className = '' }: { k: Kpi; className?: string }) {
   const faded = k.n < MIN_N;
   return (
-    <li className={`${TILE} flex list-none flex-col px-3 ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
+    <li className={`${TILE} flex list-none flex-col px-2.5 ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
       <div className="text-sm font-bold text-[var(--text-muted)]">{k.label}</div>
       <div className="mt-1 text-3xl font-black tracking-tight">{k.value}</div>
       <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.sub}</div>
