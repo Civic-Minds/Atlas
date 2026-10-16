@@ -4,11 +4,13 @@ export function shortStopName(name: string): string {
   if (n.includes(' - ')) n = n.slice(n.lastIndexOf(' - ') + 3);
   const segments = n.split(/\s+at\s+/i);
   if (segments.length > 1) {
-    const station = segments.find(s => /station/i.test(s));
+    const station = segments.find(s => /station/i.test(s)) ?? segments.find(s => /\b(loop|terminal)\b/i.test(s));
     n = station ?? segments[segments.length - 1];
   }
   const station = n.match(/^(.*?\bStation)\b/i);
-  return (station ? station[1] : n).trim();
+  const short = (station ? station[1] : n).trim();
+  // Close a bracket the name leaves open (the TTC feed has "University Ave (Queen's Park Station" with no closing one).
+  return short.split('(').length > short.split(')').length ? `${short})` : short;
 }
 
 /** A stop worth naming on an axis even when space is short: stations, loops and terminals. */

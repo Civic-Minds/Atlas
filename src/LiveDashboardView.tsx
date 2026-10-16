@@ -132,7 +132,7 @@ function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: num
   const scale = runTimeScale(groups.map(g => g.hours));
   return (
     <section aria-labelledby="dash-runtime" className="mt-10">
-      <SectionTitle id="dash-runtime">Run time vs schedule</SectionTitle>
+      <SectionTitle id="dash-runtime">Run time</SectionTitle>
       <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, {BAND_WORDS[band]}, over the stops every regular trip serves, so short turns count too.</p>
       <div className={`mt-4 grid gap-x-10 gap-y-8 ${groups.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {groups.map(g => (

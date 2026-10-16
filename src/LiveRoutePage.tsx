@@ -336,7 +336,7 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
   const hoursOf = (d: number) => (rt.byHour[String(d)] ?? []).filter(h => h.n >= 1 && (band === 'all' || periodKeyForHour(h.hour) === band));
   const scale = runTimeScale(dirs.map(hoursOf));
   return (
-    <Section id="runtime" title="Run time vs schedule">
+    <Section id="runtime" title="Run time">
       <p className="mt-2 text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, by the hour it starts, over the stops every regular trip serves, so short turns count too.</p>
       <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {dirs.map(d => {
@@ -559,7 +559,7 @@ export default function LiveRoutePage() {
         <Filters v3={v3} dir={dir} setDir={setDir} />
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Run time vs schedule')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Run time')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWait v3={v3} band={band} dir={dir} /></ErrorBoundary>
