@@ -1,75 +1,133 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
-import type { AgencyRouteRow, AgencySummary } from '../shared/liveAgency';
-import { dateRangeText, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
-import { weekOfText } from '../shared/liveWording';
+import { delayAmount, headwayAmount } from '../shared/headwayText';
+import type { AgencySummary } from '../shared/liveAgency';
+import type { DashboardBand, DashboardBandData, LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { RouteNameCell } from './pageParts';
+import { shortStopName } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
-import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
-import { KpiRow } from './LiveDashboardView';
-import { BOUNDARY, Method, withNiceNames } from './LiveRoutePage';
-import {
-  BANDS, DAYS, DetailPanel, Bunching, Buildup, Delivered, ExtraWait, Group, Late, RunTime, Section, WorstStops, dirsOf,
-  type Day, type Selection,
-} from './LiveExplorePage';
+import AtlasBrand from './components/AtlasBrand';
+import RoutePicker, { orderRoutes } from './components/Live/RoutePicker';
+import RouteMap, { type MapPick } from './components/Live/RouteMap';
+import { directionStopsById } from './components/Live/DirectionStrip';
+import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure } from './components/Live/routeMapModel';
+import { STEP_LABELS } from './components/Live/routeStripModel';
+import { delayText } from './components/Live/routeStripModel';
+import { BANDS, Block, DetailPanel, Fact, Group, Late, Panel, RunTime, type Selection } from './LiveExplorePage';
+import { withNiceNames } from './LiveRoutePage';
 
-const pct = (x: number | null) => (x == null ? '–' : `${Math.round(x * 100)}%`);
-/** A route got worse when its late share rose by at least this much since last week (the same fixed amount the tiles use for shares). */
-const WORSE_BY = 0.02;
+const pct = (x: number) => `${Math.round(x * 100)}%`;
+const mins = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`.replace('-', '−');
 const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
 
-interface Row { r: AgencyRouteRow; change: number | null }
-const rowsOf = (s: AgencySummary): Row[] => s.routes.map(r => ({ r, change: r.lateShare != null && r.lateLastWeek != null ? r.lateShare - r.lateLastWeek : null }));
-
-/** Every route with its late share, worst first, with the routes that got worse this week on top. */
-function orderRoutes(s: AgencySummary): { worse: Row[]; rest: Row[] } {
-  const all = rowsOf(s).sort((a, b) => (b.r.lateShare ?? -1) - (a.r.lateShare ?? -1) || a.r.route.localeCompare(b.r.route, undefined, { numeric: true }));
-  const worse = all.filter(x => x.change != null && x.change >= WORSE_BY).sort((a, b) => (b.change ?? 0) - (a.change ?? 0));
-  return { worse, rest: all.filter(x => !worse.includes(x)) };
+/** The three step labels of a measure's key: the bunching key the strips already use, and the same shape for the others. */
+function stepLabels(measure: MapMeasure): [string, string, string] {
+  if (measure === 'bunching') return [...STEP_LABELS.bunching] as [string, string, string];
+  const [a, b] = MAP_STEP_LIMITS[measure];
+  if (measure === 'late') return [`Under ${pct(a)}`, `${pct(a)}–${pct(b)}`, `${pct(b)} or more`];
+  const m = (x: number) => `${x} min`;
+  return [`Under ${m(a)}`, `${a}–${m(b)}`, `${m(b)} or more`];
 }
+const STEP_VAR = (measure: MapMeasure, step: number) => `var(--strip-${measure === 'bunching' ? 'bunching' : 'delay'}-${step})`;
 
-function RouteList({ s, route, onPick }: { s: AgencySummary; route: string; onPick: (route: string) => void }) {
-  const { worse, rest } = useMemo(() => orderRoutes(s), [s]);
-  const item = ({ r, change }: Row, isWorse: boolean) => {
-    const on = r.route === route;
-    const tone = isWorse ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-dim)]';
-    const line = change == null ? null : Math.round(change * 100) === 0 ? 'same as last week' : `${change > 0 ? '▲' : '▼'} from ${pct(r.lateLastWeek)} last week`;
-    return (
-      <li key={r.route} className="list-none">
-        <button type="button" onClick={() => onPick(r.route)} aria-current={on ? 'true' : undefined}
-          className={`flex w-full items-baseline justify-between gap-3 rounded-md px-3 py-1.5 text-left text-sm ${on ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>
-          <span className="min-w-0 truncate"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode ?? 3} agencyName={s.agency.toUpperCase()} /></span>
-          <span className="shrink-0 text-right">
-            <span className="font-black tracking-tight">{pct(r.lateShare)}</span>
-            {line && <span className={`block text-xs ${tone}`}>{line}</span>}
-          </span>
-        </button>
-      </li>
-    );
-  };
+function Key({ measure }: { measure: MapMeasure }) {
+  const labels = stepLabels(measure);
   return (
-    <nav aria-label="Routes" className="min-h-0 overflow-y-auto px-2 pb-6">
-      {worse.length > 0 && (
-        <>
-          <h2 className="px-3 pb-1 pt-3 text-sm font-black">Got worse this week</h2>
-          <ul className="m-0 p-0">{worse.map(x => item(x, true))}</ul>
-        </>
-      )}
-      <h2 className="px-3 pb-1 pt-4 text-sm font-black">All routes</h2>
-      <ul className="m-0 p-0">{rest.map(x => item(x, false))}</ul>
-    </nav>
+    <div className="pointer-events-none absolute left-3 top-3 z-10 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-2 text-xs shadow-sm">
+      <div className="font-bold text-[var(--text-secondary)]">{MEASURES.find(([k]) => k === measure)![1]}</div>
+      <ul className="m-0 mt-1 flex flex-col gap-1 p-0">
+        {labels.map((l, i) => (
+          <li key={l} className="flex list-none items-center gap-2 text-[var(--text-legend)]"><span aria-hidden="true" className="inline-block h-2.5 w-5 rounded-full" style={{ background: STEP_VAR(measure, i) }} />{l}</li>
+        ))}
+        <li className="flex list-none items-center gap-2 text-[var(--text-legend)]"><span aria-hidden="true" className="inline-block h-2.5 w-5 rounded-full" style={{ background: 'var(--strip-delay-0)', opacity: 0.45 }} />Not measured</li>
+      </ul>
+    </div>
   );
 }
 
-function RouteView({ agency, route, band, dir, day, setDay, sel, setSel }: {
-  agency: string; route: string; band: DashboardBand; dir: number | null; day: Day; setDay: (d: Day) => void; sel: Selection | null; setSel: (s: Selection | null) => void;
+/** The panel for a picked segment: the stretch's figures, then the stop it leaves. */
+function SegmentPanel({ v3, band, dir, fromStopId, toStopId, data, stops }: { v3: LiveV3; band: DashboardBand; dir: number; fromStopId: string; toStopId: string; data: DashboardBandData; stops: ReturnType<typeof directionStopsById> }) {
+  const a = stops.get(fromStopId), b = stops.get(toStopId);
+  const stretch = data.buildup.find(x => x.directionId === dir)?.stretches.find(x => x.fromStopId === fromStopId && x.toStopId === toStopId);
+  const full = data.stops.find(x => x.stopId === fromStopId && x.directionId === dir);
+  const bunch = v3.bunching.find(x => x.directionId === dir)?.bands[band]?.stops.find(x => x.stopId === fromStopId);
+  const extra = v3.extraWait?.[band]?.find(x => x.directionId === dir && x.stopId === fromStopId);
+  return (
+    <Panel docked title={`${shortStopName(a?.name ?? fromStopId)} to ${shortStopName(b?.name ?? toStopId)}`} sub={v3.directionLabels[String(dir)]}>
+      {stretch && stretch.n > 0 && (
+        <Block>
+          <Fact label="Typical added" value={mins(stretch.medianAddedMin)} />
+          <Fact label="Trips where it grows" value={pct(stretch.growShare)} sub={`of ${stretch.n.toLocaleString()}`} />
+        </Block>
+      )}
+      <Block>
+        {a && a.n > 0 && a.delayMin != null && <Fact label="Typical delay" value={delayText(a.delayMin)} />}
+        {full && <Fact label="1 in 10 later than" value={mins(full.p90Min)} />}
+        {a?.lateShare != null && a.n > 0 && <Fact label="Late" value={pct(a.lateShare)} sub={`of ${a.n.toLocaleString()} departures`} />}
+      </Block>
+      {bunch && bunch.n > 0 && (
+        <Block>
+          <Fact label="Too close together" value={pct(bunch.bunchedShare)} />
+          <Fact label="Too far apart" value={pct(bunch.gappedShare)} sub={`${bunch.n.toLocaleString()} gaps`} />
+        </Block>
+      )}
+      {extra && <Block><Fact label="Extra wait" value={delayAmount(Math.max(0, extra.extraWaitMin))} sub={`Scheduled every ${headwayAmount(extra.scheduledGapMin)}`} /></Block>}
+    </Panel>
+  );
+}
+
+function Canvas({ data, v3, route, dir, band, measure, pick, setPick }: {
+  data: Extract<ReturnType<typeof useLiveDashboard>, { kind: 'done' }>['data'] & { status: 'ready' }; v3: LiveV3; route: string; dir: number; band: DashboardBand; measure: MapMeasure;
+  pick: MapPick | null; setPick: (p: MapPick | null) => void;
+}) {
+  const bandData = v3.bands[band] as DashboardBandData;
+  const uncertain = data.uncertainStart ?? [];
+  const model = useMemo(() => routeMapModel(v3, dir, band, measure), [v3, dir, band, measure]);
+  const stops = useMemo(() => directionStopsById(v3, dir, band, uncertain), [v3, dir, band, uncertain]);
+  const forms = bandData.buildup.find(b => b.directionId === dir)?.forms;
+  const bForms = v3.bunching.find(b => b.directionId === dir)?.bands[band]?.forms;
+  // With nothing picked the panel opens on where delays start, else where bunching forms, else stays empty.
+  const auto: { sel: Selection; kicker: string } | null = forms ? { sel: { dir, kind: 'stretch', mode: 'delay' }, kicker: 'Where delays start' } : bForms ? { sel: { dir, kind: 'stretch', mode: 'bunching' }, kicker: 'Where bunching forms' } : null;
+  const hasChart = measure === 'late' || measure === 'runTime';
+  return (
+    <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className="flex min-h-0 min-w-0 flex-col">
+        <div className="relative min-h-0 flex-1">
+          <RouteMap model={model} measure={measure} selected={pick} onPick={setPick} frameKey={`${route}-${dir}`} />
+          <Key measure={measure} />
+          {data.note && <p className="absolute bottom-3 left-3 right-3 z-10 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{data.note}</p>}
+        </div>
+        {hasChart && (
+          <div className="max-h-[40%] shrink-0 overflow-y-auto border-t border-[var(--border-primary)] bg-[var(--bg-app)] px-6 pb-4">
+            <ErrorBoundary label="This chart could not be drawn.">
+              {measure === 'late' ? <Late data={bandData} dir={dir} day="all" band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /> : <RunTime v3={v3} band={band} dir={dir} />}
+            </ErrorBoundary>
+          </div>
+        )}
+      </div>
+      <div className="min-h-0 overflow-y-auto border-t border-[var(--border-primary)] bg-[var(--bg-header)] lg:border-l lg:border-t-0">
+        {pick?.kind === 'segment' ? (
+          <SegmentPanel v3={v3} band={band} dir={dir} fromStopId={pick.fromStopId} toStopId={pick.toStopId} data={bandData} stops={stops} />
+        ) : pick?.kind === 'stop' && stops.has(pick.stopId) ? (
+          <DetailPanel docked v3={v3} band={band} sel={{ dir, kind: 'stop', stopId: pick.stopId }} stops={stops} data={bandData} />
+        ) : auto ? (
+          <DetailPanel docked kicker={auto.kicker} v3={v3} band={band} sel={auto.sel} stops={stops} data={bandData} />
+        ) : (
+          <Panel docked title={data.routeTitle || `${v3.directionLabels[String(dir)]}`} sub={v3.directionLabels[String(dir)]}><span /></Panel>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function RouteCanvas({ agency, route, dir, setDir, band, measure, pick, setPick }: {
+  agency: string; route: string; dir: number | null; setDir: (d: number) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const state = useLiveDashboard(agency, route);
   if (state.kind === 'loading') return <p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {agency.toUpperCase()} {route}…</p>;
@@ -77,125 +135,51 @@ function RouteView({ agency, route, band, dir, day, setDay, sel, setSel }: {
   const data = state.data;
   if (data.status !== 'ready') return <p className="p-6 text-sm text-[var(--text-muted)]">{data.status === 'no_analysis' ? devOnly(data.reason) : data.reason}</p>;
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
-  return <Loaded key={`${agency}-${route}`} data={data} v3={v3} agency={agency} route={route} band={band} dir={dir} day={day} setDay={setDay} sel={sel} setSel={setSel} />;
+  const ids = Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b);
+  const shown = dir != null && ids.includes(dir) ? dir : ids[0];
+  return (
+    <>
+      <DirectionBar ids={ids} labels={v3.directionLabels} dir={shown} setDir={setDir} />
+      <Canvas data={data} v3={v3} route={route} dir={shown} band={band} measure={measure} pick={pick} setPick={setPick} />
+    </>
+  );
 }
 
-function Loaded({ data, v3, agency, route, band, dir, day, setDay, sel, setSel }: {
-  data: Extract<ReturnType<typeof useLiveDashboard>, { kind: 'done' }>['data'] & { status: 'ready' }; v3: LiveV3; agency: string; route: string; band: DashboardBand; dir: number | null;
-  day: Day; setDay: (d: Day) => void; sel: Selection | null; setSel: (s: Selection | null) => void;
-}) {
-  const bandData = v3.bands[band] as DashboardBandData;
-  const uncertain = data.uncertainStart ?? [];
-  // A direction kept from another route may not exist on this one: show both.
-  if (dir != null && !(String(dir) in v3.directionLabels)) dir = null;
-  const dirs = dirsOf(v3, dir);
-  // The panel opens on where delay builds up when the route has such a stretch, else on the first stop.
-  const fallback: Selection = (() => {
-    for (const d of dirs) if (bandData.buildup.find(b => b.directionId === d)?.forms) return { dir: d, kind: 'stretch', mode: 'delay' };
-    return { dir: dirs[0], kind: 'stop', stopId: [...directionStopsById(v3, dirs[0], band, uncertain).keys()][0] };
-  })();
-  const shown: Selection = (() => {
-    if (!sel || !dirs.includes(sel.dir)) return fallback;
-    if (sel.kind === 'stretch') return (sel.mode === 'delay' ? bandData.buildup.find(b => b.directionId === sel.dir)?.forms : v3.bunching.find(b => b.directionId === sel.dir)?.bands[band]?.forms) ? sel : fallback;
-    return directionStopsById(v3, sel.dir, band, uncertain).has(sel.stopId) ? sel : fallback;
-  })();
-  const stops = useMemo(() => directionStopsById(v3, shown.dir, band, uncertain), [v3, shown.dir, band, uncertain]);
-  const pickStop = (d: number, stopId: string) => { if (directionStopsById(v3, d, band, uncertain).has(stopId)) setSel({ dir: d, kind: 'stop', stopId }); };
-  const title = data.routeTitle || `${agency.toUpperCase()} ${route}`;
-  const crumb = shown.kind === 'stop' ? stops.get(shown.stopId)?.name : null;
-  const dates = v3.window.dates;
+/** The direction switch sits above the map, under the top bar, because its options belong to the picked route. */
+function DirectionBar({ ids, labels, dir, setDir }: { ids: number[]; labels: Record<string, string>; dir: number; setDir: (d: number) => void }) {
+  if (ids.length < 2) return null;
   return (
-    <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_22rem]">
-      <div className="min-h-0 overflow-y-auto px-6 pb-16 pt-4">
-        <div className="flex flex-wrap items-baseline gap-x-2 text-sm">
-          <a href={`/apps/live/${agency}`} className="font-bold hover:underline">{agency.toUpperCase()}</a>
-          <span aria-hidden="true" className="text-[var(--text-dim)]">›</span>
-          {crumb ? <button type="button" onClick={() => setSel(null)} className="font-bold hover:underline">{title}</button> : <span className="font-black">{title}</span>}
-          {crumb && <><span aria-hidden="true" className="text-[var(--text-dim)]">›</span><span className="font-black">{crumb}</span></>}
-        </div>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">
-          {dates.length ? `${weekOfText(dates[0], dates[dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} trips · estimated from where vehicles were, not reported by {agency.toUpperCase()}
-        </p>
-        {data.note && <p className="mt-2 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
-        <ErrorBoundary label={BOUNDARY('This week compared with last week')}><KpiRow v3={v3} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Along the route')}>
-          <div id="x-strip" className="mt-6 space-y-6">
-            {dirs.map(d => (
-              <div key={d} className="min-w-0">
-                <h3 className="mb-1 text-base font-black">{v3.directionLabels[String(d)]}</h3>
-                <DirectionStrip
-                  v3={v3} directionId={d} band={band} uncertain={uncertain}
-                  selectedId={shown.dir === d && shown.kind === 'stop' ? shown.stopId : null}
-                  onSelect={stopId => setSel({ dir: d, kind: 'stop', stopId })}
-                  selectedStretch={shown.dir === d && shown.kind === 'stretch' ? shown.mode : null}
-                  onSelectStretch={mode => setSel({ dir: d, kind: 'stretch', mode })}
-                />
-              </div>
-            ))}
-          </div>
-        </ErrorBoundary>
-        <div className="grid gap-x-10 2xl:grid-cols-2">
-          <Section id="t-late" title="How well it keeps to its timetable">
-            <div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>
-            <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Late data={bandData} dir={dir} day={day} band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
-          </Section>
-          <Section id="t-runtime" title="Run time">
-            <ErrorBoundary label={BOUNDARY('Run time')}><RunTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
-          </Section>
-        </div>
-        <Section id="t-buildup" title="Where delays build up">
-          <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
-        </Section>
-        <Section id="t-wait" title="Extra wait">
-          <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWait v3={v3} band={band} dir={dir} /></ErrorBoundary>
-        </Section>
-        <Section id="t-bunching" title="Where bunching forms">
-          <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} /></ErrorBoundary>
-        </Section>
-        <div className="grid gap-x-10 2xl:grid-cols-2">
-          <Section id="t-delivered" title="Service delivered">
-            <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
-          </Section>
-          <Section id="t-stops" title="Stops with the most delay">
-            <ErrorBoundary label={BOUNDARY('Stops with the most delay')}>
-              <WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} onPick={pickStop} canPick={(d, id) => directionStopsById(v3, d, band, uncertain).has(id)} />
-            </ErrorBoundary>
-          </Section>
-        </div>
-        <ErrorBoundary label="How this is measured could not be drawn."><Method data={data} /></ErrorBoundary>
-      </div>
-      <div className="min-h-0 overflow-y-auto border-t border-[var(--border-primary)] p-4 lg:border-l lg:border-t-0">
-        <DetailPanel v3={v3} band={band} sel={shown} stops={stops} data={bandData} />
-      </div>
+    <div className="flex items-center gap-2 border-b border-[var(--border-primary)] px-4 py-2">
+      <Group label="Direction" value={String(dir)} onChange={v => setDir(Number(v))} options={ids.map(d => [String(d), labels[String(d)]] as const)} />
     </div>
   );
 }
 
-/** The Live planner screen: a fixed shell with every route in a list on the left, the filters on top, and the picked route (strip, charts, stops) with a panel for the picked stop or stretch. State is in the address. */
+/** The Live planner: the picked route on the map, each segment coloured by the chosen measure; a panel for the picked segment or stop. State is in the address. */
 export default function LiveToolPage() {
   const { agency = '' } = useParams();
   const state = useLiveAgency(FEATURES.liveReports ? agency : '');
   const [route, setRoute] = useState<string | null>(() => readParam('route'));
   const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
-  const [day, setDay] = useState<Day>(() => { const d = readParam('day'); return d === 'weekday' || d === 'weekend' ? d : 'all'; });
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
-  const [sel, setSel] = useState<Selection | null>(() => {
-    const stop = readParam('stop'), d = Number(readParam('sdir') ?? readParam('dir') ?? 0);
-    return stop ? { dir: d, kind: 'stop', stopId: stop } : null;
+  const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) ? (m as MapMeasure) : 'late'; });
+  const [pick, setPick] = useState<MapPick | null>(() => {
+    const stop = readParam('stop'), seg = readParam('seg');
+    if (stop) return { kind: 'stop', stopId: stop };
+    const [f, t] = (seg ?? '').split('>');
+    return f && t ? { kind: 'segment', fromStopId: f, toStopId: t } : null;
   });
-  const summary = state.kind === 'done' && state.data.status === 'ready' ? state.data.summary : null;
-  // With no route in the address, the tool opens on the top of the list.
-  const worstFirst = useMemo(() => { if (!summary) return null; const o = orderRoutes(summary); return (o.worse[0] ?? o.rest[0])?.r.route ?? null; }, [summary]);
-  const current = route ?? worstFirst ?? null;
+  const summary: AgencySummary | null = state.kind === 'done' && state.data.status === 'ready' ? state.data.summary : null;
+  const top = useMemo(() => { if (!summary) return null; const o = orderRoutes(summary); return (o.worse[0] ?? o.rest[0])?.r.route ?? null; }, [summary]);
+  const current = route ?? top;
   useEffect(() => {
     syncUrlParams({
-      view: null, route: route, dir: dir == null ? null : String(dir), day: day === 'all' ? null : day, band: band === 'all' ? null : band,
-      stop: sel?.kind === 'stop' ? sel.stopId : null, sdir: sel?.kind === 'stop' ? String(sel.dir) : null,
+      view: null, route, dir: dir == null ? null : String(dir), band: band === 'all' ? null : band, measure: measure === 'late' ? null : measure,
+      stop: pick?.kind === 'stop' ? pick.stopId : null, seg: pick?.kind === 'segment' ? `${pick.fromStopId}>${pick.toStopId}` : null,
     });
-  }, [route, dir, day, band, sel]);
+  }, [route, dir, band, measure, pick]);
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agency]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
-  const pickRoute = (r: string) => { setRoute(r); setSel(null); };
   const shell = (body: ReactNode) => <main className="relative flex h-screen min-h-0 flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">{body}</main>;
   if (state.kind === 'loading') return shell(<p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {agency.toUpperCase()}…</p>);
   if (state.kind === 'error') return shell(<p className="p-6 text-sm text-[var(--text-muted)]">{state.reason}</p>);
@@ -203,30 +187,13 @@ export default function LiveToolPage() {
   const s = state.data.summary;
   return shell(
     <>
-      <header className="flex flex-wrap items-center gap-x-8 gap-y-2 border-b border-[var(--border-primary)] px-6 py-3">
-        <a href={`/apps/live/${agency}`} className="text-base font-black hover:underline">{agency.toUpperCase()}</a>
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-2" role="group" aria-label="Filters">
-          <DirectionFilter agency={agency} route={current} dir={dir} setDir={setDir} />
-          <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
-        </div>
+      <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2">
+        <a href="/" aria-label="Atlas by Civic Minds"><AtlasBrand /></a>
+        {current && <RoutePicker s={s} route={current} onPick={r => { setRoute(r); setPick(null); }} />}
+        <Group label="Measure" value={measure} onChange={v => setMeasure(v as MapMeasure)} options={MEASURES} />
+        <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
       </header>
-      <div className="grid min-h-0 flex-1 lg:grid-cols-[19rem_minmax(0,1fr)]">
-        <div className="flex min-h-0 flex-col border-b border-[var(--border-primary)] lg:border-b-0 lg:border-r">
-          <div className="max-h-[30vh] min-h-0 overflow-y-auto lg:max-h-none lg:flex-1"><RouteList s={s} route={current ?? ''} onPick={pickRoute} /></div>
-        </div>
-        <div className="flex min-h-0 min-w-0 flex-col">
-          {current ? <RouteView agency={agency} route={current} band={band} dir={dir} day={day} setDay={setDay} sel={sel} setSel={setSel} /> : null}
-        </div>
-      </div>
+      {current && <RouteCanvas agency={agency} route={current} dir={dir} setDir={d => { setDir(d); setPick(null); }} band={band} measure={measure} pick={pick} setPick={setPick} />}
     </>,
   );
-}
-
-/** The direction pills for the picked route (from its analysis); nothing until it has loaded. */
-function DirectionFilter({ agency, route, dir, setDir }: { agency: string; route: string | null; dir: number | null; setDir: (d: number | null) => void }) {
-  const state = useLiveDashboard(route ? agency : null, route);
-  const labels = state.kind === 'done' && state.data.status === 'ready' ? state.data.v3.directionLabels : null;
-  if (!labels) return null;
-  const ids = Object.keys(labels).map(Number).sort((a, b) => a - b);
-  return <Group label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))} options={[['both', 'Both directions'], ...ids.map(d => [String(d), labels[String(d)]] as const)]} />;
 }
