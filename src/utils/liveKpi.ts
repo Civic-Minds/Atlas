@@ -71,6 +71,13 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
 }
 
 /** The small caption under the tiles: which days each week is, and which were left out. */
+/** The one line by the tiles: "Oct 8–14 vs Oct 1–7". The explanation lives under "How this is measured" (weekCaption). */
+export function weekRangeLine(w: NonNullable<LiveV3['weekly']>): string {
+  const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
+  return w.comparable ? `${range(w.thisWeek)} vs ${range(w.lastWeek)}` : `${range(w.thisWeek)}: too few days of good recordings to compare with ${range(w.lastWeek)}`;
+}
+
+/** The full explanation of the week comparison, for "How this is measured". */
 export function weekCaption(w: NonNullable<LiveV3['weekly']>): string {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
   const base = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}. Days with gaps in our recordings are left out of both, and trips during gaps in our recordings aren't counted (${w.thisWeek.healthyDates.length} of ${w.thisWeek.dates.length} days counted this week, ${w.lastWeek.healthyDates.length} of ${w.lastWeek.dates.length} last week).`;

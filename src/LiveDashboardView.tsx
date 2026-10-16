@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
 import { dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
-import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, type DayKind, type Kpi } from './utils/liveKpi';
+import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, weekRangeLine, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import DataTable from './components/ui/DataTable';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
@@ -40,7 +40,19 @@ function Delta({ k }: { k: Kpi }) {
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.</p>;
-  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), runTimeTileStretch(v3.runningTime?.stretch, n => shortStopName(titleCase(n))))} caption={`${weekCaption(w)} ${NOISE_RULE}`} />;
+  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), runTimeTileStretch(v3.runningTime?.stretch, n => shortStopName(titleCase(n))))} caption={weekRangeLine(w)} />;
+}
+
+/** The week comparison explained, at the bottom of the page (the tiles carry only the two date ranges). */
+function WeekMethod({ v3, toFull }: { v3: LiveV3; toFull: (hash: string) => void }) {
+  if (!v3.weekly) return null;
+  return (
+    <details className="mt-12" id="dash-method">
+      <summary className="cursor-pointer text-xl font-black tracking-tight">How this is measured</summary>
+      <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{weekCaption(v3.weekly)} {NOISE_RULE}</p>
+      <p className="mt-3"><ArrowLink href="?view=analysis#method" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('method'); }}>The full method, in Full analysis</ArrowLink></p>
+    </details>
+  );
 }
 
 /** The tiles row itself: the route dashboard and the agency dashboard show their figures the same way. */
@@ -249,6 +261,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
       <section className="mt-10 max-w-xl" aria-label="The stops most often late">
         <ErrorBoundary label={bad('The stop list')}><WorstStops v3={v3} data={data} dir={dir} uncertain={uncertain} toFull={toFull} /></ErrorBoundary>
       </section>
+      <WeekMethod v3={v3} toFull={toFull} />
     </>
   );
 }

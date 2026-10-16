@@ -132,7 +132,9 @@ describe('Live route dashboard', () => {
     const weekRegion = screen.getAllByRole('region', { name: /This week compared with last week/ })[0];
     for (const label of ['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
-    expect(screen.getByText(/left out of both weeks/)).toBeTruthy();
+    expect(screen.getByText(/Days with gaps in our recordings are left out of both/)).toBeTruthy();
+    // By the tiles, only the two weeks' dates; the explanation is under How this is measured.
+    expect(screen.getAllByText(/^[A-Z][a-z]{2} \d+–\d+ vs [A-Z][a-z]{2} \d+–\d+$/).length).toBeGreaterThan(0);
     expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();
     expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
     expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
