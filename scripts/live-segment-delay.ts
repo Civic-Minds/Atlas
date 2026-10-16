@@ -20,7 +20,7 @@ import {
   type HoldEvent, type Pattern, type TripPing, type TripStopStatus, type PositionSample, type ScheduledRunTimes, type SegmentObservation, type TimeBand,
 } from '../shared/segmentDelay.js';
 import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
-import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
+import { BUNCHED_GAP_SEC, MIN_GAPS, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
@@ -1137,4 +1137,23 @@ const result = {
   }),
 };
 writeFileSync(OUT, JSON.stringify(result));
+
+// Gaps through the day (B4 chart): every measured gap at each stop with enough gaps, in the window. A separate file
+// beside the analysis, loaded only when the chart is shown. Per stop: m = minutes after the service day's start (GTFS
+// style, so 1 am is 1500), g = the gap in seconds, s = the timetable's typical gap in that stretch of service, seconds.
+const gapsOut: Record<string, Record<string, { m: number[]; g: number[]; s: number[] }>> = {};
+for (const [key, m] of headwayByStop) {
+  const [stopId, dir] = key.split('|');
+  const wins = (m.get('all') ?? []).filter(w => inWindow.has(w.date) && w.actualAt);
+  const total = wins.reduce((n, w) => n + w.actualGaps.length, 0);
+  if (total < MIN_GAPS) continue;
+  const row = { m: [] as number[], g: [] as number[], s: [] as number[] };
+  for (const w of wins) {
+    const sched = Math.round(median(w.scheduledGaps) ?? 0);
+    const start = serviceDayStart(w.date);
+    w.actualGaps.forEach((g, i) => { row.m.push(Math.round((w.actualAt![i] - start) / 60)); row.g.push(Math.round(g)); row.s.push(sched); });
+  }
+  (gapsOut[dir] ??= {})[stopId] = row;
+}
+writeFileSync(OUT.replace(/-segments\.json$/, '-gaps.json'), JSON.stringify({ schema: 1, agency: 'ttc', route: ROUTE, dates: windowDates, directions: gapsOut }));
 console.log(`dates ${usedDates.length} (${usedDates[0]}..${usedDates[usedDates.length - 1]}), runs matched ${runsMatched}/${runsTotal} (no timetable trip: ${runsUnmatched}), passes ${observations.length}, segments ${stats.length}, headway windows ${windowsKept}/${windowsTotal}, outages ${outages.length}`);

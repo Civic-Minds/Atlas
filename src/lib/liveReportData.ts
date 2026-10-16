@@ -38,5 +38,11 @@ export function liveYesterdayDataUrl(agency: string, route: string | null): stri
     : `/api/live-yesterday?agency=${encodeURIComponent(agency)}${route ? `&route=${encodeURIComponent(route)}` : ''}${devDate()}`;
 }
 
+export function liveGapsDataUrl(agency: string, route: string): string {
+  return fromR2
+    ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/${encodeURIComponent(route)}-gaps.json`
+    : `/api/live-gaps?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
+}
+
 /** R2 answers a missing file with an error page, not JSON: read that as "no such route", the API's own answer. */
 export const liveDataMissing = (r: Response) => fromR2 && !r.ok;

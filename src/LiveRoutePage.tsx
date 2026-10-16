@@ -6,6 +6,8 @@ import {
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
+import { useLiveGaps, type LiveGaps, type StopGaps } from './hooks/useLiveGaps';
+import GapsChart from './components/charts/GapsChart';
 import { devOnly, liveReportTitle, withoutDevHint } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
@@ -264,7 +266,32 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
 }
 
 /** B4: where and why bunching forms. "Linked to", never "caused by". Too-close and too-far gaps are shown separately. */
-function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: DashboardBand }) {
+/** Gaps through the day at one stop of one direction: where bunching forms by default, any measured stop on request. */
+function GapsBlock({ data, gaps, label }: { data: DashboardBunchingBand; gaps: Record<string, StopGaps> | undefined; label: string }) {
+  const options = data.stops.filter(s => s.n >= 30 && gaps?.[s.stopId]);
+  const preferred = [data.forms?.toStopId, data.biggestRise?.toStopId].find(id => id && options.some(o => o.stopId === id))
+    ?? [...options].sort((a, b) => b.badShare - a.badShare)[0]?.stopId;
+  const [picked, setPicked] = useState<string | null>(null);
+  const stopId = picked ?? preferred;
+  const stop = options.find(o => o.stopId === stopId);
+  if (!gaps || !stop) return null;
+  return (
+    <div className="mt-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h4 className="text-sm font-black">Gaps through the day</h4>
+        <label className="text-xs text-[var(--text-muted)]">
+          <span className="sr-only">Stop</span>
+          <select value={stop.stopId} onChange={e => setPicked(e.target.value)} className="h-6 max-w-[16rem] rounded-md border border-[var(--border-primary)] bg-[var(--bg-app)] px-1.5 text-xs text-[var(--text-secondary)] outline-none focus-visible:outline-2 focus-visible:outline-[var(--accent)]">
+            {options.map(o => <option key={o.stopId} value={o.stopId}>{o.name}</option>)}
+          </select>
+        </label>
+      </div>
+      <GapsChart gaps={gaps[stop.stopId]} ariaLabel={`${label}: every gap between cars at ${stop.name} through the day, against the timetable.`} />
+    </div>
+  );
+}
+
+function Bunching({ v3, dir, band, gaps }: { v3: LiveV3; dir: number | null; band: DashboardBand; gaps: LiveGaps | null }) {
   const rows = v3.bunching.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
   const pointsOf = (data: DashboardBunchingBand): ProfilePoint[] => data.stops.filter(s => s.n >= 10).map(s => ({ label: s.name, short: shortStopName(s.name), major: isMajorStop(s.name), y: s.bunchedShare, y2: s.gappedShare, n: s.n }));
   const scale = sharedScale(rows.flatMap(b => (b.bands[band] ? [pointsOf(b.bands[band])] : [])));
@@ -298,6 +325,7 @@ function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: Das
                   marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? 'Forms here' : 'Biggest rise' }] : []}
                 />
               )}
+              <GapsBlock data={data} gaps={gaps?.directions[String(b.directionId)]} label={label} />
               {stretch && (
                 <>
                   <p className="mt-3 text-sm">{data.kind === 'forms' ? 'It forms' : 'Its biggest rise is'} between {stretch.fromName} and {stretch.toName}.</p>
@@ -524,6 +552,7 @@ export const BOUNDARY = (what: string) => withoutDevHint(`${what} could not be d
 function AnalysisPage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
+  const gaps = useLiveGaps(FEATURES.liveReports ? agency : null, route);
   // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
   // whose answer differs by period list it per period.
   const band: DashboardBand = 'all';
@@ -607,7 +636,7 @@ function AnalysisPage() {
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWait v3={v3} band={band} dir={dir} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} gaps={gaps} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label="How this is measured could not be drawn."><Method data={data} /></ErrorBoundary>
         </>)}
