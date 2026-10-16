@@ -119,6 +119,8 @@ export interface LiveV3 {
   };
   stops: DashboardStop[];
   buildup: DashboardBuildup[];
+  /** Per direction, per stop on a regular pattern, by hour of day (index 0-23): [departures, late share, gaps, bunched share, too-long share, extra wait minutes], null where nothing was measured. Older files: absent. */
+  stopHours?: Record<string, Record<string, Array<[number, number | null, number, number | null, number | null, number | null] | null>>>;
   /** Per direction, the street line between each pair of consecutive stops on a regular pattern, for the planner map. Older files: absent (the map draws straight lines). */
   segmentLines?: Record<string, Array<{ from: string; to: string; coordinates: [number, number][] }>>;
   /** Per direction, the regular patterns (20%+ of the direction's trips) as ordered stops, the main one first: the trunk and the branches. Older files: absent. */
