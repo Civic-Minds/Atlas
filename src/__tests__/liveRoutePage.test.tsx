@@ -134,7 +134,7 @@ describe('Live route dashboard', () => {
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
     expect(screen.getByText(/Days with gaps in our recordings are left out of both/)).toBeTruthy();
     // By the tiles, only the two weeks' dates; the explanation is under How this is measured.
-    expect(screen.getAllByText(/^[A-Z][a-z]{2} \d+–\d+ vs [A-Z][a-z]{2} \d+–\d+$/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^Changes compared with the week before \([A-Z][a-z]{2} \d+–\d+\)$/).length).toBeGreaterThan(0);
     expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();
     expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
     expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
@@ -164,7 +164,7 @@ describe('Live route dashboard', () => {
     vi.setSystemTime(new Date('2026-10-15T20:00:00Z'));
     try {
       const { unmount } = renderPage(ready);
-      expect(await screen.findByText('Oct 8–14 · 1,234 trips · estimated from where vehicles were, not reported by TTC')).toBeTruthy();
+      expect(await screen.findByText('Week of Oct 8–14 · 1,234 trips · estimated from where vehicles were, not reported by TTC')).toBeTruthy();
       expect(screen.queryByRole('status')).toBeNull();
       unmount();
       vi.setSystemTime(new Date('2026-10-25T20:00:00Z'));

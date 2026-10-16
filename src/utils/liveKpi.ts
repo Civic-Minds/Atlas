@@ -27,19 +27,23 @@ const clean = (x: number) => String(round1(x)).replace('-', '−');
 const pct0 = (x: number) => `${Math.round(x * 100)}%`;
 const pct1 = (x: number) => `${clean(Math.round(x * 1000) / 10)}%`;
 
-/** The change chip: "▲ 1 pt", "▼ 0.1 pt", or "same". `isShare` figures are 0-1 and change in points; the rest in minutes. */
-export function kpiDelta(key: CompareKey, now: number | null, before: number | null, lowerIsBetter: boolean, isShare: boolean, noise: number | null = null): Kpi['delta'] {
+/**
+ * The change line: "down from 10% last week", "up from 5% faster last week", or "same as last week". `lastText` is last
+ * week's value as the tile writes it; without it the line gives the size of the change ("▲ 1 pt"). `isShare` figures are
+ * 0-1 and change in points; the rest in minutes.
+ */
+export function kpiDelta(key: CompareKey, now: number | null, before: number | null, lowerIsBetter: boolean, isShare: boolean, noise: number | null = null, lastText: string | null = null): Kpi['delta'] {
   if (now == null || before == null) return null;
   const diff = isShare ? (now - before) * 100 : now - before;
   const mag = round1(Math.abs(diff));
   const unit = isShare ? 'pt' : 'min';
-  if (mag === 0) return { arrow: 'none', text: 'same', tone: 'same', spoken: 'same as last week' };
+  if (mag === 0) return { arrow: 'none', text: lastText ? 'same as last week' : 'same', tone: 'same', spoken: 'same as last week' };
   const up = diff > 0;
   const { tone, big, measured } = weekChangeTone(key, now, before, lowerIsBetter, noise);
   const word = isShare ? (mag === 1 ? 'point' : 'points') : 'min';
   return {
     arrow: up ? 'up' : 'down',
-    text: `${up ? '▲' : '▼'} ${clean(mag)} ${unit}`,
+    text: lastText ? `${up ? 'up' : 'down'} from ${lastText} last week` : `${up ? '▲' : '▼'} ${clean(mag)} ${unit}`,
     tone,
     spoken: `${up ? 'up' : 'down'} ${clean(mag)} ${word} from last week${big ? (measured ? ', a bigger change than usual day to day' : '') : (measured ? ', within the usual day-to-day change' : ', a small change')}`,
   };
@@ -56,25 +60,25 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   const mk = (key: CompareKey, label: string, value: string, sub: string, n: number, unit: string, nLast: number | null, delta: Kpi['delta'], last: string | null): Kpi => ({ key, label, value, sub, n, unit, nLastWeek: nLast, delta, lastWeekText: last });
   const compare = w.comparable;
   const tiles = [
-    mk('late', 'Late', t.late ? pct0(t.late.share) : '–', 'of departures 5.5+ min late', t.late?.n ?? 0, 'departures', l.late?.n ?? null,
-      compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, dailyNoise(daily.late, nThis, nLast)) : null, l.late ? pct0(l.late.share) : null),
+    mk('late', 'Late', t.late ? pct0(t.late.share) : '–', 'of departures left more than 5½ min late', t.late?.n ?? 0, 'departures', l.late?.n ?? null,
+      compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, dailyNoise(daily.late, nThis, nLast), l.late ? pct0(l.late.share) : null) : null, l.late ? pct0(l.late.share) : null),
     mk('tripTime', 'Run time', t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : '–', t.tripTime ? `${runStretch ? `${runStretch}; ` : ''}timetable ${Math.round(t.tripTime.scheduledMin)} min` : 'too few trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
-      compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false) : null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null),
-    mk('extraWait', 'Extra wait', t.extraWait ? `${clean(t.extraWait.minutes)} min` : '–', 'longer than scheduled', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
-      compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),
-    mk('bunching', 'Bunching', t.bunching ? pct0(t.bunching.share) : '–', 'of gaps too close or too far apart', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
-      compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true) : null, l.bunching ? pct0(l.bunching.share) : null),
+      compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false, null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null) : null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null),
+    mk('extraWait', 'Extra wait', t.extraWait ? `${clean(t.extraWait.minutes)} min` : '–', 'longer wait than the timetable promises', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
+      compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false, null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),
+    mk('bunching', 'Bunching', t.bunching ? pct0(t.bunching.share) : '–', 'of gaps between cars bunched or too long', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
+      compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true, null, l.bunching ? pct0(l.bunching.share) : null) : null, l.bunching ? pct0(l.bunching.share) : null),
     mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', t.delivered ? `of scheduled trips ran (${t.delivered.seen.toLocaleString()} of ${(t.delivered.seen + t.delivered.notSeen).toLocaleString()})` : 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
-      compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, dailyNoise(daily.delivered, nThis, nLast)) : null, l.delivered?.share != null ? pct1(l.delivered.share) : null),
+      compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, dailyNoise(daily.delivered, nThis, nLast), l.delivered?.share != null ? pct1(l.delivered.share) : null) : null, l.delivered?.share != null ? pct1(l.delivered.share) : null),
   ];
   return tiles.filter(k => k.value !== '–');
 }
 
 /** The small caption under the tiles: which days each week is, and which were left out. */
-/** The one line by the tiles: "Oct 8–14 vs Oct 1–7". The explanation lives under "How this is measured" (weekCaption). */
+/** The one line by the tiles: "Changes compared with the week before (Oct 1–7)". The explanation lives under "How this is measured" (weekCaption). */
 export function weekRangeLine(w: NonNullable<LiveV3['weekly']>): string {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
-  return w.comparable ? `${range(w.thisWeek)} vs ${range(w.lastWeek)}` : `${range(w.thisWeek)}: too few days of good recordings to compare with ${range(w.lastWeek)}`;
+  return w.comparable ? `Changes compared with the week before (${range(w.lastWeek)})` : `${range(w.thisWeek)}: too few days of good recordings to compare with ${range(w.lastWeek)}`;
 }
 
 /** The full explanation of the week comparison, for "How this is measured". */

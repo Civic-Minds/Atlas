@@ -184,7 +184,7 @@ export default function LiveAgencyPage() {
   const coverage = coverageText(s);
   const w = s.weekly;
   const dates = w?.thisWeek.dates ?? [];
-  const tiles = agencyKpiTiles(s, coverage);
+  const tiles = agencyKpiTiles(s);
   return (
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
@@ -192,14 +192,11 @@ export default function LiveAgencyPage() {
           <div className="min-w-0">
             <PageTitle>{name}: how the network is running</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {dates.length ? `${dateRangeText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
+              {dates.length ? `Week of ${dateRangeText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
         </div>
-        <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">
-          These figures cover only the {s.covered.length} routes Live has analysed so far ({s.covered.join(', ')}), not the whole network.
-        </p>
         <ErrorBoundary>
           {w && tiles.length
             ? <KpiTiles tiles={tiles} caption={weekRangeLine({ ...w, health: [] })} />
