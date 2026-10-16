@@ -62,8 +62,12 @@ export function branchFigures(b: RunTimeBranch, band: DashboardBand): RunTimeFig
   return b.bands ? b.bands[band] ?? null : band === 'all' ? b.all : null;
 }
 /** "To Marine Parade: usually 12 min, timetable 14 (over 14 stops from Humber Loop, 215 trips)." */
+/** The opening of the longer-pattern line: "To Bloor St West: usually 52 min, timetable 56" (the lite view's Run time tile). */
+export function branchRunTimeShort(b: RunTimeBranch, nice: (name: string) => string = x => x, f: RunTimeFigures = b.all): string {
+  return `To ${nice(b.toName)}: usually ${Math.round(f.typicalMin)} min, timetable ${Math.round(f.scheduledMin)}`;
+}
 export function branchRunTimeLine(b: RunTimeBranch, nice: (name: string) => string = x => x, f: RunTimeFigures = b.all): string {
-  return `To ${nice(b.toName)}: usually ${Math.round(f.typicalMin)} min, timetable ${Math.round(f.scheduledMin)}, 1 in 10 over ${Math.round(f.p90Min)} (over ${b.stops} stops from ${nice(b.fromName)}, ${f.n.toLocaleString()} trips).`;
+  return `${branchRunTimeShort(b, nice, f)}, 1 in 10 over ${Math.round(f.p90Min)} (over ${b.stops} stops from ${nice(b.fromName)}, ${f.n.toLocaleString()} trips).`;
 }
 export interface RunTimeFigures { n: number; scheduledMin: number; typicalMin: number; p90Min: number; overMin: number }
 export interface WeekMetrics {

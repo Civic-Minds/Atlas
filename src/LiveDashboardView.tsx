@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
-import { branchFigures, branchRunTimeLine, dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { branchFigures, branchRunTimeLine, branchRunTimeShort, dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, weekRangeLine, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import SortableDataTable from './components/ui/SortableDataTable';
@@ -38,10 +38,14 @@ function Delta({ k }: { k: Kpi }) {
 }
 
 /** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
-export function KpiRow({ v3 }: { v3: LiveV3 }) {
+export function KpiRow({ v3, branchLines = false }: { v3: LiveV3; /** The lite view: each longer pattern's run time under the Run time tile. */ branchLines?: boolean }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.')}</p>;
-  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), runTimeTileStretch(v3.runningTime?.stretch, n => shortStopName(titleCase(n))))} caption={weekRangeLine(w)} />;
+  const nice = (n: string) => shortStopName(titleCase(n));
+  const tiles = kpiTiles(w, weekDailyValues(v3), runTimeTileStretch(v3.runningTime?.stretch, nice));
+  const lines = branchLines ? Object.values(v3.runningTime?.branches ?? {}).flat().flatMap(b => { const f = branchFigures(b, 'all'); return f ? [branchRunTimeShort(b, nice, f)] : []; }) : [];
+  const after = lines.length ? <ul className="mt-2 grid gap-x-6 text-xs leading-5 text-[var(--text-dim)] sm:grid-cols-2">{lines.map(l => <li key={l}>{l}</li>)}</ul> : null;
+  return <KpiTiles tiles={tiles} caption={weekRangeLine(w)} after={after} />;
 }
 
 /** The week comparison explained, at the bottom of the page (the tiles carry only the two date ranges). */
@@ -57,7 +61,7 @@ function WeekMethod({ v3, toFull }: { v3: LiveV3; toFull: (hash: string) => void
 }
 
 /** The tiles row itself: the route dashboard and the agency dashboard show their figures the same way. */
-export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption: string }) {
+export function KpiTiles({ tiles, caption, after }: { tiles: Kpi[]; caption: string; /** Short lines right under the tile row (the lite view's longer patterns). */ after?: ReactNode }) {
   return (
     <section aria-label="This week compared with last week" className="mt-5">
       <ul className={`grid grid-cols-2 gap-3 sm:grid-cols-3 ${tiles.length >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
@@ -73,6 +77,7 @@ export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption: string }) 
           );
         })}
       </ul>
+      {after}
       <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">{caption}</p>
     </section>
   );
@@ -259,7 +264,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
   // The lite view (?view=lite), made to share: the week's tiles, the route strip, late by hour and a way into the rest.
   if (lite) return (
     <>
-      <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
+      <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} branchLines /></ErrorBoundary>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={null} allOnly /></ErrorBoundary>
       <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
