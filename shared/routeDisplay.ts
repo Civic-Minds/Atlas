@@ -21,8 +21,9 @@ export interface RouteDisplay {
 /**
  * Hide a numeric internal id when the route has a useful public name. `mode` is the route's effective mode (shared/modes.ts:
  * the feed's route_type with the agency's listed corrections), the same value the agency pages use, so a route hides or shows
- * its number the same way on every surface. Rail, subway, ferry and the other non-bus modes hide it (their ids are internal:
- * "30053" for the Expo Line, "1" for "Line 1 (Yonge-University)"). A streetcar keeps its number (TTC 501 Queen), and so does a
+ * its number the same way on every surface. Rail, subway, ferry and the other non-bus modes hide an id of three or more
+ * digits (internal: "30053" for the Expo Line, "701" for UTA's Blue Line) and keep a short one, which is the public name (NYC
+ * subway "2", O-Train "1"); "1" with "Line 1 (Yonge-University)" is handled by routeDisplay. A streetcar keeps its number (TTC 501 Queen), and so does a
  * bus ("108 Metro Local Line", "99 B-Line"); only a bus with a long internal id (5 or more digits) and a name ending in Line or
  * SeaBus loses it. Demand-responsive services (extended types 15xx) follow the bus rule. With no mode known the bus rule applies.
  */
@@ -37,7 +38,9 @@ export function shouldHideNumericRouteShortName(
   if (mode === 0) return false;
   // Demand-responsive extended types (15xx) are named like buses: their zone numbers are public (exo-laurentides 303).
   if (mode === undefined || mode === 3 || mode === 11 || (mode >= 1500 && mode < 1600)) return internalId && named;
-  return true;
+  // Rail, subway and ferry: a short number is the public name (NYC subway 1-7, O-Train 1, 2 and 4); a number of three or
+  // more digits is an internal id (UTA 701 Blue Line, Calgary 201 Red Line, HRT 800 Light Rail Tide, HRT 090 ferry).
+  return shortName.trim().length >= 3;
 }
 
 /**
@@ -68,7 +71,10 @@ const escapeRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
  */
 export function withoutRepeatedShortName(primary: string, secondary: string | undefined): { primary: string; secondary?: string } {
   if (!secondary) return { primary };
-  const short = escapeRe(primary.trim());
+  // A number repeats with or without leading zeros ("1" and "Route 01", "3" and "03 - Mason").
+  const short = /^\d+$/.test(primary.trim()) ? `0*${escapeRe(primary.trim().replace(/^0+(?=\d)/, ''))}` : escapeRe(primary.trim());
+  // "Route 01" on route 1 says nothing more than the number ("Line 2" on route 2 stays the name, as before).
+  if (/^\d+$/.test(primary.trim()) && new RegExp(`^${DESIGNATOR_WORD}0+${escapeRe(primary.trim().replace(/^0+(?=\d)/, ''))}$`, 'i').test(secondary.trim())) return { primary };
   if (new RegExp(`${DESIGNATOR_WORD}${short}$`, 'i').test(secondary.trim())) return { primary: secondary.trim() };
   // A one-letter code followed straight by a hyphen is part of the name ("G-Line"), not a separator.
   const sep = /^[A-Za-z]$/.test(primary.trim()) ? '(?:\\s+[-–—:./]?\\s*|[:./]\\s*)' : '\\s*[-–—:./]?\\s*';

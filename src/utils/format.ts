@@ -235,7 +235,9 @@ export function routeLabelCase(part: string): string {
  */
 export function routeLabels(input: Parameters<typeof routeDisplay>[0]) {
   const d = routeDisplay(input);
-  const primary = routeLabelCase(d.primary);
+  // The route's own code in capitals ("SSSF", "RWXP", "CRSN") is never title-cased; it would read "Sssf".
+  const ownCode = !!input.shortName && d.primary === input.shortName.trim() && /^[\p{Lu}\p{N}]+$/u.test(d.primary);
+  const primary = ownCode ? d.primary : routeLabelCase(d.primary);
   const secondary = d.secondary ? routeLabelCase(d.secondary) : undefined;
   return { primary, secondary, text: secondary ? `${primary} — ${secondary}` : primary };
 }

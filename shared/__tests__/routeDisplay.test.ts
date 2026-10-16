@@ -22,9 +22,12 @@ describe('splitDesignator', () => {
 });
 
 describe('shouldHideNumericRouteShortName', () => {
-  it('hides numeric ids on rail, subway and ferry, but not on trams or buses', () => {
+  it('hides internal (3+ digit) ids on rail, subway and ferry, keeps short public numbers, never on trams or buses', () => {
     expect(shouldHideNumericRouteShortName('30053', 'Expo Line', 1)).toBe(true);
-    expect(shouldHideNumericRouteShortName('1', 'Line 1 (Yonge-University)', 1)).toBe(true);
+    expect(shouldHideNumericRouteShortName('090', 'Elizabeth River Ferry', 4)).toBe(true);
+    // NYC subway 2 and 3 share "7 Avenue Express"; O-Train 1: the number is the public name.
+    expect(shouldHideNumericRouteShortName('2', '7 Avenue Express', 1)).toBe(false);
+    expect(shouldHideNumericRouteShortName('1', "Blair <> Tunney's Pasture", 12)).toBe(false);
     expect(shouldHideNumericRouteShortName('501', 'Queen', 0)).toBe(false);
     expect(shouldHideNumericRouteShortName('108', 'Metro Local Line', 3)).toBe(false);
     expect(shouldHideNumericRouteShortName('099', 'Broadway B-Line', 3)).toBe(false);
@@ -85,5 +88,12 @@ describe('routeDisplay', () => {
     expect(routeDisplay({ shortName: '090', longName: 'ELIZABETH RIVER FERRY', routeType: 4, agencySlug: 'hrt' }).text).toBe('ELIZABETH RIVER FERRY');
     expect(routeDisplay({ shortName: '501', longName: 'Queen', routeType: 0, agencySlug: 'ttc' }).text).toBe('501 — Queen');
     expect(routeDisplay({ shortName: '303', longName: 'Saint-Jérôme (Saint-Camille) (sur réservation)', routeType: 1501, agencySlug: 'exo-laurentides' }).primary).toBe('303');
+  });
+  it('treats a zero-padded number as a repeat, and never title-cases the route\'s own capital code', () => {
+    expect(routeDisplay({ shortName: '1', longName: '01 - Midway', routeType: 3 }).text).toBe('1 — Midway');
+    expect(routeDisplay({ shortName: '3', longName: 'Route 03 - Green', routeType: 3 }).text).toBe('3 — Green');
+    expect(routeDisplay({ shortName: '1', longName: 'Route 01', routeType: 3 }).text).toBe('1');
+    expect(routeDisplay({ shortName: '2', longName: 'Line 2', routeType: 3 }).text).toBe('Line 2');
+    expect(routeDisplay({ shortName: 'A', longName: '8 Avenue Express', routeType: 1, agencySlug: 'nyct-subway' }).text).toBe('A — 8 Avenue Express');
   });
 });

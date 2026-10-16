@@ -134,6 +134,8 @@ describe('routeLabels case', () => {
     expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
     expect(routeLabelCase('Île-des-Soeurs')).toBe('Île-des-Soeurs');
     for (const code of ['SL1', '34E', '1X', 'WCE', 'GO', 'SU 43', 'RT 5']) expect(routeLabelCase(code)).toBe(code);
+    expect(routeLabels({ shortName: 'SSSF', longName: 'Sausalito - San Francisco Ferry', routeType: 4 }).primary).toBe('SSSF');
+    expect(routeLabels({ shortName: 'RWXP', longName: 'Ridgway Express', routeType: 3 }).text).toBe('RWXP — Ridgway Express');
   });
   it('gives the card title in title case and lists the cleaned names', () => {
     expect(routeLabels({ shortName: '961', longName: '757X - NORFOLK TO NNTC', routeType: 3 })).toMatchObject({ primary: '757X', secondary: 'Norfolk to NNTC', text: '757X — Norfolk to NNTC' });
