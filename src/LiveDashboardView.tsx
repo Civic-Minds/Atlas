@@ -20,6 +20,8 @@ import LegendItem from './components/ui/LegendItem';
 import { SectionTitle } from './components/ui/PageTitle';
 import { lateCount, lateHourLine } from '../shared/liveWording';
 import MethodFootnote from './components/Live/MethodFootnote';
+import type { LiveYesterday } from '../shared/liveYesterday';
+import { NOT_ENOUGH_YESTERDAY, againstLastWeekday, changesComparedWithSameDay, dayText } from '../shared/liveWording';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', '−');
@@ -41,6 +43,20 @@ function Delta({ k }: { k: Kpi }) {
 }
 
 /** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
+/** The Yesterday tiles: the same five figures for one day, against the same weekday a week before (CIV-278). */
+export function YesterdayTiles({ y, tiles }: { y: LiveYesterday; tiles?: Kpi[] }) {
+  if (!y.weekly.thisWeek.healthyDates.length) return <p className="mt-5 text-sm text-[var(--text-muted)]">{NOT_ENOUGH_YESTERDAY}</p>;
+  const ks = (tiles ?? kpiTiles(y.weekly, y.daily)).map(k => (k.delta ? { ...k, delta: { ...k.delta, text: againstLastWeekday(k.delta.text, y.compareDate) } } : k));
+  return <KpiTiles tiles={ks} caption={y.weekly.comparable ? changesComparedWithSameDay(y.compareDate) : NOT_ENOUGH_YESTERDAY} />;
+}
+
+/** The Yesterday view's late-by-hour, for Days. */
+export const yesterdayHours = (y: LiveYesterday) => ({
+  label: dayText(y.date),
+  late: y.weekly.thisWeek.late ? { ...y.weekly.thisWeek.late, days: 1 } : null,
+  hours: y.lateByHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n })),
+});
+
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.')}</p>;
@@ -80,9 +96,9 @@ export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption: string }) 
 }
 
 /** Late share and lateness by hour for all days, weekdays and weekends, side by side on one scale. */
-function Days({ v3, data, band, dir, allOnly = false }: { v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; /** The lite view: the All days chart only. */ allOnly?: boolean }) {
+function Days({ v3, data, band, dir, allOnly = false, oneDay }: { v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; /** The lite view: the All days chart only. */ allOnly?: boolean; /** The Yesterday view: that day's figures in place of the week's. */ oneDay?: { label: string; late: { share: number; n: number; days: number } | null; hours: HourValue[] } }) {
   const healthy = v3.weekly?.thisWeek.healthyDates ?? v3.window.dates;
-  const cols = DAY_KINDS.filter(([kind]) => !allOnly || kind === 'all').map(([kind, label]) => {
+  const cols = oneDay ? [{ kind: 'all' as const, label: oneDay.label, late: oneDay.late, hours: oneDay.hours }] : DAY_KINDS.filter(([kind]) => !allOnly || kind === 'all').map(([kind, label]) => {
     const block = data.adherence.timepoints[kind];
     const late = lateForDays(block.byDate, healthy, kind);
     const hours: HourValue[] = block.byHour.filter(h => h.n > 0 && (band === 'all' || periodKeyForHour(h.hour) === band)).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));
@@ -252,21 +268,26 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
   );
 }
 
-export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, toFull, lite = false }: {
+export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, toFull, lite = false, yesterday = null, periodPills = null }: {
   v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[]; note: string | null; title: string;
   /** The direction and time-of-day pills: they sit below the week figures, above the parts they change. */
   filters: ReactNode;
   toFull: (hash: string) => void;
   /** The lite view: tiles, strip, late by hour and the Full analysis link only. */
   lite?: boolean;
+  /** The lite view's Yesterday figures, when the Yesterday pill is on. */
+  yesterday?: LiveYesterday | null;
+  /** The This week / Yesterday pills, shown above the tiles in the lite view. */
+  periodPills?: ReactNode;
 }) {
   const bad = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
   // The lite view (?view=lite), made to share: the week's tiles, the route strip, late by hour and a way into the rest.
   if (lite) return (
     <>
-      <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
+      {periodPills}
+      <ErrorBoundary label={bad('The week comparison')}>{yesterday ? <YesterdayTiles y={yesterday} /> : <KpiRow v3={v3} />}</ErrorBoundary>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
-      <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={null} allOnly /></ErrorBoundary>
+      <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={null} allOnly oneDay={yesterday ? yesterdayHours(yesterday) : undefined} /></ErrorBoundary>
       <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
     </>
   );

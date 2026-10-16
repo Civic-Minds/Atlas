@@ -28,7 +28,8 @@ import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { weekOfText, lateCount, lateHourLine } from '../shared/liveWording';
+import { weekOfText, lateCount, lateHourLine, dayText, PERIOD_PILLS } from '../shared/liveWording';
+import { useLiveYesterday } from './hooks/useLiveYesterday';
 import MethodFootnote from './components/Live/MethodFootnote';
 
 type Day = 'all' | 'weekday' | 'weekend';
@@ -517,6 +518,10 @@ function AnalysisPage() {
   // ?view=dashboard for now, and ?view=analysis is the full page.
   const [view, setView] = useState<'dashboard' | 'analysis' | 'lite'>(() => { const v = new URLSearchParams(window.location.search).get('view'); return v === 'analysis' || v === 'dashboard' ? v : 'lite'; });
   useEffect(() => { syncUrlParams({ view: view === 'lite' ? null : view }); }, [view]);
+  // The summary's This week / Yesterday choice (CIV-278), kept in the address.
+  const [day, setDay] = useState<'week' | 'yesterday'>(() => (new URLSearchParams(window.location.search).get('day') === 'yesterday' ? 'yesterday' : 'week'));
+  useEffect(() => { syncUrlParams({ day: day === 'yesterday' ? 'yesterday' : null }); }, [day]);
+  const yesterday = useLiveYesterday(FEATURES.liveReports ? agency : null, route ?? null, view === 'lite' && day === 'yesterday');
   useEffect(() => {
     if (view !== 'analysis' || !window.location.hash) return;
     document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
@@ -545,6 +550,13 @@ function AnalysisPage() {
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
   const bandData = v3.bands?.[band] as DashboardBandData;
   const uncertain = data.uncertainStart ?? [];
+  const shownYesterday = view === 'lite' && day === 'yesterday' ? yesterday : null;
+  const periodPills = (
+    <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label={`${PERIOD_PILLS.week} or ${PERIOD_PILLS.yesterday}`}>
+      <Pill size="segment" selected={day === 'week'} onClick={() => setDay('week')}>{PERIOD_PILLS.week}</Pill>
+      <Pill size="segment" selected={day === 'yesterday'} onClick={() => setDay('yesterday')}>{PERIOD_PILLS.yesterday}</Pill>
+    </div>
+  );
   return (
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
@@ -552,7 +564,7 @@ function AnalysisPage() {
           <div className="min-w-0">
             <PageTitle>{title}: how it is running</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {v3.window.dates.length ? `${weekOfText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} trips · estimated from where vehicles were, not reported by {agency.toUpperCase()}
+              {shownYesterday ? `${dayText(shownYesterday.date)} · ${(shownYesterday.weekly.thisWeek.late?.n ?? 0).toLocaleString()} trips · ` : v3.window.dates.length ? `${weekOfText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ${v3.totals.runs.toLocaleString()} trips · ` : `${v3.totals.runs.toLocaleString()} trips · `}estimated from where vehicles were, not reported by {agency.toUpperCase()}
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
@@ -568,7 +580,7 @@ function AnalysisPage() {
           <Pill size="segment" selected={view === 'analysis'} onClick={() => setView('analysis')}>Full analysis</Pill>
         </div>}
         {view !== 'analysis' ? (
-          <LiveDashboardView lite={view === 'lite'} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}
+          <LiveDashboardView lite={view === 'lite'} yesterday={shownYesterday} periodPills={periodPills} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}
             filters={<Filters v3={v3} dir={dir} setDir={setDir} />}
             toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
         ) : (<>

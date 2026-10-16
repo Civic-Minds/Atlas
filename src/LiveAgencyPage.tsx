@@ -20,10 +20,12 @@ import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
 import SortableDataTable from './components/ui/SortableDataTable';
 import LiveOffNotice from './components/LiveOffNotice';
-import { KpiTiles } from './LiveDashboardView';
+import { KpiTiles, YesterdayTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { weekOfText } from '../shared/liveWording';
+import { weekOfText, dayText, PERIOD_PILLS } from '../shared/liveWording';
+import { useLiveYesterday } from './hooks/useLiveYesterday';
+import Pill from './components/ui/Pill';
 import MethodFootnote from './components/Live/MethodFootnote';
 
 const MINUS = '−';
@@ -167,6 +169,10 @@ export default function LiveAgencyPage() {
   const { agency = '' } = useParams();
   // Live off: no request at all, only the notice.
   const state = useLiveAgency(FEATURES.liveReports ? agency : '');
+  // This week / Yesterday (CIV-278), kept in the address; Yesterday swaps the tiles only.
+  const [day, setDay] = useState<'week' | 'yesterday'>(() => (new URLSearchParams(window.location.search).get('day') === 'yesterday' ? 'yesterday' : 'week'));
+  useEffect(() => { syncUrlParams({ day: day === 'yesterday' ? 'yesterday' : null }); }, [day]);
+  const yesterday = useLiveYesterday(FEATURES.liveReports ? agency : null, null, day === 'yesterday');
   useEffect(() => {
     if (!agency) return;
     applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
@@ -184,6 +190,7 @@ export default function LiveAgencyPage() {
   const w = s.weekly;
   const dates = w?.thisWeek.dates ?? [];
   const tiles = agencyKpiTiles(s);
+  const shown = day === 'yesterday' ? yesterday : null;
   return (
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
@@ -191,13 +198,17 @@ export default function LiveAgencyPage() {
           <div className="min-w-0">
             <PageTitle>{name}: how the network is running</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {dates.length ? `${weekOfText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
+              {shown ? `${dayText(shown.date)} · ` : dates.length ? `${weekOfText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
         </div>
+        <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label={`${PERIOD_PILLS.week} or ${PERIOD_PILLS.yesterday}`}>
+          <Pill size="segment" selected={day === 'week'} onClick={() => setDay('week')}>{PERIOD_PILLS.week}</Pill>
+          <Pill size="segment" selected={day === 'yesterday'} onClick={() => setDay('yesterday')}>{PERIOD_PILLS.yesterday}</Pill>
+        </div>
         <ErrorBoundary>
-          {w && tiles.length
+          {shown ? <YesterdayTiles y={shown} tiles={agencyKpiTiles({ ...s, weekly: shown.weekly, daily: shown.daily })} /> : w && tiles.length
             ? <KpiTiles tiles={tiles} caption={weekRangeLine({ ...w, health: [] })} />
             : <p className="mt-5 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in the analysis files yet. Rebuild them with npm run live:analyze.')}</p>}
         </ErrorBoundary>

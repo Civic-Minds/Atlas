@@ -22,3 +22,14 @@ export const USUALLY_ON_TIME = 'Usually on time';
 export const usuallyOffBy = (minutes: string, side: 'early' | 'late'): string => `Usually ${minutes} min ${side}`;
 export const lateShareText = (pct: string): string => `${pct} late`;
 export const bunchedAndLong = (bunched: string, tooLong: string): string => `${bunched} bunched · ${tooLong} too long`;
+
+/** The Yesterday view (CIV-278, wording approved by Ryan). */
+export const PERIOD_PILLS = { week: 'This week', yesterday: 'Yesterday' } as const;
+const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+export const weekdayOf = (date: string): string => WEEKDAYS[new Date(`${date}T12:00:00Z`).getUTCDay()];
+/** "Thursday, Oct 15": a single day where the weekly view says "Week of Oct 8–14". */
+export const dayText = (date: string): string => `${weekdayOf(date)}, ${dateRangeText(date, date)}`;
+/** A tile's change line against the same weekday a week before: "▲ from 9% last week" becomes "▲ from 9% last Thursday". */
+export const againstLastWeekday = (line: string, compareDate: string): string => line.replace(/last week$/, `last ${weekdayOf(compareDate)}`);
+export const changesComparedWithSameDay = (compareDate: string): string => `Changes compared with the same day last week (${dayText(compareDate)})`;
+export const NOT_ENOUGH_YESTERDAY = 'Not enough recordings yesterday to compare.';
