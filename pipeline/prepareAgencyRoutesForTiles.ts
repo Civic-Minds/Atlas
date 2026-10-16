@@ -12,6 +12,7 @@
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter.js';
 import { flattenPeriodHeadwayProps, pickTileRouteProperties } from '../shared/pmtilesProps.js';
 import { SHARED_STRETCH_KEYS } from './sharedStretch.js';
+import { STRETCH_SHADOW_KEYS } from './tripSets.js';
 
 export type RouteFeatureForTiles = {
   type: string;
@@ -39,6 +40,8 @@ export function prepareAgencyRouteFeaturesForTiles(
     // Shared-stretch values (CIV-82) are read from agency JSON only (frequency overlay,
     // stop popups). Tiles would only stringify them, so they stay out and tiles are unchanged.
     for (const key of SHARED_STRETCH_KEYS) delete f.properties[key];
+    // Frequency focus step 3 shadow fields: JSON only, so the tiles stay byte-identical.
+    for (const key of STRETCH_SHADOW_KEYS) delete f.properties[key];
     flattenPeriodHeadwayProps(f.properties);
     // Keep only what the map reads from a tile; the nested tables stay in the agency JSON.
     f.properties = pickTileRouteProperties(f.properties);

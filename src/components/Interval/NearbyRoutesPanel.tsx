@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import { headwayToTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { fmtHeadway, titleCase } from '../../utils/format';
-import { headwayAboutRange } from '../../utils/headwayText';
+import { headwayEveryRange } from '../../utils/headwayText';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { PANEL_Z_INDEX, PANEL_TITLE } from '../../styles';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
@@ -71,12 +71,12 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   </span>
                   {r.headway != null && (
                     <span className="text-xs font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
-                      {r.sharedHeadway != null ? headwayAboutRange(r.sharedHeadway, r.headway) : fmtHeadway(r.headway)}
+                      {r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : fmtHeadway(r.headway)}
                     </span>
                   )}
-                  {r.headway == null && r.limited && (
+                  {r.headway == null && (r.limited || r.noRegular) && (
                     <span className="text-xs font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
-                      limited
+                      {r.noRegular ? 'no regular service' : 'limited'}
                     </span>
                   )}
                 </div>

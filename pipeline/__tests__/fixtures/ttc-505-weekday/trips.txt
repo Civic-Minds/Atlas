@@ -1,0 +1,377 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+505,1,50810058,East - 505 Dundas towards Broadview Station,,0,2234158,1122881,1,2
+505,1,50810146,East - 505 Dundas towards Broadview Station,,0,2234165,1122881,1,2
+505,1,50810148,East - 505 Dundas towards Broadview Station,,0,2234163,1122881,1,2
+505,1,50810145,East - 505 Dundas towards Broadview Station,,0,2234157,1122881,1,2
+505,1,50810144,East - 505 Dundas towards Broadview Station,,0,2234153,1122881,1,2
+505,1,50810143,East - 505 Dundas towards Broadview Station,,0,2234155,1122881,1,2
+505,1,50810142,East - 505 Dundas towards Broadview Station,,0,2234133,1122881,1,2
+505,1,50810141,East - 505 Dundas towards Broadview Station,,0,2234135,1122881,1,2
+505,1,50810057,East - 505 Dundas towards Broadview Station,,0,2234158,1122880,1,2
+505,1,50810140,East - 505 Dundas towards Broadview Station,,0,2234167,1122881,1,2
+505,1,50810177,East - 505 Dundas towards Broadview Station,,0,2234165,1122880,1,2
+505,1,50810139,East - 505 Dundas towards Broadview Station,,0,2234154,1122881,1,2
+505,1,50810176,East - 505 Dundas towards Broadview Station,,0,2234163,1122880,1,2
+505,1,50810174,East - 505 Dundas towards Broadview Station,,0,2234157,1122877,1,2
+505,1,50810054,East - 505 Dundas towards Broadview Station,,0,2234136,1122881,1,2
+505,1,50810073,East - 505 Dundas towards Broadview Station,,0,2234159,1122881,1,2
+505,1,50810175,East - 505 Dundas towards Broadview Station,,0,2234153,1122877,1,2
+505,1,50810173,East - 505 Dundas towards Broadview Station,,0,2234155,1122877,1,2
+505,1,50810172,East - 505 Dundas towards Broadview Station,,0,2234133,1122877,1,2
+505,1,50810171,East - 505 Dundas towards Broadview Station,,0,2234135,1122877,1,2
+505,1,50810170,East - 505 Dundas towards Broadview Station,,0,2234167,1122877,1,2
+505,1,50810169,East - 505 Dundas towards Broadview Station,,0,2234154,1122877,1,2
+505,1,50810168,East - 505 Dundas towards Broadview Station,,0,2234136,1122877,1,2
+505,1,50810115,East - 505 Dundas towards Broadview Station,,0,2234152,1122878,1,2
+505,1,50810167,East - 505 Dundas towards Broadview Station,,0,2234159,1122877,1,2
+505,1,50810156,East - 505 Dundas towards Broadview Station,,0,2234158,1122877,1,2
+505,1,50810085,East - 505 Dundas towards Broadview Station,,0,2234165,1122877,1,2
+505,1,50810084,East - 505 Dundas towards Broadview Station,,0,2234163,1122877,1,2
+505,1,50810083,East - 505 Dundas towards Broadview Station,,0,2234151,1122877,1,2
+505,1,50810114,East - 505 Dundas towards Broadview Station,,0,2234138,1122878,1,2
+505,1,50810082,East - 505 Dundas towards Broadview Station,,0,2234157,1122877,1,2
+505,1,50810074,East - 505 Dundas towards Broadview Station,,0,2234164,1122878,1,2
+505,1,50810081,East - 505 Dundas towards Broadview Station,,0,2234140,1122877,1,2
+505,1,50810080,East - 505 Dundas towards Broadview Station,,0,2234153,1122877,1,2
+505,1,50810079,East - 505 Dundas towards Broadview Station,,0,2234155,1122877,1,2
+505,1,50810078,East - 505 Dundas towards Broadview Station,,0,2234152,1122877,1,2
+505,1,50810147,East - 505 Dundas towards Broadview Station,,0,2234134,1122878,1,2
+505,1,50810077,East - 505 Dundas towards Broadview Station,,0,2234133,1122877,1,2
+505,1,50810076,East - 505 Dundas towards Broadview Station,,0,2234137,1122877,1,2
+505,1,50810137,East - 505 Dundas towards Broadview Station,,0,2234160,1122878,1,2
+505,1,50810075,East - 505 Dundas towards Broadview Station,,0,2234135,1122877,1,2
+505,1,50810138,East - 505 Dundas towards Broadview Station,,0,2234162,1122877,1,2
+505,1,50810136,East - 505 Dundas towards Broadview Station,,0,2234167,1122877,1,2
+505,1,50810135,East - 505 Dundas towards Broadview Station,,0,2234154,1122877,1,2
+505,1,50810060,East - 505 Dundas towards Broadview Station,,0,2234161,1122877,1,2
+505,1,50810166,East - 505 Dundas towards Broadview Station,,0,2234138,1122877,1,2
+505,1,50810165,East - 505 Dundas towards Broadview Station,,0,2234136,1122877,1,2
+505,1,50810164,East - 505 Dundas towards Broadview Station,,0,2234164,1122877,1,2
+505,1,50810163,East - 505 Dundas towards Broadview Station,,0,2234159,1122877,1,2
+505,1,50810162,East - 505 Dundas towards Broadview Station,,0,2234158,1122877,1,2
+505,1,50810161,East - 505 Dundas towards Broadview Station,,0,2234134,1122877,1,2
+505,1,50810160,East - 505 Dundas towards Broadview Station,,0,2234165,1122877,1,2
+505,1,50810159,East - 505 Dundas towards Broadview Station,,0,2234160,1122877,1,2
+505,1,50810158,East - 505 Dundas towards Broadview Station,,0,2234163,1122877,1,2
+505,1,50810157,East - 505 Dundas towards Broadview Station,,0,2234151,1122877,1,2
+505,1,50810112,East - 505 Dundas towards Broadview Station,,0,2234157,1122877,1,2
+505,1,50810134,East - 505 Dundas towards Broadview Station,,0,2234140,1122877,1,2
+505,1,50810133,East - 505 Dundas towards Broadview Station,,0,2234153,1122877,1,2
+505,1,50810132,East - 505 Dundas towards Broadview Station,,0,2234155,1122877,1,2
+505,1,50810131,East - 505 Dundas towards Broadview Station,,0,2234152,1122877,1,2
+505,1,50810053,East - 505 Dundas towards Broadview Station,,0,2234139,1122878,1,2
+505,1,50810130,East - 505 Dundas towards Broadview Station,,0,2234133,1122877,1,2
+505,1,50810129,East - 505 Dundas towards Broadview Station,,0,2234137,1122877,1,2
+505,1,50810128,East - 505 Dundas towards Broadview Station,,0,2234135,1122877,1,2
+505,1,50810127,East - 505 Dundas towards Broadview Station,,0,2234162,1122877,1,2
+505,1,50810126,East - 505 Dundas towards Broadview Station,,0,2234167,1122877,1,2
+505,1,50810125,East - 505 Dundas towards Broadview Station,,0,2234154,1122877,1,2
+505,1,50810124,East - 505 Dundas towards Broadview Station,,0,2234161,1122877,1,2
+505,1,50810123,East - 505 Dundas towards Broadview Station,,0,2234138,1122877,1,2
+505,1,50810122,East - 505 Dundas towards Broadview Station,,0,2234136,1122877,1,2
+505,1,50810121,East - 505 Dundas towards Broadview Station,,0,2234164,1122877,1,2
+505,1,50810120,East - 505 Dundas towards Broadview Station,,0,2234159,1122877,1,2
+505,1,50810119,East - 505 Dundas towards Broadview Station,,0,2234158,1122877,1,2
+505,1,50810118,East - 505 Dundas towards Broadview Station,,0,2234134,1122877,1,2
+505,1,50810117,East - 505 Dundas towards Broadview Station,,0,2234139,1122877,1,2
+505,1,50810116,East - 505 Dundas towards Broadview Station,,0,2234165,1122877,1,2
+505,1,50810096,East - 505 Dundas towards Broadview Station,,0,2234160,1122877,1,2
+505,1,50810072,East - 505 Dundas towards Broadview Station,,0,2234163,1122877,1,2
+505,1,50810071,East - 505 Dundas towards Broadview Station,,0,2234151,1122877,1,2
+505,1,50810070,East - 505 Dundas towards Broadview Station,,0,2234157,1122877,1,2
+505,1,50810069,East - 505 Dundas towards Broadview Station,,0,2234140,1122877,1,2
+505,1,50810068,East - 505 Dundas towards Broadview Station,,0,2234153,1122877,1,2
+505,1,50810066,East - 505 Dundas towards Broadview Station,,0,2234155,1122877,1,2
+505,1,50810065,East - 505 Dundas towards Broadview Station,,0,2234152,1122877,1,2
+505,1,50810064,East - 505 Dundas towards Broadview Station,,0,2234133,1122877,1,2
+505,1,50810063,East - 505 Dundas towards Broadview Station,,0,2234137,1122877,1,2
+505,1,50810062,East - 505 Dundas towards Broadview Station,,0,2234135,1122877,1,2
+505,1,50810061,East - 505 Dundas towards Broadview Station,,0,2234162,1122877,1,2
+505,1,50810113,East - 505 Dundas towards Broadview Station,,0,2234167,1122877,1,2
+505,1,50810091,East - 505 Dundas towards Broadview Station,,0,2234154,1122877,1,2
+505,1,50810090,East - 505 Dundas towards Broadview Station,,0,2234161,1122877,1,2
+505,1,50810089,East - 505 Dundas towards Broadview Station,,0,2234138,1122877,1,2
+505,1,50810088,East - 505 Dundas towards Broadview Station,,0,2234136,1122877,1,2
+505,1,50810087,East - 505 Dundas towards Broadview Station,,0,2234164,1122877,1,2
+505,1,50810086,East - 505 Dundas towards Broadview Station,,0,2234159,1122877,1,2
+505,1,50810155,East - 505 Dundas towards Broadview Station,,0,2234158,1122877,1,2
+505,1,50810154,East - 505 Dundas towards Broadview Station,,0,2234134,1122877,1,2
+505,1,50810153,East - 505 Dundas towards Broadview Station,,0,2234139,1122877,1,2
+505,1,50810152,East - 505 Dundas towards Broadview Station,,0,2234165,1122877,1,2
+505,1,50810151,East - 505 Dundas towards Broadview Station,,0,2234160,1122877,1,2
+505,1,50810179,East - 505 Dundas towards Broadview Station,,0,2234166,1122878,1,2
+505,1,50810150,East - 505 Dundas towards Broadview Station,,0,2234163,1122877,1,2
+505,1,50810095,East - 505 Dundas towards Broadview Station,,0,2234151,1122877,1,2
+505,1,50810094,East - 505 Dundas towards Broadview Station,,0,2234157,1122877,1,2
+505,1,50810093,East - 505 Dundas towards Broadview Station,,0,2234140,1122877,1,2
+505,1,50810092,East - 505 Dundas towards Broadview Station,,0,2234153,1122877,1,2
+505,1,50810111,East - 505 Dundas towards Broadview Station,,0,2234155,1122877,1,2
+505,1,50810110,East - 505 Dundas towards Broadview Station,,0,2234152,1122877,1,2
+505,1,50810109,East - 505 Dundas towards Broadview Station,,0,2234133,1122877,1,2
+505,1,50810108,East - 505 Dundas towards Broadview Station,,0,2234137,1122877,1,2
+505,1,50810107,East - 505 Dundas towards Broadview Station,,0,2234135,1122877,1,2
+505,1,50810106,East - 505 Dundas towards Broadview Station,,0,2234162,1122877,1,2
+505,1,50810105,East - 505 Dundas towards Broadview Station,,0,2234167,1122877,1,2
+505,1,50810067,East - 505 Dundas towards Broadview Station,,0,2234156,1122878,1,2
+505,1,50810104,East - 505 Dundas towards Broadview Station,,0,2234154,1122877,1,2
+505,1,50810103,East - 505 Dundas towards Broadview Station,,0,2234161,1122877,1,2
+505,1,50810102,East - 505 Dundas towards Broadview Station,,0,2234166,1122877,1,2
+505,1,50810101,East - 505 Dundas towards Broadview Station,,0,2234138,1122877,1,2
+505,1,50810100,East - 505 Dundas towards Broadview Station,,0,2234136,1122877,1,2
+505,1,50810099,East - 505 Dundas towards Broadview Station,,0,2234164,1122877,1,2
+505,1,50810098,East - 505 Dundas towards Broadview Station,,0,2234159,1122877,1,2
+505,1,50810205,East - 505 Dundas towards Broadview Station,,0,2234158,1122877,1,2
+505,1,50810204,East - 505 Dundas towards Broadview Station,,0,2234134,1122877,1,2
+505,1,50810203,East - 505 Dundas towards Broadview Station,,0,2234139,1122877,1,2
+505,1,50810202,East - 505 Dundas towards Broadview Station,,0,2234165,1122877,1,2
+505,1,50810201,East - 505 Dundas towards Broadview Station,,0,2234160,1122877,1,2
+505,1,50810200,East - 505 Dundas towards Broadview Station,,0,2234163,1122877,1,2
+505,1,50810199,East - 505 Dundas towards Broadview Station,,0,2234156,1122877,1,2
+505,1,50810198,East - 505 Dundas towards Broadview Station,,0,2234151,1122877,1,2
+505,1,50810197,East - 505 Dundas towards Broadview Station,,0,2234157,1122877,1,2
+505,1,50810196,East - 505 Dundas towards Broadview Station,,0,2234140,1122877,1,2
+505,1,50810195,East - 505 Dundas towards Broadview Station,,0,2234153,1122877,1,2
+505,1,50810194,East - 505 Dundas towards Broadview Station,,0,2234155,1122877,1,2
+505,1,50810193,East - 505 Dundas towards Broadview Station,,0,2234152,1122877,1,2
+505,1,50810192,East - 505 Dundas towards Broadview Station,,0,2234133,1122877,1,2
+505,1,50810191,East - 505 Dundas towards Broadview Station,,0,2234137,1122877,1,2
+505,1,50810190,East - 505 Dundas towards Broadview Station,,0,2234135,1122877,1,2
+505,1,50810189,East - 505 Dundas towards Broadview Station,,0,2234162,1122877,1,2
+505,1,50810188,East - 505 Dundas towards Broadview Station,,0,2234167,1122877,1,2
+505,1,50810187,East - 505 Dundas towards Broadview Station,,0,2234154,1122877,1,2
+505,1,50810186,East - 505 Dundas towards Broadview Station,,0,2234161,1122877,1,2
+505,1,50810185,East - 505 Dundas towards Broadview Station,,0,2234166,1122877,1,2
+505,1,50810184,East - 505 Dundas towards Broadview Station,,0,2234138,1122877,1,2
+505,1,50810183,East - 505 Dundas towards Broadview Station,,0,2234136,1122877,1,2
+505,1,50810182,East - 505 Dundas towards Broadview Station,,0,2234164,1122877,1,2
+505,1,50810181,East - 505 Dundas towards Broadview Station,,0,2234159,1122877,1,2
+505,1,50810180,East - 505 Dundas towards Broadview Station,,0,2234158,1122877,1,2
+505,1,50810178,East - 505 Dundas towards Broadview Station,,0,2234134,1122877,1,2
+505,1,50810055,East - 505 Dundas towards Broadview Station,,0,2234139,1122877,1,2
+505,1,50810097,East - 505 Dundas Short Turn towards Broadview Ave,S,0,2234165,1122879,1,2
+505,1,50810059,East - 505 Dundas towards Broadview Station,,0,2234160,1122877,1,2
+505,1,50810149,East - 505 Dundas Short Turn towards Broadview Ave,S,0,2234163,1122879,1,2
+505,1,50810056,East - 505 Dundas towards Broadview Station,,0,2234156,1122877,1,2
+505,1,50810206,East - 505 Dundas Short Turn towards Broadview Ave,S,0,2234151,1122879,1,2
+505,1,50810215,East - 505 Dundas towards Broadview Station,,0,2234157,1122877,1,2
+505,1,50810216,East - 505 Dundas towards Broadview Station,,0,2234140,1122877,1,2
+505,1,50810208,East - 505 Dundas Short Turn towards Broadview Ave,S,0,2234153,1122879,1,2
+505,1,50810212,East - 505 Dundas towards Broadview Station,,0,2234155,1122877,1,2
+505,1,50810207,East - 505 Dundas Short Turn towards Broadview Ave,S,0,2234152,1122879,1,2
+505,1,50810241,East - 505 Dundas towards Broadview Station,,0,2234133,1122877,1,2
+505,1,50810242,East - 505 Dundas towards Broadview Station,,0,2234137,1122877,1,2
+505,1,50810232,East - 505 Dundas towards Broadview Station,,0,2234135,1122877,1,2
+505,1,50810233,East - 505 Dundas towards Broadview Station,,0,2234154,1122877,1,2
+505,1,50810234,East - 505 Dundas towards Broadview Station,,0,2234138,1122877,1,2
+505,1,50810235,East - 505 Dundas towards Broadview Station,,0,2234136,1122877,1,2
+505,1,50810236,East - 505 Dundas towards Broadview Station,,0,2234159,1122877,1,2
+505,1,50810218,East - 505 Dundas towards Broadview Station,,0,2234134,1122877,1,2
+505,1,50810224,East - 505 Dundas towards Broadview Station,,0,2234139,1122877,1,2
+505,1,50810239,East - 505 Dundas Short Turn towards Broadview Ave,S,0,2234156,1122879,1,2
+505,1,50810225,East - 505 Dundas towards Broadview Station,,0,2234157,1122877,1,2
+505,1,50810231,East - 505 Dundas towards Broadview Station,,0,2234140,1122877,1,2
+505,1,50810211,East - 505 Dundas towards Broadview Station,,0,2234155,1122877,1,2
+505,1,50810226,East - 505 Dundas towards Broadview Station,,0,2234133,1122877,1,2
+505,1,50810227,East - 505 Dundas towards Broadview Station,,0,2234137,1122877,1,2
+505,1,50810228,East - 505 Dundas towards Broadview Station,,0,2234135,1122877,1,2
+505,1,50810229,East - 505 Dundas towards Broadview Station,,0,2234154,1122877,1,2
+505,1,50810209,East - 505 Dundas towards Broadview Station,,0,2234138,1122877,1,2
+505,1,50810222,East - 505 Dundas towards Broadview Station,,0,2234136,1122877,1,2
+505,1,50810223,East - 505 Dundas towards Broadview Station,,0,2234159,1122877,1,2
+505,1,50810237,East - 505 Dundas towards Broadview Station,,0,2234134,1122877,1,2
+505,1,50810238,East - 505 Dundas towards Broadview Station,,0,2234139,1122877,1,2
+505,1,50810240,East - 505 Dundas towards Broadview Station,,0,2234157,1122877,1,2
+505,1,50810219,East - 505 Dundas towards Broadview Station,,0,2234140,1122877,1,2
+505,1,50810213,East - 505 Dundas towards Broadview Station,,0,2234155,1122877,1,2
+505,1,50810214,East - 505 Dundas towards Broadview Station,,0,2234133,1122877,1,2
+505,1,50810230,East - 505 Dundas towards Broadview Station,,0,2234137,1122877,1,2
+505,1,50810217,East - 505 Dundas towards Broadview Station,,0,2234135,1122877,1,2
+505,1,50810210,East - 505 Dundas towards Broadview Station,,0,2234154,1122877,1,2
+505,1,50810220,East - 505 Dundas towards Broadview Station,,0,2234138,1122877,1,2
+505,1,50810221,East - 505 Dundas Short Turn towards Broadview Ave,S,0,2234159,1122879,1,2
+505,1,50810344,West - 505 Dundas towards Dundas West Station,,1,2234158,1122882,1,2
+505,1,50810243,West - 505 Dundas towards Dundas West Station,,1,2234165,1122882,1,2
+505,1,50810301,West - 505 Dundas towards Dundas West Station,,1,2234163,1122882,1,2
+505,1,50810279,West - 505 Dundas towards Dundas West Station,,1,2234157,1122882,1,2
+505,1,50810360,West - 505 Dundas towards Dundas West Station,,1,2234153,1122882,1,2
+505,1,50810359,West - 505 Dundas towards Dundas West Station,,1,2234155,1122882,1,2
+505,1,50810358,West - 505 Dundas towards Dundas West Station,,1,2234133,1122882,1,2
+505,1,50810357,West - 505 Dundas towards Dundas West Station,,1,2234135,1122882,1,2
+505,1,50810356,West - 505 Dundas towards Dundas West Station,,1,2234167,1122882,1,2
+505,1,50810355,West - 505 Dundas towards Dundas West Station,,1,2234154,1122882,1,2
+505,1,50810354,West - 505 Dundas towards Dundas West Station,,1,2234136,1122883,1,2
+505,1,50810353,West - 505 Dundas towards Dundas West Station,,1,2234159,1122883,1,2
+505,1,50810352,West - 505 Dundas towards Dundas West Station,,1,2234158,1122883,1,2
+505,1,50810351,West - 505 Dundas towards Dundas West Station,,1,2234165,1122883,1,2
+505,1,50810350,West - 505 Dundas towards Dundas West Station,,1,2234163,1122883,1,2
+505,1,50810349,West - 505 Dundas towards Dundas West Station,,1,2234157,1122883,1,2
+505,1,50810300,West - 505 Dundas towards Dundas West Station,,1,2234151,1122885,1,2
+505,1,50810348,West - 505 Dundas towards Dundas West Station,,1,2234153,1122883,1,2
+505,1,50810302,West - 505 Dundas towards Dundas West Station,,1,2234140,1122885,1,2
+505,1,50810347,West - 505 Dundas towards Dundas West Station,,1,2234155,1122883,1,2
+505,1,50810305,West - 505 Dundas towards Dundas West Station,,1,2234152,1122883,1,2
+505,1,50810346,West - 505 Dundas towards Dundas West Station,,1,2234133,1122883,1,2
+505,1,50810345,West - 505 Dundas towards Dundas West Station,,1,2234135,1122883,1,2
+505,1,50810304,West - 505 Dundas towards Dundas West Station,,1,2234137,1122885,1,2
+505,1,50810342,West - 505 Dundas towards Dundas West Station,,1,2234167,1122887,1,2
+505,1,50810303,West - 505 Dundas towards Dundas West Station,,1,2234162,1122885,1,2
+505,1,50810341,West - 505 Dundas towards Dundas West Station,,1,2234154,1122887,1,2
+505,1,50810340,West - 505 Dundas towards Dundas West Station,,1,2234138,1122887,1,2
+505,1,50810339,West - 505 Dundas towards Dundas West Station,,1,2234136,1122887,1,2
+505,1,50810289,West - 505 Dundas towards Dundas West Station,,1,2234161,1122885,1,2
+505,1,50810338,West - 505 Dundas towards Dundas West Station,,1,2234164,1122887,1,2
+505,1,50810337,West - 505 Dundas towards Dundas West Station,,1,2234159,1122887,1,2
+505,1,50810336,West - 505 Dundas towards Dundas West Station,,1,2234158,1122887,1,2
+505,1,50810335,West - 505 Dundas towards Dundas West Station,,1,2234134,1122887,1,2
+505,1,50810334,West - 505 Dundas towards Dundas West Station,,1,2234165,1122887,1,2
+505,1,50810333,West - 505 Dundas towards Dundas West Station,,1,2234160,1122887,1,2
+505,1,50810332,West - 505 Dundas towards Dundas West Station,,1,2234163,1122887,1,2
+505,1,50810331,West - 505 Dundas towards Dundas West Station,,1,2234151,1122887,1,2
+505,1,50810330,West - 505 Dundas towards Dundas West Station,,1,2234157,1122887,1,2
+505,1,50810343,West - 505 Dundas towards Dundas West Station,,1,2234140,1122887,1,2
+505,1,50810329,West - 505 Dundas towards Dundas West Station,,1,2234153,1122883,1,2
+505,1,50810328,West - 505 Dundas towards Dundas West Station,,1,2234155,1122883,1,2
+505,1,50810327,West - 505 Dundas towards Dundas West Station,,1,2234152,1122883,1,2
+505,1,50810326,West - 505 Dundas towards Dundas West Station,,1,2234133,1122883,1,2
+505,1,50810325,West - 505 Dundas towards Dundas West Station,,1,2234137,1122883,1,2
+505,1,50810324,West - 505 Dundas towards Dundas West Station,,1,2234135,1122883,1,2
+505,1,50810323,West - 505 Dundas towards Dundas West Station,,1,2234162,1122883,1,2
+505,1,50810322,West - 505 Dundas towards Dundas West Station,,1,2234167,1122883,1,2
+505,1,50810321,West - 505 Dundas towards Dundas West Station,,1,2234154,1122883,1,2
+505,1,50810320,West - 505 Dundas towards Dundas West Station,,1,2234161,1122883,1,2
+505,1,50810244,West - 505 Dundas towards Dundas West Station,,1,2234138,1122883,1,2
+505,1,50810299,West - 505 Dundas towards Dundas West Station,,1,2234136,1122883,1,2
+505,1,50810298,West - 505 Dundas towards Dundas West Station,,1,2234164,1122883,1,2
+505,1,50810297,West - 505 Dundas towards Dundas West Station,,1,2234159,1122883,1,2
+505,1,50810296,West - 505 Dundas towards Dundas West Station,,1,2234158,1122883,1,2
+505,1,50810294,West - 505 Dundas towards Dundas West Station,,1,2234134,1122883,1,2
+505,1,50810293,West - 505 Dundas towards Dundas West Station,,1,2234139,1122883,1,2
+505,1,50810292,West - 505 Dundas towards Dundas West Station,,1,2234165,1122883,1,2
+505,1,50810291,West - 505 Dundas towards Dundas West Station,,1,2234160,1122883,1,2
+505,1,50810290,West - 505 Dundas towards Dundas West Station,,1,2234163,1122883,1,2
+505,1,50810287,West - 505 Dundas towards Dundas West Station,,1,2234151,1122883,1,2
+505,1,50810285,West - 505 Dundas towards Dundas West Station,,1,2234157,1122883,1,2
+505,1,50810284,West - 505 Dundas towards Dundas West Station,,1,2234140,1122883,1,2
+505,1,50810283,West - 505 Dundas towards Dundas West Station,,1,2234153,1122883,1,2
+505,1,50810282,West - 505 Dundas towards Dundas West Station,,1,2234155,1122883,1,2
+505,1,50810281,West - 505 Dundas towards Dundas West Station,,1,2234152,1122883,1,2
+505,1,50810280,West - 505 Dundas towards Dundas West Station,,1,2234133,1122883,1,2
+505,1,50810245,West - 505 Dundas towards Dundas West Station,,1,2234137,1122883,1,2
+505,1,50810319,West - 505 Dundas towards Dundas West Station,,1,2234135,1122883,1,2
+505,1,50810318,West - 505 Dundas towards Dundas West Station,,1,2234162,1122883,1,2
+505,1,50810317,West - 505 Dundas towards Dundas West Station,,1,2234167,1122883,1,2
+505,1,50810316,West - 505 Dundas towards Dundas West Station,,1,2234154,1122883,1,2
+505,1,50810315,West - 505 Dundas towards Dundas West Station,,1,2234161,1122883,1,2
+505,1,50810314,West - 505 Dundas towards Dundas West Station,,1,2234138,1122883,1,2
+505,1,50810313,West - 505 Dundas towards Dundas West Station,,1,2234136,1122883,1,2
+505,1,50810312,West - 505 Dundas towards Dundas West Station,,1,2234164,1122883,1,2
+505,1,50810311,West - 505 Dundas towards Dundas West Station,,1,2234159,1122883,1,2
+505,1,50810310,West - 505 Dundas towards Dundas West Station,,1,2234158,1122883,1,2
+505,1,50810309,West - 505 Dundas towards Dundas West Station,,1,2234134,1122883,1,2
+505,1,50810308,West - 505 Dundas towards Dundas West Station,,1,2234139,1122883,1,2
+505,1,50810307,West - 505 Dundas towards Dundas West Station,,1,2234165,1122883,1,2
+505,1,50810306,West - 505 Dundas towards Dundas West Station,,1,2234160,1122883,1,2
+505,1,50810295,West - 505 Dundas towards Dundas West Station,,1,2234163,1122883,1,2
+505,1,50810261,West - 505 Dundas towards Dundas West Station,,1,2234151,1122883,1,2
+505,1,50810260,West - 505 Dundas towards Dundas West Station,,1,2234157,1122883,1,2
+505,1,50810259,West - 505 Dundas towards Dundas West Station,,1,2234140,1122883,1,2
+505,1,50810258,West - 505 Dundas towards Dundas West Station,,1,2234153,1122883,1,2
+505,1,50810257,West - 505 Dundas towards Dundas West Station,,1,2234155,1122883,1,2
+505,1,50810256,West - 505 Dundas towards Dundas West Station,,1,2234152,1122883,1,2
+505,1,50810255,West - 505 Dundas towards Dundas West Station,,1,2234133,1122883,1,2
+505,1,50810254,West - 505 Dundas towards Dundas West Station,,1,2234137,1122883,1,2
+505,1,50810253,West - 505 Dundas towards Dundas West Station,,1,2234135,1122883,1,2
+505,1,50810286,West - 505 Dundas towards Dundas West Station,,1,2234162,1122883,1,2
+505,1,50810252,West - 505 Dundas towards Dundas West Station,,1,2234167,1122883,1,2
+505,1,50810251,West - 505 Dundas towards Dundas West Station,,1,2234154,1122883,1,2
+505,1,50810288,West - 505 Dundas towards Dundas West Station,,1,2234161,1122883,1,2
+505,1,50810250,West - 505 Dundas towards Dundas West Station,,1,2234166,1122883,1,2
+505,1,50810249,West - 505 Dundas towards Dundas West Station,,1,2234138,1122883,1,2
+505,1,50810248,West - 505 Dundas towards Dundas West Station,,1,2234136,1122883,1,2
+505,1,50810247,West - 505 Dundas towards Dundas West Station,,1,2234164,1122883,1,2
+505,1,50810246,West - 505 Dundas towards Dundas West Station,,1,2234159,1122883,1,2
+505,1,50810278,West - 505 Dundas towards Dundas West Station,,1,2234158,1122887,1,2
+505,1,50810277,West - 505 Dundas towards Dundas West Station,,1,2234134,1122887,1,2
+505,1,50810276,West - 505 Dundas towards Dundas West Station,,1,2234139,1122887,1,2
+505,1,50810275,West - 505 Dundas towards Dundas West Station,,1,2234165,1122887,1,2
+505,1,50810274,West - 505 Dundas towards Dundas West Station,,1,2234160,1122887,1,2
+505,1,50810273,West - 505 Dundas towards Dundas West Station,,1,2234163,1122887,1,2
+505,1,50810272,West - 505 Dundas towards Dundas West Station,,1,2234156,1122887,1,2
+505,1,50810271,West - 505 Dundas towards Dundas West Station,,1,2234151,1122887,1,2
+505,1,50810270,West - 505 Dundas towards Dundas West Station,,1,2234157,1122887,1,2
+505,1,50810269,West - 505 Dundas towards Dundas West Station,,1,2234140,1122887,1,2
+505,1,50810268,West - 505 Dundas towards Dundas West Station,,1,2234153,1122887,1,2
+505,1,50810267,West - 505 Dundas towards Dundas West Station,,1,2234155,1122887,1,2
+505,1,50810266,West - 505 Dundas towards Dundas West Station,,1,2234152,1122887,1,2
+505,1,50810265,West - 505 Dundas towards Dundas West Station,,1,2234133,1122887,1,2
+505,1,50810264,West - 505 Dundas towards Dundas West Station,,1,2234137,1122887,1,2
+505,1,50810263,West - 505 Dundas towards Dundas West Station,,1,2234135,1122887,1,2
+505,1,50810262,West - 505 Dundas towards Dundas West Station,,1,2234162,1122887,1,2
+505,1,50810382,West - 505 Dundas towards Dundas West Station,,1,2234167,1122887,1,2
+505,1,50810381,West - 505 Dundas towards Dundas West Station,,1,2234154,1122887,1,2
+505,1,50810380,West - 505 Dundas towards Dundas West Station,,1,2234161,1122887,1,2
+505,1,50810379,West - 505 Dundas towards Dundas West Station,,1,2234166,1122887,1,2
+505,1,50810378,West - 505 Dundas towards Dundas West Station,,1,2234138,1122887,1,2
+505,1,50810377,West - 505 Dundas towards Dundas West Station,,1,2234136,1122887,1,2
+505,1,50810376,West - 505 Dundas towards Dundas West Station,,1,2234164,1122887,1,2
+505,1,50810375,West - 505 Dundas towards Dundas West Station,,1,2234159,1122887,1,2
+505,1,50810374,West - 505 Dundas towards Dundas West Station,,1,2234158,1122887,1,2
+505,1,50810428,West - 505 Dundas towards Dundas West Station,,1,2234134,1122887,1,2
+505,1,50810427,West - 505 Dundas towards Dundas West Station,,1,2234139,1122887,1,2
+505,1,50810426,West - 505 Dundas towards Dundas West Station,,1,2234165,1122887,1,2
+505,1,50810425,West - 505 Dundas towards Dundas West Station,,1,2234160,1122887,1,2
+505,1,50810424,West - 505 Dundas towards Dundas West Station,,1,2234163,1122887,1,2
+505,1,50810373,West - 505 Dundas towards Dundas West Station,,1,2234156,1122887,1,2
+505,1,50810372,West - 505 Dundas towards Dundas West Station,,1,2234151,1122887,1,2
+505,1,50810371,West - 505 Dundas towards Dundas West Station,,1,2234157,1122887,1,2
+505,1,50810370,West - 505 Dundas towards Dundas West Station,,1,2234140,1122887,1,2
+505,1,50810369,West - 505 Dundas towards Dundas West Station,,1,2234153,1122887,1,2
+505,1,50810368,West - 505 Dundas towards Dundas West Station,,1,2234155,1122887,1,2
+505,1,50810413,West - 505 Dundas towards Dundas West Station,,1,2234152,1122887,1,2
+505,1,50810412,West - 505 Dundas towards Dundas West Station,,1,2234133,1122887,1,2
+505,1,50810399,West - 505 Dundas towards Dundas West Station,,1,2234137,1122887,1,2
+505,1,50810400,West - 505 Dundas towards Dundas West Station,,1,2234135,1122883,1,2
+505,1,50810396,West - 505 Dundas Short Turn towards Broadview Ave,S,1,2234162,1122884,1,2
+505,1,50810384,West - 505 Dundas Short Turn towards Broadview Ave,S,1,2234167,1122884,1,2
+505,1,50810401,West - 505 Dundas towards Dundas West Station,,1,2234154,1122883,1,2
+505,1,50810397,West - 505 Dundas Short Turn towards Broadview Ave,S,1,2234161,1122884,1,2
+505,1,50810398,West - 505 Dundas Short Turn towards Broadview Ave,S,1,2234166,1122884,1,2
+505,1,50810422,West - 505 Dundas towards Dundas West Station,,1,2234138,1122883,1,2
+505,1,50810361,West - 505 Dundas towards Dundas West Station,,1,2234136,1122883,1,2
+505,1,50810403,West - 505 Dundas Short Turn towards Broadview Ave,S,1,2234164,1122884,1,2
+505,1,50810362,West - 505 Dundas towards Dundas West Station,,1,2234159,1122883,1,2
+505,1,50810402,West - 505 Dundas Short Turn towards Broadview Ave,S,1,2234158,1122884,1,2
+505,1,50810363,West - 505 Dundas towards Dundas West Station,,1,2234134,1122883,1,2
+505,1,50810364,West - 505 Dundas towards Dundas West Station,,1,2234139,1122883,1,2
+505,1,50810404,West - 505 Dundas Short Turn towards Broadview Ave,S,1,2234160,1122884,1,2
+505,1,50810365,West - 505 Dundas towards Dundas West Station,,1,2234156,1122883,1,2
+505,1,50810419,West - 505 Dundas towards Dundas West Station,,1,2234157,1122883,1,2
+505,1,50810366,West - 505 Dundas towards Dundas West Station,,1,2234140,1122883,1,2
+505,1,50810367,West - 505 Dundas towards Dundas West Station,,1,2234155,1122883,1,2
+505,1,50810423,West - 505 Dundas towards Dundas West Station,,1,2234133,1122883,1,2
+505,1,50810383,West - 505 Dundas towards Dundas West Station,,1,2234137,1122883,1,2
+505,1,50810385,West - 505 Dundas towards Dundas West Station,,1,2234135,1122883,1,2
+505,1,50810420,West - 505 Dundas towards Dundas West Station,,1,2234154,1122883,1,2
+505,1,50810421,West - 505 Dundas towards Dundas West Station,,1,2234138,1122883,1,2
+505,1,50810411,West - 505 Dundas towards Dundas West Station,,1,2234136,1122883,1,2
+505,1,50810410,West - 505 Dundas towards Dundas West Station,,1,2234159,1122883,1,2
+505,1,50810386,West - 505 Dundas towards Dundas West Station,,1,2234134,1122883,1,2
+505,1,50810387,West - 505 Dundas towards Dundas West Station,,1,2234139,1122883,1,2
+505,1,50810388,West - 505 Dundas towards Dundas West Station,,1,2234157,1122883,1,2
+505,1,50810389,West - 505 Dundas towards Dundas West Station,,1,2234140,1122883,1,2
+505,1,50810390,West - 505 Dundas towards Dundas West Station,,1,2234155,1122883,1,2
+505,1,50810391,West - 505 Dundas towards Dundas West Station,,1,2234133,1122883,1,2
+505,1,50810392,West - 505 Dundas towards Dundas West Station,,1,2234137,1122883,1,2
+505,1,50810393,West - 505 Dundas towards Dundas West Station,,1,2234135,1122883,1,2
+505,1,50810394,West - 505 Dundas towards Dundas West Station,,1,2234154,1122883,1,2
+505,1,50810395,West - 505 Dundas towards Dundas West Station,,1,2234138,1122883,1,2
+505,1,50810405,West - 505 Dundas towards Dundas West Station,,1,2234136,1122883,1,2
+505,1,50810406,West - 505 Dundas towards Dundas West Station,,1,2234159,1122883,1,2
+505,1,50810407,West - 505 Dundas towards Dundas West Station,,1,2234134,1122883,1,2
+505,1,50810408,West - 505 Dundas towards Dundas West Station,,1,2234139,1122883,1,2
+505,1,50810409,West - 505 Dundas Short Turn towards Broadview Ave,S,1,2234157,1122884,1,2
+505,1,50810414,West - 505 Dundas towards Dundas West Station,,1,2234140,1122883,1,2
+505,1,50810415,West - 505 Dundas Short Turn towards Broadview Ave,S,1,2234155,1122884,1,2
+505,1,50810416,West - 505 Dundas towards Dundas West Station,,1,2234137,1122883,1,2
+505,1,50810418,West - 505 Dundas Short Turn towards Broadview Ave,S,1,2234154,1122884,1,2
+505,1,50810417,West - 505 Dundas towards Dundas West Station,,1,2234138,1122883,1,2

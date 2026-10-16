@@ -1,0 +1,238 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+133,1,50796423,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233445,1122061,1,1
+133,1,50796424,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233438,1122061,1,1
+133,1,50796415,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233439,1122061,1,1
+133,1,50796416,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233437,1122061,1,1
+133,1,50796417,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233440,1122059,1,1
+133,1,50796418,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233441,1122059,1,1
+133,1,50796419,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233442,1122059,1,1
+133,1,50796420,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233443,1122059,1,1
+133,1,50796421,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233444,1122059,1,1
+133,1,50796422,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233445,1122059,1,1
+133,1,50796425,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233438,1122059,1,1
+133,1,50796426,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233436,1122059,1,1
+133,1,50796485,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233439,1122059,1,1
+133,1,50796486,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233437,1122059,1,1
+133,1,50796487,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233446,1122059,1,1
+133,1,50796488,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233440,1122059,1,1
+133,1,50796489,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233441,1122059,1,1
+133,1,50796490,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233442,1122059,1,1
+133,1,50796491,South - 133 Neilson towards Kennedy Stn via Scarborough Centre Stn,,0,2233443,1122059,1,1
+133,1,50796492,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233444,1122061,1,1
+133,1,50796493,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233445,1122061,1,1
+133,1,50796464,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233438,1122061,1,1
+133,1,50796431,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233436,1122061,1,1
+133,1,50796432,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233439,1122061,1,1
+133,1,50796433,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233437,1122061,1,1
+133,1,50796434,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233446,1122061,1,1
+133,1,50796435,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233440,1122061,1,1
+133,1,50796436,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233441,1122061,1,1
+133,1,50796437,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233442,1122061,1,1
+133,1,50796438,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233443,1122061,1,1
+133,1,50796439,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233444,1122061,1,1
+133,1,50796440,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233445,1122061,1,1
+133,1,50796429,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233438,1122061,1,1
+133,1,50796427,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233436,1122061,1,1
+133,1,50796441,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233439,1122061,1,1
+133,1,50796442,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233437,1122061,1,1
+133,1,50796443,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233446,1122061,1,1
+133,1,50796444,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233440,1122061,1,1
+133,1,50796445,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233441,1122061,1,1
+133,1,50796446,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233442,1122061,1,1
+133,1,50796447,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233443,1122061,1,1
+133,1,50796448,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233444,1122061,1,1
+133,1,50796449,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233445,1122061,1,1
+133,1,50796450,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233438,1122061,1,1
+133,1,50796451,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233436,1122061,1,1
+133,1,50796452,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233439,1122061,1,1
+133,1,50796428,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233437,1122061,1,1
+133,1,50796465,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233449,1122061,1,1
+133,1,50796466,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233446,1122061,1,1
+133,1,50796467,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233440,1122061,1,1
+133,1,50796468,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233441,1122061,1,1
+133,1,50796469,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233448,1122061,1,1
+133,1,50796470,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233442,1122061,1,1
+133,1,50796471,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233443,1122061,1,1
+133,1,50796472,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233444,1122061,1,1
+133,1,50796473,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233445,1122061,1,1
+133,1,50796474,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233438,1122061,1,1
+133,1,50796475,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233450,1122061,1,1
+133,1,50796476,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233436,1122061,1,1
+133,1,50796477,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233439,1122061,1,1
+133,1,50796478,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233437,1122061,1,1
+133,1,50796479,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233449,1122061,1,1
+133,1,50796480,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233446,1122061,1,1
+133,1,50796481,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233440,1122061,1,1
+133,1,50796482,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233441,1122061,1,1
+133,1,50796483,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233448,1122061,1,1
+133,1,50796484,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233442,1122061,1,1
+133,1,50796453,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233443,1122061,1,1
+133,1,50796494,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233444,1122061,1,1
+133,1,50796495,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233445,1122061,1,1
+133,1,50796496,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233438,1122061,1,1
+133,1,50796497,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233450,1122061,1,1
+133,1,50796498,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233436,1122061,1,1
+133,1,50796499,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233439,1122061,1,1
+133,1,50796500,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233437,1122061,1,1
+133,1,50796501,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233449,1122061,1,1
+133,1,50796502,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233446,1122061,1,1
+133,1,50796503,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233441,1122061,1,1
+133,1,50796504,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233448,1122061,1,1
+133,1,50796505,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233442,1122061,1,1
+133,1,50796506,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233444,1122061,1,1
+133,1,50796507,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233445,1122061,1,1
+133,1,50796508,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233438,1122061,1,1
+133,1,50796509,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233436,1122061,1,1
+133,1,50796510,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233439,1122061,1,1
+133,1,50796511,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233437,1122061,1,1
+133,1,50796512,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233446,1122061,1,1
+133,1,50796513,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233441,1122061,1,1
+133,1,50796514,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233448,1122061,1,1
+133,1,50796430,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233442,1122061,1,1
+133,1,50796455,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233445,1122061,1,1
+133,1,50796456,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233447,1122061,1,1
+133,1,50796457,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233446,1122061,1,1
+133,1,50796458,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233448,1122061,1,1
+133,1,50796459,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233445,1122061,1,1
+133,1,50796460,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233447,1122061,1,1
+133,1,50796461,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233446,1122061,1,1
+133,1,50796462,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233448,1122061,1,1
+133,1,50796463,South - 133 Neilson towards Kennedy Stn via Centenary Hospital and Scarborough Centre Stn,,0,2233445,1122061,1,1
+133,1,50796560,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233445,1122063,1,1
+133,1,50796524,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233438,1122063,1,1
+133,1,50796525,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233439,1122063,1,1
+133,1,50796546,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233437,1122063,1,1
+133,1,50796547,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233440,1122063,1,1
+133,1,50796550,North - 133 Neilson towards Morningside Heights via Centenary Hospital,,1,2233443,1122064,1,1
+133,1,50796551,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233445,1122066,1,1
+133,1,50796602,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233441,1122063,1,1
+133,1,50796552,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233438,1122066,1,1
+133,1,50796542,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233442,1122063,1,1
+133,1,50796553,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233439,1122066,1,1
+133,1,50796603,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233443,1122063,1,1
+133,1,50796604,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233444,1122063,1,1
+133,1,50796554,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233437,1122066,1,1
+133,1,50796605,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233445,1122063,1,1
+133,1,50796555,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233446,1122066,1,1
+133,1,50796543,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233438,1122063,1,1
+133,1,50796556,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233440,1122066,1,1
+133,1,50796606,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233436,1122063,1,1
+133,1,50796557,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233441,1122066,1,1
+133,1,50796607,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233439,1122063,1,1
+133,1,50796569,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233442,1122066,1,1
+133,1,50796608,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233437,1122063,1,1
+133,1,50796570,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233443,1122066,1,1
+133,1,50796609,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233446,1122063,1,1
+133,1,50796571,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233444,1122066,1,1
+133,1,50796610,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233440,1122063,1,1
+133,1,50796572,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233445,1122066,1,1
+133,1,50796611,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233441,1122063,1,1
+133,1,50796573,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233438,1122066,1,1
+133,1,50796612,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233442,1122063,1,1
+133,1,50796574,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233436,1122066,1,1
+133,1,50796613,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233443,1122063,1,1
+133,1,50796575,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233439,1122066,1,1
+133,1,50796614,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233444,1122063,1,1
+133,1,50796576,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233437,1122066,1,1
+133,1,50796615,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233445,1122063,1,1
+133,1,50796577,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233446,1122066,1,1
+133,1,50796616,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233438,1122063,1,1
+133,1,50796578,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233440,1122066,1,1
+133,1,50796617,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233436,1122063,1,1
+133,1,50796579,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233441,1122066,1,1
+133,1,50796618,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233439,1122063,1,1
+133,1,50796533,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233442,1122066,1,1
+133,1,50796619,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233437,1122063,1,1
+133,1,50796534,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233443,1122066,1,1
+133,1,50796620,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233446,1122063,1,1
+133,1,50796535,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233444,1122066,1,1
+133,1,50796621,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233440,1122063,1,1
+133,1,50796536,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233445,1122066,1,1
+133,1,50796563,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233441,1122063,1,1
+133,1,50796537,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233438,1122066,1,1
+133,1,50796564,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233442,1122063,1,1
+133,1,50796538,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233436,1122066,1,1
+133,1,50796565,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233443,1122063,1,1
+133,1,50796539,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233439,1122066,1,1
+133,1,50796566,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233444,1122063,1,1
+133,1,50796540,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233437,1122066,1,1
+133,1,50796567,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233445,1122063,1,1
+133,1,50796548,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233446,1122066,1,1
+133,1,50796568,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233438,1122063,1,1
+133,1,50796591,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233440,1122067,1,1
+133,1,50796586,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233436,1122063,1,1
+133,1,50796590,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233441,1122067,1,1
+133,1,50796587,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233439,1122063,1,1
+133,1,50796518,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233442,1122067,1,1
+133,1,50796588,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233437,1122063,1,1
+133,1,50796517,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233443,1122067,1,1
+133,1,50796592,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233446,1122063,1,1
+133,1,50796516,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233444,1122067,1,1
+133,1,50796515,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233445,1122067,1,1
+133,1,50796589,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233438,1122067,1,1
+133,1,50796601,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233436,1122067,1,1
+133,1,50796562,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233439,1122067,1,1
+133,1,50796596,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233437,1122067,1,1
+133,1,50796595,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233446,1122067,1,1
+133,1,50796594,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233440,1122067,1,1
+133,1,50796580,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233441,1122067,1,1
+133,1,50796532,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233442,1122067,1,1
+133,1,50796558,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233449,1122063,1,1
+133,1,50796531,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233443,1122067,1,1
+133,1,50796519,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233444,1122067,1,1
+133,1,50796520,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233445,1122067,1,1
+133,1,50796521,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233438,1122065,1,1
+133,1,50796559,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233448,1122063,1,1
+133,1,50796522,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233450,1122065,1,1
+133,1,50796523,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233436,1122065,1,1
+133,1,50796526,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233439,1122065,1,1
+133,1,50796530,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233437,1122065,1,1
+133,1,50796529,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233449,1122065,1,1
+133,1,50796528,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233446,1122065,1,1
+133,1,50796527,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233440,1122065,1,1
+133,1,50796561,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233441,1122065,1,1
+133,1,50796549,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233448,1122065,1,1
+133,1,50796541,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233442,1122065,1,1
+133,1,50796585,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233443,1122065,1,1
+133,1,50796584,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233444,1122065,1,1
+133,1,50796583,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233445,1122065,1,1
+133,1,50796582,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233438,1122065,1,1
+133,1,50796581,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233450,1122065,1,1
+133,1,50796593,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233436,1122065,1,1
+133,1,50796600,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233439,1122065,1,1
+133,1,50796599,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233437,1122065,1,1
+133,1,50796598,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233449,1122065,1,1
+133,1,50796597,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233446,1122065,1,1
+133,1,50796545,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233440,1122065,1,1
+133,1,50796544,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233441,1122065,1,1
+133,1,50796627,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233448,1122065,1,1
+133,1,50796626,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233442,1122067,1,1
+133,1,50796625,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233443,1122067,1,1
+133,1,50796649,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233444,1122067,1,1
+133,1,50796624,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233445,1122067,1,1
+133,1,50796640,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233438,1122067,1,1
+133,1,50796639,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233436,1122067,1,1
+133,1,50796638,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233439,1122067,1,1
+133,1,50796643,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233437,1122067,1,1
+133,1,50796637,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233446,1122067,1,1
+133,1,50796636,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233441,1122067,1,1
+133,1,50796635,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233448,1122067,1,1
+133,1,50796634,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233442,1122067,1,1
+133,1,50796633,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233444,1122067,1,1
+133,1,50796646,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233445,1122067,1,1
+133,1,50796645,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233438,1122067,1,1
+133,1,50796644,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233436,1122067,1,1
+133,1,50796648,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233439,1122067,1,1
+133,1,50796647,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233437,1122067,1,1
+133,1,50796629,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233446,1122067,1,1
+133,1,50796642,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn,,1,2233447,1122063,1,1
+133,1,50796630,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233448,1122067,1,1
+133,1,50796631,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233445,1122067,1,1
+133,1,50796632,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233447,1122067,1,1
+133,1,50796650,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233446,1122067,1,1
+133,1,50796622,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233448,1122067,1,1
+133,1,50796651,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233445,1122067,1,1
+133,1,50796628,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233447,1122067,1,1
+133,1,50796623,North - 133 Neilson towards Morningside Heights via Scarborough Centre Stn and Centenary Hospital,,1,2233446,1122067,1,1
+133,1,50796652,North - 133 Neilson towards Morningside Heights via Centenary Hospital,,1,2233448,1122062,1,1
+133,1,50796641,North - 133 Neilson towards Morningside Heights via Centenary Hospital,,1,2233445,1122062,1,1

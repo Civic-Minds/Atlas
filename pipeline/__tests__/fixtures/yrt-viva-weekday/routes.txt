@@ -1,0 +1,5 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+601,YRT,blue,VIVA BLUE,,3,,009CDB,FFFFFF
+603,YRT,purple,VIVA PURPLE,,3,,9461A8,FFFFFF
+605,YRT,orange,VIVA ORANGE,,3,,FBAF33,111111
+607,YRT,yellow,VIVA YELLOW,,3,,FFDD00,111111

@@ -1,0 +1,7 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+14278,14278,Pearson Airport Terminal 3 - Arrivals Level Columns C8-C12,,43.686811,-79.620932,,,,,,1
+2148,2148,Dundas St West at East Mall Cres,,43.63037,-79.549175,,,,,,1
+2149,2149,Dundas St West at East Mall Cres,,43.630726,-79.549041,,,,,,1
+14092,14092,Pearson Airport Terminal 1 - Ground Level Column R4,,43.681739,-79.611041,,,,,,1
+14719,14719,Kipling Station,,43.637582,-79.535677,,,,,,1
+15144,15144,Jetliner Rd at Airport Rd South Side,,43.685321,-79.607296,,,,,,1

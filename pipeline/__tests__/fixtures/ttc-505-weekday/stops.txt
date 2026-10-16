@@ -1,0 +1,83 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+13702,13702,Dundas St West at Dundas West Outer Platform,,43.656768,-79.453253,,,,,,2
+9855,9855,Edna Ave at Dundas St West,,43.657134,-79.453027,,,,,,1
+2127,2127,Dundas St East at River St,,43.661284,-79.358,,,,,,2
+2160,2160,Dundas St West at Dufferin St,,43.649587,-79.431565,,,,,,2
+988,988,Dundas St West at Sorauren Ave,,43.651198,-79.445012,,,,,,2
+2190,2190,Dundas St West at Spadina Ave,,43.653064,-79.397708,,,,,,2
+2158,2158,Dundas St West at Dovercourt Rd,,43.649365,-79.424889,,,,,,2
+2170,2170,Dundas St West at Lansdowne Ave,,43.650111,-79.440135,,,,,,2
+2152,2152,Dundas St West at Brock Ave,,43.649938,-79.4355,,,,,,2
+2151,2151,Dundas St West at Brock Ave,,43.649826,-79.435721,,,,,,2
+987,987,Dundas St West at Sorauren Ave,,43.651247,-79.445756,,,,,,2
+2143,2143,Dundas St West at Bay St,,43.655845,-79.383493,,,,,,2
+2165,2165,Dundas St West at Gladstone Ave,,43.649633,-79.429626,,,,,,2
+2147,2147,Dundas St West at Beverley St,,43.653887,-79.393724,,,,,,1
+2159,2159,Dundas St West at Dovercourt Rd,,43.649513,-79.424553,,,,,,2
+2130,2130,Dundas St East at Sherbourne St,,43.65822,-79.371303,,,,,,2
+2131,2131,Dundas St East at Sherbourne St,,43.658406,-79.370878,,,,,,2
+2122,2122,Dundas St East at Ontario St,,43.658752,-79.368653,,,,,,2
+3371,3371,Broadview Ave at Danforth Ave,,43.676342,-79.359041,,,,,,2
+2142,2142,Dundas St West at Bay St,,43.655582,-79.384014,,,,,,2
+2183,2183,Dundas St West at Rusholme Rd,,43.649553,-79.426473,,,,,,2
+2167,2167,Dundas St West at Howard Park Ave,,43.652232,-79.448522,,,,,,2
+2171,2171,Dundas St West at Lansdowne Ave,,43.650206,-79.43948,,,,,,2
+2117,2117,Dundas St East at Church St,,43.656583,-79.376993,,,,,,2
+2118,2118,Dundas St East at Jarvis St,,43.656947,-79.374706,,,,,,2
+1769,1769,Broadview Ave at Wolfrey Ave,,43.674457,-79.357342,,,,,,2
+2116,2116,Dundas St East at Church St,,43.656371,-79.377358,,,,,,2
+2140,2140,Dundas St West at Bathurst St - Toronto Western Hospital,,43.652163,-79.406259,,,,,,2
+2175,2175,Dundas St West at Ossington Ave,,43.64927,-79.420944,,,,,,2
+1761,1761,Broadview Ave at Millbrook Cres,,43.671897,-79.354734,,,,,,2
+2197,2197,Dundas St West at Yonge St - TMU Station,,43.65619,-79.38119,,,,,,2
+9317,9317,Broadview Ave at Mountstephen St,,43.663942,-79.35187,,,,,,2
+2125,2125,Dundas St East at Parliament St,,43.65951,-79.365882,,,,,,2
+1760,1760,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,,43.668079,-79.353319,,,,,,2
+2141,2141,Dundas St West at Bathurst St - Toronto Western Hospital,,43.652424,-79.405874,,,,,,2
+2166,2166,Dundas St West at Grace St,,43.650777,-79.413806,,,,,,2
+2157,2157,Dundas St West at Denison Ave,,43.652113,-79.402165,,,,,,2
+1759,1759,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,,43.667664,-79.353308,,,,,,2
+990,990,Dundas St West at Sterling Rd,,43.650684,-79.442777,,,,,,2
+2182,2182,Dundas St West at Roncesvalles Ave,,43.653685,-79.451357,,,,,,2
+986,986,Dundas St West at Howard Park Ave,,43.651921,-79.447458,,,,,,2
+2124,2124,Dundas St East at Parliament St,,43.659283,-79.366291,,,,,,2
+2189,2189,Dundas St West at Spadina Ave,,43.652776,-79.398341,,,,,,2
+2174,2174,Dundas St West at McCaul St,,43.65441,-79.391209,,,,,,2
+1757,1757,Broadview Ave at Gerrard St East,,43.665274,-79.352444,,,,,,2
+2185,2185,Dundas St West at Shaw St,,43.649703,-79.418489,,,,,,2
+2161,2161,Dundas St West at Dufferin St,,43.649675,-79.431314,,,,,,2
+2153,2153,Dundas St West at Chestnut St,,43.655136,-79.386129,,,,,,2
+1755,1755,Broadview Ave at Danforth Ave,,43.676051,-79.358601,,,,,,2
+2181,2181,Dundas St West at Roncesvalles Ave East Side,,43.65348,-79.451258,,,,,,2
+2156,2156,Dundas St West at Denison Ave,,43.651939,-79.40236,,,,,,2
+2126,2126,Dundas St East at River St,,43.661093,-79.358286,,,,,,2
+2136,2136,Dundas St East at Yonge St - TMU Station,,43.656426,-79.380755,,,,,,2
+10181,10181,Dundas St West at Grace St,,43.650581,-79.41422,,,,,,2
+2146,2146,Dundas St West at Beverley St,,43.65371,-79.393961,,,,,,2
+2154,2154,Dundas St West at Chestnut St,,43.655337,-79.385867,,,,,,2
+2164,2164,Dundas St West at Gladstone Ave,,43.649516,-79.429975,,,,,,2
+2193,2193,Dundas St West at University Ave - St Patrick Station,,43.654679,-79.388742,,,,,,2
+991,991,Dundas St West at Sterling Rd,,43.650631,-79.443251,,,,,,2
+1756,1756,Broadview Ave at Dundas St East,,43.6626,-79.351506,,,,,,2
+1767,1767,Broadview Ave at Withrow Ave,,43.669859,-79.353435,,,,,,2
+1763,1763,Broadview Ave at Jack Layton Way,,43.666481,-79.353132,,,,,,2
+2150,2150,Dundas St West at Bloor St West,,43.6561,-79.45233,,,,,,2
+9318,9318,Broadview Ave at Mountstephen St,,43.664096,-79.35214,,,,,,2
+2123,2123,Dundas St East at Ontario St,,43.658961,-79.368357,,,,,,2
+1762,1762,Broadview Ave at Millbrook Cres,,43.672144,-79.355165,,,,,,2
+2115,2115,Dundas St East at Broadview Ave,,43.662249,-79.351814,,,,,,2
+2173,2173,Dundas St West at McCaul St,,43.654219,-79.391552,,,,,,2
+2119,2119,Dundas St East at Jarvis St,,43.657163,-79.374378,,,,,,2
+2176,2176,Dundas St West at Ossington Ave,,43.64943,-79.42049,,,,,,2
+2172,2172,Dundas St West at Lisgar St,,43.649434,-79.426882,,,,,,2
+1768,1768,Broadview Ave at Wolfrey Ave,,43.674192,-79.356904,,,,,,2
+2194,2194,Dundas St West at University Ave - St Patrick Station,,43.654919,-79.387813,,,,,,2
+1766,1766,Broadview Ave at Withrow Ave,,43.669638,-79.35303,,,,,,2
+1758,1758,Broadview Ave at Gerrard St East,,43.665663,-79.352794,,,,,,2
+14639,14639,Broadview Station,,43.677013,-79.358147,,,,,,1
+14666,14666,Dundas West Station,,43.656698,-79.45346,,,,,,1
+15354,15354,Dundas St West at Manning Ave,,43.651197,-79.411029,,,,,,2
+15355,15355,Dundas St West at Manning Ave,,43.651375,-79.410818,,,,,,2
+15356,15356,Dundas St West at Shaw St,,43.649911,-79.418123,,,,,,2
+15873,15873,Dundas St East at Regent Park Blvd,,43.660471,-79.361655,,,,,,1
+15872,15872,Dundas St East at Regent Park Blvd,,43.660247,-79.361966,,,,,,1

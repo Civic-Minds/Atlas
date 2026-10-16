@@ -43,6 +43,7 @@ import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
+import { directionStretches, nightOnlyTrips, periodSustainedMid, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
@@ -483,6 +484,8 @@ export interface ProcessOptions extends GtfsTransformOptions {
   analysisCriteriaFn?: (raw: RawRouteDepartures[]) => AnalysisResult[];
   /** Read-only view of the phase 2 results, for tests and audits. Does not change the output. */
   onAnalysisResults?: (results: readonly AnalysisResult[]) => void;
+  /** Tests only (frequency focus step 3): the stretch selector's output beside stopDepsByGroup, for the trip-membership check. */
+  onStretches?: (input: { stretches: ReadonlyMap<string, DirectionStretches>; stopDepsByGroup: ReadonlyMap<string, ReadonlyMap<string, readonly number[]>> }) => void;
 }
 
 /** Thrown when validateGtfs reports errors and options.force is not set. */
@@ -955,6 +958,18 @@ export async function processGtfsBuffer(
   // shape-scoped mirror -- the Step 5 terminalRawTimes fallback bottoms out at stopDepsByGroup
   // regardless, so this still covers every route that reaches the night-service check.
   const stopDepsByGroupNight = new Map<string, Map<string, number[]>>();
+  // Frequency focus step 3 (shadow): every trip of each route direction day that feeds
+  // stopDepsByGroup, with its first visit of each stop, for the stretch selector (tripSets.ts).
+  // The same membership as stopDepsByGroup (inGroup, chained ends, frequency expansion); parent
+  // stations left out, as patterns are read on the stops the trips list.
+  const stretchVisitsByGroup = new Map<string, Map<string, Array<TripVisit & { seq: number }>>>();
+  const addStretchVisit = (gKey: string, tripKey: string, visit: TripVisit & { seq: number }) => {
+    let trips = stretchVisitsByGroup.get(gKey);
+    if (!trips) { trips = new Map(); stretchVisitsByGroup.set(gKey, trips); }
+    let visits = trips.get(tripKey);
+    if (!visits) { visits = []; trips.set(tripKey, visits); }
+    visits.push(visit);
+  };
   const stopDepsByHeadsignGroupNight = new Map<string, Map<string, number[]>>();
   // Shared-stretch pooling (CIV-82): each pattern's departures inside its route group,
   // direction and day, all on the GROUP's representative weekday (inGroup), so patterns
@@ -1230,6 +1245,8 @@ export async function processGtfsBuffer(
         headwayRangeByPeriod: computePeriodHeadwayRanges(result.times),
         maxGapByPeriod: computePeriodMaxGaps(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
+        // D8 shadow (frequency focus step 3): nothing reads it.
+        headwayByPeriodSustainedMid: periodSustainedMid(result.times),
         partialWeekdayServiceByPeriod: result.partialWeekday
           ? Object.fromEntries(PERIOD_KEYS.map(key => [key, result.partialWeekdayPeriods?.includes(key) ?? false]))
           : undefined,
@@ -1391,6 +1408,12 @@ export async function processGtfsBuffer(
           if (!visitSet.has(visitKey)) {
             visitSet.add(visitKey);
             pushAll(st.stop_id);
+            // Every visit shapes the pattern; a chained trip's end is not a departure the
+            // direction map counts (TTC 63 runs as two trips joined at Ossington, so dropping
+            // that stop from the pattern left the two halves sharing no stop).
+            if (grp.inGroup) {
+              addStretchVisit(gKey, st.trip_id, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined, counted: chainedEnd === undefined ? undefined : false });
+            }
             // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
             const parentVisitKey = parentId ? `${grp.dayType}:${parentId}` : null;
             if (parentId && parentVisitKey && !visitSet.has(parentVisitKey)) {
@@ -1637,6 +1660,10 @@ export async function processGtfsBuffer(
           for (const grp of groups) {
             const pickupAllowed = st.pickup_type?.trim() !== '1';
             addFrequencyDeparture(grp, st.stop_id, mins, pickupAllowed);
+            if (grp.inGroup) {
+              const night = mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF;
+              addStretchVisit(`${grp.shortName}::${grp.dirId}::${grp.dayType}`, `${tripId}@${offset}`, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined });
+            }
             if (countParent) addFrequencyDeparture(grp, parentId!, mins, pickupAllowed);
             else if (parentId && pickupAllowed && grp.shapeId && grp.inShape) markBoardable(`${grp.shapeId}::${grp.dayType}`, parentId);
           }
@@ -1816,7 +1843,20 @@ export async function processGtfsBuffer(
     directionMiddayWaitByKey.set(key, best);
     return best;
   };
+  // #899's inputs for the stretch selector's limited decision and midday cap (step 6), as main
+  // reads them: that wait, and whether the direction has a midday reading (a typical midday gap)
+  // at any of its stops, as main takes it from any drawn line. Not only at the best-served stop:
+  // TransLink 748's least-wait stop has two midday trips, and no reading, while its route stops
+  // read every 122.
+  const directionMidday899 = (key: string): { wait: number | null; hasReading: boolean } => {
+    const wait = directionMiddayWait(key);
+    if (wait == null) return { wait, hasReading: false };
+    const hasReading = [...(stopDepsByGroup.get(key)?.values() ?? [])].some(times => computePeriodHeadways(times).midday != null);
+    return { wait, hasReading };
+  };
 
+  const rowRunsAtNight = new Map<GeoJsonFeature, boolean>();
+  const rowNightStops = new Map<GeoJsonFeature, string[]>();
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
     // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
     feature.properties.frequentService = false;
@@ -1974,9 +2014,13 @@ export async function processGtfsBuffer(
     const shapePts: [number, number][] = feature.geometry.type === 'LineString'
       ? feature.geometry.coordinates.map(([lon, lat]) => [lat, lon])
       : [];
+    // The row's own end stops: stops with departures in its own metric map, projected onto its
+    // shape. Projecting every stop the direction serves picked stops of other patterns that have
+    // no times in this map, so the check failed automatically (TTC 301 westbound to Long Branch
+    // ended on stop 13944, never on its own 6523).
     const nightShapeStops = isMapless
       ? maplessStopProjection
-      : projectStopsOntoShape([...stopMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
+      : projectStopsOntoShape([...metricStopMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
     const nightEndpointStopIds = [...new Set([
       nightShapeStops[0]?.stopId,
       nightShapeStops.at(-1)?.stopId,
@@ -1994,6 +2038,20 @@ export async function processGtfsBuffer(
       60,
     );
     feature.properties.nightService = feature.properties.nightService60;
+    // Frequency focus step 4: whether this row itself runs at night: more than half of its own
+    // stops get departures across the 2-5am window's midpoint, from any trip of the direction
+    // (CTA 77's westbound owl runs on a pattern that is not drawn and turns short of the rows' end
+    // stops). The route verdict comes from the stretches after the loop; only rows that run at
+    // night are lit, so a row that is mostly a branch whose owl ends at 2:17 is not drawn as
+    // all-night service.
+    {
+      const own = nightShapeStops.map(({ stopId }) => stopId);
+      const atNight = own.filter(stopId => runsAcrossNightMidpoint(
+        nightServiceDepartureTimes(stopMap.get(stopId) ?? [], stopDepsByGroupNight.get(gKey)?.get(stopId) ?? []),
+      ));
+      rowRunsAtNight.set(feature, own.length > 0 && atNight.length * 2 > own.length);
+      rowNightStops.set(feature, atNight);
+    }
 
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};
@@ -2959,6 +3017,97 @@ export async function processGtfsBuffer(
   annotateShortTurnVariants(features, shapes);
   stampWorstDirectionHeadways(features);
   stampRouteIrregularDirection(features);
+
+  // Frequency focus step 3, shadow only: the stretch selector's values beside today's, for the
+  // report. Nothing reads them, and tiles leave them out. Routes with no direction_id in the feed
+  // get no stretch data, as the midday cap does.
+  {
+    const synthesizedGroups = new Set<string>();
+    for (const [feature, { shortName }] of featureStopHeadwaySlots) {
+      if (gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) synthesizedGroups.add(shortName);
+    }
+    const stretchesByKey = new Map<string, DirectionStretches>();
+    for (const [gKey, trips] of stretchVisitsByGroup) {
+      if (synthesizedGroups.has(gKey.slice(0, gKey.indexOf('::')))) continue;
+      const directionTrips = [...trips].map(([tripId, visits]) => ({
+        tripId,
+        visits: [...visits].sort((a, b) => a.seq - b.seq).map(({ stopId, minutes, overnightOnly, counted }) => ({ stopId, minutes, overnightOnly, counted })),
+      }));
+      const coord = (stopId: string): [number, number] | undefined => {
+        const stop = stopsById.get(stopId);
+        return stop ? [stop.lat, stop.lon] : undefined;
+      };
+      const stretches = directionStretches(gKey, directionTrips, coord);
+      // The night version (Ryan, 2026-10-15): the same direction from its 2-5am trips only.
+      const nightTrips = nightOnlyTrips(directionTrips);
+      if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
+      stretches.midday899 = directionMidday899(gKey);
+      stretchesByKey.set(gKey, stretches);
+    }
+    options?.onStretches?.({ stretches: stretchesByKey, stopDepsByGroup });
+    stampStretchShadow(features, stretchesByKey, feature => {
+      const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
+      return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
+    }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}));
+    // A partial-weekday route-day (#710) keeps today's filter: its stretch reads one weekday, while
+    // its service runs on others and continues on the next day's service after midnight.
+    const partialRouteDays = new Set([...partialWeekdayFeatures].map(f => {
+      const slot = featureStopHeadwaySlots.get(f);
+      return slot ? `${slot.shortName}::${slot.day}` : null;
+    }).filter((k): k is string => k != null));
+    for (const feature of features) {
+      const slot = featureStopHeadwaySlots.get(feature);
+      if (!slot || !partialRouteDays.has(`${slot.shortName}::${slot.day}`)) continue;
+      delete feature.properties.routeFilterHeadwayByPeriod;
+      delete feature.properties.routeRunsByPeriod;
+      delete feature.properties.directionFilterHeadwayByPeriod;
+      delete feature.properties.routeAllDayHeadway;
+      delete feature.properties.routeMiddayCap;
+    }
+    // Step 6: "limited service" (the hide-limited toggle, routeHasLimitedDirection) reads the
+    // stretches, as the all-day value does: a route has a limited direction only when a direction's
+    // main stretch does not run at midday. Phase 2's per-pattern class marked TTC 134 limited (a
+    // part-day variant), which hid it at midday while it runs every 15.
+    for (const feature of features) {
+      const p = feature.properties;
+      if (p.routeFilterHeadwayByPeriod === undefined) continue;
+      if (p.stretchRouteLimited === true) p.routeHasLimitedDirection = true;
+      else delete p.routeHasLimitedDirection;
+    }
+    // Step 6: Frequent Service reads the stretches: the route qualifies when every direction's main
+    // stretch and each tail running 7-19 do; its rows with midday service are lit.
+    for (const feature of features) {
+      const p = feature.properties;
+      if (p.routeFilterHeadwayByPeriod === undefined) continue;
+      const runsMidday = (p.periodCoverageHeadway as HeadwayByPeriod | undefined)?.midday != null;
+      p.frequentService = p.day === 'Weekday' && p.stretchFrequentService === true && runsMidday;
+      const research = p.stretchResearchFrequentService as { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean } | undefined;
+      if (research) p.researchFrequentService = runsMidday ? research : { daytime15: false, daytime30: false, extended15: false, extended30: false };
+    }
+    // Step 4: Night reads the stretches. A route qualifies when every direction it runs by day
+    // passes at the middle of its main stretch (and each tail that runs at night passes), 2-5am;
+    // its rows that run at night are lit. A route with no stretch verdict does not qualify.
+    for (const feature of features) {
+      if (!featureStopHeadwaySlots.has(feature)) continue;
+      const p = feature.properties;
+      // A route that qualifies only on its night version (part of the route, or a night path)
+      // lights every row its night service runs on, and lists the stops it runs at, so the map
+      // draws and the card names only that part.
+      const nightStops = rowNightStops.get(feature) ?? [];
+      const partial = p.stretchNightPartial60 === true;
+      const runs = partial ? nightStops.length >= 2 : rowRunsAtNight.get(feature) === true;
+      p.nightService30 = p.stretchNight30 === true && runs;
+      p.nightService60 = p.stretchNight60 === true && runs;
+      p.nightService = p.nightService60;
+      if (p.nightService60 && partial) {
+        p.nightServicePartOfRoute = true;
+        p.nightServiceStops = nightStops;
+      } else {
+        delete p.nightServicePartOfRoute;
+        delete p.nightServiceStops;
+      }
+    }
+  }
 
   annotateSharedStretches(features, {
     memberOf: feature => {

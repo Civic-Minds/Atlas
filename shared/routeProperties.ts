@@ -1,4 +1,5 @@
 import type {
+  PeriodKey,
   HeadwayByHourMaxGap,
   HeadwayByPeriod,
   HeadwayByPeriodMaxGap,
@@ -64,5 +65,27 @@ export interface RouteProperties {
   sharedStretches?: SharedStretch[];
   /** Pooled values per stop for the whole route/direction/day, on one carrier feature. Read via getPooledStop. */
   sharedStops?: Record<string, SharedStop>;
+  /**
+   * Frequency focus (pipeline/tripSets.ts), agency JSON only. Filter-agreeing fields: stamped on every feature of a route-day
+   * or on none; cards and lists show these so they never disagree with the map's filter. A period's null means no regular
+   * service there ("no regular service", never a number).
+   */
+  routeFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
+  /** The route's all-day filter value (step 6); NO_PERIOD_SERVICE_TILE_VALUE when it has none (limited, or no regular service). */
+  routeAllDayHeadway?: number;
+  /** Whether the route runs in the period at all (the "All" level). */
+  routeRunsByPeriod?: Partial<Record<PeriodKey, boolean>>;
+  /** Each direction's own filter value. */
+  directionFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
+  /** The route's range, [best stretch, worst] ("every 8–25"); null: one number. Display only. */
+  stretchPeriodRange?: Partial<Record<PeriodKey, [number, number] | null>>;
+  /** What this feature is on the card: the direction's main stretch, a tail, or a variant (a short turn: no destination row). */
+  stretchRole?: 'main' | 'tail' | 'variant';
+  /** 0 for the main stretch; a tail's index into stretchMeta.tails. Absent for variants. */
+  stretchIndex?: number;
+  stretchMeta?: { main: { stops: number; refStop: string; trips: number } | null; tails: Array<{ refStop: string; stops: number; km: number; trips: number }> };
+  /** Night service runs on only part of the route: draw and name only these stops' segments ("part of the route"). */
+  nightServicePartOfRoute?: boolean;
+  nightServiceStops?: string[];
   researchFrequentService?: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
 }

@@ -460,7 +460,7 @@ export function isSustainedHeadway(
  * even if every trip after that is tightly spaced, so boundary gaps are checked the same as
  * internal ones.
  */
-function hasSustainedServiceInWindow(
+export function hasSustainedServiceInWindow(
   departureTimes: number[],
   start: number,
   end: number,

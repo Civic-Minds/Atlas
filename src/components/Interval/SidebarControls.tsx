@@ -41,6 +41,7 @@ import { trackEvent } from '../../lib/analytics';
 import type { CompareRouteRow } from './compareTypes';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
+import { hasStretchRoles, stretchRowFeatures, variantOnlyRow } from '../../utils/stretchCard';
 
 interface SidebarControlsProps {
   query: string;
@@ -282,7 +283,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // quadratic in route features and reran on every layer update (froze Live zooming, CIV-218).
   const notableRoutes = useMemo(() => {
     if (!searchFocused) return [];
-    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; sharedHeadway?: number }>();
+    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -301,13 +302,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const display = routeListDisplay(routeFeatures, period);
         const headway = display.headway ?? 999;
         const limited = display.limited;
+        const noRegular = display.noRegular === true;
         const sharedHeadway = display.sharedHeadway;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = shortenAgencyName(facts.agencyName);
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, sharedHeadway });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) {
@@ -315,6 +317,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             existing.sharedHeadway = sharedHeadway;
           }
           existing.limited = existing.headway >= 999 && (existing.limited || limited);
+          existing.noRegular = existing.headway >= 999 && (existing.noRegular === true || noRegular);
         }
       }
     }
@@ -461,6 +464,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       // entirely rather than mislabeling it "limited service" (#227); a
       // route not running right now isn't the same as a genuinely
       // short-window/peak-only pattern.
+    }
+    // Frequency focus: when the data carries the stretch roles, a direction's rows are its main stretch and its tails (one row
+    // each); variants such as short turns get no destination row. A direction with no main or tail feature keeps today's rows.
+    for (const g of map.values()) {
+      const directionFeatures = currentRoute.directions.filter(d => (d.directionId ?? 0) === g.dirId);
+      if (!hasStretchRoles(directionFeatures)) continue;
+      let rows = stretchRowFeatures(directionFeatures, period).filter(d =>
+        metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null || hasDirectionPeriodService(d, period));
+      // With tails, the shared main stretch is the trunk they hang off: it gets a row only when it has a cadence of its own to show.
+      const variantRow = variantOnlyRow(directionFeatures);
+      if (variantRow) rows = [variantRow];
+      if (rows.some(d => d.stretchRole === 'tail')) rows = rows.filter(d => d.stretchRole !== 'main' || routeCardDisplayHeadway(d, period) != null);
+      if (rows.length > 0) { g.realTier = rows; g.span = []; }
     }
     // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.
     // Multiple shape variants can share the same headsign (e.g. different mid-route detours), producing
@@ -685,6 +701,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     };
 
     const seen = new Map<string, TransferEntry>();
+    const connectionRows = new Map<string, ShapeProperties[]>();
 
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       // Find stops in the transfer band (beyond sibling radius, within walking radius)
@@ -725,15 +742,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             agencyName: shortenAgencyName(facts.agencyName),
             agencySlug: slug,
             routeType: facts.routeType,
-            headway: routeCardDisplayHeadway(p, period),
+            headway: null,
             nearestStopName: closest.stopName,
             distanceMeters: closest.dist,
           });
+          connectionRows.set(mapKey, [p]);
         } else {
-          const headway = routeCardDisplayHeadway(p, period);
-          if (headway != null && (existing.headway === null || headway < existing.headway)) {
-            existing.headway = headway;
-          }
+          connectionRows.get(mapKey)!.push(p);
           if (closest.dist < existing.distanceMeters) {
             existing.distanceMeters = closest.dist;
             existing.nearestStopName = closest.stopName;
@@ -748,6 +763,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         departingKeys.add(branch.rKey);
       }
     }
+
+    // The same number the lists and the map use: the slower direction's filter value, not the best branch.
+    for (const [mapKey, rows] of connectionRows) seen.get(mapKey)!.headway = routeListDisplay(rows, period).headway;
 
     return Array.from(seen.values())
       .filter(conn => !departingKeys.has(conn.rKey))

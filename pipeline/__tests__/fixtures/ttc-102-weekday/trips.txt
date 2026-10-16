@@ -1,0 +1,421 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+102,1,50791142,South - 102 Markham Rd towards Warden Station,,0,2233141,1121865,1,1
+102,1,50791055,South - 102 Markham Rd towards Warden Station,,0,2233132,1121865,1,1
+102,1,50791047,South - 102 Markham Rd towards Warden Station,,0,2233135,1121865,1,1
+102,1,50791048,South - 102 Markham Rd towards Warden Station,,0,2233136,1121865,1,1
+102,1,50791049,South - 102 Markham Rd towards Warden Station,,0,2233137,1121865,1,1
+102,1,50791133,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791050,South - 102 Markham Rd towards Warden Station,,0,2233194,1121865,1,1
+102,1,50791051,South - 102 Markham Rd towards Warden Station,,0,2233138,1121865,1,1
+102,1,50791186,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791136,South - 102 Markham Rd towards Warden Station,,0,2233142,1121865,1,1
+102,1,50791057,South - 102 Markham Rd towards Warden Station,,0,2233144,1121863,1,1
+102,1,50791089,South - 102 Markham Rd towards Warden Station,,0,2233201,1121865,1,1
+102,1,50791053,South - 102 Markham Rd towards Warden Station,,0,2233200,1121863,1,1
+102,1,50791174,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791090,South - 102 Markham Rd towards Warden Station,,0,2233139,1121865,1,1
+102,1,50791091,South - 102 Markham Rd towards Warden Station,,0,2233197,1121865,1,1
+102,1,50791054,South - 102 Markham Rd towards Warden Station,,0,2233195,1121863,1,1
+102,1,50791092,South - 102 Markham Rd towards Warden Station,,0,2233202,1121865,1,1
+102,1,50791060,South - 102 Markham Rd towards Warden Station,,0,2233196,1121866,1,1
+102,1,50791093,South - 102 Markham Rd towards Warden Station,,0,2233141,1121865,1,1
+102,1,50791100,South - 102 Markham Rd towards Warden Station,,0,2233140,1121863,1,1
+102,1,50791094,South - 102 Markham Rd towards Warden Station,,0,2233132,1121865,1,1
+102,1,50791061,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791095,South - 102 Markham Rd towards Warden Station,,0,2233135,1121865,1,1
+102,1,50791101,South - 102 Markham Rd towards Warden Station,,0,2233203,1121863,1,1
+102,1,50791096,South - 102 Markham Rd towards Warden Station,,0,2233136,1121865,1,1
+102,1,50791062,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791097,South - 102 Markham Rd towards Warden Station,,0,2233137,1121865,1,1
+102,1,50791102,South - 102 Markham Rd towards Warden Station,,0,2233145,1121863,1,1
+102,1,50791098,South - 102 Markham Rd towards Warden Station,,0,2233194,1121865,1,1
+102,1,50791056,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791099,South - 102 Markham Rd towards Warden Station,,0,2233138,1121865,1,1
+102,1,50791143,South - 102 Markham Rd towards Warden Station,,0,2233146,1121863,1,1
+102,1,50791063,South - 102 Markham Rd towards Warden Station,,0,2233196,1121866,1,1
+102,1,50791181,South - 102 Markham Rd towards Warden Station,,0,2233142,1121865,1,1
+102,1,50791182,South - 102 Markham Rd towards Warden Station,,0,2233201,1121865,1,1
+102,1,50791144,South - 102 Markham Rd towards Warden Station,,0,2233192,1121863,1,1
+102,1,50791064,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791183,South - 102 Markham Rd towards Warden Station,,0,2233139,1121865,1,1
+102,1,50791184,South - 102 Markham Rd towards Warden Station,,0,2233197,1121865,1,1
+102,1,50791185,South - 102 Markham Rd towards Warden Station,,0,2233202,1121865,1,1
+102,1,50791145,South - 102 Markham Rd towards Warden Station,,0,2233198,1121863,1,1
+102,1,50791065,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791166,South - 102 Markham Rd towards Warden Station,,0,2233141,1121865,1,1
+102,1,50791146,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791043,South - 102 Markham Rd towards Warden Station,,0,2233132,1121865,1,1
+102,1,50791067,South - 102 Markham Rd towards Warden Station,,0,2233144,1121863,1,1
+102,1,50791066,South - 102 Markham Rd towards Warden Station,,0,2233135,1121865,1,1
+102,1,50791147,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791068,South - 102 Markham Rd towards Warden Station,,0,2233136,1121865,1,1
+102,1,50791124,South - 102 Markham Rd towards Warden Station,,0,2233195,1121863,1,1
+102,1,50791148,South - 102 Markham Rd towards Warden Station,,0,2233196,1121866,1,1
+102,1,50791123,South - 102 Markham Rd towards Warden Station,,0,2233137,1121865,1,1
+102,1,50791141,South - 102S Markham Rd Short Turn towards Markham and Steeles,S,0,2233194,1121862,1,1
+102,1,50791149,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791125,South - 102 Markham Rd towards Warden Station,,0,2233138,1121865,1,1
+102,1,50791127,South - 102 Markham Rd towards Warden Station,,0,2233140,1121863,1,1
+102,1,50791126,South - 102 Markham Rd towards Warden Station,,0,2233142,1121865,1,1
+102,1,50791150,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791128,South - 102 Markham Rd towards Warden Station,,0,2233139,1121865,1,1
+102,1,50791130,South - 102 Markham Rd towards Warden Station,,0,2233145,1121863,1,1
+102,1,50791151,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791129,South - 102 Markham Rd towards Warden Station,,0,2233197,1121865,1,1
+102,1,50791152,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791131,South - 102 Markham Rd towards Warden Station,,0,2233141,1121865,1,1
+102,1,50791076,South - 102 Markham Rd towards Warden Station,,0,2233146,1121863,1,1
+102,1,50791132,South - 102 Markham Rd towards Warden Station,,0,2233198,1121865,1,1
+102,1,50791153,South - 102 Markham Rd towards Warden Station,,0,2233196,1121866,1,1
+102,1,50791077,South - 102 Markham Rd towards Warden Station,,0,2233135,1121865,1,1
+102,1,50791079,South - 102 Markham Rd towards Warden Station,,0,2233192,1121863,1,1
+102,1,50791154,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791078,South - 102 Markham Rd towards Warden Station,,0,2233144,1121865,1,1
+102,1,50791155,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791080,South - 102 Markham Rd towards Warden Station,,0,2233137,1121865,1,1
+102,1,50791082,South - 102 Markham Rd towards Warden Station,,0,2233132,1121863,1,1
+102,1,50791081,South - 102 Markham Rd towards Warden Station,,0,2233195,1121865,1,1
+102,1,50791156,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791083,South - 102 Markham Rd towards Warden Station,,0,2233142,1121865,1,1
+102,1,50791085,South - 102 Markham Rd towards Warden Station,,0,2233136,1121863,1,1
+102,1,50791157,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791084,South - 102 Markham Rd towards Warden Station,,0,2233140,1121865,1,1
+102,1,50791158,South - 102 Markham Rd towards Warden Station,,0,2233196,1121866,1,1
+102,1,50791069,South - 102 Markham Rd towards Warden Station,,0,2233197,1121865,1,1
+102,1,50791071,South - 102 Markham Rd towards Warden Station,,0,2233138,1121863,1,1
+102,1,50791070,South - 102 Markham Rd towards Warden Station,,0,2233145,1121865,1,1
+102,1,50791159,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791165,South - 102 Markham Rd towards Warden Station,,0,2233139,1121863,1,1
+102,1,50791134,South - 102 Markham Rd towards Warden Station,,0,2233198,1121865,1,1
+102,1,50791160,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791135,South - 102 Markham Rd towards Warden Station,,0,2233146,1121865,1,1
+102,1,50791161,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791073,South - 102 Markham Rd towards Warden Station,,0,2233141,1121863,1,1
+102,1,50791103,South - 102 Markham Rd towards Warden Station,,0,2233144,1121865,1,1
+102,1,50791074,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233192,1121864,1,1
+102,1,50791163,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791087,South - 102 Markham Rd towards Warden Station,,0,2233135,1121863,1,1
+102,1,50791072,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233195,1121864,1,1
+102,1,50791164,South - 102 Markham Rd towards Warden Station,,0,2233196,1121866,1,1
+102,1,50791075,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233193,1121864,1,1
+102,1,50791167,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791116,South - 102 Markham Rd towards Warden Station,,0,2233137,1121863,1,1
+102,1,50791059,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233142,1121864,1,1
+102,1,50791115,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233140,1121864,1,1
+102,1,50791168,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791119,South - 102 Markham Rd towards Warden Station,,0,2233132,1121863,1,1
+102,1,50791117,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233197,1121864,1,1
+102,1,50791169,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791118,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233145,1121864,1,1
+102,1,50791170,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791122,South - 102 Markham Rd towards Warden Station,,0,2233136,1121863,1,1
+102,1,50791120,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233198,1121864,1,1
+102,1,50791121,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233146,1121864,1,1
+102,1,50791171,South - 102 Markham Rd towards Warden Station,,0,2233196,1121866,1,1
+102,1,50791178,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233144,1121864,1,1
+102,1,50791058,South - 102 Markham Rd towards Warden Station,,0,2233138,1121863,1,1
+102,1,50791172,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791176,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233192,1121864,1,1
+102,1,50791173,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791106,South - 102 Markham Rd towards Warden Station,,0,2233139,1121863,1,1
+102,1,50791104,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233195,1121864,1,1
+102,1,50791105,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233193,1121864,1,1
+102,1,50791088,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791162,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233142,1121864,1,1
+102,1,50791108,South - 102 Markham Rd towards Warden Station,,0,2233141,1121863,1,1
+102,1,50791137,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791107,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233140,1121864,1,1
+102,1,50791138,South - 102 Markham Rd towards Warden Station,,0,2233196,1121866,1,1
+102,1,50791177,South - 102 Markham Rd towards Warden Station,,0,2233135,1121863,1,1
+102,1,50791109,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233197,1121864,1,1
+102,1,50791110,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233145,1121864,1,1
+102,1,50791139,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791179,South - 102C Markham Rd towards Warden Station via Dynamic Dr,C,0,2233198,1121864,1,1
+102,1,50791140,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791112,South - 102 Markham Rd towards Warden Station,,0,2233137,1121863,1,1
+102,1,50791180,South - 102 Markham Rd towards Warden Station,,0,2233146,1121865,1,1
+102,1,50791111,South - 102 Markham Rd towards Warden Station,,0,2233204,1121865,1,1
+102,1,50791044,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791113,South - 102 Markham Rd towards Warden Station,,0,2233144,1121865,1,1
+102,1,50791086,South - 102 Markham Rd towards Warden Station,,0,2233132,1121863,1,1
+102,1,50791114,South - 102 Markham Rd towards Warden Station,,0,2233199,1121865,1,1
+102,1,50791175,South - 102 Markham Rd towards Warden Station,,0,2233192,1121865,1,1
+102,1,50791045,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791052,South - 102 Markham Rd towards Warden Station,,0,2233195,1121865,1,1
+102,1,50791201,South - 102 Markham Rd towards Warden Station,,0,2233136,1121863,1,1
+102,1,50791046,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791199,South - 102 Markham Rd towards Warden Station,,0,2233193,1121865,1,1
+102,1,50791200,South - 102 Markham Rd towards Warden Station,,0,2233196,1121865,1,1
+102,1,50791187,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791202,South - 102 Markham Rd towards Warden Station,,0,2233139,1121865,1,1
+102,1,50791205,South - 102 Markham Rd towards Warden Station,,0,2233138,1121863,1,1
+102,1,50791203,South - 102 Markham Rd towards Warden Station,,0,2233140,1121865,1,1
+102,1,50791204,South - 102 Markham Rd towards Warden Station,,0,2233141,1121865,1,1
+102,1,50791188,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791206,South - 102 Markham Rd towards Warden Station,,0,2233197,1121865,1,1
+102,1,50791209,South - 102 Markham Rd towards Warden Station,,0,2233142,1121863,1,1
+102,1,50791189,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791207,South - 102 Markham Rd towards Warden Station,,0,2233135,1121865,1,1
+102,1,50791222,South - 102S Markham Rd Short Turn towards Markham and Steeles,S,0,2233146,1121862,1,1
+102,1,50791208,South - 102 Markham Rd towards Warden Station,,0,2233198,1121865,1,1
+102,1,50791216,South - 102S Markham Rd Short Turn towards Sheppard,S,0,2233144,1121861,1,1
+102,1,50791190,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791210,South - 102 Markham Rd towards Warden Station,,0,2233143,1121865,1,1
+102,1,50791220,South - 102 Markham Rd towards Warden Station,,0,2233145,1121863,1,1
+102,1,50791211,South - 102 Markham Rd towards Warden Station,,0,2233199,1121865,1,1
+102,1,50791212,South - 102 Markham Rd towards Warden Station,,0,2233192,1121865,1,1
+102,1,50791191,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791221,South - 102 Markham Rd towards Warden Station,,0,2233195,1121865,1,1
+102,1,50791192,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791232,South - 102 Markham Rd towards Warden Station,,0,2233132,1121863,1,1
+102,1,50791230,South - 102 Markham Rd towards Warden Station,,0,2233193,1121865,1,1
+102,1,50791231,South - 102 Markham Rd towards Warden Station,,0,2233196,1121865,1,1
+102,1,50791223,South - 102S Markham Rd Short Turn towards Markham and Steeles,S,0,2233139,1121862,1,1
+102,1,50791193,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791233,South - 102 Markham Rd towards Warden Station,,0,2233140,1121865,1,1
+102,1,50791214,South - 102 Markham Rd towards Warden Station,,0,2233136,1121863,1,1
+102,1,50791234,South - 102 Markham Rd towards Warden Station,,0,2233141,1121865,1,1
+102,1,50791194,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791235,South - 102 Markham Rd towards Warden Station,,0,2233197,1121865,1,1
+102,1,50791236,South - 102 Markham Rd towards Warden Station,,0,2233198,1121865,1,1
+102,1,50791215,South - 102 Markham Rd towards Warden Station,,0,2233138,1121863,1,1
+102,1,50791195,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791237,South - 102 Markham Rd towards Warden Station,,0,2233142,1121865,1,1
+102,1,50791238,South - 102 Markham Rd towards Warden Station,,0,2233143,1121865,1,1
+102,1,50791196,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791239,South - 102 Markham Rd towards Warden Station,,0,2233199,1121865,1,1
+102,1,50791240,South - 102 Markham Rd towards Warden Station,,0,2233192,1121865,1,1
+102,1,50791245,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791241,South - 102 Markham Rd towards Warden Station,,0,2233193,1121865,1,1
+102,1,50791242,South - 102 Markham Rd towards Warden Station,,0,2233196,1121865,1,1
+102,1,50791226,South - 102 Markham Rd towards Warden Station,,0,2233133,1121866,1,1
+102,1,50791243,South - 102 Markham Rd towards Warden Station,,0,2233132,1121865,1,1
+102,1,50791227,South - 102 Markham Rd towards Warden Station,,0,2233134,1121866,1,1
+102,1,50791246,South - 102 Markham Rd towards Warden Station,,0,2233140,1121865,1,1
+102,1,50791244,South - 102 Markham Rd towards Warden Station,,0,2233141,1121865,1,1
+102,1,50791228,South - 102 Markham Rd towards Warden Station,,0,2233190,1121866,1,1
+102,1,50791217,South - 102 Markham Rd towards Warden Station,,0,2233197,1121865,1,1
+102,1,50791218,South - 102 Markham Rd towards Warden Station,,0,2233198,1121865,1,1
+102,1,50791213,South - 102S Markham Rd Short Turn towards Sheppard,S,0,2233142,1121861,1,1
+102,1,50791229,South - 102 Markham Rd towards Warden Station,,0,2233191,1121866,1,1
+102,1,50791219,South - 102 Markham Rd towards Warden Station,,0,2233143,1121865,1,1
+102,1,50791225,South - 102 Markham Rd towards Warden Station,,0,2233199,1121865,1,1
+102,1,50791197,South - 102S Markham Rd Short Turn towards Sheppard,S,0,2233192,1121861,1,1
+102,1,50791198,South - 102S Markham Rd Short Turn towards Sheppard,S,0,2233193,1121861,1,1
+102,1,50791224,South - 102 Markham Rd towards Warden Station,,0,2233196,1121865,1,1
+102,1,50791256,North - 102B Markham Rd towards Steeles,B,1,2233141,1121873,1,1
+102,1,50791257,North - 102B Markham Rd towards Steeles,B,1,2233132,1121873,1,1
+102,1,50791258,North - 102B Markham Rd towards Steeles,B,1,2233135,1121873,1,1
+102,1,50791248,North - 102B Markham Rd towards Steeles,B,1,2233201,1121871,1,1
+102,1,50791259,North - 102B Markham Rd towards Steeles,B,1,2233136,1121873,1,1
+102,1,50791255,North - 102D Markham Rd towards Major Mackenzie,D,1,2233140,1121869,1,1
+102,1,50791260,North - 102B Markham Rd towards Steeles,B,1,2233137,1121873,1,1
+102,1,50791247,North - 102B Markham Rd towards Steeles,B,1,2233139,1121871,1,1
+102,1,50791309,North - 102D Markham Rd towards Major Mackenzie,D,1,2233203,1121869,1,1
+102,1,50791273,North - 102B Markham Rd towards Steeles,B,1,2233194,1121873,1,1
+102,1,50791275,North - 102B Markham Rd towards Steeles,B,1,2233138,1121873,1,1
+102,1,50791311,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233141,1121870,1,1
+102,1,50791310,North - 102D Markham Rd towards Major Mackenzie,D,1,2233145,1121869,1,1
+102,1,50791261,North - 102B Markham Rd towards Steeles,B,1,2233142,1121873,1,1
+102,1,50791312,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233132,1121870,1,1
+102,1,50791313,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233135,1121870,1,1
+102,1,50791294,North - 102D Markham Rd towards Major Mackenzie,D,1,2233146,1121869,1,1
+102,1,50791314,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233136,1121870,1,1
+102,1,50791329,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791305,North - 102B Markham Rd towards Steeles,B,1,2233197,1121873,1,1
+102,1,50791315,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233137,1121870,1,1
+102,1,50791274,North - 102B Markham Rd towards Steeles,B,1,2233202,1121873,1,1
+102,1,50791334,North - 102D Markham Rd towards Major Mackenzie,D,1,2233192,1121869,1,1
+102,1,50791316,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233194,1121870,1,1
+102,1,50791330,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791317,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233138,1121870,1,1
+102,1,50791335,North - 102D Markham Rd towards Major Mackenzie,D,1,2233198,1121869,1,1
+102,1,50791318,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233142,1121870,1,1
+102,1,50791331,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791319,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233201,1121870,1,1
+102,1,50791288,North - 102D Markham Rd towards Major Mackenzie,D,1,2233144,1121869,1,1
+102,1,50791272,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233139,1121870,1,1
+102,1,50791332,North - 102A Markham Rd towards Centennial College,A,1,2233196,1121872,1,1
+102,1,50791277,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233197,1121870,1,1
+102,1,50791337,North - 102D Markham Rd towards Major Mackenzie,D,1,2233200,1121869,1,1
+102,1,50791278,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233202,1121870,1,1
+102,1,50791333,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791321,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233141,1121870,1,1
+102,1,50791338,North - 102D Markham Rd towards Major Mackenzie,D,1,2233195,1121869,1,1
+102,1,50791327,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233132,1121870,1,1
+102,1,50791287,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791306,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233135,1121870,1,1
+102,1,50791339,North - 102D Markham Rd towards Major Mackenzie,D,1,2233140,1121869,1,1
+102,1,50791307,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233136,1121870,1,1
+102,1,50791336,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791308,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233137,1121870,1,1
+102,1,50791295,North - 102D Markham Rd towards Major Mackenzie,D,1,2233203,1121869,1,1
+102,1,50791254,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233194,1121870,1,1
+102,1,50791328,North - 102A Markham Rd towards Centennial College,A,1,2233196,1121872,1,1
+102,1,50791302,North - 102D Markham Rd towards Major Mackenzie,D,1,2233145,1121869,1,1
+102,1,50791322,North - 102C Markham Rd towards Steeles via Dynamic Dr,C,1,2233138,1121870,1,1
+102,1,50791296,North - 102B Markham Rd towards Steeles,B,1,2233142,1121871,1,1
+102,1,50791279,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791297,North - 102D Markham Rd towards Major Mackenzie,D,1,2233146,1121869,1,1
+102,1,50791298,North - 102B Markham Rd towards Steeles,B,1,2233139,1121871,1,1
+102,1,50791293,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791299,North - 102B Markham Rd towards Steeles,B,1,2233197,1121871,1,1
+102,1,50791300,North - 102D Markham Rd towards Major Mackenzie,D,1,2233192,1121869,1,1
+102,1,50791263,North - 102A Markham Rd towards Centennial College,A,1,2233190,1121872,1,1
+102,1,50791262,North - 102B Markham Rd towards Steeles,B,1,2233141,1121871,1,1
+102,1,50791320,North - 102B Markham Rd towards Steeles,B,1,2233198,1121871,1,1
+102,1,50791264,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791323,North - 102D Markham Rd towards Major Mackenzie,D,1,2233132,1121869,1,1
+102,1,50791324,North - 102B Markham Rd towards Steeles,B,1,2233135,1121871,1,1
+102,1,50791265,North - 102A Markham Rd towards Centennial College,A,1,2233196,1121872,1,1
+102,1,50791325,North - 102B Markham Rd towards Steeles,B,1,2233144,1121871,1,1
+102,1,50791326,North - 102D Markham Rd towards Major Mackenzie,D,1,2233136,1121869,1,1
+102,1,50791266,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791280,North - 102B Markham Rd towards Steeles,B,1,2233137,1121871,1,1
+102,1,50791282,North - 102B Markham Rd towards Steeles,B,1,2233195,1121871,1,1
+102,1,50791267,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791283,North - 102D Markham Rd towards Major Mackenzie,D,1,2233138,1121869,1,1
+102,1,50791284,North - 102B Markham Rd towards Steeles,B,1,2233142,1121871,1,1
+102,1,50791268,North - 102A Markham Rd towards Centennial College,A,1,2233190,1121872,1,1
+102,1,50791285,North - 102B Markham Rd towards Steeles,B,1,2233140,1121871,1,1
+102,1,50791286,North - 102D Markham Rd towards Major Mackenzie,D,1,2233139,1121869,1,1
+102,1,50791269,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791301,North - 102B Markham Rd towards Steeles,B,1,2233197,1121871,1,1
+102,1,50791249,North - 102B Markham Rd towards Steeles,B,1,2233145,1121871,1,1
+102,1,50791270,North - 102A Markham Rd towards Centennial College,A,1,2233196,1121872,1,1
+102,1,50791250,North - 102D Markham Rd towards Major Mackenzie,D,1,2233141,1121869,1,1
+102,1,50791251,North - 102B Markham Rd towards Steeles,B,1,2233198,1121871,1,1
+102,1,50791271,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791252,North - 102B Markham Rd towards Steeles,B,1,2233146,1121871,1,1
+102,1,50791253,North - 102D Markham Rd towards Major Mackenzie,D,1,2233135,1121869,1,1
+102,1,50791281,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791289,North - 102B Markham Rd towards Steeles,B,1,2233144,1121871,1,1
+102,1,50791290,North - 102B Markham Rd towards Steeles,B,1,2233192,1121871,1,1
+102,1,50791303,North - 102A Markham Rd towards Centennial College,A,1,2233190,1121872,1,1
+102,1,50791291,North - 102D Markham Rd towards Major Mackenzie,D,1,2233137,1121869,1,1
+102,1,50791292,North - 102B Markham Rd towards Steeles,B,1,2233195,1121871,1,1
+102,1,50791304,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791276,North - 102B Markham Rd towards Steeles,B,1,2233193,1121871,1,1
+102,1,50791348,North - 102D Markham Rd towards Major Mackenzie,D,1,2233132,1121869,1,1
+102,1,50791354,North - 102B Markham Rd towards Steeles,B,1,2233142,1121871,1,1
+102,1,50791398,North - 102A Markham Rd towards Centennial College,A,1,2233196,1121872,1,1
+102,1,50791355,North - 102B Markham Rd towards Steeles,B,1,2233140,1121871,1,1
+102,1,50791356,North - 102D Markham Rd towards Major Mackenzie,D,1,2233136,1121869,1,1
+102,1,50791397,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791357,North - 102B Markham Rd towards Steeles,B,1,2233197,1121871,1,1
+102,401,50791389,North - 102A Markham Rd towards Centennial College,A,1,2234874,1121868,1,1
+102,1,50791358,North - 102B Markham Rd towards Steeles,B,1,2233145,1121871,1,1
+102,1,50791374,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791349,North - 102D Markham Rd towards Major Mackenzie,D,1,2233138,1121869,1,1
+102,1,50791350,North - 102B Markham Rd towards Steeles,B,1,2233198,1121871,1,1
+102,1,50791380,North - 102A Markham Rd towards Centennial College,A,1,2233190,1121872,1,1
+102,1,50791352,North - 102B Markham Rd towards Steeles,B,1,2233146,1121871,1,1
+102,1,50791384,North - 102D Markham Rd towards Major Mackenzie,D,1,2233139,1121869,1,1
+102,1,50791387,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791429,North - 102B Markham Rd towards Steeles,B,1,2233144,1121871,1,1
+102,1,50791381,North - 102B Markham Rd towards Steeles,B,1,2233192,1121871,1,1
+102,1,50791388,North - 102A Markham Rd towards Centennial College,A,1,2233196,1121872,1,1
+102,1,50791382,North - 102D Markham Rd towards Major Mackenzie,D,1,2233141,1121869,1,1
+102,1,50791410,North - 102B Markham Rd towards Steeles,B,1,2233195,1121871,1,1
+102,1,50791448,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791411,North - 102B Markham Rd towards Steeles,B,1,2233193,1121871,1,1
+102,1,50791412,North - 102D Markham Rd towards Major Mackenzie,D,1,2233135,1121869,1,1
+102,1,50791449,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791413,North - 102B Markham Rd towards Steeles,B,1,2233142,1121871,1,1
+102,1,50791414,North - 102B Markham Rd towards Steeles,B,1,2233140,1121871,1,1
+102,1,50791450,North - 102A Markham Rd towards Centennial College,A,1,2233190,1121872,1,1
+102,1,50791415,North - 102D Markham Rd towards Major Mackenzie,D,1,2233137,1121869,1,1
+102,1,50791416,North - 102B Markham Rd towards Steeles,B,1,2233197,1121871,1,1
+102,1,50791451,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791417,North - 102B Markham Rd towards Steeles,B,1,2233145,1121871,1,1
+102,1,50791418,North - 102D Markham Rd towards Major Mackenzie,D,1,2233132,1121869,1,1
+102,1,50791399,North - 102A Markham Rd towards Centennial College,A,1,2233196,1121872,1,1
+102,1,50791419,North - 102B Markham Rd towards Steeles,B,1,2233198,1121871,1,1
+102,1,50791345,North - 102B Markham Rd towards Steeles,B,1,2233146,1121871,1,1
+102,1,50791400,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791346,North - 102D Markham Rd towards Major Mackenzie,D,1,2233136,1121869,1,1
+102,1,50791453,North - 102B Markham Rd towards Steeles,B,1,2233144,1121871,1,1
+102,1,50791385,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791377,North - 102B Markham Rd towards Steeles,B,1,2233192,1121871,1,1
+102,1,50791378,North - 102D Markham Rd towards Major Mackenzie,D,1,2233138,1121869,1,1
+102,1,50791386,North - 102A Markham Rd towards Centennial College,A,1,2233190,1121872,1,1
+102,1,50791379,North - 102B Markham Rd towards Steeles,B,1,2233195,1121871,1,1
+102,1,50791445,North - 102B Markham Rd towards Steeles,B,1,2233193,1121871,1,1
+102,1,50791372,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791454,North - 102D Markham Rd towards Major Mackenzie,D,1,2233142,1121869,1,1
+102,1,50791375,North - 102B Markham Rd towards Steeles,B,1,2233204,1121873,1,1
+102,1,50791455,North - 102B Markham Rd towards Steeles,B,1,2233139,1121871,1,1
+102,1,50791456,North - 102B Markham Rd towards Steeles,B,1,2233196,1121871,1,1
+102,1,50791406,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791457,North - 102B Markham Rd towards Steeles,B,1,2233140,1121871,1,1
+102,1,50791376,North - 102B Markham Rd towards Steeles,B,1,2233199,1121873,1,1
+102,1,50791458,North - 102B Markham Rd towards Steeles,B,1,2233141,1121871,1,1
+102,1,50791459,North - 102D Markham Rd towards Major Mackenzie,D,1,2233145,1121869,1,1
+102,1,50791407,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791460,North - 102B Markham Rd towards Steeles,B,1,2233197,1121871,1,1
+102,1,50791461,North - 102B Markham Rd towards Steeles,B,1,2233135,1121871,1,1
+102,1,50791464,North - 102B Markham Rd towards Steeles,B,1,2233198,1121871,1,1
+102,1,50791408,North - 102A Markham Rd towards Centennial College,A,1,2233190,1121872,1,1
+102,1,50791462,North - 102B Markham Rd towards Steeles,B,1,2233146,1121871,1,1
+102,1,50791463,North - 102D Markham Rd towards Major Mackenzie,D,1,2233204,1121869,1,1
+102,1,50791409,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791383,North - 102B Markham Rd towards Steeles,B,1,2233144,1121871,1,1
+102,1,50791437,North - 102B Markham Rd towards Steeles,B,1,2233199,1121871,1,1
+102,1,50791438,North - 102B Markham Rd towards Steeles,B,1,2233192,1121871,1,1
+102,1,50791373,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791439,North - 102D Markham Rd towards Major Mackenzie,D,1,2233132,1121869,1,1
+102,1,50791440,North - 102B Markham Rd towards Steeles,B,1,2233195,1121871,1,1
+102,1,50791441,North - 102B Markham Rd towards Steeles,B,1,2233193,1121871,1,1
+102,1,50791420,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791442,North - 102B Markham Rd towards Steeles,B,1,2233196,1121871,1,1
+102,1,50791401,North - 102D Markham Rd towards Major Mackenzie,D,1,2233136,1121869,1,1
+102,1,50791360,North - 102B Markham Rd towards Steeles,B,1,2233143,1121873,1,1
+102,1,50791421,North - 102A Markham Rd towards Centennial College,A,1,2233190,1121872,1,1
+102,1,50791402,North - 102B Markham Rd towards Steeles,B,1,2233139,1121871,1,1
+102,1,50791403,North - 102B Markham Rd towards Steeles,B,1,2233140,1121871,1,1
+102,1,50791404,North - 102B Markham Rd towards Steeles,B,1,2233141,1121871,1,1
+102,1,50791422,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791405,North - 102D Markham Rd towards Major Mackenzie,D,1,2233138,1121869,1,1
+102,1,50791390,North - 102B Markham Rd towards Steeles,B,1,2233197,1121871,1,1
+102,1,50791351,North - 102D Markham Rd towards Major Mackenzie,D,1,2233135,1121869,1,1
+102,1,50791423,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791430,North - 102B Markham Rd towards Steeles,B,1,2233198,1121871,1,1
+102,1,50791446,North - 102B Markham Rd towards Steeles,B,1,2233142,1121871,1,1
+102,1,50791424,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791431,North - 102B Markham Rd towards Steeles,B,1,2233143,1121871,1,1
+102,1,50791432,North - 102B Markham Rd towards Steeles,B,1,2233199,1121871,1,1
+102,1,50791370,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233145,1121874,1,1
+102,1,50791425,North - 102A Markham Rd towards Centennial College,A,1,2233190,1121872,1,1
+102,1,50791433,North - 102B Markham Rd towards Steeles,B,1,2233192,1121871,1,1
+102,1,50791369,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233195,1121874,1,1
+102,1,50791434,North - 102B Markham Rd towards Steeles,B,1,2233193,1121871,1,1
+102,1,50791426,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791435,North - 102B Markham Rd towards Steeles,B,1,2233196,1121871,1,1
+102,1,50791436,North - 102B Markham Rd towards Steeles,B,1,2233132,1121871,1,1
+102,1,50791427,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791340,North - 102B Markham Rd towards Steeles,B,1,2233140,1121871,1,1
+102,1,50791368,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233136,1121874,1,1
+102,1,50791341,North - 102B Markham Rd towards Steeles,B,1,2233141,1121871,1,1
+102,1,50791428,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791342,North - 102B Markham Rd towards Steeles,B,1,2233197,1121871,1,1
+102,1,50791343,North - 102B Markham Rd towards Steeles,B,1,2233198,1121871,1,1
+102,1,50791444,North - 102A Markham Rd towards Centennial College,A,1,2233190,1121872,1,1
+102,1,50791367,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233138,1121874,1,1
+102,1,50791391,North - 102B Markham Rd towards Steeles,B,1,2233142,1121871,1,1
+102,1,50791392,North - 102B Markham Rd towards Steeles,B,1,2233143,1121871,1,1
+102,1,50791359,North - 102A Markham Rd towards Centennial College,A,1,2233191,1121872,1,1
+102,1,50791393,North - 102B Markham Rd towards Steeles,B,1,2233199,1121871,1,1
+102,1,50791394,North - 102B Markham Rd towards Steeles,B,1,2233192,1121871,1,1
+102,1,50791447,North - 102A Markham Rd towards Centennial College,A,1,2233133,1121872,1,1
+102,1,50791395,North - 102B Markham Rd towards Steeles,B,1,2233193,1121871,1,1
+102,1,50791353,North - 102B Markham Rd towards Steeles,B,1,2233196,1121871,1,1
+102,1,50791366,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233132,1121874,1,1
+102,1,50791443,North - 102A Markham Rd towards Centennial College,A,1,2233134,1121872,1,1
+102,1,50791365,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233140,1121874,1,1
+102,1,50791361,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233190,1121874,1,1
+102,1,50791364,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233141,1121874,1,1
+102,1,50791363,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233197,1121874,1,1
+102,1,50791371,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233191,1121874,1,1
+102,1,50791362,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233198,1121874,1,1
+102,1,50791452,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233199,1121874,1,1
+102,1,50791344,North - 102S Markham Rd Short Turn towards Sheppard,S,1,2233196,1121874,1,1

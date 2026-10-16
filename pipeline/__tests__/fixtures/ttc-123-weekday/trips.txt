@@ -1,0 +1,299 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+123,1,50794822,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122001,1,1
+123,1,50794875,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233361,1122002,1,1
+123,1,50794821,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122001,1,1
+123,1,50794837,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794970,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794927,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2234711,1122002,1,1
+123,1,50794931,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233364,1122004,1,1
+123,1,50794859,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794862,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794823,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233374,1122002,1,1
+123,1,50794860,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233361,1122003,1,1
+123,1,50794835,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233362,1122004,1,1
+123,1,50794827,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794845,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2234711,1122002,1,1
+123,1,50794858,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794828,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794943,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794855,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233374,1122002,1,1
+123,1,50794829,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233361,1122003,1,1
+123,1,50794944,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233364,1122004,1,1
+123,1,50794830,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794868,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2234711,1122002,1,1
+123,1,50794945,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794831,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794946,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233362,1122004,1,1
+123,1,50794869,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233374,1122002,1,1
+123,1,50794832,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233361,1122003,1,1
+123,1,50794867,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794833,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794850,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2234711,1122002,1,1
+123,1,50794907,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794834,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794908,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233364,1122004,1,1
+123,1,50794962,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233374,1122002,1,1
+123,1,50794851,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233361,1122003,1,1
+123,1,50794909,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794963,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2234711,1122002,1,1
+123,1,50794861,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794910,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233362,1122004,1,1
+123,1,50794911,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794872,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794964,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794917,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794965,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794926,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794857,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794849,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794919,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794916,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794920,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794966,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794921,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794967,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794922,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794843,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794889,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794844,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794885,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794870,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794886,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794898,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794918,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794899,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794940,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794900,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794864,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794890,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794865,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794901,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233379,1122002,1,1
+123,1,50794968,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794883,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794878,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233380,1122002,1,1
+123,1,50794969,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794884,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794902,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233379,1122002,1,1
+123,1,50794923,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794941,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794924,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233376,1122003,1,1
+123,1,50794903,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233380,1122002,1,1
+123,1,50794942,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233381,1122004,1,1
+123,1,50794925,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794904,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233379,1122002,1,1
+123,1,50794879,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794824,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794880,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233382,1122004,1,1
+123,1,50794956,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233380,1122002,1,1
+123,1,50794825,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233376,1122003,1,1
+123,1,50794881,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794826,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794887,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233379,1122002,1,1
+123,1,50794882,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794863,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794915,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233380,1122002,1,1
+123,1,50794866,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233381,1122004,1,1
+123,1,50794871,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233376,1122003,1,1
+123,1,50794947,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794847,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233379,1122002,1,1
+123,1,50794873,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794948,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233382,1122004,1,1
+123,1,50794874,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794848,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233380,1122002,1,1
+123,1,50794949,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794846,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233376,1122003,1,1
+123,1,50794876,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233379,1122002,1,1
+123,1,50794950,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794928,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794951,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233381,1122004,1,1
+123,1,50794877,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233380,1122002,1,1
+123,1,50794929,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794952,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794930,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233376,1122003,1,1
+123,1,50794897,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233379,1122002,1,1
+123,1,50794953,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233382,1122004,1,1
+123,1,50794932,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233360,1122003,1,1
+123,1,50794891,South - 123F Sherway towards Sherway Gardens via West Mall,F,0,2233380,1122002,1,1
+123,1,50794954,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233377,1122004,1,1
+123,1,50794933,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233375,1122003,1,1
+123,1,50794955,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794934,South - 123D Sherway towards Sherway Gardens via Shorncliffe and East Mall,D,0,2233376,1122003,1,1
+123,1,50794852,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233360,1122005,1,1
+123,1,50794892,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794853,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233377,1122005,1,1
+123,1,50794893,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794854,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233360,1122005,1,1
+123,1,50794912,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794914,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233377,1122005,1,1
+123,1,50794959,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794894,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233360,1122005,1,1
+123,1,50794913,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794895,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233377,1122005,1,1
+123,1,50794935,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794896,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233360,1122005,1,1
+123,1,50794961,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794856,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233377,1122005,1,1
+123,1,50794960,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794888,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233360,1122005,1,1
+123,1,50794939,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794958,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233377,1122005,1,1
+123,1,50794938,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794957,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233360,1122005,1,1
+123,1,50794937,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794906,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233377,1122005,1,1
+123,1,50794936,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794905,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233360,1122005,1,1
+123,1,50794840,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794842,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233377,1122005,1,1
+123,1,50794839,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233378,1122004,1,1
+123,1,50794841,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233360,1122005,1,1
+123,1,50794836,South - 123C Sherway towards Long Branch via Shorncliffe and North Queen,C,0,2233363,1122004,1,1
+123,1,50794838,South - 123B Sherway towards Long Branch via Shorncliffe and East Mall,B,0,2233377,1122005,1,1
+123,1,50795019,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233377,1122009,1,1
+123,1,50795018,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233364,1122008,1,1
+123,1,50795022,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795058,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50794996,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233362,1122008,1,1
+123,1,50794988,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233361,1122006,1,1
+123,1,50795088,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795066,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795060,North - 123F Sherway towards Kipling Station via West Mall,F,1,2234711,1122007,1,1
+123,1,50795014,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50794975,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795015,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233364,1122008,1,1
+123,1,50794995,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233374,1122007,1,1
+123,1,50795030,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233361,1122006,1,1
+123,1,50795016,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795031,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795017,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233362,1122008,1,1
+123,1,50794989,North - 123F Sherway towards Kipling Station via West Mall,F,1,2234711,1122007,1,1
+123,1,50794982,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795011,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50794987,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233374,1122007,1,1
+123,1,50794978,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233361,1122006,1,1
+123,1,50795053,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50795027,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795054,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233364,1122008,1,1
+123,1,50795096,North - 123F Sherway towards Kipling Station via West Mall,F,1,2234711,1122007,1,1
+123,1,50795028,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795055,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795084,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233374,1122007,1,1
+123,1,50795048,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233361,1122006,1,1
+123,1,50795056,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233362,1122008,1,1
+123,1,50795049,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795057,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795020,North - 123F Sherway towards Kipling Station via West Mall,F,1,2234711,1122007,1,1
+123,1,50795050,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795095,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50795021,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233374,1122007,1,1
+123,1,50795051,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233361,1122006,1,1
+123,1,50795032,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795052,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50794973,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795003,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795080,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50795004,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795087,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795046,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795001,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795047,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795002,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50795083,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795033,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50794981,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795065,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50794983,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795067,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50794984,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795068,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50794985,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795070,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50794991,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795013,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50794992,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795006,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795089,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795081,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795090,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50794979,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233380,1122007,1,1
+123,1,50795061,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50795034,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50794980,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233379,1122007,1,1
+123,1,50795094,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795074,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795005,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233380,1122007,1,1
+123,1,50795040,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50794998,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795041,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233382,1122008,1,1
+123,1,50795082,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233379,1122007,1,1
+123,1,50794999,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795042,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50795000,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233376,1122006,1,1
+123,1,50795086,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233380,1122007,1,1
+123,1,50795043,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795069,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795085,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233379,1122007,1,1
+123,1,50795044,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233381,1122008,1,1
+123,1,50795071,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795045,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795010,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233380,1122007,1,1
+123,1,50795072,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233376,1122006,1,1
+123,1,50795075,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233382,1122008,1,1
+123,1,50795073,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50794997,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233379,1122007,1,1
+123,1,50795076,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50795091,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50794974,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233380,1122007,1,1
+123,1,50795077,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795092,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233376,1122006,1,1
+123,1,50795078,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233381,1122008,1,1
+123,1,50794986,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233379,1122007,1,1
+123,1,50795093,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795012,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795029,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795059,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233380,1122007,1,1
+123,1,50795099,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233382,1122008,1,1
+123,1,50795038,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233376,1122006,1,1
+123,1,50795035,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233379,1122007,1,1
+123,1,50795100,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233377,1122008,1,1
+123,1,50795039,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50794971,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50794994,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233380,1122007,1,1
+123,1,50794993,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50794972,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233381,1122008,1,1
+123,1,50795023,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233379,1122007,1,1
+123,1,50795079,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233376,1122006,1,1
+123,1,50795062,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795036,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233360,1122006,1,1
+123,1,50795024,North - 123F Sherway towards Kipling Station via West Mall,F,1,2233380,1122007,1,1
+123,1,50795063,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233382,1122008,1,1
+123,1,50795009,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233377,1122009,1,1
+123,1,50795037,North - 123D Sherway towards Kipling Station via East Mall and Shorncliffe,D,1,2233375,1122006,1,1
+123,1,50795025,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795097,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233360,1122009,1,1
+123,1,50795026,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795098,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233377,1122009,1,1
+123,1,50795064,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795007,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233360,1122009,1,1
+123,1,50794976,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795008,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233377,1122009,1,1
+123,1,50794977,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50794990,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233360,1122009,1,1
+123,1,50795117,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795111,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233377,1122009,1,1
+123,1,50795114,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795116,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233360,1122009,1,1
+123,1,50795115,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795109,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233377,1122009,1,1
+123,1,50795106,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795110,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233360,1122009,1,1
+123,1,50795118,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795101,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233377,1122009,1,1
+123,1,50795105,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795102,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233360,1122009,1,1
+123,1,50795107,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795103,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233377,1122009,1,1
+123,1,50795108,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233378,1122008,1,1
+123,1,50795104,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233360,1122009,1,1
+123,1,50795112,North - 123C Sherway towards Kipling Station via North Queen and Shorncliffe,C,1,2233363,1122008,1,1
+123,1,50795113,North - 123B Sherway towards Kipling Station via East Mall and Shorncliffe,B,1,2233377,1122009,1,1
