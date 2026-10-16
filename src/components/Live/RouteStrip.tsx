@@ -2,7 +2,7 @@ import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, typ
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
-  LEGEND_TITLE, MIN_N, STEP_LABELS, delayText, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopN, stopValue, stretchSpan, stripSummary,
+  LEGEND_TITLE, MIN_N, STEP_LABELS, delayText, keyStops, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
 } from './routeStripModel';
 
@@ -68,12 +68,14 @@ function valueText(stop: RouteStripStop, mode: RouteStripMode): string {
 /**
  * One direction of a route as a line of stops, each coloured by a three-step scale for typical delay or for bunching.
  * Wide: a horizontal line with the terminals, the marked stretch's ends and a few evenly spaced stops labelled.
- * On phones, or in a column narrower than `verticalBelow` px: a vertical list with every stop named. The strip is one focusable unit: its label
+ * On phones, or in a column narrower than `verticalBelow` px: a compact vertical line with the key stops named, and a
+ * "Show all stops" switch for the full list with every stop named. The strip is one focusable unit: its label
  * sums it up, the arrow keys step through the stops, and the same figures are available as a table.
  */
 export default function RouteStrip({ stops, mode, directionLabel, delaysStart, bunchingForms, minN = MIN_N, verticalBelow = 360, className = '' }: RouteStripProps) {
   const [ref, width] = useWidth();
   const [active, setActive] = useState<number | null>(null);
+  const [allStops, setAllStops] = useState(false);
   const liveId = useId();
   const stretch: StretchSpan | null = useMemo(
     () => (mode === 'delay' ? stretchSpan(stops, delaysStart, 'delaysStart') : stretchSpan(stops, bunchingForms, 'bunchingForms')),
@@ -171,7 +173,9 @@ export default function RouteStrip({ stops, mode, directionLabel, delaysStart, b
       >
         <span id={liveId} className="sr-only" aria-live="polite">{announce}</span>
         {vertical ? (
-          <VerticalList stops={stops} mode={mode} steps={steps} stretch={stretch} active={active} setActive={setActive} faded={faded} />
+          allStops
+            ? <VerticalList stops={stops} mode={mode} steps={steps} stretch={stretch} active={active} setActive={setActive} faded={faded} />
+            : <CompactList stops={stops} mode={mode} steps={steps} stretch={stretch} active={active} setActive={setActive} faded={faded} />
         ) : width > 0 && count > 0 ? (
           <div
             className="relative touch-pan-y select-none"
@@ -221,6 +225,11 @@ export default function RouteStrip({ stops, mode, directionLabel, delaysStart, b
           </div>
         ) : null}
       </div>
+      {vertical && count > 2 && (
+        <button type="button" onClick={() => setAllStops(v => !v)} aria-expanded={allStops} className="mt-2 text-xs font-bold text-[var(--accent)]">
+          {allStops ? 'Show key stops only' : `Show all ${count} stops`}
+        </button>
+      )}
       {legend}
       {table}
     </figure>
@@ -289,5 +298,70 @@ function VerticalList({ stops, mode, steps, stretch, active, setActive, faded }:
         );
       })}
     </ol>
+  );
+}
+
+const ROW_DOT = 6;
+const ROW_NAMED = 22;
+
+/**
+ * Phones: one vertical line with only the key stops named (both ends, the marked stretch, a few stations); the stops
+ * between are small unnamed dots. Tap anywhere on the line to pick the nearest stop and read its figures.
+ */
+function CompactList({ stops, mode, steps, stretch, active, setActive, faded }: {
+  stops: readonly RouteStripStop[];
+  mode: RouteStripMode;
+  steps: readonly (Step | null)[];
+  stretch: StretchSpan | null;
+  active: number | null;
+  setActive: (i: number | null) => void;
+  faded: (s: RouteStripStop) => boolean;
+}) {
+  const named = useMemo(() => new Set(keyStops(stops, stretch)), [stops, stretch]);
+  const last = stops.length - 1;
+  // Each row's top, so a tap maps to the nearest stop.
+  const tops = useMemo(() => { let y = 0; return stops.map((_, i) => { const t = y; y += named.has(i) ? ROW_NAMED : ROW_DOT; return t; }); }, [stops, named]);
+  const height = (i: number) => (named.has(i) ? ROW_NAMED : ROW_DOT);
+  const pick = (e: PointerEvent<HTMLDivElement>) => {
+    const y = e.clientY - e.currentTarget.getBoundingClientRect().top;
+    let best = 0;
+    tops.forEach((t, i) => { if (Math.abs(t + height(i) / 2 - y) < Math.abs(tops[best] + height(best) / 2 - y)) best = i; });
+    setActive(active === best ? null : best);
+  };
+  const activeStop = active != null ? stops[active] : null;
+  return (
+    <div aria-hidden="true">
+      <div className="relative touch-pan-y select-none" onPointerDown={pick}>
+        {stops.map((s, i) => {
+          const isNamed = named.has(i);
+          const inStretch = stretch != null && i >= stretch.from && i <= stretch.to;
+          const dot = isNamed ? 11 : 5;
+          return (
+            <div key={`${s.stopId}-${i}`} className="relative flex items-center" style={{ height: height(i) }}>
+              <span className="pointer-events-none absolute left-[19px] w-0.5 bg-[var(--text-dim)] opacity-40" style={{ top: i === 0 ? '50%' : 0, bottom: i === last ? '50%' : 0 }} />
+              {inStretch && <span className="pointer-events-none absolute left-0 w-0.5 bg-[var(--text-secondary)]" style={{ top: i === stretch!.from ? '50%' : 0, bottom: i === stretch!.to ? '50%' : 0 }} />}
+              {inStretch && (i === stretch!.from || i === stretch!.to) && <span className="pointer-events-none absolute left-0 top-1/2 h-0.5 w-3 bg-[var(--text-secondary)]" />}
+              <span
+                className="absolute rounded-full"
+                style={{ ...swatchStyle(mode, steps[i], !!s.uncertain), width: dot, height: dot, left: 20 - dot / 2, opacity: faded(s) ? 0.35 : 1, outline: active === i ? '2px solid var(--text-primary)' : undefined, outlineOffset: 2 }}
+              />
+              {isNamed && (
+                <span className="ml-10 flex min-w-0 flex-1 items-baseline gap-2">
+                  <span className={`min-w-0 flex-1 truncate text-sm ${i === 0 || i === last || inStretch ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>
+                  <span className={`shrink-0 text-xs ${faded(s) ? 'text-[var(--text-dim)]' : 'text-[var(--text-secondary)]'}`}>{valueText(s, mode)}</span>
+                </span>
+              )}
+              {stretch && i === stretch.from && <span className="pointer-events-none absolute right-0 text-xs font-bold text-[var(--text-primary)]" style={{ top: isNamed ? -14 : -10 }}>{stretch.label}</span>}
+            </div>
+          );
+        })}
+      </div>
+      {activeStop && (
+        <div className="mt-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-2 text-xs">
+          <div className="font-bold text-[var(--text-primary)]">{stopDetail(activeStop).name}</div>
+          {stopDetail(activeStop).lines.map(l => <div key={l} className="mt-0.5 text-[var(--text-secondary)]">{l}</div>)}
+        </div>
+      )}
+    </div>
   );
 }

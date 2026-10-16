@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { LiveV3 } from '../../../../shared/liveDashboard';
 import RouteStrip from '../RouteStrip';
-import { pickLabels, routeStripFromV3, shortStopName, stepFor, stretchSpan, stripSummary, type RouteStripStop } from '../routeStripModel';
+import { keyStops, pickLabels, routeStripFromV3, shortStopName, stepFor, stretchSpan, stripSummary, type RouteStripStop } from '../routeStripModel';
 
 const stop = (i: number, over: Partial<RouteStripStop> = {}): RouteStripStop => ({
   stopId: `S${i}`, name: `Spadina Ave at Street ${i} South Side`, delayMin: i * 0.5, lateShare: 0.1, bunchingShare: 0.1 + i * 0.02, n: 500, bunchingN: 400, ...over,
@@ -150,9 +150,10 @@ describe('RouteStrip', () => {
     expect(screen.getByText('Bunching forms')).toBeTruthy();
   });
 
-  it('becomes a vertical list with every stop named when the strip is narrow', () => {
+  it('becomes a compact vertical line when narrow, with a switch to the full list of every stop', () => {
     setWidth(300);
     render(<RouteStrip stops={STOPS} mode="delay" directionLabel="Southbound" />);
+    fireEvent.click(screen.getByRole('button', { name: `Show all ${STOPS.length} stops` }));
     for (const s of STOPS) expect(screen.getAllByText(s.name).length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByText(STOPS[3].name)[0]);
     expect(screen.getByText('500 departures measured')).toBeTruthy();
@@ -163,5 +164,20 @@ describe('RouteStrip', () => {
     render(<RouteStrip stops={STOPS} mode="delay" directionLabel="Southbound" />);
     expect(screen.getByText('Show as a table')).toBeTruthy();
     expect(screen.getByRole('table')).toBeTruthy();
+  });
+});
+
+describe('keyStops', () => {
+  const mk = (names: string[]) => names.map((name, i) => ({ stopId: `s${i}`, name, delayMin: 0, lateShare: 0, bunchingShare: 0, n: 100 })) as RouteStripStop[];
+  it('names both ends, the marked stretch and a few stations, never two neighbours', () => {
+    const names = Array.from({ length: 40 }, (_, i) => (i === 21 ? 'Spadina Station' : `Stop ${i}`));
+    const keys = keyStops(mk(names), { from: 30, to: 31 }, 5);
+    expect(keys).toEqual(expect.arrayContaining([0, 39, 30, 31, 21]));
+    expect(keys.length).toBeLessThanOrEqual(9);
+    const extra = keys.filter(i => ![30, 31].includes(i));
+    extra.slice(1).forEach((k, j) => expect(k - extra[j]).toBeGreaterThanOrEqual(2));
+  });
+  it('handles a two-stop route', () => {
+    expect(keyStops(mk(['A', 'B']), null)).toEqual([0, 1]);
   });
 });

@@ -8,6 +8,7 @@ import HourSpark, { type HourValue } from './components/charts/HourSpark';
 import RouteStrip, { routeStripFromV3, type RouteStripMode } from './components/Live/RouteStrip';
 import Pill from './components/ui/Pill';
 import { syncUrlParams } from './utils/syncUrlParams';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import { PAGE_ACTION, TILE } from './pageStyles';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -159,7 +160,12 @@ function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: num
 function AlongRoute({ v3, band, dir, uncertain }: { v3: LiveV3; band: DashboardBand; dir: number | null; uncertain: UncertainStart[] }) {
   const [mode, setMode] = useState<RouteStripMode>(() => (new URLSearchParams(window.location.search).get('strip') === 'bunching' ? 'bunching' : 'delay'));
   useEffect(() => { syncUrlParams({ strip: mode === 'bunching' ? 'bunching' : null }); }, [mode]);
-  const dirs = useMemo(() => dirsOf(v3, dir).map(d => routeStripFromV3(v3, d, band, uncertain)).filter(d => d.stops.length > 1), [v3, dir, band, uncertain]);
+  const all = useMemo(() => dirsOf(v3, dir).map(d => routeStripFromV3(v3, d, band, uncertain)).filter(d => d.stops.length > 1), [v3, dir, band, uncertain]);
+  // Phones show one direction at a time, so the two lines are not stacked down a long page.
+  const phone = useMediaQuery('(max-width: 479px)');
+  const [phoneDir, setPhoneDir] = useState(0);
+  const pickable = phone && all.length > 1;
+  const dirs = pickable ? [all[Math.min(phoneDir, all.length - 1)]] : all;
   return (
     <section aria-labelledby="dash-strip" className="mt-10">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
@@ -172,11 +178,16 @@ function AlongRoute({ v3, band, dir, uncertain }: { v3: LiveV3; band: DashboardB
       <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
         {mode === 'delay' ? 'Each stop coloured by how late cars typically leave it' : 'Each stop coloured by the share of gaps between cars that are too close or too far apart'} {BAND_WORDS[band]}. Hover or tap a stop for its figures.
       </p>
+      {pickable && (
+        <div className="mt-3 flex flex-wrap gap-1.5" role="group" aria-label="Direction shown">
+          {all.map((d, i) => <Pill key={d.directionId} size="segment" selected={i === Math.min(phoneDir, all.length - 1)} onClick={() => setPhoneDir(i)}>{d.label}</Pill>)}
+        </div>
+      )}
       {dirs.length ? (
         <div className="mt-4 grid gap-x-8 gap-y-8">
           {dirs.map(d => (
             <div key={d.directionId} className="min-w-0">
-              <h3 className="text-base font-black">{d.label}</h3>
+              {!pickable && <h3 className="text-base font-black">{d.label}</h3>}
               <RouteStrip className="mt-2" stops={d.stops} mode={mode} directionLabel={d.label} delaysStart={d.delaysStart} bunchingForms={d.bunchingForms} />
             </div>
           ))}

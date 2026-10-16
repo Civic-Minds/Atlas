@@ -142,6 +142,26 @@ export function pickLabels({ xs, widths, width, priority = [], majors = 5, gap =
   return placed.sort((a, b) => a - b);
 }
 
+/**
+ * The stops named on the compact phone strip: both ends, the marked stretch's ends, and about `majors` stops spread
+ * evenly between, preferring a station or loop within two stops of each even spot. Sorted, no repeats.
+ */
+export function keyStops(stops: readonly RouteStripStop[], stretch: { from: number; to: number } | null, majors = 5): number[] {
+  const last = stops.length - 1;
+  if (last < 0) return [];
+  const keep = new Set<number>([0, last]);
+  if (stretch) { keep.add(stretch.from); keep.add(stretch.to); }
+  const major = (i: number) => /\b(station|loop)\b/i.test(stops[i]?.name ?? '');
+  for (let k = 1; k <= majors; k++) {
+    const target = Math.round((k * last) / (majors + 1));
+    const near = [0, 1, -1, 2, -2].map(d => target + d).filter(i => i > 0 && i < last);
+    const pick = near.find(major) ?? near[0];
+    // Skip a spot right next to a stop already named, so names never sit on adjacent rows.
+    if (pick != null && ![...keep].some(j => Math.abs(j - pick) < 2)) keep.add(pick);
+  }
+  return [...keep].sort((a, b) => a - b);
+}
+
 export interface StretchSpan {
   kind: 'delaysStart' | 'bunchingForms';
   label: string;
