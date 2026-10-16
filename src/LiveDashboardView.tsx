@@ -7,7 +7,8 @@ import SortableDataTable from './components/ui/SortableDataTable';
 import { withoutDevHint } from './lib/liveReportData';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
-import RouteStrip, { routeStripFromV3 } from './components/Live/RouteStrip';
+import DirectionStrip from './components/Live/DirectionStrip';
+import { routeStripFromV3 } from './components/Live/routeStripModel';
 import Pill from './components/ui/Pill';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
@@ -57,22 +58,25 @@ function WeekMethod({ v3, toFull }: { v3: LiveV3; toFull: (hash: string) => void
   );
 }
 
+/** One figure tile: title, big number, caption and the change line. The base look of every Live card. */
+export function KpiTile({ k, className = '' }: { k: Kpi; className?: string }) {
+  const faded = k.n < MIN_N;
+  return (
+    <li className={`${TILE} flex list-none flex-col ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
+      <div className="text-sm font-bold text-[var(--text-muted)]">{k.label}</div>
+      <div className="mt-1 text-3xl font-black tracking-tight">{k.value}</div>
+      <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.sub}</div>
+      <div className="mt-auto pt-3"><Delta k={k} /></div>
+    </li>
+  );
+}
+
 /** The tiles row itself: the route dashboard and the agency dashboard show their figures the same way. */
 export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption: string }) {
   return (
     <section aria-label="This week compared with last week" className="mt-5">
       <ul className={`grid grid-cols-2 gap-3 sm:grid-cols-3 ${tiles.length >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
-        {tiles.map(k => {
-          const faded = k.n < MIN_N;
-          return (
-            <li key={k.key} className={`${TILE} flex list-none flex-col ${faded ? 'opacity-60' : ''}`} title={`${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
-              <div className="text-sm font-bold text-[var(--text-muted)]">{k.label}</div>
-              <div className="mt-1 text-3xl font-black tracking-tight">{k.value}</div>
-              <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.sub}</div>
-              <div className="mt-auto pt-3"><Delta k={k} /></div>
-            </li>
-          );
-        })}
+        {tiles.map(k => <KpiTile key={k.key} k={k} />)}
       </ul>
       <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">{caption}</p>
     </section>
@@ -216,7 +220,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
             return (
               <div key={d.directionId} className="min-w-0">
                 {!pickable && <h3 className="text-base font-black">{d.label}</h3>}
-                <RouteStrip className="mt-2" stops={d.stops} directionLabel={d.label} delaysStart={d.delaysStart} bunchingForms={d.bunchingForms} />
+                <DirectionStrip className="mt-2" v3={v3} directionId={d.directionId} band="all" uncertain={uncertain} />
                 {notes.map(n => <p key={n} className="mt-2 max-w-3xl text-sm text-[var(--text-secondary)]">{n}</p>)}
               </div>
             );

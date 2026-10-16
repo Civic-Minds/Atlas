@@ -47,7 +47,7 @@ function sortValue(sort: Sort, r: AgencyRouteRow): number {
 }
 
 /** Fetches nothing while `agency` is empty (Live switched off). */
-function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse } {
+export function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse } {
   const [state, setState] = useState<{ kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse }>({ kind: 'loading' });
   useEffect(() => {
     if (!agency) return;
