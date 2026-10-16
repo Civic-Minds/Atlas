@@ -163,22 +163,19 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
   };
 
   const legend = (
-    <div className="mt-2 space-y-1 text-xs text-[var(--text-legend)]">
+    // One line that wraps only where it runs out of room (phones): each key stays together.
+    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--text-legend)]">
       {tracks.map(t => (
-        <div key={t.mode} className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <span key={t.mode} className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="font-bold text-[var(--text-secondary)]">{LEGEND_TITLE[t.mode]}:</span>
           {([0, 1, 2] as const).map(step => (
             <span key={step} className="inline-flex items-center gap-1.5"><Swatch mode={t.mode} step={step} />{STEP_LABELS[t.mode][step]}</span>
           ))}
-        </div>
+        </span>
       ))}
-      {(anyUncertain || anyFaded || anyMissing) && (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          {anyUncertain && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} uncertain />Less exact</span>}
-          {anyFaded && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} faded />Fewer than {minN} departures or gaps</span>}
-          {anyMissing && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={null} />Not measured</span>}
-        </div>
-      )}
+      {anyUncertain && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} uncertain />Less exact</span>}
+      {anyFaded && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} faded />Fewer than {minN} departures or gaps</span>}
+      {anyMissing && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={null} />Not measured</span>}
     </div>
   );
 
