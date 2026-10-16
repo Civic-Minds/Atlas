@@ -4,7 +4,7 @@
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
 import { dailyNoise, dateRangeText, weekChangeTone, type CompareKey, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
-import { LATE_TILE_CAPTION } from '../../shared/liveWording';
+import { LATE_TILE_CAPTION, SAME_AS_LAST_WEEK, changeFromLastWeek, changesComparedWith } from '../../shared/liveWording';
 export { NOISE_RULE } from '../../shared/liveDashboard';
 
 export type KpiTone = 'better' | 'worse' | 'same';
@@ -38,13 +38,13 @@ export function kpiDelta(key: CompareKey, now: number | null, before: number | n
   const diff = isShare ? (now - before) * 100 : now - before;
   const mag = round1(Math.abs(diff));
   const unit = isShare ? 'pt' : 'min';
-  if (mag === 0) return { arrow: 'none', text: lastText ? 'same as last week' : 'same', tone: 'same', spoken: 'same as last week' };
+  if (mag === 0) return { arrow: 'none', text: lastText ? SAME_AS_LAST_WEEK : 'same', tone: 'same', spoken: SAME_AS_LAST_WEEK };
   const up = diff > 0;
   const { tone, big, measured } = weekChangeTone(key, now, before, lowerIsBetter, noise);
   const word = isShare ? (mag === 1 ? 'point' : 'points') : 'min';
   return {
     arrow: up ? 'up' : 'down',
-    text: lastText ? `${up ? 'up' : 'down'} from ${lastText} last week` : `${up ? '▲' : '▼'} ${clean(mag)} ${unit}`,
+    text: lastText ? changeFromLastWeek(up ? 'up' : 'down', lastText) : `${up ? '▲' : '▼'} ${clean(mag)} ${unit}`,
     tone,
     spoken: `${up ? 'up' : 'down'} ${clean(mag)} ${word} from last week${big ? (measured ? ', a bigger change than usual day to day' : '') : (measured ? ', within the usual day-to-day change' : ', a small change')}`,
   };
@@ -79,7 +79,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
 /** The one line by the tiles: "Changes compared with the week before (Oct 1–7)". The explanation lives under "How this is measured" (weekCaption). */
 export function weekRangeLine(w: NonNullable<LiveV3['weekly']>): string {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
-  return w.comparable ? `Changes compared with the week before (${range(w.lastWeek)})` : `${range(w.thisWeek)}: too few days of good recordings to compare with ${range(w.lastWeek)}`;
+  return w.comparable ? changesComparedWith(range(w.lastWeek)) : `${range(w.thisWeek)}: too few days of good recordings to compare with ${range(w.lastWeek)}`;
 }
 
 /** The full explanation of the week comparison, for "How this is measured". */
