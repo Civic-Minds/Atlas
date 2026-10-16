@@ -23,7 +23,7 @@ import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles, YesterdayTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { weekOfText, dayComparedWith, PERIOD_PILLS } from '../shared/liveWording';
+import { weekOfText, dayComparedWith, dayText, PERIOD_PILLS } from '../shared/liveWording';
 import { useLiveYesterday } from './hooks/useLiveYesterday';
 import Pill from './components/ui/Pill';
 import MethodFootnote from './components/Live/MethodFootnote';
@@ -198,7 +198,7 @@ export default function LiveAgencyPage() {
           <div className="min-w-0">
             <PageTitle>{name}: how the network is running</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {shown ? `${dayComparedWith(shown.date, shown.compareDate)} · ` : dates.length ? `${weekOfText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
+              {shown ? `${shown.weekly.comparable ? dayComparedWith(shown.date, shown.compareDate) : dayText(shown.date)} · ` : dates.length ? `${weekOfText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}

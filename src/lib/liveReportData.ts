@@ -29,10 +29,13 @@ export const withoutDevHint = (text: string): string => (fromR2 ? text.replace(/
 /** Page titles (approved): "504 King · Live · Atlas" and "TTC · Live · Atlas". */
 export const liveReportTitle = (name: string) => `${name} · Live · Atlas`;
 
+/** Dev only: ?date=YYYY-MM-DD picks the day the local Yesterday view shows, for review against older archive days. */
+const devDate = () => { const d = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('date'); return d && /^\d{4}-\d{2}-\d{2}$/.test(d) ? `&date=${d}` : ''; };
+
 export function liveYesterdayDataUrl(agency: string, route: string | null): string {
   return fromR2
     ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/yesterday/${route ? encodeURIComponent(route) : 'agency'}.json`
-    : `/api/live-yesterday?agency=${encodeURIComponent(agency)}${route ? `&route=${encodeURIComponent(route)}` : ''}`;
+    : `/api/live-yesterday?agency=${encodeURIComponent(agency)}${route ? `&route=${encodeURIComponent(route)}` : ''}${devDate()}`;
 }
 
 /** R2 answers a missing file with an error page, not JSON: read that as "no such route", the API's own answer. */
