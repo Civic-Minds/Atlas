@@ -30,21 +30,21 @@ import { KpiRow } from './LiveDashboardView';
 import { BOUNDARY, Method, withNiceNames } from './LiveRoutePage';
 import { weekOfText, lateCount, lateHourLine } from '../shared/liveWording';
 
-type Day = 'all' | 'weekday' | 'weekend';
-const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
-const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
+export type Day = 'all' | 'weekday' | 'weekend';
+export const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
+export const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
 const MINUS = '−';
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', MINUS);
 const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 
 /** What is open in the detail panel: a stop (by its place in the direction's strip) or a marked stretch. */
-type Selection = { dir: number; kind: 'stop'; stopId: string } | { dir: number; kind: 'stretch'; mode: RouteStripMode };
+export type Selection = { dir: number; kind: 'stop'; stopId: string } | { dir: number; kind: 'stretch'; mode: RouteStripMode };
 
-const dirsOf = (v3: LiveV3, dir: number | null) => Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b).filter(d => dir == null || d === dir);
+export const dirsOf = (v3: LiveV3, dir: number | null) => Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b).filter(d => dir == null || d === dir);
 const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
 
-function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+export function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
     <section className="mt-12 min-w-0" aria-labelledby={id}>
       <SectionTitle id={id}>{title}</SectionTitle>
@@ -53,7 +53,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
   );
 }
 
-function Group({ label, options, value, onChange }: { label: string; options: ReadonlyArray<readonly [string, string]>; value: string; onChange: (v: string) => void }) {
+export function Group({ label, options, value, onChange }: { label: string; options: ReadonlyArray<readonly [string, string]>; value: string; onChange: (v: string) => void }) {
   return (
     <div className="flex flex-wrap gap-1.5" role="group" aria-label={label}>
       {options.map(([k, text]) => <Pill key={k} size="segment" selected={value === k} onClick={() => onChange(k)}>{text}</Pill>)}
@@ -83,7 +83,7 @@ function Block({ title, children }: { title?: string; children: ReactNode }) {
 }
 
 /** Everything known about the picked stop or stretch, for the time of day chosen above. */
-function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: DashboardBand; sel: Selection; stops: Map<string, RouteStripStop>; data: DashboardBandData }) {
+export function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: DashboardBand; sel: Selection; stops: Map<string, RouteStripStop>; data: DashboardBandData }) {
   const strip = { label: v3.directionLabels[String(sel.dir)] };
   const buildup = data.buildup.find(b => b.directionId === sel.dir);
   const bunchBand = v3.bunching.find(b => b.directionId === sel.dir)?.bands[band];
@@ -170,7 +170,7 @@ function Panel({ title, sub, children }: { title: string; sub: string; children:
   );
 }
 
-function Main({ v3, band, dir, uncertain, sel, setSel }: {
+export function Main({ v3, band, dir, uncertain, sel, setSel }: {
   v3: LiveV3; band: DashboardBand; dir: number | null; uncertain: UncertainStart[]; sel: Selection; setSel: (s: Selection) => void;
 }) {
   const data = v3.bands[band];
@@ -198,7 +198,7 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
 }
 
 /** Share of departures ahead, on time and late by hour for the chosen kind of day. */
-function Late({ data, dir, day, band, lateMin }: { data: DashboardBandData; dir: number | null; day: Day; band: DashboardBand; lateMin: number }) {
+export function Late({ data, dir, day, band, lateMin }: { data: DashboardBandData; dir: number | null; day: Day; band: DashboardBand; lateMin: number }) {
   const block = data.adherence.timepoints[day];
   const c = dir == null ? block.overall : block.byDirection[String(dir)];
   const label = DAYS.find(([k]) => k === day)![1];
@@ -223,7 +223,7 @@ function Late({ data, dir, day, band, lateMin }: { data: DashboardBandData; dir:
   );
 }
 
-function RunTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
+export function RunTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
   const rt = v3.runningTime;
   if (!rt) return null;
   const dirs = dirsOf(v3, dir);
@@ -247,7 +247,7 @@ function RunTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: numb
   );
 }
 
-function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[] }) {
+export function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[] }) {
   const rows = data.buildup.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
   const lessExactStops = (d: number) => uncertain.find(u => u.directionId === d)?.stops ?? 0;
   const pointsOf = (b: (typeof rows)[number]): ProfilePoint[] => b.stretches.filter(s => s.n >= 10).map((s, i) => ({
@@ -302,7 +302,7 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
   );
 }
 
-function WorstStops({ v3, data, dir, uncertain, onPick, canPick }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; onPick: (directionId: number, stopId: string) => void; canPick: (directionId: number, stopId: string) => boolean }) {
+export function WorstStops({ v3, data, dir, uncertain, onPick, canPick }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; onPick: (directionId: number, stopId: string) => void; canPick: (directionId: number, stopId: string) => boolean }) {
   const top = useMemo(() => rankStops(data.stops, dir, uncertain).slice(0, 10), [data, dir, uncertain]);
   if (!top.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank.</p>;
   return (
@@ -330,7 +330,7 @@ function WorstStops({ v3, data, dir, uncertain, onPick, canPick }: { v3: LiveV3;
   );
 }
 
-function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
+export function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
   const all = v3.extraWait?.[band];
   if (!all) return null;
   if (all.length === 0) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stop on this route has a vehicle every 15 minutes or better in this time of day.</p>;
@@ -384,7 +384,7 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
   );
 }
 
-function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: DashboardBand }) {
+export function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: DashboardBand }) {
   const rows = v3.bunching.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
   const pointsOf = (data: (typeof rows)[number]['bands'][string]): ProfilePoint[] => data.stops.filter(s => s.n >= 10).map(s => ({ label: s.name, short: shortStopName(s.name), major: isMajorStop(s.name), y: s.bunchedShare, y2: s.gappedShare, n: s.n }));
   const scale = sharedScale(rows.flatMap(b => (b.bands[band] ? [pointsOf(b.bands[band])] : [])));
@@ -421,7 +421,7 @@ function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: Das
   );
 }
 
-function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
+export function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
   const sd = v3.serviceDelivered;
   if (!sd) return null;
   const overall = dir == null ? sd.overall : sd.overall.byDirection[String(dir)];
