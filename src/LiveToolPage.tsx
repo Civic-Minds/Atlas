@@ -20,12 +20,13 @@ import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
-import Widget, { WIDGET_GRID } from './components/Live/tool/Widget';
+import Widget from './components/Live/tool/Widget';
+import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
 import OverviewList from './components/Live/tool/OverviewList';
 import LateByHourWidget from './components/Live/tool/LateByHourWidget';
 import ProblemsWidget from './components/Live/tool/ProblemsWidget';
 import StopHourWidget from './components/Live/tool/StopHourWidget';
-import StringLineWidget from './components/Live/tool/StringLineWidget';
+import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData from './components/Live/tool/useNetworkData';
 import { KpiTile } from './LiveDashboardView';
 import { BANDS, Group } from './LiveExplorePage';
@@ -95,37 +96,43 @@ function networkHours(s: AgencySummary) {
   }).filter(x => x.n > 0);
 }
 
-/** The right panel with nothing selected: the network's headline tiles, late by hour, and the stops where most cars leave late. */
-function NetworkWidgets({ s, band, onStop }: { s: AgencySummary; band: DashboardBand; onStop: (route: string, dir: number, stopId: string) => void }) {
-  const hours = useMemo(() => networkHours(s), [s]);
-  return (
-    <>
-      <ul className="contents">{agencyKpiTiles(s).map(k => <KpiTile key={k.key} k={k} />)}</ul>
-      <LateByHourWidget hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} />
-      <ProblemsWidget title="Stops where the most cars leave late" rows={s.worstStops.slice(0, 6).map(x => ({ key: `${x.route}-${x.stopId}-${x.directionId}`, label: shortStopName(titleCase(x.name)), sub: x.routeLabel, value: pct(x.lateShare), onPick: () => onStop(x.route, x.directionId, x.stopId) }))} />
-    </>
-  );
+const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.map(k => ({ key: `tile-${k.key}`, size: 'small', tile: true, node: <KpiTile k={k} /> }));
+
+/** The late-by-hour values of a route's whole day. */
+const routeHours = (v3: LiveV3) => v3.bands.all.adherence.timepoints.all.byHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));
+
+/** The widgets with nothing selected, in priority order: the network's tiles, late by hour, the stops where most cars leave late. */
+function networkWidgets(s: AgencySummary, band: DashboardBand, onStop: (route: string, dir: number, stopId: string) => void): PanelWidget[] {
+  const hours = networkHours(s);
+  const rows = s.worstStops.slice(0, 3).map(x => ({ key: `${x.route}-${x.stopId}-${x.directionId}`, label: shortStopName(titleCase(x.name)), sub: x.routeLabel, value: pct(x.lateShare), onPick: () => onStop(x.route, x.directionId, x.stopId) }));
+  return [
+    ...tileWidgets(agencyKpiTiles(s)),
+    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourWidget hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} /> }] : []),
+    ...(rows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops where the most cars leave late" rows={rows} /> }] : []),
+  ];
 }
 
-/** The right panel for a route: the picked stop or segment on top, then the route's tiles, stops by hour, worst stops and string-line. */
-function RouteWidgets({ agency, route, data, v3, dir, band, measure, pick, stops, setPick }: {
-  agency: string; route: string; data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; stops: ReturnType<typeof directionStopsById>; setPick: (p: MapPick | null) => void;
-}) {
+/** The widgets for a route, in priority order: the picked stop or segment, the tiles, late by hour, run time, stops by hour, the worst stops. Whatever the window is too short for goes to a later page. */
+function routeWidgets({ route, data, v3, dir, band, measure, pick, stops, setPick }: {
+  route: string; data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; stops: ReturnType<typeof directionStopsById>; setPick: (p: MapPick | null) => void;
+}): PanelWidget[] {
   const bandData = v3.bands[band] as DashboardBandData;
-  const worst = useMemo(() => rankStops(bandData.stops, dir, data.uncertainStart ?? []).slice(0, 6), [bandData, dir, data.uncertainStart]);
+  const worst = rankStops(bandData.stops, dir, data.uncertainStart ?? []).slice(0, 3);
   const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
   const sel = pick?.kind === 'segment'
     ? { title: `${shortStopName(stops.get(pick.fromStopId)?.name ?? pick.fromStopId)} to ${shortStopName(stops.get(pick.toStopId)?.name ?? pick.toStopId)}`, lines: segmentLines(bandData, dir, pick.fromStopId, pick.toStopId) }
     : picked ? { title: picked.name, lines: stopLines(v3, band, dir, picked) } : null;
-  return (
-    <>
-      {sel && <Widget title={sel.title} size="medium"><div className="space-y-0.5 text-sm text-[var(--text-secondary)]">{sel.lines.map(l => <div key={l}>{l}</div>)}</div></Widget>}
-      <ul className="contents">{weekly(v3).map(k => <KpiTile key={k.key} k={k} />)}</ul>
-      <StopHourWidget v3={v3} dir={dir} stops={stops} measure={measure} selectedStopId={pick?.kind === 'stop' ? pick.stopId : null} onPick={id => setPick({ kind: 'stop', stopId: id })} />
-      <ProblemsWidget title="Stops with the most delay" rows={worst.map(x => ({ key: x.stopId, label: shortStopName(titleCase(x.name)), value: pct(x.lateShare), onPick: () => setPick({ kind: 'stop', stopId: x.stopId }) }))} />
-      <StringLineWidget key={`${route}-${dir}`} agency={agency} route={route} dir={dir} band={band} dates={v3.window.dates} />
-    </>
-  );
+  const hours = routeHours(v3);
+  const hasRunTime = (v3.runningTime?.byHour[String(dir)] ?? []).filter(h => h.n >= 1).length >= 2;
+  const hasHeat = measure !== 'runTime' && [...stops.keys()].some(id => v3.stopHours?.[String(dir)]?.[id]);
+  return [
+    ...(sel ? [{ key: 'selection', size: 'medium' as const, node: <Widget title={sel.title} size="medium"><div className="space-y-0.5 text-sm text-[var(--text-secondary)]">{sel.lines.map(l => <div key={l}>{l}</div>)}</div></Widget> }] : []),
+    ...tileWidgets(weekly(v3)),
+    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourWidget hours={hours} band={band} overall={v3.bands.all.adherence.timepoints.all.overall?.lateShare ?? null} /> }] : []),
+    ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
+    ...(hasHeat ? [{ key: 'stops-hour', size: 'large' as const, node: <StopHourWidget v3={v3} dir={dir} stops={stops} measure={measure} selectedStopId={pick?.kind === 'stop' ? pick.stopId : null} onPick={id => setPick({ kind: 'stop', stopId: id })} /> }] : []),
+    ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops with the most delay" rows={worst.map(x => ({ key: x.stopId, label: shortStopName(titleCase(x.name)), value: pct(x.lateShare), onPick: () => setPick({ kind: 'stop', stopId: x.stopId }) }))} /> }] : []),
+  ];
 }
 
 /** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
@@ -160,6 +167,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, band, measure, pick, se
       : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked)} /> : null
     : null;
   const openStop = (r: string, d: number, stopId: string) => { setRoute(r); setDir(d); setPick({ kind: 'stop', stopId }); };
+  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ route: route!, data: ready, v3, dir: shown, band, measure, pick, stops, setPick }) : !route ? networkWidgets(s, band, openStop) : [];
   return (
     <div className="relative min-h-0 flex-1">
       <div className="absolute inset-0">
@@ -180,10 +188,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, band, measure, pick, se
           )}
           {ready?.note && <p className="pointer-events-none absolute bottom-0 left-0 right-0 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>}
         </div>
-        <div className={`pointer-events-auto w-[24.5rem] shrink-0 overflow-y-auto ${WIDGET_GRID}`}>
-          {v3 && ready ? <RouteWidgets agency={agency} route={route!} data={ready} v3={v3} dir={shown} band={band} measure={measure} pick={pick} stops={stops} setPick={setPick} />
-            : !route ? <NetworkWidgets s={s} band={band} onStop={openStop} /> : null}
-        </div>
+        <WidgetPanel className="pointer-events-auto w-[24.5rem] shrink-0" widgets={widgets} />
       </div>
     </div>
   );

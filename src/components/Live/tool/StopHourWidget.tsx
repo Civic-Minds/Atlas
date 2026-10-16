@@ -25,7 +25,7 @@ export default function StopHourWidget({ v3, dir, stops, measure, selectedStopId
   return (
     <Widget title="Stops by hour" size="large">
       <div className="flex h-full flex-col">
-        <div className="grid min-h-0 flex-1 content-start gap-px" style={{ gridTemplateColumns: `repeat(${SPARKLINE_HOURS.length}, minmax(0, 1fr))` }} role="img" aria-label="Stops down the route by hour of the day, coloured by the chosen measure.">
+        <div className="grid min-h-0 flex-1 gap-px" style={{ gridTemplateColumns: `repeat(${SPARKLINE_HOURS.length}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${rows.length}, minmax(0, 1fr))` }} role="img" aria-label="Stops down the route by hour of the day, coloured by the chosen measure.">
           {rows.map(({ s, row }) => SPARKLINE_HOURS.map(gh => {
             const e = row![gh % 24];
             const v = e ? cellValue(e, m) : null;
@@ -34,7 +34,7 @@ export default function StopHourWidget({ v3, dir, stops, measure, selectedStopId
             return (
               <button key={`${s.stopId}-${gh}`} type="button" tabIndex={-1} onClick={() => onPick(s.stopId)}
                 title={`${s.name}, ${SPARKLINE_HOUR_LABELS[gh] ?? gh % 24}${v != null ? `: ${m === 'extraWait' ? `${Math.round(v * 10) / 10} min` : pct(v)}` : ''}`}
-                className="block h-[5px] rounded-[1px] p-0"
+                className="block h-full min-h-0 rounded-[1px] p-0"
                 style={{ background: step == null ? 'var(--border-primary)' : `var(--strip-${fam}-${step})`, opacity: step == null ? 0.35 : 1, outline: on ? '1px solid var(--text-primary)' : undefined }} />
             );
           }))}
