@@ -292,10 +292,10 @@ export function headwayWindows(
   observedByTrip: Map<string, number>,
   observedAll: number[],
   minRun = 4,
-): { actualGaps: number[]; scheduledGaps: number[] }[] {
+): { actualGaps: number[]; scheduledGaps: number[]; actualAt: number[] }[] {
   const sched = [...scheduled].sort((a, b) => a.t - b.t);
   const all = [...observedAll].sort((a, b) => a - b);
-  const out: { actualGaps: number[]; scheduledGaps: number[] }[] = [];
+  const out: { actualGaps: number[]; scheduledGaps: number[]; actualAt: number[] }[] = [];
   let run: { tripId: string; t: number; seen: number }[] = [];
   const flush = () => {
     // A stretch spanning a service break (over 30 min between scheduled trips) isn't a headway.
@@ -305,7 +305,8 @@ export function headwayWindows(
       const hi = Math.max(...run.map(r => r.seen));
       const inside = all.filter(t => t >= lo && t <= hi);
       const gaps = (xs: number[]) => xs.slice(1).map((x, i) => x - xs[i]);
-      out.push({ actualGaps: gaps(inside), scheduledGaps: gaps(run.map(r => r.t)) });
+      // actualAt: when the later vehicle of each gap passed (epoch seconds), for the gaps-through-the-day chart.
+      out.push({ actualGaps: gaps(inside), scheduledGaps: gaps(run.map(r => r.t)), actualAt: inside.slice(1) });
     }
     run = [];
   };

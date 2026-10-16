@@ -432,7 +432,7 @@ for (const svcDate of dates) {
     }
   }
 }
-type Win = { date: string; actualGaps: number[]; scheduledGaps: number[] };
+type Win = { date: string; actualGaps: number[]; scheduledGaps: number[]; actualAt?: number[] };
 const headwayByStop = new Map<string, Map<TimeBand | 'all', Win[]>>();
 let windowsTotal = 0, windowsKept = 0;
 for (const [k, sched] of scheduledAt) {
