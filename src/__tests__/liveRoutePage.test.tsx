@@ -110,7 +110,11 @@ describe('Live route dashboard', () => {
     expect(document.body.textContent).not.toMatch(/near here/);
     // Each figure is one focusable unit with a summary; each chart can be read as a table.
     for (const chart of screen.getAllByRole('img')) expect(chart.getAttribute('tabindex')).toBe('0');
-    expect(screen.getAllByText('Show as a table').length).toBe(5);
+    // No visible table toggles: each chart's numbers are a screen-reader table linked by aria-describedby.
+    expect(screen.queryByText('Show as a table')).toBeNull();
+    for (const chart of screen.getAllByRole('img')) expect(document.getElementById(chart.getAttribute('aria-describedby')!)?.querySelector('table')).toBeTruthy();
+    // No downloads on the Live page.
+    expect(screen.queryByRole('button', { name: /CSV/ })).toBeNull();
   });
 
   it('shows trip time, extra wait, service delivered and this week against last week, in plain words', async () => {
@@ -156,12 +160,6 @@ describe('Live route dashboard', () => {
     expect(within(b2).queryAllByText('Westbound').length).toBe(0);
   });
 
-  it('offers the stop and stretch tables as CSV', async () => {
-    renderPage(ready);
-    await screen.findByRole('heading', { name: /how it is running/ });
-    expect(screen.getByRole('button', { name: 'Download the stops as CSV' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Download the stretches as CSV' })).toBeTruthy();
-  });
 
   it('shows how fresh the data is and warns when it is old', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });

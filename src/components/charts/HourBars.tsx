@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import DataTable from '../ui/DataTable';
 
@@ -22,15 +23,16 @@ const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 < 12 ? '
  * A bar for each hour of the day, in the same shape as the route card's schedule sparkline: same hour order, narrow
  * rounded bars, 90% opacity, a faded bar where there are too few departures, and the same axis labels (6a, 12p, 6p, 12a).
  * Each bar splits into shares (for example ahead / on time / late) with a small gap between them. The numbers are also
- * available as a table.
+ * in a table for screen readers.
  */
 export default function HourBars({ columns, parts, ariaLabel, minN = 30 }: { columns: readonly HourColumn[]; parts: readonly HourPart[]; ariaLabel: string; minN?: number }) {
+  const tableId = useId();
   const byHour = new Map(columns.map(c => [c.hour, c]));
   const text = (c: HourColumn) => `${clock(c.hour)}: ${c.parts.map((p, i) => `${parts[i].name} ${Math.round(p * 100)}%`).join(', ')} (${c.n.toLocaleString()} departures)`;
   const ordered = SPARKLINE_HOURS.map(h => byHour.get(h % 24)).filter((c): c is HourColumn => !!c);
   return (
     <figure className="m-0">
-      <div role="img" aria-label={ariaLabel} tabIndex={0}>
+      <div role="img" aria-label={ariaLabel} tabIndex={0} aria-describedby={tableId}>
         <div aria-hidden="true">
         <div className="flex items-end gap-px" style={{ height: H }}>
           {SPARKLINE_HOURS.map(gtfsHour => {
@@ -58,10 +60,11 @@ export default function HourBars({ columns, parts, ariaLabel, minN = 30 }: { col
         <span className="font-normal">Paler bars rest on fewer than {minN} departures.</span>
         {parts.map(p => <span key={p.name} className="inline-flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-sm" style={{ background: p.color }} aria-hidden="true" />{p.name}</span>)}
       </figcaption>
-      <details className="mt-2 text-xs">
-        <summary className="cursor-pointer font-bold text-[var(--accent)]">Show as a table</summary>
-        <div className="mt-2 max-h-64 overflow-auto">
+      {/* The numbers behind the chart, for screen readers only: linked to the chart by aria-describedby. */}
+      <div id={tableId} className="sr-only">
+        <div>
           <DataTable
+            fixed
             caption={ariaLabel}
             rows={ordered}
             rowKey={c => c.hour}
@@ -72,7 +75,7 @@ export default function HourBars({ columns, parts, ariaLabel, minN = 30 }: { col
             ]}
           />
         </div>
-      </details>
+      </div>
     </figure>
   );
 }

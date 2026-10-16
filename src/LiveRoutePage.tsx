@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence, toCsv,
+  LINK_LABELS, NOISE_RULE, bunchingSentence, buildupTakeaway, compareTiles, weekDailyValues, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -49,13 +49,6 @@ const axisMin = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 
 type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 
-function downloadCsv(filename: string, text: string) {
-  const url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-}
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
@@ -141,7 +134,6 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
     y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n,
   }));
   const scale = sharedScale(rows.map(pointsOf));
-  const csvRows = rows.flatMap(b => b.stretches.map(s => [v3.directionLabels[String(b.directionId)], s.fromName, s.toName, s.medianAddedMin, s.growShare, s.medianDelayMin, s.n]));
   return (
     <Section id="b3" title="Where delays build up">
       <p className="mt-2 text-sm text-[var(--text-muted)]">How late vehicles leave each stop along the route, and where that delay jumps and stays up.</p>
@@ -172,13 +164,14 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
               />
               <div className="mt-3 overflow-x-auto">
                 <DataTable
+                  fixed
                   caption={`${label}: the stretches that add the most delay`}
                   rows={worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={[
                     { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => `${s.fromName} to ${s.toName}` },
-                    { key: 'added', header: 'Typical added', className: 'whitespace-nowrap', cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: 'Trips where it grows', className: 'whitespace-nowrap', cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
+                    { key: 'added', header: 'Typical added', cell: s => mins(s.medianAddedMin) },
+                    { key: 'grows', header: 'Trips where it grows', cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ]}
                 />
               </div>
@@ -186,9 +179,6 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
           );
         })}
       </div>
-      {csvRows.length > 0 && (
-        <p className="mt-3"><Pill tone="outline" onClick={() => downloadCsv('delay-by-stretch.csv', toCsv(['Direction', 'From', 'To', 'Typical added delay (min)', 'Share of trips where delay grows 30+ s', 'Typical delay at the end of the stretch (min)', 'Trips'], csvRows))}>Download the stretches as CSV</Pill></p>
-      )}
     </Section>
   );
 }
@@ -205,20 +195,21 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
       {top.length ? (
         <div className="mt-4 overflow-x-auto">
           <DataTable
+            fixed
             caption="Stops ranked by the share of late departures"
             rows={top}
             rowKey={s => `${s.stopId}-${s.directionId}`}
             columns={[
               { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
-              ...(both ? [{ key: 'dir', header: 'Direction', className: 'whitespace-nowrap', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-              { key: 'late', header: 'Late', className: 'whitespace-nowrap', cell: s => (
+              ...(both ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
+              { key: 'late', header: 'Late', cell: s => (
                 <span className="inline-flex items-center gap-2">
                   <span className="block h-2 w-20 rounded-sm bg-[var(--control-inactive-bg)]" aria-hidden="true"><span className="block h-full rounded-sm bg-[var(--accent)] opacity-90" style={{ width: `${Math.max(2, s.lateShare * 100)}%` }} /></span>
                   {pct(s.lateShare)}
                 </span>
               ) },
-              { key: 'median', header: 'Typical delay', className: 'whitespace-nowrap', cell: s => mins(s.medianMin) },
-              { key: 'p90', header: '1 in 10 later than', className: 'whitespace-nowrap', cell: s => mins(s.p90Min) },
+              { key: 'median', header: 'Typical delay', cell: s => mins(s.medianMin) },
+              { key: 'p90', header: '1 in 10 later than', cell: s => mins(s.p90Min) },
               { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
             ]}
           />
@@ -228,9 +219,6 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
         <p className="mt-2 max-w-2xl text-xs text-[var(--text-dim)]">
           Not ranked: the first {hidden[0].stops} stops {hidden.length === 1 ? v3.directionLabels[String(hidden[0].directionId)].toLowerCase() : 'in some directions'}, where delay is less exact (see the note above).
         </p>
-      )}
-      {top.length > 0 && (
-        <p className="mt-3"><Pill tone="outline" onClick={() => downloadCsv('stops-by-late-share.csv', toCsv(['Stop', 'Direction', 'Share of departures late', 'Typical delay (min)', 'Delay 1 in 10 exceed (min)', 'Departures'], ranked.map(s => [s.name, v3.directionLabels[String(s.directionId)], s.lateShare, s.medianMin, s.p90Min, s.n])))}>Download the stops as CSV</Pill></p>
       )}
     </Section>
   );
@@ -415,14 +403,15 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
           {worst.length > 0 && (
             <div className="mt-5 overflow-x-auto">
               <DataTable
+                fixed
                 caption="Stops where riders wait longest compared with the timetable"
                 rows={worst}
                 rowKey={s => `${s.stopId}-${s.directionId}`}
                 columns={[
                   { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
-                  ...(dir == null ? [{ key: 'dir', header: 'Direction', className: 'whitespace-nowrap', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-                  { key: 'extra', header: 'Extra wait', className: 'whitespace-nowrap', cell: s => `${num(s.extraWaitMin)} min` },
-                  { key: 'sched', header: 'Scheduled every', className: 'whitespace-nowrap', cell: s => `${num(s.scheduledGapMin)} min` },
+                  ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
+                  { key: 'extra', header: 'Extra wait', cell: s => `${num(s.extraWaitMin)} min` },
+                  { key: 'sched', header: 'Scheduled every', cell: s => `${num(s.scheduledGapMin)} min` },
                   { key: 'n', header: 'Gaps', cell: s => s.gaps.toLocaleString() },
                 ]}
               />
