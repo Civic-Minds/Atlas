@@ -3,7 +3,7 @@
  * filter labels, legend, export image, tooltips, aria labels) calls these instead of writing
  * "every N min" by hand, so the same frequency always reads the same way.
  *
- * The final set of formats (N is minutes; "h" is used only above 60 minutes):
+ * The final set of formats (N is always minutes, never hours):
  *
  *   headwayEvery(10)          "every 10 min"             a stated or scheduled spacing
  *   headwayOrBetter(10)       "every 10 min or better"   what a filter or threshold means
@@ -16,10 +16,9 @@
  *   headwayAmount(10)         "10 min"                   a bare spacing with no "every" (tables, chart cells)
  *   delayAmount(3)            "3 min"                    a delay or gap length that is not a headway
  *
- * Units: up to and including 60 minutes is always minutes ("60 min"). Above that, a spacing that
- * is a whole or half hour reads in hours ("every 1.5 h", "every 2 h"); anything else stays in
- * minutes ("every 75 min"), except headwayAbout, which rounds to the nearest half hour above 60
- * ("about every 1.5 h") because it is already approximate.
+ * Units: headways always read in minutes, never hours ("every 90 min", "every 120 min"), so a
+ * column of values never mixes units. headwayAbout rounds to the nearest 30 minutes above 60
+ * ("about every 90 min") because it is already approximate.
  *
  * Whole numbers print as they are; other numbers print to one decimal ("7.5 min"). Missing or
  * non-finite values print "—" (headwayFilterLabel is the one exception: no limit is "All routes").
@@ -36,16 +35,14 @@ function num(n: number): string {
   return Number.isInteger(n) ? String(n) : String(Math.round(n * 10) / 10);
 }
 
-/** "10 min", or "1.5 h" for an exact whole or half hour above 60 minutes. */
+/** "10 min", "120 min": always minutes. */
 function amount(minutes: number): string {
-  if (minutes > 60 && Number.isInteger(minutes / 30)) return `${num(minutes / 60)} h`;
   return `${num(minutes)} min`;
 }
 
-/** "10 min", "1 h": a bare spacing with no "every". Whole hours only above 60 minutes. */
+/** "10 min", "120 min": a bare spacing with no "every", rounded to the whole minute. */
 export function headwayAmount(minutes: number | null | undefined): string {
   if (!isUsable(minutes)) return MISSING;
-  if (minutes > 60) return `${Math.round(minutes / 60)} h`;
   return `${Math.round(minutes)} min`;
 }
 
@@ -65,11 +62,11 @@ export function headwayFilterLabel(maxHeadway: number): string {
   return isUsable(maxHeadway) ? capitalizeFirst(headwayOrBetter(maxHeadway)) : MISSING;
 }
 
-/** "about every 16 min": a measured or typical spacing. Above 60 minutes it rounds to the half hour. */
+/** "about every 16 min": a measured or typical spacing. Above 60 minutes it rounds to the nearest 30 min. */
 export function headwayAbout(minutes: number | null | undefined): string {
   if (!isUsable(minutes)) return MISSING;
   if (minutes <= 60) return `about every ${num(minutes)} min`;
-  return `about every ${num(Math.round(minutes / 30) / 2)} h`;
+  return `about every ${Math.round(minutes / 30) * 30} min`;
 }
 
 /** "every 30–60 min": a list cadence, combined on a shared stretch up to each branch's own. */
@@ -77,8 +74,7 @@ export function headwayEveryRange(low: number | null | undefined, high: number |
   if (!isUsable(low) || !isUsable(high)) return MISSING;
   const prefix = compact ? '' : 'every ';
   if (low === high) return `${prefix}${amount(low)}`;
-  if (low <= 60 && high <= 60) return `${prefix}${num(low)}–${num(high)} min`;
-  return `${prefix}${amount(low)} – ${amount(high)}`;
+  return `${prefix}${num(low)}–${num(high)} min`;
 }
 
 /** "about every 6–12 min" when both ends fit in minutes; otherwise two "about" phrases. */

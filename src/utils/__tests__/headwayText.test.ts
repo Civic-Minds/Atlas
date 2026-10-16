@@ -36,7 +36,7 @@ describe('headwayText', () => {
   it('about range: both ends in minutes, collapsed when equal, split above 60', () => {
     expect(headwayAboutRange(6, 12)).toBe('about every 6–12 min');
     expect(headwayAboutRange(10, 10)).toBe('about every 10 min');
-    expect(headwayAboutRange(30, 90)).toBe('about every 30 min – about every 1.5 h');
+    expect(headwayAboutRange(30, 90)).toBe('about every 30 min – about every 90 min');
   });
 
   it('tier label and band label', () => {
@@ -45,11 +45,11 @@ describe('headwayText', () => {
     expect(headwayBandLabel(16, 30)).toBe('16–30 min');
   });
 
-  it('amount: bare spacing, whole hours above 60', () => {
+  it('amount: bare spacing, always minutes', () => {
     expect(headwayAmount(10)).toBe('10 min');
     expect(headwayAmount(60)).toBe('60 min');
-    expect(headwayAmount(61)).toBe('1 h');
-    expect(headwayAmount(120)).toBe('2 h');
+    expect(headwayAmount(61)).toBe('61 min');
+    expect(headwayAmount(120)).toBe('120 min');
   });
 
   it('delay amount is not a headway', () => {
@@ -58,17 +58,17 @@ describe('headwayText', () => {
   });
 
   describe('units above 60 minutes', () => {
-    it('exact spacings use hours only for whole and half hours', () => {
-      expect(headwayEvery(90)).toBe('every 1.5 h');
-      expect(headwayEvery(120)).toBe('every 2 h');
+    it('exact spacings stay in minutes, never hours', () => {
+      expect(headwayEvery(90)).toBe('every 90 min');
+      expect(headwayEvery(120)).toBe('every 120 min');
       expect(headwayEvery(75)).toBe('every 75 min');
-      expect(headwayOrBetter(120)).toBe('every 2 h or better');
+      expect(headwayOrBetter(120)).toBe('every 120 min or better');
     });
-    it('about rounds to the nearest half hour', () => {
-      expect(headwayAbout(61)).toBe('about every 1 h');
-      expect(headwayAbout(80)).toBe('about every 1.5 h');
-      expect(headwayAbout(90)).toBe('about every 1.5 h');
-      expect(headwayAbout(120)).toBe('about every 2 h');
+    it('about rounds to the nearest 30 min', () => {
+      expect(headwayAbout(61)).toBe('about every 60 min');
+      expect(headwayAbout(80)).toBe('about every 90 min');
+      expect(headwayAbout(90)).toBe('about every 90 min');
+      expect(headwayAbout(120)).toBe('about every 120 min');
     });
   });
 
