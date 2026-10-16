@@ -31,6 +31,21 @@ export function stretchRowFeatures(features: readonly ShapeProperties[], period:
   return [...best.values()].sort((a, b) => (a.stretchRole === b.stretchRole ? (a.stretchIndex ?? 0) - (b.stretchIndex ?? 0) : a.stretchRole === 'main' ? -1 : 1));
 }
 
+/**
+ * A direction whose features are all variants (short turns, part-day patterns) still gets one row, read from the direction's
+ * filter value, never from the pattern's own numbers. The variant that draws the most stops stands for it.
+ */
+export function variantOnlyRow(features: readonly ShapeProperties[]): ShapeProperties | undefined {
+  if (features.length === 0 || features.some(f => f.stretchRole === 'main' || f.stretchRole === 'tail')) return undefined;
+  return [...features].sort((a, b) => (b.stopOrder?.length ?? 0) - (a.stopOrder?.length ?? 0))[0];
+}
+
+/** The direction's filter value for a variant-only row: a number, or null for no regular service. Undefined when absent. */
+export function variantRowHeadway(f: ShapeProperties, period: TimePeriod): number | null | undefined {
+  if (f.stretchRole !== 'variant' || period === 'all') return undefined;
+  return f.directionFilterHeadwayByPeriod?.[period as PeriodKey];
+}
+
 export interface RouteContract {
   /** The route's filter value in the period: a number, or null for no regular service. */
   filterValue: number | null;

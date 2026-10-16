@@ -45,7 +45,7 @@ import { trackEvent } from '../../lib/analytics';
 import type { CompareRouteRow } from './compareTypes';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
-import { hasStretchRoles, stretchRowFeatures } from '../../utils/stretchCard';
+import { hasStretchRoles, stretchRowFeatures, variantOnlyRow } from '../../utils/stretchCard';
 
 interface SidebarControlsProps {
   query: string;
@@ -483,6 +483,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       let rows = stretchRowFeatures(directionFeatures, period).filter(d =>
         metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null || hasDirectionPeriodService(d, period));
       // With tails, the shared main stretch is the trunk they hang off: it gets a row only when it has a cadence of its own to show.
+      const variantRow = variantOnlyRow(directionFeatures);
+      if (variantRow) rows = [variantRow];
       if (rows.some(d => d.stretchRole === 'tail')) rows = rows.filter(d => d.stretchRole !== 'main' || routeCardDisplayHeadway(d, period) != null);
       if (rows.length > 0) { g.realTier = rows; g.span = []; }
     }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
-import { hasStretchRoles, routeContract, stretchRowFeatures } from '../stretchCard';
+import { hasStretchRoles, routeContract, stretchRowFeatures, variantOnlyRow, variantRowHeadway } from '../stretchCard';
 
 const f = (over: Record<string, unknown>) => ({ routeId: 'r', directionId: 0, tier: 'frequent', headway: 6, routeShortName: '1', routeLongName: null, ...over }) as unknown as ShapeProperties;
 
@@ -52,5 +52,20 @@ describe('routeContract', () => {
   });
   it('treats a range whose ends match as one number', () => {
     expect(routeContract([f({ routeFilterHeadwayByPeriod: { midday: 15 }, stretchPeriodRange: { midday: [15, 15] } })], 'midday')!.range).toBeNull();
+  });
+});
+
+describe('variant-only direction (TTC 134 southbound)', () => {
+  const v = (stops: number, extra: object = {}) => ({ stretchRole: 'variant', stopOrder: Array(stops).fill('s'), directionFilterHeadwayByPeriod: { midday: 15 }, ...extra }) as never;
+  it('uses one row, the variant with the most stops', () => {
+    const a = v(28), b = v(32);
+    expect(variantOnlyRow([a, b])).toBe(b);
+  });
+  it('is not used when the direction has a main or tail', () => {
+    expect(variantOnlyRow([v(5), { stretchRole: 'main' } as never])).toBeUndefined();
+  });
+  it('reads the direction value, never the pattern', () => {
+    expect(variantRowHeadway(v(5, { headwayByPeriod: { midday: 231 } }), 'midday')).toBe(15);
+    expect(variantRowHeadway(v(5), 'all')).toBeUndefined();
   });
 });

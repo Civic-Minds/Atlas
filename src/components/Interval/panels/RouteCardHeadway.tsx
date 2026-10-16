@@ -41,7 +41,7 @@ import {
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
-import { hasStretchRoles, routeContract } from '../../../utils/stretchCard';
+import { hasStretchRoles, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
@@ -713,9 +713,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const branchFilterHeadway = routeFilterHeadway(d, period);
                     const dimmed = maxHeadway !== Infinity && !featurePassesHeadwayFilter(d, period, maxHeadway);
                     return (() => {
-                      const displayH = hoveredHour != null
-                        ? branchDisplayHourHeadway(d, hoveredHour) ?? routeCardDisplayHeadway(d, period)
-                        : routeCardDisplayHeadway(d, period);
+                      const variantH = hoveredHour == null ? variantRowHeadway(d, period) : undefined;
+                      const displayH = variantH !== undefined
+                        ? variantH
+                        : hoveredHour != null
+                          ? branchDisplayHourHeadway(d, hoveredHour) ?? routeCardDisplayHeadway(d, period)
+                          : routeCardDisplayHeadway(d, period);
                       const label = branchLabel(group, d, gi);
                       if (!label && !collapseGroups && displayH == null) return null;
                       const trunkHw = hoveredHour == null && period !== 'all'
@@ -731,7 +734,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             headway={noRegularService && hoveredHour == null ? undefined : displayH ?? undefined}
                             limitedLabel={noRegularService && hoveredHour == null ? 'no regular service' : undefined}
                             colorHeadway={hoveredHour == null ? branchFilterHeadway : undefined}
-                            headwayLabel={hoveredHour == null ? routeCardCoverageText(d, period) : undefined}
+                            headwayLabel={hoveredHour == null && variantH === undefined ? routeCardCoverageText(d, period) : undefined}
                             trunkHeadway={trunkHw}
                             edgeGapAllowance={d.edgeGapAllowance}
                             onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}
