@@ -384,6 +384,8 @@ jobs:
       - name: Check the reprocess outcome
         id: reprocess-check
         if: always() && inputs.start_at == 'reprocess' && steps.reprocess.outcome != 'skipped'
+        env:
+          REPROCESS_OUTCOME: ${{ steps.reprocess.outcome }}
         run: |
           python3 - <<'PY'
           import json, os
@@ -392,21 +394,31 @@ jobs:
           path = 'tmp/derived-reprocess/report.json'
           lines = ['## Rebuild publish: reprocess', '']
           fatal = ''
-          if not os.path.exists(path):
-              lines.append('No report was written: the reprocess crashed before it finished. See the log.')
-              fatal = 'the reprocess crashed before writing a report'
-          else:
-              rep = json.load(open(path))
-              t = rep.get('totals', {})
-              rows = rep.get('agencies', [])
-              lines.append(f"**{t.get('processed', 0)} written**, {t.get('refused', 0)} refused (live data kept), {t.get('failed', 0)} failed, {t.get('skipped', 0)} skipped (of {t.get('targets', len(rows))} agencies).")
-              for status, title in (('failed', 'Failed (errors)'), ('refused', 'Refused (live data kept)')):
-                  sel = [r for r in rows if r.get('status') == status]
-                  if sel:
-                      lines += ['', f'### {title}: {len(sel)}', '', '| Agency | Reason |', '|---|---|']
-                      lines += [f"| {r['slug']} | {str(r.get('reason', '')).replace('|', '/')} |" for r in sel]
-              if t.get('failed', 0) > 0:
-                  fatal = f"{t['failed']} agencies failed"
+          try:
+              if not os.path.exists(path):
+                  lines.append('No report was written: the reprocess crashed before it finished. See the log.')
+                  fatal = 'the reprocess crashed before writing a report'
+              else:
+                  rep = json.load(open(path))
+                  t = rep.get('totals', {})
+                  rows = rep.get('agencies', [])
+                  refused, failed = t.get('refused', 0), t.get('failed', 0)
+                  lines.append(f"**{t.get('processed', 0)} written**, {refused} refused (live data kept), {failed} failed, {t.get('skipped', 0)} skipped (of {t.get('targets', len(rows))} agencies).")
+                  for status, title in (('failed', 'Failed (errors)'), ('refused', 'Refused (live data kept)')):
+                      sel = [r for r in rows if r.get('status') == status]
+                      if sel:
+                          lines += ['', f'### {title}: {len(sel)}', '', '| Agency | Reason |', '|---|---|']
+                          lines += [f"| {r['slug']} | {str(r.get('reason', '')).replace('|', '/')} |" for r in sel]
+                  if failed > 0:
+                      fatal = f'{failed} agencies failed'
+                  elif os.environ.get('REPROCESS_OUTCOME') == 'failure' and refused == 0:
+                      # It exited 1 with nothing refused or failed: something after the report went wrong
+                      # (for example bumping the public data version), so it is not a normal refusal.
+                      fatal = 'the reprocess exited with an error although no agency was refused or failed'
+          except Exception as e:
+              # A malformed report must not skip the steps that save the stamps; stop the run after them.
+              lines.append(f'Could not read the report: {e}')
+              fatal = f'could not read the reprocess report ({type(e).__name__})'
           open(md, 'a').write('\n'.join(lines) + '\n')
           open(out, 'a').write(f'fatal={fatal}\n')
           PY
@@ -416,7 +428,7 @@ jobs:
       # pull request step moves them.
       - name: Save the stamped files
         id: stamps
-        if: inputs.start_at == 'reprocess' && steps.reprocess.outcome != 'skipped'
+        if: always() && inputs.start_at == 'reprocess' && steps.reprocess.outcome != 'skipped'
         run: |
           mkdir -p tmp/rebuild-state
           git rev-parse HEAD > tmp/rebuild-state/sha.txt
