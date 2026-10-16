@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { kpiDelta, kpiTiles, lateForDays, weekCaption } from '../liveKpi';
+import { dailyNoise, kpiDelta, kpiTiles, lateForDays, weekCaption } from '../liveKpi';
 import type { LiveV3 } from '../../../shared/liveDashboard';
 
 describe('kpiDelta', () => {
@@ -46,5 +46,23 @@ describe('lateForDays', () => {
   });
   it('is empty when no day of that kind is left', () => {
     expect(lateForDays(byDate, ['2026-10-09'], 'weekend')).toBeNull();
+  });
+});
+
+describe('dailyNoise', () => {
+  it('is 2 x the standard error of the difference of two weekly means, from the day-to-day spread', () => {
+    // sd of [0.1, 0.2, 0.3] is 0.1; 2 * 0.1 * sqrt(1/3 + 1/3)
+    expect(dailyNoise([0.1, 0.2, 0.3], 3, 3)).toBeCloseTo(0.1633, 4);
+    expect(dailyNoise([0.1, 0.2], 2, 2)).toBeNull();
+  });
+  it('greys a change inside the day-to-day spread and colours one outside it, and says so on hover', () => {
+    const noisy = dailyNoise([0.07, 0.33, 0.1, 0.11, 0.13, 0.1], 6, 7)!;
+    expect(kpiDelta('late', 0.25, 0.2, true, true, noisy)).toMatchObject({ tone: 'same', spoken: expect.stringMatching(/usual day-to-day/) });
+    expect(kpiDelta('late', 0.25, 0.2, true, true, 0.02)).toMatchObject({ tone: 'worse', spoken: expect.stringMatching(/bigger change than usual day to day/) });
+  });
+  it('leaves out a tile with no figure this week', () => {
+    const week = (dates: string[]) => ({ days: 7, dates, healthyDates: dates, late: { share: 0.1, n: 900 }, tripTime: null, extraWait: null, bunching: { share: 0.2, gaps: 600 }, delivered: null });
+    const w: NonNullable<LiveV3['weekly']> = { minHealthyDays: 4, health: [], thisWeek: week(['2026-10-08']), lastWeek: week(['2026-10-01']), comparable: true };
+    expect(kpiTiles(w).map(t => t.label)).toEqual(['Late', 'Bunching']);
   });
 });

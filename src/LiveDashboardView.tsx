@@ -39,7 +39,7 @@ function Delta({ k }: { k: Kpi }) {
   const tone = k.delta.tone === 'better' ? 'text-[var(--status-positive-text)]' : k.delta.tone === 'worse' ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-muted)]';
   return (
     <span className="flex flex-wrap items-baseline gap-x-2 text-xs">
-      <span className={`whitespace-nowrap font-bold ${tone}`} aria-label={k.delta.spoken}>{k.delta.text}</span>
+      <span className={`whitespace-nowrap font-bold ${tone}`} aria-label={k.delta.spoken} title={k.delta.spoken}>{k.delta.text}</span>
       {k.lastWeekText && <span className="whitespace-nowrap text-[var(--text-dim)]">last week {k.lastWeekText}</span>}
     </span>
   );
@@ -48,10 +48,14 @@ function Delta({ k }: { k: Kpi }) {
 function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.</p>;
-  const tiles = kpiTiles(w);
+  const ok = new Set(w.thisWeek.healthyDates);
+  const tiles = kpiTiles(w, {
+    late: v3.bands.all.adherence.timepoints.all.byDate.filter(d => ok.has(d.date) && d.n > 0).map(d => d.lateShare),
+    delivered: (v3.serviceDelivered?.byDay ?? []).flatMap(d => (ok.has(d.date) && d.share != null ? [d.share] : [])),
+  });
   return (
     <section aria-label="This week compared with last week" className="mt-5">
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <ul className={`grid grid-cols-2 gap-3 sm:grid-cols-3 ${tiles.length >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
         {tiles.map(k => {
           const faded = k.n < MIN_N;
           return (
