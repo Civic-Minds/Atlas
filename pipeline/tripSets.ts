@@ -552,8 +552,8 @@ export interface StretchPeriodGap {
 /**
  * The one-gap reading of a period at a stretch's reference stop, or null: departures on both sides
  * of the period's midpoint, the gaps between them unsteady by the shared gap test, and steady once
- * the longest is left out ("every 5 min, with a 169 min gap": TTC 504 overnight). `every` is the
- * median gap, `gap` the longest.
+ * the longest is left out. The caller applies it only to periods that run (D8 and the dominant
+ * hole check). `every` is the median gap, `gap` the longest.
  */
 export function periodOneGap(stretchTimes: readonly number[], start: number, end: number): StretchPeriodGap | null {
   const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
@@ -622,7 +622,9 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     period[key].hasService = timesIn(d.main).length > 0;
     period[key].filterValue = runs && values.length > 0 ? Math.max(...values) : null;
     period[key].edge = runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
-    period[key].gap = period[key].edge ? null : periodOneGap(d.main.times, start, end);
+    // Only where the settled checks count the period as running: a big-gap period that does not
+    // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "no regular service".
+    period[key].gap = runs && !period[key].edge ? periodOneGap(d.main.times, start, end) : null;
   }
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
   // of the window's midpoint. One that only starts its day inside the window (CTA 20's downtown

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { periodEdge, periodOneGap, periodPartialEdge } from '../tripSets';
+import { periodEdge, periodOneGap, periodPartialEdge, rollupDirection, type DirectionStretches } from '../tripSets';
 
 // #934: SF Muni 8BX AM at Bryant St & 5th St (13724), the oracle's departures (6:00-9:00).
 const BX_AM = [437, 445, 455, 463, 473, 481, 491, 499, 510, 518, 527, 537];
@@ -54,5 +54,25 @@ describe('periodOneGap (narrow D6)', () => {
     expect(periodOneGap([540, 550, 560, 570, 580, 590], 540, 900)).toBeNull();
     expect(periodOneGap([540, 545, 550, 650, 655, 660, 760, 765, 770], 540, 900)).toBeNull();
     expect(periodOneGap([540, 545, 550, 650, 655], 540, 900)).toBeNull();
+  });
+});
+
+describe('rollupDirection: the one-gap reading only where the period runs', () => {
+  const dir = (times: number[]): DirectionStretches => ({
+    key: 'r::0::Weekday',
+    main: { kind: 'main', stops: ['a'], refStop: 'a', lengthKm: 1, times, nightTimes: times, tripCount: times.length },
+    tails: [], regularPatternCount: 1, variantTripCount: 0,
+  });
+  it('TTC 504 overnight: the dominant hole means it does not run, so no gap reading', () => {
+    const T504 = [1560, 1565, 1570, 1575, 1576, 1580, 1585, 1590, 1595, 1600, 1769, 1779, 1789, 1794, 1799];
+    const r = rollupDirection(dir(T504))!;
+    expect(r.period.overnight.runs).toBe(false);
+    expect(r.period.overnight.gap).toBeNull();
+  });
+  it('a midday every 10 with one 45-minute gap runs and reads the gap', () => {
+    const t = [540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 675, 685, 695, 705, 715, 725, 735, 745, 755, 765, 775, 785, 795, 805, 815, 825, 835, 845, 855, 865, 875, 885, 895];
+    const r = rollupDirection(dir(t))!;
+    expect(r.period.midday.runs).toBe(true);
+    expect(r.period.midday.gap).toEqual({ every: 10, gap: 45 });
   });
 });
