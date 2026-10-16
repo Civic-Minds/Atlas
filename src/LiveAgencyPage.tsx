@@ -105,7 +105,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
             rowKey={r => r.route}
             columns={[
               { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
-              { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} departures at timepoints this week`}>{pct(r.lateShare)}</span> },
+              { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
               { key: 'lastWeek', header: 'Last week', className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: 'Run time', cell: r => pctSigned(r.runTimeOver) },
               { key: 'bunching', sortable: true, header: 'Bunching', cell: r => pct(r.bunchingShare) },

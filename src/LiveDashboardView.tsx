@@ -95,7 +95,7 @@ function Days({ v3, data, band, dir, allOnly = false }: { v3: LiveV3; data: Dash
     <section aria-labelledby="dash-days" className="mt-10">
       <SectionTitle id="dash-days">Late, by day and hour</SectionTitle>
       <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
-        How often cars leave 5.5+ minutes late {BAND_WORDS[band]}, by kind of day and hour, at stops where the timetable gives a time.
+        How often trips leave the end of the line more than 5 min late, by kind of day and the hour they start.
         {dir != null && ' Both directions: this view is not split by direction yet.'}
       </p>
       <div className={`mt-4 grid gap-x-8 gap-y-6 ${allOnly ? '' : 'md:grid-cols-3'}`}>

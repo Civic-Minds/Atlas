@@ -1067,7 +1067,7 @@ const v3 = {
     kept: keptRuns.filter(d => inWindow.has(d)).length,
   },
   swaps: { reassigned: swapsReassigned, dropped: swapsDropped, rate: r3(windowRuns.length + swapsDropped ? swapsInWindow.length / (windowRuns.length + swapsDropped) : 0) },
-  uncertainty: { nearCutoffShare: r3(nearCutoffShare), withinMin: 0.75, note: 'Share of timepoint departures within 0.75 min of an on-time cutoff; positions are about a minute apart, so those can land on either side.' },
+  uncertainty: { nearCutoffShare: r3(nearCutoffShare), withinMin: 0.75, note: 'Share of terminal departures within 0.75 min of an on-time cutoff; positions are about a minute apart, so those can land on either side.' },
   totals: { runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded },
   directionLabels,
   // The headline adherence counts each trip's departure from the end of the line (its first stop), as the TTC does; the

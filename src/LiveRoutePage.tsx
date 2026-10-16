@@ -115,7 +115,7 @@ function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: numbe
     <Section id="b1" title="How well it keeps to its timetable">
       {all && all.n > 0 ? (
         <>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">Share of departures {lateMin}+ minutes late, at the stops where the timetable gives a time.</p>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">Share of trips that left the end of the line more than 5 min late.</p>
           <div className="mt-3 grid max-w-2xl grid-cols-3 gap-2">
             {DAYS.map(([k, label]) => {
               const c = countsFor(k);
@@ -479,7 +479,7 @@ export function Method({ data }: { data: Ready }) {
     <details className="mt-12 group" id="method">
       <summary className="cursor-pointer text-xl font-black tracking-tight">How this is measured</summary>
       <ul className="mt-3 max-w-3xl list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--text-muted)]">
-        <li>Counted at timepoints: the stops where the timetable gives a time. Times between them are estimated, so the share late counting every stop is shown only here: {pct(v3.bands.all.adherence.allStops.all.overall.lateShare)} of {v3.bands.all.adherence.allStops.all.overall.n.toLocaleString()} departures.</li>
+        <li>Counted where each trip leaves the end of the line, as the TTC measures it.</li>
         <li>Delay builds up where the biggest jump in delay holds for the next few stops (3 stops or about 1 km).</li>
         <li>Bunching: gaps under {Math.round(v3.thresholds.bunchedGapSec / 60)} minutes count as too close together; gaps more than twice the timetable's count as too far apart. "Linked to" means measured in the same stretch, not the cause.</li>
         <li>Trip time counts only trips on the main route seen at both ends (short turns are left out). Extra wait is worked out from the gaps between vehicles at each stop.</li>
