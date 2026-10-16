@@ -30,6 +30,7 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled agency place', pattern: /· \{(secondary|agencyPlace|agency\.region)\}/, use: 'AgencyName' },
   { name: 'hand-rolled page heading', pattern: /<h1[ >]/, use: 'PageTitle' },
   { name: 'hand-rolled section heading', pattern: /<h2 [^>]*className="[^"]*text-(xl|base) font-black/, use: 'SectionTitle' },
+  { name: 'route label written by hand', pattern: /\b(getRouteLabel|shouldHideNumericRouteShortName|routeListCompanionName)\(/, use: 'routeLabels (utils/format.ts, one helper in shared/routeDisplay.ts)' },
   { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
   { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP|CARD_NOTICE_ACTION)\b/, use: 'ArrowLink, Tag' },
   { name: 'hand-rolled page frame', pattern: /<main className="min-h-screen bg-\[var\(--bg-app\)\] px-/, use: 'PageShell' },
@@ -41,6 +42,8 @@ const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
   'components/Interval/FilterPanel.tsx': ['option pill classes'],
   'apps/History.tsx': ['option pill classes'],
+  // Live is local-only and its route groups carry no route type; it still names routes its own way (audit R8).
+  'apps/LiveVehicles.tsx': ['route label written by hand'],
   // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
   'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
   'components/Interval/HeadwaySparkline.tsx': ['hand-rolled section heading'],

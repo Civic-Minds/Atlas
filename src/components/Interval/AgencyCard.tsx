@@ -14,7 +14,7 @@ import Pill from '../ui/Pill';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
 import { headwayAboutRange } from '../../utils/headwayText';
-import { agencyDisplayParts, getRouteLabel, shouldHideNumericRouteShortName, titleCase } from '../../utils/format';
+import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { routeListDisplay } from '../../utils/effectiveHeadway';
@@ -313,13 +313,11 @@ function RouteListSection({
       {routes.map(r => {
         const isLive = FEATURES.live && liveShortNames.has(r.shortName);
         const key = `${r.agencySlug}::${r.routeId}`;
-        const label = shouldHideNumericRouteShortName(r.shortName, r.longName, r.routeType)
-          ? r.longName ?? r.shortName
-          : getRouteLabel(r.shortName, r.longName);
+        const label = routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType }).text;
         return (
           <div key={r.routeId} className="px-3 py-1 hover:bg-[var(--bg-btn-hover)] transition-colors">
           <CardDirectionRow
-            label={titleCase(label)}
+            label={label}
             headway={r.headway ?? undefined}
             headwayLabel={r.headway != null && r.sharedHeadway != null ? headwayAboutRange(r.sharedHeadway, r.headway) : undefined}
             limited={r.limited}

@@ -18,6 +18,7 @@ import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import { loadingText, loadErrorText } from '../content/stateCopy';
+import { routeLabels } from '../utils/format';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -33,6 +34,8 @@ interface NightServiceRouteSummary {
   routeId: string | null;
   routeShortName: string | null;
   routeLongName: string | null;
+  /** GTFS route_type, from the map's route features (needed to decide whether a numeric id is hidden). */
+  routeType?: number;
   destinations: string[];
 }
 
@@ -43,6 +46,7 @@ interface NightServiceFeatureProperties {
   routeId?: string | null;
   routeShortName?: string | null;
   routeLongName?: string | null;
+  routeType?: number;
   headsign?: string | null;
   agencyName?: string | null;
 }
@@ -140,6 +144,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
         routeId: properties.routeId ?? null,
         routeShortName: properties.routeShortName ?? indexed?.routeShortName ?? null,
         routeLongName: properties.routeLongName ?? indexed?.routeLongName ?? null,
+        routeType: properties.routeType,
         destinations: [],
       };
       const headsign = properties.headsign ?? indexed?.headsign;
@@ -194,9 +199,11 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
                   className="disabled:cursor-default"
                 >
                   <div className="min-w-0 flex-1">
-                  <div className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={[route.routeShortName, route.routeLongName].filter(Boolean).join(" — ")}>
-                    {route.routeShortName || route.routeLongName || 'Unnamed route'}
-                    {route.routeShortName && route.routeLongName && <span className={`font-normal ${LIST_ROW_DIM}`}> — {route.routeLongName}</span>}
+                  <div className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencyName: agency.agencyName }).text}>
+                    {(() => {
+                      const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencyName: agency.agencyName });
+                      return <>{label.primary || 'Unnamed route'}{label.secondary && <span className={`font-normal ${LIST_ROW_DIM}`}> — {label.secondary}</span>}</>;
+                    })()}
                   </div>
                   {route.destinations.length > 0 && (
                     <div className={`mt-0.5 ${LIST_ROW_DIM} truncate`} title={route.destinations.join(' · ')}>

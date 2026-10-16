@@ -34,7 +34,7 @@ import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
 import { waitForMapExportReady } from '../../utils/mapExport';
 import { describeMapExport, type MapExportBox, type MapExportDetails, type MapExportView, type RenderedRouteSample } from '../../utils/mapExportDetails';
-import { getRouteLabel, titleCase } from '../../utils/format';
+import { routeLabels } from '../../utils/format';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
 import { mapViewKind, viewAllowsOnDemand } from '../../../shared/viewLayers';
@@ -392,7 +392,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           const agencyName = state.agencies.find(agency => agency.slug === agencySlug)?.name ?? null;
           const shortName = typeof props.routeShortName === 'string' ? props.routeShortName : null;
           const longName = typeof props.routeLongName === 'string' ? props.routeLongName : null;
-          const label = titleCase(getRouteLabel(shortName, longName, agencyName));
+          const label = routeLabels({ shortName, longName, agencyName }).full;
           if (label) {
             routeLabel = label;
             routeShortName = shortName ?? longName;

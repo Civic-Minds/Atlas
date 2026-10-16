@@ -1,5 +1,5 @@
 import React from 'react';
-import { titleCase, getRouteLabel } from '../../../utils/format';
+import { routeLabels } from '../../../utils/format';
 import { FLOATING_CARD, PANEL_ENTER, LIST_ROW_PRIMARY } from '../../../styles';
 import ListRow from '../../ui/ListRow';
 
@@ -47,7 +47,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
                 <div className="min-w-0 flex-1 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
                   <span className={LIST_ROW_PRIMARY}>
-                    {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
+                    {routeLabels({ shortName: r.shortName, longName: r.longName, agencyName: r.agencyName }).full}
                   </span>
                 </div>
               </ListRow>

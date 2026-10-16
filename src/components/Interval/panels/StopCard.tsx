@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { titleCase, getRouteLabel } from '../../../utils/format';
+import { titleCase, routeLabels } from '../../../utils/format';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   AgencyFilterChips,
@@ -153,7 +153,7 @@ export const StopCard: React.FC<StopCardProps> = ({
             return (
               <CardDirectionRow
                 key={rKey}
-                label={titleCase(getRouteLabel(routeShortName, routeLongName, agencyName))}
+                label={routeLabels({ shortName: routeShortName, longName: routeLongName, agencyName }).full}
                 subLabel={`${nearestStopName} · ${Math.round(distanceMeters)} m away`}
                 headway={headway ?? undefined}
                 onClick={() => openRoute(rKey)}

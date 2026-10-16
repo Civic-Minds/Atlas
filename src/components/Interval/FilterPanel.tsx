@@ -11,7 +11,7 @@ import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
-import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
+import { agencyDisplayParts, formatStoredDate, routeLabels } from '../../utils/format';
 import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
@@ -456,16 +456,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             <AgencyName primary={primary} secondary={secondary} />
                           </p>
                           <div className="divide-y divide-[var(--border-primary)]">
-                            {group.routes.map(route => (
-                              <div key={route.key} className="py-2.5">
-                                <div className="flex items-baseline justify-between gap-3">
-                                  <p className="text-xs font-bold text-[var(--text-primary)] line-clamp-2 break-words" title={route.routeShortName}>{route.routeShortName}</p>
+                            {group.routes.map(route => {
+                              const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, agencyName: group.agencyName });
+                              return (
+                                <div key={route.key} className="py-2.5">
+                                  <div className="flex items-baseline justify-between gap-3">
+                                    <p className="text-xs font-bold text-[var(--text-primary)] line-clamp-2 break-words" title={label.text}>{label.primary}</p>
+                                  </div>
+                                  {label.secondary && (
+                                    <p className="text-xs text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5" title={label.secondary}>{label.secondary}</p>
+                                  )}
                                 </div>
-                                {route.routeLongName && route.routeLongName !== route.routeShortName && (
-                                  <p className="text-xs text-[var(--text-secondary)] line-clamp-2 break-words mt-0.5" title={route.routeLongName}>{route.routeLongName}</p>
-                                )}
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
                         );

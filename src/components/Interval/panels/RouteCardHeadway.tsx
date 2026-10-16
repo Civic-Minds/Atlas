@@ -4,7 +4,7 @@ import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
-import { titleCase, getRouteLabel, shortenAgencyName, resolveBranchLabel, formatBranchLabel } from '../../../utils/format';
+import { routeLabels, shortenAgencyName, resolveBranchLabel, formatBranchLabel } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import { getCachedAgencyGeo } from '../../../lib/agencyGeo';
 import { tripTimeSeriesFor, type PublishedRunningTimes } from '../../../utils/tripTime';
@@ -537,7 +537,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               onHourHover={setHoveredHour}
               allowExpand={FEATURES.sparklineExpand}
               reserveStackedLegendSpace={hasTrunkSparkline}
-              title={titleCase(getRouteLabel(currentRoute.routeShortName, currentRoute.routeLongName, agencyDisplayName))}
+              title={routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, agencyName: agencyDisplayName }).full}
             />
           </>
         );

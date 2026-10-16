@@ -1,4 +1,4 @@
-import { titleCase, getRouteLabel, shortenAgencyName } from '../utils/format';
+import { routeLabels, shortenAgencyName } from '../utils/format';
 import { SidebarCardHeader } from './Interval/cardUi';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, onAgencyClick }: Props) {
-  const title = titleCase(getRouteLabel(routeShortName, routeLongName, agencyName));
+  const title = routeLabels({ shortName: routeShortName, longName: routeLongName, agencyName }).full;
   const displayAgency = agencyName ? shortenAgencyName(agencyName) : null;
   return (
     <SidebarCardHeader

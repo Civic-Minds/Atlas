@@ -5,13 +5,7 @@ import {
   LIST_ROW_DIM,
 } from '../../styles';
 import Panel from '../ui/Panel';
-import {
-  titleCase,
-  shortenAgencyName,
-  cleanRouteShortName,
-  routeListCompanionName,
-  shouldHideNumericRouteShortName,
-} from '../../utils/format';
+import { shortenAgencyName, routeLabels } from '../../utils/format';
 import RouteListRow from '../RouteListRow';
 import { routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
@@ -46,25 +40,10 @@ interface SearchSuggestionsPanelProps {
   displayForRouteKey: (key: string) => RouteListDisplay;
 }
 
-export function routeRowLabels(shortName: string | null | undefined, longName: string | null, routeType?: number) {
-  const blankShortName = !shortName || !shortName.trim();
-  const hiddenShortName = blankShortName || shouldHideNumericRouteShortName(shortName, longName, routeType);
-  if (hiddenShortName && longName) {
-    // "Line 1 (Yonge-University)" -> bold "Line 1" + regular "Yonge-University", matching
-    // how normal routes read ("7 Bathurst"). Other long names stay as one primary label.
-    const designator = longName.trim().match(/^((?:Line|Route)\s+[A-Za-z0-9]{1,3})\s*(?:\(([^)]+)\)|[-–—:]\s*(.+))$/i);
-    if (designator) {
-      return { shortName: titleCase(designator[1]), name: titleCase((designator[2] ?? designator[3]).trim()) };
-    }
-    return { shortName: titleCase(longName), name: undefined };
-  }
-  const displayShortName = hiddenShortName ? '' : shortName;
-  const short = cleanRouteShortName(displayShortName);
-  const companion = routeListCompanionName(longName ? titleCase(longName) : null, displayShortName ?? '');
-  return {
-    shortName: titleCase(short),
-    name: companion ? titleCase(companion) : undefined,
-  };
+/** A route's bold and lighter parts for a list row. Same cleaned names as the card title (see shared/routeDisplay.ts). */
+export function routeRowLabels(shortName: string | null | undefined, longName: string | null, routeType?: number, agencyName?: string | null) {
+  const { primary, secondary } = routeLabels({ shortName, longName, routeType, agencyName });
+  return { shortName: primary, name: secondary };
 }
 
 export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null) {

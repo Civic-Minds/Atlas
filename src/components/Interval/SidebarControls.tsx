@@ -5,7 +5,7 @@ import { useColorVision } from '../../context/ColorVisionContext';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { getRouteLabel, shortenAgencyName, searchOverlayHidesPanel, titleCase } from '../../utils/format';
+import { routeLabels, shortenAgencyName, searchOverlayHidesPanel } from '../../utils/format';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -768,9 +768,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
       })
       .filter((route, index, routes) => {
-        const displayKey = `${route.agencyName.trim().toLowerCase()}::${titleCase(getRouteLabel(route.shortName, route.longName, route.agencyName)).trim().toLowerCase().replace(/\s+/g, ' ')}`;
+        const displayKey = `${route.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: route.shortName, longName: route.longName, agencyName: route.agencyName }).full.trim().toLowerCase().replace(/\s+/g, ' ')}`;
         return routes.findIndex(candidate => {
-          const candidateKey = `${candidate.agencyName.trim().toLowerCase()}::${titleCase(getRouteLabel(candidate.shortName, candidate.longName, candidate.agencyName)).trim().toLowerCase().replace(/\s+/g, ' ')}`;
+          const candidateKey = `${candidate.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: candidate.shortName, longName: candidate.longName, agencyName: candidate.agencyName }).full.trim().toLowerCase().replace(/\s+/g, ' ')}`;
           return candidateKey === displayKey;
         }) === index;
       })

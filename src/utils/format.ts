@@ -1,4 +1,5 @@
 import { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cleanHeadsign';
+import { routeDisplay, shouldHideNumericRouteShortName } from '../../shared/routeDisplay';
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';
 export { cleanHeadsign, formatRemDisplay, getRouteLabel };
@@ -155,7 +156,8 @@ export function titleCase(s: string): string {
 
   return s
     .toLowerCase()
-    .replace(/\b(\p{L}+)/gu, (fullWord, word, offset, str) => {
+    // Not \b: it is ASCII-only, so it split "île" after the accented first letter ("îLe").
+    .replace(/(?<![\p{L}\p{N}])(\p{L}+)/gu, (fullWord, word, offset, str) => {
       if (word.length === 1 && str[offset + word.length] === '.') {
         return word.toUpperCase();
       }
@@ -213,14 +215,29 @@ export function routeListCompanionName(
   return displayName;
 }
 
-/** Hide numeric internal IDs when a rail/ferry route has a useful public name. */
-export function shouldHideNumericRouteShortName(
-  shortName: string | null | undefined,
-  longName: string | null | undefined,
-  routeType?: number,
-): boolean {
-  if (!shortName || !longName || !/^\d+$/.test(shortName.trim())) return false;
-  return routeType !== 3 || /(?:line|seabus)$/i.test(longName.trim());
+export { shouldHideNumericRouteShortName };
+
+/**
+ * Case for one part of a route label. A feed that shouts ("PARK ST") is title-cased; a name that already has lower-case letters
+ * ("Granville-YVR", "Kendall/MIT Station", "Île-des-Soeurs") is the feed's own spelling and is left alone, and so is a short code
+ * (up to 3 characters, or up to 6 with a digit: "WCE", "SL1", "34E", "1X"), which title case would turn into "Wce" or "Sl1".
+ */
+export function routeLabelCase(part: string): string {
+  if (!part || /\p{Ll}/u.test(part)) return part;
+  if (!/\s/.test(part) && (part.length <= 3 || (/\d/.test(part) && part.length <= 6))) return part;
+  return titleCase(part);
+}
+
+/**
+ * A route's label for any surface: `{ primary, secondary, text, full }` (see shared/routeDisplay.ts). Lists, search, Nearby and
+ * agency pages show primary bold and secondary lighter; `text` is both on one line; `full` is the card title (always title case,
+ * unchanged).
+ */
+export function routeLabels(input: { shortName: string | null | undefined; longName: string | null | undefined; routeType?: number; agencyName?: string | null }) {
+  const d = routeDisplay(input);
+  const primary = routeLabelCase(d.primary);
+  const secondary = d.secondary ? routeLabelCase(d.secondary) : undefined;
+  return { primary, secondary, text: secondary ? `${primary} — ${secondary}` : primary, full: titleCase(d.full) };
 }
 
 /** Vehicle word for a GTFS route_type (0 tram, 1 metro, 2 rail, 3 bus, 4 ferry). */
