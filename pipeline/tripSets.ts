@@ -488,8 +488,11 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   const dayType = d.key.slice(d.key.lastIndexOf('::') + 2) as 'Weekday' | 'Saturday' | 'Sunday';
   const grading = DEFAULT_CRITERIA.dayTypes[dayType]?.timeWindow ?? { start: 420, end: 1320 };
   const allDayOf = (st: Stretch) => {
-    const t = st.times.filter(x => x >= grading.start && x <= grading.end);
-    return t.length >= 3 ? Math.round(computeHeadwayStats(t).median) : null;
+    // Phase 2's overnight fallback: with fewer than two departures in the window (a night route),
+    // the stretch reads all of its departures.
+    let t = st.times.filter(x => x >= grading.start && x <= grading.end);
+    if (t.length < 2) t = [...st.times];
+    return t.length >= 2 ? Math.round(computeHeadwayStats(t).median) : null;
   };
   const allDays = [d.main, ...allDayTails].map(allDayOf);
   const frequentStretches = [d.main, ...allDayTails];

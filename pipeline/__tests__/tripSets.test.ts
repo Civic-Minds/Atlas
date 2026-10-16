@@ -550,3 +550,10 @@ describe('step 6: the all-day filter, the midday cap and Frequent Service read t
     expect(tails).toEqual(['Long Branch', 'Marine Parade']);
   });
 });
+
+describe('step 6: a night route keeps an all-day value (phase 2 overnight fallback)', () => {
+  it('TTC 320 Weekday night reads its overnight cadence all day, as its headline does', async () => {
+    const r = await run('ttc-320-weekday-night');
+    expect(row(r, '320', 'Weekday').routeAllDayHeadway).toBeLessThan(60);
+  });
+});
