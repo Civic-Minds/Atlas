@@ -20,7 +20,7 @@ import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { STEP_LABELS } from './components/Live/routeStripModel';
-import { delayText } from './components/Live/routeStripModel';
+import { stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
 import StringLine, { useStrings } from './components/Live/StringLine';
 import Pill from './components/ui/Pill';
 import { dateRangeText } from '../shared/liveDashboard';
@@ -56,34 +56,32 @@ function Key({ measure }: { measure: MapMeasure }) {
   );
 }
 
-/** The panel for a picked segment: the stretch's figures, then the stop it leaves. */
-function SegmentPanel({ v3, band, dir, fromStopId, toStopId, data, stops }: { v3: LiveV3; band: DashboardBand; dir: number; fromStopId: string; toStopId: string; data: DashboardBandData; stops: ReturnType<typeof directionStopsById> }) {
-  const a = stops.get(fromStopId), b = stops.get(toStopId);
-  const stretch = data.buildup.find(x => x.directionId === dir)?.stretches.find(x => x.fromStopId === fromStopId && x.toStopId === toStopId);
-  const full = data.stops.find(x => x.stopId === fromStopId && x.directionId === dir);
-  const bunch = v3.bunching.find(x => x.directionId === dir)?.bands[band]?.stops.find(x => x.stopId === fromStopId);
-  const extra = v3.extraWait?.[band]?.find(x => x.directionId === dir && x.stopId === fromStopId);
+/** The card for a picked stop: its name and the trimmed figures the strip's hover shows, then its extra wait where it has one. Compact, no scroll. */
+function StopCard({ v3, band, dir, stop }: { v3: LiveV3; band: DashboardBand; dir: number; stop: RouteStripStop }) {
+  const extra = v3.extraWait?.[band]?.find(x => x.directionId === dir && x.stopId === stop.stopId);
+  const d = stopDetail(stop);
   return (
-    <Panel docked title={`${shortStopName(a?.name ?? fromStopId)} to ${shortStopName(b?.name ?? toStopId)}`} sub={v3.directionLabels[String(dir)]}>
+    <div className="space-y-0.5 p-3 text-xs">
+      <div className="text-sm font-bold leading-snug">{d.name}</div>
+      {d.lines.map(l => <div key={l} className="text-[var(--text-secondary)]">{l}</div>)}
+      {extra && <div className="text-[var(--text-secondary)]">Extra wait {delayAmount(Math.max(0, extra.extraWaitMin))}</div>}
+    </div>
+  );
+}
+
+/** The card for a picked segment: only the segment (its name, the time it adds, how often delay grows across it), never its start stop. */
+function SegmentCard({ data, dir, fromStopId, toStopId, stops }: { data: DashboardBandData; dir: number; fromStopId: string; toStopId: string; stops: ReturnType<typeof directionStopsById> }) {
+  const stretch = data.buildup.find(x => x.directionId === dir)?.stretches.find(x => x.fromStopId === fromStopId && x.toStopId === toStopId);
+  return (
+    <div className="space-y-0.5 p-3 text-xs">
+      <div className="text-sm font-bold leading-snug">{shortStopName(stops.get(fromStopId)?.name ?? fromStopId)} to {shortStopName(stops.get(toStopId)?.name ?? toStopId)}</div>
       {stretch && stretch.n > 0 && (
-        <Block>
-          <Fact label="Typical added" value={mins(stretch.medianAddedMin)} />
-          <Fact label="Trips where it grows" value={pct(stretch.growShare)} sub={`of ${stretch.n.toLocaleString()}`} />
-        </Block>
+        <>
+          <div className="text-[var(--text-secondary)]">Typical added {mins(stretch.medianAddedMin)}</div>
+          <div className="text-[var(--text-secondary)]">Trips where it grows {pct(stretch.growShare)} of {stretch.n.toLocaleString()}</div>
+        </>
       )}
-      <Block>
-        {a && a.n > 0 && a.delayMin != null && <Fact label="Typical delay" value={delayText(a.delayMin)} />}
-        {full && <Fact label="1 in 10 later than" value={mins(full.p90Min)} />}
-        {a?.lateShare != null && a.n > 0 && <Fact label="Late" value={pct(a.lateShare)} sub={`of ${a.n.toLocaleString()} departures`} />}
-      </Block>
-      {bunch && bunch.n > 0 && (
-        <Block>
-          <Fact label="Too close together" value={pct(bunch.bunchedShare)} />
-          <Fact label="Too far apart" value={pct(bunch.gappedShare)} sub={`${bunch.n.toLocaleString()} gaps`} />
-        </Block>
-      )}
-      {extra && <Block><Fact label="Extra wait" value={delayAmount(Math.max(0, extra.extraWaitMin))} sub={`Scheduled every ${headwayAmount(extra.scheduledGapMin)}`} /></Block>}
-    </Panel>
+    </div>
   );
 }
 
@@ -111,11 +109,10 @@ function Canvas({ data, v3, agency, view, route, dir, band, measure, pick, ancho
   const model = useMemo(() => routeMapModel(v3, dir, band, measure), [v3, dir, band, measure]);
   const stops = useMemo(() => directionStopsById(v3, dir, band, uncertain), [v3, dir, band, uncertain]);
   const hasChart = measure === 'late' || measure === 'runTime';
+  const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
   const card = pick?.kind === 'segment' ? (
-    <SegmentPanel v3={v3} band={band} dir={dir} fromStopId={pick.fromStopId} toStopId={pick.toStopId} data={bandData} stops={stops} />
-  ) : pick?.kind === 'stop' && stops.has(pick.stopId) ? (
-    <DetailPanel docked v3={v3} band={band} sel={{ dir, kind: 'stop', stopId: pick.stopId }} stops={stops} data={bandData} />
-  ) : null;
+    <SegmentCard data={bandData} dir={dir} fromStopId={pick.fromStopId} toStopId={pick.toStopId} stops={stops} />
+  ) : picked ? <StopCard v3={v3} band={band} dir={dir} stop={picked} /> : null;
   if (view === 'strings') return <StringsPane key={`${route}`} agency={agency} route={route} v3={v3} dir={dir} band={band} />;
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">

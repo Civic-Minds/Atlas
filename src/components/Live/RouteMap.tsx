@@ -128,14 +128,14 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
   useEffect(place, [anchor]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // The card sits above its anchor, or below it when the anchor is near the top; kept inside the map's width.
-  const cardW = 320;
+  const cardW = 260;
   const below = at != null && at.y < 280;
   return (
     <div className={`relative h-full w-full overflow-hidden ${className}`.trim()}>
       <div ref={box} className="h-full w-full" role="img" aria-label="Map of the route, coloured by the chosen measure" />
       {at && card && (
         <div className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)] shadow-2xl"
-          style={{ left: Math.max(8, Math.min(at.w - cardW - 8, at.x - cardW / 2)), top: at.y, width: cardW, maxHeight: '60%', overflowY: 'auto', transform: below ? 'translateY(16px)' : 'translateY(calc(-100% - 16px))' }}>
+          style={{ left: Math.max(8, Math.min(at.w - cardW - 8, at.x - cardW / 2)), top: at.y, width: cardW, transform: below ? 'translateY(16px)' : 'translateY(calc(-100% - 16px))' }}>
           {card}
         </div>
       )}
