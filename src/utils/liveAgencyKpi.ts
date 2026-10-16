@@ -7,18 +7,18 @@ import { kpiDelta, kpiTiles, type Kpi } from './liveKpi';
 
 const pctSigned = (x: number) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${Math.abs(Math.round(x * 100))}%`;
 
-export function agencyKpiTiles(s: AgencySummary, coverage: string): Kpi[] {
+export function agencyKpiTiles(s: AgencySummary): Kpi[] {
   const w = s.weekly;
   if (!w) return [];
   const full = { ...w, health: [] };
   return kpiTiles(full, s.daily).map(k => {
-    if (k.key !== 'tripTime') return { ...k, sub: `${k.sub} · ${coverage}` };
+    if (k.key !== 'tripTime') return k;
     const now = runTimeOver(w.thisWeek.tripTime), before = runTimeOver(w.lastWeek.tripTime);
     if (now == null) return k;
     return {
       ...k,
       value: pctSigned(now),
-      sub: `${now >= 0 ? 'longer' : 'shorter'} than the timetable, the average trip · ${coverage}`,
+      sub: `${now >= 0 ? 'longer' : 'shorter'} than the timetable, the average trip`,
       delta: w.comparable ? kpiDelta('tripTime', now, before, true, true) : null,
       lastWeekText: before != null ? pctSigned(before) : null,
     };
