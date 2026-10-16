@@ -1,10 +1,13 @@
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
 import { dateRangeText, rankStops, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import DataTable from './components/ui/DataTable';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
+import RouteStrip, { routeStripFromV3, type RouteStripMode } from './components/Live/RouteStrip';
+import Pill from './components/ui/Pill';
+import { syncUrlParams } from './utils/syncUrlParams';
 import { PAGE_ACTION, TILE } from './pageStyles';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -156,6 +159,37 @@ function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: num
   );
 }
 
+/** Each direction as a line of stops coloured by typical delay or by bunching, with where it starts marked. */
+function AlongRoute({ v3, band, dir, uncertain }: { v3: LiveV3; band: DashboardBand; dir: number | null; uncertain: UncertainStart[] }) {
+  const [mode, setMode] = useState<RouteStripMode>(() => (new URLSearchParams(window.location.search).get('strip') === 'bunching' ? 'bunching' : 'delay'));
+  useEffect(() => { syncUrlParams({ strip: mode === 'bunching' ? 'bunching' : null }); }, [mode]);
+  const dirs = useMemo(() => dirsOf(v3, dir).map(d => routeStripFromV3(v3, d, band, uncertain)).filter(d => d.stops.length > 1), [v3, dir, band, uncertain]);
+  return (
+    <section aria-labelledby="dash-strip" className="mt-10">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <h2 id="dash-strip" className="text-xl font-black tracking-tight">Along the route</h2>
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Colour the stops by">
+          <Pill size="segment" selected={mode === 'delay'} onClick={() => setMode('delay')}>Delay</Pill>
+          <Pill size="segment" selected={mode === 'bunching'} onClick={() => setMode('bunching')}>Bunching</Pill>
+        </div>
+      </div>
+      <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
+        {mode === 'delay' ? 'Each stop coloured by how late cars typically leave it' : 'Each stop coloured by the share of gaps between cars that are too close or too far apart'} {BAND_WORDS[band]}. Hover or tap a stop for its figures.
+      </p>
+      {dirs.length ? (
+        <div className="mt-4 grid gap-x-8 gap-y-8">
+          {dirs.map(d => (
+            <div key={d.directionId} className="min-w-0">
+              <h3 className="text-base font-black">{d.label}</h3>
+              <RouteStrip className="mt-2" stops={d.stops} mode={mode} directionLabel={d.label} delaysStart={d.delaysStart} bunchingForms={d.bunchingForms} />
+            </div>
+          ))}
+        </div>
+      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">No stops were measured for this choice.</p>}
+    </section>
+  );
+}
+
 function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; toFull: (hash: string) => void }) {
   const top = useMemo(() => rankStops(data.stops, dir, uncertain).slice(0, 5), [data, dir, uncertain]);
   return (
@@ -184,12 +218,10 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
   );
 }
 
-export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, strip, toFull }: {
+export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, toFull }: {
   v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[]; note: string | null; title: string;
   /** The direction and time-of-day pills: they sit below the week figures, above the parts they change. */
   filters: ReactNode;
-  /** The route strip, when it is available. */
-  strip?: ReactNode;
   toFull: (hash: string) => void;
 }) {
   const summary = useMemo(() => { try { return summaryText(v3, title); } catch { return null; } }, [v3, title]);
@@ -202,7 +234,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
         <p className="mt-3 text-sm text-[var(--text-muted)]">Everything below follows these choices. The figures above are the whole week, both directions, all day.</p>
         {filters}
       </div>
-      {strip && <ErrorBoundary label={bad('The route strip')}>{strip}</ErrorBoundary>}
+      <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} band={band} dir={dir} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
       <section className="mt-10 grid gap-x-8 gap-y-10 lg:grid-cols-3" aria-label="Trip time and the stops most often late">
         <ErrorBoundary label={bad('Trip time')}><TripTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
