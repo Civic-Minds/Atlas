@@ -23,6 +23,31 @@ These are the rules for "every N min or less". Read this before touching frequen
 
 The map reads PMTiles. A change to these rules reaches the live map only after a PMTiles rebuild. Changes to how processing measures headways also need a reprocess of every agency first.
 
+## Thresholds and where they were decided
+
+These are settled; don't change them without a new decision (Ryan, 2026-10-15).
+
+**A. Tier tolerance** (how much a tier may bend and still count). Decided 2026-10-03 to 2026-10-06 in #567 (parent), #568 (edge gaps), #570 (hard gaps) and #571 (census of 1,160 archives), with the decisions in the issue comments. Shipped in 75c2d842 (PR #584). Decision log: `docs/engineering/pipeline-studies/frequency-tier-methodology-2026-10/INDEX.md`, section "Decision log".
+
+| What | Value | Code |
+|---|---|---|
+| Near-miss share (`violationPercentByTier`) | 10% for the 5, 8, 10 and 15 minute tiers; 5% for the 20, 30 and 60 minute tiers | `pipeline/transit-phase2.ts` |
+| Near-miss floor and cap (`maxGraceViolations`) | 0, with a cap of three gaps | `pipeline/transit-phase2.ts` |
+| Edge gap allowance (`EDGE_GAP_ALLOWANCE_MINUTES`) | 10 minutes over the tier, for each true service edge (not window boundaries); each edge uses one near-miss slot | `pipeline/transit-phase2.ts` |
+| Hard-gap grace | the larger of 5 minutes and 15% of the tier; no bigger allowance turns a large internal gap into a near miss | `pipeline/transit-phase2.ts` |
+| Minimum evidence | 3 departures; 4 after an edge allowance | `pipeline/transit-phase2.ts` |
+
+**B. Steadiness checks** (is the median a fair description of the gaps).
+
+| Constant | Value | Decided in |
+|---|---|---|
+| `MIN_UNSUSTAINED_EXCESS_MINUTES` | 15 | 1ab8ec57, #345 |
+| `MIN_UNSUSTAINED_RATIO` | 1.7 | b1dfb752, #345 |
+| `BOUNDARY_DOMINANT_RATIO` | 8 | a267472a, #299 |
+| `PERIOD_COVERAGE_MAX_HEADWAY` | 60 | 33758d8b and 5be33998, #524 |
+
+The first three live in `pipeline/headway-utils.ts`, the last in `shared/periodEligibility.ts`.
+
 ## Checks
 
 - Real-route regression tests, using frozen copies of real data (`scripts/__fixtures__/headway-filter-routes.json`) in `src/utils/__tests__/routeHeadwayFilter.test.ts`:

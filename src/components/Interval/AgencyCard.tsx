@@ -511,7 +511,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           </p>
           {FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug) && (
             <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-              <ArrowLink size="xs" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>
+              <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>
               {(() => { const area = areaLinkFor(agency.slug, FEATURES.agencyPages); return area && <a href={area.href} className="text-[var(--accent)] hover:underline">{area.label}</a>; })()}
             </p>
           )}
