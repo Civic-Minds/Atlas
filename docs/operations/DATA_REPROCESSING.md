@@ -54,6 +54,23 @@ A reprocess does not leave the refresh handoff marker that `build-pmtiles` norma
 
 These commands write public R2 data. Get explicit approval immediately before running the `--write` or publish commands.
 
+## Running it on GitHub Actions
+
+The same sequence runs in the cloud, so a full rebuild does not need a laptop. The `Rebuild data release` workflow (`.github/workflows/rebuild-release.yml`) is manual only and uses the same R2 secrets as `refresh-feeds.yml`. It runs once it is on main.
+
+```bash
+# Dry run: reprocess + PMTiles dry run. Writes nothing to R2.
+gh workflow run rebuild-release.yml -f ref=<branch or SHA> -f mode=dry-run
+# Publish: reprocess --write, build-pmtiles, verify, build-history, publish-data-release
+gh workflow run rebuild-release.yml -f ref=main -f mode=publish -f allow="communitytransit:drop"
+```
+
+- **Inputs:** `ref` (default `main`), `mode` (`dry-run` default, or `publish`), `allow` (space-separated `<slug>:<flag>`, passed to the reprocess and to `publish-data-release`), `concurrency` (agencies in parallel, 1-4, default 2), `start_at` (publish only).
+- **Dry run:** uploads `tmp/derived-reprocess/report.json` and the release diff (`tmp/release-diff/*.md`, `*.json`) as the run's `rebuild-report-*` artifact. Read it before publishing, then repeat each reviewed `--allow` in the publish run.
+- **Publish:** refuses unless `ref` is the current tip of main. It also opens the same two small pull requests the weekly refresh does (feed expiry stamps, agency pages) and auto-merges the agency pages one.
+- **No overlap:** it shares the `atlas-data-release` concurrency group with the weekly refresh, so the two queue behind each other and never run at once. Do not start a publish run close to Monday 06:00 UTC.
+- **Time:** one job with a 345 minute limit (GitHub's cap is 360). The last local full run was about 55 minutes of reprocess plus the tile build. If a run ever stops part way, run it again with `start_at`: `pmtiles` (agency artifacts are already in R2), `history`, or `publish`. Every stage is safe to repeat.
+
 ## Release diff gate
 
 `refresh` (and so `refresh-release`), `reprocess-derived-artifacts --write` and `publish-data-release` all run one shared check (`pipeline/releaseDiff.ts`, [#671](https://github.com/Civic-Minds/Atlas/issues/671)) before any R2 write. It compares each agency's new output with what is live and writes a report to `tmp/release-diff/<run-id>.md` and `.json` (for publish, the run ID is the release ID), then prints a short summary.

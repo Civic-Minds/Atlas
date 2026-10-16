@@ -1,0 +1,312 @@
+name: Rebuild data release
+
+# Heavy full rebuild of every agency's derived data (a shared process-core change), run on a
+# GitHub runner instead of a laptop. Manual only; see docs/operations/DATA_REPROCESSING.md.
+#
+#   gh workflow run rebuild-release.yml -f ref=main -f mode=dry-run
+#   gh workflow run rebuild-release.yml -f ref=main -f mode=publish -f allow="communitytransit:drop"
+#
+# dry-run: reprocess + PMTiles dry run, uploads the report and the release diff as artifacts.
+#          Writes nothing to R2.
+# publish: reprocess --write -> build-pmtiles -> verify-pmtiles-remote -> build-history ->
+#          publish-data-release. Refuses unless `ref` is the current tip of main.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag or SHA to build from. Publish mode only accepts the current tip of main.'
+        required: false
+        default: main
+        type: string
+      mode:
+        description: 'dry-run writes nothing to R2. publish writes agency artifacts and makes the release live.'
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - publish
+      allow:
+        description: 'Space-separated reviewed release-gate overrides, each <slug>:<flag> (e.g. "communitytransit:drop"). Passed to the reprocess and publish steps. Review the dry-run report first.'
+        required: false
+        type: string
+      concurrency:
+        description: 'Agencies reprocessed in parallel (1-4). The runner has 16 GB; 2 matches the local run.'
+        required: false
+        default: '2'
+        type: string
+      start_at:
+        description: 'Publish mode only. Resume a run that stopped part way: reprocess (everything), pmtiles (agency data already written to R2), history, or publish.'
+        required: false
+        default: reprocess
+        type: choice
+        options:
+          - reprocess
+          - pmtiles
+          - history
+          - publish
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+
+# Same group as the weekly refresh (refresh-feeds.yml): the two can never run at once, because
+# overlapping runs could publish tiles and agency data from different builds. Queue, never
+# cancel, so a run that is mid-upload always finishes.
+concurrency:
+  group: atlas-data-release
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    # GitHub's hard limit is 360 minutes. The last local full run was about 55 minutes of
+    # reprocess plus the tile build; if a run ever approaches the limit, rerun with start_at
+    # to continue from the stage that was running (each stage is safe to repeat).
+    timeout-minutes: 345
+    env:
+      MODE: ${{ inputs.mode }}
+      START_AT: ${{ inputs.mode == 'publish' && inputs.start_at || 'reprocess' }}
+      ALLOW_INPUT: ${{ inputs.allow }}
+      CONCURRENCY_INPUT: ${{ inputs.concurrency }}
+      NODE_OPTIONS: --max-old-space-size=8192
+    steps:
+      - name: Check the inputs
+        run: |
+          [[ "$CONCURRENCY_INPUT" =~ ^[1-4]$ ]] || { echo "concurrency must be 1-4, got: $CONCURRENCY_INPUT"; exit 1; }
+          for pair in $ALLOW_INPUT; do
+            [[ "$pair" =~ ^[a-z0-9-]+:[a-z-]+$ ]] || { echo "Bad allow value: $pair (expected <slug>:<flag>)"; exit 1; }
+          done
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || 'main' }}
+
+      # Publishing rebuilds the live map, so it only ever builds the code that is on main.
+      - name: Publish mode builds main only
+        if: inputs.mode == 'publish'
+        run: |
+          git fetch --no-tags --depth=1 origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "Refusing to publish: ref '${{ inputs.ref }}' is $(git rev-parse --short HEAD), main is $(git rev-parse --short FETCH_HEAD)."
+            echo "Merge the work to main and run again with ref=main, or use mode=dry-run for a branch."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit && npx tsc --noEmit -p tsconfig.api.json
+
+      - name: Test
+        if: inputs.mode == 'publish' && env.START_AT == 'reprocess'
+        run: npm run test
+
+      - name: Install tippecanoe
+        run: sudo apt-get install -y tippecanoe
+
+      # ---- Dry run: nothing below this block writes to R2 -------------------------------
+
+      - name: Reprocess every agency (dry run)
+        if: inputs.mode == 'dry-run'
+        run: |
+          allow_args=()
+          for pair in $ALLOW_INPUT; do allow_args+=(--allow "$pair"); done
+          REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" npm run reprocess-derived-artifacts -- "${allow_args[@]}"
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
+          CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
+          GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
+
+      - name: Build PMTiles from the reprocessed data (dry run)
+        if: inputs.mode == 'dry-run'
+        run: npm run build-pmtiles -- --dry-run
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
+          CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
+          GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
+          ATLAS_LOCAL_PREVIEW_DIR: tmp/derived-reprocess
+
+      # ---- Publish: writes to R2 ---------------------------------------------------------
+
+      - name: Reprocess every agency and write the artifacts to R2
+        id: reprocess
+        if: inputs.mode == 'publish' && env.START_AT == 'reprocess'
+        run: |
+          allow_args=()
+          for pair in $ALLOW_INPUT; do allow_args+=(--allow "$pair"); done
+          REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" npm run reprocess-derived-artifacts -- --write "${allow_args[@]}"
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
+          CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
+          GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
+
+      # --write stamps each rebuilt agency's feed expiry in public/data/index.json and
+      # config/agencies/<slug>.json. main is protected, so they go in as a small PR.
+      - name: Open or update the reprocess metadata pull request
+        id: reprocess-pr
+        if: inputs.mode == 'publish' && env.START_AT == 'reprocess'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: reprocess feed expiry stamps"
+          title: "chore: reprocess feed expiry stamps"
+          body: |
+            Automated: feed expiry metadata stamped by a full reprocess (rebuild-release workflow).
+          branch: automation/reprocess-metadata
+          delete-branch: true
+          labels: data-quality,pipeline
+
+      # create-pull-request resets this checkout to origin/main; put the stamped files back so
+      # the tiles and the release are built from what the reprocess wrote.
+      - name: Restore the stamped files after the pull request step
+        if: inputs.mode == 'publish' && env.START_AT == 'reprocess'
+        env:
+          REPROCESS_HEAD_SHA: ${{ steps.reprocess-pr.outputs.pull-request-head-sha }}
+        run: |
+          if [ -n "$REPROCESS_HEAD_SHA" ]; then
+            git checkout "$REPROCESS_HEAD_SHA" -- .
+            git reset --quiet
+          fi
+          git diff --shortstat
+
+      # A reprocess leaves no refresh handoff marker, so this intentional repack needs
+      # --allow-stale-data (docs/operations/DATA_REPROCESSING.md).
+      - name: Build and upload the PMTiles release (not public yet)
+        if: inputs.mode == 'publish' && (env.START_AT == 'reprocess' || env.START_AT == 'pmtiles')
+        run: npm run build-pmtiles -- --allow-stale-data
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
+          CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
+          GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
+
+      - name: Verify the uploaded release
+        if: inputs.mode == 'publish' && (env.START_AT == 'reprocess' || env.START_AT == 'pmtiles')
+        run: npm run verify-pmtiles-remote
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
+          CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
+          GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
+
+      - name: Rebuild history config
+        if: inputs.mode == 'publish' && env.START_AT != 'publish'
+        run: npm run build-history
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
+          CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
+          GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
+
+      # Repeat every --allow accepted during the reprocess: publish compares the whole release
+      # with the public one again.
+      - name: Publish the verified data release
+        id: publish
+        if: inputs.mode == 'publish'
+        run: |
+          allow_args=()
+          for pair in $ALLOW_INPUT; do allow_args+=(--allow "$pair"); done
+          npm run publish-data-release -- "${allow_args[@]}"
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
+          CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
+          GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
+
+      # publish-data-release regenerates shared/data/agency-pages*.json from the new release.
+      # Agency pages are prerendered from those committed files, so they go in as a small PR
+      # exactly as the weekly refresh does (CI is dispatched on the branch, then auto-merge).
+      - name: Read the published release id
+        id: agency-pages-release
+        if: inputs.mode == 'publish'
+        run: echo "id=$(node -p "require('./shared/data/agency-pages.json').releaseId")" >> "$GITHUB_OUTPUT"
+
+      - name: Open agency pages pull request
+        id: agency-pages-pr
+        if: inputs.mode == 'publish'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          add-paths: |
+            shared/data/agency-pages.json
+            shared/data/agency-page-slugs.json
+          commit-message: "Regenerate agency pages for release-${{ steps.agency-pages-release.outputs.id }}"
+          title: "Regenerate agency pages for release-${{ steps.agency-pages-release.outputs.id }}"
+          body: |
+            Automated: agency page data regenerated from the data release that was just published, so agency pages match the live map.
+          branch: automation/agency-pages
+          delete-branch: true
+          labels: data-quality,pipeline
+
+      - name: Run CI on the agency pages branch
+        if: inputs.mode == 'publish' && steps.agency-pages-pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run ci.yml --ref automation/agency-pages
+
+      - name: Auto-merge agency pages pull request once checks pass
+        if: inputs.mode == 'publish' && steps.agency-pages-pr.outputs.pull-request-number != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge "${{ steps.agency-pages-pr.outputs.pull-request-number }}" --auto --squash
+
+      # ---- Reports (both modes, even when a step failed) ---------------------------------
+
+      - name: Upload the reprocess report and release diff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rebuild-report-${{ inputs.mode }}-${{ github.run_id }}
+          path: |
+            tmp/derived-reprocess/report.json
+            tmp/release-diff/*.md
+            tmp/release-diff/*.json
+          if-no-files-found: warn
+          retention-days: 30
