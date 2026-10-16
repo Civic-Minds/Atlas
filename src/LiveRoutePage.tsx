@@ -487,7 +487,7 @@ export function Method({ data }: { data: Ready }) {
         <li>Window: the last {v3.window.days} service days ({first} to {last}); {v3.totals.runs.toLocaleString()} trips and {v3.totals.stopPassages.toLocaleString()} stop departures. Built {data.generatedAt.slice(0, 10)}.</li>
         <li>Delay at a stop is how late the vehicle left it compared with the timetable. The agency does not report delays, so we work them out from where each vehicle was seen (about once a minute) and estimate the moment it left the stop.</li>
         <li>Vehicles are matched to timetable trips by trip number. If a trip is 15+ minutes off its own slot but another trip fits within 3 minutes at most stops, it is counted as that trip; otherwise it is left out.</li>
-        <li>Because vehicles are seen only about once a minute, {pct(v3.uncertainty.nearCutoffShare)} of departures at stops with a scheduled time are within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit, and could land on either side of it.</li>
+        <li>Because vehicles are seen only about once a minute, {pct(v3.uncertainty.nearCutoffShare)} of trips leaving the end of the line are within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit, and could land on either side of it.</li>
         <li>Late means {v3.thresholds.lateAtOrAboveMin}+ minutes after the timetable; ahead means {Math.abs(v3.thresholds.earlyAtOrBelowMin)}+ minutes before it. These are the same limits the Live map uses.</li>
         {v3.leftOut && (v3.leftOut.noTimetableTrip > 0 || v3.leftOut.excluded > 0) && (
           <li>
