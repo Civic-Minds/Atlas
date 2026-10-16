@@ -11,6 +11,14 @@ export interface DataTableColumn<T> {
   rowHeader?: boolean;
   /** Fixed layout only: width in rem. Defaults to FIXED_FIRST_COLUMN_REM for the first column, FIXED_COLUMN_REM for the rest. */
   width?: number;
+  /** The header sorts the table (with the table's `sort` and `onSort`). */
+  sortable?: boolean;
+}
+
+/** Which column the rows are sorted by. `reversed` is the second click: the table's own default order turned round. */
+export interface DataTableSort {
+  key: string;
+  reversed: boolean;
 }
 
 /**
@@ -62,6 +70,15 @@ interface DataTableProps<T> {
    * Without it, each table sizes its columns to its own content.
    */
   fixed?: boolean;
+  /**
+   * Fixed layout that fills its container: the first column keeps its set width and the others share the rest equally,
+   * never narrower than their set widths. For a page whose other blocks span the full content width.
+   */
+  fill?: boolean;
+  /** Current sort, for the sortable columns' arrow and aria-sort. */
+  sort?: DataTableSort;
+  /** Called with a sortable column's key when its header is clicked (or Enter / Space on it). */
+  onSort?: (key: string) => void;
 }
 
 /** Width of the first column in a fixed-layout table. One value for every table, so they all line up. */
@@ -70,25 +87,32 @@ export const FIXED_FIRST_COLUMN_REM = 16;
 export const FIXED_COLUMN_REM = 8;
 
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false }: DataTableProps<T>) {
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false, fill = false, sort, onSort }: DataTableProps<T>) {
   const v = VARIANTS[variant];
   const widths = columns.map((col, i) => col.width ?? (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
   const pad = (i: number) => (v.gap && i < columns.length - 1 ? ' pr-4' : '');
   return (
     <table
       className={fixed ? `${v.table} table-fixed` : v.table}
-      style={fixed ? { width: `${widths.reduce((a, b) => a + b, 0)}rem` } : undefined}
+      style={fixed ? (fill ? { width: '100%', minWidth: `${widths.reduce((a, b) => a + b, 0)}rem` } : { width: `${widths.reduce((a, b) => a + b, 0)}rem` }) : undefined}
     >
       {caption && <caption className="sr-only">{caption}</caption>}
       {fixed && (
         <colgroup>
-          {columns.map((col, i) => <col key={col.key} style={{ width: `${widths[i]}rem` }} />)}
+          {columns.map((col, i) => <col key={col.key} style={fill && i > 0 ? undefined : { width: `${widths[i]}rem` }} />)}
         </colgroup>
       )}
       <thead className={v.thead}>
         <tr className={v.headRow}>
           {columns.map((col, i) => (
-            <th key={col.key} scope="col" className={`${v.th}${pad(i)}`}>{col.header}</th>
+            col.sortable && onSort ? (
+              <th key={col.key} scope="col" className={`${v.th}${pad(i)}`} aria-sort={sort?.key === col.key ? (sort.reversed ? 'ascending' : 'descending') : 'none'}>
+                <button type="button" onClick={() => onSort(col.key)} className="inline-flex items-center gap-1 font-[inherit] hover:underline">
+                  {col.header}
+                  <span aria-hidden="true" className={`text-[0.7em] ${sort?.key === col.key ? '' : 'invisible'}`}>{sort?.key === col.key && sort.reversed ? '▲' : '▼'}</span>
+                </button>
+              </th>
+            ) : <th key={col.key} scope="col" className={`${v.th}${pad(i)}`}>{col.header}</th>
           ))}
         </tr>
       </thead>

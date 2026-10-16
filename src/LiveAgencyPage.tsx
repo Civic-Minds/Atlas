@@ -18,7 +18,6 @@ import { shortStopName } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
-import Pill from './components/ui/Pill';
 import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
@@ -78,29 +77,35 @@ function RoutesTable({ s }: { s: AgencySummary }) {
     const v = new URLSearchParams(window.location.search).get('sort');
     return SORTS.some(([k]) => k === v) ? v as Sort : 'late';
   });
+  const [reversed, setReversed] = useState(false);
   useEffect(() => { syncUrlParams({ sort: sort === 'late' ? null : sort }); }, [sort]);
-  const rows = [...s.routes].sort((a, b) => sortValue(sort, b) - sortValue(sort, a) || a.route.localeCompare(b.route, undefined, { numeric: true }));
+  // A header click sorts worst first; clicking the sorted header again turns the order round.
+  const onSort = (key: string) => {
+    const next = SORTS.find(([k]) => k === key)?.[0];
+    if (!next) return;
+    if (next === sort) setReversed(r => !r); else { setSort(next); setReversed(false); }
+  };
+  const rows = [...s.routes].sort((a, b) => (reversed ? -1 : 1) * (sortValue(sort, b) - sortValue(sort, a)) || a.route.localeCompare(b.route, undefined, { numeric: true }));
   return (
     <>
-      <div className="mt-4 flex flex-wrap items-center gap-1.5" role="group" aria-label="Sort routes by">
-        <span className="mr-1 text-sm text-[var(--text-muted)]">Worst first by</span>
-        {SORTS.map(([k, label]) => <Pill key={k} size="segment" selected={sort === k} onClick={() => setSort(k)}>{label}</Pill>)}
-      </div>
       {routesByMode(rows.map(r => ({ ...r, mode: r.mode ?? 3 }))).map(group => (
         <div key={group.mode} className="mt-4 overflow-x-auto">
           <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
           <DataTable
             caption={`${group.label} ${group.routes.length}`}
             fixed
+            fill
+            sort={{ key: sort, reversed }}
+            onSort={onSort}
             rows={group.routes}
             rowKey={r => r.route}
             columns={[
               { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
-              { key: 'late', header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} departures at timepoints this week`}>{pct(r.lateShare)}</span> },
+              { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} departures at timepoints this week`}>{pct(r.lateShare)}</span> },
               { key: 'lastWeek', header: 'Last week', className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
-              { key: 'runTime', header: 'Run time', cell: r => pctSigned(r.runTimeOver) },
-              { key: 'bunching', header: 'Bunching', cell: r => pct(r.bunchingShare) },
-              { key: 'delivered', header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
+              { key: 'runTime', sortable: true, header: 'Run time', cell: r => pctSigned(r.runTimeOver) },
+              { key: 'bunching', sortable: true, header: 'Bunching', cell: r => pct(r.bunchingShare) },
+              { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
             ]}
           />
         </div>
