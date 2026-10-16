@@ -51,6 +51,11 @@ on:
         required: false
         type: string
 
+# Processing output depends on the machine's timezone, and the runners are UTC: pin the zone
+# everything was reviewed on until the date math is timezone independent.
+env:
+  TZ: America/Toronto
+
 # Same group as the weekly refresh (refresh-feeds.yml): the two can never run at once, because
 # overlapping runs could publish tiles and agency data from different builds. Queue, never
 # cancel, so a run that is mid-upload always finishes.
@@ -106,6 +111,16 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      # The processing date math uses the machine's local time (pipeline/transit-calendar.ts,
+      # process-core.ts), so output depends on the timezone. Everything was reviewed on Toronto time.
+      - name: Check the timezone
+        run: |
+          date
+          echo "TZ=$TZ"
+          zone="$(node -p "Intl.DateTimeFormat().resolvedOptions().timeZone")"
+          echo "node timezone: $zone"
+          [ "$zone" = "America/Toronto" ] || { echo "Expected America/Toronto"; exit 1; }
 
       - name: Type check
         run: npx tsc --noEmit && npx tsc --noEmit -p tsconfig.api.json
@@ -270,6 +285,16 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      # The processing date math uses the machine's local time (pipeline/transit-calendar.ts,
+      # process-core.ts), so output depends on the timezone. Everything was reviewed on Toronto time.
+      - name: Check the timezone
+        run: |
+          date
+          echo "TZ=$TZ"
+          zone="$(node -p "Intl.DateTimeFormat().resolvedOptions().timeZone")"
+          echo "node timezone: $zone"
+          [ "$zone" = "America/Toronto" ] || { echo "Expected America/Toronto"; exit 1; }
 
       - name: Type check
         run: npx tsc --noEmit && npx tsc --noEmit -p tsconfig.api.json
