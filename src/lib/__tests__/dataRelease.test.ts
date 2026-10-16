@@ -51,7 +51,7 @@ describe('data releases', () => {
 
   it('rejects a release whose tiles were built under rules this app does not accept', () => {
     expect(isCompatibleDataRelease({ ...complete, tileRulesVersion: TILE_RULES_VERSION })).toBe(true);
-    for (const version of [0, 1, 2, 5]) expect(isCompatibleDataRelease({ ...complete, tileRulesVersion: version })).toBe(false);
+    for (const version of [0, 1, 2, 3, 6]) expect(isCompatibleDataRelease({ ...complete, tileRulesVersion: version })).toBe(false);
     expect(isCompatibleDataRelease({ ...complete, tileRulesVersion: 'x' as unknown as number })).toBe(false);
   });
 

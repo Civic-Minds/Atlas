@@ -1,0 +1,441 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+507,1,50811024,East - 507 Long Branch Replacement Bus towards Humber,,0,2234213,1122908,1,1
+507,1,50811023,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122908,1,1
+507,1,50811022,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122908,1,1
+507,1,50811021,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122908,1,1
+507,1,50811020,East - 507 Long Branch Replacement Bus towards Humber,,0,2234212,1122908,1,1
+507,1,50811051,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50811050,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811049,East - 507 Long Branch Replacement Bus towards Humber,,0,2234213,1122906,1,1
+507,1,50811077,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811048,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50811047,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811076,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811046,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811045,East - 507 Long Branch Replacement Bus towards Humber,,0,2234212,1122906,1,1
+507,1,50811044,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50811075,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811043,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811042,East - 507 Long Branch Replacement Bus towards Humber,,0,2234213,1122906,1,1
+507,1,50811019,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122908,1,1
+507,1,50811074,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811041,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50811040,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811018,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122908,1,1
+507,1,50811039,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811073,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811094,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811093,East - 507 Long Branch Replacement Bus towards Humber,,0,2234212,1122906,1,1
+507,1,50811016,East - 507 Long Branch Replacement Bus towards Humber,,0,2234211,1122907,1,1
+507,1,50811092,East - 507 Long Branch Replacement Bus towards Humber,,0,2234203,1122906,1,1
+507,1,50811091,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50811072,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811090,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811089,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50811071,East - 507 Long Branch Replacement Bus towards Humber,,0,2234211,1122907,1,1
+507,1,50811088,East - 507 Long Branch Replacement Bus towards Humber,,0,2234213,1122906,1,1
+507,1,50811087,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50811070,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811086,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811085,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811069,East - 507 Long Branch Replacement Bus towards Humber,,0,2234211,1122907,1,1
+507,1,50811084,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811083,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811027,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811082,East - 507 Long Branch Replacement Bus towards Humber,,0,2234212,1122906,1,1
+507,1,50811081,East - 507 Long Branch Replacement Bus towards Humber,,0,2234203,1122906,1,1
+507,1,50811080,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50811068,East - 507 Long Branch Replacement Bus towards Humber,,0,2234211,1122907,1,1
+507,1,50811079,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811078,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50811067,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811052,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,S,0,2234213,1122909,1,1
+507,1,50810991,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50810990,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50810989,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811066,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50810988,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50810987,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50810986,East - 507 Long Branch Replacement Bus towards Humber,,0,2234203,1122906,1,1
+507,1,50811065,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50810985,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50810984,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50810983,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50811064,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50810982,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50810981,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50810980,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811063,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50810979,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50810978,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50810977,East - 507 Long Branch Replacement Bus towards Humber,,0,2234203,1122906,1,1
+507,1,50811062,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50810976,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50810975,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50810974,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50811061,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50810973,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50810972,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50810971,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811060,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50810970,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50810969,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50810968,East - 507 Long Branch Replacement Bus towards Humber,,0,2234203,1122906,1,1
+507,1,50810967,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50811059,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50810966,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50810965,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50810964,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50811058,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811111,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811110,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811109,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811057,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811108,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811107,East - 507 Long Branch Replacement Bus towards Humber,,0,2234203,1122906,1,1
+507,1,50811106,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50811056,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811105,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811104,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50811103,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50811055,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811102,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811101,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811100,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811054,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811099,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811098,East - 507 Long Branch Replacement Bus towards Humber,,0,2234203,1122906,1,1
+507,1,50811017,East - 507 Long Branch Replacement Bus towards Humber,,0,2234208,1122908,1,1
+507,1,50811097,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50811053,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811096,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811095,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50811038,East - 507 Long Branch Replacement Bus towards Humber,,0,2234214,1122907,1,1
+507,1,50811015,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50811014,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811037,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811013,East - 507 Long Branch Replacement Bus towards Humber,,0,2234209,1122906,1,1
+507,1,50811012,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811011,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811026,East - 507 Long Branch Replacement Bus towards Humber,,0,2234214,1122907,1,1
+507,1,50811010,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811009,East - 507 Long Branch Replacement Bus towards Humber,,0,2234208,1122906,1,1
+507,1,50811036,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811008,East - 507 Long Branch Replacement Bus towards Humber,,0,2234203,1122906,1,1
+507,1,50811007,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50811035,East - 507 Long Branch Replacement Bus towards Humber,,0,2234214,1122907,1,1
+507,1,50811006,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811005,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50811034,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811004,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50811003,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811033,East - 507 Long Branch Replacement Bus towards Humber,,0,2234214,1122907,1,1
+507,1,50811002,East - 507 Long Branch Replacement Bus towards Humber,,0,2234209,1122906,1,1
+507,1,50811001,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811032,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811000,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50810999,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811031,East - 507 Long Branch Replacement Bus towards Humber,,0,2234214,1122907,1,1
+507,1,50810998,East - 507 Long Branch Replacement Bus towards Humber,,0,2234208,1122906,1,1
+507,1,50810997,East - 507 Long Branch Replacement Bus towards Humber,,0,2234203,1122906,1,1
+507,1,50810996,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50811030,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50810995,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50810994,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50811029,East - 507 Long Branch Replacement Bus towards Humber,,0,2234214,1122907,1,1
+507,1,50810993,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50810992,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811028,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811118,East - 507 Long Branch Replacement Bus towards Humber,,0,2234209,1122906,1,1
+507,1,50811117,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811025,East - 507 Long Branch Replacement Bus towards Humber,,0,2234214,1122907,1,1
+507,1,50811116,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811115,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811136,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811114,East - 507 Long Branch Replacement Bus towards Humber,,0,2234208,1122906,1,1
+507,1,50811113,East - 507 Long Branch Replacement Bus towards Humber,,0,2234203,1122906,1,1
+507,1,50811135,East - 507 Long Branch Replacement Bus towards Humber,,0,2234214,1122907,1,1
+507,1,50811112,East - 507 Long Branch Replacement Bus towards Humber,,0,2234202,1122906,1,1
+507,1,50811183,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811134,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811182,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50811181,East - 507 Long Branch Replacement Bus towards Humber,,0,2234199,1122906,1,1
+507,1,50811180,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811140,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,S,0,2234209,1122909,1,1
+507,1,50811133,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811179,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811178,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811177,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811132,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811176,East - 507 Long Branch Replacement Bus towards Humber,,0,2234208,1122906,1,1
+507,1,50811142,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,S,0,2234202,1122909,1,1
+507,1,50811175,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811174,East - 507 Long Branch Replacement Bus towards Humber,,0,2234200,1122906,1,1
+507,1,50811131,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811173,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811172,East - 507 Long Branch Replacement Bus towards Humber,,0,2234206,1122906,1,1
+507,1,50811171,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811130,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811170,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811169,East - 507 Long Branch Replacement Bus towards Humber,,0,2234208,1122906,1,1
+507,1,50811168,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811129,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811167,East - 507 Long Branch Replacement Bus towards Humber,,0,2234192,1122906,1,1
+507,1,50811139,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,S,0,2234200,1122909,1,1
+507,1,50811166,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811137,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,S,0,2234206,1122909,1,1
+507,1,50811128,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811165,East - 507 Long Branch Replacement Bus towards Humber,,0,2234193,1122906,1,1
+507,1,50811164,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811163,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811127,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811162,East - 507 Long Branch Replacement Bus towards Humber,,0,2234194,1122906,1,1
+507,1,50811138,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,S,0,2234208,1122909,1,1
+507,1,50811161,East - 507 Long Branch Replacement Bus towards Humber,,0,2234201,1122906,1,1
+507,1,50811126,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811160,East - 507 Long Branch Replacement Bus towards Humber,,0,2234192,1122906,1,1
+507,1,50811159,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811158,East - 507 Long Branch Replacement Bus towards Humber,,0,2234193,1122906,1,1
+507,1,50811125,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811157,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811156,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811124,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811155,East - 507 Long Branch Replacement Bus towards Humber,,0,2234194,1122906,1,1
+507,1,50811154,East - 507 Long Branch Replacement Bus towards Humber,,0,2234192,1122906,1,1
+507,1,50811123,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811153,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811152,East - 507 Long Branch Replacement Bus towards Humber,,0,2234193,1122906,1,1
+507,1,50811122,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811151,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811150,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811121,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811149,East - 507 Long Branch Replacement Bus towards Humber,,0,2234194,1122906,1,1
+507,1,50811148,East - 507 Long Branch Replacement Bus towards Humber,,0,2234192,1122906,1,1
+507,1,50811147,East - 507 Long Branch Replacement Bus towards Humber,,0,2234207,1122906,1,1
+507,1,50811120,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811146,East - 507 Long Branch Replacement Bus towards Humber,,0,2234193,1122906,1,1
+507,1,50811145,East - 507 Long Branch Replacement Bus towards Humber,,0,2234205,1122906,1,1
+507,1,50811119,East - 507 Long Branch Replacement Bus towards Humber,,0,2234210,1122907,1,1
+507,1,50811144,East - 507 Long Branch Replacement Bus towards Humber,,0,2234204,1122906,1,1
+507,1,50811143,East - 507 Long Branch Replacement Bus towards Humber,,0,2234194,1122906,1,1
+507,1,50811141,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,S,0,2234204,1122909,1,1
+507,1,50811233,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234213,1122912,1,1
+507,1,50811243,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122915,1,1
+507,1,50811232,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811242,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122915,1,1
+507,1,50811231,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811344,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811230,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811229,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234212,1122912,1,1
+507,1,50811343,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811228,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811227,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811226,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234213,1122912,1,1
+507,1,50811342,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811225,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811224,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811341,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811223,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811222,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234212,1122912,1,1
+507,1,50811221,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811340,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811220,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811241,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122915,1,1
+507,1,50811371,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811370,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234213,1122912,1,1
+507,1,50811240,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234203,1122915,1,1
+507,1,50811369,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811339,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811368,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811367,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811338,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234211,1122913,1,1
+507,1,50811366,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811365,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811337,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811364,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234212,1122912,1,1
+507,1,50811363,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234203,1122912,1,1
+507,1,50811336,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234211,1122913,1,1
+507,1,50811362,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811361,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811335,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811360,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811359,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234213,1122912,1,1
+507,1,50811358,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811334,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234211,1122913,1,1
+507,1,50811187,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811186,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811333,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811185,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811201,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234211,1122913,1,1
+507,1,50811184,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811260,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,,1,2234212,1122914,1,1
+507,1,50811403,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234203,1122912,1,1
+507,1,50811257,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811402,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811401,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811400,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811256,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811399,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811398,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811397,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811255,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811396,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811395,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811394,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234203,1122912,1,1
+507,1,50811254,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811393,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811392,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811391,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811253,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811390,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811389,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811388,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811252,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811387,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811386,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811385,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234203,1122912,1,1
+507,1,50811251,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811384,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811383,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811382,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811381,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811250,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811380,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811379,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811378,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811249,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811377,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811376,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234203,1122912,1,1
+507,1,50811375,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811248,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811374,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811373,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811372,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811247,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811357,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811356,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811355,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811246,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811354,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811353,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234203,1122912,1,1
+507,1,50811352,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811245,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811351,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811350,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811349,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811244,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811348,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811347,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811346,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811218,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811345,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811332,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234208,1122912,1,1
+507,1,50811239,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234209,1122915,1,1
+507,1,50811331,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234203,1122912,1,1
+507,1,50811330,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811217,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234214,1122913,1,1
+507,1,50811329,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811328,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811216,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811327,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811326,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811215,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234214,1122913,1,1
+507,1,50811325,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234209,1122912,1,1
+507,1,50811324,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811214,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811323,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811322,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811213,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234214,1122913,1,1
+507,1,50811321,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234208,1122912,1,1
+507,1,50811320,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234203,1122912,1,1
+507,1,50811212,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811319,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811318,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811211,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234214,1122913,1,1
+507,1,50811317,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811316,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811315,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811210,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811314,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234209,1122912,1,1
+507,1,50811313,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811209,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234214,1122913,1,1
+507,1,50811312,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811311,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811208,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811310,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234208,1122912,1,1
+507,1,50811309,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234203,1122912,1,1
+507,1,50811207,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234214,1122913,1,1
+507,1,50811308,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811307,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811206,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811306,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811305,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234199,1122912,1,1
+507,1,50811205,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234214,1122913,1,1
+507,1,50811304,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811303,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234209,1122912,1,1
+507,1,50811204,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811302,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811301,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811300,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811203,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811299,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234208,1122912,1,1
+507,1,50811258,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,,1,2234203,1122914,1,1
+507,1,50811298,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234202,1122912,1,1
+507,1,50811297,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811202,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811296,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811263,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,,1,2234199,1122914,1,1
+507,1,50811295,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811294,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811200,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811293,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811292,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811291,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234208,1122912,1,1
+507,1,50811199,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811290,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811289,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234200,1122912,1,1
+507,1,50811288,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811198,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811287,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234206,1122912,1,1
+507,1,50811234,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234192,1122915,1,1
+507,1,50811286,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811197,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811285,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811219,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234193,1122915,1,1
+507,1,50811284,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234208,1122912,1,1
+507,1,50811283,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234201,1122912,1,1
+507,1,50811196,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811282,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234192,1122912,1,1
+507,1,50811235,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234194,1122915,1,1
+507,1,50811281,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811280,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234193,1122912,1,1
+507,1,50811195,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811279,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811278,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811194,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811277,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234194,1122912,1,1
+507,1,50811262,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,,1,2234201,1122914,1,1
+507,1,50811276,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234192,1122912,1,1
+507,1,50811193,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811275,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811274,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234193,1122912,1,1
+507,1,50811192,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811273,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811272,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811191,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811271,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234194,1122912,1,1
+507,1,50811270,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234192,1122912,1,1
+507,1,50811190,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811269,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234207,1122912,1,1
+507,1,50811268,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234193,1122912,1,1
+507,1,50811267,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234205,1122912,1,1
+507,1,50811189,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811266,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811265,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234194,1122912,1,1
+507,1,50811188,West - 507M Long Branch Replacement Bus towards Marine Parade,M,1,2234210,1122913,1,1
+507,1,50811264,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234192,1122912,1,1
+507,1,50811259,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,,1,2234207,1122914,1,1
+507,1,50811238,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234193,1122912,1,1
+507,1,50811261,East - 507 Long Branch Replacement Bus Short Turn towards Kipling,,1,2234205,1122914,1,1
+507,1,50811237,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234204,1122912,1,1
+507,1,50811236,West - 507 Long Branch Replacement Bus towards Long Branch,,1,2234194,1122912,1,1

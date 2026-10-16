@@ -1,0 +1,173 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+11364,11364,Progress Ave at Markham Rd East Side,,43.781933,-79.233259,,,,,,1
+13900,13900,Markham Rd at Passmore Ave North Side,,43.831141,-79.250611,,,,,,2
+4241,4241,Kingston Rd at McNab Blvd East Side,,43.728894,-79.227864,,,,,,1
+1555,1555,St Clair Ave East at Brimley Rd West Side,,43.720854,-79.241966,,,,,,1
+4623,4623,St Clair Ave East at Danforth Rd,,43.71665,-79.260259,,,,,,1
+1559,1559,St Clair Ave East at Elfreda Blvd,,43.713659,-79.273123,,,,,,2
+1562,1562,St Clair Ave East at Kennedy Rd,,43.716364,-79.261557,,,,,,2
+5564,5564,Markham Rd at Greencrest Circt North Side,,43.758172,-79.224634,,,,,,1
+13655,13655,9350 Markham Rd,,43.894003,-79.264674,,,,,,1
+13656,13656,Markham Rd at 16th Ave,,43.892174,-79.264278,,,,,,2
+5567,5567,Markham Rd at Kingston Rd,,43.738896,-79.2173,,,,,,1
+12602,12602,Markham Rd at McNicoll Ave,,43.824152,-79.248125,,,,,,2
+4204,4204,Kingston Rd at Bellamy Rd South,,43.732376,-79.224488,,,,,,1
+4469,4469,Markham Rd at Milner Ave,,43.789774,-79.237366,,,,,,1
+13664,13664,Markham Rd at Highglen Ave,,43.851489,-79.254731,,,,,,1
+5580,5580,Markham Rd at Progress Ave,,43.781634,-79.233561,,,,,,2
+13645,13645,Main St Markham North at Springdale Ave,,43.885657,-79.26252,,,,,,1
+5561,5561,Markham Rd at Ellesmere Rd,,43.776283,-79.231507,,,,,,1
+5557,5557,Markham Rd at Cougar Crt,,43.744964,-79.219554,,,,,,1
+13642,13642,Main St Markham North at Robinson St,,43.877739,-79.260689,,,,,,2
+4466,4466,Markham Rd at Eglinton Ave East,,43.74298,-79.21863,,,,,,1
+6115,6115,St Clair Ave East at Linden Ave - Scarborough GO Station,,43.717955,-79.255615,,,,,,1
+1561,1561,St Clair Ave East at Gidley Rd,,43.719424,-79.247666,,,,,,1
+5586,5586,Markham Rd at Tuxedo Crt,,43.779611,-79.233182,,,,,,1
+4269,4269,Kingston Rd at Whitecap Blvd East Side,,43.734323,-79.221794,,,,,,1
+14325,14325,Markham Rd at Edward Jeffreys Ave,,43.896388,-79.265252,,,,,,1
+13657,13657,Main St Markham North at Springdale Ave,,43.885989,-79.262791,,,,,,1
+10841,10841,Markham Rd at Nashdene Rd,,43.820321,-79.246455,,,,,,1
+5558,5558,Markham Rd at Eastpark Blvd,,43.755724,-79.224217,,,,,,1
+1565,1565,St Clair Ave East at Kingston Rd West Side,,43.721913,-79.237176,,,,,,1
+5588,5588,Markham Rd at Verne Cres North Side,,43.79608,-79.239867,,,,,,1
+13701,13701,2260 Markham Rd,,43.810941,-79.24306,,,,,,1
+5571,5571,Markham Rd at Luella St,,43.745213,-79.219916,,,,,,1
+5578,5578,Markham Rd at Pandora Cir,,43.769473,-79.229188,,,,,,1
+13654,13654,Markham Rd at Bur Oak Ave - Mount Joy GO Station,,43.900455,-79.266217,,,,,,2
+14157,14157,7675 Markham Rd,,43.853231,-79.254733,,,,,,1
+11564,11564,Dynamic Dr at Turbina Ave,,43.826754,-79.252028,,,,,,1
+5560,5560,Markham Rd at Ellesmere Rd,,43.776664,-79.232023,,,,,,1
+1560,1560,St Clair Ave East at Fermoy Rd,,43.721461,-79.239054,,,,,,1
+5583,5583,Markham Rd at Sheppard Ave East,,43.794082,-79.239147,,,,,,1
+13700,13700,2275 Markham Rd,,43.810593,-79.242772,,,,,,2
+13636,13636,Markham Rd at Kirkham Dr,,43.851046,-79.254243,,,,,,1
+5568,5568,Markham Rd at Lawrence Ave East,,43.760008,-79.225565,,,,,,1
+1568,1568,St Clair Ave East at Marsh Rd,,43.715953,-79.264399,,,,,,2
+13667,13667,Markham Rd at Elson St,,43.840837,-79.252183,,,,,,1
+13669,13669,Markham Rd at Passmore Ave,,43.830781,-79.250916,,,,,,2
+1556,1556,St Clair Ave East at Cotton Ave,,43.715853,-79.263794,,,,,,2
+13630,13630,Markham Rd at Turbina Ave,,43.827124,-79.249028,,,,,,1
+5573,5573,Markham Rd at McLevin Ave,,43.798401,-79.24081,,,,,,1
+13658,13658,Main St Markham North at Station St - Markham GO Station,,43.882371,-79.26199,,,,,,1
+1554,1554,St Clair Ave East at Birchmount Rd West Side,,43.714145,-79.271838,,,,,,1
+11565,11565,80 Dynamic Dr,,43.824305,-79.251737,,,,,,1
+13660,13660,Main St Markham North at Robinson St South Side,,43.877632,-79.260864,,,,,,1
+13661,13661,Main St Markham North at Highway 7,,43.874234,-79.260028,,,,,,1
+4239,4239,Kingston Rd at Mason Rd,,43.734649,-79.221929,,,,,,1
+13634,13634,Markham Rd at Denison St,,43.844258,-79.252597,,,,,,1
+5574,5574,Markham Rd at Nugget Ave,,43.79875,-79.241345,,,,,,1
+5554,5554,Markham Rd at Brimorton Dr,,43.773367,-79.230476,,,,,,1
+4251,4251,Kingston Rd at Parkcrest Dr,,43.736092,-79.22033,,,,,,1
+4211,4211,Kingston Rd at Cathedral Bluffs Dr,,43.724857,-79.232508,,,,,,1
+4242,4242,Kingston Rd at McNab Blvd,,43.72896,-79.228287,,,,,,1
+14156,14156,7710 Markham Rd,,43.853679,-79.255258,,,,,,1
+1569,1569,St Clair Ave East at Midland Ave,,43.718543,-79.251592,,,,,,1
+5553,5553,Markham Rd at Blakemanor Blvd South Side,,43.750815,-79.222323,,,,,,1
+14155,14155,Markham Rd at Opposite Walkway to Clandfield St,,43.859187,-79.256598,,,,,,1
+5562,5562,Markham Rd at Finch Ave East,,43.813201,-79.243361,,,,,,1
+5581,5581,Markham Rd at Rochman Blvd South Side,,43.76411,-79.227104,,,,,,1
+1566,1566,St Clair Ave East at Linden Ave - Scarborough GO Station,,43.717393,-79.256113,,,,,,2
+5565,5565,Markham Rd at Greencedar Circt,,43.757974,-79.224943,,,,,,1
+6126,6126,St Clair Ave East at Santamonica Blvd,,43.713222,-79.276424,,,,,,1
+1558,1558,St Clair Ave East at Danforth Rd,,43.717085,-79.259368,,,,,,1
+4253,4253,Kingston Rd at Pine Ridge Dr,,43.730112,-79.226453,,,,,,1
+4220,4220,Kingston Rd at Pine Ridge Dr,,43.730572,-79.226452,,,,,,2
+4622,4622,St Clair Ave East at Brimley Rd,,43.720746,-79.241603,,,,,,1
+1571,1571,St Clair Ave East at North Woodrow Blvd,,43.715452,-79.266449,,,,,,1
+9859,9859,Sheppard Ave East at Markham Rd West Side,,43.793838,-79.239638,,,,,,1
+6103,6103,St Clair Ave East at Birchmount Rd East Side,,43.714182,-79.270532,,,,,,1
+4626,4626,St Clair Ave East at Kingston Rd,,43.721743,-79.23683,,,,,,1
+13662,13662,Main St Markham South at Princess St,,43.866676,-79.258372,,,,,,2
+13643,13643,Main St Markham North at Parkway Ave,,43.881208,-79.261486,,,,,,1
+13647,13647,9275 Markham Rd,,43.893776,-79.264383,,,,,,2
+5555,5555,Markham Rd at Brimorton Dr,,43.773714,-79.230844,,,,,,1
+13872,13872,Dynamic Dr at Passmore Ave,,43.829769,-79.253294,,,,,,1
+5584,5584,Markham Rd at Stevenwood Rd North Side,,43.755949,-79.223981,,,,,,1
+5572,5572,Markham Rd at Markanna Dr,,43.740729,-79.218032,,,,,,1
+2860,2860,Markham Rd at Kingston Rd North Side,,43.739442,-79.217165,,,,,,1
+10827,10827,Dynamic Dr at Nashdene Rd North Side,,43.820101,-79.248652,,,,,,1
+10826,10826,Nashdene Rd at Markham Rd West Side,,43.820098,-79.247102,,,,,,1
+5575,5575,Markham Rd at Painted Post Dr,,43.76769,-79.228502,,,,,,1
+13666,13666,Markham Rd at Denison St,,43.844662,-79.253085,,,,,,1
+4247,4247,Kingston Rd at Neilson Ave,,43.72337,-79.234227,,,,,,1
+13639,13639,Main St Markham South at James Scott Rd,,43.866411,-79.257959,,,,,,1
+4258,4258,Kingston Rd at Ravine Dr,,43.731626,-79.224812,,,,,,1
+12605,12605,Markham Rd at Turbina Ave,,43.827452,-79.249554,,,,,,2
+14143,14143,2200 Markham Rd,,43.808678,-79.24389,,,,,,1
+5563,5563,Markham Rd at Greenbrae Circt,,43.762388,-79.226409,,,,,,1
+5559,5559,Markham Rd at Eglinton Ave East,,43.743397,-79.219195,,,,,,1
+4624,4624,St Clair Ave East at Fermoy Rd,,43.72124,-79.239268,,,,,,1
+13631,13631,Markham Rd at Passmore Ave,,43.830357,-79.250385,,,,,,1
+12603,12603,Markham Rd at Nashdene Rd,,43.820127,-79.245947,,,,,,2
+13633,13633,Markham Rd at Elson St,,43.840339,-79.251667,,,,,,1
+13638,13638,Markham Rd at Walkway to Clandfield St,,43.859253,-79.256305,,,,,,1
+13635,13635,Markham Rd at New Delhi Dr,,43.847622,-79.253399,,,,,,1
+4629,4629,St Clair Ave East at Santamonica Blvd,,43.712912,-79.276699,,,,,,1
+13659,13659,Main St Markham North at Bullock Dr,,43.881496,-79.261788,,,,,,1
+10840,10840,McNicoll Ave at Markham Rd,,43.823774,-79.24824,,,,,,1
+14324,14324,Markham Rd at Edward Jeffreys Ave,,43.896004,-79.264866,,,,,,2
+5569,5569,Markham Rd at Lawrence Ave East,,43.759679,-79.225072,,,,,,1
+13644,13644,Main St Markham North at Ramona Blvd - Markham GO Station,,43.882893,-79.261892,,,,,,1
+1552,1552,St Clair Ave East at Andrew Ave,,43.720079,-79.244714,,,,,,1
+4250,4250,Kingston Rd at Parkcrest Dr,,43.73564,-79.220356,,,,,,1
+4240,4240,Kingston Rd at McCowan Rd,,43.725443,-79.232326,,,,,,1
+13665,13665,Markham Rd at Golden Ave,,43.848191,-79.253938,,,,,,1
+4224,4224,Kingston Rd at Fenwood Heights West Side,,43.727383,-79.230088,,,,,,1
+2861,2861,Markham Rd at Markanna Dr,,43.740623,-79.217674,,,,,,1
+13640,13640,Main St Markham South at Highway 7,,43.87375,-79.259621,,,,,,1
+6007,6007,Progress Ave at Roadway to Centennial College,,43.783526,-79.231618,,,,,,1
+1563,1563,St Clair Ave East at Kennedy Rd,,43.716705,-79.261083,,,,,,2
+9333,9333,Markham Rd at Finch Ave East,,43.812817,-79.242767,,,,,,1
+4223,4223,Kingston Rd at Fenwood Heights,,43.727269,-79.229715,,,,,,1
+13680,13680,Dynamic Dr at Turbina Ave North Side,,43.827116,-79.251922,,,,,,1
+5585,5585,Markham Rd at Tuxedo Crt,,43.77944,-79.232752,,,,,,1
+6008,6008,Progress Ave at Opposite Roadway to Centennial College,,43.783468,-79.231974,,,,,,1
+13681,13681,145 Dynamic Dr,,43.828039,-79.252357,,,,,,1
+4471,4471,Markham Rd at Sheppard Ave East,,43.793604,-79.238418,,,,,,1
+4628,4628,St Clair Ave East at North Woodrow Blvd,,43.715113,-79.266834,,,,,,2
+5576,5576,Markham Rd at Painted Post Dr,,43.767395,-79.228128,,,,,,1
+14339,14339,Markham Rd at Bur Oak Ave - Mount Joy GO Station,,43.900026,-79.265771,,,,,,1
+5552,5552,Markham Rd at Blakemanor Blvd,,43.750967,-79.22208,,,,,,1
+4468,4468,Markham Rd at Milner Ave,,43.789364,-79.236737,,,,,,1
+13637,13637,Markham Rd at 14th Ave,,43.856591,-79.255581,,,,,,1
+13632,13632,Markham Rd at Steeles Ave East,,43.836408,-79.250894,,,,,,1
+5579,5579,Markham Rd at Progress Ave South Side,,43.78118,-79.233832,,,,,,1
+13629,13629,Markham Rd at McNicoll Ave,,43.823823,-79.247559,,,,,,1
+1212,1212,Kingston Rd at Neilson Ave West Side,,43.7234,-79.23469,,,,,,1
+10829,10829,McNicoll Ave at Dynamic Dr East Side,,43.823316,-79.250753,,,,,,1
+13641,13641,Main St Markham North at Thomson Crt,,43.874837,-79.259936,,,,,,2
+1553,1553,St Clair Ave East at Andrew Ave,,43.720304,-79.24451,,,,,,1
+13668,13668,Markham Rd at Steeles Ave East South Side,,43.836078,-79.251323,,,,,,1
+11563,11563,150 Dynamic Dr,,43.828095,-79.252608,,,,,,1
+5587,5587,Markham Rd at Verne Cres,,43.795761,-79.240146,,,,,,1
+4625,4625,St Clair Ave East at Jeanette St,,43.719753,-79.246965,,,,,,1
+5582,5582,Markham Rd at Scranton Rd,,43.765086,-79.227226,,,,,,1
+13663,13663,Markham Rd at 14th Ave,,43.856238,-79.255878,,,,,,1
+13646,13646,Main St Markham North at 16th Ave,,43.891827,-79.263892,,,,,,2
+14379,14379,Steeles Ave East at Eastvale Rd,,43.83816,-79.245033,,,,,,2
+14608,14608,Markham Rd at Select Ave,,43.833243,-79.25076,,,,,,1
+14609,14609,Markham Rd at Select Ave,,43.833674,-79.251192,,,,,,1
+15193,15193,Tapscott Rd at Select Ave,,43.833518,-79.246834,,,,,,2
+15381,15381,Major Mackenzie Dr East at Markham Rd,,43.909707,-79.268583,,,,,,2
+15382,15382,Major Mackenzie Dr East at Ralph Chalmers Ave,,43.908378,-79.273087,,,,,,2
+15391,15391,Castlemore Ave at Markham Rd West Side,,43.904115,-79.269109,,,,,,2
+15392,15392,Castlemore Ave at Fred McLaren Blvd,,43.902882,-79.272971,,,,,,2
+15393,15393,Castlemore Ave at Mingay Ave,,43.901805,-79.276284,,,,,,2
+15394,15394,Mingay Ave at Fred McLaren Blvd,,43.903786,-79.276762,,,,,,2
+15395,15395,Mingay Ave at Major Mackenzie Dr East,,43.907142,-79.277864,,,,,,2
+15449,15449,Markham Rd at Castlemore Ave,,43.904534,-79.267211,,,,,,2
+15535,15535,Markham Rd at Greenholm Circt,,43.762077,-79.226054,,,,,,1
+15669,15669,9690 Markham Rd,,43.902267,-79.266654,,,,,,2
+15670,15670,Opposite 9690 Markham Rd,,43.902238,-79.266305,,,,,,2
+15744,15744,Kingston Rd at St Clair Ave East,,43.721614,-79.23625,,,,,,1
+12540,12540,Kingston Rd at Brimley Rd,,43.717955,-79.240455,,,,,,1
+15855,15855,2201 Markham Rd,,43.808298,-79.243613,,,,,,1
+15887,15887,Centennial College Bus Terminal,,43.785912,-79.229343,,,,,,1
+16252,16252,Morningside Ave at Passmore Ave - Amazon Fulfillment Centre,,43.835793,-79.242093,,,,,,1
+16256,16256,Morningside Ave at Passmore Ave,,43.833489,-79.241136,,,,,,1
+16265,16265,Dynamic Dr at McNicoll Ave North Side,,43.823692,-79.251527,,,,,,1
+16281,16281,Castlemore Ave at Hammersly Blvd,,43.90365,-79.270447,,,,,,1
+16574,16574,7075 Markham Rd,,43.837999,-79.251101,,,,,,1
+16719,16719,2661 Kingston Rd,,43.715423,-79.243365,,,,,,1
+16797,16797,St Clair Ave East at Midland Ave West Side,,43.718631,-79.252181,,,,,,1
+16898,16898,Warden Station,,43.712541,-79.278521,,,,,,1

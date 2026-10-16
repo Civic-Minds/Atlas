@@ -1,0 +1,64 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+301,1,50802911,East - 301L Queen Replacement Bus towards Dufferin,L,0,2234192,1122312,1,1
+301,1,50802908,East - 301 Queen Short Turn towards Roncesvalles,S,0,2234046,1122309,1,2
+301,1,50802912,East - 301L Queen Replacement Bus towards Dufferin,L,0,2234193,1122312,1,1
+301,1,50802894,East - 301 Queen towards Neville Park,,0,2234040,1122307,1,2
+301,1,50802954,East - 301 Queen towards Neville Park,,0,2234041,1122307,1,2
+301,1,50802910,East - 301 Queen Short Turn towards Roncesvalles,S,0,2234045,1122309,1,2
+301,1,50802913,East - 301L Queen Replacement Bus towards Dufferin,L,0,2234194,1122312,1,1
+301,1,50802895,East - 301 Queen towards Neville Park,,0,2234042,1122307,1,2
+301,1,50802909,East - 301 Queen Short Turn towards Roncesvalles,S,0,2234065,1122309,1,2
+301,1,50802896,East - 301 Queen towards Neville Park,,0,2234049,1122307,1,2
+301,1,50802914,East - 301L Queen Replacement Bus towards Dufferin,L,0,2234192,1122312,1,1
+301,1,50802897,East - 301 Queen towards Neville Park,,0,2234039,1122307,1,2
+301,1,50802898,East - 301 Queen towards Neville Park,,0,2234068,1122307,1,2
+301,1,50802915,East - 301L Queen Replacement Bus towards Dufferin,L,0,2234193,1122312,1,1
+301,1,50802899,East - 301 Queen towards Neville Park,,0,2234067,1122307,1,2
+301,1,50802900,East - 301 Queen towards Neville Park,,0,2234037,1122307,1,2
+301,1,50802916,East - 301L Queen Replacement Bus towards Dufferin,L,0,2234194,1122312,1,1
+301,1,50802948,East - 301 Queen towards Neville Park,,0,2234048,1122307,1,2
+301,1,50802901,East - 301 Queen towards Neville Park,,0,2234040,1122307,1,2
+301,1,50802917,East - 301L Queen Replacement Bus towards Dufferin,L,0,2234192,1122312,1,1
+301,1,50802902,East - 301 Queen towards Neville Park,,0,2234041,1122307,1,2
+301,1,50802949,East - 301 Queen towards Neville Park,,0,2234042,1122307,1,2
+301,1,50802918,East - 301L Queen Replacement Bus towards Dufferin,L,0,2234193,1122312,1,1
+301,1,50802903,East - 301 Queen towards Neville Park,,0,2234049,1122307,1,2
+301,1,50802904,East - 301 Queen Short Turn towards Roncesvalles,S,0,2234039,1122309,1,2
+301,1,50802905,East - 301 Queen Short Turn towards Roncesvalles,S,0,2234068,1122309,1,2
+301,1,50802956,East - 301 Queen Short Turn towards Roncesvalles,S,0,2234067,1122309,1,2
+301,1,50802906,East - 301 Queen Short Turn towards Roncesvalles,S,0,2234037,1122309,1,2
+301,1,50802907,East - 301 Queen Short Turn towards Roncesvalles,S,0,2234048,1122309,1,2
+301,1,50802919,West - 301 Queen towards Long Branch,,1,2234042,1122313,1,2
+301,1,50802935,West - 301 Queen Short Turn towards Roncesvalles,S,1,2234043,1122314,1,2
+301,1,50802920,West - 301 Queen towards Long Branch,,1,2234065,1122313,1,2
+301,1,50802921,West - 301 Queen towards Long Branch,,1,2234049,1122313,1,2
+301,1,50802950,West - 301 Queen towards Long Branch,,1,2234039,1122313,1,2
+301,1,50802936,West - 301 Queen Short Turn towards Roncesvalles,S,1,2234038,1122314,1,2
+301,1,50802922,West - 301 Queen towards Long Branch,,1,2234068,1122313,1,2
+301,1,50802940,West - 301L Queen Replacement Bus towards Long Branch,L,1,2234192,1122317,1,1
+301,1,50802937,West - 301 Queen Short Turn towards Roncesvalles,S,1,2234047,1122314,1,2
+301,1,50802923,West - 301 Queen towards Long Branch,,1,2234067,1122313,1,2
+301,1,50802938,West - 301 Queen Short Turn towards Roncesvalles,S,1,2234066,1122314,1,2
+301,1,50802924,West - 301 Queen towards Long Branch,,1,2234037,1122313,1,2
+301,1,50802941,West - 301L Queen Replacement Bus towards Long Branch,L,1,2234193,1122317,1,1
+301,1,50802951,West - 301 Queen towards Long Branch,,1,2234048,1122313,1,2
+301,1,50802939,West - 301 Queen Short Turn towards Roncesvalles,S,1,2234044,1122314,1,2
+301,1,50802925,West - 301 Queen towards Long Branch,,1,2234040,1122313,1,2
+301,1,50802942,West - 301L Queen Replacement Bus towards Long Branch,L,1,2234194,1122317,1,1
+301,1,50802926,West - 301 Queen towards Long Branch,,1,2234041,1122313,1,2
+301,1,50802927,West - 301 Queen towards Long Branch,,1,2234042,1122313,1,2
+301,1,50802943,West - 301L Queen Replacement Bus towards Long Branch,L,1,2234192,1122317,1,1
+301,1,50802952,West - 301 Queen towards Long Branch,,1,2234049,1122313,1,2
+301,1,50802928,West - 301 Queen towards Long Branch,,1,2234039,1122313,1,2
+301,1,50802944,West - 301L Queen Replacement Bus towards Long Branch,L,1,2234193,1122317,1,1
+301,1,50802929,West - 301 Queen towards Long Branch,,1,2234068,1122313,1,2
+301,1,50802930,West - 301 Queen towards Long Branch,,1,2234067,1122313,1,2
+301,1,50802945,West - 301S Queen Replacement Bus Short Turn,S,1,2234194,1122318,1,1
+301,1,50802953,West - 301 Queen towards Long Branch,,1,2234037,1122313,1,2
+301,1,50802931,West - 301 Queen towards Long Branch,,1,2234048,1122313,1,2
+301,1,50802946,West - 301S Queen Replacement Bus Short Turn,S,1,2234192,1122318,1,1
+301,1,50802955,West - 301 Queen Short Turn towards Roncesvalles,S,1,2234040,1122314,1,2
+301,1,50802932,West - 301 Queen Short Turn towards Roncesvalles,S,1,2234041,1122314,1,2
+301,1,50802947,West - 301S Queen Replacement Bus Short Turn,S,1,2234193,1122318,1,1
+301,1,50802933,West - 301 Queen Short Turn towards Roncesvalles,S,1,2234042,1122314,1,2
+301,1,50802934,West - 301 Queen Short Turn towards Roncesvalles,S,1,2234049,1122314,1,2

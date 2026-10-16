@@ -1,0 +1,795 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+25,1,50801185,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233667,1122253,1,1
+25,1,50801186,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233689,1122246,1,1
+25,1,50801202,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233668,1122253,1,1
+25,1,50801183,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233672,1122253,1,1
+25,1,50801184,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233669,1122251,1,1
+25,1,50801213,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233692,1122253,1,1
+25,1,50801189,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801187,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233671,1122253,1,1
+25,1,50801188,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233693,1122253,1,1
+25,1,50801182,South - 25C Don Mills towards Don Mills Station,C,0,2233696,1122248,1,1
+25,1,50801190,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233691,1122251,1,1
+25,1,50801191,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233695,1122251,1,1
+25,1,50801203,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801192,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233673,1122251,1,1
+25,1,50801204,South - 25C Don Mills towards Don Mills Station,C,0,2233697,1122248,1,1
+25,1,50801193,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233690,1122251,1,1
+25,1,50801205,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801194,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233678,1122251,1,1
+25,1,50801206,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801195,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233675,1122251,1,1
+25,1,50801207,South - 25C Don Mills towards Don Mills Station,C,0,2233696,1122248,1,1
+25,1,50801196,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233689,1122251,1,1
+25,1,50801208,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801197,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233694,1122251,1,1
+25,1,50801209,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801198,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233667,1122251,1,1
+25,1,50801210,South - 25C Don Mills towards Don Mills Station,C,0,2233697,1122248,1,1
+25,1,50801199,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233669,1122251,1,1
+25,1,50801211,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801200,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233668,1122251,1,1
+25,1,50801212,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801201,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801238,South - 25C Don Mills towards Don Mills Station,C,0,2233696,1122248,1,1
+25,1,50801214,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233700,1122251,1,1
+25,1,50801239,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801215,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233672,1122251,1,1
+25,1,50801240,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801216,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233692,1122251,1,1
+25,1,50801241,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801217,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233691,1122251,1,1
+25,1,50801242,South - 25C Don Mills towards Don Mills Station,C,0,2233697,1122248,1,1
+25,1,50801218,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233701,1122251,1,1
+25,1,50801243,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801219,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233671,1122251,1,1
+25,1,50801244,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801220,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233693,1122251,1,1
+25,1,50801245,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801221,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233695,1122251,1,1
+25,1,50801246,South - 25C Don Mills towards Don Mills Station,C,0,2233696,1122248,1,1
+25,1,50801222,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233703,1122251,1,1
+25,1,50801247,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801223,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233673,1122251,1,1
+25,1,50801248,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801224,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233690,1122251,1,1
+25,1,50801249,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801225,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233678,1122251,1,1
+25,1,50801250,South - 25C Don Mills towards Don Mills Station,C,0,2233697,1122248,1,1
+25,1,50801226,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233675,1122251,1,1
+25,1,50801251,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801227,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233689,1122251,1,1
+25,1,50801252,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801228,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233694,1122251,1,1
+25,1,50801253,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801229,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233667,1122251,1,1
+25,1,50801254,South - 25C Don Mills towards Don Mills Station,C,0,2233696,1122248,1,1
+25,1,50801230,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233702,1122251,1,1
+25,1,50801255,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801231,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233669,1122251,1,1
+25,1,50801256,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801232,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233668,1122251,1,1
+25,1,50801257,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801233,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801258,South - 25C Don Mills towards Don Mills Station,C,0,2233697,1122248,1,1
+25,1,50801234,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233700,1122251,1,1
+25,1,50801259,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801235,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233672,1122251,1,1
+25,1,50801260,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801236,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233692,1122251,1,1
+25,1,50801261,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801237,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233691,1122251,1,1
+25,1,50801262,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233671,1122251,1,1
+25,1,50801316,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801263,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233693,1122251,1,1
+25,1,50801317,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801264,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233695,1122251,1,1
+25,1,50801318,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801265,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233703,1122251,1,1
+25,1,50801319,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801266,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233673,1122251,1,1
+25,1,50801320,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801267,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233678,1122251,1,1
+25,1,50801321,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801268,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233675,1122251,1,1
+25,1,50801322,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801269,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233694,1122251,1,1
+25,1,50801323,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801270,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233667,1122251,1,1
+25,1,50801324,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801271,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233702,1122251,1,1
+25,1,50801325,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801272,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233669,1122251,1,1
+25,1,50801326,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801273,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801327,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801274,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233668,1122251,1,1
+25,1,50801328,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801275,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233672,1122251,1,1
+25,1,50801329,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801276,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233691,1122251,1,1
+25,1,50801330,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801277,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233671,1122251,1,1
+25,1,50801331,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801278,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233693,1122251,1,1
+25,1,50801332,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801279,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233695,1122251,1,1
+25,1,50801333,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801280,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233703,1122251,1,1
+25,1,50801334,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801281,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233673,1122251,1,1
+25,1,50801335,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801282,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233678,1122251,1,1
+25,1,50801336,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801283,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233675,1122251,1,1
+25,1,50801337,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801284,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233694,1122251,1,1
+25,1,50801338,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801285,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233667,1122251,1,1
+25,1,50801339,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801286,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233702,1122251,1,1
+25,1,50801340,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801287,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233669,1122251,1,1
+25,1,50801341,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801288,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801342,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801289,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233668,1122251,1,1
+25,1,50801343,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801290,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233672,1122251,1,1
+25,1,50801344,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801291,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233691,1122251,1,1
+25,1,50801345,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801292,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233671,1122251,1,1
+25,1,50801346,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801293,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233693,1122251,1,1
+25,1,50801347,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801294,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233695,1122251,1,1
+25,1,50801348,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801295,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233703,1122251,1,1
+25,1,50801349,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801296,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233673,1122251,1,1
+25,1,50801350,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801297,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233678,1122251,1,1
+25,1,50801351,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801298,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233675,1122251,1,1
+25,1,50801352,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801299,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233694,1122251,1,1
+25,1,50801353,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801300,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233667,1122251,1,1
+25,1,50801354,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801301,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233702,1122251,1,1
+25,1,50801355,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801302,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233669,1122251,1,1
+25,1,50801356,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801303,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801357,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801304,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233668,1122251,1,1
+25,1,50801358,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801305,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233672,1122251,1,1
+25,1,50801359,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801306,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233691,1122251,1,1
+25,1,50801360,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801307,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233671,1122251,1,1
+25,1,50801361,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801308,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233693,1122251,1,1
+25,1,50801362,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801309,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233695,1122251,1,1
+25,1,50801363,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801310,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233703,1122251,1,1
+25,1,50801364,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801311,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233673,1122251,1,1
+25,1,50801365,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801312,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233678,1122251,1,1
+25,1,50801366,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801313,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233675,1122251,1,1
+25,1,50801419,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801314,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233694,1122251,1,1
+25,1,50801420,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801315,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233667,1122251,1,1
+25,1,50801469,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801418,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233702,1122251,1,1
+25,1,50801470,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801421,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233669,1122251,1,1
+25,1,50801471,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801422,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233708,1122251,1,1
+25,1,50801472,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801423,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801473,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801424,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233668,1122251,1,1
+25,1,50801474,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801425,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233672,1122251,1,1
+25,401,50801373,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233679,1122249,1,1
+25,1,50801475,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801426,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233691,1122251,1,1
+25,401,50801368,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233711,1122249,1,1
+25,1,50801476,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801427,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233709,1122251,1,1
+25,1,50801477,South - 25C Don Mills towards Don Mills Station,C,0,2233706,1122248,1,1
+25,1,50801428,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233671,1122251,1,1
+25,1,50801478,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801429,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233693,1122251,1,1
+25,401,50801367,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2234929,1122249,1,1
+25,1,50801479,South - 25C Don Mills towards Don Mills Station,C,0,2233713,1122248,1,1
+25,1,50801430,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233695,1122251,1,1
+25,401,50801375,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233714,1122245,1,1
+25,1,50801480,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801431,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233703,1122251,1,1
+25,1,50801481,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801432,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233707,1122251,1,1
+25,1,50801482,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801433,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233673,1122251,1,1
+25,1,50801483,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801434,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233710,1122251,1,1
+25,1,50801484,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801435,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233678,1122251,1,1
+25,1,50801485,South - 25C Don Mills towards Don Mills Station,C,0,2233715,1122248,1,1
+25,1,50801436,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233675,1122251,1,1
+25,1,50801486,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801437,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233694,1122251,1,1
+25,1,50801487,South - 25C Don Mills towards Don Mills Station,C,0,2233713,1122248,1,1
+25,1,50801438,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233667,1122251,1,1
+25,1,50801488,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801439,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233702,1122251,1,1
+25,1,50801489,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801440,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233679,1122251,1,1
+25,1,50801490,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801441,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233669,1122251,1,1
+25,1,50801491,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801442,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233708,1122251,1,1
+25,1,50801492,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801443,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233711,1122251,1,1
+25,1,50801493,South - 25C Don Mills towards Don Mills Station,C,0,2233715,1122248,1,1
+25,1,50801444,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801494,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801445,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233668,1122251,1,1
+25,1,50801495,South - 25C Don Mills towards Don Mills Station,C,0,2233713,1122248,1,1
+25,1,50801446,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233672,1122251,1,1
+25,1,50801496,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801447,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233691,1122251,1,1
+25,1,50801497,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801448,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233709,1122251,1,1
+25,1,50801498,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801449,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233714,1122251,1,1
+25,1,50801499,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801450,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233693,1122251,1,1
+25,1,50801500,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801451,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233695,1122251,1,1
+25,1,50801501,South - 25C Don Mills towards Don Mills Station,C,0,2233715,1122248,1,1
+25,1,50801452,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233703,1122251,1,1
+25,1,50801502,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801453,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233707,1122251,1,1
+25,1,50801503,South - 25C Don Mills towards Don Mills Station,C,0,2233713,1122248,1,1
+25,1,50801454,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233673,1122251,1,1
+25,1,50801504,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801455,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233710,1122251,1,1
+25,1,50801505,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801456,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233678,1122251,1,1
+25,1,50801506,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801457,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233675,1122251,1,1
+25,1,50801507,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801458,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233694,1122251,1,1
+25,1,50801508,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801459,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233667,1122251,1,1
+25,1,50801509,South - 25C Don Mills towards Don Mills Station,C,0,2233715,1122248,1,1
+25,1,50801460,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233702,1122251,1,1
+25,1,50801510,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801461,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233679,1122251,1,1
+25,1,50801511,South - 25C Don Mills towards Don Mills Station,C,0,2233713,1122248,1,1
+25,1,50801462,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233669,1122251,1,1
+25,1,50801512,South - 25C Don Mills towards Don Mills Station,C,0,2233674,1122248,1,1
+25,1,50801463,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233708,1122251,1,1
+25,1,50801513,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801464,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233711,1122251,1,1
+25,1,50801514,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801465,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801515,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801466,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233668,1122251,1,1
+25,1,50801516,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801467,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233672,1122251,1,1
+25,1,50801517,South - 25C Don Mills towards Don Mills Station,C,0,2233715,1122248,1,1
+25,1,50801468,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233691,1122251,1,1
+25,1,50801518,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801519,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233709,1122251,1,1
+25,1,50801554,South - 25C Don Mills towards Don Mills Station,C,0,2233713,1122248,1,1
+25,1,50801520,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233714,1122251,1,1
+25,1,50801555,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801521,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233693,1122251,1,1
+25,1,50801556,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801522,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233695,1122251,1,1
+25,1,50801557,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801523,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233707,1122251,1,1
+25,1,50801558,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801524,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233673,1122251,1,1
+25,1,50801559,South - 25C Don Mills towards Don Mills Station,C,0,2233715,1122248,1,1
+25,1,50801525,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233710,1122251,1,1
+25,1,50801560,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801526,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233675,1122251,1,1
+25,1,50801561,South - 25C Don Mills towards Don Mills Station,C,0,2233713,1122248,1,1
+25,1,50801527,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233694,1122251,1,1
+25,1,50801562,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801528,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233702,1122251,1,1
+25,1,50801563,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801529,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233679,1122251,1,1
+25,1,50801564,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801530,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233708,1122251,1,1
+25,1,50801565,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801531,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233711,1122251,1,1
+25,1,50801566,South - 25C Don Mills towards Don Mills Station,C,0,2233715,1122248,1,1
+25,1,50801532,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801567,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801533,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233668,1122251,1,1
+25,1,50801568,South - 25C Don Mills towards Don Mills Station,C,0,2233713,1122248,1,1
+25,1,50801534,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233709,1122251,1,1
+25,1,50801569,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801535,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233714,1122251,1,1
+25,1,50801570,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801536,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233693,1122251,1,1
+25,1,50801571,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801537,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233695,1122251,1,1
+25,1,50801572,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801538,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233707,1122251,1,1
+25,1,50801573,South - 25C Don Mills towards Don Mills Station,C,0,2233715,1122248,1,1
+25,1,50801539,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233673,1122251,1,1
+25,1,50801574,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801540,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233710,1122251,1,1
+25,1,50801575,South - 25C Don Mills towards Don Mills Station,C,0,2233713,1122248,1,1
+25,1,50801541,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233675,1122251,1,1
+25,1,50801576,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801542,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233694,1122251,1,1
+25,1,50801577,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801543,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233702,1122251,1,1
+25,1,50801578,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801544,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233679,1122251,1,1
+25,1,50801579,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801545,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233708,1122251,1,1
+25,1,50801580,South - 25C Don Mills towards Don Mills Station,C,0,2233715,1122248,1,1
+25,1,50801546,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233716,1122251,1,1
+25,1,50801581,South - 25C Don Mills towards Don Mills Station,C,0,2233699,1122248,1,1
+25,1,50801547,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233670,1122251,1,1
+25,1,50801582,South - 25C Don Mills towards Don Mills Station,C,0,2233713,1122248,1,1
+25,1,50801548,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233668,1122251,1,1
+25,1,50801583,South - 25C Don Mills towards Don Mills Station,C,0,2233698,1122248,1,1
+25,1,50801549,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233709,1122251,1,1
+25,1,50801584,South - 25C Don Mills towards Don Mills Station,C,0,2233705,1122248,1,1
+25,1,50801550,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233714,1122251,1,1
+25,1,50801585,South - 25C Don Mills towards Don Mills Station,C,0,2233704,1122248,1,1
+25,1,50801551,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233693,1122251,1,1
+25,1,50801376,South - 25C Don Mills towards Don Mills Station,C,0,2233712,1122248,1,1
+25,1,50801552,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233717,1122251,1,1
+25,1,50801620,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233715,1122253,1,1
+25,1,50801553,South - 25B Don Mills towards Broadview Station via Don Valley Station,B,0,2233707,1122251,1,1
+25,1,50801619,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233699,1122253,1,1
+25,1,50801586,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233713,1122253,1,1
+25,1,50801587,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233705,1122253,1,1
+25,1,50801588,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233673,1122253,1,1
+25,1,50801589,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233710,1122253,1,1
+25,1,50801590,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233675,1122253,1,1
+25,1,50801591,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233694,1122253,1,1
+25,1,50801592,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233702,1122253,1,1
+25,1,50801593,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233679,1122253,1,1
+25,1,50801594,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233708,1122253,1,1
+25,1,50801595,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233716,1122253,1,1
+25,1,50801596,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233670,1122253,1,1
+25,1,50801597,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233668,1122253,1,1
+25,1,50801598,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233714,1122253,1,1
+25,1,50801599,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233693,1122253,1,1
+25,1,50801600,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233717,1122253,1,1
+25,1,50801601,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233707,1122253,1,1
+25,1,50801602,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233715,1122253,1,1
+25,1,50801603,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233713,1122253,1,1
+25,1,50801604,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233705,1122253,1,1
+25,1,50801605,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233673,1122253,1,1
+25,1,50801606,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233710,1122253,1,1
+25,1,50801607,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233675,1122253,1,1
+25,1,50801608,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233694,1122253,1,1
+25,1,50801609,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233702,1122253,1,1
+25,1,50801610,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233679,1122253,1,1
+25,1,50801611,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233708,1122253,1,1
+25,1,50801612,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233716,1122253,1,1
+25,1,50801613,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233670,1122253,1,1
+25,1,50801614,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233668,1122253,1,1
+25,1,50801615,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233714,1122253,1,1
+25,1,50801616,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233693,1122253,1,1
+25,1,50801617,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233717,1122253,1,1
+25,1,50801618,South - 25A Don Mills towards Broadview Station via Don Mills Station and Don Valley Station,A,0,2233707,1122253,1,1
+25,1,50801370,South - 25S Don Mills Short Turn towards Don Valley Station,S,0,2233713,1122250,1,1
+25,1,50801369,South - 25C Don Mills towards Don Mills Station,C,0,2233675,1122248,1,1
+25,1,50801372,South - 25C Don Mills towards Don Mills Station,C,0,2233702,1122248,1,1
+25,1,50801371,South - 25C Don Mills towards Don Mills Station,C,0,2233716,1122248,1,1
+25,1,50801380,North - 25C Don Mills towards Steeles,C,1,2233692,1122255,1,1
+25,1,50801377,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233690,1122262,1,1
+25,1,50801393,North - 25C Don Mills towards Steeles,C,1,2233696,1122255,1,1
+25,1,50801394,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801379,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233675,1122262,1,1
+25,1,50801407,North - 25C Don Mills towards Steeles,C,1,2233697,1122255,1,1
+25,1,50801378,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233689,1122256,1,1
+25,1,50801395,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801392,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233694,1122256,1,1
+25,1,50801381,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233667,1122256,1,1
+25,1,50801396,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801382,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233669,1122256,1,1
+25,1,50801397,North - 25C Don Mills towards Steeles,C,1,2233696,1122255,1,1
+25,1,50801383,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233668,1122256,1,1
+25,1,50801398,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801384,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233670,1122256,1,1
+25,1,50801399,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801385,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233672,1122256,1,1
+25,1,50801400,North - 25C Don Mills towards Steeles,C,1,2233697,1122255,1,1
+25,1,50801386,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233692,1122256,1,1
+25,1,50801401,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801387,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233691,1122256,1,1
+25,1,50801402,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801388,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233671,1122256,1,1
+25,1,50801403,North - 25C Don Mills towards Steeles,C,1,2233696,1122255,1,1
+25,1,50801389,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233693,1122256,1,1
+25,1,50801404,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801390,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233695,1122256,1,1
+25,1,50801405,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801391,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233673,1122256,1,1
+25,1,50801406,North - 25C Don Mills towards Steeles,C,1,2233697,1122255,1,1
+25,1,50801408,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233690,1122256,1,1
+25,1,50801409,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801410,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801625,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233678,1122256,1,1
+25,1,50801411,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801626,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233675,1122256,1,1
+25,1,50801412,North - 25C Don Mills towards Steeles,C,1,2233696,1122255,1,1
+25,1,50801627,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233689,1122256,1,1
+25,1,50801413,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801628,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233694,1122256,1,1
+25,1,50801414,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801629,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233667,1122256,1,1
+25,1,50801415,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801630,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233702,1122256,1,1
+25,1,50801416,North - 25C Don Mills towards Steeles,C,1,2233697,1122255,1,1
+25,1,50801631,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233669,1122256,1,1
+25,1,50801417,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801632,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233668,1122256,1,1
+25,1,50801647,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801633,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233670,1122256,1,1
+25,1,50801648,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801634,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233700,1122256,1,1
+25,1,50801649,North - 25C Don Mills towards Steeles,C,1,2233696,1122255,1,1
+25,1,50801635,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233672,1122256,1,1
+25,1,50801650,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801636,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233692,1122256,1,1
+25,1,50801651,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801637,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233691,1122256,1,1
+25,1,50801652,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801638,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233701,1122256,1,1
+25,1,50801653,North - 25C Don Mills towards Steeles,C,1,2233697,1122255,1,1
+25,1,50801639,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233671,1122256,1,1
+25,1,50801654,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801640,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233693,1122256,1,1
+25,1,50801655,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801641,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233695,1122256,1,1
+25,1,50801656,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801642,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233703,1122256,1,1
+25,1,50801657,North - 25C Don Mills towards Steeles,C,1,2233696,1122255,1,1
+25,1,50801643,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233673,1122256,1,1
+25,1,50801658,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801644,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233690,1122256,1,1
+25,1,50801659,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801645,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233678,1122256,1,1
+25,1,50801660,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801646,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233675,1122256,1,1
+25,1,50801661,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233694,1122256,1,1
+25,1,50801716,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801662,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233667,1122256,1,1
+25,1,50801717,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801663,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233702,1122256,1,1
+25,1,50801718,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801664,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233669,1122256,1,1
+25,1,50801719,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801665,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233670,1122256,1,1
+25,1,50801720,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801666,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233668,1122256,1,1
+25,1,50801721,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801667,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233672,1122256,1,1
+25,1,50801722,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801668,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233691,1122256,1,1
+25,1,50801723,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801669,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233671,1122256,1,1
+25,1,50801724,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801670,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233693,1122256,1,1
+25,1,50801725,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801671,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233695,1122256,1,1
+25,1,50801726,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801672,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233703,1122256,1,1
+25,1,50801727,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801673,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233673,1122256,1,1
+25,1,50801728,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801674,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233678,1122256,1,1
+25,1,50801729,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801675,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233675,1122256,1,1
+25,1,50801730,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801676,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233694,1122256,1,1
+25,1,50801731,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801677,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233667,1122256,1,1
+25,1,50801732,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801678,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233702,1122256,1,1
+25,1,50801733,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801679,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233669,1122256,1,1
+25,1,50801734,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801680,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233670,1122256,1,1
+25,1,50801735,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801681,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233668,1122256,1,1
+25,1,50801736,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801682,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233672,1122256,1,1
+25,1,50801737,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801683,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233691,1122256,1,1
+25,1,50801738,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801684,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233671,1122256,1,1
+25,1,50801739,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801685,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233693,1122256,1,1
+25,1,50801740,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801686,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233695,1122256,1,1
+25,1,50801741,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801687,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233703,1122256,1,1
+25,1,50801742,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801688,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233673,1122256,1,1
+25,1,50801743,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801689,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233678,1122256,1,1
+25,1,50801744,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801690,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233675,1122256,1,1
+25,1,50801745,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801691,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233694,1122256,1,1
+25,1,50801746,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801692,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233667,1122256,1,1
+25,1,50801747,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801693,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233702,1122256,1,1
+25,1,50801748,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801694,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233669,1122256,1,1
+25,1,50801749,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801695,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233670,1122256,1,1
+25,1,50801750,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801696,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233668,1122256,1,1
+25,1,50801751,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801697,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233672,1122256,1,1
+25,1,50801752,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801698,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233691,1122256,1,1
+25,1,50801753,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801699,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233671,1122256,1,1
+25,1,50801754,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801700,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233693,1122256,1,1
+25,1,50801755,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801701,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233695,1122256,1,1
+25,1,50801756,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801702,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233703,1122256,1,1
+25,1,50801757,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801703,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233673,1122256,1,1
+25,1,50801758,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801704,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233678,1122256,1,1
+25,1,50801759,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801705,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233675,1122256,1,1
+25,1,50801760,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801706,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233694,1122256,1,1
+25,1,50801761,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801707,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233667,1122256,1,1
+25,1,50801762,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801708,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233702,1122256,1,1
+25,1,50801763,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801709,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233669,1122256,1,1
+25,1,50801764,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801710,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233670,1122256,1,1
+25,1,50801765,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801711,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233668,1122256,1,1
+25,1,50801766,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801712,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233672,1122256,1,1
+25,1,50801767,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801713,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233691,1122256,1,1
+25,1,50801768,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801714,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233671,1122256,1,1
+25,1,50801769,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801715,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233693,1122256,1,1
+25,1,50801770,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801855,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801771,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233695,1122256,1,1
+25,1,50801856,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801772,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233703,1122256,1,1
+25,1,50801857,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801773,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233707,1122256,1,1
+25,1,50801858,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801774,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233673,1122256,1,1
+25,1,50801859,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801775,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233678,1122256,1,1
+25,1,50801860,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801776,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233675,1122256,1,1
+25,401,50801624,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2234989,1122254,1,1
+25,1,50801861,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801777,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233694,1122256,1,1
+25,1,50801862,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,401,50801623,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2234991,1122254,1,1
+25,1,50801778,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233667,1122256,1,1
+25,1,50801863,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,401,50801622,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233710,1122260,1,1
+25,1,50801779,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233702,1122256,1,1
+25,1,50801864,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801780,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233679,1122256,1,1
+25,401,50801621,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233715,1122259,1,1
+25,1,50801865,North - 25C Don Mills towards Steeles,C,1,2233706,1122255,1,1
+25,1,50801781,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233669,1122256,1,1
+25,1,50801866,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801782,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233708,1122256,1,1
+25,1,50801783,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233711,1122256,1,1
+25,1,50801819,North - 25C Don Mills towards Steeles,C,1,2233713,1122255,1,1
+25,1,50801820,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801784,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233670,1122256,1,1
+25,1,50801785,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233668,1122256,1,1
+25,1,50801821,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801822,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801786,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233672,1122256,1,1
+25,1,50801787,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233691,1122256,1,1
+25,1,50801823,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801824,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801788,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233709,1122256,1,1
+25,1,50801789,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233714,1122256,1,1
+25,1,50801825,North - 25C Don Mills towards Steeles,C,1,2233715,1122255,1,1
+25,1,50801826,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801790,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233693,1122256,1,1
+25,1,50801791,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233695,1122256,1,1
+25,1,50801827,North - 25C Don Mills towards Steeles,C,1,2233713,1122255,1,1
+25,1,50801828,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801792,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233703,1122256,1,1
+25,1,50801793,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233707,1122256,1,1
+25,1,50801829,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801830,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801794,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233673,1122256,1,1
+25,1,50801795,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233710,1122256,1,1
+25,1,50801831,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801832,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801796,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233678,1122256,1,1
+25,1,50801797,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233675,1122256,1,1
+25,1,50801833,North - 25C Don Mills towards Steeles,C,1,2233715,1122255,1,1
+25,1,50801834,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801798,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233694,1122256,1,1
+25,1,50801799,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233667,1122256,1,1
+25,1,50801835,North - 25C Don Mills towards Steeles,C,1,2233713,1122255,1,1
+25,1,50801836,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801800,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233702,1122256,1,1
+25,1,50801801,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233679,1122256,1,1
+25,1,50801837,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801838,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801802,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233669,1122256,1,1
+25,1,50801803,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233708,1122256,1,1
+25,1,50801839,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801840,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801804,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233711,1122256,1,1
+25,1,50801805,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233670,1122256,1,1
+25,1,50801841,North - 25C Don Mills towards Steeles,C,1,2233715,1122255,1,1
+25,1,50801842,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801806,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233668,1122256,1,1
+25,1,50801807,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233672,1122256,1,1
+25,1,50801843,North - 25C Don Mills towards Steeles,C,1,2233713,1122255,1,1
+25,1,50801844,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801808,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233691,1122256,1,1
+25,1,50801809,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233709,1122256,1,1
+25,1,50801845,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801846,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801810,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233714,1122256,1,1
+25,1,50801811,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233693,1122256,1,1
+25,1,50801847,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801848,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801812,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233695,1122256,1,1
+25,1,50801813,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233703,1122256,1,1
+25,1,50801849,North - 25C Don Mills towards Steeles,C,1,2233715,1122255,1,1
+25,1,50801850,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801814,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233707,1122256,1,1
+25,1,50801815,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233673,1122256,1,1
+25,1,50801851,North - 25C Don Mills towards Steeles,C,1,2233713,1122255,1,1
+25,1,50801852,North - 25C Don Mills towards Steeles,C,1,2233674,1122255,1,1
+25,1,50801816,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233710,1122256,1,1
+25,1,50801853,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801817,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233678,1122256,1,1
+25,1,50801854,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801818,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233675,1122256,1,1
+25,1,50801867,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233694,1122256,1,1
+25,1,50801873,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801874,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801868,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233702,1122256,1,1
+25,1,50801869,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233679,1122256,1,1
+25,1,50801875,North - 25C Don Mills towards Steeles,C,1,2233715,1122255,1,1
+25,1,50801870,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233708,1122256,1,1
+25,1,50801876,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801871,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233711,1122256,1,1
+25,1,50801877,North - 25C Don Mills towards Steeles,C,1,2233713,1122255,1,1
+25,1,50801872,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233670,1122256,1,1
+25,1,50801878,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801888,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233668,1122256,1,1
+25,1,50801879,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801889,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233672,1122256,1,1
+25,1,50801880,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801890,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233709,1122256,1,1
+25,1,50801881,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801891,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233714,1122256,1,1
+25,1,50801882,North - 25C Don Mills towards Steeles,C,1,2233715,1122255,1,1
+25,1,50801892,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233693,1122256,1,1
+25,1,50801883,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801893,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233695,1122256,1,1
+25,1,50801884,North - 25C Don Mills towards Steeles,C,1,2233713,1122255,1,1
+25,1,50801894,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233707,1122256,1,1
+25,1,50801885,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801895,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233673,1122256,1,1
+25,1,50801910,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801896,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233710,1122256,1,1
+25,1,50801911,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801897,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233675,1122256,1,1
+25,1,50801912,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801898,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233694,1122256,1,1
+25,1,50801913,North - 25C Don Mills towards Steeles,C,1,2233715,1122255,1,1
+25,1,50801899,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233702,1122256,1,1
+25,1,50801914,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801900,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233679,1122256,1,1
+25,1,50801915,North - 25C Don Mills towards Steeles,C,1,2233713,1122255,1,1
+25,1,50801901,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233708,1122256,1,1
+25,1,50801916,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801902,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233711,1122256,1,1
+25,1,50801917,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801903,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233670,1122256,1,1
+25,1,50801918,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801904,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233668,1122256,1,1
+25,1,50801919,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801905,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233709,1122256,1,1
+25,1,50801920,North - 25C Don Mills towards Steeles,C,1,2233715,1122255,1,1
+25,1,50801906,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233714,1122256,1,1
+25,1,50801921,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801907,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233693,1122256,1,1
+25,1,50801922,North - 25C Don Mills towards Steeles,C,1,2233713,1122255,1,1
+25,1,50801908,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233717,1122256,1,1
+25,1,50801923,North - 25C Don Mills towards Steeles,C,1,2233698,1122255,1,1
+25,1,50801909,North - 25B Don Mills towards Don Mills Station via Don Valley Station,B,1,2233707,1122256,1,1
+25,1,50801924,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801930,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233673,1122258,1,1
+25,1,50801925,North - 25C Don Mills towards Steeles,C,1,2233704,1122255,1,1
+25,1,50801931,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233710,1122258,1,1
+25,1,50801926,North - 25C Don Mills towards Steeles,C,1,2233712,1122255,1,1
+25,1,50801932,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233675,1122258,1,1
+25,1,50801927,North - 25C Don Mills towards Steeles,C,1,2233715,1122255,1,1
+25,1,50801933,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233694,1122258,1,1
+25,1,50801928,North - 25C Don Mills towards Steeles,C,1,2233699,1122255,1,1
+25,1,50801934,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233702,1122258,1,1
+25,1,50801929,North - 25C Don Mills towards Steeles,C,1,2233713,1122255,1,1
+25,1,50801887,North - 25C Don Mills towards Steeles,C,1,2233705,1122255,1,1
+25,1,50801935,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233679,1122258,1,1
+25,1,50801936,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233708,1122258,1,1
+25,1,50801937,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233716,1122258,1,1
+25,1,50801938,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233670,1122258,1,1
+25,1,50801939,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233668,1122258,1,1
+25,1,50801940,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233714,1122258,1,1
+25,1,50801941,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233693,1122258,1,1
+25,1,50801942,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233717,1122258,1,1
+25,1,50801943,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233707,1122258,1,1
+25,1,50801944,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233715,1122258,1,1
+25,1,50801945,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233699,1122258,1,1
+25,1,50801946,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233713,1122258,1,1
+25,1,50801947,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233705,1122258,1,1
+25,1,50801948,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233673,1122258,1,1
+25,1,50801949,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233710,1122258,1,1
+25,1,50801950,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233675,1122258,1,1
+25,1,50801951,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233694,1122258,1,1
+25,1,50801952,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233702,1122258,1,1
+25,1,50801953,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233679,1122258,1,1
+25,1,50801954,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233708,1122258,1,1
+25,1,50801955,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233716,1122258,1,1
+25,1,50801956,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233670,1122258,1,1
+25,1,50801957,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233668,1122258,1,1
+25,1,50801958,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233714,1122258,1,1
+25,1,50801959,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233693,1122258,1,1
+25,1,50801960,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233717,1122258,1,1
+25,1,50801961,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233707,1122258,1,1
+25,1,50801962,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233715,1122258,1,1
+25,1,50801963,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233713,1122258,1,1
+25,1,50801964,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233705,1122258,1,1
+25,1,50801965,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233673,1122258,1,1
+25,1,50801966,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233710,1122258,1,1
+25,1,50801967,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233675,1122258,1,1
+25,1,50801968,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233694,1122258,1,1
+25,1,50801969,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233702,1122258,1,1
+25,1,50801970,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233679,1122258,1,1
+25,1,50801971,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233708,1122258,1,1
+25,1,50801972,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233716,1122258,1,1
+25,1,50801973,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233670,1122258,1,1
+25,1,50801974,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233668,1122258,1,1
+25,1,50801975,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233714,1122258,1,1
+25,1,50801976,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233693,1122258,1,1
+25,1,50801886,North - 25A Don Mills towards Steeles via Don Valley Station and Don Mills Station,A,1,2233717,1122258,1,1

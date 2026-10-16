@@ -1,0 +1,658 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import JSZip from 'jszip';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { processGtfsBuffer } from '../process-core';
+import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
+import { isLimitedService } from '../../shared/irregularRoutes';
+import { directionStretches, rollupDirection, rollupRoute, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
+
+// Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
+// shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
+// --tails, `_reports/frequency-oracle-expected.md`, "Re-run at the middle stop"), never the code's.
+// Fixtures cut from `Atlas-worktrees/_feeds` are listed in fixtures/STRETCH-FIXTURES.md.
+
+async function fixtureZip(name: string): Promise<Buffer> {
+  const dir = resolve(__dirname, 'fixtures', name);
+  const zip = new JSZip();
+  for (const file of readdirSync(dir)) if (file.endsWith('.txt')) zip.file(file, readFileSync(resolve(dir, file)));
+  return zip.generateAsync({ type: 'nodebuffer' });
+}
+
+type Run = { rows: any[]; stretches: ReadonlyMap<string, DirectionStretches>; stopDepsByGroup: ReadonlyMap<string, ReadonlyMap<string, readonly number[]>> };
+const runs = new Map<string, Promise<Run>>();
+function run(name: string, slug = name.split('-')[0]): Promise<Run> {
+  if (!runs.has(name)) {
+    runs.set(name, (async () => {
+      let captured: Omit<Run, 'rows'> | null = null;
+      const result = await processGtfsBuffer(await fixtureZip(name), undefined, { slug, onStretches: input => { captured = input; } });
+      const rows = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null);
+      return { rows, ...captured! };
+    })());
+  }
+  return runs.get(name)!;
+}
+const row = (r: Run, route: string, day: string, dir = 0) =>
+  r.rows.find(p => p.routeShortName === route && p.day === day && p.directionId === dir);
+const mainValue = (r: Run, key: string, period: string) => rollupDirection(r.stretches.get(key)!)!.period[period as 'midday'].mainValue;
+
+beforeAll(() => {
+  vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-20T12:00:00') });
+});
+afterAll(() => {
+  vi.useRealTimers();
+});
+
+describe('tails: the shared-stretch test (5 stops, 1 km)', () => {
+  // Two regular patterns on one trunk; pattern B runs on past the trunk's end for `extra` stops.
+  const trips = (extra: number, spacingKm: number): { trips: DirectionTrip[]; coord: (id: string) => [number, number] | undefined } => {
+    const trunk = Array.from({ length: 10 }, (_, i) => `t${i}`);
+    const tail = Array.from({ length: extra }, (_, i) => `x${i}`);
+    const coords = new Map<string, [number, number]>();
+    trunk.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+    // Latitude degrees: 1 km is about 0.009.
+    tail.forEach((id, i) => coords.set(id, [43.7 + (i + 1) * spacingKm * 0.009, -79.4]));
+    const out: DirectionTrip[] = [];
+    // Both patterns run every 10 through midday (09:00-15:00), so both are regular.
+    for (let n = 0; n < 36; n++) {
+      out.push({ tripId: `a${n}`, visits: trunk.map((stopId, i) => ({ stopId, minutes: 540 + n * 10 + i })) });
+      out.push({ tripId: `b${n}`, visits: [...trunk, ...tail].map((stopId, i) => ({ stopId, minutes: 545 + n * 10 + i })) });
+    }
+    return { trips: out, coord: id => coords.get(id) };
+  };
+  it('5 stops over 1.2 km is a tail', () => {
+    const { trips: t, coord } = trips(5, 0.3);
+    expect(directionStretches('k', t, coord).tails.map(s => s.stops.length)).toEqual([5]);
+  });
+  it('5 stops over 0.9 km is not (TTC 507 Marine Parade cut short)', () => {
+    const { trips: t, coord } = trips(5, 0.22);
+    expect(directionStretches('k', t, coord).tails).toEqual([]);
+  });
+  it('4 stops over 1.25 km is not (TTC 29 dir 0 branches)', () => {
+    const { trips: t, coord } = trips(4, 0.42);
+    expect(directionStretches('k', t, coord).tails).toEqual([]);
+  });
+  it('a pattern that does not run steadily through any period is a variant: no tail, its trips count where they serve', () => {
+    // Pattern B runs 3 trips at 10:00-10:20 only: part of a period, not through it.
+    const { trips: t, coord } = trips(6, 0.5);
+    const fewB = t.filter(trip => trip.tripId.startsWith('a') || ['b6', 'b7', 'b8'].includes(trip.tripId));
+    const d = directionStretches('k', fewB, coord);
+    expect(d.regularPatternCount).toBe(1);
+    expect(d.tails).toEqual([]);
+    expect(d.variantTripCount).toBe(3);
+    expect(d.main!.tripCount).toBe(39);
+  });
+
+  it('a branch with a small share of trips that runs steadily all day is regular, and its run is a tail', () => {
+    // Pattern B every 30 through midday (12 trips) beside A every 10 (36): a quarter of the trips, steady.
+    const { trips: t, coord } = trips(6, 0.5);
+    const sparseB = t.filter(trip => trip.tripId.startsWith('a') || (trip.tripId.startsWith('b') && Number(trip.tripId.slice(1)) % 3 === 0));
+    const d = directionStretches('k', sparseB, coord);
+    expect(d.regularPatternCount).toBe(2);
+    expect(d.tails.map(s => s.stops.length)).toEqual([6]);
+  });
+
+  it('regular patterns that share no stop: the busiest is the main stretch, the other a tail (TTC 25 at Don Mills Station)', () => {
+    const coords = new Map<string, [number, number]>();
+    const south = Array.from({ length: 8 }, (_, i) => `s${i}`);
+    const north = Array.from({ length: 6 }, (_, i) => `n${i}`);
+    south.forEach((id, i) => coords.set(id, [43.6 + i * 0.005, -79.4]));
+    north.forEach((id, i) => coords.set(id, [43.7 + i * 0.005, -79.4]));
+    const out: DirectionTrip[] = [];
+    for (let n = 0; n < 36; n++) out.push({ tripId: `s${n}`, visits: south.map((stopId, i) => ({ stopId, minutes: 540 + n * 10 + i })) });
+    for (let n = 0; n < 24; n++) out.push({ tripId: `n${n}`, visits: north.map((stopId, i) => ({ stopId, minutes: 545 + n * 15 + i })) });
+    const d = directionStretches('k', out, id => coords.get(id));
+    expect(d.main!.stops).toEqual(south);
+    expect(d.tails.map(s => s.stops)).toEqual([north]);
+  });
+});
+
+describe('trip membership matches stopDepsByGroup (spec section 1)', () => {
+  it.each(['ttc-29-weekday', 'ttc-94-weekday', 'ttc-507-weekday', 'ttc-63-weekday'])('%s: every main stretch reads the same departures as the direction map at its stop', async name => {
+    const r = await run(name);
+    let checked = 0;
+    for (const [key, d] of r.stretches) {
+      if (!d.main) continue;
+      const map = [...new Set(r.stopDepsByGroup.get(key)?.get(d.main.refStop) ?? [])].sort((a, b) => a - b);
+      expect([...d.main.times], key).toEqual(map);
+      checked++;
+    }
+    expect(checked).toBeGreaterThan(0);
+  });
+});
+
+describe('route values from the selector (shadow fields)', () => {
+  it('TTC 507 Weekday midday: the Marine Parade tail sets the route, every 8-25', async () => {
+    const r = await run('ttc-507-weekday');
+    expect(mainValue(r, '507::0::Weekday', 'midday')).toBe(7);
+    expect(mainValue(r, '507::1::Weekday', 'midday')).toBe(8);
+    const tail = r.stretches.get('507::1::Weekday')!.tails.find(t => t.stops.length === 6)!;
+    expect(tail.refStop).toBe('14544');
+    expect(row(r, '507', 'Weekday', 1).stretchPeriodHeadway.midday).toBe(25);
+    expect(row(r, '507', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(25);
+    expect(row(r, '507', 'Weekday').stretchPeriodRange.midday).toEqual([8, 25]);
+  });
+
+  it('TTC 134 Weekday midday: time-of-day variants fold into the main stretch, every 15', async () => {
+    const r = await run('ttc-134-weekday');
+    for (const dir of [0, 1]) expect(row(r, '134', 'Weekday', dir).stretchPeriodHeadway.midday).toBe(15);
+    expect(row(r, '134', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(15);
+    expect(row(r, '134', 'Weekday').stretchPeriodRange.midday).toBeNull();
+    expect(row(r, '134', 'Weekday').stretchPeriodCoverage.midday).toBeLessThanOrEqual(60);
+  });
+
+  it('TTC 123 Weekday midday: the 2-trip West Mall row never sets the route; branches every 23', async () => {
+    const r = await run('ttc-123-weekday');
+    expect(mainValue(r, '123::0::Weekday', 'midday')).toBe(11);
+    expect(mainValue(r, '123::1::Weekday', 'midday')).toBe(10);
+    expect(row(r, '123', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(23);
+    expect(row(r, '123', 'Weekday').stretchPeriodRange.midday).toEqual([11, 23]);
+  });
+
+  it('TTC 102 Weekday midday: main every 5; the Major Mackenzie branch (102D, 18% of trips, every 30 all day) sets the route at 30', async () => {
+    // 102D runs steadily all day, so it is regular despite its share and its own run is a tail.
+    const r = await run('ttc-102-weekday');
+    expect(mainValue(r, '102::0::Weekday', 'midday')).toBe(5);
+    expect(mainValue(r, '102::1::Weekday', 'midday')).toBe(5);
+    expect(row(r, '102', 'Weekday', 1).stretchPeriodHeadway.midday).toBe(30);
+    expect(row(r, '102', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(30);
+    expect(row(r, '102', 'Weekday').stretchPeriodRange.midday).toEqual([5, 30]);
+  });
+
+  it('TTC 29 Weekday midday: converging origins form no tail in either direction, every 8', async () => {
+    // The spec expected one dir 1 tail (5 stops, 1.55 km); the oracle on this feed finds none in
+    // either direction (main stretches of 45 and 44 stops, every 8 at the middle stop).
+    const r = await run('ttc-29-weekday');
+    expect(r.stretches.get('29::0::Weekday')!.tails).toEqual([]);
+    expect(r.stretches.get('29::1::Weekday')!.tails).toEqual([]);
+    expect(row(r, '29', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(8);
+    expect(row(r, '29', 'Weekday').stretchPeriodRange.midday).toBeNull();
+  });
+
+  it('TTC 94 Weekday midday: main every 10, the Harbord tail every 20', async () => {
+    const r = await run('ttc-94-weekday');
+    expect(mainValue(r, '94::0::Weekday', 'midday')).toBe(10);
+    expect(row(r, '94', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(20);
+    expect(row(r, '94', 'Weekday').stretchPeriodRange.midday).toEqual([10, 20]);
+  });
+
+  it.each([['ttc-63-weekday', 'Weekday', 7], ['ttc-63-saturday', 'Saturday', 5]] as const)('TTC 63 %s: two trips joined at Ossington still share their stop; the halves are tails', async (name, day, every) => {
+    // TTC 63 runs each direction as two trips chained at Ossington Station. A chained trip's end
+    // is not a departure, but it is on the pattern, so the halves share Ossington (main stretch)
+    // and each half is a tail: oracle Oakwood 7/10 and Queen at Shaw 7/10 (dir 0), Oakwood 7/9
+    // and Ossington at Argyle 7/7 (dir 1) on weekdays; Saturday's tails run 62-69 midday trips
+    // each (every 5).
+    const r = await run(name);
+    for (const [dir, ossington] of [[0, '14746'], [1, '14743']] as const) {
+      const d = r.stretches.get(`63::${dir}::${day}`)!;
+      expect(d.main?.refStop).toBe(ossington);
+      expect(d.tails).toHaveLength(2);
+    }
+    expect(row(r, '63', day).stretchRoutePeriodHeadway.midday).toBe(every);
+  });
+
+  it('TTC 300 Weekday night dir 1: with no shared stop, the trunk (most stop visits) is main, not the 2-stop Pearson hop', async () => {
+    const r = await run('ttc-300-weekday-night');
+    const d = r.stretches.get('300::1::Weekday')!;
+    expect(d.main!.stops.length).toBeGreaterThan(100);
+    expect(d.main!.refStop).not.toBe('14278');
+  });
+
+  it('TTC 25 Weekday late: the north half (25C, no stop shared with 25B) is a tail; it runs every 6 with one 15-minute gap', async () => {
+    // 25B (Broadview - Don Mills Station) and 25C (Don Mills Station - Steeles) share no stop, so
+    // the busier 25B is the main stretch and 25C's run is a tail. Oracle at the north stop
+    // (Don Mills Rd at Seneca Hill, 1968), 23:00-26:00: 27 departures, every 6, max gap 15 (25:31-25:46).
+    const r = await run('ttc-25-weekday');
+    const d = r.stretches.get('25::0::Weekday')!;
+    expect(d.tails.map(t => t.stops.length)).toEqual([14]);
+    expect(d.tails[0].refStop).toBe('1968');
+    const tail = stretchPeriods(d.tails[0]).late;
+    expect([tail.value, tail.coverage]).toEqual([6, 15]);
+    expect(row(r, '25', 'Weekday').stretchRoutePeriodHeadway.late).toBe(6);
+  });
+
+  it('SEPTA 66 Weekday midday: the City Line branch past Primrose runs every 20 and sets the route', async () => {
+    // Oracle at the middle stop: main every 10 (max 10-11); tail Frankford Av & Primrose St
+    // (12 stops, 86 trips) every 20, max 21.
+    const r = await run('septa-66-weekday');
+    const tail = r.stretches.get('66::1::Weekday')!.tails.find(t => t.refStop === '21872')!;
+    expect(stretchPeriods(tail).midday.value).toBe(20);
+    expect(row(r, '66', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(20);
+    expect(row(r, '66', 'Weekday').stretchPeriodRange.midday).toEqual([10, 20]);
+  });
+
+  it('TransLink 044 Weekday AM: the 3-trip Dundarave Express is limited (#720), never a branch', async () => {
+    const r = await run('translink-044-weekday', 'translink');
+    for (const dir of [0, 1]) {
+      const d = r.stretches.get(`044::${dir}::Weekday`)!;
+      expect(d.regularPatternCount).toBe(1);
+      expect(d.tails).toEqual([]);
+      expect(d.variantTripCount).toBe(3);
+    }
+  });
+
+  it('CTA 93 Sunday evening: a 7-trip short turn does not shape the main stretch, so the route has no evening service', async () => {
+    // Oracle at the full route's middle stop (California & Lincoln): direction 1's last evening
+    // bus is 19:42, before the 21:00 midpoint; the evening trips run only Logan Square - Foster.
+    const r = await run('cta-93-sunday');
+    expect(r.stretches.get('93::1::Sunday')!.main!.stops.length).toBeGreaterThan(70);
+    expect(row(r, '93', 'Sunday').routeFilterHeadwayByPeriod.evening).toBeNull();
+  });
+
+  it('CTA 36 Saturday PM: every 12, not the #602 29', async () => {
+    const r = await run('cta-36-saturday');
+    expect(row(r, '36', 'Saturday').stretchRoutePeriodHeadway.pmPeak).toBe(12);
+    expect(row(r, '36', 'Saturday').stretchPeriodCoverage.pmPeak).not.toBe(85);
+  });
+
+  it('LA Metro 51 Weekday AM: two regular tails set the route at 24, so it fails every 20 (D1)', async () => {
+    const r = await run('lacmta-51-weekday');
+    expect(row(r, '51', 'Weekday').stretchRoutePeriodHeadway.amPeak).toBe(24);
+    expect(row(r, '51', 'Weekday').stretchRoutePeriodHeadway.amPeak).toBeGreaterThan(20);
+    expect(row(r, '51', 'Weekday').stretchPeriodRange.amPeak).toEqual([8, 24]);
+  });
+
+  it('TTC 505 Weekday midday: the Broadview short turns are variants, not tails; every 6', async () => {
+    const r = await run('ttc-505-weekday');
+    for (const dir of [0, 1]) {
+      const d = r.stretches.get(`505::${dir}::Weekday`)!;
+      expect(d.regularPatternCount).toBe(1);
+      expect(d.tails).toEqual([]);
+    }
+    expect(row(r, '505', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(6);
+    expect(row(r, '505', 'Weekday').stretchPeriodRange.midday).toBeNull();
+  });
+
+  it('MBTA 436 Weekday PM: at the middle stop dir 0 waits 69, so the route does not meet every 60 there', async () => {
+    // Step 2a read the route's PM full-window wait as 57 (passes every 60). The middle-stop wait
+    // is 69: the step 2a value is a pattern's own, not the direction's at its middle stop.
+    const r = await run('mbta-436-weekday');
+    expect(row(r, '436', 'Weekday').stretchPeriodCoverage.pmPeak).toBe(69);
+  });
+});
+
+describe('night from the selector (D2, D3, D7: 2-5am at the middle stop)', () => {
+  it('TTC 320 Weekday: passes every 30 and every 60', async () => {
+    const r = await run('ttc-320-weekday-night');
+    expect([row(r, '320', 'Weekday').stretchNight30, row(r, '320', 'Weekday').stretchNight60]).toEqual([true, true]);
+  });
+  it('TTC 301 Weekday: passes both on the fallback stretch (its regular patterns share no stop westbound)', async () => {
+    const r = await run('ttc-301-weekday-night');
+    expect([row(r, '301', 'Weekday').stretchNight30, row(r, '301', 'Weekday').stretchNight60]).toEqual([true, true]);
+  });
+  it('TTC 337 and 373 Weekday: every 30 with longer edges, so they pass every 60 and fail every 30', async () => {
+    const r = await run('ttc-337-373-night');
+    for (const route of ['337', '373']) {
+      expect([row(r, route, 'Weekday').stretchNight30, row(r, route, 'Weekday').stretchNight60], route).toEqual([false, true]);
+    }
+  });
+  it('TTC 320 Sunday: passes both', async () => {
+    const r = await run('ttc-320-sunday-night');
+    expect([row(r, '320', 'Sunday').stretchNight30, row(r, '320', 'Sunday').stretchNight60]).toEqual([true, true]);
+  });
+});
+
+describe('night on disconnected pieces (NYC subway S)', () => {
+  it('S keeps passing: the 42 St shuttle stops overnight, Franklin Av and Rockaway Park run all night', async () => {
+    const r = await run('nyct-subway-s-weekday', 'nyct');
+    const p = row(r, 'S', 'Weekday');
+    expect(r.stretches.get('S::0::Weekday')!.disconnected).toBe(true);
+    expect([p.stretchNight30, p.stretchNight60]).toEqual([true, true]);
+  });
+});
+
+describe('night service on part of the route counts, on the part it runs (Ryan, 2026-10-15)', () => {
+  it('CTA 87: the owl covers part of the route; it qualifies at 60 as part of the route, and fails 30', async () => {
+    // The daytime main stretch's middle stop opens at 4:10 (no night service there), so the night
+    // version decides. Oracle at its middle stops, 2-5: 14540 (dir 0) 9 departures, max gap 30;
+    // 14778 (dir 1) 8 departures, max gap 31.
+    const r = await run('cta-87-weekday');
+    expect(r.stretches.get('87::0::Weekday')!.main!.stops.length).toBeGreaterThan(13);
+    const rows = r.rows.filter(p => p.routeShortName === '87' && p.day === 'Weekday');
+    expect(rows.every(p => p.stretchNight60 === true && p.stretchNightPartial60 === true)).toBe(true);
+    expect(rows.every(p => p.stretchNight30 === false)).toBe(true);
+    const lit = rows.filter(p => p.nightService60);
+    expect(lit.length).toBeGreaterThan(0);
+    expect(lit.every(p => p.nightServicePartOfRoute === true && p.nightServiceStops.length >= 2)).toBe(true);
+  });
+  it('NYC subway 3, 5, M, N and R run a shorter night route: each qualifies at 30 and 60 as part of the route', async () => {
+    // Oracle at each night middle stop, 2-5: every 20 (227S/226N, 504S/503N, M06S/M08N, R27S, R35S/R35N).
+    const r = await run('nyct-subway-night-weekday', 'nyct');
+    for (const route of ['3', '5', 'M', 'N', 'R']) {
+      const rows = r.rows.filter(p => p.routeShortName === route && p.day === 'Weekday');
+      expect(rows.every(p => p.stretchNight30 === true && p.stretchNight60 === true), route).toBe(true);
+      expect(rows.some(p => p.nightServicePartOfRoute === true), route).toBe(true);
+    }
+  });
+});
+
+describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
+  it('a dead start before about 4:09 is never sustained at the midpoint; today\'s flags are untouched', async () => {
+    const r = await run('yrt-viva-weekday', 'yrt');
+    for (const route of ['blue', 'purple', 'orange', 'yellow']) {
+      for (const dir of [0, 1]) {
+        const p = row(r, route, 'Weekday', dir);
+        expect(p.stretchPeriodSustainedMid.overnight, `${route} ${dir}`).not.toBe(true);
+        expect(p.headwayByPeriodSustainedMid?.overnight, `${route} ${dir}`).not.toBe(true);
+      }
+    }
+    expect(row(r, 'yellow', 'Weekday', 0).headwayByPeriodSustained.overnight).not.toBe(true);
+    expect(row(r, 'orange', 'Weekday', 1).headwayByPeriodSustained.overnight).toBe(true);
+    expect(row(r, 'purple', 'Weekday', 1).headwayByPeriodSustained.overnight).toBe(true);
+  });
+});
+
+describe('route roll-up (rule 1)', () => {
+  const dir = (value: number | null) => ({
+    period: Object.fromEntries(['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'].map(k => [k, { value, coverage: value, sustained: true, sustainedMid: true, mainValue: value, filterValue: value, runs: value != null, hasService: value != null }])),
+    night30: true,
+    night60: true,
+    nightPartial30: false,
+    nightPartial60: false,
+    allDay: value,
+    middayWait: value,
+    midday: { hasReading: true, runs: true, wait: value },
+    limitedOnly: false,
+    frequent: false,
+    research: { daytime15: false, daytime30: false, extended15: false, extended30: false },
+  }) as any;
+  it('a direction with no stretch data leaves the route with no value, never the other direction alone', () => {
+    const route = rollupRoute([dir(10), null]);
+    expect(route.period.midday.value).toBeNull();
+    expect([route.night30, route.night60]).toEqual([false, false]);
+  });
+  it('a direction with no value in a period leaves the route with none in that period', () => {
+    expect(rollupRoute([dir(10), dir(null)]).period.midday.value).toBeNull();
+    expect(rollupRoute([dir(10), dir(20)]).period.midday.value).toBe(20);
+  });
+  it('filter value: a direction with only stray trips nulls the route; one with no service at all is skipped (one-way peak)', () => {
+    const stray = dir(10);
+    stray.period.midday = { ...stray.period.midday, filterValue: null, runs: false, hasService: true };
+    const none = dir(10);
+    none.period.midday = { ...none.period.midday, filterValue: null, runs: false, hasService: false };
+    expect(rollupRoute([dir(10), stray]).period.midday.filterValue).toBeNull();
+    expect(rollupRoute([dir(10), none]).period.midday.filterValue).toBe(10);
+  });
+  it('all day: a limited direction (#720) leaves the route with no all-day value, never the other direction alone (#899; GO 43 read every 30)', () => {
+    const limited = { ...dir(55), allDay: null, limitedOnly: true };
+    expect(rollupRoute([dir(30), limited]).allDay).toBeNull();
+    expect(rollupRoute([dir(30), dir(55)]).allDay).toBe(55);
+  });
+});
+
+describe('night tails (D3 with the D8 midpoint)', () => {
+  // A trunk every 20 all night, and a branch tail whose only window trips start its day at
+  // 4:47 and 4:57 (CTA 20's downtown loop): the tail does not run at night and drops out.
+  const coords = new Map<string, [number, number]>();
+  const trunk = Array.from({ length: 10 }, (_, i) => `t${i}`);
+  const tail = Array.from({ length: 6 }, (_, i) => `x${i}`);
+  trunk.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+  tail.forEach((id, i) => coords.set(id, [43.7 + (i + 1) * 0.004, -79.4]));
+  const build = (tailStarts: number[]) => {
+    const out: DirectionTrip[] = [];
+    // Every 20 from 01:00 to 23:00 (+24h for the night) on the trunk.
+    for (let m = 60; m <= 1380 + 360; m += 20) out.push({ tripId: `a${m}`, visits: trunk.map((stopId, i) => ({ stopId, minutes: m + i })) });
+    for (const m of tailStarts) out.push({ tripId: `b${m}`, visits: [...trunk, ...tail].map((stopId, i) => ({ stopId, minutes: m + i })) });
+    return directionStretches('k', out, id => coords.get(id));
+  };
+  it('a tail that only starts its day inside the window is ignored', () => {
+    // Tail trips from 4:47 every 30 through the day.
+    const d = build(Array.from({ length: 40 }, (_, i) => 287 + 30 * i));
+    expect(d.tails).toHaveLength(1);
+    expect(rollupDirection(d)!.night60).toBe(true);
+  });
+  it('a tail that runs across the window midpoint must pass', () => {
+    // Tail trips at 2:10 and 4:20 only: across the midpoint, a 130-minute gap.
+    const d = build([1570, 1700, ...Array.from({ length: 36 }, (_, i) => 360 + 30 * i)]);
+    expect(rollupDirection(d)!.night60).toBe(false);
+  });
+});
+
+describe('Night flags read the stretches (step 4 switch)', () => {
+  it('CTA 77 passes Night 60 on its main stretch; its westbound rows are lit though the owl runs on an undrawn pattern', async () => {
+    const r = await run('cta-77-weekday');
+    const rows = r.rows.filter(p => p.routeShortName === '77' && p.day === 'Weekday');
+    expect(rows.every(p => p.stretchNight60 === true)).toBe(true);
+    for (const dir of [0, 1]) expect(rows.some(p => p.directionId === dir && p.nightService60 === true), `dir ${dir}`).toBe(true);
+    expect(rows.every(p => p.nightService === p.nightService60)).toBe(true);
+  });
+  it('a route that fails keeps every row dark (CTA 87 at 30)', async () => {
+    const r = await run('cta-87-weekday');
+    expect(r.rows.filter(p => p.routeShortName === '87' && p.day === 'Weekday').some(p => p.nightService30)).toBe(false);
+  });
+  it('TTC 337 rows pass 60 and not 30, as the route does', async () => {
+    const r = await run('ttc-337-373-night');
+    const rows = r.rows.filter(p => p.routeShortName === '337' && p.day === 'Weekday' && p.nightService60);
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.some(p => p.nightService30)).toBe(false);
+  });
+});
+
+describe('step 5a: the frequency filter reads the stretch selector (rv_)', () => {
+  const filterable = (r: Run, route: string) => {
+    const features = r.rows.filter(p => p.routeShortName === route).map(p => ({ properties: JSON.parse(JSON.stringify(p)) }));
+    normalizeRouteFilterFeatures(features);
+    return features.map(f => f.properties);
+  };
+  const passes = (r: Run, route: string, day: string, period: any, max: number) => routePassesHeadwayFilter(filterable(r, route), period, day, max);
+
+  it('LA Metro 51 Weekday AM: the slower branch (24) decides, so it fails every 20 and passes every 30 (D1)', async () => {
+    const r = await run('lacmta-51-weekday');
+    expect([passes(r, '51', 'Weekday', 'amPeak', 20), passes(r, '51', 'Weekday', 'amPeak', 30)]).toEqual([false, true]);
+  });
+  it('TTC 134 Weekday midday passes every 15 (today the 231 wait hides it, #907)', async () => {
+    const r = await run('ttc-134-weekday');
+    expect(passes(r, '134', 'Weekday', 'midday', 15)).toBe(true);
+  });
+  it('TTC 123 Weekday midday: 23 (branches), passes 30 and fails 20', async () => {
+    const r = await run('ttc-123-weekday');
+    expect([passes(r, '123', 'Weekday', 'midday', 20), passes(r, '123', 'Weekday', 'midday', 30)]).toEqual([false, true]);
+  });
+  it('TTC 507 Weekday midday: Marine Parade (25) decides, passes 30 and fails 20', async () => {
+    const r = await run('ttc-507-weekday');
+    expect([passes(r, '507', 'Weekday', 'midday', 20), passes(r, '507', 'Weekday', 'midday', 30)]).toEqual([false, true]);
+  });
+  it('CTA 36 Saturday PM: 12, passes every 15 (#602)', async () => {
+    const r = await run('cta-36-saturday');
+    expect(passes(r, '36', 'Saturday', 'pmPeak', 15)).toBe(true);
+  });
+  it('TTC 29 Weekday midday: every 8 on its main stretch, passes every 10', async () => {
+    const r = await run('ttc-29-weekday');
+    expect(passes(r, '29', 'Weekday', 'midday', 10)).toBe(true);
+  });
+  it('MBTA 436 Weekday PM: the middle-stop wait of 69 fails every 60', async () => {
+    const r = await run('mbta-436-weekday');
+    expect(passes(r, '436', 'Weekday', 'pmPeak', 60)).toBe(false);
+  });
+  it('YRT Viva overnight: stray morning runs only, so no route is drawn under All overnight', async () => {
+    const r = await run('yrt-viva-weekday', 'yrt');
+    for (const route of ['blue', 'purple', 'orange', 'yellow']) {
+      expect(passes(r, route, 'Weekday', 'overnight', Infinity), route).toBe(false);
+      expect(passes(r, route, 'Weekday', 'overnight', 60), route).toBe(false);
+    }
+  });
+});
+
+describe('step 6 shadow: headline, midday wait and Frequent Service on the stretches', () => {
+  it.each([
+    // [fixture, route, day, all-day headline, Frequent Service]
+    ['ttc-94-weekday', '94', 'Weekday', 20, false], // the Harbord tail every 20 decides (D1)
+    ['ttc-29-weekday', '29', 'Weekday', 8, true], // one main stretch every 8 (today 16 per origin)
+    ['cta-j14-saturday', 'J14', 'Saturday', 10, false],
+    ['ttc-507-weekday', '507', 'Weekday', 19, false], // the Marine Parade tail decides (D1): every 19 over 7-22 (25 at midday)
+    ['ttc-505-weekday', '505', 'Weekday', 6, true],
+  ] as const)('%s: all-day %s', async (name, route, day, allDay, frequent) => {
+    const r = await run(name);
+    const p = row(r, route, day);
+    expect(p.stretchAllDayHeadway).toBe(allDay);
+    expect(p.stretchFrequentService).toBe(day === 'Weekday' ? frequent : false);
+  });
+});
+
+describe('runs through the period: the settled checks catch a straggler before the next service', () => {
+  it.each([['ttc-900-weekday', '900'], ['ttc-102-weekday', '102']])('%s overnight is not drawn under All and has no value', async (name, route) => {
+    // TTC 900: 26:11-26:41, then nothing until 29:19 (typical 15). TTC 102: 26:02-26:16 then 29:10
+    // (typical 12), and 26:43 then 29:13 the other way.
+    const r = await run(name);
+    const p = row(r, route, 'Weekday');
+    expect(p.routeRunsByPeriod.overnight).toBe(false);
+    expect(p.routeFilterHeadwayByPeriod.overnight).toBeNull();
+  });
+});
+
+describe('review fixes: partial night only where night service misses the main stretch; holes are internal gaps', () => {
+  it('TTC 353 and 395 run at night on their corridor with a 66-67 minute opening gap: they fail Night, as their overnight value says', async () => {
+    const r = await run('ttc-353-395-weekday');
+    for (const [route, wait] of [['353', 66], ['395', 67]] as const) {
+      const p = row(r, route, 'Weekday');
+      expect([p.stretchNight30, p.stretchNight60, p.stretchNightPartial60], route).toEqual([false, false, false]);
+      expect(p.routeFilterHeadwayByPeriod.overnight, route).toBe(wait);
+    }
+  });
+  it('LA Metro 105: the Vernon owl stays a real part-of-route night service', async () => {
+    const r = await run('lacmta-105-weekday');
+    const p = row(r, '105', 'Weekday');
+    expect([p.stretchNight60, p.stretchNightPartial60]).toEqual([true, true]);
+  });
+  it('CTA 134 and 143 PM: one-way peak service that starts at 16:14 still runs in the PM (drawn under All), read on its full-window wait', async () => {
+    const r = await run('cta-134-143-weekday');
+    for (const route of ['134', '143']) {
+      const p = row(r, route, 'Weekday');
+      expect(p.routeRunsByPeriod.pmPeak, route).toBe(true);
+      expect(p.routeFilterHeadwayByPeriod.pmPeak, route).not.toBeNull();
+    }
+  });
+});
+
+describe('step 6: the all-day filter, the midday cap and Frequent Service read the stretches', () => {
+  const filterable = (r: Run, route: string) => {
+    const features = r.rows.filter(p => p.routeShortName === route).map(p => ({ properties: JSON.parse(JSON.stringify(p)) }));
+    normalizeRouteFilterFeatures(features);
+    return features.map(f => f.properties);
+  };
+  it.each([
+    // [fixture, route, day, passes, fails, Frequent Service on some row]
+    ['ttc-94-weekday', '94', 'Weekday', 20, 15, false],
+    ['ttc-29-weekday', '29', 'Weekday', 10, 5, true],
+    ['ttc-507-weekday', '507', 'Weekday', 20, 15, false],
+    ['ttc-505-weekday', '505', 'Weekday', 10, 5, true],
+    ['cta-j14-saturday', 'J14', 'Saturday', 10, 5, false],
+    ['ttc-134-weekday', '134', 'Weekday', 15, 10, false],
+    // The 8-stop Beverly tail runs only at the peaks (a 313-minute midday hole): limited, so it takes
+    // no part; the route is every 10 all day and Frequent Service.
+    ['cta-9-weekday', '9', 'Weekday', 10, 5, true],
+  ] as const)('%s all day passes %s, fails %s', async (name, route, day, pass, fail, frequent) => {
+    const r = await run(name);
+    const rows = filterable(r, route);
+    expect(routePassesHeadwayFilter(rows, 'all', day, pass)).toBe(true);
+    expect(routePassesHeadwayFilter(rows, 'all', day, fail)).toBe(false);
+    expect(rows.filter(p => p.day === day).some(p => p.frequentService === true)).toBe(frequent);
+  });
+  it('card rows: 505 names one row per direction (its Broadview Ave short turns are variants); 507 has a Long Branch and a Marine Parade tail', async () => {
+    const r505 = await run('ttc-505-weekday');
+    const roles505 = r505.rows.filter(p => p.day === 'Weekday').map(p => [p.directionId, p.headsign, p.stretchRole]);
+    expect(roles505.filter(([, h]) => h === 'Broadview Ave').every(([, , role]) => role === 'variant')).toBe(true);
+    const r507 = await run('ttc-507-weekday');
+    const tails = r507.rows.filter(p => p.day === 'Weekday' && p.directionId === 1 && p.stretchRole === 'tail').map(p => p.headsign).sort();
+    expect(tails).toEqual(['Long Branch', 'Marine Parade']);
+  });
+});
+
+describe('step 6: a night route keeps an all-day value (phase 2 overnight fallback)', () => {
+  it('TTC 320 Weekday night reads its overnight cadence all day, as its headline does', async () => {
+    const r = await run('ttc-320-weekday-night');
+    expect(row(r, '320', 'Weekday').routeAllDayHeadway).toBeLessThan(60);
+  });
+});
+
+describe('step 6: a time-limited or rush-hour-only route has no all-day value (#720 classes)', () => {
+  it('OC Transpo 226 (11 peak trips) reads no all-day value instead of every 18', async () => {
+    const r = await run('octranspo-226-weekday');
+    const rows = r.rows.filter(p => p.routeShortName === '226' && p.day === 'Weekday');
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.every(p => p.routeAllDayHeadway === 999999)).toBe(true);
+    expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 60)).toBe(false);
+    // Its peak service still reads.
+    expect(routePassesHeadwayFilter(rows, 'pmPeak', 'Weekday', 30)).toBe(true);
+  });
+});
+
+describe('step 6 review: all-day value and limited service from the stretch, not phase 2 per-shape classes', () => {
+  const routeRows = (r: Run, route: string) => r_(r, route, 'Weekday');
+  const r_ = (r: Run, route: string, day: string) => {
+    const rows = r.rows.filter(p => p.routeShortName === route && p.day === day);
+    expect(rows.length).toBeGreaterThan(0);
+    // A fixture cut to one weekday is partial-weekday and silently keeps today's fields.
+    expect(rows.every(p => p.routeFilterHeadwayByPeriod !== undefined)).toBe(true);
+    return rows;
+  };
+  it('CapMetro 7 (every 16, 7:00-22:00 both ways, a shape per trip) keeps its all-day value and is not limited', async () => {
+    const rows = routeRows(await run('capmetro-7-weekday'), '7');
+    expect(rows[0].routeAllDayHeadway).toBe(17);
+    expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 30)).toBe(true);
+    expect(rows.some(p => isLimitedService(p))).toBe(false);
+  });
+  it('CTA 108 and X9 (rush hour only, a 4-5 hour midday gap both ways) have no all-day value and are limited', async () => {
+    const r = await run('cta-108-x9-weekday', 'cta');
+    for (const route of ['108', 'X9']) {
+      const rows = routeRows(r, route);
+      expect(rows[0].routeAllDayHeadway).toBe(999999);
+      expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 60)).toBe(false);
+      expect(rows.every(p => isLimitedService(p))).toBe(true);
+    }
+  });
+  it('TTC 119 (every 30 at midday both ways on the shared stretch, alternating branches) reads its midday and passes all day', async () => {
+    const rows = routeRows(await run('ttc-119-133-336-weekday', 'ttc'), '119');
+    expect(rows[0].routeFilterHeadwayByPeriod.midday).toBe(30);
+    expect(rows[0].routeMiddayCap).toBe(0);
+    expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 30)).toBe(true);
+    expect(rows.some(p => isLimitedService(p))).toBe(false);
+  });
+  it('TTC 133 is not Frequent Service: southbound at Centenary starts 9:04, northbound the Centenary tail ends 14:53', async () => {
+    const rows = routeRows(await run('ttc-119-133-336-weekday', 'ttc'), '133');
+    expect(rows[0].stretchFrequentService).toBe(false);
+    expect(rows.some(p => p.frequentService)).toBe(false);
+  });
+  it('night routes keep an all-day value by phase 2\'s overnight fallback, the slower branch deciding (TTC 300, 336, 337)', async () => {
+    const r = await run('ttc-119-133-336-weekday', 'ttc');
+    expect(routeRows(r, '336')[0].routeAllDayHeadway).toBe(20);
+    expect(routeRows(r, '337')[0].routeAllDayHeadway).toBe(30);
+    // Bloor trunk every 8 at night; its branches every 15 and 16.
+    expect(routeRows(await run('ttc-300-weekday-night', 'ttc'), '300')[0].routeAllDayHeadway).toBe(15);
+  });
+  it('TTC 134 (every 15 at midday) is not limited service, though some of its patterns read time-limited', async () => {
+    const rows = routeRows(await run('ttc-134-weekday', 'ttc'), '134');
+    expect(rows[0].routeFilterHeadwayByPeriod.midday).toBe(15);
+    expect(rows.some(p => p.serviceClass === 'time-limited')).toBe(true);
+    expect(rows.some(p => isLimitedService(p))).toBe(false);
+  });
+  // Branches that are not phase 2 regular now count (D1). Oracle at each tail's middle stop.
+  it('TTC 76: the 76B branch, northbound every 20-36 from 7:00 to 21:46, decides all day (25) and fails Frequent Service', async () => {
+    const rows = routeRows(await run('ttc-76-weekday', 'ttc'), '76');
+    expect(rows[0].routeAllDayHeadway).toBe(25);
+    expect(rows.some(p => p.frequentService)).toBe(false);
+  });
+  it('SEPTA T3 Saturday: the 12-trip Darby branch, spread over about 12 hours, decides all day', async () => {
+    const rows = r_(await run('septa-t3-saturday', 'septa'), 'T3', 'Saturday');
+    expect(rows[0].routeAllDayHeadway).toBe(91);
+  });
+  it('MiWay 45: the 45-only stretch to Meadowvale runs every 30 and decides; the peak-only 45A Hadwen tail (311-min midday gap) does not', async () => {
+    const rows = routeRows(await run('miway-45-weekday', 'miway'), '45');
+    expect(rows[0].routeAllDayHeadway).toBe(32);
+  });
+  it('SEPTA 113 and 44: branches every 60 (113 to Chester and Claymont) and every 45 (44 by Montgomery Av) decide', async () => {
+    const r = await run('septa-113-44-weekday', 'septa');
+    expect(routeRows(r, '113')[0].routeAllDayHeadway).toBe(60);
+    expect(routeRows(r, '44')[0].routeAllDayHeadway).toBe(42);
+  });
+  it('TransLink 321: every 10 all day, but not Frequent Service: its White Rock end starts 7:20 and has a 16-minute gap', async () => {
+    const rows = routeRows(await run('translink-321-weekday', 'translink'), '321');
+    expect(rows[0].routeAllDayHeadway).toBe(10);
+    expect(rows.some(p => p.frequentService)).toBe(false);
+  });
+  it('GO 88 Saturday (every 90-120 at midday both ways) is not limited: the 3-trip 88C spread over the day is a schedule and shapes the main stretch', async () => {
+    const rows = r_(await run('go-88-saturday', 'go'), '88', 'Saturday');
+    expect(rows.some(p => p.routeHasLimitedDirection === true)).toBe(false);
+    expect(rows[0].routeAllDayHeadway).toBeLessThan(999999);
+  });
+});

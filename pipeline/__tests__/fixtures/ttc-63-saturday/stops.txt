@@ -1,0 +1,70 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+9895,9895,Eglinton Ave West at Everden Rd - Cedarvale Station,,43.698853,-79.435955,,,,,,1
+2380,2380,Eglinton Ave West at Marlee Ave,,43.698127,-79.439204,,,,,,1
+13624,13624,King St West at Shaw St East Side,,43.641451,-79.414528,,,,,,1
+5904,5904,Oakwood Ave at Eglinton Ave West South Side,,43.696926,-79.442725,,,,,,1
+5911,5911,Oakwood Ave at Rogers Rd,,43.687031,-79.438568,,,,,,1
+5974,5974,Ossington Ave at Hepbourne St,,43.659829,-79.424863,,,,,,1
+11695,11695,Shaw St at King St West North Side,,43.641791,-79.415057,,,,,,1
+2379,2379,Eglinton Ave West at Marlee Ave,,43.697932,-79.439508,,,,,,1
+5954,5954,Ossington Ave at Churchill Ave,,43.651764,-79.421588,,,,,,1
+5914,5914,Oakwood Ave at St Clair Ave West North Side,,43.680177,-79.435813,,,,,,1
+5972,5972,Ossington Ave at Harbord St,,43.6584,-79.424161,,,,,,1
+5915,5915,Oakwood Ave at St Clair Ave West,,43.679367,-79.435722,,,,,,1
+5959,5959,Ossington Ave at Davenport Rd,,43.674503,-79.430794,,,,,,1
+5905,5905,Oakwood Ave at Vaughan Rd,,43.692326,-79.440768,,,,,,1
+6850,6850,Queen St West at Shaw St,,43.64456,-79.416511,,,,,,1
+5903,5903,Oakwood Ave at Eglinton Ave West,,43.696886,-79.442511,,,,,,1
+5963,5963,Ossington Ave at Dundas St West North Side,,43.649724,-79.420791,,,,,,1
+13895,13895,Ossington Ave at Dupont St,,43.670395,-79.429239,,,,,,1
+5977,5977,Ossington Ave at Pendrith St,,43.665987,-79.427402,,,,,,1
+5957,5957,Ossington Ave at College St,,43.654463,-79.422802,,,,,,1
+5958,5958,Ossington Ave at Davenport Rd South Side,,43.674344,-79.430882,,,,,,1
+949,949,Davenport Rd at Oakwood Ave,,43.674514,-79.433361,,,,,,1
+5978,5978,Ossington Ave at Queen St West North Side,,43.644832,-79.419001,,,,,,1
+5952,5952,Ossington Ave at Argyle St,,43.646988,-79.419915,,,,,,1
+5898,5898,Oakwood Ave at Davenport Rd,,43.674783,-79.433978,,,,,,2
+5967,5967,Ossington Ave at Salvador Allende Crt,,43.671948,-79.429712,,,,,,1
+5917,5917,Oakwood Ave at Vaughan Rd,,43.692373,-79.440597,,,,,,1
+5910,5910,Oakwood Ave at Jesmond Ave,,43.689834,-79.439719,,,,,,1
+5973,5973,Ossington Ave at Hepbourne St North Side,,43.660046,-79.424765,,,,,,2
+5897,5897,Oakwood Ave at Clovelly Ave,,43.695054,-79.441966,,,,,,2
+5965,5965,Ossington Ave at Dupont St,,43.669929,-79.42888,,,,,,1
+5956,5956,Ossington Ave at College St,,43.654282,-79.422547,,,,,,1
+6052,6052,Shaw St at Queen St West,,43.644422,-79.416079,,,,,,1
+5896,5896,Oakwood Ave at Clovelly Ave,,43.694727,-79.441622,,,,,,1
+11691,11691,Shaw St at Adelaide St West,,43.642702,-79.415587,,,,,,1
+5976,5976,Ossington Ave at Leeds St,,43.663933,-79.426369,,,,,,1
+5961,5961,Ossington Ave at Dewson St,,43.65672,-79.423493,,,,,,1
+5895,5895,Oakwood Ave at Burlington Cres North Side,,43.677165,-79.434813,,,,,,1
+5960,5960,Ossington Ave at Dewson St South Side,,43.656601,-79.423646,,,,,,1
+5966,5966,Ossington Ave at Essex St,,43.66628,-79.427347,,,,,,1
+5970,5970,Ossington Ave at Hallam St,,43.668114,-79.428289,,,,,,1
+5969,5969,Ossington Ave at Hallam St,,43.667784,-79.427976,,,,,,1
+5908,5908,Oakwood Ave at Highview Cres,,43.676397,-79.43463,,,,,,1
+5975,5975,Ossington Ave at Leeds St South Side,,43.663872,-79.426518,,,,,,1
+5962,5962,Ossington Ave at Dundas St West,,43.649438,-79.420865,,,,,,1
+6050,6050,Shaw St at Adelaide St West,,43.642626,-79.415367,,,,,,1
+5913,5913,Oakwood Ave at Rosemount Ave,,43.678178,-79.435399,,,,,,1
+5955,5955,Ossington Ave at Churchill Ave,,43.652123,-79.421898,,,,,,2
+13625,13625,Strachan Ave at Canniff St,,43.641543,-79.411854,,,,,,1
+13344,13344,King St West at Sudbury St,,43.640853,-79.417479,,,,,,1
+5916,5916,Oakwood Ave at St Clair Ave West,,43.679864,-79.435844,,,,,,1
+5900,5900,Oakwood Ave at Earlsdale Ave,,43.685104,-79.438004,,,,,,1
+5912,5912,Oakwood Ave at Rogers Rd,,43.687221,-79.438826,,,,,,1
+5979,5979,Ossington Ave at Queen St West,,43.644501,-79.419048,,,,,,1
+5909,5909,Oakwood Ave at Jesmond Ave,,43.689468,-79.439406,,,,,,1
+5968,5968,Ossington Ave at Salvador Allende Crt South Side,,43.671906,-79.429892,,,,,,1
+5899,5899,Oakwood Ave at Earlsdale Ave,,43.685432,-79.437922,,,,,,1
+5971,5971,Ossington Ave at Harbord St South Side,,43.658263,-79.424266,,,,,,1
+14536,14536,Strachan Ave at East Liberty St,,43.639439,-79.411078,,,,,,1
+14537,14537,East Liberty St at Pirandello St West Side,,43.638634,-79.414425,,,,,,1
+14538,14538,East Liberty St at Lynn Williams St,,43.638683,-79.416984,,,,,,1
+14539,14539,Liberty St at Atlantic Ave,,43.638372,-79.420366,,,,,,2
+14540,14540,Atlantic Ave at King St West,,43.639911,-79.421069,,,,,,1
+14681,14681,Cedarvale Station,,43.699453,-79.435904,,,,,,1
+14743,14743,Ossington Station,,43.662271,-79.426546,,,,,,1
+14746,14746,Ossington Station,,43.662437,-79.426176,,,,,,1
+15890,15890,Ossington Ave at Argyle St North Side,,43.647166,-79.419842,,,,,,1
+15985,15985,Oakwood Ave at Conway Ave,,43.682738,-79.437077,,,,,,1
+15986,15986,Oakwood Ave at Conway Ave North Side,,43.682962,-79.436877,,,,,,1

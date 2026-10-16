@@ -114,10 +114,18 @@ describe('tile rules fingerprint', () => {
   // #899 adds the worstDirectionMiddayCap key and an all-day filter clause that reads it. No
   // version bump, as for #710's pws keys: older tiles lack the key and evaluate exactly as before,
   // and older apps ignore it; the overview tiles keep it too. Hash only.
+  // Frequency focus step 2a: a pool member without a coverage value no longer opens the route's
+  // full-window wait to every sibling, which changes worstDirectionPeriodCoverageHeadway in tiles:
+  // version 5, bumped once for the whole focus branch.
+  // Step 3 strips its shadow stretch keys in prepareAgencyRoutesForTiles; the tile allowlist already
+  // left them out, so no tile value changes: hash only.
+  // Step 5a adds the rv_/rr_ route filter keys and reads them first in the period filter: a tile
+  // change, covered by the same version 5 bump (one bump for the whole focus branch).
+  // Step 6 adds routeAllDayHeadway and routeMiddayCap, read first by the all-day filter: same bump.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
-      version: 4,
-      fingerprint: 'e633b752dfc9092602489869283ca2ce5c627d23eb3be7fb1b1a56e480dc9559',
+      version: 5,
+      fingerprint: '4168c399ca67e5dae7bff48276cc82bc4a290f77f8df8f605af6437646c6f610',
     });
   });
 });

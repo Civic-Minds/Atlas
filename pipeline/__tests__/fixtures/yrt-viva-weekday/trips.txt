@@ -1,0 +1,591 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+601,155.0.1,2002383,Newmarket Terminal - NB,,0,202242,83258,1,1
+601,155.0.1,2002384,Newmarket Terminal - NB,,0,202241,83258,1,1
+601,155.0.1,2002385,Newmarket Terminal - NB,,0,202236,83258,1,1
+601,155.0.1,2002386,Newmarket Terminal - NB,,0,202235,83258,1,1
+601,155.0.1,2002387,Newmarket Terminal - NB,,0,202234,83258,1,1
+601,155.0.1,2002388,Newmarket Terminal - NB,,0,202233,83258,1,1
+601,155.0.1,2002389,Newmarket Terminal - NB,,0,202255,83258,1,1
+601,155.0.1,2002390,Newmarket Terminal - NB,,0,202252,83258,1,1
+601,155.0.1,2002391,Newmarket Terminal - NB,,0,202239,83258,1,1
+601,155.0.1,2002392,Newmarket Terminal - NB,,0,202254,83258,1,2
+601,155.0.1,2002393,Newmarket Terminal - NB,,0,202237,83258,1,2
+601,155.0.1,2002394,Newmarket Terminal - NB,,0,202247,83258,1,2
+601,155.0.1,2002395,Newmarket Terminal - NB,,0,202246,83258,1,2
+601,155.0.1,2002396,Newmarket Terminal - NB,,0,202238,83258,1,2
+601,155.0.1,2002397,Newmarket Terminal - NB,,0,202253,83258,1,2
+601,155.0.1,2002398,Newmarket Terminal - NB,,0,202242,83258,1,2
+601,155.0.1,2002399,Newmarket Terminal - NB,,0,202241,83258,1,2
+601,155.0.1,2002400,Newmarket Terminal - NB,,0,202236,83258,1,2
+601,155.0.1,2002401,Newmarket Terminal - NB,,0,202235,83258,1,2
+601,155.0.1,2002402,Newmarket Terminal - NB,,0,202234,83258,1,2
+601,155.0.1,2002403,Newmarket Terminal - NB,,0,202226,83258,1,1
+601,155.0.1,2002404,Newmarket Terminal - NB,,0,202228,83258,1,1
+601,155.0.1,2002405,Newmarket Terminal - NB,,0,202227,83258,1,1
+601,155.0.1,2002406,Newmarket Terminal - NB,,0,202250,83258,1,1
+601,155.0.1,2002407,Newmarket Terminal - NB,,0,202249,83258,1,1
+601,155.0.1,2002408,Newmarket Terminal - NB,,0,202231,83258,1,1
+601,155.0.1,2002409,Newmarket Terminal - NB,,0,202247,83258,1,1
+601,155.0.1,2002410,Newmarket Terminal - NB,,0,202246,83258,1,1
+601,155.0.1,2002411,Newmarket Terminal - NB,,0,202233,83258,1,1
+601,155.0.1,2002412,Newmarket Terminal - NB,,0,202242,83258,1,1
+601,155.0.1,2002413,Newmarket Terminal - NB,,0,202241,83258,1,1
+601,155.0.1,2002414,Newmarket Terminal - NB,,0,202239,83258,1,1
+601,155.0.1,2002415,Newmarket Terminal - NB,,0,202232,83258,1,1
+601,155.0.1,2002416,Newmarket Terminal - NB,,0,202226,83258,1,1
+601,155.0.1,2002417,Newmarket Terminal - NB,,0,202228,83258,1,1
+601,155.0.1,2002418,Newmarket Terminal - NB,,0,202227,83258,1,1
+601,155.0.1,2002419,Newmarket Terminal - NB,,0,202250,83258,1,1
+601,155.0.1,2002420,Newmarket Terminal - NB,,0,202249,83258,1,1
+601,155.0.1,2002421,Newmarket Terminal - NB,,0,202231,83258,1,1
+601,155.0.1,2002422,Newmarket Terminal - NB,,0,202247,83258,1,1
+601,155.0.1,2002423,Newmarket Terminal - NB,,0,202246,83258,1,1
+601,155.0.1,2002424,Newmarket Terminal - NB,,0,202289,83258,1,1
+601,155.0.1,2002425,Newmarket Terminal - NB,,0,202242,83258,1,1
+601,155.0.1,2002426,Newmarket Terminal - NB,,0,202241,83258,1,1
+601,155.0.1,2002427,Newmarket Terminal - NB,,0,202252,83258,1,1
+601,155.0.1,2002428,Newmarket Terminal - NB,,0,202245,83258,1,2
+601,155.0.1,2002429,Newmarket Terminal - NB,,0,202232,83258,1,2
+601,155.0.1,2002430,Newmarket Terminal - NB,,0,202244,83258,1,2
+601,155.0.1,2002431,Newmarket Terminal - NB,,0,202237,83258,1,2
+601,155.0.1,2002432,Newmarket Terminal - NB,,0,202251,83258,1,2
+601,155.0.1,2002433,Newmarket Terminal - NB,,0,202227,83258,1,2
+601,155.0.1,2002434,Newmarket Terminal - NB,,0,202250,83258,1,2
+601,155.0.1,2002435,Newmarket Terminal - NB,,0,202249,83258,1,2
+601,155.0.1,2002436,Newmarket Terminal - NB,,0,202248,83258,1,2
+601,155.0.1,2002437,Newmarket Terminal - NB,,0,202231,83258,1,2
+601,155.0.1,2002438,Newmarket Terminal - NB,,0,202247,83258,1,2
+601,155.0.1,2002439,Newmarket Terminal - NB,,0,202246,83258,1,2
+601,155.0.1,2002440,Newmarket Terminal - NB,,0,202226,83258,1,2
+601,155.0.1,2002441,Newmarket Terminal - NB,,0,202228,83258,1,2
+601,155.0.1,2002442,Newmarket Terminal - NB,,0,202233,83258,1,2
+601,155.0.1,2002443,Newmarket Terminal - NB,,0,202238,83258,1,1
+601,155.0.1,2002444,Newmarket Terminal - NB,,0,202245,83258,1,1
+601,155.0.1,2002445,Newmarket Terminal - NB,,0,202288,83258,1,1
+601,155.0.1,2002446,Newmarket Terminal - NB,,0,202244,83258,1,1
+601,155.0.1,2002447,Newmarket Terminal - NB,,0,202237,83258,1,1
+601,155.0.1,2002448,Newmarket Terminal - NB,,0,202243,83258,1,1
+601,155.0.1,2002449,Newmarket Terminal - NB,,0,202289,83258,1,1
+601,155.0.1,2002450,Newmarket Terminal - NB,,0,202242,83258,1,1
+601,155.0.1,2002451,Newmarket Terminal - NB,,0,202241,83258,1,1
+601,155.0.1,2002452,Newmarket Terminal - NB,,0,202240,83258,1,1
+601,155.0.1,2002453,Newmarket Terminal - NB,,0,202239,83258,1,1
+601,155.0.1,2002454,Newmarket Terminal - NB,,0,202226,83258,1,1
+601,155.0.1,2002455,Newmarket Terminal - NB,,0,202233,83258,1,1
+601,155.0.1,2002456,Newmarket Terminal - NB,,0,202238,83258,1,1
+601,155.0.1,2002457,Newmarket Terminal - NB,,0,202288,83258,1,1
+601,155.0.1,2002458,Newmarket Terminal - NB,,0,202237,83258,1,1
+601,155.0.1,2002459,Newmarket Terminal - NB,,0,202289,83258,1,1
+601,155.0.1,2002460,Newmarket Terminal - NB,,0,202241,83258,1,1
+601,155.0.1,2002461,Newmarket Terminal - NB,,0,202240,83258,1,1
+601,155.0.1,2002462,Newmarket Terminal - NB,,0,202239,83258,1,1
+601,155.0.1,2002463,Newmarket Terminal - NB,,0,202226,83258,1,1
+601,155.0.1,2002464,Newmarket Terminal - NB,,0,202238,83258,1,1
+601,155.0.1,2002465,Newmarket Terminal - NB,,0,202288,83258,1,1
+601,155.0.1,2002466,Newmarket Terminal - NB,,0,202237,83258,1,1
+601,155.0.1,2002467,Newmarket Terminal - NB,,0,202289,83258,1,1
+601,155.0.1,2002468,Newmarket Terminal - NB,,0,202236,83259,1,1
+601,155.0.1,2002469,Newmarket Terminal - NB,,0,202235,83259,1,1
+601,155.0.1,2002470,Newmarket Terminal - NB,,0,202234,83259,1,1
+601,155.0.1,2002471,Newmarket Terminal - NB,,0,202233,83259,1,1
+601,155.0.1,2002472,Newmarket Terminal - NB,,0,202232,83259,1,1
+601,155.0.1,2002473,Newmarket Terminal - NB,,0,202231,83259,1,1
+601,155.0.1,2002474,Newmarket Terminal - NB,,0,202230,83259,1,1
+601,155.0.1,2002475,Newmarket Terminal - NB,,0,202229,83259,1,1
+601,155.0.1,2002476,Newmarket Terminal - NB,,0,202228,83259,1,1
+601,155.0.1,2002477,Newmarket Terminal - NB,,0,202227,83259,1,1
+601,155.0.1,2002478,Newmarket Terminal - NB,,0,202226,83259,1,1
+601,155.0.1,2002479,Finch GO Bus Terminal - SB,,1,202242,83260,1,1
+601,155.0.1,2002480,Finch GO Bus Terminal - SB,,1,202241,83260,1,1
+601,155.0.1,2002481,Finch GO Bus Terminal - SB,,1,202236,83260,1,2
+601,155.0.1,2002482,Finch GO Bus Terminal - SB,,1,202235,83260,1,2
+601,155.0.1,2002483,Finch GO Bus Terminal - SB,,1,202234,83260,1,2
+601,155.0.1,2002484,Finch GO Bus Terminal - SB,,1,202233,83260,1,2
+601,155.0.1,2002485,Finch GO Bus Terminal - SB,,1,202255,83260,1,2
+601,155.0.1,2002486,Finch GO Bus Terminal - SB,,1,202252,83260,1,2
+601,155.0.1,2002487,Finch GO Bus Terminal - SB,,1,202239,83260,1,2
+601,155.0.1,2002488,Finch GO Bus Terminal - SB,,1,202249,83260,1,2
+601,155.0.1,2002489,Finch GO Bus Terminal - SB,,1,202254,83260,1,2
+601,155.0.1,2002490,Finch GO Bus Terminal - SB,,1,202237,83260,1,2
+601,155.0.1,2002491,Finch GO Bus Terminal - SB,,1,202247,83260,1,2
+601,155.0.1,2002492,Finch GO Bus Terminal - SB,,1,202246,83260,1,1
+601,155.0.1,2002493,Finch GO Bus Terminal - SB,,1,202238,83260,1,1
+601,155.0.1,2002494,Finch GO Bus Terminal - SB,,1,202253,83260,1,1
+601,155.0.1,2002495,Finch GO Bus Terminal - SB,,1,202242,83260,1,1
+601,155.0.1,2002496,Finch GO Bus Terminal - SB,,1,202241,83260,1,1
+601,155.0.1,2002497,Finch GO Bus Terminal - SB,,1,202236,83260,1,1
+601,155.0.1,2002498,Finch GO Bus Terminal - SB,,1,202231,83260,1,1
+601,155.0.1,2002499,Finch GO Bus Terminal - SB,,1,202247,83260,1,1
+601,155.0.1,2002500,Finch GO Bus Terminal - SB,,1,202246,83260,1,1
+601,155.0.1,2002501,Finch GO Bus Terminal - SB,,1,202233,83260,1,1
+601,155.0.1,2002502,Finch GO Bus Terminal - SB,,1,202242,83260,1,1
+601,155.0.1,2002503,Finch GO Bus Terminal - SB,,1,202241,83260,1,1
+601,155.0.1,2002504,Finch GO Bus Terminal - SB,,1,202239,83260,1,1
+601,155.0.1,2002505,Finch GO Bus Terminal - SB,,1,202232,83260,1,1
+601,155.0.1,2002506,Finch GO Bus Terminal - SB,,1,202226,83260,1,1
+601,155.0.1,2002507,Finch GO Bus Terminal - SB,,1,202228,83260,1,1
+601,155.0.1,2002508,Finch GO Bus Terminal - SB,,1,202249,83260,1,1
+601,155.0.1,2002509,Finch GO Bus Terminal - SB,,1,202250,83260,1,1
+601,155.0.1,2002510,Finch GO Bus Terminal - SB,,1,202227,83260,1,1
+601,155.0.1,2002511,Finch GO Bus Terminal - SB,,1,202228,83260,1,1
+601,155.0.1,2002512,Finch GO Bus Terminal - SB,,1,202226,83260,1,1
+601,155.0.1,2002513,Finch GO Bus Terminal - SB,,1,202235,83260,1,1
+601,155.0.1,2002514,Finch GO Bus Terminal - SB,,1,202246,83260,1,2
+601,155.0.1,2002515,Finch GO Bus Terminal - SB,,1,202289,83260,1,2
+601,155.0.1,2002516,Finch GO Bus Terminal - SB,,1,202242,83260,1,2
+601,155.0.1,2002517,Finch GO Bus Terminal - SB,,1,202241,83260,1,2
+601,155.0.1,2002518,Finch GO Bus Terminal - SB,,1,202252,83260,1,2
+601,155.0.1,2002519,Finch GO Bus Terminal - SB,,1,202245,83260,1,2
+601,155.0.1,2002520,Finch GO Bus Terminal - SB,,1,202232,83260,1,2
+601,155.0.1,2002521,Finch GO Bus Terminal - SB,,1,202244,83260,1,2
+601,155.0.1,2002522,Finch GO Bus Terminal - SB,,1,202237,83260,1,2
+601,155.0.1,2002523,Finch GO Bus Terminal - SB,,1,202251,83260,1,2
+601,155.0.1,2002524,Finch GO Bus Terminal - SB,,1,202227,83260,1,2
+601,155.0.1,2002525,Finch GO Bus Terminal - SB,,1,202250,83260,1,2
+601,155.0.1,2002526,Finch GO Bus Terminal - SB,,1,202249,83260,1,1
+601,155.0.1,2002527,Finch GO Bus Terminal - SB,,1,202248,83260,1,1
+601,155.0.1,2002528,Finch GO Bus Terminal - SB,,1,202231,83260,1,1
+601,155.0.1,2002529,Finch GO Bus Terminal - SB,,1,202247,83260,1,1
+601,155.0.1,2002530,Finch GO Bus Terminal - SB,,1,202246,83260,1,1
+601,155.0.1,2002531,Finch GO Bus Terminal - SB,,1,202226,83260,1,1
+601,155.0.1,2002532,Finch GO Bus Terminal - SB,,1,202228,83260,1,1
+601,155.0.1,2002533,Finch GO Bus Terminal - SB,,1,202233,83260,1,1
+601,155.0.1,2002534,Finch GO Bus Terminal - SB,,1,202238,83260,1,1
+601,155.0.1,2002535,Finch GO Bus Terminal - SB,,1,202247,83260,1,2
+601,155.0.1,2002536,Finch GO Bus Terminal - SB,,1,202231,83260,1,2
+601,155.0.1,2002537,Finch GO Bus Terminal - SB,,1,202248,83260,1,2
+601,155.0.1,2002538,Finch GO Bus Terminal - SB,,1,202249,83260,1,1
+601,155.0.1,2002539,Finch GO Bus Terminal - SB,,1,202250,83260,1,1
+601,155.0.1,2002540,Finch GO Bus Terminal - SB,,1,202227,83260,1,1
+601,155.0.1,2002541,Finch GO Bus Terminal - SB,,1,202239,83260,1,1
+601,155.0.1,2002542,Finch GO Bus Terminal - SB,,1,202226,83260,1,1
+601,155.0.1,2002543,Finch GO Bus Terminal - SB,,1,202233,83260,1,1
+601,155.0.1,2002544,Finch GO Bus Terminal - SB,,1,202240,83260,1,1
+601,155.0.1,2002545,Finch GO Bus Terminal - SB,,1,202241,83260,1,1
+601,155.0.1,2002546,Finch GO Bus Terminal - SB,,1,202289,83260,1,1
+601,155.0.1,2002547,Finch GO Bus Terminal - SB,,1,202237,83260,1,1
+601,155.0.1,2002548,Finch GO Bus Terminal - SB,,1,202288,83260,1,1
+601,155.0.1,2002549,Finch GO Bus Terminal - SB,,1,202289,83260,1,1
+601,155.0.1,2002550,Finch GO Bus Terminal - SB,,1,202241,83260,1,1
+601,155.0.1,2002551,Finch GO Bus Terminal - SB,,1,202240,83260,1,1
+601,155.0.1,2002552,Finch GO Bus Terminal - SB,,1,202237,83260,1,1
+601,155.0.1,2002553,Finch GO Bus Terminal - SB,,1,202288,83260,1,1
+601,155.0.1,2002554,Finch GO Bus Terminal - SB,,1,202238,83260,1,1
+601,155.0.1,2002555,Finch GO Bus Terminal - SB,,1,202250,83260,1,1
+601,155.0.1,2002556,Finch GO Bus Terminal - SB,,1,202227,83260,1,1
+601,155.0.1,2002557,Finch GO Bus Terminal - SB,,1,202228,83260,1,1
+601,155.0.1,2002558,Finch GO Bus Terminal - SB,,1,202226,83260,1,1
+601,155.0.1,2002559,Finch GO Bus Terminal - SB,,1,202229,83260,1,1
+601,155.0.1,2002560,Finch GO Bus Terminal - SB,,1,202230,83260,1,1
+601,155.0.1,2002561,Finch GO Bus Terminal - SB,,1,202231,83260,1,1
+601,155.0.1,2002562,Finch GO Bus Terminal - SB,,1,202232,83260,1,1
+601,155.0.1,2002563,Finch GO Bus Terminal - SB,,1,202233,83260,1,1
+601,155.0.1,2002564,Finch GO Bus Terminal - SB,,1,202234,83260,1,1
+601,155.0.1,2002565,Finch GO Bus Terminal - SB,,1,202235,83260,1,1
+601,155.0.1,2002566,Finch GO Bus Terminal - SB,,1,202236,83260,1,1
+603,155.0.1,2002706,Cornell Bus Terminal via Highway 7 - EB,,0,202266,83263,1,1
+603,155.0.1,2002707,Cornell Bus Terminal via Highway 7 - EB,,0,202267,83263,1,1
+603,155.0.1,2002708,Cornell Bus Terminal via Highway 7 - EB,,0,202274,83263,1,1
+603,155.0.1,2002709,Cornell Bus Terminal via Highway 7 - EB,,0,202261,83263,1,1
+603,155.0.1,2002710,Cornell Bus Terminal via Highway 7 - EB,,0,202272,83263,1,1
+603,155.0.1,2002711,Cornell Bus Terminal via Highway 7 - EB,,0,202271,83263,1,1
+603,155.0.1,2002712,Cornell Bus Terminal via Highway 7 - EB,,0,202267,83263,1,1
+603,155.0.1,2002713,Cornell Bus Terminal via Highway 7 - EB,,0,202264,83263,1,2
+603,155.0.1,2002714,Cornell Bus Terminal via Highway 7 - EB,,0,202270,83263,1,2
+603,155.0.1,2002715,Cornell Bus Terminal via Highway 7 - EB,,0,202268,83263,1,2
+603,155.0.1,2002716,Cornell Bus Terminal via Highway 7 - EB,,0,202272,83263,1,2
+603,155.0.1,2002717,Cornell Bus Terminal via Highway 7 - EB,,0,202271,83263,1,2
+603,155.0.1,2002718,Cornell Bus Terminal via Highway 7 - EB,,0,202267,83263,1,2
+603,155.0.1,2002719,Cornell Bus Terminal via Highway 7 - EB,,0,202269,83263,1,2
+603,155.0.1,2002720,Cornell Bus Terminal via Highway 7 - EB,,0,202273,83263,1,1
+603,155.0.1,2002721,Cornell Bus Terminal via Highway 7 - EB,,0,202265,83263,1,1
+603,155.0.1,2002722,Cornell Bus Terminal via Highway 7 - EB,,0,202261,83263,1,1
+603,155.0.1,2002723,Cornell Bus Terminal via Highway 7 - EB,,0,202272,83263,1,1
+603,155.0.1,2002724,Cornell Bus Terminal via Highway 7 - EB,,0,202271,83263,1,1
+603,155.0.1,2002725,Cornell Bus Terminal via Highway 7 - EB,,0,202266,83263,1,1
+603,155.0.1,2002726,Cornell Bus Terminal via Highway 7 - EB,,0,202280,83263,1,1
+603,155.0.1,2002727,Cornell Bus Terminal via Highway 7 - EB,,0,202270,83263,1,1
+603,155.0.1,2002728,Cornell Bus Terminal via Highway 7 - EB,,0,202268,83263,1,1
+603,155.0.1,2002729,Cornell Bus Terminal via Highway 7 - EB,,0,202260,83263,1,1
+603,155.0.1,2002730,Cornell Bus Terminal via Highway 7 - EB,,0,202267,83263,1,1
+603,155.0.1,2002731,Cornell Bus Terminal via Highway 7 - EB,,0,202269,83263,1,1
+603,155.0.1,2002732,Cornell Bus Terminal via Highway 7 - EB,,0,202280,83263,1,1
+603,155.0.1,2002733,Cornell Bus Terminal via Highway 7 - EB,,0,202265,83263,1,1
+603,155.0.1,2002734,Cornell Bus Terminal via Highway 7 - EB,,0,202268,83263,1,1
+603,155.0.1,2002735,Cornell Bus Terminal via Highway 7 - EB,,0,202260,83263,1,1
+603,155.0.1,2002736,Cornell Bus Terminal via Highway 7 - EB,,0,202267,83263,1,1
+603,155.0.1,2002737,Cornell Bus Terminal via Highway 7 - EB,,0,202262,83263,1,2
+603,155.0.1,2002738,Cornell Bus Terminal via Highway 7 - EB,,0,202266,83263,1,2
+603,155.0.1,2002739,Cornell Bus Terminal via Highway 7 - EB,,0,202280,83263,1,2
+603,155.0.1,2002740,Cornell Bus Terminal via Highway 7 - EB,,0,202265,83263,1,2
+603,155.0.1,2002741,Cornell Bus Terminal via Highway 7 - EB,,0,202261,83263,1,2
+603,155.0.1,2002742,Cornell Bus Terminal via Highway 7 - EB,,0,202263,83263,1,2
+603,155.0.1,2002743,Cornell Bus Terminal via Highway 7 - EB,,0,202260,83263,1,2
+603,155.0.1,2002744,Cornell Bus Terminal via Highway 7 - EB,,0,202267,83263,1,2
+603,155.0.1,2002745,Cornell Bus Terminal via Highway 7 - EB,,0,202262,83263,1,2
+603,155.0.1,2002746,Cornell Bus Terminal via Highway 7 - EB,,0,202266,83263,1,2
+603,155.0.1,2002747,Cornell Bus Terminal via Highway 7 - EB,,0,202280,83263,1,2
+603,155.0.1,2002748,Cornell Bus Terminal via Highway 7 - EB,,0,202265,83263,1,1
+603,155.0.1,2002749,Cornell Bus Terminal via Highway 7 - EB,,0,202261,83263,1,1
+603,155.0.1,2002750,Cornell Bus Terminal via Highway 7 - EB,,0,202263,83263,1,1
+603,155.0.1,2002751,Cornell Bus Terminal via Highway 7 - EB,,0,202260,83263,1,1
+603,155.0.1,2002752,Cornell Bus Terminal via Highway 7 - EB,,0,202262,83263,1,1
+603,155.0.1,2002753,Cornell Bus Terminal via Highway 7 - EB,,0,202280,83263,1,1
+603,155.0.1,2002754,Cornell Bus Terminal via Highway 7 - EB,,0,202261,83263,1,1
+603,155.0.1,2002755,Cornell Bus Terminal via Highway 7 - EB,,0,202260,83263,1,1
+603,155.0.1,2002756,Cornell Bus Terminal via Highway 7 - EB,,0,202262,83263,1,1
+603,155.0.1,2002757,Cornell Bus Terminal via Highway 7 - EB,,0,202280,83263,1,1
+603,155.0.1,2002758,Cornell Bus Terminal via Highway 7 - EB,,0,202263,83263,1,1
+603,155.0.1,2002759,Cornell Bus Terminal via Highway 7 - EB,,0,202262,83263,1,1
+603,155.0.1,2002760,Cornell Bus Terminal via Highway 7 - EB,,0,202261,83263,1,1
+603,155.0.1,2002761,Cornell Bus Terminal via Highway 7 - EB,,0,202260,83263,1,1
+603,155.0.1,2002762,Richmond Hill Centre - WB,,1,202266,83265,1,1
+603,155.0.1,2002763,Richmond Hill Centre - WB,,1,202267,83265,1,1
+603,155.0.1,2002764,Richmond Hill Centre - WB,,1,202274,83265,1,1
+603,155.0.1,2002765,Richmond Hill Centre - WB,,1,202261,83265,1,1
+603,155.0.1,2002766,Richmond Hill Centre - WB,,1,202272,83265,1,1
+603,155.0.1,2002767,Richmond Hill Centre via Highway 7 - WB,,1,202266,83264,1,1
+603,155.0.1,2002768,Richmond Hill Centre via Highway 7 - WB,,1,202267,83264,1,1
+603,155.0.1,2002769,Richmond Hill Centre via Highway 7 - WB,,1,202264,83264,1,1
+603,155.0.1,2002770,Richmond Hill Centre via Highway 7 - WB,,1,202270,83264,1,1
+603,155.0.1,2002771,Richmond Hill Centre via Highway 7 - WB,,1,202268,83264,1,1
+603,155.0.1,2002772,Richmond Hill Centre via Highway 7 - WB,,1,202272,83264,1,2
+603,155.0.1,2002773,Richmond Hill Centre via Highway 7 - WB,,1,202271,83264,1,2
+603,155.0.1,2002774,Richmond Hill Centre via Highway 7 - WB,,1,202267,83264,1,2
+603,155.0.1,2002775,Richmond Hill Centre via Highway 7 - WB,,1,202264,83264,1,2
+603,155.0.1,2002776,Richmond Hill Centre via Highway 7 - WB,,1,202270,83264,1,2
+603,155.0.1,2002777,Richmond Hill Centre via Highway 7 - WB,,1,202265,83264,1,2
+603,155.0.1,2002778,Richmond Hill Centre via Highway 7 - WB,,1,202261,83264,1,2
+603,155.0.1,2002779,Richmond Hill Centre via Highway 7 - WB,,1,202260,83264,1,1
+603,155.0.1,2002780,Richmond Hill Centre via Highway 7 - WB,,1,202267,83264,1,1
+603,155.0.1,2002781,Richmond Hill Centre via Highway 7 - WB,,1,202269,83264,1,1
+603,155.0.1,2002782,Richmond Hill Centre via Highway 7 - WB,,1,202273,83264,1,1
+603,155.0.1,2002783,Richmond Hill Centre via Highway 7 - WB,,1,202265,83264,1,1
+603,155.0.1,2002784,Richmond Hill Centre via Highway 7 - WB,,1,202261,83264,1,1
+603,155.0.1,2002785,Richmond Hill Centre via Highway 7 - WB,,1,202272,83264,1,1
+603,155.0.1,2002786,Richmond Hill Centre via Highway 7 - WB,,1,202271,83264,1,1
+603,155.0.1,2002787,Richmond Hill Centre via Highway 7 - WB,,1,202266,83264,1,1
+603,155.0.1,2002788,Richmond Hill Centre via Highway 7 - WB,,1,202280,83264,1,1
+603,155.0.1,2002789,Richmond Hill Centre via Highway 7 - WB,,1,202270,83264,1,1
+603,155.0.1,2002790,Richmond Hill Centre via Highway 7 - WB,,1,202268,83264,1,1
+603,155.0.1,2002791,Richmond Hill Centre via Highway 7 - WB,,1,202260,83264,1,1
+603,155.0.1,2002792,Richmond Hill Centre via Highway 7 - WB,,1,202267,83264,1,1
+603,155.0.1,2002793,Richmond Hill Centre via Highway 7 - WB,,1,202269,83264,1,1
+603,155.0.1,2002794,Richmond Hill Centre via Highway 7 - WB,,1,202280,83264,1,1
+603,155.0.1,2002795,Richmond Hill Centre via Highway 7 - WB,,1,202265,83264,1,1
+603,155.0.1,2002796,Richmond Hill Centre via Highway 7 - WB,,1,202261,83264,1,2
+603,155.0.1,2002797,Richmond Hill Centre via Highway 7 - WB,,1,202263,83264,1,2
+603,155.0.1,2002798,Richmond Hill Centre via Highway 7 - WB,,1,202260,83264,1,2
+603,155.0.1,2002799,Richmond Hill Centre via Highway 7 - WB,,1,202267,83264,1,2
+603,155.0.1,2002800,Richmond Hill Centre via Highway 7 - WB,,1,202262,83264,1,2
+603,155.0.1,2002801,Richmond Hill Centre via Highway 7 - WB,,1,202266,83264,1,2
+603,155.0.1,2002802,Richmond Hill Centre via Highway 7 - WB,,1,202280,83264,1,2
+603,155.0.1,2002803,Richmond Hill Centre via Highway 7 - WB,,1,202265,83264,1,2
+603,155.0.1,2002804,Richmond Hill Centre via Highway 7 - WB,,1,202261,83264,1,2
+603,155.0.1,2002805,Richmond Hill Centre via Highway 7 - WB,,1,202263,83264,1,2
+603,155.0.1,2002806,Richmond Hill Centre via Highway 7 - WB,,1,202260,83264,1,2
+603,155.0.1,2002807,Richmond Hill Centre via Highway 7 - WB,,1,202290,83264,1,1
+603,155.0.1,2002808,Richmond Hill Centre via Highway 7 - WB,,1,202262,83264,1,1
+603,155.0.1,2002809,Richmond Hill Centre via Highway 7 - WB,,1,202266,83264,1,1
+603,155.0.1,2002810,Richmond Hill Centre via Highway 7 - WB,,1,202280,83264,1,1
+603,155.0.1,2002811,Richmond Hill Centre via Highway 7 - WB,,1,202261,83264,1,1
+603,155.0.1,2002812,Richmond Hill Centre via Highway 7 - WB,,1,202260,83264,1,1
+603,155.0.1,2002813,Richmond Hill Centre via Highway 7 - WB,,1,202262,83264,1,1
+603,155.0.1,2002814,Richmond Hill Centre via Highway 7 - WB,,1,202280,83264,1,1
+603,155.0.1,2002815,Richmond Hill Centre via Highway 7 - WB,,1,202261,83264,1,1
+603,155.0.1,2002816,Richmond Hill Centre via Highway 7 - WB,,1,202260,83264,1,1
+603,155.0.1,2002817,Richmond Hill Centre via Highway 7 - WB,,1,202262,83264,1,1
+603,155.0.1,2002818,Richmond Hill Centre via Highway 7 - WB,,1,202261,83264,1,1
+603,155.0.1,2002819,Richmond Hill Centre via Highway 7 - WB,,1,202260,83264,1,1
+605,155.0.1,2002933,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,1
+605,155.0.1,2002934,Richmond Hill Centre Terminal - EB,,0,202284,83269,1,1
+605,155.0.1,2002935,Richmond Hill Centre Terminal - EB,,0,202285,83269,1,1
+605,155.0.1,2002936,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,1
+605,155.0.1,2002937,Richmond Hill Centre Terminal - EB,,0,202281,83269,1,1
+605,155.0.1,2002938,Richmond Hill Centre Terminal - EB,,0,202282,83269,1,1
+605,155.0.1,2002939,Richmond Hill Centre Terminal - EB,,0,202336,83269,1,1
+605,155.0.1,2002940,Richmond Hill Centre Terminal - EB,,0,202337,83269,1,1
+605,155.0.1,2002941,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,1
+605,155.0.1,2002942,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,1
+605,155.0.1,2002943,Richmond Hill Centre Terminal - EB,,0,202336,83269,1,1
+605,155.0.1,2002944,Richmond Hill Centre Terminal - EB,,0,202337,83269,1,1
+605,155.0.1,2002945,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,1
+605,155.0.1,2002946,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,1
+605,155.0.1,2002947,Richmond Hill Centre Terminal - EB,,0,202336,83269,1,1
+605,155.0.1,2002948,Richmond Hill Centre Terminal - EB,,0,202337,83269,1,1
+605,155.0.1,2002949,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,1
+605,155.0.1,2002950,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,1
+605,155.0.1,2002951,Richmond Hill Centre Terminal - EB,,0,202337,83269,1,1
+605,155.0.1,2002952,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,1
+605,155.0.1,2002953,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,1
+605,155.0.1,2002954,Richmond Hill Centre Terminal - EB,,0,202284,83269,1,1
+605,155.0.1,2002955,Richmond Hill Centre Terminal - EB,,0,202281,83269,1,1
+605,155.0.1,2002956,Richmond Hill Centre Terminal - EB,,0,202286,83269,1,1
+605,155.0.1,2002957,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,1
+605,155.0.1,2002958,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,1
+605,155.0.1,2002959,Richmond Hill Centre Terminal - EB,,0,202284,83269,1,1
+605,155.0.1,2002960,Richmond Hill Centre Terminal - EB,,0,202281,83269,1,1
+605,155.0.1,2002961,Richmond Hill Centre Terminal - EB,,0,202286,83269,1,1
+605,155.0.1,2002962,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,1
+605,155.0.1,2002963,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,1
+605,155.0.1,2002964,Richmond Hill Centre Terminal - EB,,0,202284,83269,1,1
+605,155.0.1,2002965,Richmond Hill Centre Terminal - EB,,0,202281,83269,1,1
+605,155.0.1,2002966,Richmond Hill Centre Terminal - EB,,0,202286,83269,1,1
+605,155.0.1,2002967,Martin Grove Road - WB,,1,202338,83270,1,1
+605,155.0.1,2002968,Martin Grove Road - WB,,1,202283,83270,1,1
+605,155.0.1,2002969,Martin Grove Road - WB,,1,202284,83270,1,1
+605,155.0.1,2002970,Martin Grove Road - WB,,1,202285,83270,1,1
+605,155.0.1,2002971,Martin Grove Road - WB,,1,202281,83270,1,1
+605,155.0.1,2002972,Martin Grove Road - WB,,1,202286,83270,1,1
+605,155.0.1,2002973,Martin Grove Road - WB,,1,202287,83270,1,1
+605,155.0.1,2002974,Martin Grove Road - WB,,1,202338,83270,1,1
+605,155.0.1,2002975,Martin Grove Road - WB,,1,202281,83270,1,1
+605,155.0.1,2002976,Martin Grove Road - WB,,1,202282,83270,1,1
+605,155.0.1,2002977,Martin Grove Road - WB,,1,202283,83270,1,1
+605,155.0.1,2002978,Martin Grove Road - WB,,1,202284,83270,1,1
+605,155.0.1,2002979,Martin Grove Road - WB,,1,202281,83270,1,1
+605,155.0.1,2002980,Martin Grove Road - WB,,1,202286,83270,1,1
+605,155.0.1,2002981,Richmond Hill Centre Terminal - EB,,0,202281,83269,1,1
+605,155.0.1,2002982,Richmond Hill Centre Terminal - EB,,0,202286,83269,1,1
+605,155.0.1,2002983,Richmond Hill Centre Terminal - EB,,0,202287,83269,1,2
+605,155.0.1,2002984,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,2
+605,155.0.1,2002985,Richmond Hill Centre Terminal - EB,,0,202282,83269,1,2
+605,155.0.1,2002986,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,2
+605,155.0.1,2002987,Richmond Hill Centre Terminal - EB,,0,202284,83269,1,2
+605,155.0.1,2002988,Richmond Hill Centre Terminal - EB,,0,202285,83269,1,2
+605,155.0.1,2002989,Richmond Hill Centre Terminal - EB,,0,202281,83269,1,2
+605,155.0.1,2002990,Richmond Hill Centre Terminal - EB,,0,202286,83269,1,2
+605,155.0.1,2002991,Richmond Hill Centre Terminal - EB,,0,202287,83269,1,1
+605,155.0.1,2002992,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,1
+605,155.0.1,2002993,Martin Grove Road - WB,,1,202282,83270,1,1
+605,155.0.1,2002994,Martin Grove Road - WB,,1,202283,83270,1,1
+605,155.0.1,2002995,Martin Grove Road - WB,,1,202284,83270,1,2
+605,155.0.1,2002996,Martin Grove Road - WB,,1,202285,83270,1,2
+605,155.0.1,2002997,Martin Grove Road - WB,,1,202281,83270,1,2
+605,155.0.1,2002998,Martin Grove Road - WB,,1,202286,83270,1,2
+605,155.0.1,2002999,Martin Grove Road - WB,,1,202287,83270,1,2
+605,155.0.1,2003000,Martin Grove Road - WB,,1,202338,83270,1,2
+605,155.0.1,2003001,Martin Grove Road - WB,,1,202282,83270,1,2
+605,155.0.1,2003002,Martin Grove Road - WB,,1,202283,83270,1,2
+605,155.0.1,2003003,Martin Grove Road - WB,,1,202284,83270,1,2
+605,155.0.1,2003004,Martin Grove Road - WB,,1,202285,83270,1,1
+605,155.0.1,2003005,Martin Grove Road - WB,,1,202281,83270,1,1
+605,155.0.1,2003006,Martin Grove Road - WB,,1,202286,83270,1,1
+605,155.0.1,2003007,Martin Grove Road - WB,,1,202287,83270,1,1
+605,155.0.1,2003008,Richmond Hill Centre Terminal - EB,,0,202335,83269,1,1
+605,155.0.1,2003009,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,2
+605,155.0.1,2003010,Richmond Hill Centre Terminal - EB,,0,202284,83269,1,2
+605,155.0.1,2003011,Richmond Hill Centre Terminal - EB,,0,202336,83269,1,2
+605,155.0.1,2003012,Richmond Hill Centre Terminal - EB,,0,202281,83269,1,2
+605,155.0.1,2003013,Richmond Hill Centre Terminal - EB,,0,202337,83269,1,2
+605,155.0.1,2003014,Richmond Hill Centre Terminal - EB,,0,202286,83269,1,2
+605,155.0.1,2003015,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,2
+605,155.0.1,2003016,Richmond Hill Centre Terminal - EB,,0,202335,83269,1,2
+605,155.0.1,2003017,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,2
+605,155.0.1,2003018,Richmond Hill Centre Terminal - EB,,0,202284,83269,1,2
+605,155.0.1,2003019,Richmond Hill Centre Terminal - EB,,0,202336,83269,1,2
+605,155.0.1,2003020,Richmond Hill Centre Terminal - EB,,0,202281,83269,1,2
+605,155.0.1,2003021,Richmond Hill Centre Terminal - EB,,0,202337,83269,1,1
+605,155.0.1,2003022,Richmond Hill Centre Terminal - EB,,0,202286,83269,1,1
+605,155.0.1,2003023,Richmond Hill Centre Terminal - EB,,0,202338,83269,1,1
+605,155.0.1,2003024,Richmond Hill Centre Terminal - EB,,0,202335,83269,1,1
+605,155.0.1,2003025,Richmond Hill Centre Terminal - EB,,0,202283,83269,1,1
+605,155.0.1,2003076,Martin Grove Road - WB,,1,202336,83270,1,1
+605,155.0.1,2003077,Martin Grove Road - WB,,1,202337,83270,1,1
+605,155.0.1,2003078,Martin Grove Road - WB,,1,202338,83270,1,1
+605,155.0.1,2003079,Martin Grove Road - WB,,1,202283,83270,1,1
+605,155.0.1,2003080,Martin Grove Road - WB,,1,202336,83270,1,1
+605,155.0.1,2003081,Martin Grove Road - WB,,1,202337,83270,1,1
+605,155.0.1,2003082,Martin Grove Road - WB,,1,202338,83270,1,1
+605,155.0.1,2003083,Martin Grove Road - WB,,1,202283,83270,1,1
+605,155.0.1,2003084,Martin Grove Road - WB,,1,202336,83270,1,1
+605,155.0.1,2003085,Martin Grove Road - WB,,1,202337,83270,1,1
+605,155.0.1,2003086,Martin Grove Road - WB,,1,202338,83270,1,1
+605,155.0.1,2003087,Martin Grove Road - WB,,1,202283,83270,1,1
+605,155.0.1,2003088,Martin Grove Road - WB,,1,202337,83270,1,1
+605,155.0.1,2003089,Martin Grove Road - WB,,1,202338,83270,1,1
+605,155.0.1,2003090,Martin Grove Road - WB,,1,202283,83270,1,1
+605,155.0.1,2003091,Martin Grove Road - WB,,1,202284,83270,1,1
+605,155.0.1,2003092,Martin Grove Road - WB,,1,202281,83270,1,1
+605,155.0.1,2003093,Martin Grove Road - WB,,1,202286,83270,1,1
+605,155.0.1,2003094,Martin Grove Road - WB,,1,202338,83270,1,1
+605,155.0.1,2003095,Martin Grove Road - WB,,1,202283,83270,1,1
+605,155.0.1,2003096,Martin Grove Road - WB,,1,202284,83270,1,1
+605,155.0.1,2003097,Martin Grove Road - WB,,1,202281,83270,1,1
+605,155.0.1,2003098,Martin Grove Road - WB,,1,202337,83270,1,1
+605,155.0.1,2003099,Martin Grove Road - WB,,1,202286,83270,1,2
+605,155.0.1,2003100,Martin Grove Road - WB,,1,202335,83270,1,1
+605,155.0.1,2003101,Martin Grove Road - WB,,1,202338,83270,1,2
+605,155.0.1,2003102,Martin Grove Road - WB,,1,202336,83270,1,1
+605,155.0.1,2003103,Martin Grove Road - WB,,1,202335,83270,1,2
+605,155.0.1,2003104,Martin Grove Road - WB,,1,202283,83270,1,2
+605,155.0.1,2003105,Martin Grove Road - WB,,1,202284,83270,1,2
+605,155.0.1,2003106,Martin Grove Road - WB,,1,202336,83270,1,2
+605,155.0.1,2003107,Martin Grove Road - WB,,1,202281,83270,1,2
+605,155.0.1,2003108,Martin Grove Road - WB,,1,202337,83270,1,2
+605,155.0.1,2003109,Martin Grove Road - WB,,1,202286,83270,1,2
+605,155.0.1,2003110,Martin Grove Road - WB,,1,202338,83270,1,2
+605,155.0.1,2003111,Martin Grove Road - WB,,1,202335,83270,1,2
+605,155.0.1,2003112,Martin Grove Road - WB,,1,202283,83270,1,2
+605,155.0.1,2003113,Martin Grove Road - WB,,1,202284,83270,1,1
+605,155.0.1,2003114,Martin Grove Road - WB,,1,202336,83270,1,1
+605,155.0.1,2003115,Martin Grove Road - WB,,1,202281,83270,1,1
+605,155.0.1,2003116,Martin Grove Road - WB,,1,202337,83270,1,1
+605,155.0.1,2003117,Martin Grove Road - WB,,1,202286,83270,1,1
+605,155.0.1,2003118,Martin Grove Road - WB,,1,202338,83270,1,1
+605,155.0.1,2003119,Martin Grove Road - WB,,1,202283,83270,1,1
+607,155.0.1,2017113,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017114,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017115,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017116,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017117,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017118,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017119,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017120,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017121,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017122,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017123,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017124,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017125,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017126,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017127,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017128,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017129,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017130,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017131,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017132,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017133,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017134,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017135,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017136,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017137,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017138,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017139,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017140,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017141,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017142,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017143,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017144,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017145,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017146,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017147,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017148,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017149,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017150,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017151,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017152,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017153,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017154,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017155,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017156,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017157,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017158,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017159,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017160,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017161,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017162,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017163,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017164,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017165,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017166,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017167,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017168,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017169,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017170,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017171,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017172,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017173,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017174,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017175,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017176,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017177,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017178,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017179,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017180,Highway 404 Park and Ride - EB,,0,203401,83637,1,1
+607,155.0.1,2017181,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017182,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017183,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017184,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017185,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017186,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017187,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017188,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017189,Highway 404 Park and Ride - EB,,0,203400,83637,1,1
+607,155.0.1,2017190,Highway 404 Park and Ride - EB,,0,203399,83637,1,1
+607,155.0.1,2017191,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017192,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017193,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017194,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017195,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017196,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017197,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017198,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017199,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017200,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017201,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017202,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017203,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017204,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017205,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017206,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017207,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017208,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017209,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017210,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017211,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017212,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017213,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017214,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017215,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017216,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017217,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017218,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017219,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017220,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017221,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017222,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017223,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017224,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017225,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017226,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017227,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017228,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017229,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017230,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017231,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017232,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017233,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017234,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017235,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017236,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017237,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017238,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017239,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017240,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017241,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017242,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017243,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017244,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017245,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017246,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017247,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017248,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017249,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017250,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017251,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017252,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017253,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017254,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017255,Newmarket Terminal - WB,,1,203401,83638,1,1
+607,155.0.1,2017256,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017257,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017258,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017259,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017260,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017261,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017262,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017263,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017264,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017265,Newmarket Terminal - WB,,1,203399,83638,1,1
+607,155.0.1,2017266,Newmarket Terminal - WB,,1,203400,83638,1,1
+607,155.0.1,2017267,Newmarket Terminal - WB,,1,203399,83638,1,1

@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color,route_sort_order,network_id,route_color_dark,route_text_color_dark
+66,1,66,Frankford TC to Frankford-Knights,11,https://www.septa.org/schedules/66,EF3340,FFFFFF,20660,bus_metro,E21220,FFFFFF

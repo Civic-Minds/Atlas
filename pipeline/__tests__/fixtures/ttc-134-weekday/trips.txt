@@ -1,0 +1,163 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+134,1,50796664,South - 134 Progress towards Scarborough Centre Stn,,0,2233463,1122068,1,1
+134,1,50796711,South - 134 Progress towards Scarborough Centre Stn,,0,2233462,1122068,1,1
+134,1,50796684,South - 134 Progress towards Scarborough Centre Stn,,0,2233466,1122068,1,1
+134,1,50796730,South - 134 Progress towards Scarborough Centre Stn,,0,2233465,1122068,1,1
+134,1,50796657,South - 134 Progress towards Scarborough Centre Stn,,0,2233464,1122068,1,1
+134,1,50796718,South - 134 Progress towards Scarborough Centre Stn,,0,2233463,1122068,1,1
+134,1,50796659,South - 134 Progress towards Scarborough Centre Stn,,0,2233462,1122068,1,1
+134,1,50796689,South - 134 Progress towards Scarborough Centre Stn,,0,2233466,1122068,1,1
+134,1,50796685,South - 134 Progress towards Scarborough Centre Stn,,0,2233465,1122068,1,1
+134,1,50796686,South - 134 Progress towards Scarborough Centre Stn,,0,2233464,1122068,1,1
+134,1,50796663,South - 134 Progress towards Scarborough Centre Stn,,0,2233463,1122068,1,1
+134,1,50796717,South - 134 Progress towards Scarborough Centre Stn,,0,2233462,1122068,1,1
+134,1,50796681,South - 134 Progress towards Scarborough Centre Stn,,0,2233466,1122068,1,1
+134,1,50796731,South - 134 Progress towards Scarborough Centre Stn,,0,2233465,1122068,1,1
+134,1,50796690,South - 134 Progress towards Scarborough Centre Stn,,0,2233464,1122068,1,1
+134,1,50796674,South - 134 Progress towards Scarborough Centre Stn,,0,2233463,1122068,1,1
+134,1,50796723,South - 134 Progress towards Scarborough Centre Stn,,0,2233462,1122068,1,1
+134,1,50796661,South - 134 Progress towards Scarborough Centre Stn,,0,2233466,1122068,1,1
+134,1,50796660,South - 134 Progress towards Scarborough Centre Stn,,0,2233465,1122068,1,1
+134,1,50796714,South - 134 Progress towards Scarborough Centre Stn,,0,2233464,1122068,1,1
+134,1,50796713,South - 134 Progress towards Scarborough Centre Stn,,0,2233463,1122068,1,1
+134,1,50796655,South - 134 Progress towards Scarborough Centre Stn,,0,2233462,1122068,1,1
+134,1,50796688,South - 134 Progress towards Scarborough Centre Stn,,0,2233466,1122068,1,1
+134,1,50796662,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122071,1,1
+134,1,50796706,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122071,1,1
+134,1,50796707,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233462,1122071,1,1
+134,1,50796675,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233466,1122071,1,1
+134,1,50796704,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122071,1,1
+134,1,50796705,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122071,1,1
+134,1,50796709,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233462,1122070,1,1
+134,1,50796699,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233466,1122070,1,1
+134,1,50796700,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122070,1,1
+134,1,50796701,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122070,1,1
+134,1,50796702,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233462,1122070,1,1
+134,1,50796703,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233466,1122070,1,1
+134,1,50796693,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122070,1,1
+134,1,50796658,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122070,1,1
+134,1,50796708,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233462,1122070,1,1
+134,1,50796692,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233466,1122070,1,1
+134,1,50796694,South - 134 Progress towards Scarborough Centre Stn,,0,2233464,1122069,1,1
+134,1,50796683,South - 134 Progress towards Scarborough Centre Stn,,0,2233461,1122069,1,1
+134,1,50796719,South - 134 Progress towards Scarborough Centre Stn,,0,2233463,1122069,1,1
+134,1,50796679,South - 134 Progress towards Scarborough Centre Stn,,0,2233462,1122069,1,1
+134,1,50796720,South - 134 Progress towards Scarborough Centre Stn,,0,2233466,1122069,1,1
+134,1,50796721,South - 134 Progress towards Scarborough Centre Stn,,0,2233464,1122069,1,1
+134,1,50796687,South - 134 Progress towards Scarborough Centre Stn,,0,2233461,1122069,1,1
+134,1,50796680,South - 134 Progress towards Scarborough Centre Stn,,0,2233463,1122069,1,1
+134,1,50796682,South - 134 Progress towards Scarborough Centre Stn,,0,2233462,1122069,1,1
+134,1,50796678,South - 134 Progress towards Scarborough Centre Stn,,0,2233466,1122069,1,1
+134,1,50796697,South - 134 Progress towards Scarborough Centre Stn,,0,2233464,1122069,1,1
+134,1,50796698,South - 134 Progress towards Scarborough Centre Stn,,0,2233461,1122069,1,1
+134,1,50796727,South - 134 Progress towards Scarborough Centre Stn,,0,2233463,1122069,1,1
+134,1,50796728,South - 134 Progress towards Scarborough Centre Stn,,0,2233462,1122069,1,1
+134,1,50796677,South - 134 Progress towards Scarborough Centre Stn,,0,2233466,1122069,1,1
+134,1,50796729,South - 134 Progress towards Scarborough Centre Stn,,0,2233464,1122069,1,1
+134,1,50796653,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233461,1122070,1,1
+134,1,50796710,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122070,1,1
+134,1,50796665,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233462,1122070,1,1
+134,1,50796666,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122070,1,1
+134,1,50796667,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233461,1122070,1,1
+134,1,50796668,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122070,1,1
+134,1,50796669,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233462,1122070,1,1
+134,1,50796722,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122070,1,1
+134,1,50796670,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233461,1122070,1,1
+134,1,50796671,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122070,1,1
+134,1,50796672,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233462,1122070,1,1
+134,1,50796712,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122070,1,1
+134,1,50796654,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233461,1122070,1,1
+134,1,50796656,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122070,1,1
+134,1,50796695,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233462,1122070,1,1
+134,1,50796696,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122070,1,1
+134,1,50796673,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233461,1122070,1,1
+134,1,50796676,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122070,1,1
+134,1,50796716,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233462,1122070,1,1
+134,1,50796715,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122070,1,1
+134,1,50796691,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122070,1,1
+134,1,50796726,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122070,1,1
+134,1,50796725,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233463,1122070,1,1
+134,1,50796724,South - 134D Progress towards Scarborough Centre Stn via Centennial College,D,0,2233464,1122070,1,1
+134,1,50796761,North - 134B Progress towards McNicoll via Tapscott,B,1,2233463,1122073,1,1
+134,1,50796762,North - 134B Progress towards McNicoll via Tapscott,B,1,2233462,1122073,1,1
+134,1,50796763,North - 134B Progress towards McNicoll via Tapscott,B,1,2233466,1122073,1,1
+134,1,50796739,North - 134B Progress towards McNicoll via Tapscott,B,1,2233464,1122077,1,1
+134,1,50796744,North - 134B Progress towards McNicoll via Tapscott,B,1,2233465,1122073,1,1
+134,1,50796803,North - 134B Progress towards McNicoll via Tapscott,B,1,2233463,1122077,1,1
+134,1,50796759,North - 134B Progress towards McNicoll via Tapscott,B,1,2233462,1122077,1,1
+134,1,50796758,North - 134B Progress towards McNicoll via Tapscott,B,1,2233466,1122077,1,1
+134,1,50796757,North - 134B Progress towards McNicoll via Tapscott,B,1,2233465,1122077,1,1
+134,1,50796756,North - 134B Progress towards McNicoll via Tapscott,B,1,2233464,1122077,1,1
+134,1,50796770,North - 134B Progress towards McNicoll via Tapscott,B,1,2233463,1122077,1,1
+134,1,50796755,North - 134B Progress towards McNicoll via Tapscott,B,1,2233462,1122077,1,1
+134,1,50796753,North - 134B Progress towards McNicoll via Tapscott,B,1,2233466,1122077,1,1
+134,1,50796752,North - 134B Progress towards McNicoll via Tapscott,B,1,2233465,1122077,1,1
+134,1,50796751,North - 134B Progress towards McNicoll via Tapscott,B,1,2233464,1122077,1,1
+134,1,50796750,North - 134B Progress towards McNicoll via Tapscott,B,1,2233463,1122077,1,1
+134,1,50796813,North - 134B Progress towards McNicoll via Tapscott,B,1,2233462,1122077,1,1
+134,1,50796777,North - 134B Progress towards McNicoll via Tapscott,B,1,2233466,1122077,1,1
+134,1,50796792,North - 134B Progress towards McNicoll via Tapscott,B,1,2233465,1122077,1,1
+134,1,50796776,North - 134B Progress towards McNicoll via Tapscott,B,1,2233464,1122077,1,1
+134,1,50796775,North - 134B Progress towards McNicoll via Tapscott,B,1,2233463,1122077,1,1
+134,1,50796774,North - 134B Progress towards McNicoll via Tapscott,B,1,2233462,1122077,1,1
+134,1,50796768,North - 134B Progress towards McNicoll via Tapscott,B,1,2233466,1122077,1,1
+134,1,50796769,North - 134B Progress towards McNicoll via Tapscott,B,1,2233465,1122077,1,1
+134,1,50796771,North - 134D Progress towards Finch via Centennial College And Tapscott,D,1,2233464,1122072,1,1
+134,1,50796772,North - 134D Progress towards Finch via Centennial College And Tapscott,D,1,2233463,1122072,1,1
+134,1,50796773,North - 134D Progress towards Finch via Centennial College And Tapscott,D,1,2233462,1122072,1,1
+134,1,50796778,North - 134D Progress towards Finch via Centennial College And Tapscott,D,1,2233466,1122072,1,1
+134,1,50796779,North - 134D Progress towards Finch via Centennial College And Tapscott,D,1,2233464,1122072,1,1
+134,1,50796780,North - 134D Progress towards Finch via Centennial College And Tapscott,D,1,2233463,1122072,1,1
+134,1,50796781,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233462,1122075,1,1
+134,1,50796782,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233466,1122075,1,1
+134,1,50796783,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233464,1122075,1,1
+134,1,50796784,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233463,1122075,1,1
+134,1,50796785,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233462,1122075,1,1
+134,1,50796786,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233466,1122075,1,1
+134,1,50796787,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233464,1122075,1,1
+134,1,50796788,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233463,1122075,1,1
+134,1,50796789,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233462,1122075,1,1
+134,1,50796790,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233466,1122075,1,1
+134,1,50796791,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233464,1122075,1,1
+134,1,50796814,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233461,1122075,1,1
+134,1,50796795,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233463,1122076,1,1
+134,1,50796765,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233462,1122076,1,1
+134,1,50796811,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233466,1122076,1,1
+134,1,50796805,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233464,1122076,1,1
+134,1,50796812,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233461,1122076,1,1
+134,1,50796743,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233463,1122076,1,1
+134,1,50796815,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233462,1122076,1,1
+134,1,50796760,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233466,1122076,1,1
+134,1,50796804,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233464,1122076,1,1
+134,1,50796737,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233461,1122076,1,1
+134,1,50796793,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233463,1122076,1,1
+134,1,50796794,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233462,1122076,1,1
+134,1,50796764,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233466,1122076,1,1
+134,1,50796745,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233464,1122076,1,1
+134,1,50796738,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233461,1122076,1,1
+134,1,50796735,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233463,1122076,1,1
+134,1,50796754,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233462,1122076,1,1
+134,1,50796807,North - 134B Progress towards McNicoll via Crow Trail,B,1,2233466,1122076,1,1
+134,1,50796797,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233464,1122075,1,1
+134,1,50796798,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233461,1122075,1,1
+134,1,50796799,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233463,1122075,1,1
+134,1,50796800,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233462,1122075,1,1
+134,1,50796801,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233464,1122075,1,1
+134,1,50796802,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233461,1122075,1,1
+134,1,50796740,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233463,1122075,1,1
+134,1,50796741,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233462,1122075,1,1
+134,1,50796742,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233464,1122075,1,1
+134,1,50796733,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233461,1122075,1,1
+134,1,50796734,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233463,1122075,1,1
+134,1,50796746,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233462,1122075,1,1
+134,1,50796747,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233464,1122075,1,1
+134,1,50796748,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233461,1122075,1,1
+134,1,50796749,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233463,1122075,1,1
+134,1,50796732,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233462,1122075,1,1
+134,1,50796796,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233464,1122075,1,1
+134,1,50796810,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233461,1122075,1,1
+134,1,50796809,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233463,1122075,1,1
+134,1,50796808,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233464,1122075,1,1
+134,1,50796767,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233463,1122075,1,1
+134,1,50796766,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233464,1122075,1,1
+134,1,50796736,North - 134D Progress towards Finch via Centennial College And Crow Trail,D,1,2233463,1122075,1,1

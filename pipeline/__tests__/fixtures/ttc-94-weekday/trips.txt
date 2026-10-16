@@ -1,0 +1,238 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+94,1,50825598,East - 94 Wellesley towards Castle Frank Station,,0,2235117,1123437,1,1
+94,1,50825599,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825600,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825604,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825601,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825605,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825602,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825606,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825603,East - 94 Wellesley towards Castle Frank Station,,0,2235117,1123437,1,1
+94,1,50825613,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825607,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825614,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825608,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825615,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825609,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825616,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825610,East - 94 Wellesley towards Castle Frank Station,,0,2235117,1123437,1,1
+94,1,50825617,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825611,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825618,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825612,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825619,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825620,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825637,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825621,East - 94 Wellesley towards Castle Frank Station,,0,2235117,1123437,1,1
+94,1,50825638,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825622,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825639,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825623,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825640,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825624,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825641,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825625,East - 94 Wellesley towards Castle Frank Station,,0,2235117,1123437,1,1
+94,1,50825642,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825626,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825643,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825627,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825644,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825628,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825645,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825629,East - 94 Wellesley towards Castle Frank Station,,0,2235117,1123437,1,1
+94,1,50825646,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825630,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825647,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825631,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825648,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825632,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825649,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825633,East - 94 Wellesley towards Castle Frank Station,,0,2235117,1123437,1,1
+94,1,50825650,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825634,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825651,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825635,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825652,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825636,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825653,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825655,East - 94 Wellesley towards Castle Frank Station,,0,2235117,1123437,1,1
+94,1,50825654,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825656,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825663,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825657,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825664,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825658,East - 94 Wellesley towards Castle Frank Station,,0,2235071,1123437,1,1
+94,1,50825665,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825659,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825666,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825660,East - 94 Wellesley towards Castle Frank Station,,0,2235117,1123437,1,1
+94,1,50825667,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825661,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825668,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825662,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825669,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825671,East - 94 Wellesley towards Castle Frank Station,,0,2235071,1123437,1,1
+94,1,50825670,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825672,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825686,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825673,East - 94 Wellesley towards Castle Frank Station,,0,2235117,1123437,1,1
+94,1,50825687,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825674,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825688,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825675,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825689,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825676,East - 94 Wellesley towards Castle Frank Station,,0,2235071,1123437,1,1
+94,1,50825690,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825677,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825691,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825678,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825692,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825679,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825693,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825680,East - 94 Wellesley towards Castle Frank Station,,0,2235071,1123437,1,1
+94,1,50825694,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825681,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825695,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825682,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825696,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825683,East - 94 Wellesley towards Castle Frank Station,,0,2235120,1123437,1,1
+94,1,50825697,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825684,East - 94 Wellesley towards Castle Frank Station,,0,2235071,1123437,1,1
+94,1,50825698,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825685,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123437,1,1
+94,1,50825708,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825699,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123437,1,1
+94,1,50825709,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825700,East - 94 Wellesley towards Castle Frank Station,,0,2235071,1123437,1,1
+94,1,50825710,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825701,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123435,1,1
+94,1,50825711,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825702,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123435,1,1
+94,1,50825712,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825703,East - 94 Wellesley towards Castle Frank Station,,0,2235071,1123435,1,1
+94,1,50825713,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825704,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123435,1,1
+94,1,50825714,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825705,East - 94 Wellesley towards Castle Frank Station,,0,2235119,1123435,1,1
+94,1,50825715,East - 94 Wellesley towards Castle Frank Station,,0,2235122,1123436,1,1
+94,1,50825706,East - 94 Wellesley towards Castle Frank Station,,0,2235071,1123435,1,1
+94,1,50825716,East - 94 Wellesley towards Castle Frank Station,,0,2235118,1123436,1,1
+94,1,50825707,East - 94 Wellesley towards Castle Frank Station,,0,2235121,1123435,1,1
+94,1,50825717,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825718,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825719,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825723,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825720,West - 94A Wellesley towards Ossington Station,A,1,2235117,1123439,1,1
+94,1,50825724,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825721,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825725,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825722,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825732,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825726,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825733,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825727,West - 94A Wellesley towards Ossington Station,A,1,2235117,1123439,1,1
+94,1,50825734,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825728,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825735,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825729,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825736,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825730,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825737,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825731,West - 94A Wellesley towards Ossington Station,A,1,2235117,1123439,1,1
+94,1,50825738,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825739,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825757,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825740,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825758,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825741,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825759,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825742,West - 94A Wellesley towards Ossington Station,A,1,2235117,1123439,1,1
+94,1,50825760,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825743,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825761,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825744,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825762,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825745,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825763,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825746,West - 94A Wellesley towards Ossington Station,A,1,2235117,1123439,1,1
+94,1,50825764,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825747,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825765,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825748,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825766,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825749,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825767,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825750,West - 94A Wellesley towards Ossington Station,A,1,2235117,1123439,1,1
+94,1,50825768,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825751,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825769,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825752,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825770,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825753,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825771,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825754,West - 94A Wellesley towards Ossington Station,A,1,2235117,1123439,1,1
+94,1,50825772,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825755,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825773,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825756,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825774,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825775,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825796,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825776,West - 94A Wellesley towards Ossington Station,A,1,2235117,1123439,1,1
+94,1,50825797,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825777,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825798,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825778,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825799,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825779,West - 94A Wellesley towards Ossington Station,A,1,2235071,1123439,1,1
+94,1,50825800,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825780,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825801,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825781,West - 94A Wellesley towards Ossington Station,A,1,2235117,1123439,1,1
+94,1,50825802,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825782,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825803,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825783,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825804,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825784,West - 94A Wellesley towards Ossington Station,A,1,2235071,1123439,1,1
+94,1,50825805,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825785,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825806,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825786,West - 94A Wellesley towards Ossington Station,A,1,2235117,1123439,1,1
+94,1,50825807,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825787,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825808,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825788,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825809,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825789,West - 94A Wellesley towards Ossington Station,A,1,2235071,1123439,1,1
+94,1,50825810,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825790,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825811,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825791,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825812,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825792,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825813,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825793,West - 94A Wellesley towards Ossington Station,A,1,2235071,1123439,1,1
+94,1,50825814,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825794,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123439,1,1
+94,1,50825815,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825795,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123439,1,1
+94,1,50825833,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825825,West - 94A Wellesley towards Ossington Station,A,1,2235120,1123439,1,1
+94,1,50825834,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825818,West - 94A Wellesley towards Ossington Station,A,1,2235071,1123439,1,1
+94,1,50825826,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825816,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123440,1,1
+94,1,50825827,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825819,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123440,1,1
+94,1,50825828,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825820,West - 94A Wellesley towards Ossington Station,A,1,2235071,1123440,1,1
+94,1,50825829,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825821,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123440,1,1
+94,1,50825830,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825817,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123440,1,1
+94,1,50825831,West - 94B Wellesley towards Wellesley Station,B,1,2235122,1123438,1,1
+94,1,50825822,West - 94A Wellesley towards Ossington Station,A,1,2235071,1123440,1,1
+94,1,50825832,West - 94B Wellesley towards Wellesley Station,B,1,2235118,1123438,1,1
+94,1,50825823,West - 94A Wellesley towards Ossington Station,A,1,2235121,1123440,1,1
+94,1,50825824,West - 94A Wellesley towards Ossington Station,A,1,2235119,1123440,1,1

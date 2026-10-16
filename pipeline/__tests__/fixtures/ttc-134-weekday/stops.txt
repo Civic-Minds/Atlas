@@ -1,0 +1,92 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+11364,11364,Progress Ave at Markham Rd East Side,,43.781933,-79.233259,,,,,,1
+11549,11549,Finchdene Sq at Torham Pl,,43.819525,-79.233091,,,,,,1
+10845,10845,Ironside Cres at McNicoll Ave North Side,,43.82473,-79.246129,,,,,,1
+9328,9328,Baldoon Rd at Crow Trail,,43.813482,-79.231714,,,,,,1
+12100,12100,Corporate Dr at Lee Centre Dr (West),,43.780433,-79.247143,,,,,,1
+4662,4662,Tapscott Rd at Lighthall Cres North Side,,43.810955,-79.235578,,,,,,1
+4703,4703,Washburn Way at Sheppard Ave East North Side,,43.796634,-79.227621,,,,,,1
+4707,4707,Washburn Way at Mammoth Hall Trail,,43.801071,-79.226152,,,,,,1
+10846,10846,45 Ironside Cres,,43.827009,-79.247112,,,,,,1
+12054,12054,Progress Ave at Sheppard Ave East,,43.794411,-79.234769,,,,,,1
+13460,13460,Progress Ave at Bellamy Rd North East Side,,43.780176,-79.243159,,,,,,1
+4547,4547,Progress Ave at Estate Dr East Side,,43.781324,-79.23551,,,,,,1
+4665,4665,Tapscott Rd at Washburn Way,,43.804389,-79.2244,,,,,,1
+2526,2526,Finch Ave East at Markham Rd,,43.813199,-79.242764,,,,,,1
+9327,9327,Baldoon Rd at Finch Ave East South Side,,43.814883,-79.232283,,,,,,1
+11557,11557,Tapscott Rd at Crow Trail,,43.807582,-79.23284,,,,,,1
+11550,11550,257 Finchdene Sq,,43.82111,-79.23489,,,,,,1
+10841,10841,Markham Rd at Nashdene Rd,,43.820321,-79.246455,,,,,,1
+11555,11555,Tapscott Rd at Melford Dr (North) South Side,,43.81059,-79.235664,,,,,,1
+4702,4702,Washburn Way at Nahanni Ter,,43.802274,-79.224569,,,,,,1
+10724,10724,Finchdene Sq at Finch Ave East,,43.815701,-79.2317,,,,,,1
+7252,7252,Sheppard Ave East at Gateforth Dr,,43.795461,-79.230553,,,,,,1
+4706,4706,Washburn Way at Griffen Dr South Side,,43.798039,-79.228238,,,,,,1
+11362,11362,Opposite 88 Corporate Dr,,43.779955,-79.24941,,,,,,1
+4660,4660,Tapscott Rd at McLevin Ave,,43.804908,-79.225741,,,,,,1
+4538,4538,830 Progress Ave,,43.780718,-79.241341,,,,,,1
+11545,11545,Crow Trail at Horseley Hill Dr,,43.809414,-79.23223,,,,,,1
+4659,4659,Tapscott Rd at Finch Ave East,,43.814017,-79.236857,,,,,,1
+2561,2561,Opposite 5600 Finch Ave East,,43.813554,-79.239965,,,,,,1
+4657,4657,Tapscott Rd at Crow Trail,,43.807698,-79.232416,,,,,,1
+11366,11366,88 Corporate Dr,,43.780138,-79.249595,,,,,,1
+4537,4537,821 Progress Ave,,43.780538,-79.241416,,,,,,1
+11367,11367,100 Consilium Pl,,43.777354,-79.250767,,,,,,1
+10850,10850,1120 Tapscott Rd,,43.827823,-79.244068,,,,,,1
+3458,3458,Crow Trail at Carrying Pl,,43.80882,-79.232496,,,,,,1
+9965,9965,Sheppard Ave East at Gateforth Dr,,43.79572,-79.230168,,,,,,1
+10293,10293,Finchdene Sq (East) at Finchdene Sq (South),,43.817462,-79.23243,,,,,,1
+4556,4556,Progress Ave at Production Dr,,43.780615,-79.238949,,,,,,1
+10849,10849,Ironside Cres at Tapscott Rd,,43.829072,-79.244928,,,,,,1
+12099,12099,Corporate Dr at Lee Centre Dr (West) West Side,,43.780521,-79.24748,,,,,,1
+11546,11546,Crow Trail at Bradstone Sq,,43.811065,-79.232681,,,,,,1
+75,75,Baldoon Rd at Finch Ave East,,43.815102,-79.232194,,,,,,1
+12058,12058,Progress Ave at Milner Business Crt South Side,,43.788208,-79.233484,,,,,,1
+12056,12056,Progress Ave at Rosebank Dr,,43.792455,-79.234239,,,,,,1
+11552,11552,Newgale Gate at Finchdene Sq West Side,,43.818881,-79.238096,,,,,,1
+12603,12603,Markham Rd at Nashdene Rd,,43.820127,-79.245947,,,,,,2
+3460,3460,Crow Trail at Tapscott Rd,,43.807819,-79.232668,,,,,,1
+6006,6006,Progress Ave at Estate Dr (West),,43.781041,-79.23775,,,,,,1
+10847,10847,105 Ironside Cres,,43.828637,-79.246914,,,,,,1
+6146,6146,Tapscott Rd at Newgale Gate,,43.818214,-79.239653,,,,,,1
+12055,12055,Progress Ave at Sheppard Ave East South Side,,43.794213,-79.234918,,,,,,1
+4661,4661,Tapscott Rd at McLevin Ave,,43.805224,-79.227067,,,,,,1
+12057,12057,Progress Ave at Milner Ave,,43.790487,-79.234372,,,,,,1
+10292,10292,Finchdene Sq (East) at Torham Pl South Side,,43.819452,-79.233233,,,,,,1
+6005,6005,Progress Ave at Markham Rd West Side,,43.781656,-79.234801,,,,,,1
+6007,6007,Progress Ave at Roadway to Centennial College,,43.783526,-79.231618,,,,,,1
+12053,12053,Progress Ave at Rosebank Dr North Side,,43.792409,-79.233987,,,,,,1
+2562,2562,5600 Finch Ave East,,43.813699,-79.240113,,,,,,1
+4709,4709,Washburn Way at Sheppard Ave East,,43.796306,-79.22768,,,,,,1
+9608,9608,Grangeway Ave at Progress Ave South Side,,43.775976,-79.250532,,,,,,1
+6008,6008,Progress Ave at Opposite Roadway to Centennial College,,43.783468,-79.231974,,,,,,1
+5849,5849,Newgale Gate at Finchdene Sq,,43.818861,-79.237676,,,,,,1
+11556,11556,430 Tapscott Rd,,43.809065,-79.23499,,,,,,1
+4664,4664,Opposite 430 Tapscott Rd - Walkway to Tunmead Square,,43.80948,-79.23493,,,,,,1
+11551,11551,Finchdene Sq at Pullman Crt,,43.820512,-79.23776,,,,,,1
+13376,13376,Washburn Way at Nahanni Ter South Side,,43.802358,-79.224717,,,,,,1
+12052,12052,Progress Ave at Milner Ave,,43.789947,-79.23395,,,,,,1
+2484,2484,Finch Ave East at Baldoon Rd,,43.815123,-79.232554,,,,,,1
+9609,9609,Bushby Dr at McCowan Rd - McCowan Rt Station,,43.774745,-79.251924,,,,,,1
+3459,3459,Crow Trail at Crittenden Sq,,43.812209,-79.233305,,,,,,1
+13629,13629,Markham Rd at McNicoll Ave,,43.823823,-79.247559,,,,,,1
+11547,11547,Crow Trail at Baldoon Rd,,43.813203,-79.232078,,,,,,1
+4705,4705,Washburn Way at Berner Trail,,43.800727,-79.226279,,,,,,1
+10844,10844,Tapscott Rd at McNicoll Ave West Side,,43.825661,-79.244275,,,,,,1
+11548,11548,Finchdene Sq (East) at Finchdene Sq (South),,43.817144,-79.23213,,,,,,1
+11365,11365,Corporate Dr at Progress Ave North Side,,43.780553,-79.243864,,,,,,1
+4701,4701,Washburn Way at Griffen Dr,,43.798171,-79.22806,,,,,,2
+4704,4704,Washburn Way at Tapscott Rd,,43.804149,-79.224085,,,,,,1
+12051,12051,Progress Ave at Milner Business Crt,,43.78833,-79.233194,,,,,,1
+3461,3461,Crow Trail at Tunmead Sq,,43.81063,-79.232672,,,,,,1
+10290,10290,Finchdene Sq (North) at Finchdene Sq (West) East Side,,43.820436,-79.23748,,,,,,1
+10291,10291,250 Finchdene Sq,,43.821102,-79.234368,,,,,,1
+10851,10851,Tapscott Rd at McNicoll Ave,,43.826054,-79.243336,,,,,,1
+11554,11554,Tapscott Rd at Finch Ave East,,43.814413,-79.237381,,,,,,1
+14761,14761,Scarborough Centre Station,,43.774369,-79.25849,,,,,,1
+15884,15884,Centennial College Bus Terminal,,43.786406,-79.229692,,,,,,1
+15885,15885,Centennial College Bus Terminal,,43.786271,-79.229592,,,,,,1
+16022,16022,Tapscott Rd at Newgale Gate South Side,,43.818131,-79.239856,,,,,,1
+16368,16368,Finch Ave East at Tapscott Rd West Side,,43.81414,-79.23788,,,,,,1
+16369,16369,Finch Ave East at Tapscott Rd East Side,,43.814291,-79.236357,,,,,,1
+16529,16529,McCowan Rd at 300 Consilium Pl,,43.778273,-79.253618,,,,,,1

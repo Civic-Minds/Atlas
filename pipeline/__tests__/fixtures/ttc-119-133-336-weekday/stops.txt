@@ -1,0 +1,422 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+11506,11506,Eighth St at Birmingham St,,43.602795,-79.507259,,,,,,2
+3543,3543,Eighth St at Lake Shore Blvd West North Side,,43.60078,-79.506431,,,,,,1
+9604,9604,Ellesmere Rd at McCowan Rd East Side,,43.77225,-79.25047,,,,,,1
+9912,9912,Finch Ave East at Yonge St East Side,,43.779842,-79.414782,,,,,,1
+526,526,Bloor St West at Islington Ave West Side,,43.64451,-79.524265,,,,,,1
+13906,13906,Nightstar Rd at Morningside Ave North Side,,43.823402,-79.230475,,,,,,1
+14104,14104,2851 Morningside Ave Walkway to Raponi Cir,,43.826549,-79.232874,,,,,,1
+1380,1380,Neilson Rd at Finch Ave East South Side,,43.81544,-79.227311,,,,,,1
+3587,3587,Finch Ave West at Dufferin St,,43.768624,-79.467298,,,,,,1
+3613,3613,Finch Ave West at Senlac Rd,,43.776326,-79.430344,,,,,,1
+3622,3622,Finch Ave West at Wilmington Ave,,43.770054,-79.460827,,,,,,1
+12064,12064,Humberline Dr at Humber College Blvd West Side,,43.731956,-79.609689,,,,,,1
+11049,11049,Humberline Dr at Humber College Blvd,,43.731861,-79.609562,,,,,,1
+9901,9901,Islington Ave at Bloor St West North Side,,43.64541,-79.523592,,,,,,1
+13363,13363,Islington Ave at Bloor St West,,43.644497,-79.523193,,,,,,1
+3791,3791,Islington Ave at Finch Ave West,,43.745841,-79.568376,,,,,,1
+12146,12146,John Garland Blvd at Finch Ave West South Side,,43.73531,-79.594657,,,,,,1
+11199,11199,John Garland Blvd at Finch Ave West,,43.735579,-79.594631,,,,,,1
+11321,11321,Keele St at Finch Ave West - Finch West Station,,43.763952,-79.491402,,,,,,1
+5891,5891,Oakdale Rd at Sheppard Ave West North Side,,43.737561,-79.524547,,,,,,1
+7691,7691,Ellesmere Rd at Helicon Gate West Side,,43.778605,-79.222594,,,,,,1
+3594,3594,Finch Ave West at Grantbrook St West Side,,43.776224,-79.432093,,,,,,1
+2725,2725,Islington Ave at Nordin Ave,,43.626838,-79.516246,,,,,,1
+1371,1371,Neilson Rd at Opp Walkway to Blackwater Cres & Kessack Crt,,43.799867,-79.218453,,,,,,1
+14083,14083,Nightstar Rd at Pogonia St,,43.824774,-79.226653,,,,,,1
+8869,8869,Wilson Ave at Keele St,,43.726925,-79.481737,,,,,,1
+1662,1662,Wilson Ave at Lady York Ave,,43.731006,-79.464577,,,,,,1
+13470,13470,Opposite 675 Wilson Ave,,43.733006,-79.455114,,,,,,1
+13921,13921,Woodbine Race Track Loop (Main Entrance),,43.716054,-79.603623,,,,,,1
+8865,8865,Wilson Ave at Julian Rd East Side - Humber River Hospital,,43.724582,-79.490689,,,,,,1
+3794,3794,Islington Ave at Fletcher Place,,43.691428,-79.544286,,,,,,2
+3827,3827,Islington Ave at Princess Margaret Blvd South Side,,43.675429,-79.537136,,,,,,2
+1399,1399,Neilson Rd at Sewells Rd,,43.806417,-79.218347,,,,,,1
+1049,1049,Ellesmere Rd at Markham Rd,,43.776669,-79.231287,,,,,,2
+9132,9132,Finch Ave West at Yonge St - Finch Station,,43.779444,-79.416584,,,,,,1
+1404,1404,Neilson Rd at Tapscott Rd,,43.806674,-79.218959,,,,,,1
+3789,3789,Islington Ave at Fairway Rd,,43.654968,-79.52804,,,,,,1
+3835,3835,Islington Ave at Rowntree Mill Rd South Side,,43.754366,-79.568921,,,,,,1
+2603,2603,1150 Finch Ave West,,43.765283,-79.483642,,,,,,1
+3809,3809,Islington Ave at The Kingsway,,43.668502,-79.534002,,,,,,1
+12926,12926,700 Arrow Rd,,43.745714,-79.529601,,,,,,1
+3761,3761,Islington Ave at Aylesbury Rd,,43.666523,-79.533099,,,,,,1
+3788,3788,Islington Ave at Fairway Rd North Side,,43.655037,-79.527877,,,,,,1
+3759,3759,Islington Ave at Aviemore Dr,,43.748528,-79.56845,,,,,,1
+2716,2716,Islington Ave at Beaumonde Heights Dr North Side,,43.742858,-79.567695,,,,,,1
+3799,3799,Islington Ave at Gosfield Gate South Side,,43.725271,-79.560044,,,,,,1
+3852,3852,Islington Ave at Westhampton Dr South Side,,43.70418,-79.550141,,,,,,2
+4490,4490,Milvan Dr at Penn Dr (North),,43.755316,-79.55831,,,,,,1
+3777,3777,Islington Ave at Dixon Rd,,43.696716,-79.546347,,,,,,1
+11417,11417,Humberwood Blvd at Honeyview Pl,,43.733402,-79.619198,,,,,,1
+4489,4489,Milvan Dr at Millwick Dr (South),,43.756247,-79.560203,,,,,,1
+3803,3803,Islington Ave at Humber Summit Lane,,43.761881,-79.573211,,,,,,1
+3823,3823,Islington Ave at Orrell Ave,,43.656887,-79.528879,,,,,,1
+3850,3850,Islington Ave at Vanhill Ave,,43.757355,-79.570029,,,,,,1
+3754,3754,Islington Ave at Albion Rd,,43.736655,-79.56489,,,,,,1
+1403,1403,Neilson Rd at Silverbell Grove,,43.804102,-79.217064,,,,,,1
+2612,2612,Finch Ave West at Keele St,,43.763298,-79.49133,,,,,,1
+11273,11273,Humber College Blvd at Highway 27,,43.730243,-79.601847,,,,,,1
+14266,14266,Staines Rd at Seasons Dr South Side,,43.830149,-79.223612,,,,,,1
+2584,2584,Finch Ave West at Ardwick Blvd (West),,43.747602,-79.562474,,,,,,1
+3767,3767,Islington Ave at Bergamot Ave,,43.716748,-79.555736,,,,,,1
+7761,7761,Finch Ave West at Weston Rd West Side,,43.752093,-79.542932,,,,,,1
+2632,2632,1685 Finch Ave West - St Wilfred Cathoiic School,,43.760174,-79.503471,,,,,,1
+14107,14107,Staines Rd at Warbler Cir,,43.82671,-79.221682,,,,,,1
+3808,3808,Islington Ave at The Kingsway North Side,,43.668756,-79.533874,,,,,,1
+3779,3779,Islington Ave at Duncanwoods Dr North Side,,43.754994,-79.568713,,,,,,1
+3787,3787,Islington Ave at Evans Ave,,43.618201,-79.510979,,,,,,1
+8873,8873,949 Wilson Ave,,43.728771,-79.474465,,,,,,1
+2734,2734,Islington Ave at Van Dusen Blvd,,43.641604,-79.522221,,,,,,1
+8872,8872,Wilson Ave at Lexfield Ave West Side,,43.723418,-79.497052,,,,,,1
+7614,7614,Clayson Rd at Bartor Rd,,43.720907,-79.524325,,,,,,1
+1388,1388,Neilson Rd at Milner Ave,,43.795851,-79.216863,,,,,,1
+2578,2578,Finch Ave West at Albion Rd,,43.740914,-79.589123,,,,,,1
+3814,3814,Islington Ave at Leduc Dr South Side,,43.718169,-79.556712,,,,,,1
+7498,7498,Arrow Rd at Finch Ave West South Side,,43.752754,-79.536043,,,,,,1
+1044,1044,Ellesmere Rd at Dolly Varden Blvd,,43.775626,-79.235048,,,,,,1
+1392,1392,Neilson Rd at Oakmeadow Blvd (North),,43.791189,-79.213692,,,,,,1
+8880,8880,Wilson Ave at Ridge Rd East Side,,43.723886,-79.493795,,,,,,1
+11250,11250,Finch Ave West at Walkway to Farr Ave,,43.743726,-79.579543,,,,,,1
+7697,7697,Ellesmere Rd at Midland Ave,,43.768149,-79.270795,,,,,,1
+7863,7863,Humber College Blvd at John Garland Blvd,,43.733547,-79.593827,,,,,,1
+7496,7496,Arrow Rd at Deerhide Cres (South),,43.74799,-79.530999,,,,,,1
+7704,7704,Ellesmere Rd at Neilson Rd - Scarborough Health Network Centenary Hospital,,43.782441,-79.205092,,,,,,1
+7621,7621,Clayson Rd at Wilson Ave North Side,,43.718363,-79.523211,,,,,,1
+3760,3760,Islington Ave at Aylesbury Rd,,43.666259,-79.532744,,,,,,1
+8888,8888,Wilson Ave at William Cragg Dr,,43.722678,-79.500338,,,,,,2
+11848,11848,Humberwood Blvd at Pinecone Dr,,43.729112,-79.620083,,,,,,1
+1613,1613,Triton Rd at Borough Dr,,43.773482,-79.261427,,,,,,1
+2609,2609,Finch Ave West at Jayzel Dr,,43.750455,-79.549378,,,,,,1
+1046,1046,Ellesmere Rd at Gander Dr East Side,,43.777555,-79.226206,,,,,,1
+11030,11030,Humberline Dr at Holyoake Cres (East) West Side,,43.731879,-79.612198,,,,,,1
+4332,4332,Kipling Ave at Kidron Valley Dr,,43.756348,-79.588563,,,,,,1
+3841,3841,Islington Ave at St Georges Blvd,,43.703263,-79.54944,,,,,,1
+2583,2583,Finch Ave West at Ardwick Blvd (East),,43.748626,-79.55775,,,,,,1
+8877,8877,Wilson Ave at Northgate Dr,,43.730184,-79.468213,,,,,,1
+3807,3807,Islington Ave at Kingsview Blvd,,43.699844,-79.548105,,,,,,1
+8881,8881,Wilson Ave at Ridge Rd West Side,,43.723931,-79.494594,,,,,,1
+2596,2596,Finch Ave West at Duncanwoods Dr,,43.748959,-79.557477,,,,,,1
+3813,3813,Islington Ave at Leduc Dr North Side,,43.718689,-79.556614,,,,,,1
+8868,8868,Wilson Ave at Keele St,,43.726427,-79.48238,,,,,,1
+4277,4277,Kipling Ave at Annabelle Dr,,43.751045,-79.585973,,,,,,1
+2628,2628,Finch Ave West at Sentinel Rd,,43.760891,-79.500169,,,,,,1
+7864,7864,Humber College Blvd at Lynmont Rd,,43.731799,-79.596075,,,,,,1
+4643,4643,Steeles Ave West at Islington Ave,,43.764154,-79.574983,,,,,,1
+11851,11851,Humberwood Blvd at Pinecone Dr North Side,,43.729041,-79.619904,,,,,,1
+7676,7676,Ellesmere Rd at Bellamy Rd North,,43.774149,-79.241959,,,,,,1
+2636,2636,Finch Ave West at Tobermory Dr,,43.759158,-79.507973,,,,,,1
+2591,2591,Finch Ave West at Chesswood Dr West Side,,43.766502,-79.478024,,,,,,1
+3812,3812,Islington Ave at Lake Shore Blvd West,,43.600902,-79.505422,,,,,,1
+3785,3785,Islington Ave at Elmhurst Dr,,43.723031,-79.558639,,,,,,1
+2580,2580,Finch Ave West at Alexdon Rd East Side,,43.764657,-79.485147,,,,,,1
+3855,3855,Islington Ave at Winnipeg Rd,,43.692368,-79.544377,,,,,,1
+3750,3750,Islington Ave at Gosfield Gate,,43.725737,-79.559925,,,,,,1
+4671,4671,192 Toryork Dr,,43.760392,-79.558741,,,,,,1
+11290,11290,Humberwood Blvd at Arborwood Dr East Side,,43.72349,-79.618315,,,,,,1
+3774,3774,1738 Islington Ave - Richview Collegiate,,43.678379,-79.538485,,,,,,1
+8851,8851,Wilson Ave at Dubray Ave,,43.728331,-79.4775,,,,,,2
+3836,3836,Islington Ave at Sandhill Dr North Side,,43.734502,-79.563903,,,,,,1
+3819,3819,Islington Ave at Muir Ave,,43.760111,-79.572001,,,,,,1
+2718,2718,Islington Ave at Bering Ave North Side,,43.639611,-79.521176,,,,,,1
+3839,3839,Islington Ave at St Andrews Blvd,,43.701432,-79.548832,,,,,,1
+2624,2624,Finch Ave West at Pearldale Ave,,43.747924,-79.562184,,,,,,1
+11040,11040,Finch Ave West at Albion Centre,,43.743079,-79.587002,,,,,,1
+3825,3825,Islington Ave at Poplar Heights Dr,,43.675562,-79.536919,,,,,,2
+1052,1052,Ellesmere Rd at Scarborough Golf Club Rd,,43.778371,-79.222373,,,,,,1
+1373,1373,Neilson Rd at Berner Trail,,43.802292,-79.217834,,,,,,1
+3793,3793,Islington Ave at Finchley Rd,,43.656734,-79.528602,,,,,,1
+2627,2627,Finch Ave West at Rumike Rd,,43.749782,-79.552422,,,,,,1
+11955,11955,Arrow Rd at Sheppard Ave West,,43.736314,-79.529568,,,,,,1
+3765,3765,Islington Ave at Beaumonde Heights Dr South Side,,43.742225,-79.567734,,,,,,2
+1051,1051,Ellesmere Rd at Orton Park Rd,,43.7796,-79.217311,,,,,,1
+2582,2582,Finch Ave West at Alness St,,43.768021,-79.471197,,,,,,1
+11289,11289,Humberwood Blvd Loop at View Green Cres,,43.724472,-79.621226,,,,,,2
+3584,3584,Finch Ave West at Carney Rd,,43.777198,-79.427696,,,,,,1
+3585,3585,Finch Ave West at Clarkhill St,,43.775305,-79.435171,,,,,,1
+13907,13907,Oasis Blvd at Seasons Dr,,43.829031,-79.233701,,,,,,1
+8862,8862,Wilson Ave at Jane St,,43.721071,-79.508391,,,,,,1
+13904,13904,Neilson Rd at Finch Ave East,,43.81611,-79.227271,,,,,,1
+4487,4487,40 Milvan Dr,,43.753568,-79.554849,,,,,,1
+1394,1394,Neilson Rd at Purpledusk Trail South Side,,43.785235,-79.20626,,,,,,1
+2606,2606,Finch Ave West at Jane St East Side,,43.757192,-79.516982,,,,,,1
+3769,3769,Islington Ave at Birmingham St North Side,,43.603813,-79.506396,,,,,,1
+3848,3848,Islington Ave at Thorold Gate North Side,,43.762953,-79.573647,,,,,,1
+2727,2727,Islington Ave at Norseman St,,43.63431,-79.519306,,,,,,1
+8857,8857,Wilson Ave at Garratt Blvd,,43.730462,-79.468017,,,,,,1
+11032,11032,Humberline Dr at Woodlot Cres (West),,43.732149,-79.614745,,,,,,1
+14081,14081,Mantis Rd at Poppy Pl (North),,43.82401,-79.222705,,,,,,1
+14105,14105,Seasons Dr at Canoe Cres (West),,43.829267,-79.228259,,,,,,1
+7712,7712,Ellesmere Rd at Parkington Cres,,43.773539,-79.245841,,,,,,1
+2616,2616,Finch Ave West at Martin Grove Rd,,43.736624,-79.591871,,,,,,1
+4486,4486,180 Milvan Dr,,43.758449,-79.565663,,,,,,1
+8861,8861,Wilson Ave at Jane St,,43.720752,-79.508813,,,,,,1
+3758,3758,800 Islington Ave,,43.616817,-79.510532,,,,,,1
+3782,3782,Islington Ave at Eglinton Ave West,,43.67969,-79.538744,,,,,,1
+7499,7499,Arrow Rd at Gail Grove South Side,,43.737782,-79.529927,,,,,,1
+3763,3763,Islington Ave at Barker Ave,,43.731993,-79.563174,,,,,,1
+9983,9983,Neilson Rd at Wickson Trail,,43.801842,-79.217723,,,,,,1
+3834,3834,Islington Ave at Riverbank Dr,,43.653404,-79.527358,,,,,,1
+3780,3780,Islington Ave at Dundas St West,,43.651252,-79.526155,,,,,,1
+3837,3837,Islington Ave at Sandhill Dr,,43.734462,-79.564233,,,,,,1
+12199,12199,Humberwood Blvd at Topbank Dr,,43.730432,-79.619758,,,,,,1
+7513,7513,Arrow Rd at Bartor Rd North Side,,43.737823,-79.529694,,,,,,1
+13458,13458,Opposite 1111 Arrow Rd,,43.751047,-79.534451,,,,,,1
+2589,2589,Finch Ave West at Champagne Dr,,43.767646,-79.471686,,,,,,1
+8833,8833,Wilson Ave at Agate Rd West Side,,43.725812,-79.486393,,,,,,1
+4485,4485,130 Milvan Dr,,43.757138,-79.562589,,,,,,1
+7862,7862,Humber College Blvd at John Garland Blvd West Side,,43.733587,-79.594019,,,,,,2
+1400,1400,Neilson Rd at Sheppard Ave East,,43.797971,-79.217375,,,,,,1
+3816,3816,Islington Ave at Milady Rd,,43.752168,-79.568109,,,,,,1
+1386,1386,Neilson Rd at Military Trail South Side,,43.78765,-79.208069,,,,,,1
+2637,2637,Finch Ave West at Tobermory Dr,,43.759379,-79.507788,,,,,,1
+13457,13457,1111 Arrow Rd,,43.751265,-79.534408,,,,,,1
+8843,8843,Wilson Ave at Apex Lane,,43.728721,-79.475772,,,,,,2
+1387,1387,Neilson Rd at Military Trail,,43.787917,-79.208112,,,,,,1
+3854,3854,Islington Ave at The Westway,,43.688485,-79.542629,,,,,,1
+7867,7867,Humber College Blvd at Westmore Dr - William Osler Health,,43.731137,-79.598867,,,,,,1
+3795,3795,Islington Ave at Fordwich Cres,,43.726961,-79.560498,,,,,,1
+12200,12200,Humberwood Blvd at Topbank Dr North Side,,43.730593,-79.619596,,,,,,1
+3818,3818,Islington Ave at Millwick Dr,,43.759961,-79.571556,,,,,,1
+7865,7865,Humber College Blvd at Lynmont Rd,,43.732113,-79.595869,,,,,,1
+11048,11048,Humberline Dr at Holyoake Cres (East),,43.731737,-79.612174,,,,,,1
+3771,3771,Islington Ave at Bywood Dr,,43.659278,-79.529924,,,,,,1
+2713,2713,Islington Ave at Ambleside Ave,,43.629214,-79.51696,,,,,,1
+11272,11272,Humber College Blvd at Highway 27,,43.730352,-79.602333,,,,,,1
+1657,1657,Wilson Ave at Dufferin St,,43.731854,-79.459521,,,,,,1
+3800,3800,Islington Ave at Great Oak Dr,,43.660902,-79.530629,,,,,,1
+3820,3820,Islington Ave at New Toronto St South Side,,43.606413,-79.506705,,,,,,1
+2611,2611,Finch Ave West at Keele St,,43.763686,-79.490698,,,,,,2
+7501,7501,Arrow Rd at Lido Rd South Side,,43.74154,-79.530848,,,,,,1
+9410,9410,Neilson Rd at McLevin Ave,,43.809181,-79.222072,,,,,,1
+3588,3588,Finch Ave West at Dufferin St,,43.769131,-79.466342,,,,,,1
+7700,7700,Ellesmere Rd at Military Trail (West),,43.779894,-79.217004,,,,,,1
+3786,3786,Islington Ave at Evans Ave South Side,,43.617871,-79.511116,,,,,,1
+1402,1402,Neilson Rd at Silverbell Grove South Side,,43.804009,-79.217316,,,,,,1
+11858,11858,Arrow Rd at Sheppard Ave West North Side,,43.736355,-79.529315,,,,,,1
+11287,11287,Humberwood Blvd at Kingsplate Cres West Side,,43.723892,-79.616434,,,,,,1
+1389,1389,Neilson Rd at Milner Ave North Side,,43.795994,-79.216541,,,,,,1
+1378,1378,Neilson Rd at Ellesmere Rd North Side,,43.783012,-79.205028,,,,,,1
+9426,9426,Neilson Rd at Oakmeadow Blvd (South),,43.79014,-79.211951,,,,,,1
+2714,2714,Islington Ave at Athol Ave,,43.626717,-79.51594,,,,,,1
+2608,2608,Finch Ave West at Jayzel Dr,,43.75079,-79.548836,,,,,,1
+1384,1384,Neilson Rd at Livonia Pl,,43.78543,-79.206107,,,,,,1
+3801,3801,Islington Ave at Hilldowntree Rd,,43.659199,-79.529676,,,,,,1
+4377,4377,Kipling Ave at Stevenson Rd,,43.744609,-79.582868,,,,,,1
+11841,11841,Rexdale Blvd at Humberwood Blvd,,43.720614,-79.612281,,,,,,1
+2590,2590,Finch Ave West at Chesswood Dr,,43.766456,-79.477022,,,,,,1
+2643,2643,Finch Ave West at Weston Rd,,43.752276,-79.542034,,,,,,1
+2730,2730,Islington Ave at Saybrook Ave,,43.636325,-79.519856,,,,,,1
+13472,13472,Humberline Dr at Viewcrest Cir East Side,,43.7322,-79.617339,,,,,,1
+3821,3821,Islington Ave at New Toronto St,,43.60655,-79.506452,,,,,,1
+3770,3770,Islington Ave at Birmingham St,,43.603386,-79.506463,,,,,,1
+8855,8855,Wilson Ave at Epic Lane Rd East Side,,43.721239,-79.505763,,,,,,1
+9409,9409,Neilson Rd at McLevin Ave,,43.8091,-79.221269,,,,,,1
+5892,5892,Oakdale Rd at Sheppard Ave West,,43.737399,-79.524639,,,,,,1
+3802,3802,Islington Ave at Holgate St,,43.684737,-79.541305,,,,,,1
+3595,3595,Finch Ave West at Greenview Ave,,43.779237,-79.418329,,,,,,1
+9170,9170,Steeles Ave West Loop at Islington Ave,,43.764093,-79.576584,,,,,,1
+2723,2723,Islington Ave at Kingsmoor Gate North Side,,43.741105,-79.56691,,,,,,1
+2629,2629,Finch Ave West at Sentinel Rd,,43.761191,-79.499797,,,,,,1
+2724,2724,Islington Ave at Kingsmoor Gate South Side,,43.740391,-79.566904,,,,,,2
+3830,3830,Islington Ave at Resources Rd South Side,,43.707793,-79.551878,,,,,,1
+3840,3840,Islington Ave at St Andrews Blvd,,43.701229,-79.548498,,,,,,1
+7677,7677,Ellesmere Rd at Bellamy Rd North,,43.774537,-79.241437,,,,,,1
+3755,3755,Islington Ave at Allenby Ave,,43.711273,-79.553078,,,,,,1
+1162,1162,Islington Ave at Anglesey Blvd,,43.66386,-79.531702,,,,,,1
+11286,11286,Humberwood Blvd at Hullrick Dr (South),,43.721747,-79.61282,,,,,,1
+9246,9246,2397 Finch Ave West - Finch/Weston Centre,,43.751703,-79.54356,,,,,,1
+11508,11508,Humberwood Blvd at Humberline Dr,,43.733428,-79.618516,,,,,,1
+7494,7494,Arrow Rd at Deerhide Cres (North),,43.749539,-79.53298,,,,,,1
+1045,1045,Ellesmere Rd at Dormington Dr West Side,,43.777547,-79.227204,,,,,,1
+7711,7711,Ellesmere Rd at Parkington Cres,,43.773188,-79.246369,,,,,,1
+2593,2593,Finch Ave West at Driftwood Ave,,43.757924,-79.513523,,,,,,1
+2726,2726,Islington Ave at Norseman St,,43.634118,-79.51889,,,,,,1
+12521,12521,Islington Ave at Finch Ave West South Side,,43.74577,-79.568755,,,,,,1
+3589,3589,Finch Ave West at Edithvale Dr,,43.777055,-79.427166,,,,,,1
+10470,10470,Opposite 700 Arrow Rd,,43.745407,-79.529314,,,,,,2
+8876,8876,Wilson Ave at Murray Rd,,43.729711,-79.471403,,,,,,1
+11714,11714,Neilson Rd at Malvern Town Centre - East Entrance,,43.8079,-79.219949,,,,,,1
+3618,3618,Finch Ave West at Torresdale Ave West Side,,43.772336,-79.451367,,,,,,1
+13903,13903,Neilson Rd at Neilson Park Dr,,43.81439,-79.226549,,,,,,1
+3817,3817,Islington Ave at Milady Rd,,43.752433,-79.56851,,,,,,1
+1401,1401,Neilson Rd at Sheppard Ave East,,43.798278,-79.217892,,,,,,1
+9506,9506,715 Finch Ave West,,43.769727,-79.462373,,,,,,1
+3623,3623,Finch Ave West at Wilmington Ave,,43.770363,-79.46065,,,,,,1
+2633,2633,Opposite 1685 Finch Ave West - St Wilfred Catholic School,,43.760411,-79.503238,,,,,,1
+9130,9130,Finch Ave West at Yonge St West Side,,43.779729,-79.416164,,,,,,1
+13473,13473,Humberline Dr at Viewcrest Cir,,43.732276,-79.617211,,,,,,1
+1612,1612,Triton Rd at Borough Dr,,43.773658,-79.261533,,,,,,1
+3806,3806,Islington Ave at Kingsview Blvd,,43.699602,-79.547712,,,,,,1
+7502,7502,Arrow Rd at Pemican Crt North Side,,43.749441,-79.532558,,,,,,1
+1043,1043,Ellesmere Rd at Dolly Varden Blvd West Side,,43.775797,-79.235291,,,,,,1
+3853,3853,Islington Ave at The Westway South Side,,43.68824,-79.542872,,,,,,1
+2635,2635,Finch Ave West at Tangiers Rd,,43.764272,-79.488069,,,,,,1
+3615,3615,Opposite 685 Finch Ave West - St Bernard's Residence,,43.771053,-79.457455,,,,,,1
+3593,3593,Finch Ave West at Goldfinch Crt East Side,,43.772257,-79.450489,,,,,,1
+3620,3620,Finch Ave West at Virgilwood Dr - North York General Finch Branson Site,,43.772698,-79.448324,,,,,,1
+8875,8875,Wilson Ave at Murray Rd,,43.729408,-79.471719,,,,,,2
+4491,4491,Milvan Dr at Penn Dr (South),,43.75159,-79.5531,,,,,,1
+2728,2728,Islington Ave at The Queensway North Side,,43.624047,-79.514742,,,,,,1
+1383,1383,Neilson Rd at Keeler Blvd,,43.790075,-79.211457,,,,,,1
+2722,2722,Islington Ave at Jutland Rd,,43.629036,-79.517124,,,,,,1
+2620,2620,Finch Ave West at Milvan Dr,,43.750105,-79.552105,,,,,,1
+2625,2625,Finch Ave West at Romfield Lane,,43.762438,-79.493647,,,,,,1
+3828,3828,Islington Ave at Rathburn Rd South Side,,43.662127,-79.531147,,,,,,1
+3579,3579,1111 Finch Ave West,,43.767047,-79.474414,,,,,,1
+3829,3829,Islington Ave at Rathburn Rd,,43.662257,-79.530948,,,,,,1
+2733,2733,Islington Ave at Van Dusen Blvd,,43.641412,-79.521938,,,,,,1
+11288,11288,Humberwood Blvd at Arborwood Dr,,43.723541,-79.618849,,,,,,1
+3796,3796,Islington Ave at Fordwich Cres,,43.727108,-79.560919,,,,,,1
+14264,14264,150 Staines Rd West Side,,43.822964,-79.219024,,,,,,1
+3846,3846,Islington Ave at Summitcrest Dr,,43.683282,-79.540697,,,,,,1
+2712,2712,Islington Ave at Albion Rd,,43.7377,-79.565693,,,,,,1
+8866,8866,Wilson Ave at Julian Rd West Side - Humber River Hospital,,43.724669,-79.491492,,,,,,1
+1375,1375,Neilson Rd at Crow Trail,,43.812353,-79.225946,,,,,,1
+7622,7622,Clayson Rd at Wilson Ave,,43.718465,-79.523435,,,,,,1
+2597,2597,Finch Ave West at Elana Dr,,43.756605,-79.520829,,,,,,1
+3614,3614,685 Finch Ave West,,43.770935,-79.456814,,,,,,1
+2622,2622,Finch Ave West at Oakdale Rd - Humber Reactivation Care,,43.755759,-79.524467,,,,,,1
+3619,3619,Finch Ave West at Virgilwood Dr West Side - North York General Finch Branson,,43.772898,-79.448603,,,,,,1
+3833,3833,Islington Ave at Ridgevalley Cres North Side,,43.67211,-79.535377,,,,,,1
+2621,2621,Finch Ave West at Norfinch Dr - Humber Reactivation Care,,43.756133,-79.524087,,,,,,1
+2617,2617,Finch Ave West at Martin Grove Rd,,43.736947,-79.591363,,,,,,1
+11329,11329,1315 and 1319 Neilson Rd,,43.807848,-79.219558,,,,,,1
+3849,3849,Islington Ave at Titan Rd,,43.630726,-79.51757,,,,,,1
+7695,7695,Ellesmere Rd at McCowan Rd,,43.77237,-79.251163,,,,,,1
+3797,3797,Islington Ave at Golfdown Dr,,43.720786,-79.557601,,,,,,1
+4488,4488,Milvan Dr at Millwick Dr (North),,43.760715,-79.566035,,,,,,1
+1656,1656,Wilson Ave at Dufferin St West Side,,43.732143,-79.459421,,,,,,1
+11597,11597,Centenary Hospital Loop at Neilson Rd,,43.78123,-79.204142,,,,,,1
+3815,3815,Islington Ave at Monogram Pl,,43.70478,-79.550106,,,,,,2
+3805,3805,Islington Ave at Judson St,,43.613907,-79.508663,,,,,,1
+7495,7495,Arrow Rd at Deerhide Cres (South),,43.747641,-79.530249,,,,,,1
+3768,3768,Islington Ave at Bergamot Ave,,43.717119,-79.556195,,,,,,1
+13446,13446,Islington Ave at Bering Ave,,43.639459,-79.521343,,,,,,1
+3778,3778,Islington Ave at Dixon Rd,,43.697254,-79.546973,,,,,,1
+3845,3845,Islington Ave at Summitcrest Dr,,43.683125,-79.54029,,,,,,1
+11295,11295,Humberwood Blvd at Kingsplate Cres,,43.723814,-79.616068,,,,,,1
+3804,3804,Islington Ave at Judson St North Side,,43.614039,-79.508392,,,,,,2
+3609,3609,Opposite 625 Finch Ave West,,43.771704,-79.454303,,,,,,1
+3790,3790,Islington Ave at Fenley Dr South Side,,43.692803,-79.544904,,,,,,2
+1048,1048,Ellesmere Rd at Markham Rd,,43.776245,-79.232002,,,,,,1
+3851,3851,Islington Ave at Vanhill Ave,,43.75723,-79.569647,,,,,,1
+3580,3580,1118 Finch Ave West,,43.767126,-79.475169,,,,,,1
+2594,2594,Finch Ave West at Driftwood Ave,,43.758188,-79.513256,,,,,,1
+7500,7500,Arrow Rd at Lido Rd,,43.741466,-79.530633,,,,,,1
+9129,9129,1183 Finch Ave West,,43.765108,-79.483034,,,,,,1
+3608,3608,625 Finch Ave West,,43.771463,-79.454512,,,,,,1
+2711,2711,Islington Ave at Barkwin Dr,,43.738105,-79.565505,,,,,,1
+8887,8887,Wilson Ave at William Cragg Dr,,43.722389,-79.500473,,,,,,2
+4282,4282,Kipling Ave at Beaconhill Rd,,43.753672,-79.587255,,,,,,1
+7616,7616,Clayson Rd at Bartor Rd,,43.728609,-79.525817,,,,,,1
+9104,9104,Weston Rd at Toryork Dr,,43.753169,-79.542526,,,,,,1
+8856,8856,Wilson Ave at Epic Lane Rd,,43.72139,-79.506142,,,,,,2
+8860,8860,Wilson Ave at Highview Ave East Side,,43.723322,-79.496337,,,,,,2
+4672,4672,220 Toryork Dr,,43.761355,-79.561117,,,,,,1
+1385,1385,Neilson Rd at Walkway to Blackwater Cres & Kessack Crt,,43.799907,-79.218183,,,,,,1
+3798,3798,Islington Ave at Golfdown Dr,,43.721595,-79.55828,,,,,,1
+2626,2626,Finch Ave West at Romfield Lane,,43.762721,-79.493586,,,,,,1
+11047,11047,Humberline Dr at Woodlot Cres (West) East Side,,43.731957,-79.61503,,,,,,2
+11041,11041,Finch Ave West at Opposite Albion Centre,,43.743183,-79.587564,,,,,,1
+1393,1393,Neilson Rd at Oakmeadow Blvd (North),,43.791116,-79.213303,,,,,,1
+3847,3847,2825 Islington Ave,,43.748941,-79.567999,,,,,,1
+3762,3762,Islington Ave at Barker Ave,,43.73177,-79.562725,,,,,,1
+9509,9509,Islington Ave at Resources Rd North Side,,43.708432,-79.551717,,,,,,1
+8878,8878,Opposite 1700 Wilson Ave - Sheridan Mall,,43.720358,-79.510855,,,,,,1
+3783,3783,Islington Ave at Eglinton Ave West,,43.67994,-79.539209,,,,,,1
+1379,1379,Neilson Rd at Ellesmere Rd,,43.782798,-79.205156,,,,,,1
+11029,11029,Finch Ave West at Kipling Ave West Side,,43.743324,-79.582681,,,,,,1
+11035,11035,Finch Ave West at Kipling Ave,,43.743099,-79.582285,,,,,,1
+4340,4340,Kipling Ave at Mount Olive Dr,,43.746891,-79.583987,,,,,,1
+2729,2729,Islington Ave at The Queensway,,43.623813,-79.515022,,,,,,1
+3784,3784,Islington Ave at Elmhurst Dr South Side,,43.722846,-79.558942,,,,,,1
+2731,2731,Islington Ave at Titan Rd,,43.630969,-79.517919,,,,,,1
+3775,3775,Islington Ave at Cordova Ave North Side,,43.648767,-79.525097,,,,,,2
+3776,3776,Islington Ave at Deerfoot Rd,,43.685138,-79.541182,,,,,,1
+14086,14086,Staines Rd at Mantis Rd,,43.821587,-79.220303,,,,,,1
+8870,8870,Wilson Ave at Lady York Ave,,43.731296,-79.464343,,,,,,1
+3826,3826,Islington Ave at Prince George Dr,,43.672344,-79.535738,,,,,,1
+8848,8848,Wilson Ave at Dubray Ave,,43.728042,-79.477861,,,,,,1
+14120,14120,Islington Ave at Rexdale Blvd North Side,,43.715356,-79.555092,,,,,,1
+14082,14082,Nightstar Rd at Cranberry Dr,,43.825574,-79.224469,,,,,,1
+3578,3578,Finch Ave West at Ancona St,,43.774869,-79.438068,,,,,,1
+2710,2710,Islington Ave at Advance Rd,,43.636079,-79.519985,,,,,,1
+3773,3773,Islington Ave at Chestnut Hills Cres,,43.653052,-79.527003,,,,,,1
+11291,11291,Humberwood Blvd at Hullrick Dr (South),,43.722003,-79.613032,,,,,,1
+13922,13922,791 Islington Ave,,43.616802,-79.510286,,,,,,1
+14389,14389,Finch Ave West at Beecroft Rd,,43.77894,-79.41862,,,,,,1
+14442,14442,Finch Ave East at Blackbird Gate,,43.816771,-79.224426,,,,,,1
+14443,14443,5910 Finch Ave East,,43.81708,-79.224083,,,,,,1
+14444,14444,Finch Ave East at Morningside Ave,,43.81923,-79.220758,,,,,,1
+14513,14513,Humberwood Blvd at Morning Star Dr,,43.726047,-79.622058,,,,,,1
+14445,14445,Finch Ave East at Morningside Ave West Side,,43.81918,-79.221189,,,,,,1
+14446,14446,Staines Rd at Jacques Rd,,43.82082,-79.2207,,,,,,1
+14514,14514,Humberwood Blvd at Morning Star Dr,,43.726267,-79.622332,,,,,,1
+14527,14527,41 Torbarrie Rd,,43.721745,-79.521918,,,,,,1
+12326,12326,Clayson Rd at Bartor Rd (North) West Side,,43.728704,-79.525838,,,,,,1
+12325,12325,600 Clayson Rd,,43.726557,-79.528466,,,,,,1
+14522,14522,Torbarrie Rd at Sergio Marchi St,,43.730099,-79.524304,,,,,,2
+14523,14523,Torbarrie Rd at Judy Sgro Ave South Side,,43.72736,-79.523711,,,,,,2
+14524,14524,Torbarrie Rd at Joseph Griffith Lane South Side,,43.725333,-79.523293,,,,,,2
+14525,14525,Opposite 41 Torbarrie Rd,,43.7217,-79.522098,,,,,,2
+14526,14526,Jethro Rd at Wilson Ave North Side,,43.719323,-79.518545,,,,,,2
+14528,14528,Torbarrie Rd at Joseph Griffith Lane North Side,,43.725571,-79.523137,,,,,,1
+14529,14529,Torbarrie Rd at Judy Sgro Ave,,43.727398,-79.523497,,,,,,1
+14557,14557,Nightstar Rd at Wharnsby Dr,,43.823871,-79.229293,,,,,,1
+14530,14530,Torbarrie Rd at Sergio Marchi St,,43.729955,-79.524055,,,,,,1
+14686,14686,Finch Station,,43.78029,-79.414537,,,,,,1
+14766,14766,Scarborough Centre Station,,43.774499,-79.257246,,,,,,1
+14801,14801,Wilson Station,,43.73487,-79.450888,,,,,,2
+12328,12328,Clayson Rd at Huxley Rd,,43.723967,-79.525842,,,,,,1
+14982,14982,Staines Rd at Point Rouge Trail,,43.825562,-79.220539,,,,,,1
+15019,15019,Fenmar Dr at Weston Rd West Side,,43.7579,-79.544695,,,,,,1
+15020,15020,86 Fenmar Dr,,43.758857,-79.54699,,,,,,2
+15022,15022,174 Fenmar Dr,,43.761178,-79.552574,,,,,,2
+15023,15023,Ormont Dr at Fenmar Dr West Side,,43.761956,-79.55666,,,,,,1
+15136,15136,Wilson Ave at Agate Rd,,43.725744,-79.485637,,,,,,1
+15312,15312,Finch Ave West at Talbot Rd,,43.777993,-79.42309,,,,,,1
+15313,15313,Finch Ave West at Talbot Rd,,43.778263,-79.422806,,,,,,2
+15405,15405,Humber College Bus Terminal,,43.728683,-79.605058,,,,,,1
+15403,15403,Humber College Bus Terminal,,43.728964,-79.604532,,,,,,1
+15565,15565,Finch West Station,,43.765364,-79.490954,,,,,,1
+15566,15566,Finch West Station,,43.765126,-79.490896,,,,,,1
+15632,15632,Finch Ave West at Tangiers Rd East Side,,43.764122,-79.487775,,,,,,1
+12327,12327,Clayson Rd at Bartor Rd (South),,43.721056,-79.524609,,,,,,1
+15400,15400,Clayson Rd at Huxley Rd,,43.723726,-79.525589,,,,,,1
+15402,15402,401 Clayson Rd,,43.726382,-79.528272,,,,,,1
+15755,15755,Wilson Ave at Beverly Hills Dr,,43.71926,-79.516618,,,,,,1
+15756,15756,Wilson Ave at Beverly Hills Dr,,43.719009,-79.51698,,,,,,1
+15784,15784,Finch Ave West at Ancona St East Side,,43.77466,-79.438062,,,,,,1
+15785,15785,Finch Ave West at Glenborough Park Cres West Side,,43.775707,-79.434316,,,,,,1
+15789,15789,Kipling Ave at Steeles Ave West South Side,,43.759079,-79.589794,,,,,,1
+15821,15821,Humber College Blvd at Westmore Dr - Etobicoke General Hospital,,43.730806,-79.599536,,,,,,1
+16061,16061,Finch Ave West at Bathurst St,,43.773842,-79.442282,,,,,,1
+16062,16062,Finch Ave West at Bathurst St,,43.773841,-79.443841,,,,,,1
+16190,16190,Islington Ave at Dundas St West South Side,,43.650745,-79.526258,,,,,,1
+16286,16286,Bartor Rd at 2233 Sheppard Avenue West,,43.731343,-79.526097,,,,,,1
+16334,16334,Scarborough Centre Station,,43.774789,-79.256643,,,,,,1
+16374,16374,Ellesmere Rd at Midland Ave East Side,,43.767989,-79.270397,,,,,,1
+16390,16390,Kennedy Station - Platform B,,43.731978,-79.263574,,,,,,1
+16453,16453,Kennedy Station Drop-off Platform,,43.732229,-79.263511,,,,,,2
+6473,6473,Islington Ave at Rexdale Blvd,,43.714779,-79.555145,,,,,,1
+16645,16645,McCowan Rd at Town Centre Crt South Side,,43.774229,-79.252204,,,,,,1
+12445,12445,Fenmar Dr at Kenhar Dr,,43.759817,-79.549314,,,,,,1
+16658,16658,Bartor Rd at 2233 Sheppard Ave West,,43.731898,-79.525937,,,,,,1
+12452,12452,Finch Ave West at Albion Rd,,43.741331,-79.589319,,,,,,1
+16497,16497,258 Toryork Dr,,43.762299,-79.563473,,,,,,1
+16512,16512,Finch Ave West and Islington Ave,,43.746032,-79.568877,,,,,,1
+16513,16513,Finch Ave West at York Gate Blvd,,43.756776,-79.52119,,,,,,1
+16517,16517,Finch Ave West at Jane St,,43.757452,-79.517439,,,,,,1
+16518,16518,Finch Ave West at Islington Ave,,43.746498,-79.568292,,,,,,1
+16570,16570,Finch Ave West at Signet Dr,,43.75347,-79.53612,,,,,,1
+16571,16571,Finch Ave West at Arrow Rd,,43.753237,-79.535646,,,,,,1
+16456,16456,Islington Ave at Central Park Roadway,,43.648488,-79.525232,,,,,,2
+16830,16830,1700 Wilson Ave,,43.720315,-79.512079,,,,,,1
+16873,16873,Neilson Rd at Crow Trail,,43.812181,-79.225543,,,,,,1
+16912,16912,Tara Avenue,,43.742683,-79.267034,,,,,,1
+16913,16913,Tara Avenue,,43.742028,-79.266923,,,,,,1
+16914,16914,Lawrence East,,43.74964,-79.269965,,,,,,1
+16915,16915,Lawrence East,,43.749381,-79.270003,,,,,,1
+16916,16916,Ellesmere,,43.766819,-79.27646,,,,,,1
+16917,16917,Ellesmere,,43.76647,-79.276535,,,,,,1

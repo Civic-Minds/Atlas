@@ -1,0 +1,41 @@
+stop_id,stop_name,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,wheelchair_boarding,stop_code
+02864,Durham Hwy. 2 @ Browview Rd.,43.9131217980881,-78.6218225259608,97,https://www.gotransit.com/find-a-station-or-stop/02864/station-details,0,,2,102864
+02863,Durham Hwy. 2 @ Bowmanville Ave.,43.9115795382994,-78.7008794862316,96,https://www.gotransit.com/find-a-station-or-stop/02863/station-details,0,,1,102863
+02862,Durham Hwy. 2 @ Bowmanville Ave.,43.91091788908,-78.7031217545171,96,https://www.gotransit.com/find-a-station-or-stop/02862/station-details,0,,1,102862
+02532,King St. W. @ Scugog St.,43.9128571,-78.6923294,96,https://www.gotransit.com/find-a-station-or-stop/02532/station-details,0,,2,102532
+02505,Hwy. 35 @ Hwy. 115 Park & Ride,44.064003,-78.6258087,28,https://www.gotransit.com/find-a-station-or-stop/02505/station-details,0,,1,102505
+02504,Peterborough Rd. 10 @ Hwy. 115 Park & Ride,44.1872025,-78.4643936,29,https://www.gotransit.com/find-a-station-or-stop/02504/station-details,0,,1,102504
+02503,Fisher Dr. Park & Ride,44.2678642,-78.3492737,30,https://www.gotransit.com/find-a-station-or-stop/02503/station-details,0,,1,102503
+02502,Peterborough Bus Terminal,44.3045998,-78.3224182,30,https://www.gotransit.com/find-a-station-or-stop/02502/station-details,0,,1,102502
+02501,Trent University,44.3569412,-78.2870331,30,https://www.gotransit.com/find-a-station-or-stop/02501/station-details,0,,1,102501
+02162,Hwy. 2 @ Hwy. 35/115 Park & Ride,43.91301,-78.612533,97,https://www.gotransit.com/find-a-station-or-stop/02162/station-details,0,,1,102162
+00948,Bowmanville Ave. @ Waverley Rd.,43.9002495,-78.6930161,96,https://www.gotransit.com/find-a-station-or-stop/00948/station-details,0,,2,100948
+00947,Bowmanville Ave. @ Waverley Rd.,43.9004822,-78.6928482,96,https://www.gotransit.com/find-a-station-or-stop/00947/station-details,0,,2,100947
+00946,Bowmanville Ave. @ Aspen Springs Dr.,43.9068298,-78.7001495,96,https://www.gotransit.com/find-a-station-or-stop/00946/station-details,0,,2,100946
+00945,Bowmanville Ave. @ Aspen Springs Dr.,43.9070091,-78.7005005,96,https://www.gotransit.com/find-a-station-or-stop/00945/station-details,0,,1,100945
+00938,King St. W. @ Temperance St.,43.9121895,-78.6885605,96,https://www.gotransit.com/find-a-station-or-stop/00938/station-details,0,,1,100938
+00734,King St. E. @ Simpson Ave.,43.9116249,-78.6742783,96,https://www.gotransit.com/find-a-station-or-stop/00734/station-details,0,,1,100734
+00719,Durham Hwy. 2 @ Durham Regional Rd. 42,43.9130058,-78.6269608,96,https://www.gotransit.com/find-a-station-or-stop/00719/station-details,0,,2,100719
+00718,Durham Hwy. 2 @ Durham Regional Rd. 42,43.9128151,-78.6273422,96,https://www.gotransit.com/find-a-station-or-stop/00718/station-details,0,,2,100718
+00541,King St. W. @ Roenigk Dr.,43.9130325,-78.6950607,96,https://www.gotransit.com/find-a-station-or-stop/00541/station-details,0,,1,100541
+00540,King St. W. @ Roenigk Dr.,43.9127769,-78.6950073,96,https://www.gotransit.com/find-a-station-or-stop/00540/station-details,0,,1,100540
+00539,Durham Hwy. 2 @ Rickard Rd.,43.9124374,-78.6391907,96,https://www.gotransit.com/find-a-station-or-stop/00539/station-details,0,,2,100539
+00537,King St. E. @ Ontario St.,43.911026,-78.6849518,96,https://www.gotransit.com/find-a-station-or-stop/00537/station-details,0,,1,100537
+00536,King St. E. @ Mearns Ave.,43.9125061,-78.6700745,96,https://www.gotransit.com/find-a-station-or-stop/00536/station-details,0,,1,100536
+00535,King St. E. @ Mearns Ave.,43.9123039,-78.6707916,96,https://www.gotransit.com/find-a-station-or-stop/00535/station-details,0,,1,100535
+00530,Durham Hwy. 2 @ Lambs Rd.,43.9112587,-78.6584167,96,https://www.gotransit.com/find-a-station-or-stop/00530/station-details,0,,2,100530
+00529,Durham Hwy. 2 @ Lambs Rd.,43.9112358,-78.6594772,96,https://www.gotransit.com/find-a-station-or-stop/00529/station-details,0,,2,100529
+00525,Durham Hwy. 2 @ Kurve Inn Rd.,43.9129677,-78.6222305,97,https://www.gotransit.com/find-a-station-or-stop/00525/station-details,0,,2,100525
+00522,King St. E. @ George St.,43.9115372,-78.686203,96,https://www.gotransit.com/find-a-station-or-stop/00522/station-details,0,,1,100522
+00521,King St. E. @ Galbraith Cr.,43.9117889,-78.6741791,96,https://www.gotransit.com/find-a-station-or-stop/00521/station-details,0,,1,100521
+00519,King St. E. @ Division St.,43.9116707,-78.6874466,96,https://www.gotransit.com/find-a-station-or-stop/00519/station-details,0,,1,100519
+00514,Durham Hwy. 2 @ Bragg Rd.,43.9126205,-78.6365585,96,https://www.gotransit.com/find-a-station-or-stop/00514/station-details,0,,2,100514
+00511,Durham Hwy. 2 @ Bennett Rd.,43.9125595,-78.6476517,96,https://www.gotransit.com/find-a-station-or-stop/00511/station-details,0,,2,100511
+00510,Durham Hwy. 2 @ Bennett Rd.,43.9123993,-78.6490173,96,https://www.gotransit.com/find-a-station-or-stop/00510/station-details,0,,2,100510
+00462,Clarington Blvd. @ Durham Hwy. 2,43.9084511,-78.7072296,96,https://www.gotransit.com/find-a-station-or-stop/00462/station-details,0,,1,100462
+00306,Clarington Blvd. @ Durham Hwy. 2 (Bowmanville) Park & Ride,43.9078712,-78.7046204,96,https://www.gotransit.com/find-a-station-or-stop/00306/station-details,0,,1,100306
+00159,Durham College Oshawa GO,43.870909,-78.88585,94,https://www.gotransit.com/find-a-station-or-stop/00159/station-details,0,,1,100159
+00158,King St. E. @ Liberty St.,43.9103699,-78.6810532,96,https://www.gotransit.com/find-a-station-or-stop/00158/station-details,0,,1,100158
+00157,King St. E. @ Liberty St.,43.9107056,-78.6806183,96,https://www.gotransit.com/find-a-station-or-stop/00157/station-details,0,,1,100157
+00156,Bowmanville Ave. @ Baseline Rd.,43.8978195,-78.6911011,96,https://www.gotransit.com/find-a-station-or-stop/00156/station-details,0,,1,100156
+00155,Bowmanville Ave. @ Baseline Rd.,43.8975792,-78.6905899,96,https://www.gotransit.com/find-a-station-or-stop/00155/station-details,0,,1,100155

@@ -1,0 +1,145 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_station,wheelchair_boarding
+1409,1409,Clark & Menomonee,"Clark & Menomonee, Southbound, Northwest Corner",41.91490086,-87.63404808,0,,1
+1451,1451,Clark & LaSalle,"Clark & LaSalle, Northwestbound, Northeast Corner",41.91341686,-87.63286275,0,,1
+1739,1739,Devon & Clark,"Devon & Clark, Eastbound, Southeast Corner",41.99801979,-87.67021778,0,,1
+1740,1740,Devon & Greenview,"Devon & Greenview, Eastbound, Southwest Corner",41.99804699,-87.66803552,0,,1
+1741,1741,Devon & Glenwood,"Devon & Glenwood, Eastbound, Southwest Corner",41.99807299,-87.66559552,0,,1
+1743,1743,Devon & Lakewood,"Devon & Lakewood, Eastbound, Southwest Corner",41.99809899,-87.66318852,0,,1
+1744,1744,Devon & Magnolia,"Devon & Magnolia, Eastbound, Southeast Corner",41.99810999,-87.66161852,0,,1
+1757,1757,Devon & Sheridan,"Devon & Sheridan, Westbound, Northwest Corner",41.99825839,-87.66108036,0,,1
+1758,1758,Devon & Lakewood,"Devon & Lakewood, Westbound, Northeast Corner",41.99824676,-87.66292745,0,,1
+1760,1760,Devon & Glenwood,"Devon & Glenwood, Westbound, Northeast Corner",41.9982154,-87.66519838,0,,1
+1761,1761,Devon & Greenview,"Devon & Greenview, Westbound, Northeast Corner",41.99819449,-87.66775759,0,,1
+1762,1762,Devon & Clark,"Devon & Clark, Westbound, Northeast Corner",41.99815579,-87.67037701,0,,1
+1834,1834,Clark & Drummond,"Clark & Drummond, Southbound, Northwest Corner",41.93073245,-87.64402605,0,,1
+1836,1836,Clark & Deming,"Clark & Deming, Southbound, Northwest Corner",41.92871974,-87.64242531,0,,1
+1837,1837,Clark & Arlington,"Clark & Arlington, Southbound, Northwest Corner",41.92701948,-87.64151263,0,,1
+1838,1838,Clark & Fullerton,"Clark & Fullerton, Southbound, Northwest Corner",41.92565023,-87.64066447,0,,1
+1839,1839,Clark & Belden,"Clark & Belden, Southbound, Northwest Corner",41.92381723,-87.63952446,0,,1
+1840,1840,Clark & Webster,"Clark & Webster, Southbound, Northwest Corner",41.92205417,-87.63842047,0,,1
+1841,1841,Clark & Dickens,"Clark & Dickens, Southbound, Northwest Corner",41.9202256,-87.63734206,0,,1
+1843,1843,Clark & Wisconsin,"Clark & Wisconsin, Southbound, Northwest Corner",41.9167207,-87.63516946,0,,1
+1845,1845,Clark & W. LaSalle Drive,"Clark & W. LaSalle Drive, Southbound, Northwest Corner",41.91322594,-87.63305944,0,,1
+1846,1846,Clark & North Ave,"Clark & North Ave, Southbound, Northwest Corner",41.91131909,-87.63187467,0,,1
+1847,1847,Clark & Burton,"Clark & Burton, Southbound, Northwest Corner",41.90950486,-87.63172475,0,,1
+1848,1848,Clark & Schiller,"Clark & Schiller, Southbound, Northwest Corner",41.90794486,-87.63167075,0,,1
+1849,1849,Clark & Goethe,"Clark & Goethe, Southbound, Northwest Corner",41.90589086,-87.63158375,0,,1
+1865,1865,Clark & Randolph,"Clark & Randolph, Southbound, Southwest Corner",41.88428526,-87.63103435,0,,1
+1869,1869,Clark & Adams,"Clark & Adams, Southbound, Southwest Corner",41.87907585,-87.63087275,0,,1
+1871,1871,Clark & Van Buren,"Clark & Van Buren, Southbound, Southwest Corner",41.87665236,-87.63084914,0,,1
+1873,1873,Clark & Harrison,"Clark & Harrison, Southbound, Northwest Corner",41.87464685,-87.63074975,0,,1
+1877,1877,Dearborn & Ida B Wells Drive,"Dearborn & Ida B Wells Drive, Northbound, Northeast Corner",41.87593485,-87.62915975,0,,1
+1880,1880,Dearborn & Adams,"Dearborn & Adams, Northbound, Northeast Corner",41.87956864,-87.62925341,0,,1
+1881,1881,Dearborn & Monroe,"Dearborn & Monroe, Northbound, Northeast Corner",41.88095585,-87.62929075,0,,1
+1882,1882,Dearborn & Madison,"Dearborn & Madison, Northbound, Northeast Corner",41.88207815,-87.62929962,0,,1
+1884,1884,Dearborn & Randolph,"Dearborn & Randolph, Northbound, Northeast Corner",41.88471585,-87.62939275,0,,1
+1885,1885,Dearborn & Wacker/Lake,"Dearborn & Wacker/Lake, Northbound, Eastside of the Street",41.88619143,-87.6294021,0,,1
+1887,1887,Dearborn & Marina City,"Dearborn & Marina City, Northbound, Eastside of the Street",41.88809986,-87.62945975,0,,1
+1900,1900,Clark & Goethe,"Clark & Goethe, Northbound, Southeast Corner",41.90570586,-87.63143475,0,,1
+1901,1901,Clark & Schiller,"Clark & Schiller, Northbound, Southeast Corner",41.90774886,-87.63149375,0,,1
+1902,1902,Clark & Burton,"Clark & Burton, Northbound, Southeast Corner",41.90935048,-87.63146407,0,,1
+1905,1905,Clark & Lincoln,"Clark & Lincoln, Northbound, Eastside of the Street",41.915538,-87.63419314,0,,1
+1906,1906,Clark & Wisconsin,"Clark & Wisconsin, Northbound, Eastside of the Street",41.91655608,-87.63480236,0,,1
+1907,1907,Clark & Armitage,"Clark & Armitage, Northbound, Eastside of the Street",41.91839066,-87.63593082,0,,1
+1908,1908,Clark & Dickens,"Clark & Dickens, Northbound, Southeast Corner",41.92008329,-87.63703664,0,,1
+1909,1909,Clark & Webster,"Clark & Webster, Northbound, Southeast Corner",41.92186611,-87.63813451,0,,1
+1910,1910,Clark & Belden,"Clark & Belden, Northbound, Southeast Corner",41.9236572,-87.63921544,0,,1
+1911,1911,Clark & Fullerton,"Clark & Fullerton, Northbound, Southeast Corner",41.92550739,-87.64027154,0,,1
+1913,1913,Clark & Deming,"Clark & Deming, Northbound, Southeast Corner",41.92863926,-87.64214729,0,,1
+1915,1915,Clark & Drummond,"Clark & Drummond, Northbound, Eastside of the Street",41.93083824,-87.64388281,0,,1
+2361,2361,State & Grand (Red Line),"State & Grand (Red Line), Northbound, Southeast Corner",41.89158886,-87.62795475,0,,1
+2367,2367,State & Grand (Red Line),"State & Grand (Red Line), Southbound, Southwest Corner",41.8915543,-87.6281713,0,,1
+2368,2368,State & Hubbard,"State & Hubbard, Southbound, Northwest Corner",41.89015913,-87.62811267,0,,1
+2370,2370,State & Marina City,"State & Marina City, Southbound, Westside of the Street",41.88835786,-87.62817775,0,,1
+4794,4794,Broadway & Foster,"Broadway & Foster, Northbound, Northeast Corner",41.97686437,-87.6597594,0,,1
+5332,5332,Broadway & Glenlake,"Broadway & Glenlake, Southbound, Northwest Corner",41.99279387,-87.66044977,0,,1
+5333,5333,Broadway & Elmdale,"Broadway & Elmdale, Southbound, Northwest Corner",41.99099751,-87.66041686,0,,1
+5336,5336,Broadway & Victoria,"Broadway & Victoria, Southbound, Northwest Corner",41.98702087,-87.66024677,0,,1
+5338,5338,Broadway & Bryn Mawr/Ridge,"Broadway & Bryn Mawr/Ridge, Southbound, Northwest Corner",41.98387748,-87.66019165,0,,1
+5339,5339,Broadway & Catalpa,"Broadway & Catalpa, Southbound, Northwest Corner",41.98190374,-87.66015522,0,,1
+5340,5340,Broadway & Balmoral,"Broadway & Balmoral, Southbound, Northwest Corner",41.98013537,-87.66010654,0,,1
+5345,5345,Broadway & Argyle,"Broadway & Argyle, Southbound, Westside of the Street",41.97331941,-87.65989807,0,,1
+5348,5348,Broadway & Leland,"Broadway & Leland, Southbound, Northwest Corner",41.9673477,-87.6588408,0,,1
+5349,5349,Broadway & Wilson,"Broadway & Wilson, Southbound, Southwest Corner",41.9652543,-87.65750394,0,,1
+5350,5350,Broadway & Sunnyside,"Broadway & Sunnyside, Southbound, Southwest Corner",41.96318859,-87.65617732,0,,1
+5351,5351,Broadway & Montrose,"Broadway & Montrose, Southbound, Northwest Corner",41.96185413,-87.65540442,0,,1
+5354,5354,Broadway & Buena,"Broadway & Buena, Southbound, Northwest Corner",41.95853387,-87.65309476,0,,1
+5355,5355,Broadway & Belle Plaine,"Broadway & Belle Plaine, Southbound, Northwest Corner",41.95699587,-87.65210776,0,,1
+5356,5356,Broadway & Irving Park,"Broadway & Irving Park, Southbound, Northwest Corner",41.95469101,-87.65070251,0,,1
+5360,5360,Broadway & Waveland,"Broadway & Waveland, Southbound, Northwest Corner",41.94927014,-87.6485142,0,,1
+5362,5362,Broadway & Cornelia,"Broadway & Cornelia, Southbound, Northwest Corner",41.94556414,-87.64626588,0,,1
+5366,5366,Broadway & Barry,"Broadway & Barry, Southbound, Northwest Corner",41.93797386,-87.64441976,0,,1
+5367,5367,Broadway & Wellington,"Broadway & Wellington, Southbound, Northwest Corner",41.93658686,-87.64436776,0,,1
+5368,5368,Broadway & Surf,"Broadway & Surf, Southbound, Northwest Corner",41.93493616,-87.6443161,0,,1
+5370,5370,Division & Clark (Red Line),"Division & Clark (Red Line), Eastbound, Southeast Corner",41.90384688,-87.63122704,0,,1
+5371,5371,Division & State,"Division & State, Eastbound, Southwest Corner",41.90388298,-87.62875496,0,,1
+5373,5373,State & Maple,"State & Maple, Southbound, Northwest Corner",41.90199286,-87.62843575,0,,1
+5374,5374,State & Oak,"State & Oak, Southbound, Westside of the Street",41.90088186,-87.62840475,0,,1
+5375,5375,State & Delaware,"State & Delaware, Southbound, Northwest Corner",41.89927186,-87.62836175,0,,1
+5379,5379,State & Huron,"State & Huron, Southbound, Northwest Corner",41.89501486,-87.62824675,0,,1
+5380,5380,State & Ontario,"State & Ontario, Southbound, Northwest Corner",41.89340054,-87.62821062,0,,1
+5385,5385,State & Ontario,"State & Ontario, Northbound, Southeast Corner",41.89319386,-87.62799775,0,,1
+5386,5386,State & Huron,"State & Huron, Northbound, Southeast Corner",41.89476386,-87.62806575,0,,1
+5389,5389,State & Delaware,"State & Delaware, Northbound, Southeast Corner",41.89901486,-87.62819075,0,,1
+5390,5390,State & Oak,"State & Oak, Northbound, Eastside of the Street",41.90049186,-87.62823575,0,,1
+5391,5391,State & Bellevue,"State & Bellevue, Northbound, Northeast Corner",41.90176286,-87.62827375,0,,1
+5392,5392,State & Elm,"State & Elm, Northbound, Southeast Corner",41.90306286,-87.62851375,0,,1
+5394,5394,Division & Dearborn,"Division & Dearborn, Westbound, Northeast Corner",41.90398986,-87.62980975,0,,1
+5395,5395,Division & Clark (Red Line),"Division & Clark (Red Line), Westbound, Northeast Corner",41.90397724,-87.63131084,0,,1
+5399,5399,Broadway & Barry,"Broadway & Barry, Northbound, Eastside of the Street",41.93789086,-87.64427376,0,,1
+5400,5400,Broadway & Belmont,"Broadway & Belmont, Northbound, Southeast Corner",41.93996086,-87.64433776,0,,1
+5402,5402,Broadway & Roscoe,"Broadway & Roscoe, Northbound, Southeast Corner",41.94325863,-87.64460642,0,,1
+5403,5403,Broadway & Cornelia,"Broadway & Cornelia, Northbound, Southeast Corner",41.94546377,-87.64604394,0,,1
+5405,5405,Broadway & Waveland,"Broadway & Waveland, Northbound, Southeast Corner",41.94910367,-87.64825036,0,,1
+5407,5407,Broadway & Halsted,"Broadway & Halsted, Northbound, Eastside of the Street",41.95117952,-87.64948834,0,,1
+5408,5408,Broadway & W. Sheridan,"Broadway & W. Sheridan, Northbound, Southeast Corner",41.9526532,-87.64956399,0,,1
+5409,5409,Broadway & Irving Park,"Broadway & Irving Park, Northbound, Southeast Corner",41.95445354,-87.65039451,0,,1
+5410,5410,Broadway & Belle Plaine,"Broadway & Belle Plaine, Northbound, Southeast Corner",41.95682987,-87.65196276,0,,1
+5411,5411,Broadway & Buena,"Broadway & Buena, Northbound, Southeast Corner",41.95836787,-87.65294976,0,,1
+5418,5418,Broadway & Lawrence,"Broadway & Lawrence, Northbound, Southeast Corner",41.96887308,-87.65955873,0,,1
+5421,5421,Broadway & Winona,"Broadway & Winona, Northbound, Southeast Corner",41.97513301,-87.6597142,0,,1
+5423,5423,Broadway & Balmoral,"Broadway & Balmoral, Northbound, Southeast Corner",41.97982632,-87.65985963,0,,1
+5424,5424,Broadway & Catalpa,"Broadway & Catalpa, Northbound, Southeast Corner",41.98171087,-87.65994677,0,,1
+5426,5426,Broadway & Hollywood,"Broadway & Hollywood, Northbound, Southeast Corner",41.98536487,-87.66002377,0,,1
+5427,5427,Broadway & Ardmore,"Broadway & Ardmore, Northbound, Northeast Corner",41.98744087,-87.66010777,0,,1
+5429,5429,Broadway & Thorndale,"Broadway & Thorndale, Northbound, Southeast Corner",41.98992212,-87.66015965,0,,1
+5430,5430,Broadway & Elmdale,"Broadway & Elmdale, Northbound, Eastside of the Street",41.99105742,-87.66018952,0,,1
+5431,5431,Broadway & Glenlake,"Broadway & Glenlake, Northbound, Eastside of the Street",41.99273966,-87.66021674,0,,1
+5432,5432,Broadway & Granville,"Broadway & Granville, Northbound, Southeast Corner",41.99444356,-87.66030129,0,,1
+5433,5433,Broadway & Rosemont,"Broadway & Rosemont, Northbound, Southeast Corner",41.996237,-87.66033594,0,,1
+8614,8614,Broadway & Hollywood,"Broadway & Hollywood, Southbound, Northwest Corner",41.98551587,-87.66024677,0,,1
+14176,14176,Clark & Arthur Terminal,"Clark & Arthur Terminal, Westbound, Bus Terminal",41.99973089,-87.67075332,0,,1
+14225,14225,Wacker & State,"Wacker & State, Westbound, Northwest Corner",41.8870347,-87.62815016,0,,1
+14442,14442,Broadway & Berwyn,"Broadway & Berwyn, Northbound, Northeast Corner",41.97830669,-87.65981697,0,,1
+14443,14443,Broadway & Rosemont,"Broadway & Rosemont, Southbound, Southwest Corner",41.99621066,-87.66056498,0,,1
+14444,14444,Broadway & Granville,"Broadway & Granville, Southbound, Southwest Corner",41.99438838,-87.66051595,0,,1
+14449,14449,Broadway & Berwyn,"Broadway & Berwyn, Southbound, Southwest Corner",41.97802322,-87.66003602,0,,1
+14451,14451,Broadway & Addison,"Broadway & Addison, Southbound, Southwest Corner",41.94702196,-87.64715806,0,,1
+14452,14452,Broadway & Addison,"Broadway & Addison, Northbound, Northeast Corner",41.94764185,-87.64737396,0,,1
+14453,14453,Broadway & Ainslie,"Broadway & Ainslie, Northbound, Northeast Corner",41.97164302,-87.65961609,0,,1
+14454,14454,Broadway & Argyle,"Broadway & Argyle, Northbound, Northeast Corner",41.97337616,-87.65965397,0,,1
+14456,14456,Broadway & Bryn Mawr/Ridge,"Broadway & Bryn Mawr/Ridge, Northbound, Northeast Corner",41.98384254,-87.65997,0,,1
+14460,14460,State & Chicago (Red Line),"State & Chicago (Red Line), Southbound, Southwest Corner",41.89644313,-87.62829256,0,,1
+14508,14508,Dearborn & Jackson,"Dearborn & Jackson, Northbound, Southeast Corner",41.87804332,-87.629207,0,,1
+14788,14788,Clark & Armitage,"Clark & Armitage, Southbound, Northwest Corner",41.9185452,-87.63630153,0,,1
+14811,14811,Broadway & Belmont,"Broadway & Belmont, Southbound, Southwest Corner",41.93981657,-87.64446606,0,,1
+14880,14880,Broadway & W. Sheridan (3900 N),"Broadway & W. Sheridan (3900 N), Southbound, Southwest Corner",41.95251154,-87.64974388,0,,1
+14899,14899,Broadway & Surf,"Broadway & Surf, Northbound, Eastside of the Street",41.93495298,-87.64416518,0,,1
+15021,15021,Broadway & Diversey,"Broadway & Diversey, Northbound, Northeast Corner",41.93308239,-87.64475007,0,,1
+15284,15284,Broadway & Montrose,"Broadway & Montrose, Northbound, Northeast Corner",41.96224057,-87.65533475,0,,1
+15343,15343,Broadway & Leland,"Broadway & Leland, Northbound, Northeast Corner",41.9673689,-87.65861429,0,,1
+15399,15399,Dearborn & Hubbard,"Dearborn & Hubbard, Northbound, Southeast Corner",41.88994544,-87.62950604,0,,1
+15417,15417,Clark & North,"Clark & North, Northwestbound, Northeast Corner",41.9114542,-87.63167277,0,,1
+16194,16194,Broadway & Wilson,"Broadway & Wilson, Northbound, Northeast Corner",41.96559911,-87.65748119,0,,1
+17266,17266,Clark & Arlington,"Clark & Arlington, Northbound, Northeast Corner",41.92698048,-87.64121788,0,,1
+17393,17393,Broadway & Sunnyside,"Broadway & Sunnyside, Northbound, Northeast Corner",41.96405422,-87.65649226,0,,1
+17398,17398,Broadway & Ainslie,"Broadway & Ainslie, Southbound, Southwest Corner",41.97133602,-87.65984834,0,,1
+17578,17578,Financial Place & Ida B Wells Drive (LaSalle St Station),"Financial Place & Ida B Wells Drive (LaSalle St Station), Northbound, Southeast Corner",41.87538242,-87.63302496,0,,1
+18010,18010,Broadway & Foster,"Broadway & Foster, Southbound, Southwest Corner",41.97612594,-87.65997557,0,,1
+18173,18173,Clark & Diversey,"Clark & Diversey, Southbound, Southwest Corner",41.93256809,-87.64496192,0,,1
+18300,18300,Broadway & Thorndale,"Broadway & Thorndale, Southbound, Southwest Corner",41.9897546,-87.66037531,0,,1
+18386,18386,Broadway & Roscoe,"Broadway & Roscoe, Southbound, Westside of the Street",41.94318439,-87.64480859,0,,1
+18393,18393,Broadway & Lawrence,"Broadway & Lawrence, Southbound, Southwest Corner",41.96887405,-87.65977346,0,,1
+18454,18454,Broadway & Cullom,"Broadway & Cullom, Northbound, Northeast Corner",41.96018046,-87.6541382,0,,1
+18455,18455,Broadway & Cullom,"Broadway & Cullom, Southbound, Southwest Corner",41.96066262,-87.6545347,0,,1
+18613,18613,State & Chicago (Red Line),"State & Chicago (Red Line), Northbound, Northeast Corner",41.89695179,-87.62812088,0,,1
