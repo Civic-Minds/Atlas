@@ -17,21 +17,17 @@ import '../../pipeline/loadEnv.js';
 import { r2GetArchiveBuffer, r2ListArchiveObjects } from '../../pipeline/r2.js';
 import { peekFeedDates, selectArchiveForAgency, selectByFeedDates } from '../../pipeline/archiveSelection.js';
 
-const slug = process.argv[2];
-if (!slug || slug.startsWith('--')) {
-  console.error('usage: resolve-archive-zip.ts <slug> [--cache DIR]');
-  process.exit(2);
-}
-const cacheArg = process.argv.indexOf('--cache');
-const cacheRoot = resolve(cacheArg > 0 ? process.argv[cacheArg + 1] : (process.env.ORACLE_ARCHIVE_CACHE ?? '../_feeds/archive-cache'));
-const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+export interface ResolvedArchiveZip { zip: string; key: string | null; reason: string; source: 'local' | 'r2-archive' }
 
-async function main(): Promise<void> {
+/**
+ * The zip the reprocess would read for `slug`, downloaded into `cacheRoot/<slug>/`. `todayYmd` (YYYYMMDD) is the date the
+ * in-service check is made against when key dates and upload order disagree (the reprocess uses today).
+ */
+export async function resolveArchiveZip(slug: string, cacheRoot: string, todayYmd: string): Promise<ResolvedArchiveZip> {
   const localDir = process.env.ATLAS_LOCAL_ARCHIVE_DIR ? resolve(process.env.ATLAS_LOCAL_ARCHIVE_DIR) : null;
   const local = localDir ? join(localDir, `${slug}.zip`) : null;
   if (local && existsSync(local)) {
-    console.log(JSON.stringify({ zip: local, key: null, reason: 'ATLAS_LOCAL_ARCHIVE_DIR recovery input (the reprocess reads it first)', source: 'local' }));
-    return;
+    return { zip: local, key: null, reason: 'ATLAS_LOCAL_ARCHIVE_DIR recovery input (the reprocess reads it first)', source: 'local' };
   }
 
   const index = JSON.parse(readFileSync(resolve('public/data/index.json'), 'utf8')) as { agencies: Array<{ slug: string; lastFeedExpiry?: string | null }> };
@@ -66,10 +62,20 @@ async function main(): Promise<void> {
     if (!buf) throw new Error(`archive object disappeared: ${key}`);
     writeFileSync(zip, buf);
   }
-  console.log(JSON.stringify({ zip, key, reason, source: 'r2-archive' }));
+  return { zip, key, reason, source: 'r2-archive' };
 }
 
-main().catch(err => {
-  console.error(err instanceof Error ? err.message : err);
-  process.exit(1);
-});
+if (process.argv[1] && resolve(process.argv[1]).endsWith('resolve-archive-zip.ts')) {
+  const slug = process.argv[2];
+  if (!slug || slug.startsWith('--')) {
+    console.error('usage: resolve-archive-zip.ts <slug> [--cache DIR]');
+    process.exit(2);
+  }
+  const cacheArg = process.argv.indexOf('--cache');
+  const cacheRoot = resolve(cacheArg > 0 ? process.argv[cacheArg + 1] : (process.env.ORACLE_ARCHIVE_CACHE ?? '../_feeds/archive-cache'));
+  const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  resolveArchiveZip(slug, cacheRoot, todayYmd).then(r => console.log(JSON.stringify(r))).catch(err => {
+    console.error(err instanceof Error ? err.message : err);
+    process.exit(1);
+  });
+}
