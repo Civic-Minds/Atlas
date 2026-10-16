@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
 import { delayAmount, headwayAmount } from '../shared/headwayText';
@@ -26,7 +26,9 @@ import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { STEP_LABELS } from './components/Live/routeStripModel';
-import { stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
+import { delayInterpolated, delayText, type RouteStripStop } from './components/Live/routeStripModel';
+import SortableDataTable from './components/ui/SortableDataTable';
+import { RouteNameCell } from './pageParts';
 import StringLine, { useStrings } from './components/Live/StringLine';
 import Pill from './components/ui/Pill';
 import { dateRangeText } from '../shared/liveDashboard';
@@ -58,35 +60,6 @@ function Key({ measure }: { measure: MapMeasure }) {
         ))}
         <li className="flex list-none items-center gap-2 text-[var(--text-legend)]"><span aria-hidden="true" className="inline-block h-2.5 w-5 rounded-full" style={{ background: 'var(--strip-delay-0)', opacity: 0.45 }} />Not measured</li>
       </ul>
-    </div>
-  );
-}
-
-/** The card for a picked stop: its name and the trimmed figures the strip's hover shows, then its extra wait where it has one. Compact, no scroll. */
-function StopCard({ v3, band, dir, stop }: { v3: LiveV3; band: DashboardBand; dir: number; stop: RouteStripStop }) {
-  const extra = v3.extraWait?.[band]?.find(x => x.directionId === dir && x.stopId === stop.stopId);
-  const d = stopDetail(stop);
-  return (
-    <div className="space-y-0.5 p-3 text-xs">
-      <div className="text-sm font-bold leading-snug">{d.name}</div>
-      {d.lines.map(l => <div key={l} className="text-[var(--text-secondary)]">{l}</div>)}
-      {extra && <div className="text-[var(--text-secondary)]">Extra wait {delayAmount(Math.max(0, extra.extraWaitMin))}</div>}
-    </div>
-  );
-}
-
-/** The card for a picked segment: only the segment (its name, the time it adds, how often delay grows across it), never its start stop. */
-function SegmentCard({ data, dir, fromStopId, toStopId, stops }: { data: DashboardBandData; dir: number; fromStopId: string; toStopId: string; stops: ReturnType<typeof directionStopsById> }) {
-  const stretch = data.buildup.find(x => x.directionId === dir)?.stretches.find(x => x.fromStopId === fromStopId && x.toStopId === toStopId);
-  return (
-    <div className="space-y-0.5 p-3 text-xs">
-      <div className="text-sm font-bold leading-snug">{shortStopName(stops.get(fromStopId)?.name ?? fromStopId)} to {shortStopName(stops.get(toStopId)?.name ?? toStopId)}</div>
-      {stretch && stretch.n > 0 && (
-        <>
-          <div className="text-[var(--text-secondary)]">Typical added {mins(stretch.medianAddedMin)}</div>
-          <div className="text-[var(--text-secondary)]">Trips where it grows {pct(stretch.growShare)} of {stretch.n.toLocaleString()}</div>
-        </>
-      )}
     </div>
   );
 }
@@ -152,35 +125,107 @@ function StringsPane({ agency, route, v3, dir, band }: { agency: string; route: 
   );
 }
 
-function Canvas({ data, v3, agency, view, route, dir, band, measure, pick, anchor, setPick }: {
-  data: Extract<ReturnType<typeof useLiveDashboard>, { kind: 'done' }>['data'] & { status: 'ready' }; v3: LiveV3; agency: string; view: 'map' | 'strings'; route: string; dir: number; band: DashboardBand; measure: MapMeasure;
-  pick: MapPick | null; anchor: [number, number] | null; setPick: (p: MapPick | null, at: [number, number] | null) => void;
+type Tab = 'stops' | 'stretches' | 'hours' | 'strings';
+const TABS: ReadonlyArray<readonly [Tab, string]> = [['stops', 'Stops'], ['stretches', 'Stretches'], ['hours', 'By hour'], ['strings', 'String line']];
+const NET_TABS: ReadonlyArray<readonly ['routes' | 'hours', string]> = [['routes', 'Routes'], ['hours', 'By hour']];
+
+/** A pane's tab bar. */
+function TabBar<K extends string>({ tabs, value, onChange }: { tabs: ReadonlyArray<readonly [K, string]>; value: K; onChange: (k: K) => void }) {
+  return (
+    <div className="shrink-0 border-b border-[var(--border-primary)] px-4 py-2">
+      <Group label="Pane" value={value} onChange={v => onChange(v as K)} options={tabs} />
+    </div>
+  );
+}
+
+const SELECTED_ROW = 'bg-[var(--accent-selected-bg)]';
+
+/** Every stop of the direction with its figures; a row picks the stop on the map. */
+function StopsTable({ v3, band, dir, stops, pick, onRow }: { v3: LiveV3; band: DashboardBand; dir: number; stops: ReturnType<typeof directionStopsById>; pick: MapPick | null; onRow: (stop: RouteStripStop) => void }) {
+  const extra = useMemo(() => new Map((v3.extraWait?.[band] ?? []).filter(x => x.directionId === dir).map(x => [x.stopId, x.extraWaitMin])), [v3, band, dir]);
+  const rows = [...stops.values()];
+  return (
+    <SortableDataTable
+      caption="Stops"
+      rows={rows}
+      rowKey={s => s.stopId}
+      rowClassName={s => (pick?.kind === 'stop' && pick.stopId === s.stopId ? SELECTED_ROW : '')}
+      columns={[
+        { key: 'stop', header: 'Stop', rowHeader: true, width: 13, className: 'font-normal', cell: s => <button type="button" onClick={() => onRow(s)} className="text-left font-[inherit] hover:underline">{s.name}</button> },
+        { key: 'delay', header: 'Typical delay', width: 6.5, worst: s => (s.n > 0 && !delayInterpolated(s) ? s.delayMin : null), cell: s => (s.n > 0 && s.delayMin != null && !delayInterpolated(s) ? delayText(s.delayMin) : '–') },
+        { key: 'late', header: 'Late', width: 4.5, worst: s => s.lateShare, cell: s => (s.lateShare != null && s.n > 0 ? pct(s.lateShare) : '–') },
+        { key: 'bunched', header: 'Too close together', width: 7.5, worst: s => s.bunchedShare, cell: s => (s.bunchedShare != null ? pct(s.bunchedShare) : '–') },
+        { key: 'long', header: 'Too far apart', width: 6, worst: s => s.gappedShare, cell: s => (s.gappedShare != null ? pct(s.gappedShare) : '–') },
+        { key: 'wait', header: 'Extra wait', width: 5.5, worst: s => extra.get(s.stopId) ?? null, cell: s => (extra.has(s.stopId) ? delayAmount(Math.max(0, extra.get(s.stopId)!)) : '–') },
+      ]}
+    />
+  );
+}
+
+/** Every stretch between consecutive stops with the time it adds; a row picks the segment on the map. */
+function StretchesTable({ data, dir, stops, pick, onRow }: { data: DashboardBandData; dir: number; stops: ReturnType<typeof directionStopsById>; pick: MapPick | null; onRow: (from: string, to: string) => void }) {
+  const rows = (data.buildup.find(b => b.directionId === dir)?.stretches ?? []).filter(x => x.n > 0);
+  const key = (x: { fromStopId: string; toStopId: string }) => `${x.fromStopId}>${x.toStopId}`;
+  const name = (id: string, fallback: string) => shortStopName(stops.get(id)?.name ?? fallback);
+  return (
+    <SortableDataTable
+      caption="Stretches"
+      rows={rows}
+      rowKey={key}
+      rowClassName={x => (pick?.kind === 'segment' && pick.fromStopId === x.fromStopId && pick.toStopId === x.toStopId ? SELECTED_ROW : '')}
+      columns={[
+        { key: 'stretch', header: 'Stretch', rowHeader: true, width: 17, className: 'font-normal', cell: x => <button type="button" onClick={() => onRow(x.fromStopId, x.toStopId)} className="text-left font-[inherit] hover:underline">{name(x.fromStopId, x.fromName)} to {name(x.toStopId, x.toName)}</button> },
+        { key: 'added', header: 'Typical added', width: 7, worst: x => x.medianAddedMin, cell: x => mins(x.medianAddedMin) },
+        { key: 'grows', header: 'Trips where it grows', width: 9, worst: x => x.growShare, cell: x => `${pct(x.growShare)} of ${x.n.toLocaleString()}` },
+      ]}
+    />
+  );
+}
+
+/** The charts by hour for the route: late share, then run time for the picked direction. */
+function HoursPane({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number }) {
+  return (
+    <div className="space-y-6">
+      <div><h2 className="pb-2 text-sm font-bold">How well it keeps to its timetable</h2><ErrorBoundary label="This chart could not be drawn."><LateByHour v3={v3} band={band} /></ErrorBoundary></div>
+      <div><h2 className="pb-2 text-sm font-bold">Run time</h2><ErrorBoundary label="This chart could not be drawn."><RunTimeByHour v3={v3} band={band} dir={dir} /></ErrorBoundary></div>
+    </div>
+  );
+}
+
+/** The picked route, split: the map on the left coloured by the measure, a tabbed data pane on the right. Picking is linked both ways. */
+function Canvas({ data, v3, agency, tab, setTab, route, dir, band, measure, pick, setPick }: {
+  data: Extract<ReturnType<typeof useLiveDashboard>, { kind: 'done' }>['data'] & { status: 'ready' }; v3: LiveV3; agency: string; tab: Tab; setTab: (t: Tab) => void; route: string; dir: number;
+  band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const bandData = v3.bands[band] as DashboardBandData;
   const uncertain = data.uncertainStart ?? [];
   const model = useMemo(() => routeMapModel(v3, dir, band, measure), [v3, dir, band, measure]);
   const stops = useMemo(() => directionStopsById(v3, dir, band, uncertain), [v3, dir, band, uncertain]);
-  const hasChart = measure === 'late' || measure === 'runTime';
-  const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
-  const card = pick?.kind === 'segment' ? (
-    <SegmentCard data={bandData} dir={dir} fromStopId={pick.fromStopId} toStopId={pick.toStopId} stops={stops} />
-  ) : picked ? <StopCard v3={v3} band={band} dir={dir} stop={picked} /> : null;
-  if (view === 'strings') return <StringsPane key={`${route}`} agency={agency} route={route} v3={v3} dir={dir} band={band} />;
+  const [centerOn, setCenterOn] = useState<{ lonLat: [number, number]; k: number } | null>(null);
+  const pane = useRef<HTMLDivElement | null>(null);
+  const centre = (lonLat: [number, number] | undefined) => { if (lonLat) setCenterOn(c => ({ lonLat, k: (c?.k ?? 0) + 1 })); };
+  // A pick made on the map scrolls its row into view.
+  useEffect(() => {
+    if (!pick) return;
+    const k = pick.kind === 'stop' ? pick.stopId : `${pick.fromStopId}>${pick.toStopId}`;
+    pane.current?.querySelector(`[data-row="${CSS.escape(k)}"]`)?.scrollIntoView({ block: 'nearest' });
+  }, [pick, tab]);
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-      <div className="relative min-h-0 flex-1">
-        <RouteMap model={model} measure={measure} selected={pick} onPick={(p, at) => setPick(p, at)} anchor={anchor ?? (pick?.kind === 'stop' ? model.stops.find(x => x.stopId === pick.stopId)?.lonLat ?? null : null)} card={card} frameKey={`${route}-${dir}`} />
+    <div className="grid min-h-0 flex-1 lg:grid-cols-[45%_minmax(0,1fr)]">
+      <div className="relative min-h-0 border-[var(--border-primary)] lg:border-r">
+        <RouteMap model={model} measure={measure} selected={pick} onPick={p => setPick(p)} centerOn={centerOn} frameKey={`${route}-${dir}`} />
         <Key measure={measure} />
         {data.note && <p className="absolute bottom-3 left-3 right-3 z-10 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{data.note}</p>}
       </div>
-      {hasChart && (
-        <div className="max-h-[40%] shrink-0 overflow-y-auto border-t border-[var(--border-primary)] bg-[var(--bg-app)] px-6 pb-4">
-          <h2 className="pb-1 pt-3 text-sm font-bold">{measure === 'late' ? 'How well it keeps to its timetable' : 'Run time'}</h2>
-          <ErrorBoundary label="This chart could not be drawn.">
-            {measure === 'late' ? <LateByHour v3={v3} band={band} /> : <RunTimeByHour v3={v3} band={band} dir={dir} />}
-          </ErrorBoundary>
+      <div className="flex min-h-0 min-w-0 flex-col">
+        <TabBar tabs={TABS} value={tab} onChange={setTab} />
+        <div ref={pane} className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+          {tab === 'stops' && <StopsTable v3={v3} band={band} dir={dir} stops={stops} pick={pick} onRow={s => { setPick({ kind: 'stop', stopId: s.stopId }); centre(model.stops.find(x => x.stopId === s.stopId)?.lonLat); }} />}
+          {tab === 'stretches' && <StretchesTable data={bandData} dir={dir} stops={stops} pick={pick} onRow={(f, t) => { setPick({ kind: 'segment', fromStopId: f, toStopId: t }); const seg = model.segments.find(x => x.fromStopId === f && x.toStopId === t); centre(seg?.coordinates[Math.floor(seg.coordinates.length / 2)]); }} />}
+          {tab === 'hours' && <HoursPane v3={v3} band={band} dir={dir} />}
+          {tab === 'strings' && <StringsPane key={route} agency={agency} route={route} v3={v3} dir={dir} band={band} />}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -219,31 +264,62 @@ function NetworkLate({ s }: { s: AgencySummary }) {
   );
 }
 
-/** The home screen: every analysed route on one map, coloured by the chosen measure and time of day. Clicking a route opens it. */
-function NetworkCanvas({ agency, s, band, measure, onRoute }: { agency: string; s: AgencySummary; band: DashboardBand; measure: MapMeasure; onRoute: (route: string) => void }) {
-  const routes = useMemo(() => s.routes.map(r => r.route), [s]);
-  const data = useNetworkData(agency, routes);
-  const model: RouteMapModel = useMemo(() => {
-    const segments: MapSegment[] = [];
-    for (const [route, v3] of data) {
-      const ids = Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b);
-      ids.forEach((d, k) => { for (const seg of routeMapModel(v3, d, band, measure).segments) segments.push({ ...seg, route, offset: ids.length > 1 ? (k === 0 ? 2.5 : -2.5) : 0 }); });
-    }
-    return { directionId: 0, segments, stops: [] };
-  }, [data, band, measure]);
+/** The network's routes, with the Routes table's columns; hovering a row lights its route on the map, a click opens it. */
+function RoutesPane({ s, onRoute, onHover }: { s: AgencySummary; onRoute: (r: string) => void; onHover: (r: string | null) => void }) {
+  const pctS = (x: number | null) => (x == null ? '–' : `${Math.round(x * 100)}%`);
+  const signed = (x: number | null) => (x == null ? '–' : `${x > 0 ? '+' : x < 0 ? '−' : ''}${Math.abs(Math.round(x * 100))}%`);
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-      <div className="relative min-h-0 flex-1">
-        <RouteMap model={model} measure={measure} selected={null} onPick={p => { if (p?.kind === 'segment' && p.route) onRoute(p.route); }} frameKey={`network-${data.size === routes.length ? 'all' : 'loading'}`} />
-        <Key measure={measure} />
-      </div>
-      {measure === 'late' && <div className="shrink-0 border-t border-[var(--border-primary)] bg-[var(--bg-app)]"><NetworkLate s={s} /></div>}
+    <div onPointerLeave={() => onHover(null)}>
+      <SortableDataTable
+        caption="Routes"
+        defaultSort="late"
+        rows={s.routes}
+        rowKey={r => r.route}
+        columns={[
+          { key: 'route', header: 'Route', rowHeader: true, width: 13, className: 'font-normal', cell: r => <button type="button" onClick={() => onRoute(r.route)} onPointerEnter={() => onHover(r.route)} className="text-left font-[inherit] hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode ?? 3} agencyName={s.agency.toUpperCase()} /></button> },
+          { key: 'late', header: 'Late', width: 4.5, worst: r => r.lateShare, cell: r => pctS(r.lateShare) },
+          { key: 'lastWeek', header: 'Last week', width: 6, className: 'text-[var(--text-muted)]', cell: r => pctS(r.lateLastWeek) },
+          { key: 'runTime', header: 'Run time', width: 6, worst: r => r.runTimeOver, cell: r => signed(r.runTimeOver) },
+          { key: 'bunching', header: 'Bunching', width: 6, worst: r => r.bunchingShare, cell: r => pctS(r.bunchingShare) },
+          { key: 'delivered', header: 'Delivered', width: 6, worst: r => (r.deliveredShare == null ? null : 1 - r.deliveredShare), cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
+        ]}
+      />
     </div>
   );
 }
 
-function RouteCanvas({ agency, route, view, setView, dir, setDir, band, measure, pick, anchor, setPick }: {
-  agency: string; view: 'map' | 'strings'; setView: (v: 'map' | 'strings') => void; route: string; dir: number | null; setDir: (d: number) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; anchor: [number, number] | null; setPick: (p: MapPick | null, at: [number, number] | null) => void;
+/** The home screen: every analysed route on the left map, coloured by the measure; the routes table on the right. A click on either opens the route. */
+function NetworkCanvas({ agency, s, band, measure, onRoute }: { agency: string; s: AgencySummary; band: DashboardBand; measure: MapMeasure; onRoute: (route: string) => void }) {
+  const routes = useMemo(() => s.routes.map(r => r.route), [s]);
+  const data = useNetworkData(agency, routes);
+  const [tab, setTab] = useState<'routes' | 'hours'>('routes');
+  const [hl, setHl] = useState<string | null>(null);
+  const model: RouteMapModel = useMemo(() => {
+    const segments: MapSegment[] = [];
+    for (const [route, v3] of data) {
+      const ids = Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b);
+      ids.forEach((d, k) => { for (const seg of routeMapModel(v3, d, band, measure).segments) segments.push({ ...seg, route, label: route, offset: ids.length > 1 ? (k === 0 ? 2.5 : -2.5) : 0 }); });
+    }
+    return { directionId: 0, segments, stops: [] };
+  }, [data, band, measure]);
+  return (
+    <div className="grid min-h-0 flex-1 lg:grid-cols-[45%_minmax(0,1fr)]">
+      <div className="relative min-h-0 border-[var(--border-primary)] lg:border-r">
+        <RouteMap model={model} measure={measure} selected={null} highlightRoute={hl} onPick={p => { if (p?.kind === 'segment' && p.route) onRoute(p.route); }} frameKey={`network-${data.size === routes.length ? 'all' : 'loading'}`} />
+        <Key measure={measure} />
+      </div>
+      <div className="flex min-h-0 min-w-0 flex-col">
+        <TabBar tabs={NET_TABS} value={tab} onChange={setTab} />
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+          {tab === 'routes' ? <RoutesPane s={s} onRoute={onRoute} onHover={setHl} /> : <div><h2 className="pb-2 text-sm font-bold">How well it keeps to its timetable</h2><NetworkLate s={s} /></div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RouteCanvas({ agency, route, tab, setTab, dir, setDir, band, measure, pick, setPick }: {
+  agency: string; tab: Tab; setTab: (t: Tab) => void; route: string; dir: number | null; setDir: (d: number) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const state = useLiveDashboard(agency, route);
   if (state.kind === 'loading') return <p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {agency.toUpperCase()} {route}…</p>;
@@ -255,18 +331,17 @@ function RouteCanvas({ agency, route, view, setView, dir, setDir, band, measure,
   const shown = dir != null && ids.includes(dir) ? dir : ids[0];
   return (
     <>
-      <DirectionBar ids={ids} labels={v3.directionLabels} dir={shown} setDir={setDir} view={view} setView={setView} />
-      <Canvas data={data} v3={v3} agency={agency} view={view} route={route} dir={shown} band={band} measure={measure} pick={pick} anchor={anchor} setPick={setPick} />
+      {ids.length > 1 && <DirectionBar ids={ids} labels={v3.directionLabels} dir={shown} setDir={setDir} />}
+      <Canvas data={data} v3={v3} agency={agency} tab={tab} setTab={setTab} route={route} dir={shown} band={band} measure={measure} pick={pick} setPick={setPick} />
     </>
   );
 }
 
-/** The direction switch sits above the map, under the top bar, because its options belong to the picked route. */
-function DirectionBar({ ids, labels, dir, setDir, view, setView }: { ids: number[]; labels: Record<string, string>; dir: number; setDir: (d: number) => void; view: 'map' | 'strings'; setView: (v: 'map' | 'strings') => void }) {
+/** The direction switch sits above the split, under the top bar, because its options belong to the picked route. */
+function DirectionBar({ ids, labels, dir, setDir }: { ids: number[]; labels: Record<string, string>; dir: number; setDir: (d: number) => void }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-primary)] px-4 py-2">
-      {ids.length > 1 ? <Group label="Direction" value={String(dir)} onChange={v => setDir(Number(v))} options={ids.map(d => [String(d), labels[String(d)]] as const)} /> : <span />}
-      <Group label="View" value={view} onChange={v => setView(v as 'map' | 'strings')} options={[['map', 'Map'], ['strings', 'String line']]} />
+    <div className="flex items-center gap-2 border-b border-[var(--border-primary)] px-4 py-2">
+      <Group label="Direction" value={String(dir)} onChange={v => setDir(Number(v))} options={ids.map(d => [String(d), labels[String(d)]] as const)} />
     </div>
   );
 }
@@ -279,10 +354,8 @@ export default function LiveToolPage() {
   const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
   const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) ? (m as MapMeasure) : 'late'; });
-  const [view, setView] = useState<'map' | 'strings'>(() => (readParam('view') === 'strings' ? 'strings' : 'map'));
-  const [anchor, setAnchor] = useState<[number, number] | null>(null);
-  const setPick = (p: MapPick | null, at: [number, number] | null) => { setPickRaw(p); setAnchor(at); };
-  const [pick, setPickRaw] = useState<MapPick | null>(() => {
+  const [tab, setTab] = useState<Tab>(() => { const t = readParam('tab'); return TABS.some(([k]) => k === t) ? (t as Tab) : 'stops'; });
+  const [pick, setPick] = useState<MapPick | null>(() => {
     const stop = readParam('stop'), seg = readParam('seg');
     if (stop) return { kind: 'stop', stopId: stop };
     const [f, t] = (seg ?? '').split('>');
@@ -292,10 +365,10 @@ export default function LiveToolPage() {
   const current = route;
   useEffect(() => {
     syncUrlParams({
-      view: view === 'strings' ? 'strings' : null, route, dir: dir == null ? null : String(dir), band: band === 'all' ? null : band, measure: measure === 'late' ? null : measure,
+      view: null, tab: tab === 'stops' ? null : tab, route, dir: dir == null ? null : String(dir), band: band === 'all' ? null : band, measure: measure === 'late' ? null : measure,
       stop: pick?.kind === 'stop' ? pick.stopId : null, seg: pick?.kind === 'segment' ? `${pick.fromStopId}>${pick.toStopId}` : null,
     });
-  }, [route, dir, band, measure, pick, view]);
+  }, [route, dir, band, measure, pick, tab]);
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agency]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const shell = (body: ReactNode) => <main className="relative flex h-screen min-h-0 flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">{body}</main>;
@@ -307,13 +380,13 @@ export default function LiveToolPage() {
     <>
       <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2">
         <a href="/" aria-label="Atlas by Civic Minds"><AtlasBrand /></a>
-        <button type="button" onClick={() => { setRoute(null); setPick(null, null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
-        <RoutePicker s={s} route={current} onPick={r => { setRoute(r); setPick(null, null); }} />
+        <button type="button" onClick={() => { setRoute(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
+        <RoutePicker s={s} route={current} onPick={r => { setRoute(r); setPick(null); }} />
         <Group label="Measure" value={measure} onChange={v => setMeasure(v as MapMeasure)} options={MEASURES} />
         <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
       </header>
-      {!current && <NetworkCanvas agency={agency} s={s} band={band} measure={measure} onRoute={r => { setRoute(r); setPick(null, null); }} />}
-      {current && <RouteCanvas agency={agency} view={view} setView={setView} route={current} dir={dir} setDir={d => { setDir(d); setPick(null, null); }} band={band} measure={measure} pick={pick} anchor={anchor} setPick={setPick} />}
+      {!current && <NetworkCanvas agency={agency} s={s} band={band} measure={measure} onRoute={r => { setRoute(r); setPick(null); }} />}
+      {current && <RouteCanvas agency={agency} tab={tab} setTab={setTab} route={current} dir={dir} setDir={d => { setDir(d); setPick(null); }} band={band} measure={measure} pick={pick} setPick={setPick} />}
     </>,
   );
 }

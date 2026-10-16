@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { getMapStyle } from '../../lib/mapStyle';
@@ -13,9 +13,10 @@ interface Props {
   selected: MapPick | null;
   /** A click on a segment or stop, with where it landed; a click on empty map gives null. */
   onPick: (pick: MapPick | null, at: [number, number] | null) => void;
-  /** Where the card is anchored (longitude, latitude), and what it shows. The card follows the map as it moves. */
-  anchor?: [number, number] | null;
-  card?: ReactNode;
+  /** Moves the map to this point (a row picked in the table); a new `k` moves it again. */
+  centerOn?: { lonLat: [number, number]; k: number } | null;
+  /** On a map of several routes: the route to show strongly while the others fade (a hovered table row). */
+  highlightRoute?: string | null;
   /** Changes when the route or direction changes: the map then frames the new route. */
   frameKey: string;
   className?: string;
@@ -33,7 +34,7 @@ function stepColor(measure: MapMeasure, step: 0 | 1 | 2 | null): string {
  * with a dot at each stop in the same colour. Segments and stops can be clicked; the picked one is marked. A segment or
  * stop with no value is drawn grey. Frames the route whenever `frameKey` changes.
  */
-export default function RouteMap({ model, measure, selected, onPick, anchor = null, card = null, frameKey, className = '' }: Props) {
+export default function RouteMap({ model, measure, selected, onPick, centerOn = null, highlightRoute = null, frameKey, className = '' }: Props) {
   const box = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
@@ -42,15 +43,9 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
   const latest = useRef({ model, measure, selected });
   latest.current = { model, measure, selected };
   const framed = useRef<string | null>(null);
-  const [at, setAt] = useState<{ x: number; y: number; w: number } | null>(null);
-  const anchorRef = useRef(anchor);
-  anchorRef.current = anchor;
-  const place = () => {
-    const map = mapRef.current, a = anchorRef.current;
-    if (!map || !a) { setAt(null); return; }
-    const p = map.project(a);
-    setAt({ x: p.x, y: p.y, w: map.getContainer().clientWidth });
-  };
+  const [tip, setTip] = useState<{ x: number; y: number; text: string } | null>(null);
+  const latestHl = useRef(highlightRoute);
+  latestHl.current = highlightRoute;
 
   const draw = () => {
     const map = mapRef.current;
@@ -63,7 +58,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       type: 'FeatureCollection',
       features: m.segments.map(s => ({
         type: 'Feature' as const,
-        properties: { from: s.fromStopId, to: s.toStopId, route: s.route ?? '', off: s.offset ?? 0, color: stepColor(me, s.step), sel: sel?.kind === 'segment' && sel.fromStopId === s.fromStopId && sel.toStopId === s.toStopId ? 1 : 0 },
+        properties: { from: s.fromStopId, to: s.toStopId, label: s.label ?? '', route: s.route ?? '', off: s.offset ?? 0, dim: latestHl.current && s.route !== latestHl.current ? 1 : 0, color: stepColor(me, s.step), sel: sel?.kind === 'segment' && sel.fromStopId === s.fromStopId && sel.toStopId === s.toStopId ? 1 : 0 },
         geometry: { type: 'LineString' as const, coordinates: s.coordinates },
       })),
     });
@@ -98,7 +93,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       map.addSource('segments', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addSource('stops', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addLayer({ id: 'seg-halo', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 12] } });
-      map.addLayer({ id: 'seg', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 8] } });
+      map.addLayer({ id: 'seg', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], 0.25, 1], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 8] } });
       map.addLayer({ id: 'seg-sel', type: 'line', source: 'segments', filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 7, 15, 15], 'line-opacity': 0.35 } });
       map.addLayer({ id: 'stp', type: 'circle', source: 'stops', paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 15, 6], 'circle-stroke-color': halo, 'circle-stroke-width': 1.5 } });
       map.addLayer({ id: 'stp-sel', type: 'circle', source: 'stops', filter: ['==', ['get', 'sel'], 1], paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 6, 15, 11], 'circle-stroke-color': light ? '#111827' : '#ffffff', 'circle-stroke-width': 2 } });
@@ -114,30 +109,26 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       else pick.current(null, null);
     });
     map.on('mousemove', e => {
-      const over = map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers: ['stp', 'seg'] }).length > 0;
-      map.getCanvas().style.cursor = over ? 'pointer' : '';
+      const hit = map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers: ['stp', 'seg'] })[0];
+      map.getCanvas().style.cursor = hit ? 'pointer' : '';
+      const text = hit ? String(hit.properties?.name ?? hit.properties?.label ?? '') : '';
+      setTip(text ? { x: e.point.x, y: e.point.y, text } : null);
     });
-    map.on('move', place);
-    map.on('resize', place);
-    const ro = new ResizeObserver(() => { if (!map.isMoving()) map.resize(); });
+    map.on('mouseout', () => setTip(null));
+        const ro = new ResizeObserver(() => { if (!map.isMoving()) map.resize(); });
     ro.observe(box.current);
     return () => { ro.disconnect(); ready.current = false; map.remove(); mapRef.current = null; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(draw, [model, measure, selected, frameKey]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(place, [anchor]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(draw, [highlightRoute]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (centerOn && mapRef.current) mapRef.current.easeTo({ center: centerOn.lonLat, duration: 300 }); }, [centerOn?.k]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // The card sits above its anchor, or below it when the anchor is near the top; kept inside the map's width.
-  const cardW = 260;
-  const below = at != null && at.y < 280;
   return (
     <div className={`relative h-full w-full overflow-hidden ${className}`.trim()}>
       <div ref={box} className="h-full w-full" role="img" aria-label="Map of the route, coloured by the chosen measure" />
-      {at && card && (
-        <div className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)] shadow-2xl"
-          style={{ left: Math.max(8, Math.min(at.w - cardW - 8, at.x - cardW / 2)), top: at.y, width: cardW, transform: below ? 'translateY(16px)' : 'translateY(calc(-100% - 16px))' }}>
-          {card}
-        </div>
+      {tip && (
+        <div className="pointer-events-none absolute z-20 whitespace-nowrap rounded-md border border-[var(--border-primary)] bg-[var(--bg-header)] px-2 py-1 text-xs font-bold shadow-sm" style={{ left: tip.x + 12, top: tip.y + 12 }}>{tip.text}</div>
       )}
     </div>
   );

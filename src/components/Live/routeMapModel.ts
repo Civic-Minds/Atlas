@@ -7,6 +7,7 @@
  */
 import type { DashboardBand, LiveV3 } from '../../../shared/liveDashboard';
 import { titleCase } from '../../utils/format';
+import { shortStopName } from './routeStripModel';
 
 export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching';
 /** The measure switch, in order, with the labels the tiles already use. */
@@ -29,7 +30,7 @@ export const mapStep = (measure: MapMeasure, value: number | null): MapStep | nu
 
 export interface MapStop { stopId: string; name: string; lonLat: [number, number]; value: number | null; step: MapStep | null; n: number }
 /** `route` and `offset` are set when several routes share one map (the network): a click then picks the route, and the two directions are drawn side by side. */
-export interface MapSegment { fromStopId: string; toStopId: string; coordinates: [number, number][]; value: number | null; step: MapStep | null; route?: string; offset?: number }
+export interface MapSegment { fromStopId: string; toStopId: string; coordinates: [number, number][]; value: number | null; step: MapStep | null; route?: string; offset?: number; /** "A to B", for the map's hover. */ label?: string }
 export interface RouteMapModel { directionId: number; segments: MapSegment[]; stops: MapStop[] }
 
 const key = (a: string, b: string) => `${a}>${b}`;
@@ -77,7 +78,7 @@ export function routeMapModel(v3: LiveV3, directionId: number, band: DashboardBa
     const a = byId.get(from), b = byId.get(to);
     if (!a?.lonLat || !b?.lonLat) continue;
     const value = segmentValue(from, to);
-    segments.push({ fromStopId: from, toStopId: to, coordinates: lines.get(key(from, to)) ?? [a.lonLat as [number, number], b.lonLat as [number, number]], value, step: mapStep(measure, value) });
+    segments.push({ label: `${shortStopName(titleCase(a.name))} to ${shortStopName(titleCase(b.name))}`, fromStopId: from, toStopId: to, coordinates: lines.get(key(from, to)) ?? [a.lonLat as [number, number], b.lonLat as [number, number]], value, step: mapStep(measure, value) });
   }
   return { directionId, segments, stops };
 }
