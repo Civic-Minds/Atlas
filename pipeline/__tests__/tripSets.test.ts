@@ -350,6 +350,7 @@ describe('route roll-up (rule 1)', () => {
     nightPartial60: false,
     allDay: value,
     middayWait: value,
+    midday: { hasReading: true, runs: true, wait: value },
     frequent: false,
     research: { daytime15: false, daytime30: false, extended15: false, extended30: false },
   }) as any;
@@ -471,7 +472,7 @@ describe('step 6 shadow: headline, midday wait and Frequent Service on the stret
     ['ttc-94-weekday', '94', 'Weekday', 20, false], // the Harbord tail every 20 decides (D1)
     ['ttc-29-weekday', '29', 'Weekday', 8, true], // one main stretch every 8 (today 16 per origin)
     ['cta-j14-saturday', 'J14', 'Saturday', 10, false],
-    ['ttc-507-weekday', '507', 'Weekday', 25, false], // the Marine Parade tail every 25 decides (D1)
+    ['ttc-507-weekday', '507', 'Weekday', 19, false], // the Marine Parade tail decides (D1): every 19 over 7-22 (25 at midday)
     ['ttc-505-weekday', '505', 'Weekday', 6, true],
   ] as const)('%s: all-day %s', async (name, route, day, allDay, frequent) => {
     const r = await run(name);
@@ -526,7 +527,7 @@ describe('step 6: the all-day filter, the midday cap and Frequent Service read t
     // [fixture, route, day, passes, fails, Frequent Service on some row]
     ['ttc-94-weekday', '94', 'Weekday', 20, 15, false],
     ['ttc-29-weekday', '29', 'Weekday', 10, 5, true],
-    ['ttc-507-weekday', '507', 'Weekday', 30, 20, false],
+    ['ttc-507-weekday', '507', 'Weekday', 20, 15, false],
     ['ttc-505-weekday', '505', 'Weekday', 10, 5, true],
     ['cta-j14-saturday', 'J14', 'Saturday', 10, 5, false],
     ['ttc-134-weekday', '134', 'Weekday', 15, 10, false],

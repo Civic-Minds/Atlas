@@ -14,6 +14,9 @@
  */
 import { TIME_PERIODS, type PeriodKey } from '../shared/config.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import { DEFAULT_CRITERIA } from './defaults.js';
+import { computeHeadwayStats } from './transit-phase2.js';
+import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
   computePeriodCoverageHeadways,
@@ -24,7 +27,6 @@ import {
   forCrossMidnightWindow,
   hasSustainedFrequentService,
   medianHeadwayInWindow,
-  sustainedMedianHeadwayInWindow,
   hasSustainedServiceInWindow,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
@@ -415,8 +417,8 @@ export interface DirectionRollup {
   allDay: number | null;
   /** Step 6 shadow: the main stretch's midday wait (#899 cap input), null with no midday service. */
   middayWait: number | null;
-  /** Step 6: the #899 cap. null: steady at midday, no cap; a number: its midday wait; Infinity: no midday departures. */
-  middayCap: number | null;
+  /** Step 6: the #899 inputs, as worstDirection.ts reads them, on the main stretch. */
+  midday: { hasReading: boolean; runs: boolean; wait: number | null };
   /** Step 6 shadow: Frequent Service (7-19 every 15, no gap) on the main stretch and every tail running then. */
   frequent: boolean;
   research: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
@@ -480,7 +482,15 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   // Tails that run steadily through midday are all-day branches; a peak-only tail (CTA 9's Beverly
   // tail, a 313-minute midday hole) is limited and takes no part in the all-day value or Frequent.
   const allDayTails = d.tails.filter((t, i) => tails[i].midday.counts);
-  const allDayOf = (st: Stretch) => sustainedMedianHeadwayInWindow([...st.times], 360, 1320, 3, undefined, true);
+  // The all-day value reads like phase 2's headline (computeHeadwayStats over the day's grading
+  // window, 07-22 or Sunday 09-21), not the 4x dominant-gap check: one 32-minute evening gap on an
+  // every-7 trunk (LA Metro 51) must not void the route's all-day value.
+  const dayType = d.key.slice(d.key.lastIndexOf('::') + 2) as 'Weekday' | 'Saturday' | 'Sunday';
+  const grading = DEFAULT_CRITERIA.dayTypes[dayType]?.timeWindow ?? { start: 420, end: 1320 };
+  const allDayOf = (st: Stretch) => {
+    const t = st.times.filter(x => x >= grading.start && x <= grading.end);
+    return t.length >= 3 ? Math.round(computeHeadwayStats(t).median) : null;
+  };
   const allDays = [d.main, ...allDayTails].map(allDayOf);
   const frequentStretches = [d.main, ...allDayTails];
   const researchOf = frequentStretches.map(st => computeResearchFrequentService([...st.times]));
@@ -488,7 +498,13 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',
     allDay: allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
     middayWait: main.midday.coverage,
-    middayCap: main.midday.sustained === true ? null : main.midday.coverage ?? Infinity,
+    midday: (() => {
+      // The #899 rule unchanged: a midday reading with a wait under three hours, or a wait of at
+      // most ALL_DAY_MIDDAY_MAX_WAIT, means the direction runs at midday.
+      const wait = main.midday.coverage;
+      const hasReading = main.midday.headway != null && wait != null && wait < 3 * 60;
+      return { hasReading, runs: hasReading || (wait != null && wait <= ALL_DAY_MIDDAY_MAX_WAIT), wait };
+    })(),
     frequent: frequentStretches.every(st => hasSustainedFrequentService([...st.times])),
     research: {
       daytime15: researchOf.every(r => r.daytime15), daytime30: researchOf.every(r => r.daytime30),
@@ -559,8 +575,14 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     allDay: complete && known.every(d => d.allDay != null) ? Math.max(...known.map(d => d.allDay!)) : null,
     middayWait: complete && known.every(d => d.middayWait != null) ? Math.max(...known.map(d => d.middayWait!)) : null,
     middayCap: (() => {
+      // #899 as worstDirection.ts applies it: some directions run at midday and some do not, the
+      // route fails every all-day threshold; all run, it is capped at the longest wait of those
+      // with no midday reading; none run (a peak-only route), no cap.
       if (!complete || known.length < 2) return null;
-      const caps = known.map(d => d.middayCap).filter((v): v is number => v != null);
+      const runs = known.map(d => d.midday.runs);
+      if (runs.some(Boolean) && !runs.every(Boolean)) return Infinity;
+      if (!runs.every(Boolean)) return null;
+      const caps = known.filter(d => !d.midday.hasReading).map(d => d.midday.wait).filter((v): v is number => v != null);
       return caps.length > 0 ? Math.max(...caps) : null;
     })(),
     frequent: complete && known.every(d => d.frequent),
