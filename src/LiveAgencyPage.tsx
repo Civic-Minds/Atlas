@@ -27,6 +27,9 @@ import { builtText, coveredRoutesText, liveSubtitle, METHOD_GROUPS } from '../sh
 import MethodFootnote, { Term } from './components/Live/MethodFootnote';
 import { bunchingLine, colourLine, deliveredLine, extraWaitLine, lateAtStopLine, lateLine, positionsLine, recordingGapsLine, runTimeLine, tripMatchLine } from './components/Live/methodLines';
 
+/** One column grid for every table on the page, so the first column, Route and Direction line up from table to table (widths in rem; the number columns keep the table default). */
+const FIRST_COL = 24, ROUTE_COL = 14, DIR_COL = 8, NUM_COL = 8;
+
 const MINUS = '−';
 const pct = (x: number | null) => (x == null ? '–' : `${Math.round(x * 100)}%`);
 const pctSigned = (x: number | null) => (x == null ? '–' : `${x > 0 ? '+' : x < 0 ? MINUS : ''}${Math.abs(Math.round(x * 100))}%`);
@@ -100,18 +103,17 @@ function RoutesTable({ s }: { s: AgencySummary }) {
           <DataTable
             caption={`${group.label} ${group.routes.length}`}
             fixed
-            fill
             sort={{ key: sort, reversed }}
             onSort={onSort}
             rows={group.routes}
             rowKey={r => r.route}
             columns={[
-              { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
-              { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
-              { key: 'lastWeek', header: 'Last week', className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
-              { key: 'runTime', sortable: true, header: 'Run time', cell: r => pctSigned(r.runTimeOver) },
-              { key: 'bunching', sortable: true, header: 'Bunching', cell: r => pct(r.bunchingShare) },
-              { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
+              { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
+              { key: 'late', width: NUM_COL, sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
+              { key: 'lastWeek', width: NUM_COL, header: 'Last week', className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
+              { key: 'runTime', width: NUM_COL, sortable: true, header: 'Run time', cell: r => pctSigned(r.runTimeOver) },
+              { key: 'bunching', width: NUM_COL, sortable: true, header: 'Bunching', cell: r => pct(r.bunchingShare) },
+              { key: 'delivered', width: NUM_COL, sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
             ]}
           />
         </div>
@@ -126,17 +128,18 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
     <div className="relative mt-3 overflow-x-auto">
       <SortableDataTable
         caption="Stops where the most cars leave late, all analysed routes"
+        fill={false}
         rows={rows}
         defaultSort="late"
         rowKey={r => `${r.route}-${r.directionId}-${r.stopId}`}
         columns={[
-          { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal truncate', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
-          { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', cell: r => titleCase(r.direction) },
-          { key: 'late', header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
-          { key: 'typical', header: 'Typical', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
-          { key: 'p90', header: '1 in 10 later than', worst: r => r.p90Min, cell: r => mins(r.p90Min) },
-          { key: 'n', header: 'Departures', cell: r => r.n.toLocaleString() },
+          { key: 'stop', header: 'Stop', rowHeader: true, width: FIRST_COL, className: 'font-normal truncate', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
+          { key: 'route', header: 'Route', width: ROUTE_COL, cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => titleCase(r.direction) },
+          { key: 'late', width: NUM_COL, header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
+          { key: 'typical', width: NUM_COL, header: 'Typical', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
+          { key: 'p90', width: NUM_COL, header: '1 in 10 later than', worst: r => r.p90Min, cell: r => mins(r.p90Min) },
+          { key: 'n', width: NUM_COL, header: 'Departures', cell: r => r.n.toLocaleString() },
         ]}
       />
     </div>
@@ -150,14 +153,15 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
     <div className="relative mt-3 overflow-x-auto">
       <SortableDataTable
         caption={caption}
+        fill={false}
         rows={rows}
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
-          { key: 'stretch', header: 'Stretch', rowHeader: true, width: 24, className: 'font-normal truncate', cell: r => <span title={`${stop(r.fromName)} to ${stop(r.toName)}`}>{stop(r.fromName)} to {stop(r.toName)}</span> },
-          { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', cell: r => titleCase(r.direction) },
-          ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),
+          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal truncate', cell: r => <span title={`${stop(r.fromName)} to ${stop(r.toName)}`}>{stop(r.fromName)} to {stop(r.toName)}</span> },
+          { key: 'route', header: 'Route', width: ROUTE_COL, cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => titleCase(r.direction) },
+          ...(valueHeader && format ? [{ key: 'value', width: NUM_COL, header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),
         ]}
       />
     </div>
