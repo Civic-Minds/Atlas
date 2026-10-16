@@ -14,7 +14,7 @@ import { resolve } from 'path';
 import { LIVE_ANALYSIS_ROUTES } from '../shared/livePollingConfig';
 import { LIVE_DASHBOARD_HOLD, LIVE_DASHBOARD_UNCERTAIN_START, type LiveV3 } from '../shared/liveDashboard';
 import { agencySummary, type AgencyRouteInput } from '../shared/liveAgency';
-import { getRouteLabel } from '../shared/cleanHeadsign';
+import { getRouteLabel, routeLabelParts } from '../shared/cleanHeadsign';
 import { titleCase } from '../src/utils/format';
 
 /** Quote-aware CSV (stop and route names hold commas). */
@@ -62,7 +62,9 @@ function main() {
     const r = byShort.get(route);
     // The route card's title rule (until the one route-label helper, UI step 9, reaches this branch).
     const label = titleCase(getRouteLabel(route, r?.route_long_name || null));
-    routes.push({ route, label, v3, uncertainStart: LIVE_DASHBOARD_UNCERTAIN_START[`${agency}::${route}`] ?? [] });
+    const parts = routeLabelParts(route, r?.route_long_name || null);
+    const titleLabel = titleCase([parts.primary, parts.secondary].filter(Boolean).join(' '));
+    routes.push({ route, label, titleLabel, mode: Number(r?.route_type ?? 3), longName: r?.route_long_name || null, v3, uncertainStart: LIVE_DASHBOARD_UNCERTAIN_START[`${agency}::${route}`] ?? [] });
   }
   const summary = agencySummary({ agency, totalRoutes, routes, held });
 

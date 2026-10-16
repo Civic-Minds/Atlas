@@ -257,10 +257,15 @@ export interface AgencyPageStats {
   byMode: Array<{ mode: number; label: string; routes: AgencyPageRoute[] }>;
 }
 
+/** Routes grouped by mode, in the shared mode order, each with its label ("Streetcar"). The agency pages and Live share it. */
+export function routesByMode<R extends { mode: number }>(routes: readonly R[]): Array<{ mode: number; label: string; routes: R[] }> {
+  return sortModes(new Set(routes.map(r => r.mode)), mode => mode).map(mode => ({ mode, label: modeLabel(mode), routes: routes.filter(r => r.mode === mode) }));
+}
+
 export function agencyStats(a: Pick<AgencyPageSummary, 'routes'>): AgencyPageStats {
   return {
     totalRoutes: a.routes.length,
-    byMode: sortModes(new Set(a.routes.map(r => r.mode)), mode => mode).map(mode => ({ mode, label: modeLabel(mode), routes: a.routes.filter(r => r.mode === mode) })),
+    byMode: routesByMode(a.routes),
   };
 }
 

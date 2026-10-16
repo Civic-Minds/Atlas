@@ -27,6 +27,8 @@ for route in "${ROUTES[@]}"; do
   # Some routes share a number with another service (506 runs streetcars and, in parallel, 506B replacement buses): analyse the named service only.
   EXTRA=()
   [ "$route" = "506" ] && EXTRA=(--exclude-headsign "replacement bus")
+  # The 507M is a shuttle to Marine Parade, a separate service from the 507 Long Branch line.
+  [ "$route" = "507" ] && EXTRA=(--separate-service "507M")
   NODE_OPTIONS=--max-old-space-size=8192 npx tsx scripts/live-segment-delay.ts \
     --gtfs "$DATA/gtfs/candidates/surface" --archive "$DATA/archive" --route "$route" --days "$DAYS" ${EXTRA[@]+"${EXTRA[@]}"} \
     --out "$DATA/out/ttc-$route-segments.json" | grep -E "^(v3|dates)" || exit 1

@@ -89,8 +89,12 @@ export interface BunchingProfile {
   climb: number | null;
 }
 
-/** `stops` in travel order. Stops with fewer than MIN_GAPS gaps are skipped. The full per-stop profile is shown beside this. */
-export function bunchingProfile(stops: readonly StopBunching[]): BunchingProfile {
+/**
+ * `stops` in travel order. Stops with fewer than MIN_GAPS gaps are skipped. The full per-stop profile is shown beside this.
+ * A stretch touching a terminal (`isTerminal`) is never where bunching forms or rises most: running out of or into a loop
+ * is layover and regulation, the same rule as delay build-up (B3).
+ */
+export function bunchingProfile(stops: readonly StopBunching[], isTerminal: (stopId: string) => boolean = () => false): BunchingProfile {
   const usable = stops.filter(s => s.n >= MIN_GAPS);
   if (usable.length < BASELINE_STOPS + 1) return { baselineBadShare: null, kind: null, forms: null, biggestRise: null, climb: null };
   const baseline = usable.slice(0, BASELINE_STOPS).reduce((a, s) => a + s.badShare, 0) / BASELINE_STOPS;
@@ -102,6 +106,7 @@ export function bunchingProfile(stops: readonly StopBunching[]): BunchingProfile
   let biggest: BunchingStretch | null = null;
   for (let i = 1; i < usable.length; i++) {
     const s = stretchAt(i);
+    if (isTerminal(s.fromStopId) || isTerminal(s.toStopId)) continue;
     if (!biggest || s.rise > biggest.rise) biggest = s;
     if (s.rise < RISE) continue;
     let end = Math.min(usable.length, i + STAYS_UP_STOPS);

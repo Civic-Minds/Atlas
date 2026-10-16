@@ -78,8 +78,8 @@ ReactDOM.createRoot(rootElement).render(
             </>
           )}
           {/* Live is local-only: the route dashboard exists only where Live can run. */}
-          {(FEATURES.live || import.meta.env.DEV) && <Route path="/apps/live/:agency/:route" element={<LiveRoutePage />} />}
-          {(FEATURES.live || import.meta.env.DEV) && <Route path="/apps/live/:agency" element={<LiveAgencyPage />} />}
+          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency/:route" element={<LiveRoutePage />} />}
+          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency" element={<LiveAgencyPage />} />}
           <Route path="/apps/night" element={<NightServiceRedirect />} />
           <Route path="/docs" element={<DocsRedirect />} />
           {RETIRED_APP_PATHS.map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}

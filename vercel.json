@@ -136,6 +136,94 @@
       "destination": "/index.html"
     },
     {
+      "source": "/apps/live/ttc",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/501",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/501/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/503",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/503/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/504",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/504/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/505",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/505/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/506",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/506/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/507",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/507/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/509",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/509/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/510",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/510/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/511",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/511/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/512",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/live/ttc/512/",
+      "destination": "/index.html"
+    },
+    {
       "source": "/docs",
       "destination": "/index.html"
     },

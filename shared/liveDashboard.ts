@@ -138,7 +138,7 @@ export interface LiveV3 {
 
 /** What /api/live-dashboard answers. `reason` is always a plain sentence that says what to do or when it will exist. */
 export type LiveDashboardResponse =
-  | { status: 'ready'; agency: string; route: string; generatedAt: string; replacementBuses: boolean; v3: LiveV3; note: string | null; /** Directions whose first stops are measured poorly (see `note`), and how many stops are affected. */ uncertainStart: UncertainStart[] }
+  | { status: 'ready'; agency: string; route: string; /** "504 King", for the page title (from the agency summary). */ routeTitle?: string | null; generatedAt: string; replacementBuses: boolean; v3: LiveV3; note: string | null; /** Directions whose first stops are measured poorly (see `note`), and how many stops are affected. */ uncertainStart: UncertainStart[] }
   | { status: 'held' | 'no_analysis' | 'unknown_route'; reason: string };
 
 /** Routes whose analysis is built but not shown until a known problem is fixed. */

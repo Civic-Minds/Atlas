@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
-import { FEATURES, periodKeyForHour } from '../shared/config';
+import { ATLAS_MODE, FEATURES, periodKeyForHour } from '../shared/config';
 import {
   LINK_LABELS, branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
+import { devOnly, liveReportTitle, withoutDevHint } from './lib/liveReportData';
+import { applySeoToDocument } from './lib/seoDom';
+import { SITE_URL } from '../shared/seo';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import { isMajorStop, shortStopName } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
-import DataTable from './components/ui/DataTable';
+import SortableDataTable from './components/ui/SortableDataTable';
 import Pill from './components/ui/Pill';
 import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
@@ -189,15 +192,15 @@ function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBand
                 })}
               />
               <div className="mt-3 overflow-x-auto">
-                <DataTable
-                  fixed
+                <SortableDataTable
                   caption={`${label}: the stretches that add the most delay`}
+                  defaultSort="added"
                   rows={worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={[
                     { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => `${s.fromName} to ${s.toName}` },
-                    { key: 'added', header: 'Typical added', cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: 'Trips where it grows', cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
+                    { key: 'added', header: 'Typical added', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
+                    { key: 'grows', header: 'Trips where it grows', worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ]}
                 />
               </div>
@@ -220,22 +223,22 @@ function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardB
       <p className="mt-2 text-sm text-[var(--text-muted)]">Stops ranked by how often vehicles leave {v3.thresholds.lateAtOrAboveMin}+ minutes late (stops with 30+ departures).</p>
       {top.length ? (
         <div className="mt-4 overflow-x-auto">
-          <DataTable
-            fixed
+          <SortableDataTable
             caption="Stops ranked by the share of late departures"
+            defaultSort="late"
             rows={top}
             rowKey={s => `${s.stopId}-${s.directionId}`}
             columns={[
               { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
               ...(both ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-              { key: 'late', header: 'Late', cell: s => (
+              { key: 'late', header: 'Late', worst: s => s.lateShare, cell: s => (
                 <span className="inline-flex items-center gap-2">
                   <span className="block h-2 w-20 rounded-sm bg-[var(--control-inactive-bg)]" aria-hidden="true"><span className="block h-full rounded-sm bg-[var(--accent)] opacity-90" style={{ width: `${Math.max(2, s.lateShare * 100)}%` }} /></span>
                   {pct(s.lateShare)}
                 </span>
               ) },
-              { key: 'median', header: 'Typical delay', cell: s => mins(s.medianMin) },
-              { key: 'p90', header: '1 in 10 later than', cell: s => mins(s.p90Min) },
+              { key: 'median', header: 'Typical delay', worst: s => s.medianMin, cell: s => mins(s.medianMin) },
+              { key: 'p90', header: '1 in 10 later than', worst: s => s.p90Min, cell: s => mins(s.p90Min) },
               { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
             ]}
           />
@@ -336,7 +339,7 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
   const hoursOf = (d: number) => (rt.byHour[String(d)] ?? []).filter(h => h.n >= 1 && (band === 'all' || periodKeyForHour(h.hour) === band));
   const scale = runTimeScale(dirs.map(hoursOf));
   return (
-    <Section id="runtime" title="Run time vs schedule">
+    <Section id="runtime" title="Run time">
       <p className="mt-2 text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, by the hour it starts, over the stops every regular trip serves, so short turns count too.</p>
       <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {dirs.map(d => {
@@ -347,11 +350,11 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
             <div key={d} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
               {runTimeStretchLabel(rt.stretch?.[String(d)], n => shortStopName(titleCase(n))) && <p className="text-sm text-[var(--text-muted)]">{runTimeStretchLabel(rt.stretch?.[String(d)], n => shortStopName(titleCase(n)))}</p>}
-              <p className="mt-1 text-sm leading-6">{runningTimeSentence(label, figures)}</p>
+              <p className="mt-1 text-sm leading-6">{withoutDevHint(runningTimeSentence(label, figures))}</p>
               {hours.length > 1 && (
                 <>
                   <p className="mt-1 text-sm font-bold">{runTimeTakeaway(label, hours)}</p>
-                  <div className="mt-2"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${runningTimeSentence(label, figures)}`} /></div>
+                  <div className="mt-2"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${withoutDevHint(runningTimeSentence(label, figures))}`} /></div>
                 </>
               )}
               {(rt.branches?.[String(d)] ?? []).length > 0 && (
@@ -410,15 +413,15 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
           </div>
           {worst.length > 0 && (
             <div className="mt-5 overflow-x-auto">
-              <DataTable
-                fixed
+              <SortableDataTable
                 caption="Stops where riders wait longest compared with the timetable"
+                defaultSort="extra"
                 rows={worst}
                 rowKey={s => `${s.stopId}-${s.directionId}`}
                 columns={[
                   { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
                   ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-                  { key: 'extra', header: 'Extra wait', cell: s => `${num(s.extraWaitMin)} min` },
+                  { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => `${num(s.extraWaitMin)} min` },
                   { key: 'sched', header: 'Scheduled every', cell: s => `${num(s.scheduledGapMin)} min` },
                   { key: 'n', header: 'Gaps', cell: s => s.gaps.toLocaleString() },
                 ]}
@@ -493,11 +496,11 @@ function Method({ data }: { data: Ready }) {
   );
 }
 
-const BOUNDARY = (what: string) => `${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`;
+const BOUNDARY = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
 
 export default function LiveRoutePage() {
   const { agency = '', route = '' } = useParams();
-  const state = useLiveDashboard(agency, route);
+  const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
   // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
   // whose answer differs by period list it per period.
   const band: DashboardBand = 'all';
@@ -511,9 +514,14 @@ export default function LiveRoutePage() {
     if (view !== 'analysis' || !window.location.hash) return;
     document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
   }, [view, state.kind]);
-  if (!FEATURES.live) return <LiveOffNotice />;
+  const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
+  useEffect(() => {
+    if (!agency || !route) return;
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agency.toUpperCase()} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agency, route, routeTitle]);
+  if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agency.toUpperCase()} ${route}`;
-  const back = <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink>;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p></PageShell>;
   if (state.kind === 'error') return <PageShell variant="wide"><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{state.reason}</p>{back}</PageShell>;
   const data = state.data;
@@ -521,7 +529,7 @@ export default function LiveRoutePage() {
     return (
       <PageShell variant="wide">
         <PageTitle className="mt-24">{title}</PageTitle>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{data.reason}</p>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{data.status === 'no_analysis' ? devOnly(data.reason) : data.reason}</p>
         {back}
       </PageShell>
     );
@@ -540,11 +548,11 @@ export default function LiveRoutePage() {
               {v3.window.dates.length ? `${dateRangeText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} trips · estimated from where vehicles were, not reported by {agency.toUpperCase()}
             </p>
           </div>
-          <ArrowLink href="/apps/live">View on Live map</ArrowLink>
+          {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
         </div>
         {(() => {
           const f = freshness(v3, route, Date.now());
-          return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{f.text}</p> : null;
+          return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{withoutDevHint(f.text)}</p> : null;
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="View">
@@ -559,7 +567,7 @@ export default function LiveRoutePage() {
         <Filters v3={v3} dir={dir} setDir={setDir} />
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Run time vs schedule')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Run time')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWait v3={v3} band={band} dir={dir} /></ErrorBoundary>

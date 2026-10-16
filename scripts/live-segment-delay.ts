@@ -23,7 +23,7 @@ import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type Run
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
-import { branchPatterns, mainStretchStops, reliableStretch, stationOrLoop } from '../shared/mainStretch.js';
+import { branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 
@@ -40,6 +40,9 @@ const OBS_OUT = args['obs-out'];
 const RUNTIMES_OUT = args['runtimes-out'];
 /** Trips whose headsign contains this text (any case) are another service under the same route number (e.g. replacement buses): left out and counted. Plain text, not a pattern. */
 const EXCLUDE_HEADSIGN = args['exclude-headsign'] ? String(args['exclude-headsign']).toLowerCase() : null;
+// A separate service that shares the route number (the 507M shuttle): its own trips carry the name in the headsign; its
+// return trips do not, so they are known by starting, in the other direction, where its named trips end.
+const SEPARATE_SERVICE = args['separate-service'] ? String(args['separate-service']).toLowerCase() : null;
 /** A stop passage more than this far from the timetable is a wrong trip match or a bad fix, not a delay. */
 const MAX_DELAY_SEC = 3600;
 /** The departure moment: the car is this far past the stop. */
@@ -92,11 +95,24 @@ function serviceDayStart(date: string): number {
 const prevDate = (d: string) => new Date(Date.parse(`${d}T12:00:00Z`) - 86400_000).toISOString().slice(0, 10);
 
 // --- static GTFS ---
+function stopTimesFile() { return existsSync(join(GTFS, `${ROUTE}-stop_times.txt`)) ? join(GTFS, `${ROUTE}-stop_times.txt`) : join(GTFS, 'stop_times.txt'); }
 const allRouteTrips = readCsv(join(GTFS, 'trips.txt'), r => r.route_id === ROUTE);
 const excludedTripIds = new Set(allRouteTrips.filter(t => EXCLUDE_HEADSIGN != null && (t.trip_headsign ?? '').toLowerCase().includes(EXCLUDE_HEADSIGN)).map(t => t.trip_id));
+if (SEPARATE_SERVICE != null) {
+  const named = allRouteTrips.filter(t => (t.trip_headsign ?? '').toLowerCase().split(/\s+/).includes(SEPARATE_SERVICE));
+  const namedIds = new Set(named.map(t => t.trip_id));
+  const routeTripIds = new Set(allRouteTrips.map(t => t.trip_id));
+  const ends = readCsv(stopTimesFile(), r => routeTripIds.has(r.trip_id));
+  const byTrip = new Map<string, { seq: number; stopId: string }[]>();
+  for (const r of ends) { const l = byTrip.get(r.trip_id) ?? []; l.push({ seq: Number(r.stop_sequence), stopId: r.stop_id }); byTrip.set(r.trip_id, l); }
+  const first = (id: string) => { const l = byTrip.get(id) ?? []; return l.reduce((a, b) => (b.seq < a.seq ? b : a), l[0])?.stopId; };
+  const last = (id: string) => { const l = byTrip.get(id) ?? []; return l.reduce((a, b) => (b.seq > a.seq ? b : a), l[0])?.stopId; };
+  const turnBack = new Set(named.map(t => `${1 - Number(t.direction_id)}|${last(t.trip_id)}`));
+  for (const t of allRouteTrips) if (namedIds.has(t.trip_id) || turnBack.has(`${t.direction_id}|${first(t.trip_id)}`)) excludedTripIds.add(t.trip_id);
+}
 const trips = allRouteTrips.filter(t => !excludedTripIds.has(t.trip_id));
 const tripById = new Map(trips.map(t => [t.trip_id, t]));
-const stopTimesPath = existsSync(join(GTFS, `${ROUTE}-stop_times.txt`)) ? join(GTFS, `${ROUTE}-stop_times.txt`) : join(GTFS, 'stop_times.txt');
+const stopTimesPath = stopTimesFile();
 const timesByTrip = new Map<string, { stopId: string; seq: number; arr: number; dep: number; tp: boolean }[]>();
 for (const st of readCsv(stopTimesPath, r => tripById.has(r.trip_id))) {
   const list = timesByTrip.get(st.trip_id) ?? [];
@@ -780,11 +796,34 @@ const swapsDropped = swapsInWindow.length - swapsReassigned;
 const tpMinutes = windowRuns.flatMap(r => r.stops.filter(s => s.timepoint).map(s => s.delaySec / 60));
 const nearCutoffShare = tpMinutes.length ? tpMinutes.filter(m => Math.abs(m - EARLY_AT_OR_BELOW_MIN) < 0.75 || Math.abs(m - LATE_AT_OR_ABOVE_MIN) < 0.75).length / tpMinutes.length : 0;
 const BANDS: (TimeBand | 'all')[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
+// B2 ranks only stops on a regular pattern (the main stretch's rule: 20%+ of the direction's trips), so a rare
+// diversion or odd pattern with a few late trips cannot top the list. Other stops are listed, not ranked.
+const regularStops = new Set<string>();
+for (const d of new Set([...patterns.values()].map(p => p.directionId))) {
+  const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
+  for (const p of regularPatterns(dirPatterns.map(q => ({ stops: q.stops.map(st => st.stopId), trips: tripsPerShape.get(q.id) ?? 0 })))) for (const st of p.stops) regularStops.add(`${d}|${st}`);
+}
+// One place listed twice: a pattern with two consecutive stop ids under 30 m apart (TTC 501 "Queen St East at
+// Parliament St" then "QUEEN ST. E. AT PARLIAMENT AVE.", 16 m and 9 s apart). B2 ranks the place once, under the first id.
+const SAME_PLACE_M = 30;
+const repeatedStops = new Set<string>();
+for (const p of patterns.values()) {
+  for (let i = 1; i < p.stops.length; i++) {
+    const a = stopsById.get(p.stops[i - 1].stopId), b = stopsById.get(p.stops[i].stopId);
+    if (a && b && a.stop_id !== b.stop_id && haversineM(Number(a.stop_lat), Number(a.stop_lon), Number(b.stop_lat), Number(b.stop_lon)) < SAME_PLACE_M) repeatedStops.add(`${p.directionId}|${b.stop_id}`);
+  }
+}
 /** Stops (B2) and delay build-up (B3) for a set of runs. */
 function stopsAndBuildup(rs: readonly RunDelays[]) {
+  // B2 also needs the stop measured on enough of the runs the timetable sends there (the run-time stretch's coverage
+  // bar, RELIABLE_STOP_MIN_SHARE): where vehicles leave the drawn shape, only a few odd runs are timed and would rank.
+  const due = new Map<string, number>();
+  for (const r of rs) for (const st of new Set((timesByTrip.get(r.tripId) ?? []).map(x => x.stopId))) due.set(`${r.directionId}|${st}`, (due.get(`${r.directionId}|${st}`) ?? 0) + 1);
+  const covered = (dir: number, stopId: string, n: number) => n >= RELIABLE_STOP_MIN_SHARE * (due.get(`${dir}|${stopId}`) ?? Infinity);
   const stops = stopDelayStats(rs).map(s => ({
     ...stopInfo(s.stopId), directionId: s.directionId, order: orderIndex(s.directionId, s.stopId), n: s.n,
-    medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare), ranked: s.ranked,
+    medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare),
+    ranked: s.ranked && regularStops.has(`${s.directionId}|${s.stopId}`) && !repeatedStops.has(`${s.directionId}|${s.stopId}`) && covered(s.directionId, s.stopId, s.n),
   })).sort((a, b) => a.directionId - b.directionId || a.order - b.order);
   // B2 ranks by late share (5.5+ min late) among stops with enough departures; median and p90 sit beside it.
   for (const dir of new Set(stops.map(x => x.directionId))) {
@@ -830,7 +869,7 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
       const wins: GapWindow[] = (headwayByStop.get(`${stopId}|${dir}`)?.get(band) ?? []).filter(w => inWindow.has(w.date));
       return { ...stopBunching(stopId, wins), alongM: alongOf.get(`${dir}|${stopId}`) };
     });
-    const profile = bunchingProfile(stops);
+    const profile = bunchingProfile(stops, stopId => terminalStops.has(stopId));
     const evidenceFor = (fromId: string, toId: string) => {
       const a = order.indexOf(fromId), b = order.indexOf(toId); // only inside the stretch itself
       const near = new Set(order.slice(a, b + 1));

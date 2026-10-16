@@ -3,7 +3,8 @@ import { periodKeyForHour } from '../shared/config';
 import { branchFigures, branchRunTimeLine, dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, NOISE_RULE, weekCaption, weekRangeLine, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
-import DataTable from './components/ui/DataTable';
+import SortableDataTable from './components/ui/SortableDataTable';
+import { withoutDevHint } from './lib/liveReportData';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import RouteStrip, { routeStripFromV3 } from './components/Live/RouteStrip';
@@ -39,7 +40,7 @@ function Delta({ k }: { k: Kpi }) {
 /** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
-  if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.</p>;
+  if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.')}</p>;
   return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), runTimeTileStretch(v3.runningTime?.stretch, n => shortStopName(titleCase(n))))} caption={weekRangeLine(w)} />;
 }
 
@@ -132,7 +133,7 @@ function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: num
   const scale = runTimeScale(groups.map(g => g.hours));
   return (
     <section aria-labelledby="dash-runtime" className="mt-10">
-      <SectionTitle id="dash-runtime">Run time vs schedule</SectionTitle>
+      <SectionTitle id="dash-runtime">Run time</SectionTitle>
       <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, {BAND_WORDS[band]}, over the stops every regular trip serves, so short turns count too.</p>
       <div className={`mt-4 grid gap-x-10 gap-y-8 ${groups.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {groups.map(g => (
@@ -228,8 +229,9 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
       <SectionTitle>Stops most often late</SectionTitle>
       {top.length ? (
         <div className="mt-3">
-          <DataTable
+          <SortableDataTable
             caption="The five stops with the highest share of late departures"
+            defaultSort="late"
             rows={top}
             rowKey={s => `${s.stopId}-${s.directionId}`}
             columns={[
@@ -239,7 +241,7 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
                   {dir == null && <span className="block text-xs text-[var(--text-dim)]">{v3.directionLabels[String(s.directionId)]}</span>}
                 </span>
               ) },
-              { key: 'late', header: 'Late', className: 'w-16 whitespace-nowrap text-right', cell: s => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
+              { key: 'late', header: 'Late', worst: s => s.lateShare, cell: s => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
             ]}
           />
         </div>
@@ -255,7 +257,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
   filters: ReactNode;
   toFull: (hash: string) => void;
 }) {
-  const bad = (what: string) => `${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`;
+  const bad = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
   return (
     <>
       <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>

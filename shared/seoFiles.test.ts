@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { AGENCY_ROUTE_SOURCES, AREA_ROUTE_SOURCES, SEO_ROUTES, SITE_URL, buildSitemapXml, knownRouteSources, sitemapRoutes } from './seo';
+import { liveReportPaths } from './liveReportPaths';
 
 const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { rewrites: { source: string; destination: string }[] };
 
@@ -48,6 +49,10 @@ describe('vercel.json routing', () => {
     for (const source of AREA_ROUTE_SOURCES) {
       expect(vercel.rewrites.find(r => r.source === source)?.destination).toBe('/area/:slug/index.html');
     }
+  });
+
+  it('sends each published Live report page to the app by its exact address, so other /apps/live paths stay 404', () => {
+    for (const path of liveReportPaths()) expect(vercel.rewrites.find(r => r.source === path)?.destination, path).toBe('/index.html');
   });
 
   it('serves the agency index from its own prerendered file', () => {

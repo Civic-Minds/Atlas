@@ -26,9 +26,8 @@ import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
 import { applySeoToDocument } from './lib/seoDom';
-import { routeLabels } from './utils/format';
 import { LINK } from './pageStyles';
-import { FrequencyBar } from './pageParts';
+import { FrequencyBar, RouteNameCell } from './pageParts';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
@@ -87,11 +86,6 @@ function Intro({ data }: { data: AgencyPageData }) {
  * A period cell: the card's cadence (a range where alternating branches combine on a shared
  * stretch), "Limited" when the route runs but has no trustworthy cadence, else a dash.
  */
-/** A route's name cell: the same cleaned names the map's lists show (bold part, then the lighter name). */
-function routeCellText(r: AgencyPageRoute, agencyName: string) {
-  const label = routeLabels({ shortName: r.name, longName: r.longName, mode: r.mode, agencyName });
-  return <><span className="font-black">{label.primary}</span>{label.secondary ? <span className="text-[var(--text-muted)]"> {label.secondary}</span> : null}</>;
-}
 
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
@@ -157,7 +151,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
-                      { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => routeCellText(r, agency.name) },
+                      { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
                       { key: 'am', header: 'AM peak', cell: r => cell('am', r) },
                       { key: 'midday', header: 'Midday', cell: r => cell('midday', r) },
                       { key: 'pm', header: 'PM peak', cell: r => cell('pm', r) },

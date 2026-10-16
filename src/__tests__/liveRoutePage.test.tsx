@@ -5,7 +5,7 @@ import type { AdherenceBlock, LiveDashboardResponse, LiveV3, UncertainStart } fr
 
 vi.mock('../../shared/config', async importOriginal => {
   const actual = await importOriginal<typeof import('../../shared/config')>();
-  return { ...actual, FEATURES: { ...actual.FEATURES, live: true } };
+  return { ...actual, FEATURES: { ...actual.FEATURES, live: true, liveReports: true } };
 });
 
 import LiveRoutePage from '../LiveRoutePage';

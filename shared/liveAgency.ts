@@ -15,6 +15,11 @@ export interface AgencyRouteInput {
   route: string;
   /** Route name as the route page shows it ("504 — King"). */
   label: string;
+  /** The route as a page title names it ("504 King"). */
+  titleLabel?: string;
+  /** GTFS route_type and route_long_name, for the routes table (grouped by mode, the agency pages' name cell). */
+  mode?: number;
+  longName?: string | null;
   v3: LiveV3;
   uncertainStart?: readonly UncertainStart[];
 }
@@ -22,6 +27,9 @@ export interface AgencyRouteInput {
 export interface AgencyRouteRow {
   route: string;
   label: string;
+  titleLabel?: string;
+  mode?: number;
+  longName?: string | null;
   lateShare: number | null;
   lateN: number;
   lateLastWeek: number | null;
@@ -130,11 +138,11 @@ export function agencySummary(input: {
     return { thisWeek, lastWeek, minHealthyDays, comparable: thisWeek.healthyDates.length >= minHealthyDays && lastWeek.healthyDates.length >= minHealthyDays };
   })() : null;
 
-  const rows: AgencyRouteRow[] = routes.map(({ route, label, v3 }) => {
+  const rows: AgencyRouteRow[] = routes.map(({ route, label, titleLabel, mode, longName, v3 }) => {
     const t = v3.weekly?.thisWeek, l = v3.weekly?.lastWeek;
     const block = v3.bands.all.adherence.timepoints.all;
     return {
-      route, label,
+      route, label, ...(titleLabel ? { titleLabel } : {}), ...(mode != null ? { mode, longName: longName ?? null } : {}),
       lateShare: t?.late?.share ?? null,
       lateN: t?.late?.n ?? 0,
       lateLastWeek: v3.weekly?.comparable ? l?.late?.share ?? null : null,
