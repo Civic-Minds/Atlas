@@ -12,9 +12,11 @@
  * publish-data-release runs this automatically after a release goes public, failure-safe. The build reads the
  * committed file, so it works with R2 unreachable.
  *
- * Numbers are the map's own: a route's headway for a period is routeFilterHeadway, the worst
- * direction's value the frequency filter compares (via routeListDisplay, which also decides when a
- * route shows "limited" instead of a number). Nothing new is measured here; the service span is just
+ * Numbers are the map's own: a route's headway for a period is the value the frequency filter
+ * compares (via routeListDisplay): the stretch selector's routeFilterHeadwayByPeriod, with the low end
+ * of its range (stretchPeriodRange) kept as `shared` for the page text ("8–25 min"), or for releases
+ * without it the worst direction's routeFilterHeadway. routeListDisplay also decides when a route
+ * shows "limited" or no number. Nothing new is measured here; the service span is just
  * the first and last hour that the published per-hour headways cover on weekdays.
  */
 import { readFileSync, writeFileSync, existsSync, renameSync } from 'node:fs';

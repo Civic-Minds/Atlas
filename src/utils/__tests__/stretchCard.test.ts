@@ -92,3 +92,32 @@ describe('the outside-filter notice', () => {
     expect(selectedRouteFilterNotice({ headway: null, activeRange: '4–5 AM', periodRange: '2–6 AM' })).not.toContain('every');
   });
 });
+
+describe('list rows, All day (frequency focus step 7)', () => {
+  const row = (dir: number, extra: Record<string, unknown>) => ({
+    routeShortName: 'R', directionId: dir, day: 'Weekday', tier: '10', serviceClass: 'regular', headway: 8,
+    headwayByPeriod: { midday: 8 }, headwayByPeriodSustained: { midday: true }, ...extra,
+  }) as unknown as ShapeProperties;
+
+  it('reads the route\'s all-day filter value, not a row\'s own headway', () => {
+    const d = routeListDisplay([row(0, { routeAllDayHeadway: 20 }), row(1, { routeAllDayHeadway: 20 })], 'all');
+    expect(d.headway).toBe(20);
+    expect(d.limited).toBe(false);
+  });
+
+  it('no all-day value with a direction that does not run at midday (OC Transpo 226) is limited, with no number', () => {
+    const d = routeListDisplay([row(0, { routeAllDayHeadway: 999999, routeHasLimitedDirection: true }), row(1, { routeAllDayHeadway: 999999, routeHasLimitedDirection: true })], 'all');
+    expect(d.headway).toBeNull();
+    expect(d.limited).toBe(true);
+  });
+
+  it('no all-day value otherwise shows no number and is not limited', () => {
+    const d = routeListDisplay([row(0, { routeAllDayHeadway: 999999 })], 'all');
+    expect(d.headway).toBeNull();
+    expect(d.limited).toBe(false);
+  });
+
+  it('data without the field keeps today\'s rule', () => {
+    expect(routeListDisplay([row(0, {}), row(1, {})], 'all').headway).toBe(8);
+  });
+});

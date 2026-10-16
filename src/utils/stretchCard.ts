@@ -5,6 +5,7 @@
  * Every function returns nothing special when the fields are absent, so a route without them keeps today's behaviour.
  */
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
+import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 
 type PeriodKey = Exclude<TimePeriod, 'all'>;
 
@@ -59,6 +60,20 @@ export interface RouteContract {
  * What the filter says about the route in a period, from any one of its features (the fields are on every feature of a
  * route-day). Undefined when the data does not carry them, or for All day (the fields are per period): use today's rule.
  */
+/**
+ * The all-day filter value (step 6) for list rows: a number, null for none, or undefined when the data does not carry it
+ * (today's rule). A route with no all-day value is limited when a direction does not run at midday (routeHasLimitedDirection).
+ */
+export function routeAllDayContract(features: readonly ShapeProperties[]): { filterValue: number | null; limited: boolean } | undefined {
+  const f = features.find(x => typeof x.routeAllDayHeadway === 'number');
+  if (!f) return undefined;
+  const value = f.routeAllDayHeadway!;
+  return {
+    filterValue: value < NO_PERIOD_SERVICE_TILE_VALUE ? value : null,
+    limited: features.some(x => x.routeHasLimitedDirection === true),
+  };
+}
+
 export function routeContract(features: readonly ShapeProperties[], period: TimePeriod): RouteContract | undefined {
   if (period === 'all') return undefined;
   const key = period as PeriodKey;

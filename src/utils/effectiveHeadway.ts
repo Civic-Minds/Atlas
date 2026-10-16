@@ -5,7 +5,7 @@ import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange } from './headwayText';
-import { routeContract } from './stretchCard';
+import { routeAllDayContract, routeContract } from './stretchCard';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -245,6 +245,10 @@ function routeListCadence(features: readonly ShapeProperties[], period: TimePeri
     const { filterValue, range } = contract;
     return { headway: filterValue, shared: filterValue != null && range && range[0] < filterValue ? range[0] : null };
   }
+  if (period === 'all') {
+    const allDay = routeAllDayContract(features);
+    if (allDay) return { headway: allDay.filterValue, shared: null };
+  }
   const byDirection = new Map<number | null, ShapeProperties[]>();
   for (const feature of features) {
     const direction = feature.directionId ?? null;
@@ -314,6 +318,9 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
   // The filter's null (runs or not) means no number and no "limited" either.
   const contract = routeContract(features, period);
   if (contract != null && contract.filterValue == null) return false;
+  // All day: no all-day value is "limited" when a direction does not run at midday (step 6), else no number.
+  const allDay = period === 'all' ? routeAllDayContract(features) : undefined;
+  if (allDay) return allDay.filterValue == null && allDay.limited;
   return routeListDisplayHeadway(features, period) == null
     && features.some(feature => routeCardDisplayLimited(feature, period));
 }
