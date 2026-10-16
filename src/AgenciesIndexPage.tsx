@@ -17,6 +17,7 @@ import { LINK } from './pageStyles';
 import Tag from './components/ui/Tag';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import PageShell from './components/ui/PageShell';
+import DocsPageLayout from './components/ui/DocsPageLayout';
 
 /** Read this page's data from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(): AgencyIndexData | null {
@@ -74,9 +75,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
   const groups = data.groups;
 
   return (
-    <PageShell variant="wide">
-
-        <article className="pb-16 pt-10 sm:pt-14">
+    <DocsPageLayout width="wide">
           <PageTitle>All agencies and regions</PageTitle>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{agencyIndexDescription(data)}</p>
 
@@ -121,7 +120,6 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
               ))}
             </section>
           ))}
-        </article>
-    </PageShell>
+    </DocsPageLayout>
   );
 }

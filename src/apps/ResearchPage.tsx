@@ -1,6 +1,6 @@
 import { Moon, Zap } from 'lucide-react';
 import { FEATURE_ROUTES } from '../../shared/config';
-import PageShell from '../components/ui/PageShell';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
 import ArrowLink from '../components/ui/ArrowLink';
 import { SURFACE } from '../styles';
 import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
@@ -22,9 +22,7 @@ const CARDS = [
 
 export default function ResearchPage() {
   return (
-    <PageShell>
-        <div className="mt-10 lg:max-w-[42rem] lg:ml-[15rem]">
-          <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
+    <DocsPageLayout articleClassName="text-sm leading-relaxed text-[var(--text-dim)]">
             <header>
               <PageTitle className="text-[var(--text-primary)]">Research</PageTitle>
               <p className="mt-3">Views of transit service that the main map does not show.</p>
@@ -39,8 +37,6 @@ export default function ResearchPage() {
                 </a>
               ))}
             </div>
-          </article>
-        </div>
-    </PageShell>
+    </DocsPageLayout>
   );
 }
