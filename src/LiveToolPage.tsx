@@ -21,6 +21,9 @@ import { directionStopsById } from './components/Live/DirectionStrip';
 import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { STEP_LABELS } from './components/Live/routeStripModel';
 import { delayText } from './components/Live/routeStripModel';
+import StringLine, { useStrings } from './components/Live/StringLine';
+import Pill from './components/ui/Pill';
+import { dateRangeText } from '../shared/liveDashboard';
 import { BANDS, Block, DetailPanel, Fact, Group, Late, Panel, RunTime, type Selection } from './LiveExplorePage';
 import { withNiceNames } from './LiveRoutePage';
 
@@ -84,8 +87,23 @@ function SegmentPanel({ v3, band, dir, fromStopId, toStopId, data, stops }: { v3
   );
 }
 
-function Canvas({ data, v3, route, dir, band, measure, pick, anchor, setPick }: {
-  data: Extract<ReturnType<typeof useLiveDashboard>, { kind: 'done' }>['data'] & { status: 'ready' }; v3: LiveV3; route: string; dir: number; band: DashboardBand; measure: MapMeasure;
+/** The string-line view: one service day of one direction, over the chosen time of day. The days are the last three of the analysis window. */
+function StringsPane({ agency, route, v3, dir, band }: { agency: string; route: string; v3: LiveV3; dir: number; band: DashboardBand }) {
+  const dates = v3.window.dates.slice(-3);
+  const [date, setDate] = useState<string | null>(dates[dates.length - 1] ?? null);
+  const state = useStrings(agency, route, date);
+  return (
+    <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Day">
+        {dates.map(d => <Pill key={d} size="segment" selected={d === date} onClick={() => setDate(d)}>{dateRangeText(d, d)}</Pill>)}
+      </div>
+      <div className="mt-4">{state.kind === 'ready' ? <StringLine data={state.data} directionId={dir} band={band} /> : null}</div>
+    </div>
+  );
+}
+
+function Canvas({ data, v3, agency, view, route, dir, band, measure, pick, anchor, setPick }: {
+  data: Extract<ReturnType<typeof useLiveDashboard>, { kind: 'done' }>['data'] & { status: 'ready' }; v3: LiveV3; agency: string; view: 'map' | 'strings'; route: string; dir: number; band: DashboardBand; measure: MapMeasure;
   pick: MapPick | null; anchor: [number, number] | null; setPick: (p: MapPick | null, at: [number, number] | null) => void;
 }) {
   const bandData = v3.bands[band] as DashboardBandData;
@@ -98,6 +116,7 @@ function Canvas({ data, v3, route, dir, band, measure, pick, anchor, setPick }: 
   ) : pick?.kind === 'stop' && stops.has(pick.stopId) ? (
     <DetailPanel docked v3={v3} band={band} sel={{ dir, kind: 'stop', stopId: pick.stopId }} stops={stops} data={bandData} />
   ) : null;
+  if (view === 'strings') return <StringsPane key={`${route}`} agency={agency} route={route} v3={v3} dir={dir} band={band} />;
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
       <div className="relative min-h-0 flex-1">
@@ -173,8 +192,8 @@ function NetworkCanvas({ agency, s, band, measure, onRoute }: { agency: string; 
   );
 }
 
-function RouteCanvas({ agency, route, dir, setDir, band, measure, pick, anchor, setPick }: {
-  agency: string; route: string; dir: number | null; setDir: (d: number) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; anchor: [number, number] | null; setPick: (p: MapPick | null, at: [number, number] | null) => void;
+function RouteCanvas({ agency, route, view, setView, dir, setDir, band, measure, pick, anchor, setPick }: {
+  agency: string; view: 'map' | 'strings'; setView: (v: 'map' | 'strings') => void; route: string; dir: number | null; setDir: (d: number) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; anchor: [number, number] | null; setPick: (p: MapPick | null, at: [number, number] | null) => void;
 }) {
   const state = useLiveDashboard(agency, route);
   if (state.kind === 'loading') return <p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {agency.toUpperCase()} {route}…</p>;
@@ -186,18 +205,18 @@ function RouteCanvas({ agency, route, dir, setDir, band, measure, pick, anchor, 
   const shown = dir != null && ids.includes(dir) ? dir : ids[0];
   return (
     <>
-      <DirectionBar ids={ids} labels={v3.directionLabels} dir={shown} setDir={setDir} />
-      <Canvas data={data} v3={v3} route={route} dir={shown} band={band} measure={measure} pick={pick} anchor={anchor} setPick={setPick} />
+      <DirectionBar ids={ids} labels={v3.directionLabels} dir={shown} setDir={setDir} view={view} setView={setView} />
+      <Canvas data={data} v3={v3} agency={agency} view={view} route={route} dir={shown} band={band} measure={measure} pick={pick} anchor={anchor} setPick={setPick} />
     </>
   );
 }
 
 /** The direction switch sits above the map, under the top bar, because its options belong to the picked route. */
-function DirectionBar({ ids, labels, dir, setDir }: { ids: number[]; labels: Record<string, string>; dir: number; setDir: (d: number) => void }) {
-  if (ids.length < 2) return null;
+function DirectionBar({ ids, labels, dir, setDir, view, setView }: { ids: number[]; labels: Record<string, string>; dir: number; setDir: (d: number) => void; view: 'map' | 'strings'; setView: (v: 'map' | 'strings') => void }) {
   return (
-    <div className="flex items-center gap-2 border-b border-[var(--border-primary)] px-4 py-2">
-      <Group label="Direction" value={String(dir)} onChange={v => setDir(Number(v))} options={ids.map(d => [String(d), labels[String(d)]] as const)} />
+    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-primary)] px-4 py-2">
+      {ids.length > 1 ? <Group label="Direction" value={String(dir)} onChange={v => setDir(Number(v))} options={ids.map(d => [String(d), labels[String(d)]] as const)} /> : <span />}
+      <Group label="View" value={view} onChange={v => setView(v as 'map' | 'strings')} options={[['map', 'Map'], ['strings', 'String line']]} />
     </div>
   );
 }
@@ -210,6 +229,7 @@ export default function LiveToolPage() {
   const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
   const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) ? (m as MapMeasure) : 'late'; });
+  const [view, setView] = useState<'map' | 'strings'>(() => (readParam('view') === 'strings' ? 'strings' : 'map'));
   const [anchor, setAnchor] = useState<[number, number] | null>(null);
   const setPick = (p: MapPick | null, at: [number, number] | null) => { setPickRaw(p); setAnchor(at); };
   const [pick, setPickRaw] = useState<MapPick | null>(() => {
@@ -222,10 +242,10 @@ export default function LiveToolPage() {
   const current = route;
   useEffect(() => {
     syncUrlParams({
-      view: null, route, dir: dir == null ? null : String(dir), band: band === 'all' ? null : band, measure: measure === 'late' ? null : measure,
+      view: view === 'strings' ? 'strings' : null, route, dir: dir == null ? null : String(dir), band: band === 'all' ? null : band, measure: measure === 'late' ? null : measure,
       stop: pick?.kind === 'stop' ? pick.stopId : null, seg: pick?.kind === 'segment' ? `${pick.fromStopId}>${pick.toStopId}` : null,
     });
-  }, [route, dir, band, measure, pick]);
+  }, [route, dir, band, measure, pick, view]);
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agency]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const shell = (body: ReactNode) => <main className="relative flex h-screen min-h-0 flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">{body}</main>;
@@ -243,7 +263,7 @@ export default function LiveToolPage() {
         <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
       </header>
       {!current && <NetworkCanvas agency={agency} s={s} band={band} measure={measure} onRoute={r => { setRoute(r); setPick(null, null); }} />}
-      {current && <RouteCanvas agency={agency} route={current} dir={dir} setDir={d => { setDir(d); setPick(null, null); }} band={band} measure={measure} pick={pick} anchor={anchor} setPick={setPick} />}
+      {current && <RouteCanvas agency={agency} view={view} setView={setView} route={current} dir={dir} setDir={d => { setDir(d); setPick(null, null); }} band={band} measure={measure} pick={pick} anchor={anchor} setPick={setPick} />}
     </>,
   );
 }

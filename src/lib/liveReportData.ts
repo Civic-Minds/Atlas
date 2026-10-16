@@ -13,6 +13,13 @@ export function liveDashboardDataUrl(agency: string, route: string): string {
     : `/api/live-dashboard?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
 }
 
+/** One service day's per-trip stop times for the string-line chart. Published beside the route's analysis (R2), or the local API in dev. */
+export function liveStringsDataUrl(agency: string, route: string, date: string): string {
+  return fromR2
+    ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/strings/${encodeURIComponent(route)}-${date}.json`
+    : `/api/live-strings?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}&date=${date}`;
+}
+
 export function liveAgencyDataUrl(agency: string): string {
   return fromR2 ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/agency.json` : `/api/live-agency?agency=${encodeURIComponent(agency)}`;
 }
