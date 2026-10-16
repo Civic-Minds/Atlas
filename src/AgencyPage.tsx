@@ -89,7 +89,7 @@ function Intro({ data }: { data: AgencyPageData }) {
  */
 /** A route's name cell: the same cleaned names the map's lists show (bold part, then the lighter name). */
 function routeCellText(r: AgencyPageRoute, agencyName: string) {
-  const label = routeLabels({ shortName: r.name, longName: r.longName, routeType: r.mode, agencyName });
+  const label = routeLabels({ shortName: r.name, longName: r.longName, mode: r.mode, agencyName });
   return <><span className="font-black">{label.primary}</span>{label.secondary ? <span className="text-[var(--text-muted)]"> {label.secondary}</span> : null}</>;
 }
 

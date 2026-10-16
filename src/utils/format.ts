@@ -232,7 +232,7 @@ export function routeLabelCase(part: string): string {
  * A route's label for any surface: `{ primary, secondary, text }` (see shared/routeDisplay.ts). Lists, search, Nearby and agency
  * pages show primary bold and secondary lighter; cards and one-line lists show `text` (both, joined by " — "). One text everywhere.
  */
-export function routeLabels(input: { shortName: string | null | undefined; longName: string | null | undefined; routeType?: number; agencyName?: string | null }) {
+export function routeLabels(input: Parameters<typeof routeDisplay>[0]) {
   const d = routeDisplay(input);
   const primary = routeLabelCase(d.primary);
   const secondary = d.secondary ? routeLabelCase(d.secondary) : undefined;

@@ -16,7 +16,7 @@ describe('splitDesignator', () => {
     expect(splitDesignator('Line 1-2')).toBeNull();
   });
   it('does not split a name that is not a designator', () => {
-    expect(splitDesignator('Line 5 Eglinton')).toBeNull();
+    expect(splitDesignator('Line 5 Eglinton')).toEqual({ designator: 'Line 5', rest: 'Eglinton' });
     expect(splitDesignator('Bathurst')).toBeNull();
   });
 });
@@ -45,12 +45,12 @@ describe('routeDisplay', () => {
     // The old card title was "1" and "E" here (the long name repeated the short one); it now matches the list.
     expect(getRouteLabel('1', 'Line 1 (Yonge-University)')).toBe('1');
     expect(d('1', 'Line 1 (Yonge-University)').text).toBe('Line 1 — Yonge-University');
-    expect(d('E', 'Green Line E', 0).text).toBe('E — Green Line E');
+    expect(d('E', 'Green Line E', 0).text).toBe('Green Line E'); // the long name already holds the letter: shown once
   });
   it('names a line from its long name even with no route type (cards have none)', () => {
     expect(d('1', 'Line 1 (Yonge-University)')).toMatchObject({ primary: 'Line 1', secondary: 'Yonge-University' });
     expect(d('5', 'Ligne 5 - Bleue', undefined, 'STM (Montréal)')).toMatchObject({ primary: 'Ligne 5', secondary: 'Bleue' });
-    expect(d('7', 'Route 7: Bathurst', 3)).toMatchObject({ primary: '7', secondary: 'Route 7: Bathurst' }); // unchanged from the old card title
+    expect(d('7', 'Route 7: Bathurst', 3)).toMatchObject({ primary: '7', secondary: 'Bathurst' });
     expect(d('G', 'G-Line Rapid Ride', 3)).toMatchObject({ primary: 'G', secondary: 'G-Line Rapid Ride' });
   });
   it('shows a list row as a bold part and a lighter name, from the cleaned names', () => {
@@ -59,7 +59,7 @@ describe('routeDisplay', () => {
     expect(d('012', 'Main', 3).primary).toBe('12');
     expect(d('1', 'Line 1 (Yonge-University)', 1)).toMatchObject({ primary: 'Line 1', secondary: 'Yonge-University' });
     expect(d('2', 'Ligne 2 - Orange', 1, 'STM (Montréal)')).toMatchObject({ primary: 'Ligne 2', secondary: 'Orange' });
-    expect(d('5', 'Line 5 Eglinton', 100)).toMatchObject({ primary: 'Line 5 Eglinton', secondary: undefined });
+    expect(d('5', 'Line 5 Eglinton', 0, 'ttc')).toMatchObject({ primary: 'Line 5', secondary: 'Eglinton' });
     expect(d('', 'Free Annapolis Downtown Shuttle')).toMatchObject({ primary: 'Free Annapolis Downtown Shuttle', secondary: undefined });
   });
   it('keeps a letter code as the bold part (GO: LE, Milton) and a streetcar number', () => {

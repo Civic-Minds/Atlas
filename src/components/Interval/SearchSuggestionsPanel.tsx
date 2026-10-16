@@ -6,6 +6,7 @@ import {
 } from '../../styles';
 import Panel from '../ui/Panel';
 import { shortenAgencyName, routeLabels } from '../../utils/format';
+import { splitRouteKey } from '../../utils/routeKey';
 import RouteListRow from '../RouteListRow';
 import { routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
@@ -13,6 +14,8 @@ import ListRow from '../ui/ListRow';
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
   key: string;
+  /** The feed's raw route_type, when known (lets a numeric id hide the same way as on the agency page). */
+  routeType?: number;
   shortName: string;
   longName: string | null;
   agencyName: string;
@@ -21,6 +24,7 @@ export interface RecentRoute {
 
 export interface SuggestedRoute {
   key: string;
+  routeType?: number;
   shortName: string;
   longName: string | null;
   agencyName: string;
@@ -41,8 +45,8 @@ interface SearchSuggestionsPanelProps {
 }
 
 /** A route's bold and lighter parts for a list row. Same cleaned names as the card title (see shared/routeDisplay.ts). */
-export function routeRowLabels(shortName: string | null | undefined, longName: string | null, routeType?: number, agencyName?: string | null) {
-  const { primary, secondary } = routeLabels({ shortName, longName, routeType, agencyName });
+export function routeRowLabels(route: Parameters<typeof routeLabels>[0]) {
+  const { primary, secondary } = routeLabels(route);
   return { shortName: primary, name: secondary };
 }
 
@@ -120,7 +124,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
               </div>
               <div>
                 {recentlyViewed.map((r) => {
-                  const labels = routeRowLabels(r.shortName, r.longName);
+                  const labels = routeRowLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
                   return (
                     <RouteListRow
                       key={r.key}
@@ -147,7 +151,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
               </div>
               <div>
                 {suggestedRoutes.map((r) => {
-                  const labels = routeRowLabels(r.shortName, r.longName);
+                  const labels = routeRowLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
                   return (
                     <RouteListRow
                       key={r.key}
