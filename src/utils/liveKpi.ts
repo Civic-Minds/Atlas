@@ -80,17 +80,19 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   return tiles.filter(k => k.value !== '–');
 }
 
-/** The small caption under the tiles: which days each week is, and which were left out. */
-/** The one line by the tiles: "Changes compared with the week before (Oct 1–7)". The explanation lives under "How this is measured" (weekCaption). */
-export function weekRangeLine(w: NonNullable<LiveV3['weekly']>): string {
+/**
+ * The line under the tiles, only when the two weeks cannot be compared (the subtitle names both weeks otherwise):
+ * "Oct 8–14: too few days of good recordings to compare with Oct 1–7".
+ */
+export function weekNotComparableLine(w: NonNullable<LiveV3['weekly']>): string | null {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
-  return w.comparable ? `Changes compared with the week before (${range(w.lastWeek)})` : `${range(w.thisWeek)}: too few days of good recordings to compare with ${range(w.lastWeek)}`;
+  return w.comparable ? null : `${range(w.thisWeek)}: too few days of good recordings to compare with ${range(w.lastWeek)}`;
 }
 
-/** The full explanation of the week comparison, for "How this is measured". */
-export function weekCaption(w: NonNullable<LiveV3['weekly']>): string {
+/** The two weeks and how many days of each were counted, for "How this is measured" (the recording-gaps rule is a Limits line). */
+export function weekWindowLine(w: NonNullable<LiveV3['weekly']>): string {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
-  const base = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}. Days with gaps in our recordings are left out of both, and trips during gaps in our recordings aren't counted (${w.thisWeek.healthyDates.length} of ${w.thisWeek.dates.length} days counted this week, ${w.lastWeek.healthyDates.length} of ${w.lastWeek.dates.length} last week).`;
+  const base = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}: ${w.thisWeek.healthyDates.length} of ${w.thisWeek.dates.length} days counted this week, ${w.lastWeek.healthyDates.length} of ${w.lastWeek.dates.length} last week.`;
   return w.comparable ? base : `Not enough days of good recordings to compare two weeks: each needs at least ${w.minHealthyDays}. ${base}`;
 }
 

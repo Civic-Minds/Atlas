@@ -22,3 +22,44 @@ export const USUALLY_ON_TIME = 'Usually on time';
 export const usuallyOffBy = (minutes: string, side: 'early' | 'late'): string => `Usually ${minutes} min ${side}`;
 export const lateShareText = (pct: string): string => `${pct} late`;
 export const bunchedAndLong = (bunched: string, tooLong: string): string => `${bunched} bunched · ${tooLong} too long`;
+
+/** The week a page is compared with, after its "Week of": "compared with Oct 1–7". */
+export const changesComparedWith = (from: string, to: string): string => `compared with ${dateRangeText(from, to)}`;
+
+/** The end of every Live page subtitle: "estimated from vehicle positions, not reported by the TTC". */
+export const estimatedNote = (agency: string): string => `estimated from vehicle positions, not reported by the ${agency.toUpperCase()}`;
+
+/**
+ * A Live page subtitle (approved by Ryan): "Week of Oct 8–14, compared with Oct 1–7 · 9 TTC streetcar routes ·
+ * estimated from vehicle positions, not reported by the TTC". `middle` is the page's own count (routes or trips);
+ * "compared with" only when the two weeks can be compared.
+ */
+export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readonly string[] | null; middle: string; agency: string }): string {
+  const t = o.thisWeek, l = o.lastWeek;
+  const week = t.length ? weekOfText(t[0], t[t.length - 1]) + (l?.length ? `, ${changesComparedWith(l[0], l[l.length - 1])}` : '') : '';
+  return [week, o.middle, estimatedNote(o.agency)].filter(Boolean).join(' · ');
+}
+
+/** "9 TTC streetcar routes": the routes a page covers, naming the mode only when every one is a streetcar (GTFS route_type 0). */
+export function coveredRoutesText(agency: string, routes: ReadonlyArray<{ mode?: number }>): string {
+  const streetcar = routes.length > 0 && routes.every(r => r.mode === 0);
+  return `${routes.length} ${agency.toUpperCase()} ${streetcar ? 'streetcar ' : ''}route${routes.length === 1 ? '' : 's'}`;
+}
+
+/** "Built Oct 16, 6:12 pm", in Toronto time (the agencies Live covers), from an ISO timestamp. */
+export function builtText(iso: string): string {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).formatToParts(new Date(iso));
+  const p = (t: string) => parts.find(x => x.type === t)?.value ?? '';
+  return `Built ${p('month')} ${p('day')}, ${p('hour')}:${p('minute')} ${p('dayPeriod').toLowerCase()}`;
+}
+
+/** The four group labels of "How this is measured", the same on every Live page. */
+export const METHOD_GROUPS = {
+  numbers: 'What each number means',
+  data: 'Where the data comes from',
+  colours: 'How changes are coloured',
+  limits: 'Limits',
+} as const;
+
+/** The recording-gaps limit, said once per page. */
+export const RECORDING_GAPS = "days with gaps in our recordings are left out, and trips during those gaps aren't counted.";

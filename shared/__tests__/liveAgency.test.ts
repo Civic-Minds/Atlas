@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { combineWeeks, coverageText, runTimeOver } from '../liveAgency';
+import { combineWeeks, runTimeOver } from '../liveAgency';
 import type { WeekMetrics } from '../liveDashboard';
 
 const week = (over: Partial<WeekMetrics>): WeekMetrics => ({
@@ -37,8 +37,3 @@ describe('combineWeeks', () => {
   });
 });
 
-describe('coverageText', () => {
-  it('says how many of the agency routes a figure covers', () => {
-    expect(coverageText({ agency: 'ttc', covered: ['501', '504'], totalRoutes: 230 })).toBe('2 of 230 TTC routes');
-  });
-});

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, NOISE_RULE, bunchingSentence, buildupTakeaway, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
+  LINK_LABELS, branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, bunchingSentence, buildupTakeaway, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -23,13 +23,14 @@ import LiveExplorePage from './LiveExplorePage';
 import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts/ProfileBars';
 import HourBars from './components/charts/HourBars';
 import { KpiRow } from './LiveDashboardView';
-import { weekCaption } from './utils/liveKpi';
+import { weekWindowLine } from './utils/liveKpi';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { weekOfText, lateCount, lateHourLine } from '../shared/liveWording';
-import MethodFootnote from './components/Live/MethodFootnote';
+import { builtText, lateCount, lateHourLine, liveSubtitle, METHOD_GROUPS } from '../shared/liveWording';
+import MethodFootnote, { Term } from './components/Live/MethodFootnote';
+import { bunchingLine, colourLine, deliveredLine, extraWaitLine, lateAtStopLine, lateLine, positionsLine, recordingGapsLine, runTimeLine, tripMatchLine } from './components/Live/methodLines';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -473,32 +474,47 @@ function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
   );
 }
 
+/** The route pages' subtitle (full analysis and explore): the week, the trip count, where the figures come from. */
+export function routeSubtitle(v3: LiveV3, agency: string): string {
+  const w = v3.weekly;
+  return liveSubtitle({ thisWeek: v3.window.dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${v3.totals.runs.toLocaleString()} trips`, agency });
+}
+
 export function Method({ data }: { data: Ready }) {
   const { v3 } = data;
   const [first, last] = [v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1]];
+  const lo = v3.leftOut;
+  const unknown = v3.serviceDelivered?.overall.unknown ?? 0;
   return (
-    <MethodFootnote id="method" collapsible>
-        <li>Counted where each trip leaves the end of the line, as the TTC measures it.</li>
-        <li>Delay builds up where the biggest jump in delay holds for the next few stops (3 stops or about 1 km).</li>
-        <li>Bunching: gaps under {Math.round(v3.thresholds.bunchedGapSec / 60)} minutes count as too close together; gaps more than twice the timetable's count as too far apart. "Linked to" means measured in the same stretch, not the cause.</li>
-        <li>Trip time counts only trips on the main route seen at both ends (short turns are left out). Extra wait is worked out from the gaps between vehicles at each stop.</li>
-        <li>Service delivered: a trip counts as run when a vehicle was seen under its trip number. Days with gaps in our recordings are left out{v3.serviceDelivered && v3.serviceDelivered.overall.unknown > 0 ? `, and ${v3.serviceDelivered.overall.unknown.toLocaleString()} trips that could not be judged are left out` : ''}.</li>
-        {v3.weekly && <li>This week compared with last week: {weekCaption(v3.weekly)} {NOISE_RULE}</li>}
-        <li>Window: the last {v3.window.days} service days ({first} to {last}); {v3.totals.runs.toLocaleString()} trips and {v3.totals.stopPassages.toLocaleString()} stop departures. Built {data.generatedAt.slice(0, 10)}.</li>
-        <li>Delay at a stop is how late the vehicle left it compared with the timetable. The agency does not report delays, so we work them out from where each vehicle was seen (about once a minute) and estimate the moment it left the stop.</li>
-        <li>Vehicles are matched to timetable trips by trip number. If a trip is 15+ minutes off its own slot but another trip fits within 3 minutes at most stops, it is counted as that trip; otherwise it is left out.</li>
-        <li>Because vehicles are seen only about once a minute, {pct(v3.uncertainty.nearCutoffShare)} of trips leaving the end of the line are within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit, and could land on either side of it.</li>
-        <li>Late means {v3.thresholds.lateAtOrAboveMin}+ minutes after the timetable; ahead means {Math.abs(v3.thresholds.earlyAtOrBelowMin)}+ minutes before it. These are the same limits the Live map uses.</li>
-        {v3.leftOut && (v3.leftOut.noTimetableTrip > 0 || v3.leftOut.excluded > 0) && (
-          <li>
-            {v3.leftOut.noTimetableTrip > 0 && <>{v3.leftOut.noTimetableTrip.toLocaleString()} runs ({pct(v3.leftOut.noTimetableTrip / (v3.leftOut.kept + v3.leftOut.noTimetableTrip + v3.leftOut.excluded))} of the vehicle trips seen) were under a trip number that is not on the timetable, such as extra or unscheduled buses, so they cannot be compared with it and are left out. </>}
-            {v3.leftOut.excluded > 0 && <>{v3.leftOut.excluded.toLocaleString()} runs by {v3.leftOut.excludedLabel ?? 'another service'} that share this route number are also left out; they are a separate service. </>}
-            The figures describe the {v3.leftOut.kept.toLocaleString()} timetabled trips that were kept.
-          </li>
-        )}
-        <li>{pct(v3.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</li>
-        {data.replacementBuses && <li>This route is run by replacement buses in this timetable, so every figure describes the buses.</li>}
-    </MethodFootnote>
+    <MethodFootnote id="method" collapsible groups={[
+      { label: METHOD_GROUPS.numbers, items: [
+        lateLine,
+        lateAtStopLine(v3.thresholds.lateAtOrAboveMin, Math.abs(v3.thresholds.earlyAtOrBelowMin)),
+        runTimeLine(true),
+        extraWaitLine,
+        bunchingLine(Math.round(v3.thresholds.bunchedGapSec / 60)),
+        deliveredLine(true),
+        <Term t="Where delay builds up">the biggest jump in delay that holds for the next few stops (3 stops or about 1 km).</Term>,
+        <Term t="Linked to">measured in the same stretch, not the cause.</Term>,
+      ] },
+      { label: METHOD_GROUPS.data, items: [
+        `Last ${v3.window.days} service days, ${dateRangeText(first, last)}: ${v3.totals.runs.toLocaleString()} trips and ${v3.totals.stopPassages.toLocaleString()} stop departures.`,
+        v3.weekly && weekWindowLine(v3.weekly),
+        positionsLine,
+        tripMatchLine(true),
+        data.replacementBuses && <Term t="Replacement buses">this route is run by replacement buses in this timetable, so every figure describes the buses.</Term>,
+        `${builtText(data.generatedAt)}.`,
+      ] },
+      { label: METHOD_GROUPS.colours, items: [v3.weekly && colourLine] },
+      { label: METHOD_GROUPS.limits, items: [
+        recordingGapsLine,
+        <Term t="Near a limit">vehicles are seen only about once a minute, so the {pct(v3.uncertainty.nearCutoffShare)} of trips leaving the end of the line within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit could land on either side of it.</Term>,
+        lo && lo.noTimetableTrip > 0 && <Term t="Unscheduled trips">{lo.noTimetableTrip.toLocaleString()} runs ({pct(lo.noTimetableTrip / (lo.kept + lo.noTimetableTrip + lo.excluded))} of the vehicle trips seen) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the {lo.kept.toLocaleString()} timetabled trips kept.</Term>,
+        lo && lo.excluded > 0 && <Term t="Other services">{lo.excluded.toLocaleString()} runs by {lo.excludedLabel ?? 'another service'} that share this route number are left out.</Term>,
+        <Term t="Mismatched trip numbers">{pct(v3.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</Term>,
+        unknown > 0 && <Term t="Unjudged trips">{unknown.toLocaleString()} trips that could not be judged are left out of Delivered.</Term>,
+      ] },
+    ]} />
   );
 }
 
@@ -552,7 +568,7 @@ function AnalysisPage() {
           <div className="min-w-0">
             <PageTitle>{title}: how it is running</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {v3.window.dates.length ? `${weekOfText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1])} · ` : ''}{v3.totals.runs.toLocaleString()} trips · estimated from where vehicles were, not reported by {agency.toUpperCase()}
+              {routeSubtitle(v3, agency)}
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
