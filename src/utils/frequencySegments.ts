@@ -345,7 +345,7 @@ export function sharedStretchStopPass(
     // #899: with an all-day threshold set, the route's midday cap decides pass or fail for its
     // stretches too (a direction with no midday service fails them all). It never changes the
     // values shown, and with no threshold it does nothing.
-    if (period === 'all' && maxHeadway !== Infinity && (p.worstDirectionMiddayCap ?? 0) > maxHeadway) continue;
+    if (period === 'all' && maxHeadway !== Infinity && ((p as { routeMiddayCap?: number }).routeMiddayCap ?? p.worstDirectionMiddayCap ?? 0) > maxHeadway) continue;
     const groupKey = `${p.routeId}|${p.day ?? ''}`;
     const byDir = ctx.groups.get(groupKey);
     if (!byDir) continue;

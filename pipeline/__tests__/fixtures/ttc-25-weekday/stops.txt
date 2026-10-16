@@ -1,0 +1,113 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+1974,1974,Don Mills Rd at Steeles Ave East,,43.81104,-79.360513,,,,,,1
+1975,1975,Don Mills Rd at Van Horne Ave,,43.787246,-79.352783,,,,,,1
+1977,1977,Don Mills Rd at Wynford Dr,,43.722851,-79.339326,,,,,,1
+11925,11925,Broadview Ave at Erindale Ave,,43.677373,-79.358606,,,,,,1
+2979,2979,Overlea Blvd at Millwood Rd East Side,,43.702452,-79.35223,,,,,,2
+8011,8011,Overlea Blvd at Thorncliffe Park Dr (East),,43.70725,-79.344028,,,,,,1
+4501,4501,Pape Ave at O'Connor Dr North Side,,43.693657,-79.350372,,,,,,1
+2646,2646,Freshmeadow Dr at Don Mills Rd,,43.809241,-79.358694,,,,,,1
+2987,2987,Overlea Blvd at William Morgan Dr,,43.707837,-79.341551,,,,,,1
+1943,1943,Don Mills Rd at Havenbrook Blvd,,43.769772,-79.346695,,,,,,1
+8012,8012,Overlea Blvd at Thorncliffe Park Dr (West),,43.705197,-79.349856,,,,,,1
+1936,1936,Don Mills Rd at Gateway Blvd (South) North Side,,43.710963,-79.33466,,,,,,1
+1938,1938,Don Mills Rd at Godstone Rd,,43.782682,-79.348922,,,,,,1
+1920,1920,Don Mills Rd at The Donway East (North),,43.740691,-79.344191,,,,,,1
+1939,1939,Don Mills Rd at Goodview Rd,,43.783994,-79.35303,,,,,,1
+1954,1954,Don Mills Rd at Moatfield Dr South Side,,43.758327,-79.34732,,,,,,1
+1932,1932,Don Mills Rd at Finch Ave East,,43.792867,-79.355008,,,,,,1
+1921,1921,Don Mills Rd at The Donway West (North),,43.741002,-79.344645,,,,,,1
+657,657,Broadview Ave at Mortimer Ave North Side,,43.684347,-79.356745,,,,,,1
+9659,9659,Graydon Hall Dr at Don Mills Rd,,43.761915,-79.346799,,,,,,1
+1918,1918,Don Mills Rd at Cliffwood Rd (South),,43.804969,-79.354936,,,,,,1
+1930,1930,Don Mills Rd at Farmcote Rd North Side,,43.74814,-79.346186,,,,,,1
+1962,1962,Don Mills Rd at Clock Tower Rd,,43.734675,-79.342942,,,,,,1
+9657,9657,Graydon Hall Dr at Graydon Hall Pl,,43.764854,-79.344085,,,,,,1
+2980,2980,Overlea Blvd at Leaside Park Dr East Side,,43.703699,-79.350961,,,,,,1
+1923,1923,Don Mills Rd at The Donway West (South),,43.732335,-79.342295,,,,,,1
+2978,2978,Overlea Blvd at Don Mills Rd West Side,,43.709806,-79.335392,,,,,,1
+1965,1965,Don Mills Rd at Premier Davis Blvd - Seneca Polytechnic,,43.79651,-79.35536,,,,,,1
+1913,1913,Don Mills Rd at Chipping Rd,,43.744603,-79.345239,,,,,,1
+1955,1955,Don Mills Rd at Moatfield Dr,,43.758464,-79.346899,,,,,,1
+1915,1915,Don Mills Rd at Cliffwood Rd (North),,43.806959,-79.356619,,,,,,1
+1928,1928,Don Mills Rd at Esterbrooke Ave,,43.779239,-79.348996,,,,,,1
+1912,1912,Don Mills Rd at Bond Ave,,43.746471,-79.346065,,,,,,1
+1949,1949,Don Mills Rd at Leith Hill Rd North Side,,43.777534,-79.347811,,,,,,1
+1960,1960,Don Mills Rd at Pebble Byway,,43.802517,-79.353511,,,,,,1
+1959,1959,Don Mills Rd at Parkway Forest Dr,,43.769413,-79.346352,,,,,,1
+1946,1946,Don Mills Rd at Lawrence Ave East,,43.736801,-79.34314,,,,,,1
+1953,1953,Don Mills Rd at McNicoll Ave,,43.799769,-79.35425,,,,,,1
+1979,1979,Don Mills Rd at York Mills Rd,,43.755636,-79.346848,,,,,,1
+2988,2988,Overlea Blvd at East York Town Centre (East Side),,43.706974,-79.345216,,,,,,1
+1970,1970,Don Mills Rd at Sheppard Ave East,,43.77549,-79.347401,,,,,,1
+12127,12127,Overlea Blvd at Leaside Park Dr,,43.703546,-79.351559,,,,,,1
+1934,1934,Don Mills Rd at Gateway Blvd (North),,43.7142,-79.336076,,,,,,1
+1907,1907,1450 Don Mills Rd,,43.752477,-79.347377,,,,,,1
+1947,1947,Don Mills Rd at Lawrence Ave East,,43.737319,-79.34365,,,,,,1
+1961,1961,Don Mills Rd at Clock Tower Rd,,43.73428,-79.342483,,,,,,1
+1933,1933,Don Mills Rd at Freshmeadow Dr,,43.808831,-79.358726,,,,,,1
+4520,4520,Overlea Blvd at Thorncliffe Park Dr (West),,43.704776,-79.349853,,,,,,1
+1917,1917,Don Mills Rd at Cliffwood Rd (South) North Side,,43.805381,-79.354928,,,,,,1
+1956,1956,Don Mills Rd at Mogul Dr,,43.802406,-79.353199,,,,,,1
+660,660,Broadview Ave at Pretoria Ave,,43.678521,-79.358476,,,,,,1
+1916,1916,Don Mills Rd at Cliffwood Rd (North),,43.807061,-79.357042,,,,,,1
+652,652,Broadview Ave at Cosburn Ave North Side,,43.688765,-79.355049,,,,,,1
+1952,1952,Don Mills Rd at McNicoll Ave,,43.799468,-79.353974,,,,,,1
+653,653,Broadview Ave at Cosburn Ave South Side,,43.688182,-79.355485,,,,,,2
+651,651,Broadview Ave at Chester Hill Rd,,43.681397,-79.357724,,,,,,1
+650,650,Broadview Ave at Bater Ave,,43.686963,-79.355778,,,,,,1
+9126,9126,Don Mills Rd at Eglinton Ave East - Don Valley Station,,43.720012,-79.338948,,,,,,1
+1948,1948,Don Mills Rd at Legato Crt,,43.746211,-79.345677,,,,,,1
+1972,1972,Don Mills Rd at St Dennis Dr,,43.716388,-79.33703,,,,,,1
+1924,1924,Don Mills Rd at Duncan Mill Rd South Side,,43.761374,-79.34741,,,,,,1
+3369,3369,849 Broadview Ave,,43.679214,-79.35811,,,,,,1
+1973,1973,Don Mills Rd at St Dennis Dr,,43.716659,-79.337512,,,,,,1
+6148,6148,Townsend Rd at Steeles Ave East South Side,,43.811061,-79.357307,,,,,,1
+649,649,876 Broadview Ave,,43.679749,-79.358155,,,,,,1
+1944,1944,Don Mills Rd at Kern Rd North Side,,43.75035,-79.346828,,,,,,1
+13422,13422,2980 Don Mills Rd,,43.78231,-79.352329,,,,,,1
+1978,1978,Don Mills Rd at Wynford Dr,,43.723169,-79.339832,,,,,,1
+1929,1929,Don Mills Rd at Fairview Mall Dr North Side,,43.77953,-79.348701,,,,,,1
+9658,9658,20 Graydon Hall Dr,,43.762983,-79.345295,,,,,,1
+659,659,Broadview Ave at Pottery Rd South Side,,43.683554,-79.357145,,,,,,1
+2986,2986,Overlea Blvd at William Morgan Dr West Side,,43.708042,-79.341737,,,,,,1
+1914,1914,Don Mills Rd at Chipping Rd,,43.744827,-79.345629,,,,,,1
+1919,1919,Don Mills Rd at Deerford Rd,,43.785281,-79.35057,,,,,,1
+11485,11485,2040 Don Mills Rd,,43.763142,-79.347344,,,,,,1
+3129,3129,Townsend Rd at Freshmeadow Dr,,43.810118,-79.356868,,,,,,1
+1957,1957,Opposite 1450 Don Mills Rd,,43.752754,-79.346954,,,,,,1
+1968,1968,Don Mills Rd at Seneca Hill Dr,,43.790373,-79.354328,,,,,,1
+1942,1942,Don Mills Rd at Green Belt Dr North Side,,43.727486,-79.340618,,,,,,1
+1922,1922,Don Mills Rd at The Donway East (South) North Side,,43.732636,-79.342026,,,,,,1
+4518,4518,Overlea Blvd at Thorncliffe Park Dr (East) West Side,,43.707457,-79.344198,,,,,,1
+2977,2977,46 Overlea Blvd,,43.706973,-79.34627,,,,,,1
+1966,1966,Don Mills Rd at Premier Davis Blvd - Seneca Polytechnic,,43.796264,-79.355054,,,,,,1
+9656,9656,Opposite 185 Graydon Hall Dr,,43.764325,-79.342106,,,,,,1
+655,655,Broadview Ave at Browning Ave,,43.680882,-79.357665,,,,,,1
+1951,1951,Don Mills Rd at Mallard Rd,,43.74829,-79.346563,,,,,,1
+9107,9107,Don Mills Rd at York Mills Rd South Side,,43.75526,-79.347225,,,,,,1
+1967,1967,Don Mills Rd at Seneca Hill Dr,,43.790161,-79.353964,,,,,,1
+6349,6349,Don Mills Rd at Sheppard Ave East North Side,,43.775794,-79.347104,,,,,,1
+1935,1935,Don Mills Rd at Gateway Blvd,,43.71453,-79.336562,,,,,,1
+1940,1940,Don Mills Rd at Graydon Hall Dr,,43.761635,-79.346994,,,,,,1
+5988,5988,Pape Ave at O'Connor Dr,,43.693358,-79.350465,,,,,,1
+1945,1945,Don Mills Rd at Kern Rd,,43.750175,-79.347097,,,,,,1
+9140,9140,Don Mills Rd at Finch Ave East,,43.792415,-79.354488,,,,,,1
+1941,1941,Don Mills Rd at Graydon Hall Pl,,43.765093,-79.34674,,,,,,1
+656,656,Broadview Ave at Hillside Dr,,43.686476,-79.356194,,,,,,1
+14623,14623,Don Mills Station,,43.776123,-79.346242,,,,,,1
+14625,14625,Don Mills Station,,43.775993,-79.3455,,,,,,1
+14637,14637,Broadview Station,,43.676772,-79.358451,,,,,,1
+15056,15056,Fenelon Loop at Graydon Hall Dr,,43.763763,-79.339098,,,,,,1
+15526,15526,Don Mills Rd at Barber Greene Rd South Side,,43.727242,-79.340888,,,,,,1
+15731,15731,Don Mills Rd at Eglinton Ave East - Don Valley Station,,43.720271,-79.338737,,,,,,2
+15988,15988,Don Mills Rd at Helen Lu Rd,,43.772806,-79.346178,,,,,,1
+15989,15989,Don Mills Rd at Helen Lu Rd,,43.772591,-79.346477,,,,,,1
+16485,16485,Don Mills Rd at Van Horne Ave South Side,,43.786746,-79.353082,,,,,,1
+16620,16620,Broadview Ave at Don Valley Dr North Side,,43.690789,-79.355308,,,,,,1
+16621,16621,Broadview Ave at Don Valley Dr,,43.690627,-79.35537,,,,,,1
+16622,16622,O'Connor Dr at Beechwood Dr East Side,,43.692697,-79.352853,,,,,,1
+16623,16623,O'Connor Dr at Hopedale Ave,,43.692948,-79.352006,,,,,,1
+16696,16696,Pape Ave at Hopedale Ave,,43.696837,-79.349451,,,,,,1
+16697,16697,Pape Ave at Donlands Ave,,43.696855,-79.349152,,,,,,1
+16758,16758,Don Mills Rd at Walkway to O'Shea Crescent,,43.785204,-79.353606,,,,,,1

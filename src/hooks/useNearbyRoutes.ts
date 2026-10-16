@@ -29,6 +29,8 @@ export interface NearbyRoute {
   headway: number | null;
   /** True when the row shows "limited" instead of a cadence (shared rule, #708). */
   limited: boolean;
+  /** The filter says no regular service in this period (shown instead of a number). */
+  noRegular?: boolean;
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
   tier: string | null;
@@ -103,7 +105,7 @@ export function useNearbyRoutes(
               (candidateProps.day === undefined || candidateProps.day === currentDay);
           })
           .map(candidate => candidate.properties as unknown as ShapeProperties);
-        const { headway, limited, sharedHeadway } = routeListDisplay(routeFeatures, period);
+        const { headway, limited, sharedHeadway, noRegular } = routeListDisplay(routeFeatures, period);
 
         if (!routeMap.has(mapKey)) {
           const label = routeLabels({ shortName: p.routeShortName, longName: p.routeLongName as string | null, routeType: p.routeType, agencySlug: slug, agencyName: p.agencyName });
@@ -117,6 +119,7 @@ export function useNearbyRoutes(
             agencySlug: slug,
             headway,
             limited,
+            noRegular,
             sharedHeadway,
             tier: (p.tier as string | null) ?? null,
             nearestStopName: stop.stopName,
@@ -129,6 +132,7 @@ export function useNearbyRoutes(
             existing.sharedHeadway = sharedHeadway;
           }
           existing.limited = existing.headway == null && (existing.limited || limited);
+          existing.noRegular = existing.headway == null && (existing.noRegular === true || noRegular === true);
           if (stop.distanceMeters < existing.distanceMeters) {
             existing.distanceMeters = stop.distanceMeters;
             existing.nearestStopName = stop.stopName;

@@ -1,0 +1,118 @@
+stop_id,stop_code,stop_name,stop_desc,platform_code,platform_name,stop_lat,stop_lon,zone_id,stop_address,stop_url,level_id,location_type,parent_station,wheelchair_boarding,municipality,on_street,at_street,vehicle_type
+14586,14586,10 Centennial Drive - Boston Children's @ Peabody,,,,42.526045,-70.951632,LocalBus,,https://www.mbta.com/stops/14586,,0,,1,Peabody,,,3
+16653,16653,Market St @ Commuter Rail,,,,42.462057,-70.947263,LocalBus,,https://www.mbta.com/stops/16653,,0,,1,Lynn,Market Street,,3
+17231,17231,Union St @ Lincoln St,,,,42.468589,-70.937928,LocalBus,,https://www.mbta.com/stops/17231,,0,,1,Lynn,Union Street,Lincoln Street,3
+17325,17325,Lynnfield St @ St Mary Cemetery,,,,42.490978,-70.971105,LocalBus,,https://www.mbta.com/stops/17325,,0,,1,Lynn,Lynnfield Street,,3
+17347,17347,500 Lynnfield St,,,,42.502142,-70.979307,LocalBus,,https://www.mbta.com/stops/17347,,0,,1,Lynn,Lynnfield Street,Dartmouth Street,3
+17354,17354,Lynnfield St @ St Mary Cemetery,,,,42.490946,-70.971172,LocalBus,,https://www.mbta.com/stops/17354,,0,,1,Lynn,Lynnfield Street,,3
+17370,17370,Goodridge St @ Memorial Pk Ave,,,,42.476049,-70.946021,LocalBus,,https://www.mbta.com/stops/17370,,0,,1,Lynn,Goodridge Street,Memorial Park Avenue,3
+24586,24586,10 Centennial Drive - West,,,,42.526993,-70.954649,LocalBus,,https://www.mbta.com/stops/24586,,0,,1,Peabody,,,3
+4451,4451,Market Square @ Western Ave,,,,42.462708,-70.964894,LocalBus,,https://www.mbta.com/stops/4451,,0,,1,Lynn,Market Square,Western Avenue,3
+4487,4487,743 Western Ave,,,,42.461928,-70.966695,LocalBus,,https://www.mbta.com/stops/4487,,0,,1,Lynn,Western Avenue,,3
+4488,4488,Western Ave @ Breed Square,,,,42.459784,-70.968935,LocalBus,,https://www.mbta.com/stops/4488,,0,,1,Lynn,Western Avenue,Breed Square,3
+4489,4489,Western Ave @ Summer St,,,,42.45844,-70.970423,LocalBus,,https://www.mbta.com/stops/4489,,0,,1,Lynn,Western Avenue,Summer Street,3
+4490,4490,Western Ave @ Albion St,,,,42.457611,-70.971438,LocalBus,,https://www.mbta.com/stops/4490,,0,,1,Lynn,Western Avenue,Minot Street,3
+4491,4491,Western Ave @ Ida St,,,,42.456024,-70.973197,LocalBus,,https://www.mbta.com/stops/4491,,0,,1,Lynn,Western Avenue,,3
+4492,4492,Western Ave @ MBTA Lynn Garage,,,,42.45538,-70.974007,LocalBus,,https://www.mbta.com/stops/4492,,0,,1,Lynn,Western Avenue,Ida Street,3
+4561,4561,10 Sylvan St,,,,42.546524,-70.945447,LocalBus,,https://www.mbta.com/stops/4561,,0,,1,Peabody,Sylvan Street,,3
+4570,4570,Lynnfield St @ Bartholomew St,,,,42.513023,-70.980254,LocalBus,,https://www.mbta.com/stops/4570,,0,,1,Peabody,Lynnfield Street,Bartholomew Street,3
+4572,4572,First Ave @ Lynnfield St,,,,42.516396,-70.972292,LocalBus,,https://www.mbta.com/stops/4572,,0,,1,Peabody,First Avenue,Lynnfield Street,3
+4573,4573,1 First Ave,,,,42.518773,-70.973919,LocalBus,,https://www.mbta.com/stops/4573,,0,,1,Peabody,First Avenue,Fourth Street,3
+4574,4574,5 Centennial Dr,,,,42.52153,-70.97003,LocalBus,,https://www.mbta.com/stops/4574,,0,,1,Peabody,Centennial Drive,,3
+4576,4576,Centennial Dr @ Corporation Way,,,,42.522172,-70.96045,LocalBus,,https://www.mbta.com/stops/4576,,0,,0,Peabody,Centennial Drive,,3
+4577,4577,Centennial Dr opp Marriott Dr,,,,42.523353,-70.957076,LocalBus,,https://www.mbta.com/stops/4577,,0,,1,Peabody,Centennial Drive,,3
+4578,4578,Centennial Dr opp Rt128 Ramp,,,,42.524241,-70.953577,LocalBus,,https://www.mbta.com/stops/4578,,0,,1,Peabody,Centennial Drive,,3
+4581,4581,Essex Ctr Dr @ Essex Green Dr,,,,42.538654,-70.949024,LocalBus,,https://www.mbta.com/stops/4581,,0,,1,Peabody,,,3
+4582,4582,Lahey Clinic before Crosswalk,,,,42.536848,-70.947079,LocalBus,,https://www.mbta.com/stops/4582,,0,,1,Peabody,Essex Center Drive,,3
+45821,45821,Lahey Clinic before Crosswalk,,,,42.536915,-70.946997,LocalBus,,https://www.mbta.com/stops/45821,,0,,1,Peabody,Essex Center Drive,,3
+4583,4583,Essex Ctr Dr opp Essex Green Dr,,,,42.538716,-70.948889,LocalBus,,https://www.mbta.com/stops/4583,,0,,1,Peabody,,,3
+4587,4587,opp 11 Centennial Dr,,,,42.523288,-70.957779,LocalBus,,https://www.mbta.com/stops/4587,,0,,0,Peabody,Centennial Drive,,3
+4588,4588,Centennial Dr opp Corporation Way,,,,42.522139,-70.960967,LocalBus,,https://www.mbta.com/stops/4588,,0,,0,Peabody,Centennial Drive,Corporation Way,3
+4590,4590,2 Centennial Dr,,,,42.521301,-70.970871,LocalBus,,https://www.mbta.com/stops/4590,,0,,2,Peabody,Centennial Drive,Fourth Street,3
+4591,4591,First Ave opp Centennial Dr,,,,42.519469,-70.974625,LocalBus,,https://www.mbta.com/stops/4591,,0,,1,Peabody,First Avenue,Fourth Street,3
+4592,4592,First Ave @ Lynnfield St,,,,42.516688,-70.972657,LocalBus,,https://www.mbta.com/stops/4592,,0,,1,Peabody,First Avenue,Second Street,3
+4594,4594,Lynnfield St opp Bartholomew St,,,,42.512961,-70.980866,LocalBus,,https://www.mbta.com/stops/4594,,0,,1,Peabody,Lynnfield Street,Bartholomew Street,3
+4596,4596,Opp 10 Sylvan St,,,,42.546898,-70.945226,LocalBus,,https://www.mbta.com/stops/4596,,0,,1,Peabody,Sylvan Street,,3
+4597,4597,Endicott St @ Commonwealth Ave,,,,42.54838,-70.942894,LocalBus,,https://www.mbta.com/stops/4597,,0,,1,Danvers,Endicott Street,Commonwealth Ave,3
+4615,4615,Commonwealth Ave @ Endicott St,,,,42.549568,-70.943024,LocalBus,,https://www.mbta.com/stops/4615,,0,,1,Danvers,Commonwealth Ave,Endicott Street,3
+6600,6600,Union St @ Exchange St,,,,42.463582,-70.943846,LocalBus,,https://www.mbta.com/stops/6600,,0,,1,Lynn,Union Street,Central Square,3
+66721,66721,Oxford St @ Washington St,,,,42.463901,-70.946636,LocalBus,,https://www.mbta.com/stops/66721,,0,,1,Lynn,Oxford Street,Washington Street,3
+66731,66731,Oxford St @ Market St,,,,42.46276,-70.947962,LocalBus,,https://www.mbta.com/stops/66731,,0,,1,Lynn,Oxford Street,Market Street,3
+6674,6674,Market St @ Liberty St,,,,42.463479,-70.949829,LocalBus,,https://www.mbta.com/stops/6674,,0,,1,Lynn,Market Street,Liberty Street,3
+6675,6675,N Common St @ Franklin St,,,,42.464262,-70.95301,LocalBus,,https://www.mbta.com/stops/6675,,0,,1,Lynn,North Common Street,Franklin Street,3
+6772,6772,Washington St @ Munroe St,,,,42.463749,-70.946134,LocalBus,,https://www.mbta.com/stops/6772,,0,,1,Lynn,Washington Street,Munroe Street,3
+6780,6780,N Common St @ Baker St,,,,42.463738,-70.957435,LocalBus,,https://www.mbta.com/stops/6780,,0,,1,Lynn,North Common Street,Baker Street,3
+6783,6783,N Common St @ Park St,,,,42.463611,-70.96058,LocalBus,,https://www.mbta.com/stops/6783,,0,,0,Lynn,North Common Street,Park Street,3
+6830,6830,Union St @ Silsbee St,,,,42.465439,-70.942949,LocalBus,,https://www.mbta.com/stops/6830,,0,,1,Lynn,Union Street,Silsbee Street,3
+6831,6831,Union St @ Smith St,,,,42.466848,-70.941581,LocalBus,,https://www.mbta.com/stops/6831,,0,,1,Lynn,Union Street,Smith Street,3
+6833,6833,Union St @ Pinkham St,,,,42.467999,-70.938845,LocalBus,,https://www.mbta.com/stops/6833,,0,,1,Lynn,Union Street,Pinkham Street,3
+6834,6834,Union St @ Chestnut St,,,,42.468936,-70.936996,LocalBus,,https://www.mbta.com/stops/6834,,0,,1,Lynn,Union Street,Chestnut Street,3
+7233,7233,Union St @ Union Ct,,,,42.467951,-70.93921,LocalBus,,https://www.mbta.com/stops/7233,,0,,1,Lynn,Union Street,Union Court,3
+7234,7234,Union St @ Joyce St,,,,42.467024,-70.941538,LocalBus,,https://www.mbta.com/stops/7234,,0,,1,Lynn,Union Street,Smith Street,3
+7237,7237,Buffum St @ Union St,,,,42.465441,-70.943385,LocalBus,,https://www.mbta.com/stops/7237,,0,,1,Lynn,Buffum Street,Baldwin Street,3
+7253,7253,Chestnut St @ Maple St,,,,42.478089,-70.950953,LocalBus,,https://www.mbta.com/stops/7253,,0,,1,Lynn,Chestnut Street,Bowler Street,3
+7254,7254,Chestnut St opp Rand St,,,,42.478504,-70.952235,LocalBus,,https://www.mbta.com/stops/7254,,0,,1,Lynn,Chestnut Street,Rand Street,3
+7255,7255,Chestnut St opp Allerton St,,,,42.479477,-70.95405,LocalBus,,https://www.mbta.com/stops/7255,,0,,1,Lynn,Chestnut Street,Allerton Street,3
+7256,7256,Broadway @ Carter Rd,,,,42.480454,-70.955155,LocalBus,,https://www.mbta.com/stops/7256,,0,,1,Lynn,Chestnut Street,Boston Street,3
+7257,7257,Broadway @ Virginia Terr,,,,42.481503,-70.956024,LocalBus,,https://www.mbta.com/stops/7257,,0,,1,Lynn,Broadway,Virginia Terrace,3
+7258,7258,Broadway opp Hudson St,,,,42.483305,-70.957585,LocalBus,,https://www.mbta.com/stops/7258,,0,,1,Lynn,Broadway,,3
+7259,7259,Broadway @ Magnolia Ave,,,,42.483865,-70.958387,LocalBus,,https://www.mbta.com/stops/7259,,0,,1,Lynn,Broadway,Magnolia Avenue,3
+7260,7260,Broadway opp Richardson Rd,,,,42.484545,-70.959328,LocalBus,,https://www.mbta.com/stops/7260,,0,,1,Lynn,Broadway,,3
+7269,7269,Northshore Mall @ Entrance F,,,,42.540734,-70.945123,LocalBus,,https://www.mbta.com/stops/7269,,0,,1,Peabody,,,3
+7270,7270,Liberty Tree Mall @ Best Buy,,,,42.552099,-70.938498,LocalBus,,https://www.mbta.com/stops/7270,,0,,1,Danvers,,,3
+7292,7292,Broadway @ Richardson Rd,,,,42.48461,-70.959841,LocalBus,,https://www.mbta.com/stops/7292,,0,,1,Lynn,Broadway,Richardson Road,3
+7293,7293,Broadway @ Springvale Ave,,,,42.483671,-70.958533,LocalBus,,https://www.mbta.com/stops/7293,,0,,1,Lynn,Broadway,Springvale Avenue,3
+7294,7294,Broadway @ Hudson St,,,,42.482602,-70.957075,LocalBus,,https://www.mbta.com/stops/7294,,0,,1,Lynn,Broadway,Hudson Street,3
+7295,7295,Broadway opp Virginia Terr,,,,42.481585,-70.956234,LocalBus,,https://www.mbta.com/stops/7295,,0,,1,Lynn,Broadway,Virginia Terrace,3
+7296,7296,Chestnut St @ Boston St,,,,42.48031,-70.955196,LocalBus,,https://www.mbta.com/stops/7296,,0,,1,Lynn,Chestnut Street,Boston Street,3
+7297,7297,Chestnut St @ Allerton St,,,,42.479229,-70.954042,LocalBus,,https://www.mbta.com/stops/7297,,0,,1,Lynn,Chestnut Street,Allerton Street,3
+7298,7298,Chestnut St @ Rand St,,,,42.478282,-70.952097,LocalBus,,https://www.mbta.com/stops/7298,,0,,1,Lynn,Chestnut Street,Rand Street,3
+7299,7299,Chestnut St @ Maple Street,,,,42.477865,-70.950569,LocalBus,,https://www.mbta.com/stops/7299,,0,,1,Lynn,Chestnut Street,Maple Street,3
+7300,7300,Chestnut St @ Western Ave,,,,42.47718,-70.949077,LocalBus,,https://www.mbta.com/stops/7300,,0,,1,Lynn,Chestnut Street,Western Avenue,3
+7313,7313,Chestnut St @ Essex St,,,,42.470519,-70.937956,LocalBus,,https://www.mbta.com/stops/7313,,0,,1,Lynn,Chestnut Street,Essex Street,3
+7314,7314,Chestnut St opp Chestnut Ave,,,,42.472103,-70.939833,LocalBus,,https://www.mbta.com/stops/7314,,0,,1,Lynn,Chestnut Street,Chestnut Avenue,3
+7315,7315,Chestnut St @ Adams St,,,,42.47372,-70.941609,LocalBus,,https://www.mbta.com/stops/7315,,0,,1,Lynn,Chestnut Street,Adams Street Extention,3
+7316,7316,Chestnut St opp Eade St,,,,42.47476,-70.94424,LocalBus,,https://www.mbta.com/stops/7316,,0,,1,Lynn,Chestnut Street,Peach Street,3
+7317,7317,Chestnut St @ Goodridge St,,,,42.47566,-70.946287,LocalBus,,https://www.mbta.com/stops/7317,,0,,1,Lynn,Chestnut Street,Goodridge Street,3
+7318,7318,Chestnut St @ Clough St,,,,42.476233,-70.947217,LocalBus,,https://www.mbta.com/stops/7318,,0,,1,Lynn,Chestnut Street,Clough Street,3
+7319,7319,Chestnut St @ Western Ave,,,,42.47729,-70.949069,LocalBus,,https://www.mbta.com/stops/7319,,0,,1,Lynn,Chestnut Street,Western Avenue,3
+7320,7320,Lynnfield St @ Auburn St,,,,42.486143,-70.962786,LocalBus,,https://www.mbta.com/stops/7320,,0,,1,Lynn,Lynnfield Street,Auburn Street,3
+7322,7322,Lynnfield St opp Averill St,,,,42.487224,-70.964623,LocalBus,,https://www.mbta.com/stops/7322,,0,,1,Lynn,Lynnfield Street,Averill Street,3
+7324,7324,Lynnfield St @ Fredrick Cir,,,,42.489309,-70.967895,LocalBus,,https://www.mbta.com/stops/7324,,0,,1,Lynn,Lynnfield Street,Fredrick Circle,3
+7327,7327,Lynnfield St @ Kernwood Dr,,,,42.493131,-70.971664,LocalBus,,https://www.mbta.com/stops/7327,,0,,1,Lynn,Lynnfield Street,Kernwood Drive,3
+7328,7328,Lynnfield St opp Trevett Ave,,,,42.494839,-70.970781,LocalBus,,https://www.mbta.com/stops/7328,,0,,1,Lynn,Lynnfield Street,Trevett Avenue,3
+7330,7330,Lynnfield St @ Woodale Rd,,,,42.497824,-70.97096,LocalBus,,https://www.mbta.com/stops/7330,,0,,1,Lynn,Lynnfield Street,Allston Street,3
+7331,7331,Lynnfield St opp Lebel Rd,,,,42.498635,-70.972963,LocalBus,,https://www.mbta.com/stops/7331,,0,,1,Lynn,Lynnfield Street,Lebel Road,3
+7332,7332,Lynnfield St @ Harris Rd,,,,42.500133,-70.975966,LocalBus,,https://www.mbta.com/stops/7332,,0,,1,Lynn,Lynnfield Street,Harris Road,3
+7334,7334,503 Lynnfield St,,,,42.502227,-70.979138,LocalBus,,https://www.mbta.com/stops/7334,,0,,1,Lynn,Lynnfield Street,Dartmouth Street,3
+7335,7335,Lynnfield St opp Stocker Ave,,,,42.503646,-70.980323,LocalBus,,https://www.mbta.com/stops/7335,,0,,1,Lynn,Lynnfield Street,Stocker Avenue,3
+7336,7336,Lynnfield St opp Gallo Rd,,,,42.505037,-70.981364,LocalBus,,https://www.mbta.com/stops/7336,,0,,1,Lynn,Lynnfield Street,Gallo Road,3
+7337,7337,Lynnfield St @ Tuscan Rd,,,,42.50594,-70.982749,LocalBus,,https://www.mbta.com/stops/7337,,0,,1,Lynn,Lynnfield Street,Tuscan Road,3
+7338,7338,715 Lynnfield St,,,,42.50789,-70.985599,LocalBus,,https://www.mbta.com/stops/7338,,0,,1,Lynn,Lynnfield Street,Cumberland Circle,3
+7339,7339,Lynnfield St @ Cobb Ln,,,,42.509258,-70.987812,LocalBus,,https://www.mbta.com/stops/7339,,0,,1,Lynn,Lynnfield Street,Cobb Lane,3
+7340,7340,Lynnfield St opp Lookout Terr,,,,42.510149,-70.989516,LocalBus,,https://www.mbta.com/stops/7340,,0,,0,Lynn,Lynnfield Street,,3
+7341,7341,Lynnfield St @ Lookout Terr,,,,42.510183,-70.989783,LocalBus,,https://www.mbta.com/stops/7341,,0,,1,Lynn,Lynnfield Street,,3
+7342,7342,Lynnfield St @ Bradford Rd,,,,42.509104,-70.987789,LocalBus,,https://www.mbta.com/stops/7342,,0,,1,Lynn,Lynnfield Street,Cobb Lane,3
+7343,7343,724 Lynnfield St,,,,42.50794,-70.985862,LocalBus,,https://www.mbta.com/stops/7343,,0,,1,Lynn,Lynnfield Street,Cumberland Circle,3
+7344,7344,Lynnfield St @ Regina Rd,,,,42.506073,-70.983126,LocalBus,,https://www.mbta.com/stops/7344,,0,,0,Lynn,Lynnfield Street,Regina Road,3
+7345,7345,Lynnfield St @ Gallo Rd,,,,42.504969,-70.981576,LocalBus,,https://www.mbta.com/stops/7345,,0,,1,Lynn,Lynnfield Street,Gallo Road,3
+7346,7346,Lynnfield St @ Dartmouth St,,,,42.503165,-70.980211,LocalBus,,https://www.mbta.com/stops/7346,,0,,1,Lynn,Lynnfield Street,Daytona Road,3
+7348,7348,Lynnfield St opp Harris Rd,,,,42.500049,-70.976058,LocalBus,,https://www.mbta.com/stops/7348,,0,,1,Lynn,Lynnfield Street,Harris Road,3
+7349,7349,Lynnfield St @ Lebel Rd,,,,42.498639,-70.973238,LocalBus,,https://www.mbta.com/stops/7349,,0,,1,Lynn,Lynnfield Street,Lebel Road,3
+7350,7350,Lynnfield St @ Allston St,,,,42.497839,-70.971238,LocalBus,,https://www.mbta.com/stops/7350,,0,,0,Lynn,Lynnfield Street,Woodale Road,3
+7352,7352,Lynnfield St @ Trevett Ave,,,,42.494916,-70.970915,LocalBus,,https://www.mbta.com/stops/7352,,0,,1,Lynn,Lynnfield Street,Trevett Avenue,3
+7353,7353,Lynnfield St @ Verdmont Ave,,,,42.492835,-70.971867,LocalBus,,https://www.mbta.com/stops/7353,,0,,1,Lynn,Lynnfield Street,Holly Avenue,3
+7356,7356,145 Lynnfield St,,,,42.48884,-70.967137,LocalBus,,https://www.mbta.com/stops/7356,,0,,1,Lynn,Lynnfield Street,Fredrick Circle,3
+7357,7357,Lynnfield St @ Averill St,,,,42.487182,-70.964721,LocalBus,,https://www.mbta.com/stops/7357,,0,,1,Lynn,Lynnfield Street,Averill Street,3
+7359,7359,Lynnfield St @ Floyd Ave,,,,42.485788,-70.962277,LocalBus,,https://www.mbta.com/stops/7359,,0,,1,Lynn,Lynnfield Street,Floyd Avenue,3
+7369,7369,Chestnut St @ Grant St,,,,42.476123,-70.947237,LocalBus,,https://www.mbta.com/stops/7369,,0,,1,Lynn,Chestnut Street,Clough Street,3
+7370,7370,Chestnut St @ Allen Ave,,,,42.475465,-70.946145,LocalBus,,https://www.mbta.com/stops/7370,,0,,1,Lynn,Chestnut Street,Allen Avenue,3
+7371,7371,Chestnut St @ Eade St,,,,42.474526,-70.943976,LocalBus,,https://www.mbta.com/stops/7371,,0,,1,Lynn,Chestnut Street,Eade Street,3
+7372,7372,Chestnut St @ Adams St,,,,42.47361,-70.941595,LocalBus,,https://www.mbta.com/stops/7372,,0,,1,Lynn,Chestnut Street,Adams Street Extention,3
+7373,7373,Chestnut St @ Chestnut Ave,,,,42.471991,-70.939852,LocalBus,,https://www.mbta.com/stops/7373,,0,,1,Lynn,Chestnut Street,Chestnut Avenue,3
+7374,7374,Chestnut St @ Essex St,,,,42.470725,-70.938349,LocalBus,,https://www.mbta.com/stops/7374,,0,,1,Lynn,Chestnut Street,Essex Street,3
+94320,94320,Neptune Blvd @ Blossom St,,,,42.460496,-70.954651,LocalBus,,https://www.mbta.com/stops/94320,,0,,1,Lynn,Neptune Boulevard,,3
+94321,94321,Neptune Blvd @ Blossom St,,,,42.46072,-70.954765,LocalBus,,https://www.mbta.com/stops/94321,,0,,1,Lynn,Neptune Boulevard,,3
+94325,94325,Neptune Blvd @ Commercial St,,,,42.459041,-70.959436,LocalBus,,https://www.mbta.com/stops/94325,,0,,0,Lynn,Neptune Boulevard,Commercial Street,3
+place-ER-0115,,Lynn,,,,42.462953,-70.945421,CR-zone-2,"325 Broad St, Lynn, MA 01901",https://www.mbta.com/stops/place-ER-0115,,1,,1,Lynn,,,
+14748,14748,Lynn,Lynn - Busway,,Busway,42.461856,-70.945945,LocalBus,,https://www.mbta.com/stops/place-ER-0115,level_ground,0,place-ER-0115,1,Lynn,Harrison Court,,3

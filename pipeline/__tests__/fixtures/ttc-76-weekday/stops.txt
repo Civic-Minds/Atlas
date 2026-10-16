@@ -1,0 +1,51 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+12139,12139,The Queensway at Morgan Ave,,43.626433,-79.501779,,,,,,1
+6976,6976,Royal York Rd at Bloor St West,,43.647184,-79.511128,,,,,,1
+7013,7013,Royal York Rd at Mimico Ave,,43.612353,-79.496884,,,,,,2
+5191,5191,Lake Shore Blvd West at Miles Rd,,43.607993,-79.490263,,,,,,1
+7020,7020,Royal York Rd at Castlebar Rd South Side,,43.632338,-79.505182,,,,,,1
+7015,7015,Royal York Rd at Newcastle St,,43.617438,-79.498765,,,,,,1
+7032,7032,Royal York Rd at Thompson Ave,,43.641883,-79.509219,,,,,,1
+6890,6890,The Queensway at Grand Ave,,43.627976,-79.494685,,,,,,1
+6983,6983,Royal York Rd at Coney Rd North Side,,43.634574,-79.50594,,,,,,1
+7031,7031,Royal York Rd at Symons St,,43.607652,-79.494895,,,,,,1
+7036,7036,Royal York Rd at Van Dusen Blvd,,43.64425,-79.510141,,,,,,1
+12140,12140,Grand Ave at Dalesford Rd South Side,,43.625663,-79.493616,,,,,,1
+7008,7008,Royal York Rd at Evans Ave South Side,,43.621585,-79.500782,,,,,,1
+6975,6975,Royal York Rd at Bloor St West South Side,,43.646969,-79.511292,,,,,,1
+6995,6995,Royal York Rd at Frankwood Rd,,43.628942,-79.503779,,,,,,1
+7035,7035,Royal York Rd at Van Dusen Blvd North Side,,43.644415,-79.510058,,,,,,1
+13361,13361,Royal York Rd at Albani St,,43.604343,-79.493513,,,,,,1
+12143,12143,Portland St at Milton St West Side,,43.620268,-79.49454,,,,,,2
+6978,6978,Royal York Rd at Cavell Ave - Mimico GO Station,,43.614961,-79.497737,,,,,,1
+11584,11584,Mimico Ave at Lake Shore Blvd West West Side,,43.613708,-79.489947,,,,,,1
+7022,7022,Royal York Rd at The Queensway,,43.626209,-79.502417,,,,,,1
+12145,12145,Portland St at Royal York Rd,,43.619179,-79.499358,,,,,,1
+6990,6990,Royal York Rd at Tenby St,,43.627715,-79.503065,,,,,,1
+12142,12142,Grand Ave at Portland St,,43.621177,-79.491724,,,,,,1
+7017,7017,Royal York Rd at Norseman St,,43.637251,-79.507323,,,,,,1
+7043,7043,Royal York Rd at York View Dr,,43.630923,-79.5046,,,,,,1
+7016,7016,Royal York Rd at Norseman St North Side,,43.637372,-79.50708,,,,,,1
+7019,7019,Royal York Rd at Oakfield Dr North Side,,43.632858,-79.505253,,,,,,1
+7001,7001,Royal York Rd at Hillside Ave,,43.610167,-79.49594,,,,,,1
+7014,7014,Royal York Rd at Newcastle St - Mimico GO Station,,43.616909,-79.498777,,,,,,1
+7042,7042,Royal York Rd at York View Dr,,43.630572,-79.504255,,,,,,1
+7023,7023,Royal York Rd at The Queensway,,43.626498,-79.50282,,,,,,1
+7007,7007,800 Royal York Rd,,43.63922,-79.508702,,,,,,1
+11586,11586,Mimico Ave at Royal York Rd,,43.61236,-79.496407,,,,,,1
+6997,6997,Royal York Rd at Glenroy Ave,,43.642141,-79.509142,,,,,,1
+6977,6977,Royal York Rd at Cavell Ave South Side,,43.614676,-79.497843,,,,,,1
+5194,5194,Lake Shore Blvd West at Norris Cres,,43.610699,-79.489978,,,,,,1
+6987,6987,Royal York Rd at Dalesford Rd,,43.624359,-79.501631,,,,,,1
+12141,12141,Grand Ave at Manitoba St South Side,,43.623181,-79.492572,,,,,,1
+6984,6984,Royal York Rd at Coney Rd,,43.634093,-79.505949,,,,,,1
+6989,6989,Royal York Rd at Dartmouth Cres,,43.605546,-79.494017,,,,,,1
+11585,11585,Mimico Ave at Wheatfield Rd,,43.613097,-79.492905,,,,,,1
+12144,12144,Portland St at Wesley St West Side,,43.619736,-79.496882,,,,,,1
+6902,6902,The Queensway at Milton St,,43.627434,-79.497227,,,,,,1
+7028,7028,Royal York Rd at Sinclair St South Side,,43.624154,-79.501817,,,,,,1
+14452,14452,Opposite 810 Royal York Rd,,43.639217,-79.508461,,,,,,1
+14753,14753,Royal York Station,,43.6481,-79.51129,,,,,,1
+15982,15982,Lake Shore Blvd West at Mimico Ave,,43.613243,-79.489484,,,,,,2
+16555,16555,The Queensway and Penhurst Ave,,43.626693,-79.500682,,,,,,1
+16743,16743,Royal York Rd at Algoma St,,43.620671,-79.500148,,,,,,1

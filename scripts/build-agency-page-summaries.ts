@@ -12,9 +12,12 @@
  * publish-data-release runs this automatically after a release goes public, failure-safe. The build reads the
  * committed file, so it works with R2 unreachable.
  *
- * Numbers use the same route rule as the map filter: a route's headway for a period is its worst
- * direction's (routeFilterHeadway). Nothing new is measured here; the service span is just the first
- * and last hour that the published per-hour headways cover on weekdays.
+ * Numbers are the map's own: a route's headway for a period is the value the frequency filter
+ * compares (via routeListDisplay): the stretch selector's routeFilterHeadwayByPeriod, with the low end
+ * of its range (stretchPeriodRange) kept as `shared` for the page text ("8–25 min"), or for releases
+ * without it the worst direction's routeFilterHeadway. routeListDisplay also decides when a route
+ * shows "limited" or no number. Nothing new is measured here; the service span is just
+ * the first and last hour that the published per-hour headways cover on weekdays.
  */
 import { readFileSync, writeFileSync, existsSync, renameSync } from 'node:fs';
 import { DEFAULT_R2_PUBLIC_URL } from '../shared/config';
@@ -64,8 +67,8 @@ export function summarize(
   const routes = new Map<string, AgencyPageRoute>();
   let first = Infinity;
   let last = -Infinity;
-  // Per route: its direction/branch rows, so the numbers come from the route card's own display rule
-  // (routeListDisplay: the slower direction's cadence, "limited" when it runs but has no trustworthy cadence).
+  // Per route: its direction/branch rows, so the numbers come from the shared list rule (routeListDisplay:
+  // the map's number, the slower direction's; "limited" when it runs but has no trustworthy cadence).
   const rows = new Map<string, ShapeProperties[]>();
   for (const f of lines) {
     const p = f.properties;

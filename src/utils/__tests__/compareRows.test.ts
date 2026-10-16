@@ -63,3 +63,20 @@ describe('compare mode route rows use the shared filter rule on each side', () =
     expect(a.headway).toBe(b.headway);
   });
 });
+
+describe('compare rows on the stretch filter fields (frequency focus step 7)', () => {
+  const feature = (dir: number, extra: Record<string, unknown>) => ({
+    type: 'Feature', geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+    properties: { routeId: 'R', routeShortName: 'R', directionId: dir, day: 'Weekday', tier: '10', serviceClass: 'regular', headway: 8,
+      headwayByPeriod: { midday: 8 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 8 }, ...extra },
+  }) as unknown as GeoJSON.Feature;
+
+  it('a route with a slower branch compares on its filter value (25), not the best direction (8)', () => {
+    const contract = { routeFilterHeadwayByPeriod: { midday: 25 }, routeRunsByPeriod: { midday: true }, stretchPeriodRange: { midday: [8, 25] }, routeAllDayHeadway: 20 };
+    const features = [feature(0, contract), feature(1, contract)];
+    normalizeRouteFilterFeatures(features);
+    expect(buildCompareRow('A', { day: 'Weekday', period: 'midday', maxHeadway: 30 }, features, 'x', filters).headway).toBe(25);
+    expect(buildCompareRow('A', { day: 'Weekday', period: 'midday', maxHeadway: 10 }, features, 'x', filters).passes).toBe(false);
+    expect(buildCompareRow('A', { day: 'Weekday', period: 'all', maxHeadway: 30 }, features, 'x', filters).headway).toBe(20);
+  });
+});

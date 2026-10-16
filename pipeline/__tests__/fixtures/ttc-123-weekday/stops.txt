@@ -1,0 +1,89 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+2435,2435,Evans Ave at Brown's Line,,43.610792,-79.549007,,,,,,2
+4435,4435,Long Branch Loop - Long Branch GO Station,,43.592111,-79.5437,,,,,,1
+3117,3117,Sherway Gardens Rd at Sherway Gate (Mall),,43.609729,-79.558438,,,,,,1
+9109,9109,Sherway Gardens Rd at Sherway Gate Mall,,43.609785,-79.558022,,,,,,1
+11587,11587,Sherway Gardens Rd at Sherway Gate (Mall),,43.609847,-79.557773,,,,,,1
+9237,9237,Shorncliffe Ave at North Queen St,,43.622732,-79.540842,,,,,,1
+9245,9245,Shorncliffe Rd at Dundas St West,,43.631979,-79.544419,,,,,,1
+11119,11119,The West Mall at The Queensway South Side,,43.61175,-79.562334,,,,,,1
+10624,10624,North Queen St at Index Rd,,43.619294,-79.554263,,,,,,1
+5014,5014,Dundas St West at East Mall Cres West Side,,43.630229,-79.551376,,,,,,1
+9627,9627,The East Mall at The Queensway,,43.61622,-79.546041,,,,,,1
+5045,5045,75 The East Mall,,43.618788,-79.548016,,,,,,1
+5028,5028,Dundas St West at Shorncliffe Rd,,43.631902,-79.544849,,,,,,1
+2177,2177,Dundas St West at Paulart Dr East Side,,43.631061,-79.54646,,,,,,1
+3386,3386,Brown's Line at Lake Shore Blvd West North Side,,43.593263,-79.539318,,,,,,1
+10628,10628,North Queen St at Eastside Dr,,43.619964,-79.552113,,,,,,1
+5055,5055,The East Mall at The Queensway,,43.616743,-79.546582,,,,,,1
+3384,3384,Brown's Line at Jellicoe Ave,,43.5964,-79.542659,,,,,,1
+6267,6267,Brown's Line at Coules Crt (North) North Side,,43.608822,-79.548079,,,,,,1
+2196,2196,Dundas St West at Wilmar Rd,,43.634928,-79.541384,,,,,,1
+9722,9722,Dundas St West at Highway 427,,43.628813,-79.555162,,,,,,1
+7670,7670,Dundas St West at West Mall Cres East Side,,43.627446,-79.560881,,,,,,1
+2184,2184,Dundas St West at Shaver Ave South,,43.632336,-79.544636,,,,,,1
+9235,9235,Shorncliffe Ave at Lockport Ave South Side,,43.62761,-79.54294,,,,,,1
+2138,2138,Dundas St West at Acorn Ave,,43.637518,-79.539041,,,,,,1
+9721,9721,Dundas St West at Highway 427,,43.629242,-79.554797,,,,,,1
+1642,1642,West Mall Cres at Dundas St West South Side,,43.626881,-79.562135,,,,,,1
+1644,1644,West Mall Cres at The West Mall,,43.627091,-79.559674,,,,,,1
+2139,2139,Dundas St West at Aukland Rd,,43.637943,-79.538266,,,,,,1
+10625,10625,North Queen St at Eastside Dr East Side,,43.619815,-79.552003,,,,,,2
+9242,9242,Shorncliffe Rd at North Queen St North Side,,43.623031,-79.540769,,,,,,1
+3383,3383,Brown's Line at Horner Ave,,43.601526,-79.545017,,,,,,1
+9510,9510,North Queen St at Atomic Ave,,43.621833,-79.543026,,,,,,1
+1632,1632,The West Mall at Sherway Dr North Side,,43.609781,-79.560638,,,,,,1
+9628,9628,The East Mall at Evans Ave,,43.612083,-79.544015,,,,,,1
+9407,9407,1800 The Queensway,,43.614118,-79.559383,,,,,,1
+3169,3169,The West Mall at Sherway Dr - Trillium Health Centre (South Stop),,43.609417,-79.559813,,,,,,1
+13670,13670,North Queen St at Nova Rd,,43.615963,-79.556747,,,,,,1
+5044,5044,70 The East Mall,,43.618406,-79.547856,,,,,,1
+6272,6272,Brown's Line at Valermo Dr,,43.605912,-79.546909,,,,,,1
+2195,2195,Dundas St West at Wilmar Rd,,43.63448,-79.541382,,,,,,1
+2148,2148,Dundas St West at East Mall Cres,,43.63037,-79.549175,,,,,,1
+2429,2429,620 Evans Ave,,43.610447,-79.550449,,,,,,1
+9234,9234,Shorncliffe Rd at Dundas St West South Side,,43.631702,-79.544524,,,,,,1
+1643,1643,West Mall Cres at The West Mall West Side,,43.627244,-79.559493,,,,,,1
+2453,2453,Evans Ave at Sheldon Ave,,43.611297,-79.545875,,,,,,1
+14320,14320,North Queen St at The East Mall East Side,,43.620509,-79.548785,,,,,,1
+9239,9239,The East Mall at North Queen St South Side,,43.620076,-79.549379,,,,,,1
+6273,6273,Brown's Line at Valermo Dr,,43.606236,-79.547324,,,,,,1
+9626,9626,The East Mall at Evans Ave North Side,,43.612232,-79.543767,,,,,,1
+6271,6271,Brown's Line at Rimilton Ave,,43.603759,-79.545963,,,,,,1
+2440,2440,Evans Ave at Gair Dr,,43.609809,-79.552434,,,,,,1
+9243,9243,Shorncliffe Ave at Newbridge Rd,,43.625836,-79.541965,,,,,,1
+2149,2149,Dundas St West at East Mall Cres,,43.630726,-79.549041,,,,,,1
+10630,10630,North Queen St at Manstor Rd,,43.61851,-79.557597,,,,,,1
+10621,10621,North Queen St at The Queensway North Side,,43.61511,-79.556375,,,,,,1
+9236,9236,Shorncliffe Ave at Newbridge Rd South Side,,43.625815,-79.542173,,,,,,1
+3388,3388,Brown's Line at Woodbury Rd,,43.59937,-79.54429,,,,,,1
+2441,2441,Evans Ave at Gair Dr,,43.610092,-79.551991,,,,,,1
+6270,6270,Brown's Line at Horner Ave,,43.601827,-79.54543,,,,,,1
+2454,2454,Evans Ave at Sherway Gate West Side,,43.609022,-79.556933,,,,,,1
+9241,9241,North Queen St at Medulla Ave,,43.62126,-79.54552,,,,,,1
+10632,10632,North Queen St at The Queensway,,43.614581,-79.5565,,,,,,1
+10629,10629,North Queen St at Index Rd West Side,,43.619313,-79.555066,,,,,,1
+10631,10631,North Queen St at Nova Rd,,43.616293,-79.557141,,,,,,1
+9244,9244,Shorncliffe Ave at Lockport Ave,,43.627616,-79.542736,,,,,,1
+9511,9511,North Queen St at Atomic Ave,,43.622082,-79.542704,,,,,,1
+3385,3385,Brown's Line at Jellicoe Ave South Side,,43.596288,-79.542878,,,,,,1
+6268,6268,Brown's Line at Coules Crt (North) South Side,,43.608085,-79.548111,,,,,,1
+1638,1638,The West Mall at The Queensway,,43.611806,-79.562012,,,,,,1
+10623,10623,North Queen St at Manstor Rd,,43.617687,-79.557511,,,,,,1
+6269,6269,Brown's Line at Finsbury Cres,,43.604007,-79.546361,,,,,,1
+2452,2452,Evans Ave at Sheldon Ave West Side,,43.61153,-79.545796,,,,,,1
+2137,2137,Dundas St West at Acorn Ave,,43.637002,-79.539088,,,,,,1
+3382,3382,Brown's Line at Horner Ave South Side,,43.601337,-79.545187,,,,,,1
+5022,5022,Dundas St West at Poplar Ave,,43.636297,-79.54012,,,,,,1
+9238,9238,North Queen St at Medulla Ave,,43.621519,-79.545196,,,,,,1
+10627,10627,North Queen St at The East Mall,,43.620636,-79.549127,,,,,,1
+2434,2434,Evans Ave at Brown's Line,,43.61044,-79.549451,,,,,,1
+2178,2178,Dundas St West at Paulart Dr,,43.631321,-79.546629,,,,,,1
+14720,14720,Kipling Station,,43.637717,-79.535511,,,,,,1
+15428,15428,Lake Shore Blvd West at Fortieth St,,43.592468,-79.541863,,,,,,1
+12880,12880,The West Mall at Paxman Rd South Side,,43.623919,-79.559741,,,,,,1
+12881,12881,The West Mall at Paxman Rd,,43.623927,-79.559414,,,,,,1
+15728,15728,135 The West Mall,,43.620127,-79.561551,,,,,,1
+15729,15729,The West Mall at Waulron St,,43.620069,-79.56205,,,,,,1
+15805,15805,Brown's Line at Woodbury Rd,,43.599214,-79.543953,,,,,,1
+16875,16875,Dundas St West at Samuel Wood Way,,43.635449,-79.540513,,,,,,1

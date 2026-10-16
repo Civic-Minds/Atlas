@@ -19,7 +19,7 @@ export function clockText(minutes: number): string {
 }
 
 export function nightRuleText(frequency: NightServiceFrequency): string {
-  return `Routes with a departure at least every ${frequency} minutes from 2am to 6am.`;
+  return `Routes with a departure at least every ${frequency} minutes from 2am to 5am.`;
 }
 
 export const FREQUENT_INFO_HEADING = 'Which routes are frequent?';

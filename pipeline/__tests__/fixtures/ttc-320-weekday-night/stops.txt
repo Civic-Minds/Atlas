@@ -1,0 +1,138 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+3244,3244,Yonge St at Shuter St,,43.654147,-79.380123,,,,,,1
+9013,9013,5800 Yonge St,,43.784107,-79.416819,,,,,,1
+3225,3225,Yonge St at Front St East North Side,,43.647377,-79.377049,,,,,,1
+13455,13455,Yonge St at Front St East,,43.646768,-79.376766,,,,,,2
+9002,9002,Yonge St at Heath St East,,43.689912,-79.394726,,,,,,1
+9003,9003,Yonge St at Hendon Ave,,43.781711,-79.416193,,,,,,1
+11371,11371,Yonge St at Wilson Ave South Side,,43.743514,-79.406769,,,,,,2
+11394,11394,Yonge St at York Mills Rd,,43.743783,-79.406435,,,,,,1
+9907,9907,York Mills Rd at Yonge St East Side,,43.744162,-79.405826,,,,,,1
+8977,8977,Yonge St at Eglinton Ave East - Eglinton Station,,43.706334,-79.398105,,,,,,1
+8975,8975,Yonge St at Cummer Ave,,43.786938,-79.41714,,,,,,1
+10797,10797,Yonge St at Merton St North Side,,43.696475,-79.396114,,,,,,1
+11494,11494,Yonge St at Elmwood Ave,,43.766466,-79.412017,,,,,,1
+4733,4733,Yonge St at St Clair Ave East - St. Clair Station,,43.687897,-79.393924,,,,,,1
+8997,8997,Yonge St at Glengrove Ave East,,43.719313,-79.400922,,,,,,1
+3233,3233,Yonge St at Irwin Ave,,43.666768,-79.385426,,,,,,1
+9037,9037,Yonge St at Crescent Rd South Side - Rosedale Station,,43.676573,-79.389457,,,,,,1
+8989,8989,Yonge St at Finch Ave West - Finch Station,,43.779948,-79.415773,,,,,,1
+8998,8998,Yonge St at Glengrove Ave West,,43.719635,-79.401209,,,,,,1
+1667,1667,Yonge St at Belsize Dr,,43.700201,-79.396851,,,,,,1
+9030,9030,Yonge St at Montgomery Ave,,43.709702,-79.399096,,,,,,1
+9031,9031,Yonge St at Moore Park Ave,,43.793966,-79.419209,,,,,,1
+9065,9065,Yonge St at York Mills Rd North Side - York Mills Station,,43.744863,-79.40666,,,,,,1
+3240,3240,Yonge St at Richmond St East,,43.651579,-79.378823,,,,,,1
+8982,8982,Yonge St at Ellerslie Ave,,43.772295,-79.413801,,,,,,1
+8985,8985,Yonge St at Fairlawn Ave,,43.730953,-79.403849,,,,,,1
+9051,9051,Yonge St at Sherwood Ave,,43.713409,-79.39965,,,,,,1
+3234,3234,Yonge St at King St East - King Station,,43.64905,-79.377753,,,,,,1
+9039,9039,Yonge St at Ranleigh Ave,,43.728001,-79.403083,,,,,,1
+8954,8954,3800 Yonge St,,43.739128,-79.405865,,,,,,2
+8965,8965,Yonge St at Castlefield Ave,,43.711692,-79.399293,,,,,,1
+1669,1669,Yonge St at Chaplin Cres,,43.698394,-79.39676,,,,,,1
+9043,9043,Yonge St at Shaftesbury Ave North Side - Summerhill Station,,43.68239,-79.391664,,,,,,1
+9038,9038,Yonge St at Ranleigh Ave,,43.727754,-79.402779,,,,,,1
+8957,8957,Yonge St at Balmoral Ave,,43.68595,-79.393304,,,,,,1
+9060,9060,Yonge St at Mcglashan Rd,,43.741787,-79.406054,,,,,,1
+9058,9058,Yonge St at Steeles Ave East,,43.797883,-79.419843,,,,,,1
+9024,9024,Yonge St at Madawaska Ave,,43.793657,-79.418809,,,,,,1
+3221,3221,Yonge St at Dundas St East - TMU Station,,43.656196,-79.380763,,,,,,1
+3229,3229,Yonge St at Grosvenor St,,43.663103,-79.383899,,,,,,1
+3237,3237,Opposite 247 Yonge St - Toronto Eaton Centre,,43.654934,-79.380414,,,,,,1
+8990,8990,Yonge St at Florence Ave,,43.758337,-79.41031,,,,,,1
+9025,9025,Yonge St at Mcglashan Rd South Side,,43.741635,-79.40641,,,,,,1
+9032,9032,Yonge St at Norton Ave,,43.77215,-79.41347,,,,,,1
+9015,9015,Yonge St at Kempford Blvd,,43.777067,-79.415018,,,,,,1
+1673,1673,Yonge St at Manor Rd West,,43.702611,-79.3976,,,,,,1
+8993,8993,Yonge St at Yonge Blvd,,43.734207,-79.404409,,,,,,1
+8980,8980,Yonge St at Eglinton Ave East North Side - Eglinton Station,,43.707916,-79.398471,,,,,,1
+1668,1668,Yonge St at Belsize Dr,,43.700368,-79.39713,,,,,,1
+8981,8981,Yonge St at Eglinton Ave West - Eglinton Station,,43.707156,-79.398556,,,,,,1
+9027,9027,Yonge St at MacPherson Ave,,43.679185,-79.390534,,,,,,2
+4732,4732,Yonge St at Heath St West,,43.690258,-79.395043,,,,,,1
+9063,9063,Yonge St at Woodlawn Ave West,,43.684014,-79.392504,,,,,,1
+8976,8976,Yonge St at Drewry Ave,,43.787152,-79.417538,,,,,,1
+246,246,Bay St at Front St West South Side - Union Station,,43.645484,-79.378997,,,,,,1
+1465,1465,Queens Quay West at Bay St East Side,,43.641548,-79.375474,,,,,,1
+10800,10800,Yonge St at Merton St,,43.696227,-79.396296,,,,,,1
+3227,3227,Yonge St at Gloucester St,,43.666489,-79.385123,,,,,,1
+8958,8958,Yonge St at Berwick Ave,,43.704437,-79.397961,,,,,,1
+3228,3228,Yonge St at Elm St,,43.657876,-79.381484,,,,,,1
+3211,3211,Yonge St at Aylmer Ave,,43.675502,-79.388832,,,,,,1
+8955,8955,Yonge St at Athabaska Ave,,43.795291,-79.419203,,,,,,1
+13559,13559,Yonge St at Avondale Ave North Side,,43.758551,-79.410029,,,,,,1
+9059,9059,Yonge St at Steeles Ave West South Side,,43.79729,-79.42005,,,,,,1
+3220,3220,Yonge St at Davenport Rd,,43.672987,-79.387984,,,,,,1
+3242,3242,Yonge St at Scollard St,,43.672646,-79.387664,,,,,,1
+1672,1672,Yonge St at Manor Rd East,,43.702402,-79.397328,,,,,,1
+9054,9054,Yonge St at St Edmund's Dr,,43.721852,-79.40142,,,,,,1
+3218,3218,Yonge St at College St - College Station,,43.661506,-79.38324,,,,,,1
+8996,8996,Yonge St at Glenforest Rd North Side,,43.730638,-79.40354,,,,,,1
+8971,8971,Yonge St at Churchill Ave,,43.773898,-79.414275,,,,,,1
+9050,9050,Yonge St at Sheppard Ave West - Sheppard Station,,43.761686,-79.411123,,,,,,1
+8988,8988,Yonge St at Finch Ave East,,43.779588,-79.415334,,,,,,1
+9022,9022,Yonge St at Lord Seaton Rd,,43.75233,-79.407869,,,,,,2
+9042,9042,Yonge St at Rowanwood Ave,,43.679043,-79.390286,,,,,,1
+3222,3222,Yonge St at Dundas St West - TMU Station,,43.656505,-79.381074,,,,,,1
+1670,1670,Yonge St at Davisville Ave North Side,,43.698675,-79.396563,,,,,,1
+9033,9033,Yonge St at Park Home Ave,,43.769422,-79.413082,,,,,,1
+8983,8983,Yonge St at Elmhurst Ave,,43.763356,-79.411485,,,,,,1
+9019,9019,Yonge St at Lawrence Ave East North Side - Lawrence Station,,43.725377,-79.402115,,,,,,1
+3213,3213,Yonge St at Bloor St East North Side - Bloor Station,,43.670773,-79.38689,,,,,,1
+3209,3209,Yonge St at Alexander St,,43.662802,-79.383587,,,,,,1
+11902,11902,Yonge St at Queens Quay East North Side,,43.642776,-79.37509,,,,,,1
+254,254,Bay St at Harbour St South Side - Jack Layton Ferry Terminal,,43.641735,-79.377377,,,,,,1
+8959,8959,Yonge St at Blythwood Rd,,43.716269,-79.400257,,,,,,1
+3214,3214,Yonge St at Bloor St West - Bloor Station,,43.670441,-79.386954,,,,,,1
+3246,3246,Yonge St at Wellesley St West - Wellesley Station,,43.665025,-79.3847,,,,,,1
+3245,3245,Yonge St at Wellesley St East - Wellesley Station,,43.664812,-79.38436,,,,,,1
+3217,3217,Yonge St at Charles St West,,43.668841,-79.386282,,,,,,1
+9062,9062,Yonge St at Woodlawn Ave East,,43.683811,-79.392236,,,,,,1
+9023,9023,Yonge St at Lytton Blvd,,43.716726,-79.400585,,,,,,1
+9021,9021,Yonge St at Lord Seaton Rd South Side,,43.752127,-79.408292,,,,,,1
+9016,9016,Yonge St at King St West - King Station,,43.649249,-79.378022,,,,,,1
+9176,9176,Steeles Ave East Loop,,43.798341,-79.417889,,,,,,1
+9064,9064,Yonge St at Yonge Blvd South Side,,43.733994,-79.404613,,,,,,1
+3238,3238,Yonge St at Queen St East - Queen Station,,43.652319,-79.379085,,,,,,1
+8984,8984,Yonge St at Empress Ave - North York Centre Station,,43.769149,-79.4127,,,,,,1
+8970,8970,Yonge St at Church Ave,,43.773679,-79.413853,,,,,,1
+3239,3239,Yonge St at Queen St West - Queen Station,,43.65251,-79.379408,,,,,,1
+8963,8963,Yonge St at William Carson Cres,,43.747206,-79.407246,,,,,,1
+8961,8961,Yonge St at Broadway Ave,,43.709449,-79.39881,,,,,,1
+9048,9048,Yonge St at Sheppard Ave East North Side - Sheppard Station,,43.762183,-79.410937,,,,,,1
+9053,9053,Yonge St at St Clair Ave West - St Clair Station,,43.688281,-79.394275,,,,,,1
+3219,3219,Yonge St at Crescent Rd - Rosedale Station,,43.676823,-79.38938,,,,,,1
+9040,9040,Yonge St at Rosehill Ave,,43.686132,-79.393183,,,,,,1
+8960,8960,Yonge St at Briar Hill Ave,,43.713729,-79.399948,,,,,,1
+3216,3216,Yonge St at Charles St East,,43.668556,-79.385974,,,,,,1
+8969,8969,Yonge St at Chatsworth Dr,,43.722068,-79.401694,,,,,,1
+8953,8953,Yonge St at Alcorn Ave - Summerhill Station,,43.682197,-79.391779,,,,,,1
+3247,3247,Yonge St at Wellington St West,,43.648025,-79.377521,,,,,,1
+9029,9029,Yonge St at Mill St,,43.739952,-79.405683,,,,,,1
+13869,13869,Yonge St at North York Blvd,,43.766912,-79.412451,,,,,,1
+3243,3243,Yonge St at Shuter St,,43.653972,-79.37982,,,,,,1
+1674,1674,Yonge St at Soudan Ave,,43.704031,-79.39766,,,,,,1
+9066,9066,Yonge St at Wilson Ave - York Mills Station,,43.74429,-79.406957,,,,,,1
+8962,8962,Yonge St at Byng Ave,,43.776514,-79.414576,,,,,,1
+9034,9034,Yonge St at Patricia Ave,,43.78997,-79.417808,,,,,,1
+9020,9020,Yonge St at Lawrence Ave West - Lawrence Station,,43.725286,-79.402385,,,,,,1
+3241,3241,Yonge St at Richmond St West,,43.651769,-79.379085,,,,,,1
+8964,8964,Yonge St at William Carson Cres,,43.74741,-79.40767,,,,,,1
+3226,3226,Yonge St at Gerrard St East,,43.658698,-79.381838,,,,,,1
+14447,14447,5799 Yonge St,,43.785048,-79.41671,,,,,,1
+14674,14674,Eglinton Station,,43.705572,-79.399461,,,,,,1
+14809,14809,York Mills Station,,43.745153,-79.406546,,,,,,1
+14950,14950,2190 Yonge St,,43.705096,-79.398103,,,,,,1
+14955,14955,Finch Station,,43.780488,-79.414808,,,,,,1
+14956,14956,Finch Station,,43.781435,-79.41502,,,,,,1
+15282,15282,Yonge St at Bishop Ave North Side,,43.782489,-79.416016,,,,,,2
+15708,15708,Opposite 2190 Yonge St,,43.705297,-79.397908,,,,,,1
+15709,15709,Yonge St at Orchard View Blvd,,43.708302,-79.3988,,,,,,1
+15782,15782,Yonge St at Patricia Ave,,43.79041,-79.418335,,,,,,2
+15783,15783,Yonge St at Athabaska Ave,,43.795681,-79.419635,,,,,,2
+16000,16000,Yonge St at Belmont St,,43.675671,-79.389062,,,,,,1
+16092,16092,Yonge St at Castlefield Ave South Side,,43.711635,-79.399535,,,,,,1
+16094,16094,Yonge St at Carlton St North Side - College Station,,43.661798,-79.383158,,,,,,1
+16260,16260,Yonge St at Gould St,,43.65756,-79.381539,,,,,,1
+16833,16833,Yonge St at Gerrard St West South Side,,43.658814,-79.382099,,,,,,1

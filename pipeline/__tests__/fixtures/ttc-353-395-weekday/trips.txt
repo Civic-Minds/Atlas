@@ -1,0 +1,53 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+353,1,50804566,East - 353 Steeles towards Staines,,0,2233951,1122600,1,1
+353,1,50804565,East - 353 Steeles towards Staines,,0,2235053,1122600,1,1
+353,1,50804570,East - 353 Steeles towards Staines,,0,2234379,1122601,1,1
+353,1,50804564,East - 353 Steeles towards Staines,,0,2233952,1122600,1,1
+353,1,50804568,East - 353 Steeles towards Staines,,0,2233951,1122601,1,1
+353,1,50804567,East - 353 Steeles towards Staines,,0,2235053,1122601,1,1
+353,1,50804563,East - 353 Steeles towards Staines,,0,2233958,1122600,1,1
+353,1,50804562,East - 353 Steeles towards Staines,,0,2234403,1122600,1,1
+353,1,50804573,East - 353 Steeles towards Staines,,0,2234471,1122603,1,1
+353,1,50804561,East - 353 Steeles towards Staines,,0,2234402,1122600,1,1
+353,1,50804574,East - 353 Steeles towards Staines,,0,2234401,1122602,1,1
+353,1,50804572,East - 353 Steeles towards Staines,,0,2234472,1122601,1,1
+353,1,50804571,East - 353 Steeles towards Staines,,0,2233958,1122601,1,1
+353,1,50804569,East - 353 Steeles towards Staines,,0,2234403,1122601,1,1
+353,1,50804575,East - 353 Steeles towards Staines,,0,2234402,1122601,1,1
+353,1,50804576,East - 353 Steeles towards Staines,,0,2234401,1122601,1,1
+353,1,50804581,West - 353 Steeles towards Martin Grove,,1,2233951,1122607,1,1
+353,1,50804580,West - 353 Steeles towards Martin Grove,,1,2235053,1122607,1,1
+353,1,50804579,West - 353 Steeles towards Martin Grove,,1,2233952,1122607,1,1
+353,1,50804584,West - 353 Steeles towards Martin Grove,,1,2234379,1122606,1,1
+353,1,50804582,West - 353 Steeles towards Martin Grove,,1,2233951,1122606,1,1
+353,1,50804586,West - 353 Steeles towards Martin Grove,,1,2235053,1122606,1,1
+353,1,50804594,West - 353 Steeles towards Martin Grove,,1,2234472,1122608,1,1
+353,1,50804592,West - 353 Steeles towards Martin Grove,,1,2233958,1122607,1,1
+353,1,50804593,West - 353 Steeles towards Martin Grove,,1,2234403,1122607,1,1
+353,1,50804577,West - 353 Steeles towards Martin Grove,,1,2234402,1122607,1,1
+353,1,50804591,West - 353 Steeles towards Martin Grove,,1,2234401,1122607,1,1
+353,1,50804590,West - 353 Steeles towards Martin Grove,,1,2234471,1122607,1,1
+353,1,50804589,West - 353 Steeles towards Martin Grove,,1,2234472,1122607,1,1
+353,1,50804583,West - 353S Steeles Short Turn towards Yonge Street,,1,2233958,1122610,1,1
+353,1,50804588,West - 353 Steeles towards Martin Grove,,1,2234403,1122606,1,1
+353,1,50804595,West - 353 Steeles towards Martin Grove,,1,2234402,1122606,1,1
+353,1,50804596,West - 353 Steeles towards Martin Grove,,1,2234401,1122606,1,1
+395,1,50805968,East - 395S York Mills Short Turn towards Port Union,S,0,2235070,1122701,1,1
+395,1,50805967,East - 395S York Mills Short Turn towards Port Union,S,0,2235069,1122701,1,1
+395,1,50805966,East - 395S York Mills Short Turn towards Port Union,S,0,2235068,1122701,1,1
+395,1,50805965,East - 395S York Mills Short Turn towards Port Union,S,0,2235067,1122700,1,1
+395,1,50805964,East - 395S York Mills Short Turn towards Port Union,S,0,2235066,1122700,1,1
+395,1,50805971,East - 395 York Mills towards Rouge Hill GO Station,,0,2235399,1122703,1,1
+395,1,50805970,East - 395 York Mills towards Rouge Hill GO Station,,0,2235138,1122703,1,1
+395,1,50805962,East - 395 York Mills towards Rouge Hill GO Station,,0,2235065,1122702,1,1
+395,1,50805969,East - 395 York Mills towards Rouge Hill GO Station,,0,2235139,1122703,1,1
+395,1,50805963,East - 395 York Mills towards Rouge Hill GO Station,,0,2235399,1122702,1,1
+395,1,50805960,East - 395 York Mills towards Rouge Hill GO Station,,0,2235138,1122702,1,1
+395,1,50805961,East - 395S York Mills Short Turn towards Port Union,S,0,2235139,1122701,1,1
+395,1,50805978,West - 395 York Mills towards York Mills Station,,1,2235070,1122705,1,1
+395,1,50805977,West - 395 York Mills towards York Mills Station,,1,2235069,1122705,1,1
+395,1,50805976,West - 395 York Mills towards York Mills Station,,1,2235068,1122705,1,1
+395,1,50805975,West - 395 York Mills towards York Mills Station,,1,2235065,1122704,1,1
+395,1,50805972,West - 395 York Mills towards York Mills Station,,1,2235399,1122705,1,1
+395,1,50805974,West - 395 York Mills towards York Mills Station,,1,2235138,1122705,1,1
+395,1,50805973,West - 395 York Mills towards York Mills Station,,1,2235139,1122705,1,1

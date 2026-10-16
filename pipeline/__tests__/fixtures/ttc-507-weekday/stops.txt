@@ -1,0 +1,66 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+6532,6532,Humber Loop at The Queensway,,43.631119,-79.478867,,,,,,1
+13692,13692,Humber Loop at The Queensway,,43.631201,-79.478674,,,,,,2
+4435,4435,Long Branch Loop - Long Branch GO Station,,43.592111,-79.5437,,,,,,1
+6920,6920,The Queensway at Stephen Dr,,43.630517,-79.484019,,,,,,2
+10130,10130,Park Lawn Rd at Lake Shore Blvd West,,43.622987,-79.481651,,,,,,1
+5164,5164,Lake Shore Blvd West at Thirty Seventh St,,43.593334,-79.538348,,,,,,1
+5160,5160,Lake Shore Blvd West at Twenty Eighth St,,43.595685,-79.527699,,,,,,1
+5151,5151,Lake Shore Blvd West at Tenth St,,43.600155,-79.508496,,,,,,1
+5191,5191,Lake Shore Blvd West at Miles Rd,,43.607993,-79.490263,,,,,,1
+5168,5168,Lake Shore Blvd West at Third St,,43.601881,-79.500644,,,,,,1
+5156,5156,Lake Shore Blvd West at Twenty Second St,,43.597338,-79.521251,,,,,,1
+5163,5163,Lake Shore Blvd West at Thirty First St,,43.595155,-79.530407,,,,,,1
+5162,5162,Lake Shore Blvd West at Thirtieth St,,43.595472,-79.52966,,,,,,1
+5202,5202,Lake Shore Blvd West at Superior Ave,,43.615096,-79.48869,,,,,,1
+5192,5192,Lake Shore Blvd West at Mimico Ave,,43.613542,-79.489314,,,,,,1
+10129,10129,88 Park Lawn Rd,,43.624275,-79.48426,,,,,,1
+13944,13944,Opposite 125 The Queensway,,43.630963,-79.481928,,,,,,1
+10118,10118,Opposite 88 Park Lawn Rd,,43.624424,-79.484087,,,,,,1
+5159,5159,Lake Shore Blvd West at Twenty Seventh St,,43.596328,-79.525043,,,,,,1
+5172,5172,Lake Shore Blvd West at Seventh St,,43.600638,-79.505392,,,,,,1
+13697,13697,Park Lawn Rd at Gardiner Expressway WB On Ramp),,43.625856,-79.486331,,,,,,1
+5179,5179,Lake Shore Blvd West at Hillside Ave,,43.611265,-79.490136,,,,,,1
+5171,5171,Lake Shore Blvd West at Fifth St,,43.601388,-79.502863,,,,,,1
+5187,5187,Lake Shore Blvd West at Long Branch Ave,,43.594303,-79.53413,,,,,,1
+5157,5157,Lake Shore Blvd West at Twenty Second St,,43.597116,-79.521413,,,,,,1
+5150,5150,Lake Shore Blvd West at Tenth St,,43.599877,-79.508796,,,,,,1
+5198,5198,Lake Shore Blvd West at Royal York Rd,,43.60382,-79.493033,,,,,,1
+5152,5152,Lake Shore Blvd West at Thirteenth St,,43.599214,-79.51196,,,,,,1
+5201,5201,Lake Shore Blvd West at Superior Ave,,43.614817,-79.488619,,,,,,1
+5188,5188,Lake Shore Blvd West at Long Branch Ave,,43.594693,-79.53303,,,,,,1
+5174,5174,Lake Shore Blvd West at Burlington St,,43.617446,-79.48738,,,,,,1
+13946,13946,Lake Shore Blvd West at First St,,43.60214,-79.498592,,,,,,1
+5161,5161,Lake Shore Blvd West at Twenty Ninth St,,43.595809,-79.528185,,,,,,1
+5203,5203,Lake Shore Blvd West at Symons St,,43.608629,-79.490452,,,,,,1
+10127,10127,Park Lawn Rd at The Queensway South Side,,43.628662,-79.490031,,,,,,1
+5180,5180,Lake Shore Blvd West at Islington Ave,,43.600896,-79.505092,,,,,,1
+14080,14080,Park Lawn Rd at Gardiner Expressway EB Off Ramp,,43.62577,-79.485783,,,,,,1
+5170,5170,Lake Shore Blvd West at Fifth St,,43.601151,-79.503113,,,,,,1
+10128,10128,134 Park Lawn Rd,,43.626778,-79.487561,,,,,,1
+5167,5167,Lake Shore Blvd West at Third St,,43.601653,-79.500866,,,,,,1
+13943,13943,125 The Queensway,,43.630685,-79.482249,,,,,,1
+5197,5197,Lake Shore Blvd West at Royal York Rd,,43.603496,-79.493243,,,,,,1
+5182,5182,Lake Shore Blvd West at Colonel Samuel Smith Park Dr,,43.598047,-79.517179,,,,,,1
+6905,6905,The Queensway at Park Lawn Rd East Side,,43.629138,-79.489215,,,,,,2
+5194,5194,Lake Shore Blvd West at Norris Cres,,43.610699,-79.489978,,,,,,1
+5165,5165,Lake Shore Blvd West at Thirty Seventh St,,43.593494,-79.537978,,,,,,1
+5173,5173,Lake Shore Blvd West at Burlington St,,43.617151,-79.487284,,,,,,1
+5193,5193,Lake Shore Blvd West at Mimico Ave,,43.613855,-79.489387,,,,,,1
+5153,5153,Lake Shore Blvd West at Thirteenth St,,43.599445,-79.511706,,,,,,1
+5158,5158,Lake Shore Blvd West at Twenty Sixth St,,43.596668,-79.524268,,,,,,1
+5181,5181,Lake Shore Blvd West at Kipling Ave,,43.598331,-79.516749,,,,,,1
+10119,10119,Park Lawn Rd at Gardiner Expressway (WB On Ramp),,43.626981,-79.487429,,,,,,1
+6919,6919,The Queensway at Stephen Dr,,43.630183,-79.484391,,,,,,1
+5199,5199,2111 Lake Shore Blvd West,,43.629066,-79.478151,,,,,,1
+5195,5195,Lake Shore Blvd West at Park Lawn Rd,,43.62278,-79.481308,,,,,,1
+13947,13947,Lake Shore Blvd West at First St,,43.602383,-79.498357,,,,,,1
+14544,14544,Marine Parade Dr (East) at Lake Shore Blvd West,,43.62998,-79.476401,,,,,,1
+14545,14545,58 Marine Parade Dr,,43.626687,-79.476853,,,,,,1
+14542,14542,Opposite 2155 Lake Shore Blvd West,,43.625719,-79.479637,,,,,,1
+14543,14543,Lake Shore Blvd West at Brookers Lane,,43.62699,-79.479017,,,,,,1
+14828,14828,Lake Shore Blvd West at Legion Rd,,43.620165,-79.483763,,,,,,1
+14829,14829,Lake Shore Blvd West at Legion Rd,,43.620357,-79.483841,,,,,,1
+14830,14830,Lake Shore Blvd West at Louisa St,,43.618371,-79.486679,,,,,,1
+14831,14831,Lake Shore Blvd West at Louisa St,,43.618653,-79.486723,,,,,,2
+16403,16403,Marine Parade Dr at Silver Moon Dr,,43.624651,-79.477619,,,,,,1

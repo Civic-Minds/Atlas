@@ -1,0 +1,161 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_station,wheelchair_boarding
+2994,2994,California & Roscoe,"California & Roscoe, Southbound, Northwest Corner",41.94292223,-87.69801745,0,,1
+2995,2995,California & Melrose,"California & Melrose, Southbound, Northwest Corner",41.94033286,-87.69791878,0,,1
+2996,2996,California & Belmont,"California & Belmont, Southbound, Northwest Corner",41.93953145,-87.69792395,0,,1
+2997,2997,California & Barry,"California & Barry, Southbound, Northwest Corner",41.93765586,-87.69784278,0,,1
+2998,2998,California & Wellington,"California & Wellington, Southbound, Northwest Corner",41.93582086,-87.69780278,0,,1
+2999,2999,California & George,"California & George, Southbound, Westside of the Street",41.9346383,-87.69777155,0,,1
+3199,3199,California & George,"California & George, Northbound, Northeast Corner",41.93458586,-87.69758978,0,,1
+3200,3200,California & Wellington,"California & Wellington, Northbound, Southeast Corner",41.93572331,-87.6976166,0,,1
+3201,3201,California & Barry,"California & Barry, Northbound, Southeast Corner",41.93747034,-87.69767455,0,,1
+3524,3524,Dodge & Brummel,"Dodge & Brummel, Northbound, Southeast Corner",42.02120739,-87.69939628,0,,1
+3525,3525,Dodge & Mulford,"Dodge & Mulford, Northbound, Southeast Corner",42.02296339,-87.69943128,0,,1
+3526,3526,Dodge & Kirk,"Dodge & Kirk, Northbound, Southeast Corner",42.02473039,-87.69937027,0,,1
+3619,3619,Dodge & Kirk,"Dodge & Kirk, Southbound, Westside of the Street",42.02481625,-87.69952898,0,,1
+3620,3620,Dodge & Mulford,"Dodge & Mulford, Southbound, Northwest Corner",42.02304925,-87.69958999,0,,1
+3621,3621,Dodge & Brummel,"Dodge & Brummel, Southbound, Northwest Corner",42.02132566,-87.69958154,0,,1
+4774,4774,Foster & Albany,"Foster & Albany, Eastbound, Southeast Corner",41.97576194,-87.70593594,0,,1
+4776,4776,Foster & Francisco,"Foster & Francisco, Eastbound, Southwest Corner",41.97567696,-87.70142695,0,,1
+4815,4815,Foster & Francisco,"Foster & Francisco, Westbound, Northeast Corner",41.97590766,-87.70143643,0,,1
+11006,11006,Kedzie & Diversey,"Kedzie & Diversey, Northbound, Southeast Corner",41.93194086,-87.70734678,0,,1
+11007,11007,Diversey & Albany,"Diversey & Albany, Eastbound, Southwest Corner",41.93198886,-87.70508278,0,,1
+11008,11008,Diversey & Sacramento,"Diversey & Sacramento, Eastbound, Southwest Corner",41.93200786,-87.70262578,0,,1
+11009,11009,Diversey & Francisco,"Diversey & Francisco, Eastbound, Southwest Corner",41.93202686,-87.70019778,0,,1
+11063,11063,Diversey & California,"Diversey & California, Westbound, Northwest Corner",41.93217484,-87.69774179,0,,1
+11064,11064,Diversey & Francisco,"Diversey & Francisco, Westbound, Northeast Corner",41.93214074,-87.69987552,0,,1
+11065,11065,Diversey & Sacramento,"Diversey & Sacramento, Westbound, Northeast Corner",41.9320899,-87.7023978,0,,1
+11066,11066,Diversey & Albany,"Diversey & Albany, Westbound, Northeast Corner",41.9320889,-87.7047978,0,,1
+11067,11067,Kedzie & Diversey,"Kedzie & Diversey, Southbound, Southwest Corner",41.93184586,-87.70749478,0,,1
+11068,11068,Logan Square Blue Line Station,"Logan Square Blue Line Station, Southbound, Bus Terminal",41.92953588,-87.70757476,0,,1
+11341,11341,Montrose & Albany,"Montrose & Albany, Eastbound, Southwest Corner",41.96115386,-87.70591978,0,,1
+11342,11342,Montrose & Sacramento,"Montrose & Sacramento, Eastbound, Southwest Corner",41.96116263,-87.7034603,0,,1
+11343,11343,Montrose & Francisco,"Montrose & Francisco, Eastbound, Southwest Corner",41.9611825,-87.70102823,0,,1
+11384,11384,Montrose & Francisco,"Montrose & Francisco, Westbound, Northeast Corner",41.96130875,-87.70076095,0,,1
+11386,11386,Montrose & Albany,"Montrose & Albany, Westbound, Northeast Corner",41.96126786,-87.70568164,0,,1
+11387,11387,Montrose & Kedzie,"Montrose & Kedzie, Westbound, Northeast Corner",41.96126474,-87.70811766,0,,1
+11865,11865,California & Birchwood,"California & Birchwood, Southbound, Northwest Corner",42.01759387,-87.69969178,0,,1
+11866,11866,California & Jarvis,"California & Jarvis, Southbound, Northwest Corner",42.01577487,-87.69972478,0,,1
+11867,11867,California & Chase,"California & Chase, Southbound, Northwest Corner",42.01396087,-87.69975778,0,,1
+11869,11869,California & Touhy,"California & Touhy, Southbound, Northwest Corner",42.01216814,-87.69981279,0,,1
+11870,11870,California & Estes,"California & Estes, Southbound, Northwest Corner",42.01034287,-87.69981878,0,,1
+11871,11871,California & Lunt,"California & Lunt, Southbound, Northwest Corner",42.0085433,-87.69986974,0,,1
+11872,11872,California & Morse,"California & Morse, Southbound, Northwest Corner",42.00673387,-87.69987478,0,,1
+11873,11873,California & Pratt,"California & Pratt, Southbound, Northwest Corner",42.00493087,-87.69990078,0,,1
+11874,11874,California & North Shore,"California & North Shore, Southbound, Northwest Corner",42.00311087,-87.69985478,0,,1
+11875,11875,California & Albion,"California & Albion, Southbound, Northwest Corner",42.00128987,-87.69980578,0,,1
+11876,11876,California & Arthur,"California & Arthur, Southbound, Northwest Corner",41.99946987,-87.69975778,0,,1
+11877,11877,California & Devon,"California & Devon, Southbound, Northwest Corner",41.99765406,-87.69973405,0,,1
+11878,11878,California & Rosemont,"California & Rosemont, Southbound, Northwest Corner",41.99584687,-87.69964978,0,,1
+11879,11879,California & Granville,"California & Granville, Southbound, Northwest Corner",41.99435675,-87.69960178,0,,1
+11880,11880,California & Glenlake,"California & Glenlake, Southbound, Northwest Corner",41.99226387,-87.69953078,0,,1
+11882,11882,California & Thorndale,"California & Thorndale, Southbound, Northwest Corner",41.98865587,-87.69941078,0,,1
+11883,11883,California & Ardmore,"California & Ardmore, Southbound, Northwest Corner",41.98683787,-87.69935078,0,,1
+11884,11884,California & Lincoln,"California & Lincoln, Southbound, Northwest Corner",41.98578743,-87.69934099,0,,1
+11885,11885,California & Hollywood,"California & Hollywood, Southbound, Northwest Corner",41.98501287,-87.69928978,0,,1
+11886,11886,California & Bryn Mawr,"California & Bryn Mawr, Southbound, Northwest Corner",41.98320687,-87.69922978,0,,1
+11887,11887,California & Catalpa,"California & Catalpa, Southbound, Northwest Corner",41.98138287,-87.69917178,0,,1
+11888,11888,California & Balmoral,"California & Balmoral, Southbound, Northwest Corner",41.97956187,-87.69911378,0,,1
+11889,11889,California & Berwyn,"California & Berwyn, Southbound, Northwest Corner",41.97774287,-87.69905578,0,,1
+11890,11890,California & Foster,"California & Foster, Southbound, Northwest Corner",41.97595799,-87.69902094,0,,1
+11892,11892,Kedzie & Lawrence,"Kedzie & Lawrence, Northbound, Northeast Corner",41.96878747,-87.70840467,0,,1
+11893,11893,Kedzie & Ainslie,"Kedzie & Ainslie, Northbound, Southeast Corner",41.97020096,-87.70840955,0,,1
+11894,11894,Kedzie & Argyle,"Kedzie & Argyle, Northbound, Southeast Corner",41.97198867,-87.70849608,0,,1
+11895,11895,Kedzie & Carmen,"Kedzie & Carmen, Northbound, Southeast Corner",41.97381863,-87.70854891,0,,1
+11896,11896,Kedzie & Foster,"Kedzie & Foster, Northbound, Southeast Corner",41.97562208,-87.70859645,0,,1
+11897,11897,California & Foster,"California & Foster, Northbound, Northeast Corner",41.97603362,-87.6988476,0,,1
+11898,11898,California & Berwyn,"California & Berwyn, Northbound, Southeast Corner",41.97757687,-87.69890978,0,,1
+11899,11899,California & Balmoral,"California & Balmoral, Northbound, Southeast Corner",41.97939587,-87.69896778,0,,1
+11900,11900,California & Catalpa,"California & Catalpa, Northbound, Southeast Corner",41.98121687,-87.69902678,0,,1
+11901,11901,California & Bryn Mawr,"California & Bryn Mawr, Northbound, Southeast Corner",41.98304087,-87.69908478,0,,1
+11902,11902,California & Lincoln,"California & Lincoln, Northbound, Southeast Corner",41.98532189,-87.69914923,0,,1
+11903,11903,California & Ardmore,"California & Ardmore, Northbound, Southeast Corner",41.98667187,-87.69920478,0,,1
+11904,11904,California & Thorndale,"California & Thorndale, Northbound, Southeast Corner",41.98848987,-87.69926578,0,,1
+11905,11905,California & Peterson,"California & Peterson, Northbound, Southeast Corner",41.99030651,-87.69931428,0,,1
+11906,11906,California & Glenlake,"California & Glenlake, Northbound, Southeast Corner",41.99209887,-87.69938578,0,,1
+11907,11907,California & Granville,"California & Granville, Northbound, Southeast Corner",41.99388887,-87.69944478,0,,1
+11908,11908,California & Rosemont,"California & Rosemont, Northbound, Southeast Corner",41.99568187,-87.69950478,0,,1
+11909,11909,California & Devon,"California & Devon, Northbound, Southeast Corner",41.99747887,-87.69956378,0,,1
+11910,11910,California & Arthur,"California & Arthur, Northbound, Southeast Corner",41.99930487,-87.69961278,0,,1
+11911,11911,California & Albion,"California & Albion, Northbound, Southeast Corner",42.00112487,-87.69966078,0,,1
+11912,11912,California & North Shore,"California & North Shore, Northbound, Southeast Corner",42.00294487,-87.69970878,0,,1
+11913,11913,California & Pratt,"California & Pratt, Northbound, Southeast Corner",42.00476587,-87.69975478,0,,1
+11914,11914,California & Morse,"California & Morse, Northbound, Southeast Corner",42.00656887,-87.69972878,0,,1
+11915,11915,California & Lunt,"California & Lunt, Northbound, Southeast Corner",42.00837187,-87.69970078,0,,1
+11916,11916,California & Estes,"California & Estes, Northbound, Southeast Corner",42.01017787,-87.69967278,0,,1
+11917,11917,California & Touhy,"California & Touhy, Northbound, Southeast Corner",42.01198887,-87.69964478,0,,1
+11919,11919,California & Chase,"California & Chase, Northbound, Southeast Corner",42.01379587,-87.69961178,0,,1
+11920,11920,California & Jarvis,"California & Jarvis, Northbound, Southeast Corner",42.01560887,-87.69957878,0,,1
+11921,11921,California & Birchwood,"California & Birchwood, Northbound, Southeast Corner",42.01742887,-87.69954578,0,,1
+12665,12665,Emerson & Maple,,42.05222146,-87.68485577,0,,1
+12675,12675,Maple & Church,"Maple & Church, Northbound, Northeast Corner",42.04886824,-87.68469578,0,,1
+12686,12686,Davis & Maple,"Davis & Maple, Westbound, Northeast Corner",42.04713058,-87.68474942,0,,1
+12687,12687,Davis & Oak,"Davis & Oak, Westbound, Northeast Corner",42.04712062,-87.68661563,0,,1
+12697,12697,Dodge & Emerson,"Dodge & Emerson, Northbound, Southeast Corner",42.0520022,-87.69877236,0,,1
+12699,12699,Dodge & Main,"Dodge & Main, Southbound, Northwest Corner",42.03398017,-87.69944306,0,,1
+12710,12710,Dodge & Lake,"Dodge & Lake, Southbound, Northwest Corner",42.04440766,-87.69920837,0,,1
+13112,13112,Dodge & Lake,"Dodge & Lake, Northbound, Southeast Corner",42.04410282,-87.69899794,0,,1
+13135,13135,Dodge & Church,,42.04822834,-87.69883571,0,,1
+13156,13156,Dodge & Church,"Dodge & Church, Southbound, Northwest Corner",42.0484616,-87.69908582,0,,1
+14358,14358,Dodge & Keeney,"Dodge & Keeney, Northbound, Southeast Corner",42.02820239,-87.69937725,0,,1
+14359,14359,Dodge & Keeney,"Dodge & Keeney, Southbound, Northwest Corner",42.02848295,-87.69947826,0,,1
+14363,14363,Dodge & Cleveland,"Dodge & Cleveland, Southbound, Northwest Corner",42.03025191,-87.69935817,0,,1
+14364,14364,Dodge & Monroe,"Dodge & Monroe, Northbound, Southeast Corner",42.0305955,-87.69924983,0,,1
+14367,14367,Dodge & Washington,"Dodge & Washington, Northbound, Southeast Corner",42.03257314,-87.69925527,0,,1
+14370,14370,Dodge & Greenleaf,"Dodge & Greenleaf, Northbound, Southeast Corner",42.03736836,-87.69901462,0,,1
+14371,14371,Dodge & Greenleaf,"Dodge & Greenleaf, Southbound, Northwest Corner",42.03747914,-87.69924437,0,,1
+14372,14372,Dodge & Crain,"Dodge & Crain, Northbound, Southeast Corner",42.0391988,-87.6990174,0,,1
+14374,14374,Dodge & Dempster,"Dodge & Dempster, Northbound, Southeast Corner",42.04095103,-87.69902096,0,,1
+14408,14408,Maple & Clark,"Maple & Clark, Southbound, Westside of the Street",42.05007048,-87.68490069,0,,1
+14409,14409,Davis Purple Line Station,"Davis Purple Line Station, Southbound, Westside of the Street",42.04778238,-87.68347888,0,,1
+14728,14728,Dodge & Lyons,"Dodge & Lyons, Southbound, Westside of the Street",42.05027788,-87.69899579,0,,1
+14729,14729,Dodge & Evanston Township HS,"Dodge & Evanston Township HS, Southbound, Westside of the Street",42.04548347,-87.69916153,0,,1
+14732,14732,California/Dodge & Howard,"California/Dodge & Howard, Northbound, Southeast Corner",42.01920787,-87.69952578,0,,1
+14735,14735,Emerson & Asbury,"Emerson & Asbury, Eastbound, Southwest Corner",42.05211665,-87.6903365,0,,1
+14737,14737,Emerson & Asbury,"Emerson & Asbury, Westbound, Northeast Corner",42.05232788,-87.68993578,0,,1
+14738,14738,Dodge & Oakton,"Dodge & Oakton, Southbound, Northwest Corner",42.02666702,-87.69961478,0,,1
+14739,14739,Dodge/California & Howard,"Dodge/California & Howard, Southbound, Northwest Corner",42.01944262,-87.69968463,0,,1
+14756,14756,Oak & Church,,42.04844679,-87.68663839,0,,1
+15018,15018,California & Peterson,"California & Peterson, Southbound, Southwest Corner",41.99023134,-87.69949244,0,,1
+15122,15122,Foster & Troy,"Foster & Troy, Westbound, Northside of the Street",41.97587651,-87.70726751,0,,1
+15218,15218,California & Diversey,"California & Diversey, Northbound, Northeast Corner",41.93240453,-87.69753576,0,,1
+15543,15543,Dodge & Emerson,"Dodge & Emerson, Southbound, Southwest Corner",42.05197479,-87.69899547,0,,1
+17473,17473,California & Roscoe,"California & Roscoe, Northbound, Northeast Corner",41.94325433,-87.69783378,0,,1
+17474,17474,California & Belmont,"California & Belmont, Northbound, Northeast Corner",41.93964331,-87.69775182,0,,1
+17497,17497,Kedzie & Ainslie,"Kedzie & Ainslie, Southbound, Northwest Corner",41.97038046,-87.70860866,0,,1
+17498,17498,Kedzie & Argyle,"Kedzie & Argyle, Southbound, Northwest Corner",41.97220269,-87.70865961,0,,1
+17499,17499,Kedzie & Carmen,"Kedzie & Carmen, Southbound, Northwest Corner",41.97405223,-87.70870943,0,,1
+17500,17500,Kedzie & Lawrence,"Kedzie & Lawrence, Southbound, Northwest Corner",41.96857586,-87.70856896,0,,1
+17501,17501,Kedzie & Foster,"Kedzie & Foster, Southbound, Southwest Corner",41.97539109,-87.70878254,0,,1
+17502,17502,Kedzie Brown Line Station,"Kedzie Brown Line Station, Southbound, Westside of the Street",41.96627108,-87.70848903,0,,1
+17787,17787,California & Addison,"California & Addison, Southbound, Southwest Corner",41.94631996,-87.69813758,0,,1
+17908,17908,Dodge & Washington,"Dodge & Washington, Southbound, Northwest Corner",42.03280123,-87.69942115,0,,1
+17945,17945,Montrose & Sacramento,"Montrose & Sacramento, Westbound, Northwest Corner",41.96128005,-87.70363412,0,,1
+18015,18015,Dodge & Dempster,"Dodge & Dempster, Southbound, Southwest Corner",42.0409693,-87.69924332,0,,1
+18045,18045,Emerson & Dewey,"Emerson & Dewey, Eastbound, Southside of the Street",42.05208278,-87.69615276,0,,1
+18046,18046,Emerson & Dewey,"Emerson & Dewey, Westbound, Northeast Corner",42.05222164,-87.69561485,0,,1
+18345,18345,Maple & Emerson,"Maple & Emerson, Southbound, Southwest Corner",42.05198151,-87.68486226,0,,1
+18449,18449,Dodge & Main,"Dodge & Main, Northbound, Northeast Corner",42.03406625,-87.69914231,0,,1
+18450,18450,Dodge & Oakton,"Dodge & Oakton, Northbound, Northeast Corner",42.02677531,-87.69937938,0,,1
+18734,18734,Logan Square Blue Line Station,"Logan Square Blue Line Station, Northbound, Northeast Corner",41.92988691,-87.70772579,0,,1
+18806,18806,Kedzie & Sunnyside,"Kedzie & Sunnyside, Southbound, Northwest Corner",41.96326948,-87.7083804,0,,1
+18807,18807,Montrose & Kedzie,"Montrose & Kedzie, Eastbound, Southeast Corner",41.96112662,-87.70779364,0,,1
+18808,18808,Montrose & Mozart,"Montrose & Mozart, Eastbound, Southeast Corner",41.96118313,-87.69931655,0,,1
+18809,18809,California & Cullom,"California & Cullom, Southbound, Northwest Corner",41.95955799,-87.6984996,0,,1
+18810,18810,California & Berteau,"California & Berteau, Southbound, Northwest Corner",41.95776101,-87.69843347,0,,1
+18811,18811,California & Belle Plaine,"California & Belle Plaine, Southbound, Northwest Corner",41.95591413,-87.69839164,0,,1
+18812,18812,California & Irving Park,"California & Irving Park, Southbound, Southwest Corner",41.95362161,-87.69834069,0,,1
+18813,18813,California & Byron,"California & Byron, Southbound, Northwest Corner",41.9523003,-87.69827858,0,,1
+18814,18814,California & Grace,"California & Grace, Southbound, Northwest Corner",41.95040753,-87.69826938,0,,1
+18815,18815,California & Waveland,"California & Waveland, Southbound, Northwest Corner",41.94861285,-87.69816852,0,,1
+18816,18816,California & Addison,"California & Addison, Northbound, Northeast Corner",41.94702382,-87.69800357,0,,1
+18817,18817,California & Waveland,"California & Waveland, Northbound, Eastside of the Street",41.94884145,-87.69801951,0,,1
+18818,18818,California & Grace,"California & Grace, Northbound, Eastside of the Street",41.95021712,-87.69805132,0,,1
+18819,18819,California & Byron,"California & Byron, Northbound, Eastside of the Street",41.95203895,-87.69808281,0,,1
+18820,18820,California & Irving Park,"California & Irving Park, Northbound, Southeast Corner",41.95381353,-87.69812578,0,,1
+18821,18821,California & Belle Plaine,"California & Belle Plaine, Northbound, Eastside of the Street",41.95567957,-87.69819389,0,,1
+18822,18822,California & Berteau,"California & Berteau, Northbound, Eastside of the Street",41.95748525,-87.69825781,0,,1
+18823,18823,California & Cullom,"California & Cullom, Northbound, Eastside of the Street",41.95929088,-87.6983294,0,,1
+18824,18824,Montrose & California,"Montrose & California, Westbound, Northwest Corner",41.96130646,-87.69887358,0,,1
+18825,18825,Kedzie & Sunnyside,"Kedzie & Sunnyside, Northbound, Southeast Corner",41.96289766,-87.7082229,0,,1
+18826,18826,Kedzie Brown Line Station,"Kedzie Brown Line Station, Northbound, Southeast Corner",41.96644887,-87.7083521,0,,1
+18863,18863,Dodge & Lyons,"Dodge & Lyons, Northbound, Southeast Corner",42.0500775,-87.69886547,0,,1

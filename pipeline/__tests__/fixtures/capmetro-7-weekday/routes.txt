@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color
+7,CM,7,7-Duval / Dove Springs,3,http://www.capmetro.org/current_schedules/pdf/007.pdf,004A97,FFFFFF

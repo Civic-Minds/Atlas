@@ -51,11 +51,11 @@ describe('the one frequency-filter rule: worst direction decides', () => {
   });
 
   it('TransLink 99 AM peak: known case, still fails every-20 (#602)', () => {
-    // Frozen current behaviour, not the desired one. The main eastbound pattern (Commercial-
-    // Broadway, every 4) is marked non-steady because it runs every 16-19 min before 7:00, so the
-    // only steady eastbound value left is the 3-trip Boundary Loop extension (every 23). The
-    // extension is kept on purpose: dropping it would make eastbound vanish from the check.
-    // #602 fixes this in processing; when it lands, this should flip to passing at 20.
+    // Step 5a: still fails, now for the right-looking reason. The route reads its eastbound main
+    // stretch at the middle stop (Commercial-Broadway, every 3 once it ramps up), which opens at
+    // 6:23 with 16-19 minute gaps before 7:00: not steady, so it reads its full-window wait, 23.
+    // The Boundary Loop extension no longer sets the value. Passing at 20 is the AM-ramp
+    // steadiness question (D8), not trip selection.
     const features = routeFeatures('translink', '099');
     const ubc = features.find((p: any) => p.headsign === 'UBC Exchange');
     expect(routeFilterHeadway(ubc, 'amPeak')).toBe(23);
@@ -72,32 +72,38 @@ describe('the one frequency-filter rule: worst direction decides', () => {
   });
 
   it('TTC 100 AM peak: the occasional Don Valley via Linkwood trips do not sink the route', () => {
-    // Northbound Don Valley every 5 (steady); the via-Linkwood variant (tier infrequent) every 15.
+    // Step 5a: the route reads its main stretch, every 5 at the middle stop. The 100A Grenoble and
+    // 100B Linkwood loops are each under the 5-stop tail test, so their trips count where they
+    // serve; the Linkwood trips no longer slow the route (they used to read 9 on this row).
     const features = routeFeatures('ttc', '100');
     const donValley = features.find((p: any) => p.headsign === 'Don Valley');
-    expect(routeFilterHeadway(donValley, 'amPeak')).toBe(9);
+    expect(routeFilterHeadway(donValley, 'amPeak')).toBe(5);
     expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 10)).toBe(true);
-    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 5)).toBe(false);
+    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 5)).toBe(true);
   });
 
-  it('LA Metro 51 AM peak: the Victoria / Tamcliff short-turn does not sink the route', () => {
-    // Southbound Avalon every 12 (steady); Victoria / Tamcliff (tier infrequent) every 24.
+  it('LA Metro 51 AM peak: the slower of its two regular branches decides (D1)', () => {
+    // Step 5a, decided by the manager 2026-10-15: Avalon / Alondra (max 23) and Avalon / Redondo
+    // Beach (max 26) are regular tails, so the route reads 24 and fails every 20 (shown "every 7-26").
     const features = routeFeatures('lacmta', '51');
     const avalon = features.find((p: any) => p.headsign === 'Avalon Station Layover');
-    expect(routeFilterHeadway(avalon, 'amPeak')).toBe(13);
-    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 15)).toBe(true);
-    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 10)).toBe(false);
+    expect(routeFilterHeadway(avalon, 'amPeak')).toBe(24);
+    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 20)).toBe(false);
+    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 30)).toBe(true);
   });
 
   // #658: weekday coverage took the worst pattern per direction, so one rare variant failed the
   // whole route. Coverage now uses the same pool as the period headway.
   it('TTC 506/63/84/100 weekday: a rare variant no longer sets the route coverage', () => {
     // Live values before the fix (wdpch amPeak/midday): 506 136/345, 63 85/338, 84 62/322, 100 17/286.
+    // Regenerated for step 5a (scripts/build-headway-filter-fixture.ts): newer feed, and step 2a's
+    // coverage fallback. The filter now reads routeFilterHeadwayByPeriod; these legacy coverage
+    // stamps still feed the cards until step 5b.
     const expected: Record<string, { amPeak: number; midday: number }> = {
-      '506': { amPeak: 13, midday: 13 },
-      '63': { amPeak: 13, midday: 10 },
-      '84': { amPeak: 16, midday: 14 },
-      '100': { amPeak: 12, midday: 12 },
+      '506': { amPeak: 14, midday: 13 },
+      '63': { amPeak: 16, midday: 13 },
+      '84': { amPeak: 62, midday: 10 },
+      '100': { amPeak: 15, midday: 12 },
     };
     for (const [route, coverage] of Object.entries(expected)) {
       const features = routeFeatures('ttc', route);
@@ -108,13 +114,12 @@ describe('the one frequency-filter rule: worst direction decides', () => {
     }
   });
 
-  it('TTC 506 weekday: the 7-trip High Park pattern is set aside, the worst direction still decides', () => {
+  it('TTC 506 weekday: the worst direction still decides at midday', () => {
+    // The regenerated feed no longer has the 7-trip High Park pattern (High Park is a regular
+    // every-13 row now); the route reads its main stretch, every 10 at midday.
     const features = routeFeatures('ttc', '506');
     const highPark = features.find((p: any) => p.headsign === 'High Park');
-    expect(highPark.tier).toBe('infrequent');
-    expect(highPark.periodCoverageHeadway.midday).toBe(345);
-    // No midday cadence of its own, so this feature reads the route coverage (13), not 345.
-    expect(routeFilterHeadway(highPark, 'midday')).toBe(13);
+    expect(routeFilterHeadway(highPark, 'midday')).toBe(10);
     expect(routePassesHeadwayFilter(features, 'midday', 'Weekday', 10)).toBe(true);
     expect(routePassesHeadwayFilter(features, 'midday', 'Weekday', 5)).toBe(false);
   });

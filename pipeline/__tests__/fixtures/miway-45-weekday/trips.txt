@@ -1,0 +1,104 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+45,26SE07-CPBlock-Weekday-11,30489450,45 N Winston Churchill To Meadowvale,,0,2910540,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492558,45 N Winston Churchill To Meadowvale,,0,2910562,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492559,45 N Winston Churchill To Meadowvale,,0,2910561,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492560,45A N Winston Churchill To Meadowvale,,0,2910565,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492561,45 N Winston Churchill To Meadowvale,,0,2910563,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492562,45A N Winston Churchill To Meadowvale,,0,2910567,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492563,45 N Winston Churchill To Meadowvale,,0,2910564,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492564,45A N Winston Churchill To Meadowvale,,0,2910562,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492565,45 N Winston Churchill To Meadowvale,,0,2910566,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492566,45A N Winston Churchill To Meadowvale,,0,2910561,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492567,45 N Winston Churchill To Meadowvale,,0,2910565,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492568,45A N Winston Churchill To Meadowvale,,0,2910563,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492569,45 N Winston Churchill To Meadowvale,,0,2910567,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492570,45A N Winston Churchill To Meadowvale,,0,2910564,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492571,45 N Winston Churchill To Meadowvale,,0,2910562,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492572,45 N Winston Churchill To Meadowvale,,0,2910566,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492573,45 N Winston Churchill To Meadowvale,,0,2910561,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492574,45 N Winston Churchill To Meadowvale,,0,2910563,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492575,45 N Winston Churchill To Meadowvale,,0,2910564,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492576,45 N Winston Churchill To Meadowvale,,0,2910562,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492577,45 N Winston Churchill To Meadowvale,,0,2910561,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492578,45 N Winston Churchill To Meadowvale,,0,2910563,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492579,45 N Winston Churchill To Meadowvale,,0,2910564,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492580,45 N Winston Churchill To Meadowvale,,0,2910562,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492581,45A N Winston Churchill To Meadowvale,,0,2910561,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492582,45 N Winston Churchill To Meadowvale,,0,2910569,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492583,45A N Winston Churchill To Meadowvale,,0,2910568,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492584,45 N Winston Churchill To Meadowvale,,0,2910563,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492585,45A N Winston Churchill To Meadowvale,,0,2910564,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492586,45 N Winston Churchill To Meadowvale,,0,2910570,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492587,45A N Winston Churchill To Meadowvale,,0,2910562,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492588,45 N Winston Churchill To Meadowvale,,0,2910571,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492589,45A N Winston Churchill To Meadowvale,,0,2910561,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492590,45 N Winston Churchill To Meadowvale,,0,2910569,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492591,45A N Winston Churchill To Meadowvale,,0,2910568,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492592,45 N Winston Churchill To Meadowvale,,0,2910563,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492593,45A N Winston Churchill To Meadowvale,,0,2910564,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492594,45 N Winston Churchill To Meadowvale,,0,2910570,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492595,45A N Winston Churchill To Meadowvale,,0,2910562,450212,1,1
+45,26SE07-CPBlock-Weekday-11,30492596,45 N Winston Churchill To Meadowvale,,0,2910571,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492597,45 N Winston Churchill To Meadowvale,,0,2910569,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492598,45 N Winston Churchill To Meadowvale,,0,2910568,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492599,45 N Winston Churchill To Meadowvale,,0,2910564,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492600,45 N Winston Churchill To Meadowvale,,0,2910570,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492601,45 N Winston Churchill To Meadowvale,,0,2910562,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492602,45 N Winston Churchill To Meadowvale,,0,2910569,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492603,45 N Winston Churchill To Meadowvale,,0,2910568,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492604,45 N Winston Churchill To Meadowvale,,0,2910564,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492605,45 N Winston Churchill To Meadowvale,,0,2910562,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492606,45 N Winston Churchill To Meadowvale,,0,2910569,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492607,45 N Winston Churchill To Meadowvale,,0,2910568,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492608,45 N Winston Churchill To Meadowvale,,0,2910564,450213,1,1
+45,26SE07-CPBlock-Weekday-11,30492609,45 S Winston Churchill To Clarkson Go,,1,2910561,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492610,45 S Winston Churchill To Clarkson Go,,1,2910563,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492611,45 S Winston Churchill To Clarkson Go,,1,2910564,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492612,45A S Winston Churchill To Clarkson Go,,1,2910562,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492613,45 S Winston Churchill To Clarkson Go,,1,2910566,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492614,45A S Winston Churchill To Clarkson Go,,1,2910561,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492615,45 S Winston Churchill To Clarkson Go,,1,2910565,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492616,45A S Winston Churchill To Clarkson Go,,1,2910563,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492617,45 S Winston Churchill To Clarkson Go,,1,2910567,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492618,45A S Winston Churchill To Clarkson Go,,1,2910564,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492619,45 S Winston Churchill To Clarkson Go,,1,2910562,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492620,45A S Winston Churchill To Clarkson Go,,1,2910566,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492621,45 S Winston Churchill To Clarkson Go,,1,2910561,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492622,45A S Winston Churchill To Clarkson Go,,1,2910565,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492623,45 S Winston Churchill To Clarkson Go,,1,2910563,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492624,45A S Winston Churchill To Clarkson Go,,1,2910564,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492625,45 S Winston Churchill To Clarkson Go,,1,2910562,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492626,45 S Winston Churchill To Clarkson Go,,1,2910561,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492627,45 S Winston Churchill To Clarkson Go,,1,2910563,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492628,45 S Winston Churchill To Clarkson Go,,1,2910564,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492629,45 S Winston Churchill To Clarkson Go,,1,2910562,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492630,45 S Winston Churchill To Clarkson Go,,1,2910561,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492631,45 S Winston Churchill To Clarkson Go,,1,2910568,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492632,45 S Winston Churchill To Clarkson Go,,1,2910563,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492633,45 S Winston Churchill To Clarkson Go,,1,2910564,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492634,45 S Winston Churchill To Clarkson Go,,1,2910570,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492635,45A S Winston Churchill To Clarkson Go,,1,2910562,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492636,45 S Winston Churchill To Clarkson Go,,1,2910571,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492637,45A S Winston Churchill To Clarkson Go,,1,2910561,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492638,45 S Winston Churchill To Clarkson Go,,1,2910569,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492639,45A S Winston Churchill To Clarkson Go,,1,2910568,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492640,45 S Winston Churchill To Clarkson Go,,1,2910563,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492641,45A S Winston Churchill To Clarkson Go,,1,2910564,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492642,45 S Winston Churchill To Clarkson Go,,1,2910570,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492643,45A S Winston Churchill To Clarkson Go,,1,2910562,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492644,45 S Winston Churchill To Clarkson Go,,1,2910571,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492645,45A S Winston Churchill To Clarkson Go,,1,2910561,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492646,45 S Winston Churchill To Clarkson Go,,1,2910569,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492647,45A S Winston Churchill To Clarkson Go,,1,2910568,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492648,45 S Winston Churchill To Clarkson Go,,1,2910563,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492649,45A S Winston Churchill To Clarkson Go,,1,2910564,450215,1,1
+45,26SE07-CPBlock-Weekday-11,30492650,45 S Winston Churchill To Clarkson Go,,1,2910570,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492651,45 S Winston Churchill To Clarkson Go,,1,2910562,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492652,45 S Winston Churchill To Clarkson Go,,1,2910571,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492653,45 S Winston Churchill To Clarkson Go,,1,2910569,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492654,45 S Winston Churchill To Clarkson Go,,1,2910568,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492655,45 S Winston Churchill To Clarkson Go,,1,2910564,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492656,45 S Winston Churchill To Clarkson Go,,1,2910562,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492657,45 S Winston Churchill To Clarkson Go,,1,2910569,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492658,45 S Winston Churchill To Clarkson Go,,1,2910568,450214,1,1
+45,26SE07-CPBlock-Weekday-11,30492659,45 S Winston Churchill To Clarkson Go,,1,2910564,450214,1,1

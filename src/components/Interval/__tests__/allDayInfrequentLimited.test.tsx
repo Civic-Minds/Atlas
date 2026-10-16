@@ -151,6 +151,21 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
       expect(screen.queryByText('limited')).toBeNull();
     });
 
+    it('OC 226 style: All day with no all-day value reads "limited", whatever the pattern numbers say', () => {
+      // routeAllDayHeadway 999999 = none; a direction does not run at midday. The pattern's own 20 must not show.
+      const oc226 = { ...frequentSaturday, headway: 20, routeAllDayHeadway: 999999, routeHasLimitedDirection: true } as unknown as ShapeProperties;
+      renderCard([oc226], 'all');
+      expect(screen.getAllByText('limited').length).toBeGreaterThan(0);
+      expect(screen.queryByText(/every 20 min/)).toBeNull();
+    });
+
+    it('a normal all-day route keeps its number when the all-day value agrees', () => {
+      const normal = { ...frequentSaturday, routeAllDayHeadway: 12 } as unknown as ShapeProperties;
+      renderCard([normal], 'all');
+      expect(screen.getByText('about every 12 min')).toBeTruthy();
+      expect(screen.queryByText('limited')).toBeNull();
+    });
+
     it('still shows a frequent route\'s all-day number', () => {
       renderCard([frequentSaturday], 'all');
       expect(screen.getByText('about every 12 min')).toBeTruthy();

@@ -1,0 +1,361 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+9622,9622,Ellesmere Rd at East Service Rd,,43.767379,-79.273102,,,,,,2
+9619,9619,Ellesmere Rd at East Service Rd,,43.767743,-79.272603,,,,,,1
+9604,9604,Ellesmere Rd at McCowan Rd East Side,,43.77225,-79.25047,,,,,,1
+6368,6368,Ellesmere Rd at Pharmacy Ave,,43.758847,-79.310443,,,,,,1
+6372,6372,Ellesmere Rd at Victoria Park Ave,,43.758123,-79.31474,,,,,,1
+9621,9621,Ellesmere Rd at West Service Rd East Side,,43.766111,-79.278977,,,,,,2
+9620,9620,Ellesmere Rd at West Service Rd,,43.766455,-79.278682,,,,,,2
+13068,13068,Lawrence Ave East at East Ave - Rouge Hill GO Station,,43.780829,-79.131368,,,,,,1
+9885,9885,Port Union Rd at Adenmore Rd North Side,,43.781768,-79.13747,,,,,,1
+8215,8215,Steeles Ave East at Don Mills Rd,,43.811361,-79.360551,,,,,,1
+7691,7691,Ellesmere Rd at Helicon Gate West Side,,43.778605,-79.222594,,,,,,1
+9346,9346,Steeles Ave East at Birchmount Rd,,43.821204,-79.317134,,,,,,1
+8216,8216,Steeles Ave East at Dudley Ave,,43.798816,-79.416983,,,,,,1
+11606,11606,Steeles Ave East at Middlefield Rd,,43.832511,-79.268102,,,,,,1
+9344,9344,Steeles Ave East at Warden Ave,,43.819426,-79.324739,,,,,,1
+8257,8257,1750 Steeles Ave West,,43.785538,-79.478067,,,,,,1
+8285,8285,Steeles Ave West at Islington Ave Loop,,43.764147,-79.576339,,,,,,1
+12088,12088,Steeles Ave West at Jane St,,43.775231,-79.52209,,,,,,1
+1590,1590,Steeles Ave West at Keele St East Side,,43.781584,-79.493751,,,,,,1
+9825,9825,Steeles Ave West at Martin Grove Rd,,43.757668,-79.603509,,,,,,1
+1603,1603,Steeles Ave West at Village Gate,,43.793281,-79.441127,,,,,,1
+8316,8316,Steeles Ave West at Weston Rd,,43.770521,-79.546149,,,,,,1
+9911,9911,Tapscott Rd at Finch Ave East North Side,,43.814645,-79.237169,,,,,,1
+9078,9078,York Mills Rd at Lesmill Rd West Side,,43.754734,-79.352534,,,,,,1
+9083,9083,York Mills Rd at Sandover Dr (1222 York Mills),,43.759813,-79.331751,,,,,,1
+8256,8256,Steeles Ave East at Opposite Walkway to Whitman St,,43.80052,-79.409206,,,,,,1
+8260,8260,Steeles Ave West at Scholes Rd/Barmac Dr,,43.768372,-79.555194,,,,,,1
+9077,9077,York Mills Rd at Leslie St West Side,,43.753001,-79.360766,,,,,,1
+8212,8212,Steeles Ave East at Bestview Dr East Side,,43.806055,-79.382961,,,,,,1
+7198,7198,Sheppard Ave East at Kingston Rd North Side,,43.799459,-79.146775,,,,,,1
+3262,3262,York Mills Rd at Highland Cres,,43.745354,-79.396532,,,,,,1
+1049,1049,Ellesmere Rd at Markham Rd,,43.776669,-79.231287,,,,,,2
+9355,9355,Steeles Ave East at Birchmount Rd,,43.821577,-79.316703,,,,,,1
+10138,10138,Steeles Ave East at Ferrier St,,43.818633,-79.32951,,,,,,1
+8302,8302,Steeles Ave West at Rossdean Dr,,43.77169,-79.54045,,,,,,1
+7678,7678,Ellesmere Rd at Birchmount Rd,,43.763213,-79.29162,,,,,,1
+9833,9833,Steeles Ave East at Brimley Rd,,43.828448,-79.286833,,,,,,1
+9069,9069,York Mills Rd at Bayview Ave West Side,,43.748013,-79.38482,,,,,,1
+7722,7722,Ellesmere Rd at Dundalk Dr West Side,,43.765185,-79.284336,,,,,,1
+7466,7466,York Mills Rd at Banbury Rd (East),,43.752639,-79.365268,,,,,,1
+9188,9188,York Mills Rd at Bayview Ave,,43.74787,-79.384519,,,,,,1
+1596,1596,Steeles Ave West at Petrolia Rd,,43.782395,-79.490224,,,,,,1
+11614,11614,Steeles Ave East at Walkway to Joycedale St,,43.833683,-79.264264,,,,,,1
+11608,11608,Steeles Ave East at Shadlock St,,43.834084,-79.261385,,,,,,1
+7701,7701,Ellesmere Rd at Mornelle Crt,,43.785001,-79.195193,,,,,,1
+10527,10527,Ellesmere Rd at Calverley Trail,,43.78949,-79.176571,,,,,,1
+7474,7474,York Mills Rd at Upper Highland Cres,,43.745541,-79.396356,,,,,,1
+3260,3260,York Mills Rd at Hedgewood Rd East Side,,43.744875,-79.398732,,,,,,1
+8264,8264,Steeles Ave West at Capstan Gate,,43.783447,-79.487039,,,,,,1
+8307,8307,Steeles Ave West at Old Weston Rd,,43.771107,-79.543085,,,,,,1
+9074,9074,York Mills Rd at Old Yonge St,,43.744926,-79.399283,,,,,,1
+8266,8266,Steeles Ave West at Carpenter Rd,,43.791875,-79.447721,,,,,,1
+8295,8295,Steeles Ave West at Norfinch Dr,,43.773471,-79.531611,,,,,,1
+8228,8228,Steeles Ave East at Leslie St,,43.808226,-79.372863,,,,,,1
+7692,7692,Ellesmere Rd at Kennedy Rd,,43.766017,-79.28076,,,,,,1
+11333,11333,York Mills Rd at Old York Mills Rd,,43.744177,-79.404398,,,,,,2
+8250,8250,Steeles Ave East at Woodbine Ave,,43.814178,-79.348291,,,,,,1
+7706,7706,Ellesmere Rd at Oakley Blvd East Side,,43.768395,-79.268369,,,,,,1
+14266,14266,Staines Rd at Seasons Dr South Side,,43.830149,-79.223612,,,,,,1
+7683,7683,Ellesmere Rd at Borough Approach East,,43.771125,-79.255707,,,,,,1
+8253,8253,Steeles Ave West at Adesso Dr,,43.77444,-79.526647,,,,,,1
+3255,3255,York Mills Rd at Cedarwood Ave West Side,,43.745953,-79.394494,,,,,,1
+9829,9829,Steeles Ave East at Strawberry Hills Dr,,43.829662,-79.280495,,,,,,1
+14107,14107,Staines Rd at Warbler Cir,,43.82671,-79.221682,,,,,,1
+9264,9264,Steeles Ave West at Gihon Spring Dr,,43.759409,-79.596885,,,,,,1
+7694,7694,Ellesmere Rd at McCowan Rd,,43.771961,-79.251774,,,,,,1
+8284,8284,Steeles Ave West at Islington Ave East Side,,43.76433,-79.57411,,,,,,1
+8292,8292,Steeles Ave West at New Westminster Dr,,43.789674,-79.457799,,,,,,1
+8036,8036,Port Union Rd at Conference Blvd,,43.786201,-79.139586,,,,,,1
+9832,9832,Steeles Ave East at Hillcroft Dr,,43.829982,-79.280198,,,,,,1
+8229,8229,Steeles Ave East at Leslie St,,43.808687,-79.372445,,,,,,1
+1044,1044,Ellesmere Rd at Dolly Varden Blvd,,43.775626,-79.235048,,,,,,1
+8247,8247,Steeles Ave East at Willowdale Ave,,43.799392,-79.414344,,,,,,1
+8275,8275,Steeles Ave West at Gerry Fitzgerald Dr,,43.785992,-79.4749,,,,,,1
+7697,7697,Ellesmere Rd at Midland Ave,,43.768149,-79.270795,,,,,,1
+8026,8026,Parkwoods Village Dr at Combermere Dr North Side,,43.758376,-79.319508,,,,,,1
+7704,7704,Ellesmere Rd at Neilson Rd - Scarborough Health Network Centenary Hospital,,43.782441,-79.205092,,,,,,1
+9828,9828,Steeles Ave East at Brimley Rd,,43.828058,-79.287519,,,,,,1
+8301,8301,Steeles Ave West at Rossdean Dr,,43.771323,-79.540862,,,,,,1
+7467,7467,York Mills Rd at Chipstead Rd,,43.751336,-79.370548,,,,,,1
+13339,13339,Steeles Ave East at Woodbine Ave,,43.813706,-79.348866,,,,,,1
+10516,10516,Ellesmere Rd at Morrish Rd,,43.789964,-79.173574,,,,,,1
+10518,10518,Ellesmere Rd at Zaph Ave,,43.791626,-79.16673,,,,,,1
+8273,8273,Steeles Ave West at Walkway to Friuli Crt,,43.765154,-79.571975,,,,,,2
+8217,8217,Steeles Ave East at Dumont St,,43.798569,-79.417152,,,,,,1
+8025,8025,Parkwoods Village Dr at Brookbanks Dr,,43.76093,-79.323736,,,,,,1
+8277,8277,Steeles Ave West at Gaudaur Rd,,43.767589,-79.560311,,,,,,1
+8298,8298,Steeles Ave West at Pine Valley Dr,,43.766739,-79.564649,,,,,,1
+1046,1046,Ellesmere Rd at Gander Dr East Side,,43.777555,-79.226206,,,,,,1
+9347,9347,Steeles Ave East at Kelvin Grove Ave,,43.822309,-79.312378,,,,,,1
+8227,8227,Steeles Ave East at Laureleaf Rd,,43.80572,-79.385651,,,,,,1
+7689,7689,Ellesmere Rd at Crocus Dr,,43.760452,-79.30435,,,,,,1
+9085,9085,York Mills Rd at Silverdale Cres,,43.756849,-79.341547,,,,,,1
+8297,8297,Steeles Ave West at Pearce Rd,,43.769841,-79.54938,,,,,,1
+7684,7684,Ellesmere Rd at Brimley Rd,,43.769843,-79.261788,,,,,,1
+10724,10724,Finchdene Sq at Finch Ave East,,43.815701,-79.2317,,,,,,1
+4643,4643,Steeles Ave West at Islington Ave,,43.764154,-79.574983,,,,,,1
+7676,7676,Ellesmere Rd at Bellamy Rd North,,43.774149,-79.241959,,,,,,1
+8291,8291,350 Steeles Ave West,,43.795394,-79.432403,,,,,,2
+9824,9824,Steeles Ave West Loop at Martin Grove Rd,,43.756665,-79.607838,,,,,,1
+8274,8274,Steeles Ave West at Futurity Gate,,43.786355,-79.474561,,,,,,1
+8259,8259,4545 Steeles Ave West,,43.771904,-79.538072,,,,,,1
+1597,1597,Steeles Ave West at Shale Gate,,43.783056,-79.487457,,,,,,1
+7707,7707,Ellesmere Rd at Oakley Blvd,,43.768604,-79.268713,,,,,,1
+9831,9831,Steeles Ave East at Opposite Walkway to Enchanted Hills Cres,,43.830596,-79.277601,,,,,,1
+6144,6144,Steeles Ave West at Peter Kaiser Gate,,43.774182,-79.527044,,,,,,1
+9822,9822,Steeles Ave West at Kipling Ave,,43.759773,-79.589707,,,,,,1
+10522,10522,Ellesmere Rd at Muirbank Blvd,,43.793969,-79.157635,,,,,,1
+8280,8280,Steeles Ave West at Hilda Ave,,43.796207,-79.429071,,,,,,1
+8303,8303,Steeles Ave West at Scholes Rd/Barmac Dr,,43.768748,-79.554719,,,,,,1
+7696,7696,Ellesmere Rd at Midland Ave,,43.76772,-79.271469,,,,,,1
+9882,9882,Steeles Ave East at Walkway to Dairis Cres,,43.829251,-79.283542,,,,,,1
+7699,7699,Ellesmere Rd at Military Trail (East) West Side,,43.786502,-79.189027,,,,,,2
+10515,10515,Ellesmere Rd at Watson St,,43.789459,-79.17583,,,,,,1
+8313,8313,Steeles Ave West at Turbine Dr,,43.767809,-79.558204,,,,,,1
+7472,7472,York Mills Rd at Sandfield Rd,,43.750392,-79.375099,,,,,,1
+9084,9084,York Mills Rd at Scarsdale Rd,,43.753294,-79.357657,,,,,,1
+9086,9086,York Mills Rd at Upjohn Rd,,43.754749,-79.351135,,,,,,1
+1052,1052,Ellesmere Rd at Scarborough Golf Club Rd,,43.778371,-79.222373,,,,,,1
+3259,3259,York Mills Rd at Glenridge Ave,,43.747477,-79.386471,,,,,,2
+7710,7710,Ellesmere Rd at Borough Approach West,,43.771077,-79.257524,,,,,,1
+7680,7680,Ellesmere Rd at Birkdale Rd,,43.768788,-79.266622,,,,,,1
+8255,8255,Steeles Ave West at Alness St,,43.784882,-79.480869,,,,,,1
+9468,9468,Ellesmere Rd at Conlins Rd,,43.787692,-79.183514,,,,,,1
+10523,10523,Ellesmere Rd at Meadowvale Rd,,43.792623,-79.163292,,,,,,1
+1051,1051,Ellesmere Rd at Orton Park Rd,,43.7796,-79.217311,,,,,,1
+7681,7681,Ellesmere Rd at Birkdale Rd,,43.769104,-79.26641,,,,,,1
+8267,8267,Steeles Ave West at Conley St,,43.788864,-79.462964,,,,,,1
+8262,8262,Steeles Ave West at Cactus Ave,,43.79425,-79.436708,,,,,,1
+7693,7693,Ellesmere Rd at Kennedy Rd,,43.765591,-79.281448,,,,,,1
+7719,7719,Ellesmere Rd at Warden Ave,,43.760959,-79.301062,,,,,,1
+8237,8237,Steeles Ave East at Townsend Rd,,43.811738,-79.357697,,,,,,1
+7679,7679,Ellesmere Rd at Birchmount Rd West Side,,43.763409,-79.291907,,,,,,1
+6142,6142,Steeles Ave East at Waggoners Wells Lane,,43.80991,-79.366126,,,,,,1
+1591,1591,Steeles Ave West at Keele St,,43.781743,-79.4942,,,,,,1
+8309,8309,Steeles Ave West at Tangreen Crt,,43.796484,-79.42658,,,,,,1
+10525,10525,Ellesmere Rd at Scarboro Ave,,43.79106,-79.169811,,,,,,1
+8210,8210,Steeles Ave East at Bayview Ave West Side,,43.803048,-79.397598,,,,,,1
+9072,9072,York Mills Rd at Fenside Dr,,43.760561,-79.327819,,,,,,1
+10517,10517,Ellesmere Rd at Deep Dene Dr,,43.790749,-79.170421,,,,,,1
+8029,8029,Parkwoods Village Dr at Gisburn Rd,,43.760085,-79.321793,,,,,,1
+3254,3254,York Mills Rd at Cedarwood Ave East Side,,43.74593,-79.393792,,,,,,1
+7702,7702,Ellesmere Rd at Morningside Ave,,43.785158,-79.193623,,,,,,1
+10514,10514,3507 Ellesmere Rd,,43.788712,-79.179141,,,,,,1
+8304,8304,Steeles Ave West at Sea Hawkway,,43.790082,-79.455881,,,,,,1
+11615,11615,Steeles Ave East at Middlefield Rd,,43.832924,-79.267602,,,,,,1
+7712,7712,Ellesmere Rd at Parkington Cres,,43.773539,-79.245841,,,,,,1
+11612,11612,Steeles Ave East at Walkway to Irenemount Cres,,43.835243,-79.257531,,,,,,1
+7685,7685,Ellesmere Rd at Brimley Rd,,43.770303,-79.261001,,,,,,1
+11397,11397,1200-1202 York Mills Rd,,43.759132,-79.333893,,,,,,1
+7705,7705,Ellesmere Rd at Neilson Rd - Scarborough Health Network Centenary Hospital,,43.782805,-79.204762,,,,,,1
+8245,8245,Steeles Ave East at Walkway to Whitman St,,43.800243,-79.409414,,,,,,1
+7721,7721,Ellesmere Rd at Wye Valley Rd,,43.764958,-79.284138,,,,,,1
+8233,8233,Steeles Ave East at Old English Lane,,43.804155,-79.392546,,,,,,1
+9261,9261,Steeles Ave West at Gihon Spring Dr,,43.7591,-79.597122,,,,,,1
+8317,8317,Steeles Ave West at Yonge St West Side,,43.798021,-79.42066,,,,,,1
+10479,10479,Steeles Ave East at Milliken GO Station,,43.824833,-79.302471,,,,,,2
+11613,11613,Steeles Ave East at Shadlock St,,43.834486,-79.260884,,,,,,1
+7714,7714,Ellesmere Rd at Pharmacy Ave,,43.75918,-79.310072,,,,,,1
+1598,1598,Steeles Ave West at Tandem Rd,,43.782754,-79.489902,,,,,,1
+8288,8288,Steeles Ave West at Klondike Dr,,43.76923,-79.552088,,,,,,1
+8224,8224,Steeles Ave East at Conacher Dr,,43.802369,-79.400756,,,,,,1
+10866,10866,Steeles Ave West at Markbrook Lane,,43.759988,-79.586385,,,,,,1
+14317,14317,740 Ellesmere Rd at Mondeo Dr,,43.764086,-79.287886,,,,,,1
+9070,9070,York Mills Rd at Don Mills Rd,,43.755569,-79.347425,,,,,,1
+8222,8222,Steeles Ave East at Firebrace Rd West Side,,43.817856,-79.332775,,,,,,1
+9087,9087,York Mills Rd at Valentine Dr,,43.757207,-79.341181,,,,,,1
+7672,7672,1300 Ellesmere Rd,,43.769539,-79.26445,,,,,,1
+10293,10293,Finchdene Sq (East) at Finchdene Sq (South),,43.817462,-79.23243,,,,,,1
+8268,8268,Steeles Ave West at Dufferin St,,43.787029,-79.470392,,,,,,1
+7687,7687,Ellesmere Rd at Claudius Gate,,43.759437,-79.308022,,,,,,1
+9826,9826,Steeles Ave West at Kipling Ave,,43.759394,-79.59007,,,,,,1
+8290,8290,Opposite 350 Steeles Ave West,,43.795105,-79.432906,,,,,,1
+7700,7700,Ellesmere Rd at Military Trail (West),,43.779894,-79.217004,,,,,,1
+8219,8219,Steeles Ave East at Fairway Heights Dr,,43.807882,-79.375931,,,,,,1
+9073,9073,York Mills Rd at Fenside Dr,,43.760782,-79.327546,,,,,,1
+11334,11334,York Mills Rd at Old York Mills Rd,,43.744461,-79.404964,,,,,,1
+8281,8281,Steeles Ave West at Irondale Dr,,43.769499,-79.549749,,,,,,1
+1592,1592,Steeles Ave West at Murray Ross Pkwy East Side,,43.776344,-79.516416,,,,,,1
+8312,8312,Steeles Ave West at Turbine Dr West Side,,43.767973,-79.558138,,,,,,1
+10605,10605,900 York Mills Rd,,43.755228,-79.350256,,,,,,1
+8270,8270,Steeles Ave West at Dufferin St East Side,,43.787239,-79.469563,,,,,,1
+8311,8311,Steeles Ave West at Thurman Rd,,43.791062,-79.452739,,,,,,1
+8272,8272,Steeles Ave West at Walkway to Plunkett Rd,,43.764965,-79.57122,,,,,,1
+8232,8232,3160 Steeles Ave East,,43.815179,-79.343803,,,,,,1
+9357,9357,Steeles Ave East at Warden Ave,,43.819848,-79.324123,,,,,,1
+1587,1587,Steeles Ave West at Bathurst St,,43.792234,-79.446093,,,,,,1
+11859,11859,Ellesmere Rd at Principal Rd,,43.76279,-79.294575,,,,,,1
+9076,9076,York Mills Rd at Leslie St,,43.752788,-79.360219,,,,,,1
+8258,8258,2215 Steeles Ave West,,43.785318,-79.477801,,,,,,1
+10141,10141,Port Union Rd at Lawrence Ave East North Side,,43.780021,-79.136654,,,,,,1
+8214,8214,Steeles Ave East at Bluffwood Dr,,43.807554,-79.376213,,,,,,1
+7682,7682,Ellesmere Rd at Borough Approach East,,43.771587,-79.255056,,,,,,1
+9830,9830,Steeles Ave East at Walkway to Enchanted Hills Cres,,43.830278,-79.27779,,,,,,1
+9356,9356,Steeles Ave East at Mountcastle Gate,,43.82074,-79.320341,,,,,,1
+8225,8225,Steeles Ave East at Henderson Ave,,43.801188,-79.406152,,,,,,1
+11611,11611,Steeles Ave East at Markham Rd West Side,,43.836512,-79.25219,,,,,,1
+4640,4640,Steeles Ave East at Old Kennedy Rd,,43.825479,-79.299832,,,,,,1
+7677,7677,Ellesmere Rd at Bellamy Rd North,,43.774537,-79.241437,,,,,,1
+7473,7473,York Mills Rd at Sandfield Rd,,43.750689,-79.374746,,,,,,1
+8294,8294,Steeles Ave West at Norfinch Dr,,43.773147,-79.531973,,,,,,1
+10478,10478,Steeles Ave East at Milliken GO Station,,43.824582,-79.302567,,,,,,2
+8271,8271,Steeles Ave West at Fenmar Dr East Side,,43.766574,-79.563755,,,,,,1
+8246,8246,Steeles Ave East at Willowdale Ave,,43.79913,-79.414582,,,,,,1
+9079,9079,York Mills Rd at Lochinvar Cres,,43.757624,-79.339319,,,,,,2
+1045,1045,Ellesmere Rd at Dormington Dr West Side,,43.777547,-79.227204,,,,,,1
+7720,7720,Ellesmere Rd at Warden Ave,,43.761429,-79.300415,,,,,,1
+7711,7711,Ellesmere Rd at Parkington Cres,,43.773188,-79.246369,,,,,,1
+12076,12076,Steeles Ave East at Opposite Walkway to Norn Cres,,43.832127,-79.269844,,,,,,2
+9787,9787,Steeles Ave East at Midland Ave,,43.826099,-79.297089,,,,,,1
+7468,7468,York Mills Rd at Harrison Rd,,43.749601,-79.378889,,,,,,1
+6146,6146,Tapscott Rd at Newgale Gate,,43.818214,-79.239653,,,,,,1
+9473,9473,Ellesmere Rd at Military Trail (East),,43.78669,-79.188167,,,,,,1
+10524,10524,Ellesmere Rd at Zaph Ave,,43.79184,-79.166565,,,,,,2
+10526,10526,Ellesmere Rd at Morrish Rd,,43.790274,-79.173121,,,,,,1
+1043,1043,Ellesmere Rd at Dolly Varden Blvd West Side,,43.775797,-79.235291,,,,,,1
+8230,8230,Steeles Ave East at Lillian St East Side,,43.799781,-79.41153,,,,,,1
+1593,1593,Steeles Ave West at Murray Ross Pkwy,,43.776613,-79.516784,,,,,,1
+9354,9354,Steeles Ave East at Putnam Gate,,43.822702,-79.311866,,,,,,1
+8314,8314,Steeles Ave West at Emerald Lane,,43.793572,-79.440815,,,,,,1
+7709,7709,Ellesmere Rd at Packard Blvd,,43.770694,-79.257782,,,,,,1
+7698,7698,Ellesmere Rd at Military Trail (East),,43.786439,-79.188422,,,,,,1
+8265,8265,Steeles Ave West at Carpenter Rd West Side,,43.792072,-79.448117,,,,,,1
+9823,9823,Steeles Ave West at Martin Grove Rd,,43.758023,-79.60324,,,,,,1
+8299,8299,Steeles Ave West at Yonge St - Centerpoint Mall,,43.797286,-79.422816,,,,,,1
+10292,10292,Finchdene Sq (East) at Torham Pl South Side,,43.819452,-79.233233,,,,,,1
+8035,8035,Port Union Rd at Clappison Blvd,,43.7815,-79.137591,,,,,,1
+8236,8236,Steeles Ave East at Tarbert Rd,,43.804084,-79.392106,,,,,,1
+8241,8241,Steeles Ave East at Victoria Park Ave West Side,,43.815581,-79.342182,,,,,,1
+10919,10919,Steeles Ave East at McCowan Rd,,43.830837,-79.275525,,,,,,1
+9471,9471,Ellesmere Rd at Calthorpe Ave,,43.788586,-79.180524,,,,,,1
+9345,9345,Steeles Ave East at Mountcastle Gate,,43.820394,-79.320622,,,,,,1
+1595,1595,Steeles Ave West at Founders Rd - York University,,43.779428,-79.504234,,,,,,1
+14264,14264,150 Staines Rd West Side,,43.822964,-79.219024,,,,,,1
+8238,8238,Steeles Ave East at Townsend Rd West Side,,43.81194,-79.358022,,,,,,1
+12077,12077,Steeles Ave East at Walkway to Norn Cres,,43.832317,-79.270029,,,,,,1
+8269,8269,Steeles Ave West at Dufferin St,,43.787469,-79.469756,,,,,,1
+8226,8226,Steeles Ave East at Laureleaf Rd,,43.805432,-79.385852,,,,,,1
+1594,1594,Steeles Ave West at Founders Rd East Side - York University,,43.779212,-79.503758,,,,,,1
+7708,7708,426 Ellesmere Rd,,43.762102,-79.297487,,,,,,1
+1602,1602,Steeles Ave West at Northwest Gate,,43.777918,-79.510766,,,,,,1
+9781,9781,Steeles Ave East at Silver Star Blvd,,43.825065,-79.300444,,,,,,1
+8243,8243,Steeles Ave East at Victoria Park Ave,,43.815376,-79.341773,,,,,,1
+7695,7695,Ellesmere Rd at McCowan Rd,,43.77237,-79.251163,,,,,,1
+9783,9783,Steeles Ave East at Ashcott St,,43.827008,-79.292081,,,,,,1
+9263,9263,5010 Steeles Ave West,,43.759485,-79.593025,,,,,,1
+7673,7673,441 Ellesmere Rd,,43.761781,-79.297639,,,,,,1
+8286,8286,Steeles Ave West at Jane St West Side,,43.775471,-79.522085,,,,,,1
+5849,5849,Newgale Gate at Finchdene Sq,,43.818861,-79.237676,,,,,,1
+10528,10528,Ellesmere Rd at Highland Creek Park,,43.788976,-79.178809,,,,,,1
+3258,3258,York Mills Rd at Fenn Ave,,43.747131,-79.388881,,,,,,1
+8027,8027,Parkwoods Village Dr at Combermere Dr,,43.758032,-79.319424,,,,,,1
+8234,8234,Steeles Ave East at Pharmacy Ave,,43.816625,-79.336828,,,,,,1
+14329,14329,741 Ellesmere Rd at Mondeo Dr,,43.764459,-79.287449,,,,,,1
+9075,9075,York Mills Rd at Laurentide Dr,,43.757636,-79.338064,,,,,,1
+8296,8296,3600 Steeles Ave West,,43.77211,-79.538315,,,,,,1
+7688,7688,1299 Ellesmere Rd,,43.769344,-79.26411,,,,,,1
+8028,8028,Parkwoods Village Dr at Gailong Crt,,43.759388,-79.321096,,,,,,1
+8315,8315,Steeles Ave West at Weston Rd,,43.770086,-79.546903,,,,,,1
+8283,8283,Steeles Ave West at Islington Ave,,43.764537,-79.574602,,,,,,1
+8213,8213,Steeles Ave East at Bestview Dr,,43.80629,-79.383217,,,,,,1
+7690,7690,Ellesmere Rd at Dewey Dr,,43.76023,-79.304551,,,,,,1
+8209,8209,3381 Steeles Ave East,,43.81478,-79.344182,,,,,,1
+8278,8278,Steeles Ave West at Hidden Trail,,43.788495,-79.463345,,,,,,1
+8310,8310,Steeles Ave West at Torresdale Ave,,43.790688,-79.453166,,,,,,1
+1048,1048,Ellesmere Rd at Markham Rd,,43.776245,-79.232002,,,,,,1
+8276,8276,Steeles Ave West at Gaudaur Rd East Side,,43.767387,-79.56018,,,,,,1
+9469,9469,Ellesmere Rd at Calthorpe Ave,,43.788307,-79.180898,,,,,,1
+6371,6371,Ellesmere Rd at Victoria Park Ave East Side,,43.757877,-79.314607,,,,,,1
+9472,9472,Ellesmere Rd at Conlins Rd,,43.788024,-79.182973,,,,,,1
+9780,9780,Steeles Ave East at Kennedy Rd,,43.823486,-79.307333,,,,,,1
+8289,8289,Steeles Ave West at Klondike Dr,,43.768972,-79.552407,,,,,,1
+3252,3252,York Mills Rd at Birchwood Ave,,43.746313,-79.392079,,,,,,1
+10520,10520,Ellesmere Rd at Muirbank Blvd,,43.793732,-79.157941,,,,,,1
+14256,14256,Steeles Ave East at Redlea Ave,,43.823929,-79.30533,,,,,,1
+7715,7715,Ellesmere Rd at Principal Rd East Side,,43.762583,-79.294268,,,,,,1
+3265,3265,York Mills Rd at York Ridge Rd,,43.74447,-79.401416,,,,,,2
+7703,7703,Ellesmere Rd at Morningside Ave,,43.785523,-79.193129,,,,,,1
+9881,9881,Steeles Ave East at Opposite Walkway to Dairis Cres,,43.828963,-79.28354,,,,,,1
+1601,1601,Steeles Ave West at Northwest Gate East Side,,43.777721,-79.510466,,,,,,1
+8221,8221,Steeles Ave East at Firebrace Rd,,43.817679,-79.33227,,,,,,1
+8306,8306,Steeles Ave West at Signet Dr,,43.770762,-79.54357,,,,,,1
+8211,8211,Steeles Ave East at Bayview Ave,,43.802916,-79.39735,,,,,,1
+9262,9262,Steeles Ave West at Walkway to Cathy Jean Cres,,43.759309,-79.592962,,,,,,2
+8261,8261,Steeles Ave East at Bathurst St,,43.792709,-79.44514,,,,,,1
+9071,9071,York Mills Rd at Don Mills Rd,,43.756053,-79.3466,,,,,,1
+3257,3257,York Mills Rd at Fenn Ave,,43.746927,-79.389067,,,,,,2
+10290,10290,Finchdene Sq (North) at Finchdene Sq (West) East Side,,43.820436,-79.23748,,,,,,1
+8300,8300,100 Steeles Ave West,,43.797152,-79.424705,,,,,,1
+7464,7464,York Mills Rd at Banbury Rd (West),,43.751639,-79.370302,,,,,,1
+7469,7469,York Mills Rd at Harrison Rd,,43.749891,-79.378669,,,,,,1
+10291,10291,250 Finchdene Sq,,43.821102,-79.234368,,,,,,1
+14086,14086,Staines Rd at Mantis Rd,,43.821587,-79.220303,,,,,,1
+8287,8287,Steeles Ave East at Jewell St,,43.799973,-79.411681,,,,,,1
+8293,8293,Steeles Ave West at New Westminster Dr,,43.79007,-79.45726,,,,,,1
+7465,7465,York Mills Rd at Banbury Rd (East),,43.752361,-79.365634,,,,,,1
+8218,8218,Steeles Ave East at Esna Park Dr,,43.817107,-79.336038,,,,,,1
+8263,8263,Steeles Ave West at Palm Gate Blvd,,43.794536,-79.436382,,,,,,1
+8279,8279,Steeles Ave West at Hilda Ave,,43.795863,-79.4294,,,,,,1
+9891,9891,Port Union Rd at Lawrence Ave East,,43.780253,-79.137057,,,,,,1
+13448,13448,Steeles Ave East at Kennedy Rd,,43.823904,-79.306817,,,,,,1
+7717,7717,Ellesmere Rd at Saratoga Dr East Side,,43.771657,-79.253176,,,,,,1
+10519,10519,Ellesmere Rd at Meadowvale Rd,,43.792312,-79.163843,,,,,,1
+14423,14423,Staines Rd at Palk Lane North Side,,43.840107,-79.231969,,,,,,1
+14376,14376,Steeles Ave East at Marydale Ave,,43.835698,-79.254563,,,,,,1
+14379,14379,Steeles Ave East at Eastvale Rd,,43.83816,-79.245033,,,,,,2
+14380,14380,Steeles Ave East at Staines Rd,,43.840734,-79.232774,,,,,,2
+14382,14382,Staines Rd at Quietbrook Cres (North),,43.8387,-79.2323,,,,,,1
+14374,14374,5671 Steeles Ave East,,43.83318,-79.265322,,,,,,1
+14375,14375,Steeles Ave East at Opposite Walkway to Irenemount Cres,,43.83491,-79.257864,,,,,,1
+14377,14377,Steeles Ave East at Markham Rd,,43.836389,-79.251567,,,,,,1
+14442,14442,Finch Ave East at Blackbird Gate,,43.816771,-79.224426,,,,,,1
+14443,14443,5910 Finch Ave East,,43.81708,-79.224083,,,,,,1
+14444,14444,Finch Ave East at Morningside Ave,,43.81923,-79.220758,,,,,,1
+14445,14445,Finch Ave East at Morningside Ave West Side,,43.81918,-79.221189,,,,,,1
+14446,14446,Staines Rd at Jacques Rd,,43.82082,-79.2207,,,,,,1
+14549,14549,Finch Ave East at Neilson Rd,,43.816137,-79.227758,,,,,,2
+14550,14550,Finch Ave East at Neilson Rd,,43.816521,-79.227338,,,,,,2
+7686,7686,Ellesmere Rd at Claudius Gate,,43.759681,-79.307806,,,,,,1
+14603,14603,Steeles Ave East at Marydale Ave,,43.83606,-79.254107,,,,,,1
+14981,14981,Steeles Ave East at Tapscott Rd,,43.837061,-79.248697,,,,,,1
+14982,14982,Staines Rd at Point Rouge Trail,,43.825562,-79.220539,,,,,,1
+14983,14983,Staines Rd at Quietbrook Cres (South),,43.837151,-79.231588,,,,,,1
+14984,14984,Staines Rd at Solstice Dr,,43.836626,-79.231597,,,,,,1
+14985,14985,Staines Rd at Hepatica St,,43.834862,-79.230163,,,,,,1
+14986,14986,Staines Rd at Hepatica St,,43.834895,-79.22975,,,,,,1
+14987,14987,Staines Rd at Rivendell Trail,,43.833283,-79.224968,,,,,,1
+14988,14988,Staines Rd at Boulderbrook Dr,,43.833043,-79.224963,,,,,,1
+14989,14989,Staines Rd at Seasons Dr North Side,,43.830857,-79.223769,,,,,,2
+15238,15238,Steeles Ave East at Maxome Ave,,43.800946,-79.406362,,,,,,1
+15239,15239,Steeles Ave East at Conacher Dr,,43.802122,-79.401007,,,,,,1
+15423,15423,Staines Rd at Knowles Dr,,43.823668,-79.219031,,,,,,2
+15432,15432,204 Staines Rd,,43.825729,-79.220367,,,,,,2
+15573,15573,Pioneer Village Station,,43.776806,-79.509408,,,,,,1
+15742,15742,Steeles Ave East at Waggoners Wells Lane,,43.810155,-79.365733,,,,,,1
+12816,12816,Steeles Ave East at Don Mills Rd East Side,,43.811216,-79.360112,,,,,,1
+16013,16013,Steeles Ave East at Ferrier St East Side,,43.818427,-79.329259,,,,,,1
+16023,16023,Kingston Rd at Rylander Blvd,,43.796887,-79.149251,,,,,,1
+16037,16037,Rouge Hill GO Station Loop,,43.780709,-79.130359,,,,,,1
+12748,12748,Rylander Blvd at Kingston Rd,,43.797731,-79.149996,,,,,,2
+16127,16127,Durnford Rd at Durness Ave,,43.800394,-79.150948,,,,,,2
+16128,16128,Durnford Rd at Tallpines Park South Side,,43.798663,-79.150156,,,,,,2
+16247,16247,Steeles Ave East at Midland Ave East Side,,43.825932,-79.296916,,,,,,1
+16255,16255,Steeles Ave East at Morningside Ave,,43.838216,-79.243873,,,,,,1
+12544,12544,Kingston Rd at Ellesmere Rd,,43.793856,-79.153976,,,,,,1
+12545,12545,Kingston Rd at Ellesmere Rd,,43.793758,-79.154476,,,,,,1
+16654,16654,York Mills Rd at Scarsdale Rd West Side,,43.753447,-79.358043,,,,,,1
+16668,16668,Steeles Ave East at Fenton Rd West Side,,43.827229,-79.292084,,,,,,1
+8254,8254,Steeles Ave West at Alness St,,43.784538,-79.481222,,,,,,1
+16688,16688,York Mills Rd at Valley Woods Rd,,43.759402,-79.332792,,,,,,1
+16689,16689,Parkwoods Village Dr at York Mills Rd,,43.761128,-79.323838,,,,,,1
+16700,16700,Finch Ave East at Finchdene Sq,,43.815531,-79.231326,,,,,,1
+16701,16701,York Mills Rd at Birchwood Ave West Side,,43.746412,-79.392178,,,,,,1
+16419,16419,Steeles Ave West at Alness St West Side,,43.784591,-79.481821,,,,,,1
+16669,16669,Steeles Ave East at McCowan Rd West Side,,43.830858,-79.27639,,,,,,1
+16804,16804,Kingston Rd at Port Union Rd,,43.798675,-79.146425,,,,,,1
+16805,16805,Kingston Rd at Sheppard Ave East West Side,,43.79855,-79.146975,,,,,,1
+16806,16806,Kingston Rd at Rylander Blvd,,43.797281,-79.148975,,,,,,1
+16807,16807,Port Union Rd at Tilley Dr,,43.788615,-79.140347,,,,,,1
+16808,16808,Port Union Rd at Conference Blvd,,43.786023,-79.139246,,,,,,1

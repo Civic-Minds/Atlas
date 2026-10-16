@@ -1,0 +1,74 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+320,1,50803613,South - 320 Yonge towards Queens Quay,,0,2235242,1122411,1,1
+320,1,50803614,South - 320 Yonge towards Queens Quay,,0,2234330,1122411,1,1
+320,1,50803615,South - 320 Yonge towards Queens Quay,,0,2234850,1122411,1,1
+320,1,50803616,South - 320 Yonge towards Queens Quay,,0,2234858,1122411,1,1
+320,1,50803618,South - 320 Yonge towards Queens Quay,,0,2234992,1122411,1,1
+320,1,50803610,South - 320 Yonge towards Queens Quay,,0,2235241,1122410,1,1
+320,1,50803619,South - 320 Yonge towards Queens Quay,,0,2234932,1122411,1,1
+320,1,50803599,South - 320 Yonge towards Queens Quay,,0,2235136,1122410,1,1
+320,1,50803620,South - 320 Yonge towards Queens Quay,,0,2234933,1122411,1,1
+320,1,50803600,South - 320 Yonge towards Queens Quay,,0,2233678,1122410,1,1
+320,1,50803601,South - 320 Yonge towards Queens Quay,,0,2233342,1122410,1,1
+320,1,50803622,South - 320 Yonge towards Queens Quay,,0,2235240,1122412,1,1
+320,1,50803623,South - 320 Yonge towards Queens Quay,,0,2234714,1122412,1,1
+320,1,50803624,South - 320 Yonge towards Queens Quay,,0,2235063,1122412,1,1
+320,1,50803621,South - 320 Yonge towards Queens Quay,,0,2234890,1122408,1,1
+320,1,50803625,South - 320 Yonge towards Queens Quay,,0,2233383,1122412,1,1
+320,1,50803626,South - 320 Yonge towards Queens Quay,,0,2234680,1122412,1,1
+320,1,50803605,South - 320 Yonge towards Queens Quay,,0,2233347,1122409,1,1
+320,1,50803627,South - 320 Yonge towards Queens Quay,,0,2234582,1122412,1,1
+320,1,50803604,South - 320 Yonge towards Queens Quay,,0,2235239,1122409,1,1
+320,1,50803628,South - 320 Yonge towards Queens Quay,,0,2235312,1122412,1,1
+320,1,50803629,South - 320 Yonge towards Queens Quay,,0,2233957,1122412,1,1
+320,1,50803609,South - 320 Yonge towards Queens Quay,,0,2234588,1122412,1,1
+320,1,50803630,South - 320 Yonge towards Queens Quay,,0,2234405,1122412,1,1
+320,1,50803631,South - 320 Yonge towards Queens Quay,,0,2235137,1122412,1,1
+320,1,50803632,South - 320 Yonge towards Queens Quay,,0,2234589,1122412,1,1
+320,1,50803633,South - 320 Yonge towards Queens Quay,,0,2235243,1122412,1,1
+320,1,50803634,South - 320 Yonge towards Queens Quay,,0,2235244,1122412,1,1
+320,1,50803591,South - 320 Yonge towards Queens Quay,,0,2233816,1122412,1,1
+320,1,50803592,South - 320 Yonge towards Queens Quay,,0,2233647,1122411,1,1
+320,1,50803617,South - 320 Yonge towards Queens Quay,,0,2233679,1122412,1,1
+320,1,50803593,South - 320 Yonge towards Queens Quay,,0,2235238,1122411,1,1
+320,1,50803594,South - 320 Yonge towards Queens Quay,,0,2233732,1122411,1,1
+320,1,50803595,South - 320 Yonge towards Queens Quay,,0,2233347,1122411,1,1
+320,1,50803596,South - 320 Yonge towards Queens Quay,,0,2235239,1122411,1,1
+320,1,50803597,South - 320 Yonge towards Queens Quay,,0,2234890,1122411,1,1
+320,1,50803598,South - 320 Yonge towards Queens Quay,,0,2235240,1122411,1,1
+320,1,50803611,South - 320 Yonge towards Queens Quay,,0,2233383,1122411,1,1
+320,1,50803612,South - 320 Yonge towards Queens Quay,,0,2235312,1122411,1,1
+320,1,50803655,North - 320S Yonge Short Turn towards Eglinton Station,S,1,2235242,1122417,1,1
+320,1,50803650,North - 320B Yonge towards York Mills/Wilson,B,1,2233342,1122414,1,1
+320,1,50803646,North - 320S Yonge Short Turn towards Eglinton Station,S,1,2234330,1122417,1,1
+320,1,50803651,North - 320B Yonge towards York Mills Station,B,1,2233357,1122413,1,1
+320,1,50803647,North - 320S Yonge Short Turn towards Eglinton Station,S,1,2234850,1122415,1,1
+320,1,50803652,North - 320S Yonge Short Turn towards Eglinton Station,S,1,2233609,1122415,1,1
+320,1,50803648,North - 320S Yonge Short Turn towards Eglinton Station,S,1,2234858,1122415,1,1
+320,1,50803653,North - 320S Yonge Short Turn towards Eglinton Station,S,1,2235241,1122415,1,1
+320,1,50803649,North - 320S Yonge Short Turn towards Eglinton Station,S,1,2234992,1122415,1,1
+320,1,50803654,North - 320S Yonge Short Turn towards Eglinton Station,S,1,2235136,1122415,1,1
+320,1,50803644,North - 320A Yonge towards Steeles,A,1,2233732,1122416,1,1
+320,1,50803645,North - 320A Yonge towards Steeles,A,1,2233347,1122416,1,1
+320,1,50803656,North - 320A Yonge towards Steeles,A,1,2235239,1122416,1,1
+320,1,50803657,North - 320A Yonge towards Steeles,A,1,2234890,1122416,1,1
+320,1,50803658,North - 320A Yonge towards Steeles,A,1,2235240,1122416,1,1
+320,1,50803659,North - 320A Yonge towards Steeles,A,1,2234714,1122416,1,1
+320,1,50803660,North - 320A Yonge towards Steeles,A,1,2235063,1122416,1,1
+320,1,50803661,North - 320A Yonge towards Steeles,A,1,2233383,1122416,1,1
+320,1,50803662,North - 320A Yonge towards Steeles,A,1,2234680,1122416,1,1
+320,1,50803663,North - 320A Yonge towards Steeles,A,1,2234582,1122416,1,1
+320,1,50803664,North - 320A Yonge towards Steeles,A,1,2235312,1122416,1,1
+320,1,50803643,North - 320A Yonge towards Steeles,A,1,2233957,1122416,1,1
+320,1,50803667,North - 320A Yonge towards Steeles,A,1,2234588,1122416,1,1
+320,1,50803668,North - 320A Yonge towards Steeles,A,1,2234405,1122416,1,1
+320,1,50803669,North - 320A Yonge towards Steeles,A,1,2235137,1122416,1,1
+320,1,50803670,North - 320A Yonge towards Steeles,A,1,2234589,1122416,1,1
+320,1,50803671,North - 320A Yonge towards Steeles,A,1,2235243,1122416,1,1
+320,1,50803672,North - 320A Yonge towards Steeles,A,1,2235244,1122416,1,1
+320,1,50803665,North - 320A Yonge towards Steeles,A,1,2233816,1122416,1,1
+320,1,50803638,North - 320A Yonge towards Steeles,A,1,2235238,1122416,1,1
+320,1,50803639,North - 320A Yonge towards Steeles,A,1,2235239,1122416,1,1
+320,1,50803640,North - 320A Yonge towards Steeles,A,1,2235240,1122416,1,1
+320,1,50803641,North - 320A Yonge towards Steeles,A,1,2233383,1122416,1,1
+320,1,50803642,North - 320A Yonge towards Steeles,A,1,2235312,1122416,1,1

@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+6705,TL,321,King George Blvd,,3,https://translink.ca/schedules-and-maps/route/321/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=321,,

@@ -1,0 +1,64 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_station,wheelchair_boarding
+73,73,Michigan & Van Buren/Ida B. Wells,"Michigan & Van Buren/Ida B. Wells, Southbound, Westside of the Street",41.87627885,-87.62440175,0,,1
+74,74,Congress Plaza & Michigan,"Congress Plaza & Michigan, Northeastbound, Southeast Corner",41.87486595,-87.62355688,0,,1
+76,76,Michigan & Jackson,"Michigan & Jackson, Northbound, Southeast Corner",41.87814285,-87.62419875,0,,1
+80,80,Adams & Wells,"Adams & Wells, Westbound, Northwest Corner",41.87943385,-87.63402975,0,,1
+1072,1072,Sheridan & Briar,"Sheridan & Briar, Southbound, Southwest Corner",41.93857809,-87.63957448,0,,1
+1073,1073,Sheridan & Barry,"Sheridan & Barry, Southbound, Southwest Corner",41.93757324,-87.63954075,0,,1
+1074,1074,Sheridan & Wellington,"Sheridan & Wellington, Southbound, Southwest Corner",41.93643247,-87.6395066,0,,1
+1075,1075,Sheridan & Oakdale,"Sheridan & Oakdale, Southbound, Southwest Corner",41.93539039,-87.63947109,0,,1
+1076,1076,Sheridan & Surf,"Sheridan & Surf, Southbound, Southwest Corner",41.93419414,-87.63943174,0,,1
+1077,1077,Sheridan & Diversey,"Sheridan & Diversey, Southbound, Northwest Corner",41.93302333,-87.63940339,0,,1
+1078,1078,Stockton & Wrightwood,"Stockton & Wrightwood, Southbound, Westside of the Street",41.93131186,-87.63903655,0,,1
+1079,1079,Stockton & Roslyn,"Stockton & Roslyn, Southbound, Westside of the Street",41.92830034,-87.63900749,0,,1
+1080,1080,Stockton & Arlington,"Stockton & Arlington, Southbound, Westside of the Street",41.92649591,-87.63778048,0,,1
+1097,1097,Michigan & Delaware,"Michigan & Delaware, Southbound, Northwest Corner",41.89935286,-87.62425175,0,,1
+1098,1098,Michigan & Pearson,"Michigan & Pearson, Southbound, Northwest Corner",41.89773886,-87.62423975,0,,1
+1100,1100,Michigan & Erie,"Michigan & Erie, Southbound, Northwest Corner",41.89429086,-87.62436975,0,,1
+1101,1101,Michigan & Ohio,"Michigan & Ohio, Southbound, Northwest Corner",41.89269886,-87.62433375,0,,1
+1102,1102,Michigan & Illinois,"Michigan & Illinois, Southbound, Westside of the Street",41.89104012,-87.62429915,0,,1
+1103,1103,Michigan & Hubbard (Wrigley Bldg.),"Michigan & Hubbard (Wrigley Bldg.), Southbound, Southwest Corner",41.88990186,-87.62424975,0,,1
+1104,1104,Michigan & South Water,"Michigan & South Water, Southbound, Northwest Corner",41.88691229,-87.62468635,0,,1
+1105,1105,Michigan & Lake/Randolph,"Michigan & Lake/Randolph, Southbound, Westside of the Street",41.88511186,-87.62462075,0,,1
+1106,1106,Michigan & Washington,"Michigan & Washington, Southbound, Northwest Corner",41.88342185,-87.62459375,0,,1
+1108,1108,Adams & S. Wacker,"Adams & S. Wacker, Westbound, Northeast Corner",41.87940785,-87.63654775,0,,1
+1110,1110,Michigan & Jackson,"Michigan & Jackson, Southbound, Northwest Corner",41.87843685,-87.62445175,0,,1
+1119,1119,Michigan & Randolph,"Michigan & Randolph, Northbound, Northeast Corner",41.88469579,-87.6243233,0,,1
+1120,1120,Michigan & South Water,"Michigan & South Water, Northbound, Southeast Corner",41.8867076,-87.62438975,0,,1
+1122,1122,Michigan & Hubbard (Tribune Bldg.),"Michigan & Hubbard (Tribune Bldg.), Northbound, Southeast Corner",41.89021286,-87.62397475,0,,1
+1123,1123,Michigan & Grand,"Michigan & Grand, Northbound, Eastside of the Street",41.89177686,-87.62403975,0,,1
+1124,1124,Michigan & Ontario,"Michigan & Ontario, Northbound, Southeast Corner",41.89320186,-87.62409475,0,,1
+1125,1125,Michigan & Huron,"Michigan & Huron, Northbound, Southeast Corner",41.89480586,-87.62410975,0,,1
+1127,1127,Michigan & Chestnut,"Michigan & Chestnut, Northbound, Southeast Corner",41.89807686,-87.62396575,0,,1
+1128,1128,Michigan & Delaware/Walton,"Michigan & Delaware/Walton, Northbound, Eastside of the Street",41.89944286,-87.62400975,0,,1
+1145,1145,Stockton & Arlington,"Stockton & Arlington, Northbound, Eastside of the Street",41.92663915,-87.63773393,0,,1
+1146,1146,Stockton & Roslyn,"Stockton & Roslyn, Northbound, Eastside of the Street",41.92830715,-87.63877302,0,,1
+1147,1147,Stockton & Wrightwood,"Stockton & Wrightwood, Northbound, Eastside of the Street",41.93132741,-87.63888937,0,,1
+1148,1148,Sheridan & Diversey,"Sheridan & Diversey, Northbound, Northeast Corner",41.93311655,-87.63918003,0,,1
+1149,1149,Sheridan & Surf,"Sheridan & Surf, Northbound, Northeast Corner",41.93450366,-87.63926562,0,,1
+1150,1150,Sheridan & Oakdale,"Sheridan & Oakdale, Northbound, Northeast Corner",41.93576986,-87.63933276,0,,1
+1151,1151,Sheridan & Wellington,"Sheridan & Wellington, Northbound, Northeast Corner",41.93676486,-87.63936476,0,,1
+1152,1152,Sheridan & Barry,"Sheridan & Barry, Northbound, Northeast Corner",41.93788934,-87.63940466,0,,1
+1153,1153,Sheridan & Briar,"Sheridan & Briar, Northbound, Southeast Corner",41.93870211,-87.63943264,0,,1
+1154,1154,Sheridan & Belmont,"Sheridan & Belmont, Northbound, Southeast Corner",41.94003295,-87.6395069,0,,1
+1421,1421,Wacker (Upper) & Michigan,"Wacker (Upper) & Michigan, Westbound, Northwest Corner",41.88836786,-87.62506075,0,,1
+2188,2188,Michigan & Madison,"Michigan & Madison, Northbound, Eastside of the Street",41.88237485,-87.62421075,0,,1
+3954,3954,Wacker (Upper) & Columbus,"Wacker (Upper) & Columbus, Eastbound, Southwest Corner",41.88779986,-87.62097275,0,,1
+4725,4725,Ida B Wells Drive & Michigan,"Ida B Wells Drive & Michigan, Westbound, Northeast Corner",41.87584893,-87.62402984,0,,1
+4970,4970,LaSalle & Adams,"LaSalle & Adams, Southbound, Northwest Corner",41.87951096,-87.63243495,0,,1
+4973,4973,LaSalle & Madison,"LaSalle & Madison, Northbound, Southeast Corner",41.88184585,-87.63227075,0,,1
+4975,4975,LaSalle & Randolph,"LaSalle & Randolph, Northbound, Southeast Corner",41.88431579,-87.63232494,0,,1
+6711,6711,Franklin & Jackson,"Franklin & Jackson, Northbound, Southeast Corner",41.87792311,-87.63511522,0,,1
+14058,14058,LaSalle & Wacker/Lake,"LaSalle & Wacker/Lake, Southbound, Westside of the Street",41.88639163,-87.63263154,0,,1
+14059,14059,LaSalle & Randolph/Washington,"LaSalle & Randolph/Washington, Southbound, Westside of the Street",41.88402622,-87.63257736,0,,1
+14060,14060,LaSalle & Madison,"LaSalle & Madison, Southbound, Southwest Corner",41.88179773,-87.63246736,0,,1
+14061,14061,LaSalle & Quincy,"LaSalle & Quincy, Northbound, Southeast Corner",41.87873232,-87.63217186,0,,1
+14222,14222,Wacker (Upper) & Columbus,"Wacker (Upper) & Columbus, Westbound, Northside of the Street",41.88809797,-87.6208499,0,,1
+14223,14223,Wacker (Upper) & State,"Wacker (Upper) & State, Eastbound, Southeast Corner",41.88675423,-87.62762805,0,,1
+14224,14224,Wacker (Upper) & Stetson,"Wacker (Upper) & Stetson, Westbound, Northside of the Street",41.88833474,-87.62286036,0,,1
+14225,14225,Wacker & State,"Wacker & State, Westbound, Northwest Corner",41.8870347,-87.62815016,0,,1
+14488,14488,Michigan & Superior,"Michigan & Superior, Southbound, Northwest Corner",41.89583088,-87.62442823,0,,1
+15241,15241,Michigan & Monroe,"Michigan & Monroe, Northbound, Southeast Corner",41.88067237,-87.62419229,0,,1
+15904,15904,LaSalle & Wacker/Lake,"LaSalle & Wacker/Lake, Northbound, Eastside of the Street",41.88630975,-87.63230534,0,,1
+18396,18396,Michigan & Monroe,"Michigan & Monroe, Southbound, Southwest Corner",41.88063279,-87.62452219,0,,1
+18510,18510,Wacker (Upper) & Michigan,"Wacker (Upper) & Michigan, Eastbound, Southeast Corner",41.88814029,-87.62402944,0,,1

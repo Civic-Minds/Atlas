@@ -188,9 +188,39 @@ describe('reference date clamp skips an expired newest period (RCT)', () => {
 
   it('keeps a short holiday period that is the newest started and still running', () => {
     // A 2-week block running today is still the newest started period, as before #734;
-    // only an ended newest period is replaced. Recorded so a change here is deliberate.
+    // only an ended newest period, or a replacement block (#921, below), is replaced.
+    // Recorded so a change here is deliberate.
     const calendar = [
       cal('R-wk', '20250901', '20270630'), cal('R-sa', '20250901', '20270630', '0000010'),
+      cal('H-wk', '20261005', '20261018'), cal('H-sa', '20261005', '20261018', '0000010'),
+    ];
+    expect(detectReferenceDate(calendar, [], undefined)).toBe('20261011');
+  });
+
+  it('keeps a short newest period that runs the regular routes (Embark\'s Wednesday service)', () => {
+    const calendar = [
+      cal('R-wk', '20250901', '20270630'), cal('R-sa', '20250901', '20270630', '0000010'),
+      cal('H-wk', '20261005', '20261018'), cal('H-sa', '20261005', '20261018', '0000010'),
+    ];
+    const trips = ['R-wk', 'R-sa', 'H-wk', 'H-sa'].flatMap(service_id => ['1', '2', '3'].map(route_id => ({ service_id, route_id })));
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20261011');
+  });
+
+  it('passes over a short replacement block whose routes the long period does not run (#921)', () => {
+    const calendar = [
+      cal('R-wk', '20250901', '20270630'), cal('R-sa', '20250901', '20270630', '0000010'),
+      cal('H-wk', '20261005', '20261018'), cal('H-sa', '20261005', '20261018', '0000010'),
+    ];
+    const trips = [
+      ...['R-wk', 'R-sa'].flatMap(service_id => ['rail-1', 'rail-2'].map(route_id => ({ service_id, route_id }))),
+      ...['H-wk', 'H-sa'].map(service_id => ({ service_id, route_id: 'shuttle' })),
+    ];
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20260731');
+  });
+
+  it('keeps a short newest period when no long period is running', () => {
+    const calendar = [
+      cal('R-wk', '20250901', '20261001'), cal('R-sa', '20250901', '20261001', '0000010'),
       cal('H-wk', '20261005', '20261018'), cal('H-sa', '20261005', '20261018', '0000010'),
     ];
     expect(detectReferenceDate(calendar, [], undefined)).toBe('20261011');
@@ -291,5 +321,34 @@ describe('running-period reference guards (#734 follow-up)', () => {
     // 2023-Dec 31 2026, has its midpoint on Jun 7 2025, before the bus periods start:
     // 47 of 122 routes and no commuter rail.
     expect(calendarReference('miami-dade-stale-bus-periods')).toBe('20260607');
+  });
+});
+
+describe('a short replacement block is not the reference (#921)', () => {
+  // Real feed (R2 gtfs/archive/soundtransit/20270326-11d7d0460ddcf215.zip), run on Oct 16 2026: calendar.txt and
+  // calendar_dates.txt unchanged, up to 5 trips per (route, service) with route_id/service_id/trip_id only. The newest
+  // period running is the Oct 17-18 Link bus bridge (2 services) replacing weekend rail; the 1 Line and 2 Line ran on
+  // no service in that block, so they dropped.
+  beforeAll(() => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-16T12:00:00') });
+  });
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+  const csv = (file: string): any[] => {
+    const [header, ...rows] = readFileSync(resolve(FIXTURES, 'soundtransit-bus-bridge-calendar', file), 'utf8').trim().split('\n').map(l => l.replace(/\r$/, '').split(','));
+    return rows.map(row => Object.fromEntries(header.map((h, i) => [h, row[i]])));
+  };
+
+  it('Sound Transit reads its regular timetable: the 1 Line and 2 Line run on the reference weekday and Saturday', () => {
+    const calendar = csv('calendar.txt'), calendarDates = csv('calendar_dates.txt'), trips = csv('trips.txt');
+    const ref = detectReferenceDate(calendar, calendarDates, trips);
+    expect(['20261017', '20261018']).not.toContain(ref);
+    for (const day of ['Monday', 'Saturday'] as const) {
+      const active = getActiveServiceIds(calendar, calendarDates, day, ref);
+      const routes = new Set(trips.filter(t => active.has(t.service_id)).map(t => t.route_id));
+      expect(routes.has('100479'), `1 Line ${day}`).toBe(true);
+      expect(routes.has('2LINE'), `2 Line ${day}`).toBe(true);
+    }
   });
 });

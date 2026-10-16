@@ -1,0 +1,341 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+76,1,50819212,South - 76A Royal York South towards Lake Shore,A,0,2234654,1123219,1,1
+76,1,50819169,South - 76A Royal York South towards Lake Shore,A,0,2234682,1123219,1,1
+76,1,50819213,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123220,1,1
+76,1,50819211,South - 76A Royal York South towards Lake Shore,A,0,2234689,1123219,1,1
+76,1,50819210,South - 76A Royal York South towards Lake Shore,A,0,2234683,1123219,1,1
+76,1,50819216,South - 76A Royal York South towards Lake Shore,A,0,2234682,1123217,1,1
+76,1,50819217,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123219,1,1
+76,1,50819215,South - 76A Royal York South towards Lake Shore,A,0,2234689,1123217,1,1
+76,1,50819214,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819170,South - 76A Royal York South towards Lake Shore,A,0,2234691,1123217,1,1
+76,1,50819224,South - 76A Royal York South towards Lake Shore,A,0,2234683,1123217,1,1
+76,1,50819223,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819222,South - 76A Royal York South towards Lake Shore,A,0,2234682,1123217,1,1
+76,1,50819221,South - 76A Royal York South towards Lake Shore,A,0,2234689,1123217,1,1
+76,1,50819218,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234687,1123218,1,1
+76,1,50819220,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819174,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234684,1123215,1,1
+76,1,50819219,South - 76A Royal York South towards Lake Shore,A,0,2234683,1123217,1,1
+76,1,50819292,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819236,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234687,1123215,1,1
+76,1,50819291,South - 76A Royal York South towards Lake Shore,A,0,2234691,1123217,1,1
+76,1,50819290,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819237,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234684,1123215,1,1
+76,1,50819167,South - 76A Royal York South towards Lake Shore,A,0,2234682,1123217,1,1
+76,1,50819166,South - 76A Royal York South towards Lake Shore,A,0,2234689,1123217,1,1
+76,1,50819238,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234687,1123215,1,1
+76,1,50819227,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819209,South - 76A Royal York South towards Lake Shore,A,0,2234683,1123217,1,1
+76,1,50819239,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234684,1123215,1,1
+76,1,50819208,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,401,50819366,South - 76C Royal York South towards Queensway,C,0,2234682,1123214,1,1
+76,1,50819207,South - 76A Royal York South towards Lake Shore,A,0,2234691,1123217,1,1
+76,1,50819240,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234687,1123215,1,1
+76,401,50819367,South - 76C Royal York South towards Queensway,C,0,2234689,1123214,1,1
+76,1,50819206,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,401,50819368,South - 76C Royal York South towards Queensway,C,0,2234682,1123214,1,1
+76,1,50819226,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819225,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819286,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123215,1,1
+76,1,50819179,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819189,South - 76A Royal York South towards Lake Shore,A,0,2234687,1123217,1,1
+76,1,50819228,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819287,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123215,1,1
+76,1,50819136,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819137,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819138,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819288,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123215,1,1
+76,1,50819139,South - 76A Royal York South towards Lake Shore,A,0,2234687,1123217,1,1
+76,1,50819140,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819141,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819289,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123215,1,1
+76,1,50819142,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819143,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819144,South - 76A Royal York South towards Lake Shore,A,0,2234687,1123217,1,1
+76,1,50819185,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123215,1,1
+76,1,50819145,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819146,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819147,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819186,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123215,1,1
+76,1,50819148,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819149,South - 76A Royal York South towards Lake Shore,A,0,2234687,1123217,1,1
+76,1,50819150,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819198,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819151,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819152,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819153,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819199,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819154,South - 76A Royal York South towards Lake Shore,A,0,2234687,1123217,1,1
+76,1,50819155,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819156,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819200,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819157,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819243,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819244,South - 76A Royal York South towards Lake Shore,A,0,2234687,1123217,1,1
+76,1,50819201,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819190,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819191,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819192,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819202,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819193,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819194,South - 76A Royal York South towards Lake Shore,A,0,2234687,1123217,1,1
+76,1,50819195,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819203,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819196,South - 76A Royal York South towards Lake Shore,A,0,2234690,1123217,1,1
+76,1,50819234,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819235,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819180,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819183,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819184,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819181,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234690,1123216,1,1
+76,1,50819197,South - 76A Royal York South towards Lake Shore,A,0,2234685,1123217,1,1
+76,1,50819274,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819129,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819273,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819272,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819128,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234690,1123216,1,1
+76,1,50819271,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819270,South - 76A Royal York South towards Lake Shore,A,0,2234685,1123217,1,1
+76,1,50819127,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819269,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819268,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819126,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234690,1123216,1,1
+76,1,50819267,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819266,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819233,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819265,South - 76A Royal York South towards Lake Shore,A,0,2234685,1123217,1,1
+76,1,50819264,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819232,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234690,1123216,1,1
+76,1,50819263,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819262,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819231,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819261,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819260,South - 76A Royal York South towards Lake Shore,A,0,2234685,1123217,1,1
+76,1,50819230,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234690,1123216,1,1
+76,1,50819135,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819134,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819229,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819133,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819132,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819188,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234690,1123216,1,1
+76,1,50819131,South - 76A Royal York South towards Lake Shore,A,0,2234685,1123217,1,1
+76,1,50819130,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819182,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819245,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819246,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819247,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819175,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819248,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819249,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819250,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819176,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819251,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819252,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819253,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819177,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819254,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819255,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819256,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819178,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819257,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819258,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819259,South - 76A Royal York South towards Lake Shore,A,0,2234686,1123217,1,1
+76,1,50819204,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819171,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819172,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819173,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819205,South - 76B Royal York South towards Queensway and Grand Avenue,B,0,2234683,1123216,1,1
+76,1,50819158,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819159,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819160,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819161,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819162,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819163,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819275,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819276,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819277,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819278,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819279,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819280,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819281,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819282,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819283,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819284,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819285,South - 76A Royal York South towards Lake Shore,A,0,2234688,1123217,1,1
+76,1,50819241,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819242,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819187,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819164,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819165,South - 76A Royal York South towards Lake Shore,A,0,2234710,1123217,1,1
+76,1,50819168,South - 76A Royal York South towards Lake Shore,A,0,2234684,1123217,1,1
+76,1,50819327,North - 76 Royal York South towards Royal York Station,,1,2234654,1123227,1,1
+76,1,50819315,North - 76 Royal York South towards Royal York Station,,1,2234682,1123230,1,1
+76,1,50819349,North - 76 Royal York South towards Royal York Station,,1,2234689,1123230,1,1
+76,1,50819348,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819347,North - 76 Royal York South towards Royal York Station,,1,2234683,1123230,1,1
+76,1,50819328,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819316,North - 76 Royal York South towards Royal York Station,,1,2234682,1123230,1,1
+76,1,50819326,North - 76 Royal York South towards Royal York Station,,1,2234689,1123230,1,1
+76,1,50819325,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819317,North - 76 Royal York South towards Royal York Station,,1,2234691,1123230,1,1
+76,1,50819324,North - 76 Royal York South towards Royal York Station,,1,2234683,1123230,1,1
+76,1,50819323,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819336,North - 76 Royal York South towards Royal York Station,,1,2234687,1123224,1,1
+76,1,50819322,North - 76 Royal York South towards Royal York Station,,1,2234682,1123230,1,1
+76,1,50819321,North - 76 Royal York South towards Royal York Station,,1,2234689,1123230,1,1
+76,1,50819293,North - 76 Royal York South towards Royal York Station,,1,2234684,1123224,1,1
+76,1,50819320,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819300,North - 76 Royal York South towards Royal York Station,,1,2234683,1123230,1,1
+76,1,50819294,North - 76 Royal York South towards Royal York Station,,1,2234687,1123224,1,1
+76,1,50819299,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819298,North - 76 Royal York South towards Royal York Station,,1,2234691,1123230,1,1
+76,1,50819295,North - 76 Royal York South towards Royal York Station,,1,2234684,1123224,1,1
+76,1,50819334,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819333,North - 76 Royal York South towards Royal York Station,,1,2234682,1123230,1,1
+76,1,50819296,North - 76 Royal York South towards Royal York Station,,1,2234687,1123224,1,1
+76,1,50819332,North - 76 Royal York South towards Royal York Station,,1,2234689,1123230,1,1
+76,1,50819331,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819297,North - 76 Royal York South towards Royal York Station,,1,2234684,1123224,1,1
+76,1,50819330,North - 76 Royal York South towards Royal York Station,,1,2234683,1123230,1,1
+76,401,50819369,North - 76 Royal York South towards Royal York Station,,1,2234682,1123228,1,1
+76,1,50819329,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819318,North - 76 Royal York South towards Royal York Station,,1,2234687,1123224,1,1
+76,1,50819335,North - 76 Royal York South towards Royal York Station,,1,2234691,1123230,1,1
+76,1,50819337,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819350,North - 76 Royal York South towards Royal York Station,,1,2234683,1123224,1,1
+76,1,50819338,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819339,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819340,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819351,North - 76 Royal York South towards Royal York Station,,1,2234683,1123224,1,1
+76,1,50819341,North - 76 Royal York South towards Royal York Station,,1,2234687,1123230,1,1
+76,1,50819342,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819358,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819352,North - 76 Royal York South towards Royal York Station,,1,2234683,1123224,1,1
+76,1,50819344,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819345,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819346,North - 76 Royal York South towards Royal York Station,,1,2234687,1123230,1,1
+76,1,50819353,North - 76 Royal York South towards Royal York Station,,1,2234683,1123224,1,1
+76,1,50819301,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819302,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819303,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819354,North - 76 Royal York South towards Royal York Station,,1,2234683,1123224,1,1
+76,1,50819304,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819305,North - 76 Royal York South towards Royal York Station,,1,2234687,1123230,1,1
+76,1,50819306,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819355,North - 76 Royal York South towards Royal York Station,,1,2234683,1123224,1,1
+76,1,50819307,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819308,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819309,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819310,North - 76 Royal York South towards Royal York Station,,1,2234687,1123230,1,1
+76,1,50819356,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819311,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819312,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819313,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819357,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819319,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819359,North - 76 Royal York South towards Royal York Station,,1,2234687,1123230,1,1
+76,1,50819360,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819314,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819361,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819362,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819363,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819343,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819364,North - 76 Royal York South towards Royal York Station,,1,2234687,1123230,1,1
+76,1,50819365,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819393,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819446,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819394,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819462,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819395,North - 76 Royal York South towards Royal York Station,,1,2234687,1123230,1,1
+76,1,50819447,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819396,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819412,North - 76 Royal York South towards Royal York Station,,1,2234690,1123230,1,1
+76,1,50819411,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,401,50819466,North - 76 Royal York South towards Royal York Station,,1,2234687,1123225,1,1
+76,401,50819413,North - 76 Royal York South towards Royal York Station,,1,2234685,1123225,1,1
+76,1,50819410,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819378,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819409,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819408,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819377,North - 76 Royal York South towards Royal York Station,,1,2234690,1123229,1,1
+76,1,50819407,North - 76 Royal York South towards Royal York Station,,1,2234685,1123230,1,1
+76,1,50819406,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819439,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819405,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819392,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819433,North - 76 Royal York South towards Royal York Station,,1,2234690,1123229,1,1
+76,1,50819391,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819390,North - 76 Royal York South towards Royal York Station,,1,2234685,1123230,1,1
+76,1,50819432,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819389,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819388,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819431,North - 76 Royal York South towards Royal York Station,,1,2234690,1123229,1,1
+76,1,50819387,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819404,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819430,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819386,North - 76 Royal York South towards Royal York Station,,1,2234685,1123230,1,1
+76,1,50819385,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819429,North - 76 Royal York South towards Royal York Station,,1,2234690,1123229,1,1
+76,1,50819384,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819383,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819428,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819382,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819381,North - 76 Royal York South towards Royal York Station,,1,2234685,1123230,1,1
+76,1,50819427,North - 76 Royal York South towards Royal York Station,,1,2234690,1123229,1,1
+76,1,50819380,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819379,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819426,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819463,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819425,North - 76 Royal York South towards Royal York Station,,1,2234690,1123229,1,1
+76,1,50819397,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819424,North - 76S Royal York South towards Evans,S,1,2234685,1123222,1,1
+76,1,50819416,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819398,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819399,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819400,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819440,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819401,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819437,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819438,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819441,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819448,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819449,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819414,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819442,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819434,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819464,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819465,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819443,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819371,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819372,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819373,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819444,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819374,North - 76 Royal York South towards Royal York Station,,1,2234686,1123230,1,1
+76,1,50819375,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819402,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819445,North - 76 Royal York South towards Royal York Station,,1,2234683,1123229,1,1
+76,1,50819403,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819450,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819451,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819452,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819453,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819454,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819455,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819456,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819457,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819458,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819459,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819460,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819461,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819415,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819417,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819418,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819419,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819420,North - 76 Royal York South towards Royal York Station,,1,2234688,1123230,1,1
+76,1,50819421,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819422,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819423,North - 76 Royal York South towards Royal York Station,,1,2234710,1123230,1,1
+76,1,50819376,North - 76 Royal York South towards Royal York Station,,1,2234684,1123230,1,1
+76,1,50819435,North - 76S Royal York South towards Evans,S,1,2234710,1123222,1,1
+76,1,50819436,North - 76S Royal York South towards Evans,S,1,2234684,1123222,1,1

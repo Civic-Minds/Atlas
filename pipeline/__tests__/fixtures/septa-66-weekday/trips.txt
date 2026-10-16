@@ -1,0 +1,283 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+66,10,906189,Frankford Transit Center,,0,2051,317777,1,1
+66,10,906188,Frankford Transit Center,,0,2052,317777,1,1
+66,10,906187,Frankford Transit Center,,0,2051,317777,1,1
+66,10,906186,Frankford Transit Center,,0,2052,317777,1,1
+66,10,906185,Frankford Transit Center,,0,2051,317777,1,1
+66,10,906184,Frankford Transit Center,,0,2052,317777,1,1
+66,10,906060,Frankford Transit Center,,0,2051,317777,1,1
+66,10,906059,Frankford Transit Center,,0,2053,317777,1,1
+66,10,906058,Frankford Transit Center,,0,2052,317777,1,1
+66,10,906057,Frankford Transit Center,,0,2054,317777,1,1
+66,10,906056,Frankford Transit Center,,0,2051,317777,1,1
+66,10,906080,Frankford Transit Center,,0,2056,317775,1,1
+66,10,906055,Frankford Transit Center,,0,2055,317777,1,1
+66,10,906081,Frankford Transit Center,,0,2053,317777,1,1
+66,10,906053,Frankford Transit Center,,0,2057,317779,1,1
+66,10,906054,Frankford Transit Center,,0,2052,317777,1,1
+66,10,906119,Frankford Transit Center,,0,2059,317779,1,1
+66,10,906052,Frankford Transit Center,,0,2058,317777,1,1
+66,10,906114,Frankford Transit Center,,0,2060,317779,1,1
+66,10,906118,Frankford Transit Center,,0,2054,317777,1,1
+66,10,906115,Frankford Transit Center,,0,2061,317779,1,1
+66,10,906192,Frankford Transit Center,,0,2057,317775,1,1
+66,10,906157,Frankford Transit Center,,0,2051,317777,1,1
+66,10,906116,Frankford Transit Center,,0,2055,317779,1,1
+66,10,906117,Frankford Transit Center,,0,2056,317777,1,1
+66,10,906148,Express Frankford Transit Center,,0,2053,317778,1,1
+66,10,906113,Frankford Transit Center,,0,2062,317777,1,1
+66,10,906155,Express Frankford Transit Center,,0,2059,317778,1,1
+66,10,906158,Frankford Transit Center,,0,2052,317777,1,1
+66,10,906152,Frankford Transit Center,,0,2060,317779,1,1
+66,10,906154,Frankford Transit Center,,0,2058,317777,1,1
+66,10,906156,Frankford Transit Center,,0,2061,317779,1,1
+66,10,906153,Frankford Transit Center,,0,2054,317777,1,1
+66,10,906150,Frankford Transit Center,,0,2051,317779,1,1
+66,10,906151,Frankford Transit Center,,0,2057,317777,1,1
+66,10,906159,Frankford Transit Center,,0,2056,317779,1,1
+66,10,906149,Frankford Transit Center,,0,2055,317777,1,1
+66,10,906180,Frankford Transit Center,,0,2062,317779,1,1
+66,10,906181,Frankford Transit Center,,0,2053,317777,1,1
+66,10,906178,Frankford Transit Center,,0,2052,317779,1,1
+66,10,906179,Frankford Transit Center,,0,2059,317777,1,1
+66,10,906177,Frankford Transit Center,,0,2058,317779,1,1
+66,10,906175,Frankford Transit Center,,0,2060,317777,1,1
+66,10,906174,Frankford Transit Center,,0,2054,317779,1,1
+66,10,906173,Frankford Transit Center,,0,2061,317777,1,1
+66,10,906172,Frankford Transit Center,,0,2062,317779,1,1
+66,10,906171,Frankford Transit Center,,0,2056,317777,1,1
+66,10,906168,Frankford Transit Center,,0,2063,317779,1,1
+66,10,906170,Frankford Transit Center,,0,2053,317777,1,1
+66,10,906176,Frankford Transit Center,,0,2058,317779,1,1
+66,10,906169,Frankford Transit Center,,0,2052,317777,1,1
+66,10,906165,Frankford Transit Center,,0,2064,317779,1,1
+66,10,906191,Frankford Transit Center,,0,2060,317777,1,1
+66,10,906164,Frankford Transit Center,,0,2062,317779,1,1
+66,10,906163,Frankford Transit Center,,0,2061,317777,1,1
+66,10,906162,Frankford Transit Center,,0,2063,317779,1,1
+66,10,906161,Frankford Transit Center,,0,2056,317777,1,1
+66,10,906139,Frankford Transit Center,,0,2052,317779,1,1
+66,10,906160,Frankford Transit Center,,0,2053,317777,1,1
+66,10,906138,Frankford Transit Center,,0,2064,317779,1,1
+66,10,906140,Frankford Transit Center,,0,2065,317777,1,1
+66,10,906137,Frankford Transit Center,,0,2061,317779,1,1
+66,10,906136,Frankford Transit Center,,0,2062,317777,1,1
+66,10,906135,Frankford Transit Center,,0,2056,317779,1,1
+66,10,906134,Frankford Transit Center,,0,2063,317777,1,1
+66,10,906131,Frankford Transit Center,,0,2053,317779,1,1
+66,10,906133,Frankford Transit Center,,0,2052,317777,1,1
+66,10,906130,Frankford Transit Center,,0,2065,317779,1,1
+66,10,906132,Frankford Transit Center,,0,2064,317777,1,1
+66,10,906112,Frankford Transit Center,,0,2062,317779,1,1
+66,10,906128,Frankford Transit Center,,0,2061,317777,1,1
+66,10,906126,Frankford Transit Center,,0,2063,317779,1,1
+66,10,906129,Frankford Transit Center,,0,2056,317777,1,1
+66,10,906124,Frankford Transit Center,,0,2067,317779,1,1
+66,10,906127,Frankford Transit Center,,0,2066,317777,1,1
+66,10,906123,Frankford Transit Center,,0,2065,317779,1,1
+66,10,906122,Frankford Transit Center,,0,2052,317777,1,1
+66,10,906120,Frankford Transit Center,,0,2068,317779,1,1
+66,10,906121,Frankford Transit Center,,0,2064,317777,1,1
+66,10,906090,Frankford Transit Center,,0,2070,317779,1,1
+66,10,906091,Frankford Transit Center,,0,2069,317777,1,1
+66,10,906111,Frankford Transit Center,,0,2056,317779,1,1
+66,10,906125,Frankford Transit Center,,0,2063,317777,1,1
+66,10,906109,Frankford Transit Center,,0,2072,317779,1,1
+66,10,906110,Frankford Transit Center,,0,2071,317777,1,1
+66,10,906078,Frankford Transit Center,,0,2066,317779,1,1
+66,10,906079,Frankford Transit Center,,0,2067,317777,1,1
+66,10,906076,Frankford Transit Center,,0,2073,317779,1,1
+66,10,906077,Frankford Transit Center,,0,2065,317777,1,1
+66,10,906075,Frankford Transit Center,,0,2074,317779,1,1
+66,10,906074,Frankford Transit Center,,0,2068,317777,1,1
+66,10,906071,Frankford Transit Center,,0,2070,317779,1,1
+66,10,906073,Frankford Transit Center,,0,2064,317777,1,1
+66,10,906067,Frankford Transit Center,,0,2056,317779,1,1
+66,10,906069,Frankford Transit Center,,0,2073,317775,1,1
+66,10,906072,Frankford Transit Center,,0,2069,317777,1,1
+66,10,906068,Frankford Transit Center,,0,2072,317779,1,1
+66,10,906066,Express Frankford Transit Center,,0,2066,317778,1,1
+66,10,906070,Frankford Transit Center,,0,2063,317777,1,1
+66,10,906064,Frankford Transit Center,,0,2064,317775,1,1
+66,10,906065,Frankford Transit Center,,0,2071,317777,1,1
+66,10,906062,Express Frankford Transit Center,,0,2065,317778,1,1
+66,10,906063,Frankford Transit Center,,0,2067,317777,1,1
+66,10,906146,Express Frankford Transit Center,,0,2068,317778,1,1
+66,10,906144,Frankford Transit Center,,0,2066,317775,1,1
+66,10,906147,Frankford Transit Center,,0,2074,317777,1,1
+66,10,906182,Express Frankford Transit Center,,0,2056,317778,1,1
+66,10,906145,Frankford Transit Center,,0,2070,317777,1,1
+66,10,906143,Express Frankford Transit Center,,0,2069,317778,1,1
+66,10,906183,Frankford Transit Center,,0,2073,317777,1,1
+66,10,906190,Express Frankford Transit Center,,0,2063,317778,1,1
+66,10,906142,Frankford Transit Center,,0,2072,317777,1,1
+66,10,906167,Express Frankford Transit Center,,0,2071,317778,1,1
+66,10,906141,Frankford Transit Center,,0,2064,317777,1,1
+66,10,906108,Frankford Transit Center,,0,2067,317779,1,1
+66,10,906166,Frankford Transit Center,,0,2065,317777,1,1
+66,10,906106,Frankford Transit Center,,0,2066,317779,1,1
+66,10,906107,Frankford Transit Center,,0,2068,317777,1,1
+66,10,906105,Frankford Transit Center,,0,2056,317777,1,1
+66,10,906104,Frankford Transit Center,,0,2070,317777,1,1
+66,10,906103,Frankford Transit Center,,0,2069,317777,1,1
+66,10,906102,Frankford Transit Center,,0,2063,317777,1,1
+66,10,906101,Frankford Transit Center,,0,2071,317777,1,1
+66,10,906100,Frankford Transit Center,,0,2064,317777,1,1
+66,10,906099,Frankford Transit Center,,0,2067,317777,1,1
+66,10,906098,Frankford Transit Center,,0,2065,317777,1,1
+66,10,906097,Frankford Transit Center,,0,2068,317777,1,1
+66,10,906096,Frankford Transit Center,,0,2070,317777,1,1
+66,10,906095,Frankford Transit Center,,0,2063,317777,1,1
+66,10,906094,Frankford Transit Center,,0,2071,317777,1,1
+66,10,906093,Frankford Transit Center,,0,2065,317777,1,1
+66,10,906061,Frankford Transit Center,,0,2068,317777,1,1
+66,10,906092,Frankford Transit Center,,0,2070,317777,1,1
+66,10,906082,Frankford Transit Center,,0,2063,317777,1,1
+66,10,906089,Frankford Transit Center,,0,2071,317777,1,1
+66,10,906088,Frankford Transit Center,,0,2065,317777,1,1
+66,10,906087,Frankford Transit Center,,0,2070,317777,1,1
+66,10,906086,Frankford Transit Center,,0,2063,317777,1,1
+66,10,906085,Frankford Transit Center,,0,2065,317777,1,1
+66,10,906084,Frankford Transit Center,,0,2070,317777,1,1
+66,10,906083,Frankford Transit Center,,0,2065,317777,1,1
+66,10,906287,Frankford-Knights,,1,2051,317783,1,1
+66,10,906286,Frankford-Knights,,1,2052,317783,1,1
+66,10,906285,Frankford-Knights,,1,2051,317783,1,1
+66,10,906284,Frankford-Knights,,1,2052,317783,1,1
+66,10,906283,Frankford-Knights,,1,2051,317783,1,1
+66,10,906282,Frankford-Knights,,1,2052,317783,1,1
+66,10,906281,Frankford-Knights,,1,2051,317783,1,1
+66,10,906280,Frankford-Knights,,1,2053,317783,1,1
+66,10,906279,Frankford-Knights,,1,2052,317783,1,1
+66,10,906278,Frankford-Knights,,1,2054,317783,1,1
+66,10,906277,Frankford-Knights,,1,2051,317783,1,1
+66,10,906276,Frankford-Knights,,1,2055,317783,1,1
+66,10,906200,Frankford-Knights,,1,2053,317783,1,1
+66,10,906199,Frankford-Knights,,1,2052,317783,1,1
+66,10,906329,Frankford-Cottman,,1,2056,317780,1,1
+66,10,906198,Frankford-Gregg,,1,2057,317781,1,1
+66,10,906221,Frankford-Knights,,1,2058,317783,1,1
+66,10,906328,Frankford-Gregg,,1,2059,317781,1,1
+66,10,906302,Frankford-Knights,,1,2054,317783,1,1
+66,10,906220,Frankford-Gregg,,1,2060,317781,1,1
+66,10,906219,Frankford-Knights,,1,2051,317783,1,1
+66,10,906218,Frankford-Gregg,,1,2061,317781,1,1
+66,10,906315,Frankford-Knights,,1,2056,317783,1,1
+66,10,906217,Frankford-Gregg,,1,2055,317781,1,1
+66,10,906314,Frankford-Knights,,1,2062,317783,1,1
+66,10,906313,Frankford-Gregg,,1,2053,317781,1,1
+66,10,906333,Frankford-Cottman,,1,2057,317780,1,1
+66,10,906216,Frankford-Knights,,1,2052,317783,1,1
+66,10,906193,Frankford-Gregg,,1,2059,317781,1,1
+66,10,906312,Frankford-Knights,,1,2058,317783,1,1
+66,10,906215,Frankford-Gregg,,1,2060,317781,1,1
+66,10,906311,Frankford-Knights,,1,2054,317783,1,1
+66,10,906214,Frankford-Gregg,,1,2061,317781,1,1
+66,10,906310,Frankford-Knights,,1,2057,317783,1,1
+66,10,906213,Frankford-Gregg,,1,2051,317781,1,1
+66,10,906227,Frankford-Knights,,1,2055,317783,1,1
+66,10,906212,Frankford-Gregg,,1,2056,317781,1,1
+66,10,906226,Frankford-Knights,,1,2053,317783,1,1
+66,10,906211,Frankford-Gregg,,1,2062,317781,1,1
+66,10,906225,Frankford-Knights,,1,2059,317783,1,1
+66,10,906209,Frankford-Gregg,,1,2052,317781,1,1
+66,10,906224,Frankford-Knights,,1,2060,317783,1,1
+66,10,906208,Frankford-Gregg,,1,2058,317781,1,1
+66,10,906223,Frankford-Knights,,1,2061,317783,1,1
+66,10,906210,Frankford-Gregg,,1,2054,317781,1,1
+66,10,906222,Frankford-Knights,,1,2056,317783,1,1
+66,10,906194,Frankford-Gregg,,1,2062,317781,1,1
+66,10,906275,Frankford-Knights,,1,2053,317783,1,1
+66,10,906274,Frankford-Gregg,,1,2063,317781,1,1
+66,10,906263,Frankford-Knights,,1,2052,317783,1,1
+66,10,906272,Frankford-Gregg,,1,2058,317781,1,1
+66,10,906273,Frankford-Knights,,1,2060,317783,1,1
+66,10,906271,Frankford-Gregg,,1,2064,317781,1,1
+66,10,906303,Frankford-Knights,,1,2061,317783,1,1
+66,10,906270,Frankford-Gregg,,1,2062,317781,1,1
+66,10,906250,Frankford-Knights,,1,2056,317783,1,1
+66,10,906197,Frankford-Gregg,,1,2063,317781,1,1
+66,10,906260,Frankford-Knights,,1,2053,317783,1,1
+66,10,906261,Frankford-Gregg,,1,2052,317781,1,1
+66,10,906258,Frankford-Knights,,1,2065,317783,1,1
+66,10,906259,Frankford-Gregg,,1,2064,317781,1,1
+66,10,906257,Frankford-Knights,,1,2062,317783,1,1
+66,10,906256,Frankford-Gregg,,1,2061,317781,1,1
+66,10,906254,Frankford-Knights,,1,2063,317783,1,1
+66,10,906255,Frankford-Gregg,,1,2056,317781,1,1
+66,10,906253,Frankford-Knights,,1,2052,317783,1,1
+66,10,906251,Frankford-Gregg,,1,2053,317781,1,1
+66,10,906252,Frankford-Knights,,1,2064,317783,1,1
+66,10,906327,Frankford-Gregg,,1,2065,317781,1,1
+66,10,906195,Frankford-Knights,,1,2061,317783,1,1
+66,10,906326,Frankford-Gregg,,1,2062,317781,1,1
+66,10,906324,Frankford-Knights,,1,2056,317783,1,1
+66,10,906325,Frankford-Gregg,,1,2063,317781,1,1
+66,10,906323,Frankford-Knights,,1,2066,317783,1,1
+66,10,906322,Frankford-Gregg,,1,2067,317781,1,1
+66,10,906320,Frankford-Knights,,1,2052,317783,1,1
+66,10,906321,Frankford-Gregg,,1,2065,317781,1,1
+66,10,906268,Frankford-Knights,,1,2064,317783,1,1
+66,10,906269,Frankford-Gregg,,1,2068,317781,1,1
+66,10,906266,Frankford-Knights,,1,2069,317783,1,1
+66,10,906267,Frankford-Gregg,,1,2070,317781,1,1
+66,10,906236,Frankford-Knights,,1,2063,317783,1,1
+66,10,906264,Frankford-Gregg,,1,2056,317781,1,1
+66,10,906248,Frankford-Knights,,1,2071,317783,1,1
+66,10,906249,Frankford-Gregg,,1,2072,317781,1,1
+66,10,906246,Frankford-Knights,,1,2067,317783,1,1
+66,10,906247,Frankford-Gregg,,1,2066,317781,1,1
+66,10,906295,Frankford-Knights,,1,2065,317783,1,1
+66,10,906245,Frankford-Gregg,,1,2073,317781,1,1
+66,10,906242,Frankford-Knights,,1,2068,317783,1,1
+66,10,906244,Frankford-Gregg,,1,2074,317781,1,1
+66,10,906243,Frankford-Knights,,1,2064,317783,1,1
+66,10,906240,Frankford-Gregg,,1,2070,317781,1,1
+66,10,906241,Frankford-Knights,,1,2069,317783,1,1
+66,10,906301,Frankford-Gregg,,1,2056,317781,1,1
+66,10,906239,Frankford-Knights,,1,2063,317783,1,1
+66,10,906300,Frankford-Gregg,,1,2072,317781,1,1
+66,10,906299,Frankford-Knights,,1,2071,317783,1,1
+66,10,906298,Frankford-Gregg,,1,2066,317781,1,1
+66,10,906297,Frankford-Knights,,1,2067,317783,1,1
+66,10,906294,Frankford-Cottman,,1,2073,317780,1,1
+66,10,906296,Frankford-Gregg,,1,2065,317781,1,1
+66,10,906293,Express Frankford-Knights,,1,2074,317782,1,1
+66,10,906289,Frankford-Gregg,,1,2068,317781,1,1
+66,10,906292,Express Frankford-Knights,,1,2070,317782,1,1
+66,10,906288,Frankford-Cottman,,1,2064,317780,1,1
+66,10,906291,Frankford-Gregg,,1,2056,317781,1,1
+66,10,906290,Express Frankford-Knights,,1,2073,317782,1,1
+66,10,906319,Frankford-Gregg,,1,2069,317781,1,1
+66,10,906330,Express Frankford-Knights,,1,2072,317782,1,1
+66,10,906332,Frankford-Cottman,,1,2066,317780,1,1
+66,10,906331,Frankford-Gregg,,1,2063,317781,1,1
+66,10,906318,Express Frankford-Knights,,1,2064,317782,1,1
+66,10,906317,Frankford-Gregg,,1,2071,317781,1,1
+66,10,906316,Express Frankford-Knights,,1,2065,317782,1,1
+66,10,906237,Frankford-Gregg,,1,2067,317781,1,1
+66,10,906238,Express Frankford-Knights,,1,2068,317782,1,1
+66,10,906235,Frankford-Gregg,,1,2066,317781,1,1
+66,10,906234,Frankford-Knights,,1,2056,317783,1,1
+66,10,906233,Frankford-Knights,,1,2070,317783,1,1
+66,10,906232,Frankford-Knights,,1,2069,317783,1,1
+66,10,906231,Frankford-Knights,,1,2063,317783,1,1
+66,10,906230,Frankford-Knights,,1,2071,317783,1,1
+66,10,906229,Frankford-Knights,,1,2064,317783,1,1
+66,10,906228,Frankford-Knights,,1,2067,317783,1,1
+66,10,906265,Frankford-Knights,,1,2065,317783,1,1
+66,10,906308,Frankford-Knights,,1,2068,317783,1,1
+66,10,906307,Frankford-Knights,,1,2070,317783,1,1
+66,10,906306,Frankford-Knights,,1,2063,317783,1,1
+66,10,906305,Frankford-Knights,,1,2071,317783,1,1
+66,10,906304,Frankford-Knights,,1,2065,317783,1,1
+66,10,906309,Frankford-Knights,,1,2068,317783,1,1
+66,10,906262,Frankford-Knights,,1,2070,317783,1,1
+66,10,906196,Frankford-Knights,,1,2063,317783,1,1
+66,10,906207,Frankford-Knights,,1,2071,317783,1,1
+66,10,906206,Frankford-Knights,,1,2065,317783,1,1
+66,10,906205,Frankford-Knights,,1,2070,317783,1,1
+66,10,906204,Frankford-Knights,,1,2063,317783,1,1
+66,10,906203,Frankford-Knights,,1,2065,317783,1,1
+66,10,906202,Frankford-Knights,,1,2070,317783,1,1
+66,10,906201,Frankford-Knights,,1,2065,317783,1,1

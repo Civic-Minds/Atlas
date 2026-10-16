@@ -44,14 +44,15 @@ describe('route lists show the slower direction (#821)', () => {
   it('skips a direction with no trips in the period (one-way peak service)', () => {
     const peakIn = row({ directionId: 0, headwayByPeriod: { amPeak: 10, pmPeak: null }, periodCoverageHeadway: { amPeak: 12 } });
     const peakOut = row({ directionId: 1, headwayByPeriod: { amPeak: null, pmPeak: 10 }, periodCoverageHeadway: { pmPeak: 12 } });
-    expect(routeListDisplayHeadway([peakIn, peakOut], 'amPeak')).toBe(10);
-    expect(routeListDisplayHeadway([peakIn, peakOut], 'pmPeak')).toBe(10);
+    // The map's number (CIV-237) is the coverage-based 12, where the rows' own cadence is 10.
+    expect(routeListDisplayHeadway([peakIn, peakOut], 'amPeak')).toBe(12);
+    expect(routeListDisplayHeadway([peakIn, peakOut], 'pmPeak')).toBe(12);
   });
 
   it('skips a direction whose only trips in the period are span patterns', () => {
     const regular = row({ directionId: 0, headwayByPeriod: { amPeak: 30 }, periodCoverageHeadway: { amPeak: 31 } });
     const span = row({ directionId: 1, tier: 'span', headwayByPeriod: { amPeak: 30 }, periodCoverageHeadway: { amPeak: 31 } });
-    expect(routeListDisplayHeadway([regular, span], 'amPeak')).toBe(30);
+    expect(routeListDisplayHeadway([regular, span], 'amPeak')).toBe(31);
   });
 });
 

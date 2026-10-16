@@ -3,9 +3,18 @@ export interface IrregularRouteProperties {
   serviceClass?: unknown;
   routeHasIrregularDirection?: unknown;
   routeHasLimitedDirection?: unknown;
+  routeAllDayHeadway?: unknown;
 }
 
+/**
+ * Limited service (the hide-limited toggle). A route-day the stretch selector stamped (it carries
+ * routeAllDayHeadway) is limited only when a direction's main stretch does not run at midday
+ * (routeHasLimitedDirection, frequency focus step 6), whatever phase 2 classes its rows: TTC 134
+ * runs every 15 at midday though some of its patterns read time-limited. Other route-days keep the
+ * row's class.
+ */
 export function isLimitedService(properties: IrregularRouteProperties): boolean {
+  if (properties.routeAllDayHeadway != null) return properties.routeHasLimitedDirection === true;
   return properties.serviceClass === 'time-limited' || properties.routeHasLimitedDirection === true;
 }
 

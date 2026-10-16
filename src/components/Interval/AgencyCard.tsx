@@ -13,7 +13,7 @@ import Panel from '../ui/Panel';
 import Pill from '../ui/Pill';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
-import { headwayAboutRange } from '../../utils/headwayText';
+import { headwayEveryRange } from '../../utils/headwayText';
 import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
@@ -42,6 +42,7 @@ interface RouteRow {
   longName: string | null;
   headway: number | null;
   limited: boolean;
+  noRegular?: boolean;
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
   tier: string | null;
@@ -319,8 +320,9 @@ function RouteListSection({
           <CardDirectionRow
             label={label}
             headway={r.headway ?? undefined}
-            headwayLabel={r.headway != null && r.sharedHeadway != null ? headwayAboutRange(r.sharedHeadway, r.headway) : undefined}
-            limited={r.limited}
+            headwayLabel={r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined}
+            limited={r.limited || r.noRegular === true}
+            limitedLabel={r.noRegular ? 'no regular service' : undefined}
             subLabel={isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName })
                 ? 'Rail replacement bus'
                 : undefined}

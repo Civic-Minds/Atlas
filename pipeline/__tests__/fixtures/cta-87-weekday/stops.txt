@@ -1,0 +1,175 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_station,wheelchair_boarding
+7008,7008,Commercial & 90th Street,"Commercial & 90th Street, Northbound, Southeast Corner",41.73179173,-87.55122695,0,,1
+7010,7010,Commercial & 88th Street,"Commercial & 88th Street, Northbound, Southeast Corner",41.73546915,-87.5513135,0,,1
+7245,7245,South Chicago & Oglesby,"South Chicago & Oglesby, Southeastbound, Westside of the Street",41.73867393,-87.56786578,0,,1
+7372,7372,91st Street & Brandon,"91st Street & Brandon, Westbound, Northeast Corner",41.73018889,-87.54685509,0,,1
+9363,9363,87th Street & Cicero Terminal,"87th Street & Cicero Terminal, Westbound, Bus Terminal",41.73279368,-87.74165988,0,,1
+9364,9364,87th Street & Kilpatrick,"87th Street & Kilpatrick, Eastbound, Southwest Corner",41.73445259,-87.73854448,0,,1
+9365,9365,87th Street & Kenton,"87th Street & Kenton, Eastbound, Southwest Corner",41.73444475,-87.73670531,0,,1
+9366,9366,87th Street & Kilbourn,"87th Street & Kilbourn, Eastbound, Southside of the Street",41.73449673,-87.7337168,0,,1
+9367,9367,87th Street & Kostner,"87th Street & Kostner, Eastbound, Southwest Corner",41.73452786,-87.73175862,0,,1
+9368,9368,87th Street & Kildare,"87th Street & Kildare, Eastbound, Southside of the Street",41.7345792,-87.72878903,0,,1
+9369,9369,87th Street & Keeler,"87th Street & Keeler, Eastbound, Southwest Corner",41.73461031,-87.72686874,0,,1
+9370,9370,87th Street & Karlov,"87th Street & Karlov, Eastbound, Southside of the Street",41.73470903,-87.7239747,0,,1
+9371,9371,87th Street & Pulaski,"87th Street & Pulaski, Eastbound, Southwest Corner",41.73472208,-87.72172643,0,,1
+9372,9372,87th Street & Springfield,"87th Street & Springfield, Eastbound, Southside of the Street",41.73479489,-87.71911263,0,,1
+9373,9373,87th Street & Hamlin,"87th Street & Hamlin, Eastbound, Southside of the Street",41.73484767,-87.71604025,0,,1
+9374,9374,87th Street & Lawndale,"87th Street & Lawndale, Eastbound, Southside of the Street",41.73487928,-87.7142,0,,1
+9375,9375,87th Street & Central Park,"87th Street & Central Park, Eastbound, Southwest Corner",41.734944,-87.71177658,0,,1
+9376,9376,3400 W 87th Street,"3400 W 87th Street, Eastbound, Southside of the Street",41.73501072,-87.70744241,0,,1
+9377,9377,3300 W 87th Street,"3300 W 87th Street, Eastbound, Southside of the Street",41.73500364,-87.70404331,0,,1
+9378,9378,87th Street & Kedzie,"87th Street & Kedzie, Eastbound, Southwest Corner",41.73504671,-87.7025342,0,,1
+9379,9379,87th Street & Albany,"87th Street & Albany, Eastbound, Southwest Corner",41.73508364,-87.69988631,0,,1
+9380,9380,87th Street & Sacramento,"87th Street & Sacramento, Eastbound, Southwest Corner",41.73517708,-87.69711195,0,,1
+9381,9381,87th Street & Francisco,"87th Street & Francisco, Eastbound, Southwest Corner",41.73520389,-87.69500536,0,,1
+9382,9382,87th Street & California,"87th Street & California, Eastbound, Southwest Corner",41.7352659,-87.69242318,0,,1
+9383,9383,87th Street & Washtenaw,"87th Street & Washtenaw, Eastbound, Southwest Corner",41.7352854,-87.68998218,0,,1
+9384,9384,2600 W 87th Street,"2600 W 87th Street, Eastbound, Southside of the Street",41.73528415,-87.68764025,0,,1
+9386,9386,87th Street & Western Terminal,"87th Street & Western Terminal, Eastbound, Bus Terminal",41.73536399,-87.68150546,0,,1
+9387,9387,87th Street & Longwood,"87th Street & Longwood, Eastbound, Southwest Corner",41.73548045,-87.67614051,0,,1
+9388,9388,87th Street & Damen,"87th Street & Damen, Eastbound, Southeast Corner",41.73556115,-87.67229965,0,,1
+9390,9390,87th Street & Wood,"87th Street & Wood, Eastbound, Southwest Corner",41.73563484,-87.66807561,0,,1
+9391,9391,87th Street & Paulina,"87th Street & Paulina, Eastbound, Southwest Corner",41.73566386,-87.66562862,0,,1
+9393,9393,87th Street & Laflin,"87th Street & Laflin, Eastbound, Southwest Corner",41.73573597,-87.66073226,0,,1
+9395,9395,87th Street & Throop,"87th Street & Throop, Eastbound, Southwest Corner",41.73580907,-87.65588268,0,,1
+9397,9397,87th Street & Aberdeen,"87th Street & Aberdeen, Eastbound, Southwest Corner",41.73590115,-87.65105242,0,,1
+9399,9399,87th Street & Vincennes,"87th Street & Vincennes, Eastbound, Southwest Corner",41.73595465,-87.64545077,0,,1
+9401,9401,87th Street & Union,"87th Street & Union, Eastbound, Southwest Corner",41.73599634,-87.64129619,0,,1
+9402,9402,87th Street & Wallace,"87th Street & Wallace, Eastbound, Southwest Corner",41.73600988,-87.63886627,0,,1
+9403,9403,87th Street & Normal,"87th Street & Normal, Eastbound, Southwest Corner",41.73602024,-87.63651475,0,,1
+9404,9404,87th Street & Holland,"87th Street & Holland, Eastbound, Southwest Corner",41.73592735,-87.63281077,0,,1
+9405,9405,87th Street & Wentworth,"87th Street & Wentworth, Eastbound, Southside of the Street",41.73608605,-87.62904354,0,,1
+9408,9408,87th Red Line Station,"87th Red Line Station, Eastbound, Southside of the Street",41.73616913,-87.62483501,0,,1
+9409,9409,87th Street & State,"87th Street & State, Eastbound, Southeast Corner",41.73620123,-87.62378151,0,,1
+9411,9411,87th Street & Michigan,"87th Street & Michigan, Eastbound, Southwest Corner",41.73634643,-87.62114076,0,,1
+9412,9412,87th Street & Indiana,"87th Street & Indiana, Eastbound, Southwest Corner",41.73637029,-87.61960821,0,,1
+9413,9413,87th Street & Prairie,"87th Street & Prairie, Eastbound, Southwest Corner",41.73641783,-87.61791373,0,,1
+9414,9414,87th Street & Calumet,"87th Street & Calumet, Eastbound, Southwest Corner",41.73641814,-87.61628436,0,,1
+9415,9415,87th Street & King Drive,"87th Street & King Drive, Eastbound, Southwest Corner",41.73644269,-87.61467859,0,,1
+9416,9416,87th Street & Eberhart,"87th Street & Eberhart, Eastbound, Southwest Corner",41.73647655,-87.61221573,0,,1
+9417,9417,87th Street & St. Lawrence,"87th Street & St. Lawrence, Eastbound, Southwest Corner",41.73654083,-87.60981073,0,,1
+9418,9418,87th Street & Langley,"87th Street & Langley, Eastbound, Southwest Corner",41.73655272,-87.60733678,0,,1
+9419,9419,87th Street & Cottage Grove,"87th Street & Cottage Grove, Eastbound, Southwest Corner",41.73657162,-87.60505827,0,,1
+9420,9420,87th Street & Drexel,"87th Street & Drexel, Eastbound, Southside of the Street",41.73661813,-87.60250426,0,,1
+9421,9421,87th Street & Dauphin/Ingleside,"87th Street & Dauphin/Ingleside, Eastbound, Southwest Corner",41.73665283,-87.60132773,0,,1
+9422,9422,87th Street & Dobson,"87th Street & Dobson, Eastbound, Southwest Corner",41.73667201,-87.59930611,0,,1
+9423,9423,87th Street & Greenwood,"87th Street & Greenwood, Eastbound, Southeast Corner",41.73670249,-87.59714765,0,,1
+9425,9425,87th Street & Kimbark,"87th Street & Kimbark, Eastbound, Southwest Corner",41.73675778,-87.59308825,0,,1
+9426,9426,87th Street & Dorchester,"87th Street & Dorchester, Eastbound, Southwest Corner",41.73681231,-87.59064746,0,,1
+9427,9427,87th Street & Blackstone,"87th Street & Blackstone, Eastbound, Southwest Corner",41.73682073,-87.58824732,0,,1
+9428,9428,87th Street & Stony Island (Nearside),"87th Street & Stony Island (Nearside), Eastbound, Southwest Corner",41.73684702,-87.58581008,0,,1
+9429,9429,87th Street & Stony Island (Farside),"87th Street & Stony Island (Farside), Eastbound, Southeast Corner",41.73685483,-87.58482272,0,,1
+9430,9430,87th Street & East End,"87th Street & East End, Eastbound, Southwest Corner",41.73688783,-87.58290572,0,,1
+9431,9431,87th Street & Cregier,"87th Street & Cregier, Eastbound, Southwest Corner",41.73692583,-87.58071072,0,,1
+9432,9432,87th Street & Bennett,"87th Street & Bennett, Eastbound, Southwest Corner",41.73696324,-87.57824626,0,,1
+9434,9434,87th Street & Clyde,"87th Street & Clyde, Eastbound, Southwest Corner",41.73704083,-87.57346272,0,,1
+9435,9435,87th Street & Paxton,"87th Street & Paxton, Eastbound, Southwest Corner",41.73705283,-87.57104372,0,,1
+9436,9436,87th Street & Anthony,"87th Street & Anthony, Eastbound, Southwest Corner",41.73708983,-87.56900272,0,,1
+9437,9437,87th Street & South Chicago,"87th Street & South Chicago, Eastbound, Southwest Corner",41.73713632,-87.56584418,0,,1
+9438,9438,87th Street & Essex,"87th Street & Essex, Eastbound, Southwest Corner",41.73717583,-87.56382272,0,,1
+9439,9439,87th Street & Colfax,"87th Street & Colfax, Eastbound, Southwest Corner",41.73721083,-87.56142272,0,,1
+9440,9440,87th Street & Marquette Avenue,"87th Street & Marquette Avenue, Eastbound, Southwest Corner",41.73725583,-87.55856371,0,,1
+9441,9441,87th Street & Manistee,"87th Street & Manistee, Eastbound, Southwest Corner",41.73728283,-87.55713372,0,,1
+9442,9442,87th Street & Escanaba,"87th Street & Escanaba, Eastbound, Southwest Corner",41.73729578,-87.55430675,0,,1
+9444,9444,87th Street & Commercial,"87th Street & Commercial, Eastbound, Southwest Corner",41.73730833,-87.55154839,0,,1
+9445,9445,87th Street & Baltimore,"87th Street & Baltimore, Eastbound, Southwest Corner",41.73736583,-87.54892071,0,,1
+9446,9446,87th Street & Burley,"87th Street & Burley, Eastbound, Southwest Corner",41.73739083,-87.54602871,0,,1
+9447,9447,87th Street & Buffalo,"87th Street & Buffalo, Eastbound, Southwest Corner",41.73740583,-87.54462571,0,,1
+9448,9448,Buffalo & 88th Street,"Buffalo & 88th Street, Southbound, Northwest Corner",41.73580983,-87.54447371,0,,1
+9449,9449,Buffalo & 89th Street,"Buffalo & 89th Street, Southbound, Northwest Corner",41.73397783,-87.54443871,0,,1
+9450,9450,Buffalo & 90th Street,"Buffalo & 90th Street, Southbound, Northwest Corner",41.73216983,-87.54440871,0,,1
+9451,9451,Buffalo & 91st Street,"Buffalo & 91st Street, Southbound, Northwest Corner",41.73027928,-87.54438563,0,,1
+9452,9452,91st Street & Houston,"91st Street & Houston, Westbound, Northeast Corner",41.73016205,-87.54976079,0,,1
+9453,9453,91st Street & Commercial,"91st Street & Commercial, Westbound, Northeast Corner",41.73015482,-87.55111638,0,,1
+9454,9454,87th Street & Commercial,"87th Street & Commercial, Westbound, Northwest Corner",41.73745108,-87.55173147,0,,1
+9456,9456,87th Street & Escanaba,"87th Street & Escanaba, Westbound, Northeast Corner",41.73742583,-87.55366571,0,,1
+9457,9457,87th Street & Burnham,"87th Street & Burnham, Westbound, Northeast Corner",41.73739283,-87.55611271,0,,1
+9458,9458,87th Street & Marquette Avenue,"87th Street & Marquette Avenue, Westbound, Northeast Corner",41.73735283,-87.55851071,0,,1
+9459,9459,87th Street & Colfax,"87th Street & Colfax, Westbound, Northeast Corner",41.73732283,-87.56095072,0,,1
+9460,9460,87th Street & Essex,"87th Street & Essex, Westbound, Northeast Corner",41.73728583,-87.56341872,0,,1
+9461,9461,87th Street & South Chicago,"87th Street & South Chicago, Westbound, Northeast Corner",41.73725283,-87.56548272,0,,1
+9462,9462,87th Street & South Chicago,"87th Street & South Chicago, Westbound, Northwest Corner",41.737261,-87.56643397,0,,1
+9463,9463,87th Street & Paxton,"87th Street & Paxton, Westbound, Northside of the Street",41.73721444,-87.57067968,0,,1
+9464,9464,87th Street & Clyde,"87th Street & Clyde, Westbound, Northside of the Street",41.73716944,-87.57313169,0,,1
+9465,9465,87th Street & Jeffery,"87th Street & Jeffery, Westbound, Northeast Corner",41.73712844,-87.57558169,0,,1
+9466,9466,87th Street & Bennett,"87th Street & Bennett, Westbound, Northeast Corner",41.73707943,-87.57800969,0,,1
+9467,9467,87th Street & Cregier,"87th Street & Cregier, Westbound, Northeast Corner",41.73706283,-87.58036872,0,,1
+9468,9468,87th Street & East End,"87th Street & East End, Westbound, Northeast Corner",41.73703083,-87.58255872,0,,1
+9469,9469,87th Street & Stony Island (Nearside),"87th Street & Stony Island (Nearside), Westbound, Northeast Corner",41.73699713,-87.58507086,0,,1
+9470,9470,87th Street & Stony Island (Farside),"87th Street & Stony Island (Farside), Westbound, Northwest Corner",41.73698595,-87.58593388,0,,1
+9471,9471,87th Street & Blackstone,"87th Street & Blackstone, Westbound, Northeast Corner",41.73695083,-87.58763372,0,,1
+9472,9472,87th Street & Dorchester,"87th Street & Dorchester, Westbound, Northeast Corner",41.73691983,-87.59010373,0,,1
+9475,9475,87th Street & Greenwood,"87th Street & Greenwood, Westbound, Northside of the Street",41.73680283,-87.59742773,0,,1
+9476,9476,87th Street & Dobson,"87th Street & Dobson, Westbound, Northside of the Street",41.73678983,-87.59896273,0,,1
+9480,9480,87th Street & Langley,"87th Street & Langley, Westbound, Northside of the Street",41.73669016,-87.60712197,0,,1
+9481,9481,87th Street & St. Lawrence,"87th Street & St. Lawrence, Westbound, Northeast Corner",41.73666583,-87.60950873,0,,1
+9482,9482,87th Street & Eberhart,"87th Street & Eberhart, Westbound, Northside of the Street",41.73661576,-87.61200471,0,,1
+9483,9483,87th Street & King Drive,"87th Street & King Drive, Westbound, Northeast Corner",41.73657991,-87.61444128,0,,1
+9484,9484,87th Street & Calumet,"87th Street & Calumet, Westbound, Northeast Corner",41.73656488,-87.61607691,0,,1
+9485,9485,87th Street & Prairie,"87th Street & Prairie, Westbound, Northeast Corner",41.73653083,-87.61750373,0,,1
+9486,9486,87th Street & Indiana,"87th Street & Indiana, Westbound, Northeast Corner",41.73650283,-87.61913773,0,,1
+9487,9487,87th Street & Michigan,"87th Street & Michigan, Westbound, Northeast Corner",41.73648083,-87.62074373,0,,1
+9489,9489,87th Street & State,"87th Street & State, Westbound, Northeast Corner",41.73643217,-87.6240306,0,,1
+9491,9491,200 W 87th Street,"200 W 87th Street, Westbound, Northside of the Street",41.73635442,-87.62754863,0,,1
+9492,9492,200 W 87th Street,"200 W 87th Street, Westbound, Northside of the Street",41.73630819,-87.62880981,0,,1
+9493,9493,87th Street & Holland,"87th Street & Holland, Westbound, Northwest Corner",41.73604736,-87.6328306,0,,1
+9494,9494,87th Street & Normal,"87th Street & Normal, Westbound, Northside of the Street",41.73623188,-87.63611994,0,,1
+9495,9495,87th Street & Wallace,"87th Street & Wallace, Westbound, Northeast Corner",41.73620585,-87.6386459,0,,1
+9496,9496,87th Street & Union,"87th Street & Union, Westbound, Northeast Corner",41.73619367,-87.6411036,0,,1
+9498,9498,87th Street & Vincennes,"87th Street & Vincennes, Westbound, Northwest Corner",41.73615263,-87.6455516,0,,1
+9500,9500,87th Street & Aberdeen,"87th Street & Aberdeen, Westbound, Northeast Corner",41.73607506,-87.65078407,0,,1
+9502,9502,87th Street & Throop,"87th Street & Throop, Westbound, Northeast Corner",41.73600475,-87.65568867,0,,1
+9503,9503,87th Street & Loomis,"87th Street & Loomis, Westbound, Northeast Corner",41.73596837,-87.65802733,0,,1
+9504,9504,87th Street & Laflin,"87th Street & Laflin, Westbound, Northeast Corner",41.73593721,-87.66048928,0,,1
+9505,9505,87th Street & Ashland,"87th Street & Ashland, Westbound, Northeast Corner",41.73591212,-87.6628913,0,,1
+9506,9506,87th Street & Paulina,"87th Street & Paulina, Westbound, Northeast Corner",41.73586825,-87.66537114,0,,1
+9508,9508,87th Street & Wolcott,"87th Street & Wolcott, Westbound, Northeast Corner",41.73579897,-87.67025899,0,,1
+9509,9509,87th Street & Damen,"87th Street & Damen, Westbound, Northeast Corner",41.73577846,-87.67266775,0,,1
+9510,9510,87th Street & Longwood,"87th Street & Longwood, Westbound, Northeast Corner",41.73573065,-87.67588001,0,,1
+9511,9511,87th Street & Western,"87th Street & Western, Westbound, Northeast Corner",41.73565617,-87.68222082,0,,1
+9512,9512,2600 W 87th Street,"2600 W 87th Street, Westbound, Northside of the Street",41.73555307,-87.68807629,0,,1
+9513,9513,87th Street & Washtenaw,"87th Street & Washtenaw, Westbound, Northeast Corner",41.73552449,-87.68956852,0,,1
+9515,9515,87th Street & Francisco,"87th Street & Francisco, Westbound, Northeast Corner",41.73543823,-87.6945598,0,,1
+9516,9516,87th Street & Sacramento,"87th Street & Sacramento, Westbound, Northeast Corner",41.73539623,-87.6969088,0,,1
+9517,9517,87th Street & Albany,"87th Street & Albany, Westbound, Northside of the Street",41.73538552,-87.69960609,0,,1
+9518,9518,87th Street & Kedzie,"87th Street & Kedzie, Westbound, Northeast Corner",41.73537552,-87.70173809,0,,1
+9519,9519,3300 W 87th Street,"3300 W 87th Street, Westbound, Northeast Corner",41.73529751,-87.7045231,0,,1
+9520,9520,3400 W 87th Street,"3400 W 87th Street, Westbound, Northside of the Street",41.73524876,-87.70769179,0,,1
+9521,9521,87th Street & Central Park,"87th Street & Central Park, Westbound, Northeast Corner",41.7351754,-87.71142582,0,,1
+9522,9522,87th Street & Lawndale,"87th Street & Lawndale, Westbound, Northeast Corner",41.73508684,-87.71402423,0,,1
+9523,9523,87th Street & Hamlin,"87th Street & Hamlin, Westbound, Northeast Corner",41.73504384,-87.71645923,0,,1
+9524,9524,87th Street & Springfield,"87th Street & Springfield, Westbound, Northeast Corner",41.73501807,-87.71885792,0,,1
+9525,9525,87th Street & Pulaski,"87th Street & Pulaski, Westbound, Northeast Corner",41.73498862,-87.72087813,0,,1
+9526,9526,87th Street & Karlov,"87th Street & Karlov, Westbound, Northeast Corner",41.73494083,-87.72379744,0,,1
+9527,9527,87th Street & Keeler,"87th Street & Keeler, Westbound, Northeast Corner",41.7348954,-87.72611341,0,,1
+9528,9528,87th Street & Kildare,"87th Street & Kildare, Westbound, Northeast Corner",41.73481626,-87.72859037,0,,1
+9529,9529,87th Street & Kostner,"87th Street & Kostner, Westbound, Northeast Corner",41.73480613,-87.73100336,0,,1
+9530,9530,87th Street & Kilbourn,"87th Street & Kilbourn, Westbound, Northeast Corner",41.73477113,-87.73341237,0,,1
+9531,9531,87th Street & Kenton,"87th Street & Kenton, Westbound, Northeast Corner",41.73473281,-87.73590388,0,,1
+9532,9532,87th Street & Kilpatrick,"87th Street & Kilpatrick, Westbound, Northeast Corner",41.73469236,-87.73828199,0,,1
+14506,14506,87th Street & Halsted,"87th Street & Halsted, Eastbound, Southeast Corner",41.73598431,-87.64313687,0,,1
+14507,14507,87th Street & Halsted,"87th Street & Halsted, Westbound, Northwest Corner",41.73617708,-87.64406985,0,,1
+14540,14540,87th Street & Racine,"87th Street & Racine, Westbound, Northwest Corner",41.73603507,-87.65359521,0,,1
+14557,14557,87th Street & Jeffery,"87th Street & Jeffery, Eastbound, Southeast Corner",41.73699945,-87.57550872,0,,1
+14778,14778,87th Street & Racine,"87th Street & Racine, Eastbound, Southeast Corner",41.73585195,-87.65305159,0,,1
+15025,15025,87th Street & Cottage Grove,"87th Street & Cottage Grove, Westbound, Northwest Corner",41.73671837,-87.60521361,0,,1
+15111,15111,87th Street & 200 West,"87th Street & 200 West, Eastbound, Southwest Corner",41.73621366,-87.62780798,0,,1
+15112,15112,87th Street & Anthony,"87th Street & Anthony, Westbound, Northeast Corner",41.73723142,-87.56871839,0,,1
+15113,15113,Beverly Country Club,"Beverly Country Club, Westbound, Northside of the Street",41.73562831,-87.68439108,0,,1
+15498,15498,87th Street & Western,"87th Street & Western, Eastbound, Southeast Corner",41.73543102,-87.68187225,0,,1
+15678,15678,Commercial & 89th Street,"Commercial & 89th Street, Northbound, Northeast Corner",41.73395384,-87.55127497,0,,1
+15787,15787,87th Street & Ashland,"87th Street & Ashland, Eastbound, Southeast Corner",41.73568335,-87.66256775,0,,1
+15788,15788,87th Street & Loomis,"87th Street & Loomis, Eastbound, Southeast Corner",41.73578404,-87.65777681,0,,1
+15789,15789,87th Street & Morgan,"87th Street & Morgan, Eastbound, Southeast Corner",41.73589233,-87.64809086,0,,1
+15790,15790,87th Street & Morgan,"87th Street & Morgan, Westbound, Northwest Corner",41.73610866,-87.64884351,0,,1
+15813,15813,Cicero & 87th Street,"Cicero & 87th Street, Northbound, Southeast Corner",41.73423688,-87.74090797,0,,1
+15886,15886,87th Street Red Line Station,"87th Street Red Line Station, Westbound, Northside of the Street",41.73641903,-87.62477147,0,,1
+15910,15910,87th Street & Utica,"87th Street & Utica, Westbound, Northside of the Street",41.73537006,-87.69839909,0,,1
+16018,16018,Beverly Country Club,"Beverly Country Club, Eastbound, Southside of the Street",41.73538625,-87.68465618,0,,1
+16048,16048,87th Street & Dauphin/Ingleside,"87th Street & Dauphin/Ingleside, Westbound, Northwest Corner",41.73676939,-87.60141109,0,,1
+17070,17070,87th & California,"87th & California, Westbound, Northwest Corner",41.73547267,-87.69251698,0,,1
+17098,17098,87th Street & Avalon,"87th Street & Avalon, Westbound, Northwest Corner",41.73687511,-87.59373298,0,,1
+17099,17099,87th Street & Wolcott,"87th Street & Wolcott, Eastbound, Southside of the Street",41.73560316,-87.67044295,0,,1
+17949,17949,87th Street & Wood,"87th Street & Wood, Westbound, Northwest Corner",41.73582515,-87.66819823,0,,1
+18672,18672,Chicago Vocational School,,41.73826733,-87.57056175,0,,1
+18681,18681,Commercial & 91st Street,"Commercial & 91st Street, Northbound, Northeast Corner",41.7303934,-87.55118485,0,,1

@@ -20,7 +20,7 @@ export interface AgencyPageRoute {
   longName: string | null;
   /** effectiveMode() (shared/modes.ts): 0 streetcar, 1 subway/metro, 2 commuter rail, 3 bus, 4 ferry, 100 light rail, ... */
   mode: number;
-  /** Weekday headway in minutes (worst direction, like the map filter); null with no sustained service. */
+  /** Weekday headway in minutes: the map filter's own number (worst direction); null with no sustained service. */
   midday: number | null;
   am: number | null;
   pm: number | null;

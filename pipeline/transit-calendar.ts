@@ -168,7 +168,26 @@ export function detectReferenceDate(
             .filter(s => s <= todayStr && groupEnd(s) >= todayStr && daysBetween(s, groupEnd(s)) >= MIN_RUNNING_PERIOD_DAYS)
             .pop()
         : undefined;
-    const runningStart = newestStarted != null && groupEnd(newestStarted) >= todayStr
+    // The newest started period still running today is kept unless it is a replacement block:
+    // short (under MIN_RUNNING_PERIOD_DAYS), with a long period also running, and under
+    // MIN_RUNNING_ROUTE_SHARE of its routes run by the long periods' services. Sound Transit's
+    // Oct 17-18 Link bus bridge (2 services, only its Shuttle routes) replaced weekend rail; as
+    // the reference it dropped the 1 Line and 2 Line (#921). A short period of the current
+    // timetable's own routes is kept: Embark's Oct 7-21 group is its regular Wednesday service.
+    // Without route ids the period is kept, as before.
+    const routesOfStarts = (starts: readonly string[]): Set<string> => {
+        const services = new Set(starts.flatMap(s => groups.get(s)!.map(c => c.service_id)));
+        return new Set((trips ?? []).filter(t => t.route_id != null && services.has(t.service_id)).map(t => t.route_id!));
+    };
+    const newestRunningIsReplacement = (() => {
+        if (newestStarted == null || longRunningStarts.length === 0 || longRunningStarts.includes(newestStarted)) return false;
+        if (daysBetween(newestStarted, groupEnd(newestStarted)) >= MIN_RUNNING_PERIOD_DAYS) return false;
+        const own = routesOfStarts([newestStarted]);
+        if (own.size === 0) return false;
+        const long = routesOfStarts(longRunningStarts);
+        return [...own].filter(r => long.has(r)).length < own.size * MIN_RUNNING_ROUTE_SHARE;
+    })();
+    const runningStart = newestStarted != null && groupEnd(newestStarted) >= todayStr && !newestRunningIsReplacement
         ? newestStarted
         : longRunningStarts.length > 0
         ? longRunningStarts[longRunningStarts.length - 1]

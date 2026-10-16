@@ -278,10 +278,17 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
         if (siblings.some(f => f.properties.periodCoverageHeadway === undefined)) return null;
         const pool = selectDirectionCoveragePool(dirMap?.get(direction)?.get(period) ?? []);
         const poolWaits = pool.map(c => c.coverage).filter((v): v is number => v != null);
-        // Use the pool only when every pattern in it reports a coverage value; otherwise fall back.
-        if (pool.length > 0 && poolWaits.length === pool.length) return Math.max(...poolWaits);
-        const waits = siblings.map(f => f.properties.periodCoverageHeadway?.[period])
+        // The pool's members that report a coverage value speak for it. A member without one (a
+        // steady row that borrows its period value from its branch, TTC 123's Long Branch via
+        // East Mall) must not open the stamp to every sibling: that let a 2-trip West Mall row's
+        // 336 set the route's midday wait. Only a pool where no member reports one falls back,
+        // and then to the non-span siblings, as span rows do not speak for a direction while
+        // another pattern does. A direction of span rows alone keeps theirs, so it never vanishes.
+        if (poolWaits.length > 0) return Math.max(...poolWaits);
+        const waitsOf = (rows: typeof siblings) => rows.map(f => f.properties.periodCoverageHeadway?.[period])
           .filter((v): v is number => v != null);
+        const nonSpanWaits = waitsOf(siblings.filter(f => f.properties.tier !== 'span'));
+        const waits = nonSpanWaits.length > 0 ? nonSpanWaits : waitsOf(siblings);
         return waits.length ? Math.max(...waits) : null;
       });
       stamp[period] = values.some(v => v == null) ? null : Math.max(...values as number[]);

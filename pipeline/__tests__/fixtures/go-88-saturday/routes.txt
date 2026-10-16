@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_color,route_text_color
+09261126-88,GO,88,Peterborough / Oshawa,3,ff0d00,FFFFFF

@@ -1,0 +1,34 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,trip_route_type,route_pattern_id,bikes_allowed
+436,BUS20264-hbl46wk1-Weekday-02,78517349,North Shore Mall via Lynnfield St,,0,L436-123,4360312,1,,436-1-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517370,North Shore Mall via Lynnfield St,,0,L436-124,4360312,1,,436-1-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517383,North Shore Mall via Lynnfield St,,0,L436-125,4360312,1,,436-1-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517318,Goodwins Circle,,0,L436-128,4360313,1,,436-2-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517410,Goodwins Circle,,0,L120-79,4360313,1,,436-2-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517320,Liberty Tree via North Shore Mall & Lynnfield St,,0,L436-131,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517321,Liberty Tree via North Shore Mall & Lynnfield St,,0,L435-118,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517322,Liberty Tree via North Shore Mall & Lynnfield St,,0,L436-128,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517334,Liberty Tree via North Shore Mall & Lynnfield St,,0,L436-126,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517350,Liberty Tree via North Shore Mall & Lynnfield St,,0,L435-121,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517363,Liberty Tree via North Shore Mall & Lynnfield St,,0,L435-111,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517366,Liberty Tree via North Shore Mall & Lynnfield St,,0,L435-119,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517374,Liberty Tree via North Shore Mall & Lynnfield St,,0,L436-124,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517382,Liberty Tree via North Shore Mall & Lynnfield St,,0,L429-95,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517384,Liberty Tree via North Shore Mall & Lynnfield St,,0,L435-120,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517407,Liberty Tree via North Shore Mall & Lynnfield St,,0,L436-127,4360311,1,,436-_-0,1
+436,BUS20264-hbl46wk1-Weekday-02,78517333,Central Square via Lynnfield St,,1,L436-123,4360309,1,,436-1-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517365,Central Square via Lynnfield St,,1,L436-124,4360309,1,,436-1-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517385,Central Square via Lynnfield St,,1,L436-125,4360309,1,,436-1-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517347,Neptune Towers via Central Square,,1,L435-108,4360315,1,,436-3-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517312,West Lynn Garage via Central Square,,1,L442-147,4360314,1,,436-9-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517316,Central Square via Malls & Lynnfield St,,1,L436-129,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517319,Central Square via Malls & Lynnfield St,,1,L436-131,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517326,Central Square via Malls & Lynnfield St,,1,L435-109,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517336,Central Square via Malls & Lynnfield St,,1,L436-126,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517346,Central Square via Malls & Lynnfield St,,1,L435-108,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517348,Central Square via Malls & Lynnfield St,,1,L435-113,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517361,Central Square via Malls & Lynnfield St,,1,L426-91,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517362,Central Square via Malls & Lynnfield St,,1,L435-110,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517364,Central Square via Malls & Lynnfield St,,1,L436-130,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517386,Central Square via Malls & Lynnfield St,,1,L450-154,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517405,Central Square via Malls & Lynnfield St,,1,L436-127,4360310,1,,436-_-1,1
+436,BUS20264-hbl46wk1-Weekday-02,78517406,Central Square via Malls & Lynnfield St,,1,L455-170,4360310,1,,436-_-1,1
