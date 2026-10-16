@@ -24,7 +24,7 @@ export interface RouteDisplay {
  * its number the same way on every surface. Rail, subway, ferry and the other non-bus modes hide it (their ids are internal:
  * "30053" for the Expo Line, "1" for "Line 1 (Yonge-University)"). A streetcar keeps its number (TTC 501 Queen), and so does a
  * bus ("108 Metro Local Line", "99 B-Line"); only a bus with a long internal id (5 or more digits) and a name ending in Line or
- * SeaBus loses it. With no mode known the bus rule applies.
+ * SeaBus loses it. Demand-responsive services (extended types 15xx) follow the bus rule. With no mode known the bus rule applies.
  */
 export function shouldHideNumericRouteShortName(
   shortName: string | null | undefined,
@@ -35,7 +35,8 @@ export function shouldHideNumericRouteShortName(
   const named = /(?:line|seabus)$/i.test(longName.trim());
   const internalId = shortName.trim().length >= 5;
   if (mode === 0) return false;
-  if (mode === undefined || mode === 3 || mode === 11) return internalId && named;
+  // Demand-responsive extended types (15xx) are named like buses: their zone numbers are public (exo-laurentides 303).
+  if (mode === undefined || mode === 3 || mode === 11 || (mode >= 1500 && mode < 1600)) return internalId && named;
   return true;
 }
 

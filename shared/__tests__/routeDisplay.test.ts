@@ -84,5 +84,6 @@ describe('routeDisplay', () => {
     expect(routeDisplay({ shortName: '201', longName: 'Red Line - Somerset - Bridlewood/Tuscany CTrain', routeType: 0, agencySlug: 'calgary' }).primary).not.toBe('201');
     expect(routeDisplay({ shortName: '090', longName: 'ELIZABETH RIVER FERRY', routeType: 4, agencySlug: 'hrt' }).text).toBe('ELIZABETH RIVER FERRY');
     expect(routeDisplay({ shortName: '501', longName: 'Queen', routeType: 0, agencySlug: 'ttc' }).text).toBe('501 — Queen');
+    expect(routeDisplay({ shortName: '303', longName: 'Saint-Jérôme (Saint-Camille) (sur réservation)', routeType: 1501, agencySlug: 'exo-laurentides' }).primary).toBe('303');
   });
 });
