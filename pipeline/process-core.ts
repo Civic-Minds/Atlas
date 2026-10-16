@@ -7,7 +7,7 @@ import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
-import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
+import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGapAllowance, otherHeadsignDepartureTimes, previousNightTailDays, serviceContinuesAfter, serviceContinuesBefore } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
@@ -401,6 +401,8 @@ export function scopedTerminalHeadline(
   day: DayType,
   routeType: string,
   railLike: boolean,
+  /** #773: the route direction's departures that day under other headsigns (serviceContinuesAfter). */
+  otherHeadsignTimes?: readonly number[],
 ): { headway: number; tier: string | null } | null {
   // Unique times: phase 1 drops duplicate departures, and a zero-minute gap would loosen the
   // every-gap allowance (wsf 73 Bainbridge: 161 trips, 23 distinct times).
@@ -422,6 +424,23 @@ export function scopedTerminalHeadline(
   const windowed = sorted.filter(t => t >= start && t <= end);
   if (windowed.length < 3) return { headway, tier: null };
   const gaps = windowed.slice(1).map((t, i) => t - windowed[i]);
+  // A gap that straddles a window edge counts for its part inside the window (#773): a bus
+  // at 06:55 and the next at 07:55 is a 55-minute wait from 07:00, not a line that opens at
+  // 07:55 (Halifax 2 Saturday: hourly until 08:00, every 15 after, read tier 30 at the six
+  // origin-end stops and 60 at the other 39). The wait counts when the line's service continues
+  // across the edge, that is when a departure of the service day sits outside the window on that
+  // side, 24:00+ departures included (serviceContinuesBefore/After, the same boundary phase 2's
+  // closing edge uses): a line whose first bus is the first of the day still opens with it, a
+  // line whose last bus is the last of the day still closes with it, and a platform whose
+  // service moves to another bay for the afternoon and returns after midnight (REM A3-A1 to
+  // Anse-a-l'Orme, #842) is one terminal once #754 joins the bays. Whether the outside
+  // departure is near or far does not matter, so an extra departure outside the window never
+  // changes the grade; the closed line stays the one case graded on its window alone. Graded as
+  // gaps, not as departures, so the trip count, span and allowance stay the window's own.
+  const edgeGaps = [
+    ...(windowed[0] > start && serviceContinuesBefore(sorted, windowed[0]) ? [windowed[0] - start] : []),
+    ...(windowed[windowed.length - 1] < end && serviceContinuesAfter(sorted, windowed[windowed.length - 1], otherHeadsignTimes) ? [end - windowed[windowed.length - 1]] : []),
+  ];
   const determined = determineTierWithEdgeGapAllowance(
     gaps,
     windowed.length,
@@ -434,6 +453,8 @@ export function scopedTerminalHeadline(
     {
       rawDepartureTimes: sorted,
       analysisTimes: windowed,
+      edgeGaps,
+      otherHeadsignTimes,
       day: (day === 'Weekday' ? 'Wednesday' : day) as DayName,
       routeType,
       railLike,
@@ -798,6 +819,29 @@ export async function processGtfsBuffer(
     const existing = rawByDayType.get(k);
     if (!existing || r.departureTimes.length > existing.length) rawByDayType.set(k, r.departureTimes);
   }
+
+  // Each route group and direction's phase-1 patterns with display headsigns, for a line's
+  // other-headsign departures (#773, serviceContinuesAfter). A Weekday line reads the weekday
+  // with the median count.
+  const rawsByGroupDir = new Map<string, RawRouteDepartures[]>();
+  for (const r of raw) {
+    const route = routeById.get(r.route);
+    const shortName = route?.route_short_name ?? r.route;
+    const key = `${routeGroupName(route, r.route)}::${r.dir}`;
+    // Compared with the feature's headsign, so the display form ("7 KENNEDY SOUTH" reads
+    // "KENNEDY SOUTH"): otherwise a line's own trips would count as another headsign.
+    const display = { ...r, headsign: resolveDisplayHeadsign(r.headsign, shortName, route?.route_long_name ?? null) ?? undefined };
+    const list = rawsByGroupDir.get(key);
+    if (list) list.push(display); else rawsByGroupDir.set(key, [display]);
+  }
+  const otherHeadsignTimesFor = (shortName: string, dirId: string, day: DayType, headsign: string | null): number[] => {
+    const raws = rawsByGroupDir.get(`${shortName}::${dirId}`) ?? [];
+    if (day !== 'Weekday') return otherHeadsignDepartureTimes(raws, day, headsign);
+    const perDay = WEEKDAYS.filter(d => raws.some(r => r.day === d))
+      .map(d => otherHeadsignDepartureTimes(raws, d, headsign))
+      .sort((a, b) => a.length - b.length);
+    return perDay[Math.floor((perDay.length - 1) / 2)] ?? [];
+  };
 
   // Per-stop headway computation (AI-96): map serviceId → dayTypes, then tripId → groups,
   // so each service block contributes to every applicable weekday/weekend bucket.
@@ -1865,6 +1909,7 @@ export async function processGtfsBuffer(
       continue;
     }
     const featureHeadsign = feature.properties.headsign as string | null;
+    const featureOtherHeadsignTimes = otherHeadsignTimesFor(shortName, dirId, day as DayType, featureHeadsign);
     const featureRoute = routeById.get(feature.properties.routeId as string);
     const railFeature = isRailLikeRoute({
       routeType: featureRoute?.route_type,
@@ -2221,7 +2266,7 @@ export async function processGtfsBuffer(
       // The pool must be all-day service with daytime departures of its own (the same guard as
       // the thin-shape rescue), so a night route's pre-dawn pieces never pool into a headline.
       const sorted = [...pool].sort((a, b) => a - b);
-      if (!scopedTerminalHeadline(sorted, day as DayType, featureRoute?.route_type ?? '', railFeature)) return null;
+      if (!scopedTerminalHeadline(sorted, day as DayType, featureRoute?.route_type ?? '', railFeature, featureOtherHeadsignTimes)) return null;
       // And even enough to read as one service (pooledHeadwayInWindow's guard): two branches
       // bunched 3 minutes apart keep the own pattern's headline.
       return pooledStepOneHeadway(sorted, [...(metricStopMap.get(terminalId) ?? [])]) != null ? sorted : null;
@@ -2411,13 +2456,13 @@ export async function processGtfsBuffer(
             stopTiers[stopId] = (TIER_RANK[railGraded] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? railGraded : byHeadway;
             continue;
           }
-          const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
+          const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature, featureOtherHeadsignTimes);
           // More service never lowers a grade: the own pattern's list is graded too and the
           // better grade stands. Own every 15 from 07:00 to 19:00 plus a sibling every 15 from
           // 20:00 to 22:00 merged to a list with a 19:00-20:00 hole and graded 60; that hole is
           // the edge of the own service, not a gap in it.
           const ownTimes = metricStopMap.get(stopId);
-          const ownGraded = ownTimes && ownTimes !== times ? scopedTerminalHeadline(ownTimes, day as DayType, featureRoute?.route_type ?? '', railFeature) : null;
+          const ownGraded = ownTimes && ownTimes !== times ? scopedTerminalHeadline(ownTimes, day as DayType, featureRoute?.route_type ?? '', railFeature, featureOtherHeadsignTimes) : null;
           const best = [graded?.tier, ownGraded?.tier].filter((t): t is string => t != null)
             .sort((a, b) => (TIER_RANK[a] ?? 99) - (TIER_RANK[b] ?? 99))[0];
           // No every-gap grade (a hole breaks the sustained sample, or rail): no stop grade. The
@@ -2459,6 +2504,7 @@ export async function processGtfsBuffer(
             day as DayType,
             featureRoute?.route_type ?? '',
             railFeature,
+            featureOtherHeadsignTimes,
           )
           : null;
         if (scoped) {
@@ -2615,6 +2661,7 @@ export async function processGtfsBuffer(
           day as DayType,
           featureRoute?.route_type ?? '',
           railFeature,
+          featureOtherHeadsignTimes,
         )
         : null;
       // The branch decision runs on plain medians (resolveTerminalHeadline, #772).
@@ -2754,7 +2801,7 @@ export async function processGtfsBuffer(
             headway,
             day: day as DayType,
             drawnStopIds: drawnIds,
-            gradeAt: (stopId, weekday) => scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature)?.tier ?? null,
+            gradeAt: (stopId, weekday) => scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature, featureOtherHeadsignTimes)?.tier ?? null,
             otherWeekdays: () => otherWeekdayPools(hsKey),
             tiers: routeTierScale(),
           });
@@ -2767,7 +2814,7 @@ export async function processGtfsBuffer(
         const drawnIds = coverageStops.map(p => p.stopId);
         return {
           gradeOnWeekday: (stopId: string, weekday: { name: DayName; tripIds: Set<string> }) =>
-            scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature)?.tier ?? null,
+            scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature, featureOtherHeadsignTimes)?.tier ?? null,
           otherWeekdays: () => otherWeekdayPools(hsKey),
         };
       })() : undefined);
