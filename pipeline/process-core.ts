@@ -2966,7 +2966,8 @@ export async function processGtfsBuffer(
           if (cap != null && capH != null && capH < candidate.headway) {
             candidate = { headway: capH, coverage: allStopPeriodCoverageHw[cap]?.[pk] ?? null, maxGap: allStopPeriodMaxGaps[cap]?.[pk] ?? null, sustained: allStopPeriodSustained[cap]?.[pk] };
           }
-          if (worstDrawnStop == null || candidate.headway > (worstDrawnStop.headway ?? -Infinity)) worstDrawnStop = candidate;
+          const candidateH = candidate.headway ?? -Infinity;
+          if (worstDrawnStop == null || candidateH > (worstDrawnStop.headway ?? -Infinity)) worstDrawnStop = candidate;
         }
       }
       // Step 5 (routeGrading.ts): the period's value and its companions.
