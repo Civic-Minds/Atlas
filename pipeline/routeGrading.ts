@@ -250,6 +250,9 @@ export interface PeriodInputs {
   branchMaxGap: number | null;
   termSustained: boolean | undefined;
   branchSustained: boolean | undefined;
+  /** #897: termH / branchH is a sparse overnight window's withheld value (see sparseOvernightHeadway). */
+  termSparse?: boolean;
+  branchSparse?: boolean;
 }
 
 export interface PeriodValue {
@@ -257,10 +260,29 @@ export interface PeriodValue {
   coverage: number | null;
   maxGap: number | null;
   sustained: boolean | undefined;
+  /** #897: the headway is a sparse overnight window's withheld value. */
+  sparse?: boolean;
+  /** #897: the value decidePeriod withheld (headway is then null). */
+  withheld?: number;
 }
 
 /** Step 5: one period's displayed value and the companions that follow its source. */
 export function decidePeriod(i: PeriodInputs): PeriodValue {
+  return withholdSparse(decideSourcedPeriod(i));
+}
+
+/**
+ * #897: a period whose value came from a sparse overnight window shows no value. The source is
+ * picked, and the coverage, max gap and sustained flag follow it, as if the value were shown, so
+ * the hole still shows, the route-wide stamps pick the same pools, and no other source's value
+ * takes its place.
+ */
+function withholdSparse(period: PeriodValue): PeriodValue {
+  if (!period.sparse || period.headway == null) return period;
+  return { headway: null, coverage: period.coverage, maxGap: period.maxGap, sustained: period.sustained, withheld: period.headway };
+}
+
+function decideSourcedPeriod(i: PeriodInputs): PeriodValue {
   const resolvedH = resolveTerminalPeriodHeadway(i.termH, i.branchH, i.terminalIsBranchScoped);
   // #771: a period read from the destination pool is never better than the worst drawn stop's
   // value in that period (the same floor as the headline). The floored period is that stop's
@@ -275,5 +297,6 @@ export function decidePeriod(i: PeriodInputs): PeriodValue {
   // rather than re-deriving the choice: comparing the value against termH/branchH keeps this in
   // sync with that function's logic by construction.
   const sustained = headway == null ? undefined : (headway === i.termH ? i.termSustained : (headway === i.branchH ? i.branchSustained : undefined));
-  return { headway, coverage, maxGap, sustained };
+  const sparse = headway == null ? false : (headway === i.termH ? !!i.termSparse : (headway === i.branchH && !!i.branchSparse));
+  return { headway, coverage, maxGap, sustained, ...(sparse ? { sparse } : {}) };
 }

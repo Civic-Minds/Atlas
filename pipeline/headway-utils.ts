@@ -555,13 +555,48 @@ export function hasSustainedFrequentService(
   return hasSustainedServiceInWindow(departureTimes, start, end, maxGapMinutes);
 }
 
+/**
+ * #897: an overnight window of exactly three departures whose two gaps the shared steadiness test
+ * (isSustainedHeadway) calls uneven: a close pair, then a hole of hours. The value of two gaps is
+ * their mean (TTC 504 weekday 116, CTA 55 Sunday 105), a wait no rider sees, so the period reads
+ * no value; its coverage and max gap still show the hole. TTC 300 weekday's short turn to Victoria
+ * Park (04:38, 04:53, 04:57: gaps 15 and 4) is steady under the same test and keeps its 10.
+ */
+export function isSparseOvernightWindow(departureTimes: readonly number[]): boolean {
+  const { start, end } = PERIODS.overnight;
+  const times = [...new Set(forCrossMidnightWindow([...departureTimes], end))]
+    .filter(t => t >= start && t <= end)
+    .sort((a, b) => a - b);
+  if (times.length !== 3) return false;
+  const gaps = [times[1] - times[0], times[2] - times[1]];
+  return !isSustainedHeadway(gaps, (gaps[0] + gaps[1]) / 2);
+}
+
+/**
+ * #897: the overnight value a sparse window withholds (the mean of its two gaps), null when the
+ * window is not sparse. Route grading still weighs it to pick the period's source, so withholding
+ * the number never hands the period to another source's value.
+ */
+export function sparseOvernightHeadway(departureTimes: readonly number[]): number | null {
+  if (!isSparseOvernightWindow(departureTimes)) return null;
+  const { start, end } = PERIODS.overnight;
+  return medianHeadwayInWindow(forCrossMidnightWindow([...departureTimes], end), start, end, 3, true);
+}
+
+/** One period's value from a departure list: computePeriodHeadways for a single period. */
+export function periodHeadwayInWindow(departureTimes: number[], key: PeriodKey, typical = true): number | null {
+  if (key === 'overnight' && isSparseOvernightWindow(departureTimes)) return null;
+  const { start, end } = PERIODS[key];
+  return medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, end), start, end, 3, typical);
+}
+
 // The median deliberately stays based on departures inside the period. A separate max-gap value
 // below captures the part of every departure gap that overlaps the period, including boundary-
 // crossing gaps, without letting one large gap change the existing median.
 export function computePeriodHeadways(departureTimes: number[], typical = true): HeadwayByPeriod {
   const result: HeadwayByPeriod = {};
-  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-    result[key] = medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, end), start, end, 3, typical);
+  for (const key of Object.keys(PERIODS) as PeriodKey[]) {
+    result[key] = periodHeadwayInWindow(departureTimes, key, typical);
   }
   return result;
 }

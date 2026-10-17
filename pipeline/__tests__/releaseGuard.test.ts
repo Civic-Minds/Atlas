@@ -122,10 +122,12 @@ describe('tile rules fingerprint', () => {
   // Step 5a adds the rv_/rr_ route filter keys and reads them first in the period filter: a tile
   // change, covered by the same version 5 bump (one bump for the whole focus branch).
   // Step 6 adds routeAllDayHeadway and routeMiddayCap, read first by the all-day filter: same bump.
+  // #897 keeps a withheld sparse overnight period (no value, unsteady flag) in the coverage pool, so the
+  // stamp reads what it read before the value was withheld; data built earlier has no such period: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '4168c399ca67e5dae7bff48276cc82bc4a290f77f8df8f605af6437646c6f610',
+      fingerprint: 'bfef30ccaae705ab77e4055550cc53f195fea861c87ad186e8292f9162934cb5',
     });
   });
 });

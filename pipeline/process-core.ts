@@ -23,7 +23,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -1127,6 +1127,8 @@ export async function processGtfsBuffer(
   // Feature → the shapeId it was actually built from, so the per-stop headway
   // resolution loop below can pool departures scoped to that exact physical path.
   const featureShapeId = new Map<GeoJsonFeature, string>();
+  // #897: a feature's own overnight value withheld as a sparse window (Step 5 still weighs it).
+  const sparseOvernightBranchHw = new Map<GeoJsonFeature, number>();
   // Feature → its stop-map group name (routeGroupName), which differs from the displayed
   // routeShortName when the feed's short name is empty (#717).
   const featureGroupName = new Map<GeoJsonFeature, string>();
@@ -1280,6 +1282,8 @@ export async function processGtfsBuffer(
     dedupedPattern.set(dedupeKey, candidate);
     if (!hasRouteShape) maplessStopSequence.set(newFeature, maplessSequence);
     if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
+    const branchSparseOvernight = sparseOvernightHeadway(result.times);
+    if (branchSparseOvernight != null) sparseOvernightBranchHw.set(newFeature, branchSparseOvernight);
     featureGroupName.set(newFeature, groupName);
     featureBranchTripCount.set(newFeature, result.times.length);
     if (result.partialWeekday || result.previousNightTailOnly) partialWeekdayFeatures.add(newFeature);
@@ -2061,6 +2065,8 @@ export async function processGtfsBuffer(
     const allStopHwPlain: Record<string, number> = {};
     const allStopMiddayHwPlain: Record<string, number> = {};
     const allStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
+    // #897: a stop's overnight value withheld as a sparse window, by stop.
+    const sparseOvernightStopHw: Record<string, number> = {};
     const allStopPeriodCoverageHw: Record<string, HeadwayByPeriod> = {};
     const allStopPeriodMaxGaps: Record<string, HeadwayByPeriodMaxGap> = {};
     const allStopPeriodSustained: Record<string, HeadwayByPeriodSustained> = {};
@@ -2158,10 +2164,17 @@ export async function processGtfsBuffer(
             const merged = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
             if (merged != null) {
               const thin = thinPoolFallbackPeriodHw.get(stopId) ?? new Map<PeriodKey, PeriodValue>();
-              thin.set(pk, { headway: merged, coverage: computePeriodCoverageHeadways(times)[pk] ?? null, maxGap: computePeriodMaxGaps(times)[pk] ?? null, sustained: computePeriodSustained(times)[pk] });
+              const sparse = pk === 'overnight' && isSparseOvernightWindow(times);
+              thin.set(pk, { headway: merged, coverage: computePeriodCoverageHeadways(times)[pk] ?? null, maxGap: computePeriodMaxGaps(times)[pk] ?? null, sustained: computePeriodSustained(times)[pk], ...(sparse ? { sparse } : {}) });
               thinPoolFallbackPeriodHw.set(stopId, thin);
             }
           }
+        }
+        // #897: the value reads null when the list it came from is a sparse overnight window; the
+        // fallback choice, coverage and max gap stay as they were. Step 5 still weighs it.
+        if (ph != null && pk === 'overnight' && isSparseOvernightWindow(isPooled && pooledPh == null ? own : times)) {
+          sparseOvernightStopHw[stopId] = ph;
+          continue;
         }
         if (ph != null) byPeriod[pk] = ph;
       }
@@ -2201,8 +2214,8 @@ export async function processGtfsBuffer(
         ?? sustainedMedianHeadwayInWindow(own, 360, 1320, 3, undefined, true);
       if (hw != null) ownStopHw[stopId] = hw; else delete ownStopHw[stopId];
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
-      for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-        const ph = medianHeadwayInWindow(forCrossMidnightWindow(own, end), start, end, 3, true);
+      for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
+        const ph = periodHeadwayInWindow(own, pk);
         if (ph != null) byPeriod[pk] = ph;
       }
       if (Object.keys(byPeriod).length > 0) ownStopPeriodHw[stopId] = byPeriod; else delete ownStopPeriodHw[stopId];
@@ -2513,13 +2526,18 @@ export async function processGtfsBuffer(
           const values = overnightPeriodValues(overnightWindowTimes(own, nextDayMap ? (nextDayMap.get(stopId) ?? []) : undefined));
           if (values.coverage == null) continue;
           if (!best || best.coverage == null || values.coverage < best.coverage
-            || (values.coverage === best.coverage && (values.headway ?? Infinity) < (best.headway ?? Infinity))) best = values;
+            || (values.coverage === best.coverage && (values.headway ?? values.withheld ?? Infinity) < (best.headway ?? best.withheld ?? Infinity))) best = values;
         }
         // Never better than one stop gets: a value the best stop cannot read (fewer than three
         // overnight departures there) is not published from the trip starts either.
         const worse = (x: number | null, y: number | null | undefined) => (x == null || y == null ? null : Math.max(x, y));
+        // #897: the worse of the two values, withheld when it is a sparse window's.
+        const startsH = fromStarts.headway ?? fromStarts.withheld, bestH = best?.headway ?? best?.withheld ?? null;
+        const worseH = worse(startsH, bestH);
+        const worseSparse = worseH != null && (worseH === startsH ? fromStarts.headway == null : best?.headway == null);
         overnight = best == null ? null : {
-          headway: worse(fromStarts.headway, best.headway),
+          headway: worseSparse ? null : worseH,
+          withheld: worseSparse ? worseH : null,
           coverage: worse(fromStarts.coverage, best.coverage),
           maxGap: worse(fromStarts.maxGap, best.maxGap),
           sustained: fromStarts.sustained === false || best.sustained === false ? false : fromStarts.sustained,
@@ -2530,7 +2548,7 @@ export async function processGtfsBuffer(
         feature.properties.periodCoverageHeadway = { ...(feature.properties.periodCoverageHeadway as HeadwayByPeriod), overnight: overnight.coverage };
         feature.properties.maxGapByPeriod = { ...(feature.properties.maxGapByPeriod as HeadwayByPeriodMaxGap), overnight: overnight.maxGap };
         const sustained = { ...(feature.properties.headwayByPeriodSustained as HeadwayByPeriodSustained) };
-        if (overnight.headway != null) sustained.overnight = overnight.sustained; else delete sustained.overnight;
+        if ((overnight.headway ?? overnight.withheld) != null) sustained.overnight = overnight.sustained; else delete sustained.overnight;
         feature.properties.headwayByPeriodSustained = sustained;
         // The headline of a night-only line is never better than its overnight reading: phase 2
         // read 337 Saturday's three-trip short turn as every 23, against every 30 all night.
@@ -2540,9 +2558,12 @@ export async function processGtfsBuffer(
         // Saturday runs every 30 from 20:30 to 02:00, and its overnight gap to the Sunday 05:30 trip
         // is not its headline.
         const overnightOnly = ![...stopMap.values()].some(times => times.some(t => t >= 540 && t < 1380));
-        if (overnightOnly && !rescued && !limitedVariant && headline != null && overnight.headway != null && overnight.headway > headline) {
-          feature.properties.headway = overnight.headway;
-          const newTier = headwayToTierOn(overnight.headway, routeTierScale());
+        // A withheld sparse value (#897) still floors it: the period shows no value, the headline
+        // keeps the floor it had.
+        const overnightFloor = overnight.headway ?? overnight.withheld;
+        if (overnightOnly && !rescued && !limitedVariant && headline != null && overnightFloor != null && overnightFloor > headline) {
+          feature.properties.headway = overnightFloor;
+          const newTier = headwayToTierOn(overnightFloor, routeTierScale());
           if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[feature.properties.tier as string] ?? -1)) feature.properties.tier = newTier;
         }
       }
@@ -2856,8 +2877,17 @@ export async function processGtfsBuffer(
     const branchPeriodHw = feature.properties.headwayByPeriod as HeadwayByPeriod | undefined;
     const branchPeriodMaxGaps = feature.properties.maxGapByPeriod as HeadwayByPeriodMaxGap | undefined;
     const branchPeriodSustained = feature.properties.headwayByPeriodSustained as HeadwayByPeriodSustained | undefined;
+    // #897: the overnight value decidePeriod withheld; the headsign trunk minimum below still
+    // compares against it, so only the period value itself changes.
+    let sparseOvernightDecided: number | null = null;
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
-      const termH = headsignTerminalPeriodHw?.[pk] ?? terminalPeriodHw?.[pk] ?? null;
+      // #897: a sparse overnight window's withheld value still picks the source (decidePeriod).
+      const hsSparseH = pk === 'overnight' && headsignTerminalPeriodHw ? sparseOvernightHeadway(terminalScopedTimes ?? []) : null;
+      const stopSparseH = pk === 'overnight' && terminalStopId ? sparseOvernightStopHw[terminalStopId] ?? null : null;
+      const hsH = headsignTerminalPeriodHw?.[pk] ?? hsSparseH;
+      const termH = hsH ?? terminalPeriodHw?.[pk] ?? stopSparseH ?? null;
+      const termSparse = termH != null && (hsH == null ? terminalPeriodHw?.[pk] == null : hsSparseH != null);
+      const branchSparseH = pk === 'overnight' ? sparseOvernightBranchHw.get(feature) ?? null : null;
       // #771: the drawn stops some pooled variants skip, read where #690 pools them (see
       // worstDrawnStopHw in Step 4): the one with the worst value this period, with its own
       // companions. A stop with no value this period is left out, as the headline leaves out a
@@ -2869,8 +2899,10 @@ export async function processGtfsBuffer(
           if (!stopHasReading(stopId)) continue;
           const thin = thinPoolFallbackPeriodHw.get(stopId)?.get(pk);
           if (ownFallbackPeriodHw.get(stopId)?.has(pk) && !thin) continue;
-          const candidate: PeriodValue | null = thin ?? (allStopPeriodHw[stopId]?.[pk] == null ? null : {
-            headway: allStopPeriodHw[stopId]?.[pk] ?? null,
+          const stopH = allStopPeriodHw[stopId]?.[pk] ?? (pk === 'overnight' ? sparseOvernightStopHw[stopId] : undefined);
+          const candidate: PeriodValue | null = thin ?? (stopH == null ? null : {
+            ...(allStopPeriodHw[stopId]?.[pk] == null ? { sparse: true } : {}),
+            headway: stopH,
             coverage: allStopPeriodCoverageHw[stopId]?.[pk] ?? null,
             maxGap: allStopPeriodMaxGaps[stopId]?.[pk] ?? null,
             sustained: allStopPeriodSustained[stopId]?.[pk],
@@ -2882,7 +2914,7 @@ export async function processGtfsBuffer(
       // Step 5 (routeGrading.ts): the period's value and its companions.
       const period = decidePeriod({
         termH,
-        branchH: branchPeriodHw?.[pk] ?? null,
+        branchH: branchPeriodHw?.[pk] ?? branchSparseH,
         terminalIsBranchScoped: terminalPeriodIsBranchScoped,
         worstDrawnStop,
         terminalCoverage: terminalCoverage[pk] ?? null,
@@ -2892,11 +2924,14 @@ export async function processGtfsBuffer(
         branchMaxGap: branchPeriodMaxGaps?.[pk] ?? null,
         termSustained: headsignTerminalPeriodSustained?.[pk] ?? terminalPeriodSustained?.[pk],
         branchSustained: branchPeriodSustained?.[pk],
+        termSparse,
+        branchSparse: branchSparseH != null,
       });
+      if (period.withheld != null) sparseOvernightDecided = period.withheld;
       periodMedians[pk] = period.headway;
       periodCoverage[pk] = period.coverage;
       periodMaxGaps[pk] = period.maxGap;
-      if (period.headway != null) periodSustained[pk] = period.sustained;
+      if (period.headway != null || period.withheld != null) periodSustained[pk] = period.sustained;
       const allVals = onShape
         .map(({ stopId }) => ownStopPeriodHw[stopId]?.[pk])
         .filter((v): v is number => v != null);
@@ -2916,8 +2951,8 @@ export async function processGtfsBuffer(
       for (const [stopId, times] of hsStopMap) {
         times.sort((a, b) => a - b);
         const byPeriod: Partial<Record<PeriodKey, number>> = {};
-        for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-          const ph = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3);
+        for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
+          const ph = periodHeadwayInWindow(times, pk, false);
           if (ph != null) byPeriod[pk] = ph;
         }
         if (Object.keys(byPeriod).length > 0) hsPeriodHw[stopId] = byPeriod;
@@ -2927,7 +2962,7 @@ export async function processGtfsBuffer(
         const vals = onShape
           .map(({ stopId }) => hsPeriodHw[stopId]?.[pk])
           .filter((v): v is number => v != null);
-        const minHw = headsignOverlapMinHeadway(vals, periodMedians[pk] ?? null);
+        const minHw = headsignOverlapMinHeadway(vals, periodMedians[pk] ?? (pk === 'overnight' ? sparseOvernightDecided : null));
         if (minHw != null) headsignPeriodMins[pk] = minHw;
       }
       if (Object.keys(headsignPeriodMins).length > 0) {
@@ -2956,7 +2991,8 @@ export async function processGtfsBuffer(
         if (v == null && pk != null) {
           // The period value stands in only where the stop really has a departure this hour.
           const own = stopMetricMap.get(stopId) ?? [];
-          if (own.some(t => t >= h * 60 && t < h * 60 + 60)) { v = allStopPeriodHw[stopId]?.[pk] ?? null; standIn = v != null; }
+          // #897: a withheld sparse overnight value still stands in, so the hour chart keeps its floor.
+          if (own.some(t => t >= h * 60 && t < h * 60 + 60)) { v = allStopPeriodHw[stopId]?.[pk] ?? (pk === 'overnight' ? sparseOvernightStopHw[stopId] ?? null : null); standIn = v != null; }
         }
         if (v != null && (floor == null || v > floor.headway)) floor = { headway: v, stopId, standIn };
       }
