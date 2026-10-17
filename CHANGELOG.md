@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Bunching tile shows last week in the same two parts (local only)**: "last week 12% · 7%" under "14% · 8%", with the arrow from the two weeks' totals; before it showed one total that read as a different measure.
+- **No arrow when the numbers match (local only)**: a tile whose this-week and last-week figures read the same now says "same as last week" instead of an arrow next to an equal number.
+- **The planner's left "Late departures by hour" fills its card (local only)**: bars scale to the chart's own tallest hour, which is labelled (as on the right), and the card says "4 of 7 days counted"; the route list below it shrinks to make room.
+- **Charts say how many days were counted (local only)**: "6 of 7 days counted" over each late-by-hour chart and in the planner, instead of "6 days" or hover only.
+- **510 northbound row names no longer touch on the Dashboard strip (local only)**: two-line names get their own spacing.
+- **Run time in the agency routes table and the planner's route list is in minutes (local only)**: "2 min slower", "3 min faster", like the tile caption, instead of "+7%". Needs the agency summary rebuilt.
+- **"Stops most often late" on the agency page and in the planner (local only)**: it said "Stops where the most cars leave late".
 - **The planner names the agency and the picked route (local only)**: "TTC" heads the left panel and the route's name ("504 King") sits in the top bar by the direction pills. A late figure resting on fewer than 3 good days (the weekend on the 504 and 510: 1 day) is dimmed with "Few measurements: treat with care." on hover (CIV-293, CIV-284).
 - **One Late definition in "How this is measured" (local only)**: the route method no longer says Late twice ("Late at a stop: left the stop 5.5+ minutes after the timetable" is gone); "Ahead means 1.5+ minutes before it" stays as its own line.
 - **Late shares count the same days on every Live page (local only)**: Full analysis, Explore, the hour charts and the planner now count only days with good recordings, like the tiles, so the same figure matches everywhere (TTC 504: 8.5% became 9.3%; 510: 13.6% became 16.2%). The stop lists, run time by hour, build-up, bunching and extra wait still include every day until the analysis stores them per day (CIV-284, CIV-293).

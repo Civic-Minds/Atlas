@@ -4,7 +4,7 @@
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
 import { isWeekendDate, dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
-import { LATE_TILE_CAPTION } from '../../shared/liveWording';
+import { LATE_TILE_CAPTION, runTimeDiffText } from '../../shared/liveWording';
 import { tenth } from '../../shared/liveFormat';
 export { NOISE_RULE } from '../../shared/liveDashboard';
 
@@ -39,12 +39,13 @@ const pct1 = (x: number) => `${clean(Math.round(x * 1000) / 10)}%`;
  * last week". The direction is the separate `arrow`, drawn as a small mark coloured by `tone`. Without `lastText` the
  * line gives the size of the change ("1 pt"). `isShare` figures are 0-1 and change in points; the rest in minutes.
  */
-export function kpiDelta(key: CompareKey, now: number | null, before: number | null, lowerIsBetter: boolean, isShare: boolean, noise: number | null = null, lastText: string | null = null): Kpi['delta'] {
+export function kpiDelta(key: CompareKey, now: number | null, before: number | null, lowerIsBetter: boolean, isShare: boolean, noise: number | null = null, lastText: string | null = null, nowText: string | null = null): Kpi['delta'] {
   if (now == null || before == null) return null;
   const diff = isShare ? (now - before) * 100 : now - before;
   const mag = round1(Math.abs(diff));
   const unit = isShare ? 'pt' : 'min';
-  if (mag === 0) return { arrow: 'none', text: lastText ? 'same as last week' : 'same', tone: 'same', spoken: 'same as last week' };
+  // Equal as displayed (same rounding as the tile) reads as no change, never an arrow next to an equal number.
+  if (mag === 0 || (lastText != null && nowText === lastText)) return { arrow: 'none', text: lastText ? 'same as last week' : 'same', tone: 'same', spoken: 'same as last week' };
   const up = diff > 0;
   const { tone, big, measured } = weekChangeTone(key, now, before, lowerIsBetter, noise);
   const word = isShare ? (mag === 1 ? 'point' : 'points') : 'min';
@@ -60,8 +61,7 @@ export type { DailyValues };
 
 /** "2 min faster than the timetable", from the same whole minutes the tile and the Run time section show. */
 function runTimeCaption(typicalMin: number, scheduledMin: number): string {
-  const diff = Math.round(typicalMin) - Math.round(scheduledMin);
-  return diff === 0 ? 'same as the timetable' : `${Math.abs(diff)} min ${diff < 0 ? 'faster' : 'slower'} than the timetable`;
+  return runTimeDiffText(Math.round(typicalMin) - Math.round(scheduledMin));
 }
 
 /** The tiles that have a figure this week (a measure with nothing behind it is left out, not shown as a dash). `runTimeScope` is the Run time tile's second caption line. */
@@ -72,17 +72,21 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   const compare = w.comparable;
   /** The one noise for every tile: that measure's own day-to-day spread (null leaves the fixed stand-in). */
   const noise = (key: CompareKey) => dailyNoise(daily[key] ?? [], nThis, nLast);
+  const bunchText = (b: WeekMetrics['bunching']) => (b ? (bunchSplit(b) ? `${pct0(b.bunched!)} · ${pct0(b.gapped!)}` : pct0(b.share)) : null);
+  // Last week's two parts are shown only when this week's are too (and last week has them): the same form on both lines.
+  const lastBunch = l.bunching ? (t.bunching && bunchSplit(t.bunching) && bunchSplit(l.bunching) ? bunchText(l.bunching) : pct0(l.bunching.share)) : null;
+  const lateT = t.late ? pct0(t.late.share) : null, tripT = t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : null, waitT = t.extraWait ? `${clean(t.extraWait.minutes)} min` : null, delT = t.delivered?.share != null ? pct1(t.delivered.share) : null;
   const tiles = [
     mk('late', 'Late', t.late ? pct0(t.late.share) : '–', LATE_TILE_CAPTION, t.late?.n ?? 0, 'departures', l.late?.n ?? null,
-      compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, noise('late'), l.late ? pct0(l.late.share) : null) : null, l.late ? pct0(l.late.share) : null),
+      compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, noise('late'), l.late ? pct0(l.late.share) : null, lateT) : null, l.late ? pct0(l.late.share) : null),
     mk('tripTime', 'Run time', t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : '–', t.tripTime ? runTimeCaption(t.tripTime.typicalMin, t.tripTime.scheduledMin) : 'too few trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
-      compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false, noise('tripTime'), l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null) : null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null),
+      compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false, noise('tripTime'), l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null, tripT) : null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null),
     mk('extraWait', 'Extra wait', t.extraWait ? `${clean(t.extraWait.minutes)} min` : '–', 'longer wait than scheduled', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
-      compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false, noise('extraWait'), l.extraWait ? `${clean(l.extraWait.minutes)} min` : null) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),
+      compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false, noise('extraWait'), l.extraWait ? `${clean(l.extraWait.minutes)} min` : null, waitT) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),
     mk('bunching', 'Bunching', t.bunching ? (bunchSplit(t.bunching) ? `${pct0(t.bunching.bunched!)} · ${pct0(t.bunching.gapped!)}` : pct0(t.bunching.share)) : '–', t.bunching && bunchSplit(t.bunching) ? BUNCHING_SPLIT_CAPTION : 'of gaps between cars bunched or too long', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
-      compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true, noise('bunching'), l.bunching ? pct0(l.bunching.share) : null) : null, l.bunching ? pct0(l.bunching.share) : null),
+      compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true, noise('bunching'), lastBunch, bunchText(t.bunching)) : null, lastBunch),
     mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', t.delivered ? 'of scheduled trips ran' : 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
-      compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, noise('delivered'), l.delivered?.share != null ? pct1(l.delivered.share) : null) : null, l.delivered?.share != null ? pct1(l.delivered.share) : null),
+      compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, noise('delivered'), l.delivered?.share != null ? pct1(l.delivered.share) : null, delT) : null, l.delivered?.share != null ? pct1(l.delivered.share) : null),
   ];
   return tiles.filter(k => k.value !== '–').map(k => (k.key === 'tripTime' && runTimeScope ? { ...k, scope: runTimeScope } : k));
 }

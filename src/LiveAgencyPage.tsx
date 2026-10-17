@@ -24,7 +24,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
-import { coveredRoutesText, LATE_THRESHOLD, liveSubtitle } from '../shared/liveWording';
+import { coveredRoutesText, LATE_THRESHOLD, liveSubtitle, runTimeDiffText } from '../shared/liveWording';
 import { tenth } from '../shared/liveFormat';
 import MethodSection from './components/Live/sections/MethodSection';
 
@@ -113,7 +113,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
               { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
               { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
               { key: 'lastWeek', header: 'Last week', className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
-              { key: 'runTime', sortable: true, header: 'Run time', cell: r => pctSigned(r.runTimeOver) },
+              { key: 'runTime', sortable: true, header: 'Run time', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : pctSigned(r.runTimeOver)) },
               { key: 'bunching', sortable: true, header: 'Bunching', cell: r => (r.bunchedShare != null && r.gappedShare != null ? `${pct(r.bunchedShare)} · ${pct(r.gappedShare)}` : pct(r.bunchingShare)) },
               { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
             ]}
@@ -132,7 +132,7 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
   return (
     <div className="relative mt-3 overflow-x-auto">
       <SortableDataTable
-        caption="Stops where the most cars leave late, all analysed routes"
+        caption="Stops most often late, all analysed routes"
         rows={rows}
         defaultSort="late"
         rowKey={r => `${r.route}-${r.directionId}-${r.stopId}`}
@@ -215,7 +215,7 @@ export default function LiveAgencyPage() {
           <RoutesTable s={s} />
         </Section>
 
-        <Section id="agency-stops" title="Stops where the most cars leave late" intro={`The ${Math.min(s.worstStops.length, TOP_STOPS)} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`}>
+        <Section id="agency-stops" title="Stops most often late" intro={`The ${Math.min(s.worstStops.length, TOP_STOPS)} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`}>
           <StopsTable s={s} rows={s.worstStops.slice(0, TOP_STOPS)} />
         </Section>
 

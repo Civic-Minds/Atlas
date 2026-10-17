@@ -46,6 +46,35 @@ describe('one colouring rule for every tile', () => {
   });
 });
 
+describe('equal as displayed reads as no change', () => {
+  const dates = ['2026-10-08', '2026-10-09', '2026-10-10', '2026-10-11'];
+  const wk = (o: object) => ({ days: 4, dates, healthyDates: dates, late: { share: 0.07, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 31.2, overMin: 1 }, extraWait: { minutes: 1.2, gaps: 500 }, bunching: { share: 0.3, gaps: 600, bunched: 0.2, gapped: 0.1 }, delivered: { share: 0.998, seen: 998, notSeen: 2, unknown: 0 }, ...o });
+  const spread = { late: [0.01, 0.2, 0.1], tripTime: [20, 40, 30], extraWait: [0.1, 2, 1], bunching: [0.1, 0.5, 0.3], delivered: [0.9, 1, 0.95] };
+  it('shows "same as last week" and no arrow on all five tiles when the displayed values match', () => {
+    // 7.4% and 7.0% both display 7%; 31.4 and 31.2 both 31 min; 1.24 and 1.2 both 1.2 min; 99.84 and 99.8 both 99.8%; the split parts match.
+    const w = { minHealthyDays: 3, health: [], comparable: true,
+      thisWeek: wk({ late: { share: 0.074, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 31.4, overMin: 1 }, extraWait: { minutes: 1.24, gaps: 500 }, bunching: { share: 0.304, gaps: 600, bunched: 0.204, gapped: 0.1 }, delivered: { share: 0.9984, seen: 998, notSeen: 2, unknown: 0 } }),
+      lastWeek: wk({}) };
+    const tiles = kpiTiles(w, spread);
+    expect(tiles).toHaveLength(5);
+    for (const t of tiles) expect(t.delta).toMatchObject({ text: 'same as last week', arrow: 'none', tone: 'same' });
+  });
+  it('shows an arrow only when the displayed values differ', () => {
+    const w = { minHealthyDays: 3, health: [], comparable: true, thisWeek: wk({ late: { share: 0.08, n: 900 } }), lastWeek: wk({}) };
+    expect(kpiTiles(w, spread)[0].delta).toMatchObject({ text: 'last week 7%', arrow: 'up' });
+  });
+  it('writes last week\'s bunching in the same two parts as this week\'s, with the arrow from the total', () => {
+    const w = { minHealthyDays: 3, health: [], comparable: true, thisWeek: wk({ bunching: { share: 0.22, gaps: 600, bunched: 0.14, gapped: 0.08 } }), lastWeek: wk({ bunching: { share: 0.19, gaps: 600, bunched: 0.12, gapped: 0.07 } }) };
+    const b = kpiTiles(w, spread).find(t => t.key === 'bunching')!;
+    expect(b.value).toBe('14% · 8%');
+    expect(b.delta).toMatchObject({ text: 'last week 12% · 7%', arrow: 'up' });
+  });
+  it('falls back to last week\'s total when it has no parts', () => {
+    const w = { minHealthyDays: 3, health: [], comparable: true, thisWeek: wk({ bunching: { share: 0.22, gaps: 600, bunched: 0.14, gapped: 0.08 } }), lastWeek: wk({ bunching: { share: 0.19, gaps: 600 } }) };
+    expect(kpiTiles(w, spread).find(t => t.key === 'bunching')!.delta).toMatchObject({ text: 'last week 19%' });
+  });
+});
+
 describe('kpiTiles', () => {
   const week = (late: number, delivered: number, dates: string[]) => ({ days: 7, dates, healthyDates: dates, late: { share: late, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 31, overMin: 1 }, extraWait: { minutes: 1.2, gaps: 500 }, bunching: { share: 0.2, gaps: 600 }, delivered: { share: delivered, seen: 990, notSeen: 10, unknown: 0 } });
   const w: NonNullable<LiveV3['weekly']> = { minHealthyDays: 5, health: [], thisWeek: week(0.21, 0.997, ['2026-10-08', '2026-10-14']), lastWeek: week(0.2, 0.998, ['2026-10-01', '2026-10-07']), comparable: true };

@@ -25,7 +25,7 @@ const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 % 24 < 1
  * to every chart in a row so their bars compare. Values below zero hang under a dashed zero line. Hours with no data are
  * left empty, not drawn as zero. The whole chart is one focusable unit with a summary label, and a table view.
  */
-export default function HourSpark({ values, scale, color, barColor, format, ariaLabel, unit, valueHeader, minN = 30, hours, height = H, hoverLine, departures = false, yAxis = false, periodBand = false, idleText, shade, hover: sharedHover, onHover }: {
+export default function HourSpark({ values, scale, color, barColor, format, ariaLabel, unit, valueHeader, minN = 30, hours, height = H, hoverLine, departures = false, yAxis = false, periodBand = false, idleText, shade, hover: sharedHover, onHover, peakLabel = false }: {
   values: readonly HourValue[];
   scale: { min: number; max: number };
   /** CSS colour (a token). */
@@ -55,6 +55,8 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
   shade?: (hour: number) => boolean;
   /** Bar area height in px (taller when the chart has a whole row to itself). */
   height?: number;
+  /** Write the value of the tallest bar (with enough samples) above it: the one number a tiny chart gives. */
+  peakLabel?: boolean;
   /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these values. */
   hours?: readonly number[];
 }) {
@@ -72,6 +74,7 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
   const ticks = !yAxis ? [] : height >= 48 ? [scale.min, (scale.min + scale.max) / 2, scale.max] : [scale.min, scale.max];
   const maxN = Math.max(0, ...axis.map(h => byHour.get(h % 24)?.n ?? 0));
   const ml = yAxis ? AXIS_W : 0;
+  const peakHour = peakLabel ? axis.map(h => h % 24).filter(h => (byHour.get(h)?.n ?? 0) >= minN).reduce<number | null>((best, h) => (best == null || byHour.get(h)!.value > byHour.get(best)!.value ? h : best), null) : null;
   const ordered = axis.map(h => byHour.get(h % 24)).filter((v): v is HourValue => !!v);
   return (
     <figure className="m-0">
@@ -102,6 +105,9 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
                       className={`absolute left-1/2 w-[60%] max-w-[12px] min-w-[3px] -translate-x-1/2 rounded-sm ${v.n >= minN ? 'opacity-90' : 'opacity-35'}`}
                       style={{ bottom, height: Math.max(2, top - bottom), background: barColor ? barColor(v.value) : color }}
                     />
+                    {peakHour === v.hour && v.value > 0 && hover == null && (
+                      <span data-peak className={`pointer-events-none absolute whitespace-nowrap text-xs font-bold leading-3 text-[var(--text-secondary)] ${axis.indexOf(gtfsHour) < 2 ? 'left-0' : axis.indexOf(gtfsHour) > axis.length - 3 ? 'right-0' : 'left-1/2 -translate-x-1/2'}`} style={{ bottom: top + 2 }}>{format(v.value)}</span>
+                    )}
                   </div>
                 );
               })}

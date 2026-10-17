@@ -83,3 +83,6 @@ export const METHOD_GROUPS = {
 
 /** The recording-gaps limit, said once per page. */
 export const RECORDING_GAPS = "days with gaps in our recordings are left out, and trips during those gaps aren't counted.";
+
+/** Run time against the timetable in whole minutes: "2 min faster than the timetable" (the tile's caption), or without the tail in a table cell. */
+export const runTimeDiffText = (diffMin: number, tail = true): string => (diffMin === 0 ? 'same as the timetable' : `${Math.abs(diffMin)} min ${diffMin < 0 ? 'faster' : 'slower'}${tail ? ' than the timetable' : ''}`);

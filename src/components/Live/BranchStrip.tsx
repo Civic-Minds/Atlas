@@ -27,7 +27,7 @@ const GUTTER = 128;
 /** One line (pattern) of one measure. */
 const ROW_H_ONE = 24;
 /** The row height when a line's name wraps to two lines in the gutter, so neighbouring names never touch. */
-const ROW_H_TWO_LINE = 32;
+const ROW_H_TWO_LINE = 38;
 /** The measure's name above its group of lines. */
 const HEAD_H = 18;
 /** Extra height above a group that carries a marked stretch (its bracket and name). */
@@ -220,7 +220,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         <span key={mode} className="absolute left-0 text-xs font-bold text-[var(--text-secondary)]" style={{ top: groupTop[t] + 1 }}>{TRACK_NAME[mode]}</span>
       ))}
       {modes.map((mode, t) => model.lines.map((_, r) => (
-        <span key={`${mode}-${r}`} className="absolute left-0 flex items-center text-xs leading-3 text-[var(--text-dim)]" style={{ top: rowY(t, r) - ROW_H / 2, height: ROW_H, width: GUTTER - 8 }} title={rowNames[r]}>{rowNames[r]}</span>
+        <span key={`${mode}-${r}`} className="absolute left-0 flex items-center text-xs leading-4 text-[var(--text-dim)]" style={{ top: rowY(t, r) - ROW_H / 2, height: ROW_H, width: GUTTER - 8 }} title={rowNames[r]}>{rowNames[r]}</span>
       )))}
       <svg className="pointer-events-none absolute left-0 top-0" width={width} height={total} style={{ overflow: 'visible' }}>
         {rails}

@@ -2,7 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DashboardBandData, LiveV3 } from '../../../../shared/liveDashboard';
 import { healthyCounts, healthyLateByHour } from '../../../../shared/liveDashboard';
-import LateByHourSection, { isThin, lateByHourModel, routeLateDays, routeLateHours, routeLateOverall } from '../sections/LateByHourSection';
+import { runTimeDiffText } from '../../../../shared/liveWording';
+import LateByHourSection, { daysCountedOf, isThin, lateByHourModel, routeLateDays, routeLateHours, routeLateOverall } from '../sections/LateByHourSection';
 
 // 2026-10-10 and 2026-10-11 are a Saturday and a Sunday. 2026-10-11 has gaps in the recordings (not a good day).
 const counts = (n: number, late: number) => ({ n, early: 0, onTime: n - late, late, earlyShare: 0, onTimeShare: (n - late) / n, lateShare: late / n, notLateShare: 1 - late / n });
@@ -64,5 +65,25 @@ describe('a figure on fewer than 3 good days is dimmed', () => {
     expect(within(container).getByRole('region', { name: 'Late departures by hour' }).className).toMatch(/opacity-60/);
     rerender(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.2, n: 200 }]} band="all" overall={0.2} days={3} />);
     expect(within(container).getByRole('region', { name: 'Late departures by hour' }).className).not.toMatch(/opacity-60/);
+  });
+});
+
+describe('visible days, peak label and run time wording', () => {
+  beforeEach(() => { vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }); });
+  it('says how many days were counted, visibly', () => {
+    expect(daysCountedOf(4, 7)).toBe('4 of 7 days counted');
+    render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.09, n: 200 }, { hour: 9, value: 0.05, n: 200 }]} band="all" overall={0.07} days={4} ofDays={7} />);
+    expect(screen.getByText('4 of 7 days counted')).toBeTruthy();
+  });
+  it('labels the tallest hour once, and the bars fill the chart relative to it', () => {
+    const { container } = render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.09, n: 200 }, { hour: 9, value: 0.05, n: 200 }, { hour: 10, value: 0.2, n: 5 }]} band="all" overall={0.07} days={6} ofDays={7} />);
+    const peaks = container.querySelectorAll('[data-peak]');
+    expect(peaks).toHaveLength(1);
+    expect(peaks[0].textContent).toBe('9%'); // the 20% hour has only 5 departures: not the peak
+  });
+  it('writes run time against the timetable in minutes', () => {
+    expect(runTimeDiffText(-2)).toBe('2 min faster than the timetable');
+    expect(runTimeDiffText(7, false)).toBe('7 min slower');
+    expect(runTimeDiffText(0, false)).toBe('same as the timetable');
   });
 });
