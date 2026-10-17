@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { assertDistinctFeeds, canonicalShapeIds, feedForDate, prefixedId, readFeedCoverage, uncoveredDates, type FeedCoverage } from '../live-gtfs-feeds';
+import { PATTERN_MERGE_REQUIRES_SAME_STOPS, assertDistinctFeeds, canonicalShapeIds, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates, type FeedCoverage } from '../live-gtfs-feeds';
 
 const csv = (path: string) => {
   const [head, ...rows] = readFileSync(path, 'utf8').trim().split('\n') as string[];
@@ -98,5 +98,55 @@ describe('the same pattern in two feeds counts as one', () => {
     expect(only.get('A:old')).toBe('A:old');
     expect(only.get('B:new')).toBe('B:new');
     expect(canonicalShapeIds([trip('A', 'A:s', '0', ['x'])], ['A']).get('A:s')).toBe('A:s');
+  });
+});
+
+describe('one coverage rule for calendar and calendar_dates (CIV-297 review)', () => {
+  const dirWith = (version: string, calendar: string, calendarDates: string): string => {
+    const dir = mkdtempSync(join(tmpdir(), `feed-${version}-`));
+    writeFileSync(join(dir, 'calendar.txt'), `service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\n${calendar}`);
+    writeFileSync(join(dir, 'calendar_dates.txt'), `service_id,date,exception_type\n${calendarDates}`);
+    writeFileSync(join(dir, 'feed_info.txt'), `feed_publisher_name,feed_version\nTTC,${version}\n`);
+    return dir;
+  };
+  it('does not widen a feed\'s range with a removal dated before its calendar starts', () => {
+    const f = readFeedCoverage(dirWith('N1', '1,1,1,1,1,1,0,0,20261101,20261130\n', '1,20261025,2\n1,20261110,2\n'), csv);
+    expect(f).toMatchObject({ start: '20261101', end: '20261130' });
+  });
+  it('widens the range with an added service date outside the calendar rows', () => {
+    const f = readFeedCoverage(dirWith('N2', '1,1,1,1,1,1,0,0,20261101,20261130\n', '1,20261031,1\n'), csv);
+    expect(f.start).toBe('20261031');
+  });
+  it('supports a feed that is only calendar_dates additions (no calendar rows)', () => {
+    const f = readFeedCoverage(dirWith('N3', '', '1,20261101,1\n1,20261102,1\n1,20261103,1\n'), csv);
+    expect(f).toMatchObject({ start: '20261101', end: '20261103' });
+    expect(feedForDate([f], '2026-11-02')?.key).toBe('N3');
+    expect(feedForDate([f], '2026-11-04')).toBeNull();
+  });
+  it('refuses a feed with no calendar rows and no added dates', () => {
+    expect(() => readFeedCoverage(dirWith('N4', '', '1,20261101,2\n'), csv)).toThrow(/covers no dates/);
+  });
+});
+
+describe('which feeds a window uses', () => {
+  const mk = (key: string, start: string, end: string): FeedCoverage => ({ key, dir: key, version: key, start, end });
+  const feeds = [mk('A', '20260930', '20261031'), mk('B', '20261101', '20261128')];
+  it('keeps only the feeds that overlap the window, so a window inside one feed is that feed alone', () => {
+    expect(feedsOverlapping(feeds, '2026-10-20', '2026-10-26').map(f => f.key)).toEqual(['A']);
+    expect(feedsOverlapping(feeds, '2026-10-28', '2026-11-03').map(f => f.key)).toEqual(['A', 'B']);
+    expect(feedsOverlapping(feeds, '2026-11-02', '2026-11-08').map(f => f.key)).toEqual(['B']);
+  });
+  it('returns every feed when none overlaps, so the gap is reported rather than hidden', () => {
+    expect(feedsOverlapping(feeds, '2026-12-20', '2026-12-26')).toHaveLength(2);
+  });
+});
+
+describe('known limit: a stop change at a feed change', () => {
+  it('does not merge two versions of a pattern whose stops differ, so they count as two patterns', () => {
+    const trip = (feed: string, shapeId: string, stops: string[]) => ({ feed, shapeId, direction: '0', stops });
+    const remap = canonicalShapeIds([trip('A', 'A:s', ['x', 'y', 'z']), trip('B', 'B:s', ['x', 'y', 'z', 'w'])], ['A', 'B']);
+    expect(remap.get('A:s')).toBe('A:s');
+    expect(remap.get('B:s')).toBe('B:s');
+    expect(PATTERN_MERGE_REQUIRES_SAME_STOPS).toBe(true);
   });
 });

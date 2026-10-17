@@ -1,7 +1,7 @@
 /**
  * Which timetable (GTFS feed) a service date belongs to, when the Live analysis is given several (CIV-297).
  *
- * A feed covers the dates in its calendar.txt, from the earliest start_date to the latest end_date. For a date, the
+ * A feed covers the dates its calendar.txt rows span, plus any date it adds service on in calendar_dates.txt. For a date, the
  * feed to use is the one among those covering it that starts latest (the same rule scripts/live-gtfs-for-date.ts
  * uses to pick a zip), so a newer feed wins an overlap. No feed covering a date is an error to report, never a date to
  * drop quietly or to give to a feed that does not cover it. A third feed is just another folder in the list.
@@ -26,13 +26,14 @@ const ymd = (date: string) => date.replace(/-/g, '');
 export function readFeedCoverage(dir: string, readCsv: (path: string) => Record<string, string>[]): FeedCoverage {
   const calendar = existsSync(join(dir, 'calendar.txt')) ? readCsv(join(dir, 'calendar.txt')) : [];
   const calDates = existsSync(join(dir, 'calendar_dates.txt')) ? readCsv(join(dir, 'calendar_dates.txt')) : [];
+  // One rule for coverage everywhere: a date is covered by a calendar.txt row that spans it, or by a calendar_dates.txt
+  // ADDITION (exception_type 1) on it. A removal (type 2) only takes service away from a date, so it never widens a feed's range.
   const starts = calendar.map(c => c.start_date).filter(Boolean);
   const ends = calendar.map(c => c.end_date).filter(Boolean);
-  // A feed with no calendar rows (service by calendar_dates only) covers the dates it lists.
-  const listed = calDates.map(c => c.date).filter(Boolean);
-  const start = [...starts, ...listed].sort()[0];
-  const end = [...ends, ...listed].sort().slice(-1)[0];
-  if (!start || !end) throw new Error(`feed ${dir} has no calendar: it covers no dates`);
+  const added = calDates.filter(c => c.exception_type === '1').map(c => c.date).filter(Boolean);
+  const start = [...starts, ...added].sort()[0];
+  const end = [...ends, ...added].sort().slice(-1)[0];
+  if (!start || !end) throw new Error(`feed ${dir} has no calendar rows or added service dates: it covers no dates`);
   const version = existsSync(join(dir, 'feed_info.txt')) ? readCsv(join(dir, 'feed_info.txt'))[0]?.feed_version || null : null;
   return { key: version ?? basename(dir), dir, version, start, end };
 }
@@ -100,4 +101,18 @@ export function canonicalShapeIds(trips: readonly TripShape[], feedKeysOldestFir
     l.forEach((sh, n) => remap.set(sh.id, canonOf.get(`${sig}#${n}`) ?? sh.id));
   }
   return remap;
+}
+
+/**
+ * Known limit: if the TTC adds or removes a stop on a pattern at a feed change, the two versions have different stop
+ * sequences and are NOT merged by canonicalShapeIds, so they count as two patterns; a pattern with fewer trips can then fall
+ * below the regular-pattern thresholds and one feed's days can drop out of the run-time stats. Pinned by a test.
+ */
+export const PATTERN_MERGE_REQUIRES_SAME_STOPS = true;
+
+/** The feeds whose date range overlaps [first, last] (service dates, YYYY-MM-DD or YYYYMMDD); all of them when none does, so a gap is reported rather than hidden. */
+export function feedsOverlapping(feeds: readonly FeedCoverage[], first: string, last: string): FeedCoverage[] {
+  const a = first.replace(/-/g, ''), b = last.replace(/-/g, '');
+  const hit = feeds.filter(f => f.start <= b && f.end >= a);
+  return hit.length ? hit : [...feeds];
 }

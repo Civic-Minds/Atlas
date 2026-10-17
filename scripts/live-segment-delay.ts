@@ -27,7 +27,7 @@ import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type Ru
 import { branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
-import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, feedForDate, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
+import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
@@ -103,8 +103,14 @@ const prevDate = (d: string) => new Date(Date.parse(`${d}T12:00:00Z`) - 86400_00
 // With one folder this is exactly the single timetable. With several, each feed's trip, service and shape ids are
 // prefixed with its key (the TTC reuses service ids 1-4 in every feed), the stops are merged (the newest feed wins), and
 // each service date is looked up in the one feed that covers it (feedForDate).
-const FEEDS = FEED_ARG.map(d => readFeedCoverage(d, readCsv)).sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
-assertDistinctFeeds(FEEDS);
+const ALL_FEEDS = FEED_ARG.map(d => readFeedCoverage(d, readCsv)).sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
+assertDistinctFeeds(ALL_FEEDS);
+/** Given several folders, a date no feed covers is an error (one folder keeps the old behaviour: such days are dropped). */
+const STRICT = ALL_FEEDS.length > 1;
+// Only the feeds that overlap the analysis window are used, so a window inside one feed is analysed exactly as with that
+// feed alone. The window is the last --days archive dates (by file name).
+const archiveDates = readdirSync(ARCHIVE).filter(f => f.startsWith(`${ROUTE}-`) && f.endsWith('.jsonl')).map(f => f.slice(ROUTE.length + 1, -6)).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+const FEEDS = STRICT && archiveDates.length ? feedsOverlapping(ALL_FEEDS, archiveDates.slice(-DAYS)[0], archiveDates[archiveDates.length - 1]) : ALL_FEEDS;
 if (!FEEDS.length) { console.error('live-segment-delay: --gtfs needs a timetable folder (or a comma-separated list of them)'); process.exit(2); }
 /** The newest feed's folder: what the agency summary reads its route names from. */
 const GTFS = FEEDS[FEEDS.length - 1].dir;
@@ -128,7 +134,7 @@ for (const feed of FEEDS) {
     const turnBack = new Set(named.map(t => `${1 - Number(t.direction_id)}|${last(t.trip_id)}`));
     for (const t of feedTrips) if (namedIds.has(t.trip_id) || turnBack.has(`${t.direction_id}|${first(t.trip_id)}`)) excludedTripIds.add(pre(t.trip_id));
   }
-  for (const t of feedTrips) allRouteTrips.push(MULTI ? { ...t, trip_id: pre(t.trip_id), service_id: pre(t.service_id), shape_id: pre(t.shape_id), _feed: feed.key, _raw: t.trip_id } : t);
+  for (const t of feedTrips) allRouteTrips.push(MULTI ? { ...t, trip_id: pre(t.trip_id), service_id: pre(t.service_id), shape_id: pre(t.shape_id), _feed: feed.key, _raw: t.trip_id, _rawShape: t.shape_id } : t);
 }
 const trips = allRouteTrips.filter(t => !excludedTripIds.has(t.trip_id));
 const tripById = new Map(trips.map(t => [t.trip_id, t]));
@@ -159,7 +165,12 @@ for (const feed of FEEDS) {
   }
 }
 // Several feeds give the same physical pattern a different shape id in each: a pattern in several feeds counts as one (see canonicalShapeIds).
+/** A shape's id as the timetable names it (feed prefixes are internal). */
+const rawShapeIds = new Map(trips.map(t => [t.shape_id, t._rawShape ?? t.shape_id]));
+const rawShapeIdOf = (id: string) => rawShapeIds.get(id) ?? id;
 if (MULTI) {
+  // A pattern whose stops change at a feed change (a stop added or removed) is two patterns here, one per feed: see
+  // PATTERN_MERGE_REQUIRES_SAME_STOPS in live-gtfs-feeds.ts.
   const remap = canonicalShapeIds(trips.map(t => ({ feed: t._feed, shapeId: t.shape_id, direction: t.direction_id, stops: (timesByTrip.get(t.trip_id) ?? []).map(x => x.stopId) })), FEEDS.map(f => f.key));
   for (const t of trips) t.shape_id = remap.get(t.shape_id) ?? t.shape_id;
 }
@@ -227,7 +238,8 @@ function activeServices(date: string): string[] | null {
   if (MULTI && !feed) return null;
   const cal = feed ? calendar.filter(c => c._feed === feed.key) : calendar;
   const exceptions = feed ? calDates.filter(c => c._feed === feed.key) : calDates;
-  if (!cal.some(c => c.start_date <= ymd && c.end_date >= ymd)) return null;
+  // Covered by a calendar row spanning the date, or by service added on it (the same rule as readFeedCoverage).
+  if (!cal.some(c => c.start_date <= ymd && c.end_date >= ymd) && !exceptions.some(c => c.date === ymd && c.exception_type === '1')) return null;
   const dow = DOW[new Date(`${date}T12:00:00Z`).getUTCDay()];
   const on = new Set(cal.filter(c => c.start_date <= ymd && c.end_date >= ymd && c[dow] === '1').map(c => c.service_id));
   for (const cd of exceptions) {
@@ -475,9 +487,9 @@ const stats = aggregateSegments(observations, scheduled, scheduleKeyForDate, hou
 // --- headway adherence per stop, per (service date, band) window ---
 // Several timetables: every service date of the window needs one. A date none covers stops the run, naming it, rather than
 // being dropped or given to a timetable that does not cover it.
-if (MULTI) {
+if (STRICT) {
   const wanted = [...allRunDates].filter(d => d >= firstLocal && d <= lastLocal).sort().slice(-DAYS);
-  const missing = uncoveredDates(FEEDS, wanted);
+  const missing = [...new Set([...uncoveredDates(FEEDS, wanted), ...wanted.filter(d => activeServices(d) === null)])].sort();
   if (missing.length) {
     console.error(`live-segment-delay: no timetable covers ${missing.join(', ')}. The feeds given cover: ${describeFeeds(FEEDS)}. Add the feed whose calendar includes those dates to --gtfs.`);
     process.exit(1);
@@ -1232,8 +1244,8 @@ if (STRINGS_DIR) {
     }));
   }
 }
-if (OBS_OUT) writeFileSync(OBS_OUT, JSON.stringify(windowRuns));
-if (RUNTIMES_OUT) writeFileSync(RUNTIMES_OUT, JSON.stringify(windowRunTimes));
+if (OBS_OUT) writeFileSync(OBS_OUT, JSON.stringify(windowRuns.map(r => ({ ...r, tripId: rawTripId_(r.tripId) }))));
+if (RUNTIMES_OUT) writeFileSync(RUNTIMES_OUT, JSON.stringify(windowRunTimes.map(r => { const x = r as typeof r & { tripId: string; patternId: string }; return { ...r, tripId: rawTripId_(x.tripId), patternId: rawShapeIdOf(x.patternId) }; })));
 console.log(`v3: window ${windowDates.length} days (${windowDates[0]}..${windowDates[windowDates.length - 1]}), runs ${windowRuns.length}, stop passages ${v3.totals.stopPassages}, dropped off-timetable ${delaysExcluded}`);
 
 const usedDates = dates;
