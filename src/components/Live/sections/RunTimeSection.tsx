@@ -63,22 +63,22 @@ export function RowLegend({ dense = false, inline = false }: { dense?: boolean; 
 const LANE_STYLE: Record<RowLabel['lane'], string> = { above: 'top-0', below: 'bottom-0', end: 'top-1/2 -translate-y-1/2' };
 
 /** One pattern as a line: the tail from the usual to the slow end, a tick at the timetable and a dot at the usual, on the section's shared scale, each with its number. */
-function PatternRow({ row, scale, width, dense, showLabel }: { row: RunTimeRow; scale: { min: number; max: number }; width: number; dense: boolean; showLabel: boolean }) {
+function PatternRow({ row, scale, width, dense, showLabel, unit }: { row: RunTimeRow; scale: { min: number; max: number }; width: number; dense: boolean; showLabel: boolean; unit: string }) {
   const pos = (m: number) => `${rowPercent(m, scale)}%`;
   const few = !row.main && row.trips < MIN_PATTERN_TRIPS;
-  const labels = placeRowLabels(row, scale, width, INSET);
+  const labels = placeRowLabels(row, scale, width, INSET, undefined, unit);
   const tone: Record<RowLabel['id'], string> = { usual: 'font-bold text-[var(--text-primary)]', scheduled: 'text-[var(--text-secondary)]', slow: 'text-[var(--text-muted)]' };
   return (
     <li className={`min-w-0 ${few ? 'text-[var(--text-dim)]' : ''}`} title={row.figures || undefined}>
       {showLabel && row.label && <div className={dense ? 'text-xs leading-4 text-[var(--text-secondary)]' : 'text-sm leading-5 text-[var(--text-secondary)]'}>{row.label}{few ? ' Few trips: treat with care.' : ''}</div>}
       {row.figures && <span className="sr-only">{row.figures}</span>}
-      <div className={`relative ${dense ? 'h-[38px]' : 'h-[44px]'} ${few ? 'opacity-60' : ''}`} aria-hidden="true">
+      <div className={`relative ${dense ? 'h-[36px]' : 'h-[44px]'} ${few ? 'opacity-60' : ''}`} aria-hidden="true">
         <div className="absolute inset-y-0" style={{ left: INSET, right: INSET }}>
           <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--border-primary)]" />
           {row.typical != null && row.p90 != null && row.p90 > row.typical && (
             <div className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-[var(--strip-delay-1)] opacity-50" style={{ left: pos(row.typical), width: `${rowPercent(row.p90, scale) - rowPercent(row.typical, scale)}%` }} />
           )}
-          {row.scheduled != null && <div data-mark="scheduled" className="absolute top-1/2 h-3.5 w-0.5 -translate-x-1/2 -translate-y-1/2 bg-[var(--text-secondary)]" style={{ left: pos(row.scheduled) }} />}
+          {row.scheduled != null && <div data-mark="scheduled" className={`absolute top-1/2 ${dense ? 'h-2.5' : 'h-3.5'} w-0.5 -translate-x-1/2 -translate-y-1/2 bg-[var(--text-secondary)]`} style={{ left: pos(row.scheduled) }} />}
           {row.typical != null && <div data-mark="usual" className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--text-primary)]" style={{ left: pos(row.typical) }} />}
         </div>
         {labels.map(l => <span key={l.id} data-label={l.id} className={`absolute whitespace-nowrap text-xs leading-none ${LANE_STYLE[l.lane]} ${tone[l.id]}`} style={{ left: l.left }}>{l.text}</span>)}
@@ -111,21 +111,21 @@ function RowAxis({ scale }: { scale: { min: number; max: number } }) {
 }
 
 /** A direction's pattern rows on one shared scale, with a faint line at each number so equal minutes line up across rows. `hideMainLabel` leaves the main row unlabelled (a line above already says what it covers). */
-export function PatternRows({ rows, scale, dense = false, hideMainLabel = false }: { rows: RunTimeRow[]; scale: { min: number; max: number }; dense?: boolean; hideMainLabel?: boolean }) {
+export function PatternRows({ rows, scale, dense = false, hideMainLabel = false, unitOnNumbers = false }: { rows: RunTimeRow[]; scale: { min: number; max: number }; dense?: boolean; hideMainLabel?: boolean; /** No minutes axis: each number carries its own "min" (the planner's card, which is short of height). */ unitOnNumbers?: boolean }) {
   const [ref, width] = useBoxWidth<HTMLUListElement>();
   const shown = rows.filter(r => !r.thin || !r.main);
   if (!shown.length) return null;
   return (
-    <div className={dense ? 'mt-1' : 'mt-2'}>
-      <div className={`relative ${GUTTER}`}>
-        <div className="pointer-events-none absolute inset-y-0 left-0" style={{ right: 28 }} aria-hidden="true">
+    <div className={dense ? 'mt-0.5' : 'mt-2'}>
+      <div className={`relative ${unitOnNumbers ? '' : GUTTER}`}>
+        <div className="pointer-events-none absolute inset-y-0 left-0" style={{ right: unitOnNumbers ? 0 : 28 }} aria-hidden="true">
           <div className="absolute inset-y-0" style={{ left: INSET, right: INSET }}>
             {scaleTicks(scale).map(t => <div key={t} className="absolute inset-y-0 w-px bg-[var(--border-primary)] opacity-60" style={{ left: `${rowPercent(t, scale)}%` }} />)}
           </div>
         </div>
-        <ul ref={ref} className={`relative m-0 list-none p-0 ${dense ? 'space-y-1' : 'space-y-2'}`}>{shown.map(r => <PatternRow key={r.key} row={r} scale={scale} width={width} dense={dense} showLabel={!(hideMainLabel && r.main)} />)}</ul>
+        <ul ref={ref} className={`relative m-0 list-none p-0 ${dense ? 'space-y-1' : 'space-y-2'}`}>{shown.map(r => <PatternRow key={r.key} row={r} scale={scale} width={width} dense={dense} showLabel={!(hideMainLabel && r.main)} unit={unitOnNumbers ? ' min' : ''} />)}</ul>
       </div>
-      <RowAxis scale={scale} />
+      {!unitOnNumbers && <RowAxis scale={scale} />}
     </div>
   );
 }

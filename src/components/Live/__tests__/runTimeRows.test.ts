@@ -77,6 +77,11 @@ describe('placeRowLabels', () => {
       for (const a of r) for (const b of r) if (a !== b && a.lane === b.lane) expect(clash(boxOf(a), boxOf(b))).toBe(false);
     }
   });
+  it('adds the unit to every number and keeps the wider labels apart', () => {
+    const r = placeRowLabels({ typical: 31, scheduled: 34, p90: 37 }, scale, W, INSET, undefined, ' min');
+    expect(r.map(l => l.text).sort()).toEqual(['31 min', '34 min', '37 min']);
+    for (const a of r) for (const b of r) if (a !== b && a.lane === b.lane) expect(clash(boxOf(a), boxOf(b))).toBe(false);
+  });
   it('draws no slow end where there is no tail, and nothing before the width is known', () => {
     expect(placeRowLabels({ typical: 31, scheduled: 34, p90: 31 }, scale, W, INSET).some(l => l.id === 'slow')).toBe(false);
     expect(placeRowLabels({ typical: 31, scheduled: 34, p90: 37 }, scale, 0, INSET)).toEqual([]);

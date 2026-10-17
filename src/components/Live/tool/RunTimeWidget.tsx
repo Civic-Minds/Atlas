@@ -11,10 +11,10 @@ export default function RunTimeWidget({ v3, dir, band }: { v3: LiveV3; dir: numb
   const rows = (runTimeRows(v3, band, [dir], n => shortStopName(titleCase(n)))[dir] ?? []).filter(r => r.main);
   const stretch = runTimeStretchOf(v3, dir);
   return (
-    <Widget title="Run time" size="medium" action={<RowLegend dense inline />}>
-      <div className="text-xs font-bold leading-4 text-[var(--text-secondary)]">{v3.directionLabels[String(dir)]}</div>
-      {stretch && <div className="text-xs leading-4 text-[var(--text-muted)]">{stretch}</div>}
-      <PatternRows rows={rows} scale={runTimeRowScale(rows)} dense hideMainLabel={!!stretch} />
+    <Widget title="Run time" size="medium" className="!p-2.5 [&>div:last-child]:!mt-0.5" action={<RowLegend dense inline />}>
+      <div className="text-xs font-bold leading-[14px] text-[var(--text-secondary)]">{v3.directionLabels[String(dir)]}</div>
+      {stretch && <div className="text-xs leading-[14px] text-[var(--text-muted)]">{stretch}</div>}
+      <PatternRows rows={rows} scale={runTimeRowScale(rows)} dense unitOnNumbers hideMainLabel={!!stretch} />
     </Widget>
   );
 }

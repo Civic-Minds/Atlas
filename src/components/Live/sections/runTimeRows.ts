@@ -75,14 +75,14 @@ const MARK_HALF = { dot: 6, tick: 2 };
  * Where the three numbers of a row go so none touches another or a mark. The usual always sits above the line and the
  * timetable's below it, so the two never meet however close they are; the slow end goes on the line just past the
  * tail's end, else above, else below, whichever is free. A label that cannot be placed without touching is left out
- * (the hover text still has it). `width` is the box the line spans; `inset` is the gap each end of the line keeps.
+ * (the hover text still has it). `unit` (" min") is added to each number when the row has no scale of its own; `width` is the box the line spans; `inset` is the gap each end of the line keeps.
  */
-export function placeRowLabels(row: Pick<RunTimeRow, 'typical' | 'scheduled' | 'p90'>, scale: { min: number; max: number }, width: number, inset: number, charPx = LABEL_CHAR_PX): RowLabel[] {
+export function placeRowLabels(row: Pick<RunTimeRow, 'typical' | 'scheduled' | 'p90'>, scale: { min: number; max: number }, width: number, inset: number, charPx = LABEL_CHAR_PX, unit = ''): RowLabel[] {
   if (!(width > 0)) return [];
   const xOf = (m: number) => inset + (rowPercent(m, scale) / 100) * (width - 2 * inset);
   const wOf = (t: string) => t.length * charPx;
   const clamp = (left: number, w: number) => Math.max(0, Math.min(width - w, left));
-  const text = (m: number) => String(Math.round(m));
+  const text = (m: number) => `${Math.round(m)}${unit}`;
   const out: RowLabel[] = [];
   const spans: Record<LabelLane, Array<[number, number]>> = { above: [], below: [], end: [] };
   const hits = (lane: LabelLane, a: number, b: number) => spans[lane].some(([x0, x1]) => a < x1 + LABEL_GAP && b > x0 - LABEL_GAP);
