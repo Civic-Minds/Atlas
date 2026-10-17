@@ -716,15 +716,23 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       const trunkHw = hoveredHour == null && period !== 'all'
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
-                      const isLimited = noRegularService && hoveredHour == null
+                      // #954: when the route has no regular service in the period, a row still shows its own
+                      // direction value when it has one (SF Muni 8 PM: Fisherman's Wharf every 8); every
+                      // other row, and All day, reads as the route does.
+                      const directionValue = period !== 'all'
+                        ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
+                        : undefined;
+                      const rowNoRegular = noRegularService && hoveredHour == null
+                        && (typeof directionValue !== 'number' || displayH == null);
+                      const isLimited = rowNoRegular
                         ? true
                         : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);
                       return (
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             label={label}
-                            headway={noRegularService && hoveredHour == null ? undefined : displayH ?? undefined}
-                            limitedLabel={noRegularService && hoveredHour == null ? noRegularLabel : undefined}
+                            headway={rowNoRegular ? undefined : displayH ?? undefined}
+                            limitedLabel={rowNoRegular ? noRegularLabel : undefined}
                             colorHeadway={hoveredHour == null ? branchFilterHeadway : undefined}
                             headwayLabel={hoveredHour == null && variantH === undefined ? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period)) : undefined}
                             trunkHeadway={trunkHw}

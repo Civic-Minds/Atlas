@@ -131,10 +131,14 @@ describe('hasRegularServiceInPeriod (#750)', () => {
     expect(hasRegularServiceInPeriod(outbound, 'amPeak')).toBe(false); // the route runs in the AM, this direction does not
     expect(hasRegularServiceInPeriod(outbound, 'all')).toBe(true);
   });
-  it('hides a direction when the route has no regular service, even if this direction has a number (SF Muni 8 weekday AM)', () => {
-    // The oracle shows a 101-min gap inbound at the middle stop, so the route value is empty; outbound still has a number.
+  it('keeps a direction with its own number when the route has no regular service (#954, SF Muni 8)', () => {
+    // The route value is empty (the other direction has a long gap); this direction still runs steadily, and the
+    // route card now shows its row, so the stop card agrees.
     const route8Outbound = { directionId: 0, directionFilterHeadwayByPeriod: { amPeak: 9 }, routeFilterHeadwayByPeriod: { amPeak: null } } as unknown as ShapeProperties;
-    expect(hasRegularServiceInPeriod(route8Outbound, 'amPeak')).toBe(false);
+    expect(hasRegularServiceInPeriod(route8Outbound, 'amPeak')).toBe(true);
+    // The direction without a number still has none.
+    const route8Inbound = { directionId: 1, directionFilterHeadwayByPeriod: { amPeak: null }, routeFilterHeadwayByPeriod: { amPeak: null } } as unknown as ShapeProperties;
+    expect(hasRegularServiceInPeriod(route8Inbound, 'amPeak')).toBe(false);
   });
   it('falls back to the route filter, and to true for older data without filter fields', () => {
     const routeOnly = { routeFilterHeadwayByPeriod: { evening: null, midday: 12 } } as unknown as ShapeProperties;

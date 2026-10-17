@@ -89,17 +89,16 @@ export function routeContract(features: readonly ShapeProperties[], period: Time
 }
 
 /**
- * Whether a route direction has regular service in the period, by the same filter values the route card reads: false
- * when the route's value is empty (the card then shows no rows) or this direction's value is empty. True for all
- * day and for older data without the filter fields. The stop card uses it so a stop never shows a cadence for a period
- * the route card says has no regular service (#750: SF Muni 8AX/8BX midday and evening, and outbound in the AM).
+ * Whether a route direction has regular service in the period, by the same filter values the route card reads: this
+ * direction's own value when the data has one (the card shows a row with a value even when the route's is empty, #954:
+ * SF Muni 8 PM, Fisherman's Wharf every 8), otherwise the route's. True for all day and for older data without the
+ * filter fields. The stop card uses it so a stop never shows a cadence for a period the route card says has no regular
+ * service (#750: SF Muni 8AX/8BX midday and evening, and outbound in the AM).
  */
 export function hasRegularServiceInPeriod(f: ShapeProperties, period: TimePeriod): boolean {
   if (period === 'all') return true;
-  // The route card hides every row when the route's value is empty, so that comes first; then this direction's own value.
-  const contract = routeContract([f], period);
-  if (contract != null && contract.filterValue == null) return false;
   const byDirection = f.directionFilterHeadwayByPeriod;
   if (byDirection && Object.prototype.hasOwnProperty.call(byDirection, period)) return typeof byDirection[period as PeriodKey] === 'number';
-  return true;
+  const contract = routeContract([f], period);
+  return !(contract != null && contract.filterValue == null);
 }
