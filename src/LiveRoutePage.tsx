@@ -32,7 +32,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import { builtText, LATE_BY_HOUR_TITLE, lateCount, lateHourLine, liveSubtitle, METHOD_GROUPS } from '../shared/liveWording';
 import MethodFootnote, { Term } from './components/Live/MethodFootnote';
-import { bunchingLine, colourLine, deliveredLine, extraWaitLine, aheadLine, lateLine, positionsLine, recordingGapsLine, runTimeLine, tripMatchLine } from './components/Live/methodLines';
+import { bunchingLine, colourLine, deliveredLine, extraWaitLine, lateAtStopLine, lateLine, positionsLine, recordingGapsLine, runTimeLine, tripMatchLine } from './components/Live/methodLines';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -517,7 +517,7 @@ export function Method({ data }: { data: Ready }) {
     <MethodFootnote id="method" collapsible groups={[
       { label: METHOD_GROUPS.numbers, items: [
         lateLine,
-        aheadLine(Math.abs(v3.thresholds.earlyAtOrBelowMin)),
+        lateAtStopLine(v3.thresholds.lateAtOrAboveMin, Math.abs(v3.thresholds.earlyAtOrBelowMin)),
         runTimeLine(true),
         extraWaitLine,
         bunchingLine(Math.round(v3.thresholds.bunchedGapSec / 60)),

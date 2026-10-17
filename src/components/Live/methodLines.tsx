@@ -3,6 +3,7 @@
  * way everywhere. Page-only lines are written next to their page.
  */
 import { NOISE_RULE } from '../../../shared/liveDashboard';
+import { LATE_AT_OR_ABOVE_MIN } from '../../../shared/liveDelayStatus';
 import { LATE_DEFINITION, RECORDING_GAPS } from '../../../shared/liveWording';
 import { Term } from './MethodFootnote';
 
@@ -12,8 +13,9 @@ export const EXTRA_WAIT_TEXT = 'how much longer riders wait than the timetable s
 export const bunchingText = (underMin = 2) => `gaps under ${underMin} minutes or over twice the timetable's.`;
 
 export const lateLine = <Term t="Late">{LATE_DEFINITION}</Term>;
-/** The route page's note on what ahead means: what is left of the old "Late at a stop" line. */
-export const aheadLine = (aheadMin: number) => <Term t="Ahead">{aheadMin}+ minutes before the timetable.</Term>;
+export const lateAtStopLine = (lateMin: number = LATE_AT_OR_ABOVE_MIN, aheadMin?: number) => (
+  <Term t="Late at a stop">left the stop {lateMin}+ minutes after the timetable{aheadMin != null ? `; ahead means ${aheadMin}+ minutes before it` : ''}.</Term>
+);
 export const runTimeLine = (shortTurns = false) => (
   <Term t="Run time">{RUN_TIME_TEXT}{shortTurns ? '; only trips seen at both ends count, so short turns are left out' : ''}.</Term>
 );
