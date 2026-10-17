@@ -105,6 +105,9 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
                       className={`absolute left-1/2 w-[60%] max-w-[12px] min-w-[3px] -translate-x-1/2 rounded-sm ${v.n >= minN ? 'opacity-90' : 'opacity-35'}`}
                       style={{ bottom, height: Math.max(2, top - bottom), background: barColor ? barColor(v.value) : color }}
                     />
+                    {v.value > scale.max && (
+                      <div data-capped aria-hidden="true" className={`absolute left-1/2 h-1.5 w-1.5 -translate-x-1/2 rotate-45 border-l-2 border-t-2 ${v.n >= minN ? 'opacity-90' : 'opacity-35'}`} style={{ bottom: top - 1, borderColor: barColor ? barColor(v.value) : color }} />
+                    )}
                     {peakHour === v.hour && v.value > 0 && hover == null && (
                       <span data-peak className={`pointer-events-none absolute whitespace-nowrap text-xs font-bold leading-3 text-[var(--text-secondary)] ${axis.indexOf(gtfsHour) < 2 ? 'left-0' : axis.indexOf(gtfsHour) > axis.length - 3 ? 'right-0' : 'left-1/2 -translate-x-1/2'}`} style={{ bottom: top + 2 }}>{format(v.value)}</span>
                     )}

@@ -19,6 +19,9 @@ const MIN_N = 30;
 /** A figure resting on fewer good days than this reads as thin: dimmed, with the tile's hover text. */
 export const MIN_GOOD_DAYS = 3;
 export const THIN_HINT = 'Few measurements: treat with care.';
+/** The top of a row's shared scale: the highest bar among hours with enough departures, at least 10%, rounded up to a tenth. */
+export const rowMax = (hours: readonly HourValue[]): number => Math.ceil(Math.max(0.1, ...hours.filter(h => h.n >= MIN_N).map(h => h.value)) * 10) / 10;
+
 /** The days of the week the figures are for (the days counted are some of these). */
 const windowDatesOf = (v3: LiveV3): string[] => v3.weekly?.thisWeek.dates ?? v3.window.dates;
 
@@ -82,9 +85,9 @@ interface DayChart { kind: string; label: string; late: { share: number; n: numb
  */
 function ChartRow({ cols, tall = false, withLabels = true, showNote, daysTitle }: { cols: DayChart[]; tall?: boolean; withLabels?: boolean; showNote: boolean; daysTitle?: string }) {
   const [hover, setHover] = useState<HourHover | null>(null);
-  // One scale for the row, tall enough for the highest bar of any chart (faded ones too), so no bar is cut off.
-  const max = Math.max(0.1, ...cols.flatMap(c => c.hours.map(h => h.value)));
-  const scale = { min: 0, max: Math.ceil(max * 10) / 10 };
+  // One scale for the row, set by the bars with enough departures: a thin hour that runs higher is capped at the top of its chart (marked), so it cannot flatten the others.
+  const max = rowMax(cols.flatMap(c => c.hours));
+  const scale = { min: 0, max };
   const axis = liveChartHours(h => cols.some(cc => (cc.hours.find(x => x.hour === h)?.n ?? 0) >= MIN_N));
   return (
     <>

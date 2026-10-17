@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DashboardBandData, LiveV3 } from '../../../../shared/liveDashboard';
 import { healthyCounts, healthyLateByHour } from '../../../../shared/liveDashboard';
 import { runTimeDiffText } from '../../../../shared/liveWording';
-import LateByHourSection, { daysCountedOf, isThin, lateByHourModel, routeLateDays, routeLateHours, routeLateOverall } from '../sections/LateByHourSection';
+import LateByHourSection, { daysCountedOf, isThin, rowMax, lateByHourModel, routeLateDays, routeLateHours, routeLateOverall } from '../sections/LateByHourSection';
 
 // 2026-10-10 and 2026-10-11 are a Saturday and a Sunday. 2026-10-11 has gaps in the recordings (not a good day).
 const counts = (n: number, late: number) => ({ n, early: 0, onTime: n - late, late, earlyShare: 0, onTimeShare: (n - late) / n, lateShare: late / n, notLateShare: 1 - late / n });
@@ -99,10 +99,14 @@ describe('thin figures say why, and one scale serves the row', () => {
     render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.2, n: 200 }]} band="all" overall={0.2} days={2} ofDays={7} />);
     expect(screen.getByText('Few measurements: treat with care.')).toBeTruthy();
   });
-  it('scales every chart of a row to the highest bar of any, so none is cut off', () => {
+  it('sets one scale from the bars with enough departures, and marks a thin bar that runs past it', () => {
+    expect(rowMax([{ hour: 1, value: 0.12, n: 50 }, { hour: 2, value: 0.7, n: 5 }])).toBe(0.2); // the 5-departure hour does not count
+    expect(rowMax([{ hour: 1, value: 0.33, n: 50 }])).toBe(0.4);
+    expect(rowMax([{ hour: 2, value: 0.7, n: 5 }])).toBe(0.1);
     const hi = { ...v3, daily: { ...v3.daily, '2026-10-10': { ...(v3.daily as Record<string, object>)['2026-10-10'], lateByHour: [{ hour: 8, n: 5, lateShare: 0.33 }] } } } as unknown as LiveV3;
     const { container } = render(<LateByHourSection chart="spark" v3={hi} data={hi.bands.all as unknown as DashboardBandData} band="all" dir={null} title="Late" />);
     const ticks = [...container.querySelectorAll('[data-tick]')].map(t => t.textContent);
-    expect(ticks.some(t => t === '40%')).toBe(true); // 33% rounds up to the 40% tick even though that hour has 5 departures
+    expect(ticks.some(t => t === '40%')).toBe(false); // the thin 33% hour did not set the axis
+    expect(container.querySelectorAll('[data-capped]').length).toBeGreaterThan(0); // and is marked at the top of its chart
   });
 });

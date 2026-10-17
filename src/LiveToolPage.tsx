@@ -109,11 +109,16 @@ const MATH: Partial<Record<Kpi['key'], string>> = { late: LATE_SHORT, extraWait:
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The route panel's tiles are bare (figure and change): the explanations are shown once, on the left. */
-const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => [
-  ...tiles.map(k => ({ key: `tile-${k.key}`, size: 'small' as const, tile: true, node: <KpiTile k={k} bare /> })),
-  // The week's figures cover the whole route, while Run time and the stops follow the direction pills: said in the grid's empty cell (no extra height).
-  ...(tiles.length % 2 === 1 ? [{ key: 'tiles-scope', size: 'small' as const, node: <p className="m-0 self-end px-1 text-xs text-[var(--text-dim)]">{BOTH_DIRECTIONS}</p> }] : []),
-];
+const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.map((k, i) => ({
+  key: `tile-${k.key}`, size: 'small' as const, tile: true,
+  node: (
+    <>
+      <KpiTile k={k} bare />
+      {/* The week's figures cover the whole route, while Run time and the stops follow the direction pills. Said once, in the 12px gap under the last row of tiles (from the row's left tile, for any number of tiles), so it takes no height. */}
+      {i === tiles.length - (tiles.length % 2 || 2) && <span className="pointer-events-none absolute left-2 top-full whitespace-nowrap text-xs leading-3 text-[var(--text-dim)]">{BOTH_DIRECTIONS}</span>}
+    </>
+  ),
+}));
 
 /** The network's summary, always on the left: the week's figures as one-line rows, then late departures by hour. */
 function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {

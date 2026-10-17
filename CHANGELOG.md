@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **A thin hour no longer flattens the late-by-hour charts (local only)**: the row's scale follows hours with 30+ departures; a faded bar that runs past it is cut at the chart's top with a small chevron (its value is still in the hover text). The 510 weekend no longer forces a 70% axis.
+- **The planner's "both directions" sits under the tiles for any number of tiles (local only)**: it was in an empty grid cell that exists only with an odd tile count.
 - **The planner frames the route above the map note (local only)**: the 510's south end ran under the "Delay at the first few stops..." note and off the screen; the map now leaves room for the note's measured height, and a stale frame set when the map loaded is gone.
 - **Agency "Where bunching forms" shows the rise, like "Where delays start" (local only)**: each stretch has its percentage (the figure the planner shows).
 - **"How this is measured" is open on every Live page (local only)**: no click to read it, and the days counted ("6 of 7 days counted this week, 7 of 7 last week.") stand on their own line.
