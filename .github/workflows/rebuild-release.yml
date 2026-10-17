@@ -7,6 +7,8 @@ name: Rebuild data release
 #   gh workflow run rebuild-release.yml -f ref=main -f mode=publish -f allow="communitytransit:drop"
 #
 # dry-run: reprocess + PMTiles dry run, uploads the report and the release diff as artifacts.
+#          agencies="ttc translink" also uploads those agencies' regenerated JSON, to check a
+#          pipeline fix before publishing.
 #          Runs the branch's code with READ-ONLY R2 credentials and a read-only GitHub token, so
 #          it cannot write R2 or the repo even if the code under test misbehaves.
 # publish: reprocess --write -> build-pmtiles -> verify-pmtiles-remote -> build-history ->
@@ -46,6 +48,10 @@ on:
           - pmtiles
           - history
           - publish
+      agencies:
+        description: 'Dry run only. Space-separated agency slugs (e.g. "ttc translink") whose regenerated JSON (routes, stops, corridors, trips, stops-meta) is uploaded as an artifact.'
+        required: false
+        type: string
       resume_run_id:
         description: 'Publish only. The run id of the earlier run to resume (its saved stamps and release manifest are downloaded). Required for start_at history or publish.'
         required: false
@@ -82,6 +88,7 @@ jobs:
       REF_INPUT: ${{ inputs.ref }}
       ALLOW_INPUT: ${{ inputs.allow }}
       CONCURRENCY_INPUT: ${{ inputs.concurrency }}
+      AGENCIES_INPUT: ${{ inputs.agencies }}
       NODE_OPTIONS: --max-old-space-size=8192
     steps:
       - name: Check the inputs and the read-only keys
@@ -92,6 +99,9 @@ jobs:
           [[ "$CONCURRENCY_INPUT" =~ ^[1-4]$ ]] || { echo "concurrency must be 1-4, got: $CONCURRENCY_INPUT"; exit 1; }
           for pair in $ALLOW_INPUT; do
             [[ "$pair" =~ ^[a-z0-9-]+:[a-z-]+$ ]] || { echo "Bad allow value: $pair (expected <slug>:<flag>)"; exit 1; }
+          done
+          for slug in $AGENCIES_INPUT; do
+            [[ "$slug" =~ ^[a-z0-9-]+$ ]] || { echo "Bad agencies value: $slug (expected an agency slug)"; exit 1; }
           done
           if [ -z "$RO_KEY" ] || [ -z "$RO_SECRET" ]; then
             echo "Missing the read-only R2 keys. Add repository secrets R2_RO_ACCESS_KEY_ID and R2_RO_SECRET_ACCESS_KEY:"
@@ -218,6 +228,35 @@ jobs:
             tmp/derived-reprocess/report.json
             tmp/release-diff/*.md
             tmp/release-diff/*.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      # agencies input: each listed agency's regenerated JSON, as the reprocess wrote it
+      # (tmp/derived-reprocess/<slug>/). A slug with no output (refused, failed, unknown) is listed
+      # in the step summary instead.
+      - name: List the requested agencies' JSON
+        id: agency-files
+        if: always() && inputs.agencies != ''
+        run: |
+          {
+            echo 'paths<<PATHS_EOF'
+            for slug in $AGENCIES_INPUT; do
+              dir="tmp/derived-reprocess/$slug"
+              if ls "$dir"/*.json >/dev/null 2>&1; then
+                echo "$dir/*.json"
+              else
+                echo "- $slug: no regenerated JSON (refused, failed or not a known slug)" >> "$GITHUB_STEP_SUMMARY"
+              fi
+            done
+            echo 'PATHS_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload the requested agencies' JSON
+        if: always() && inputs.agencies != '' && steps.agency-files.outputs.paths != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: rebuild-agencies-dry-run-${{ github.run_id }}
+          path: ${{ steps.agency-files.outputs.paths }}
           if-no-files-found: warn
           retention-days: 30
 
