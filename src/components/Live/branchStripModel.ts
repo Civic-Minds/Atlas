@@ -120,7 +120,10 @@ export function branchStripFromV3(v3: LiveV3, directionId: number, band: Dashboa
   const bandData = v3.bands?.[band] ?? { stops: v3.stops, buildup: v3.buildup };
   const lessExact = uncertain.find(u => u.directionId === directionId)?.stops ?? 0;
   const byId = new Map(bandData.stops.filter(s => s.directionId === directionId).map(s => [s.stopId, s]));
-  const branchBunching = new Map((v3.bunching.find(b => b.directionId === directionId)?.bands[band]?.branchStops ?? []).map(s => [s.stopId, s]));
+  // Gap figures by stop: the main pattern's own list and the branch-only stops. A main-pattern stop with no delay figures
+  // (a terminal nobody departs from) still has gaps, so it is looked up here too, not only on the delay list.
+  const bandBunching = v3.bunching.find(b => b.directionId === directionId)?.bands[band];
+  const branchBunching = new Map([...(bandBunching?.stops ?? []), ...(bandBunching?.branchStops ?? [])].map(s => [s.stopId, s]));
   const mainById = new Map(straight.stops.map(s => [s.stopId, s]));
   const stopFor = (s: { stopId: string; name: string }): RouteStripStop => {
     const main = mainById.get(s.stopId);

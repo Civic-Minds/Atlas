@@ -72,6 +72,12 @@ describe('branchStripFromV3 bunching join (CIV-311)', () => {
     expect(by.get('z')).toMatchObject({ bunchingShare: null, bunchingN: 0 });
     expect(by.get('a')).toMatchObject({ bunchingShare: 0.2, bunchingN: 80 });
   });
+  it('keeps the gap figures of a main-pattern stop that has no delay figures (a terminal nobody departs from)', () => {
+    const noDelay = JSON.parse(JSON.stringify(v3));
+    noDelay.stops = noDelay.stops.filter((s: { stopId: string }) => s.stopId !== 'c');
+    const c = new Map(allBranchStops(branchStripFromV3(noDelay, 0, 'all')!).map(s => [s.stopId, s])).get('c');
+    expect(c).toMatchObject({ bunchingShare: 0.2, bunchingN: 80, delayMin: null });
+  });
   it('still works on a file without branchStops', () => {
     const old = JSON.parse(JSON.stringify(v3)); delete old.bunching[0].bands.all.branchStops;
     const by = new Map(allBranchStops(branchStripFromV3(old, 0, 'all')!).map(s => [s.stopId, s]));
