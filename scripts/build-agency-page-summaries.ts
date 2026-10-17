@@ -57,30 +57,38 @@ const CACHE_ROOT = 'tmp/agency-pages-cache';
 const useCache = !process.argv.includes('--no-cache');
 
 /** Delete every cached release but this one (each holds about 1.5 GB). */
-function pruneReleaseCache(releaseId: string): void {
-  if (!useCache || !existsSync(CACHE_ROOT)) return;
-  for (const dir of readdirSync(CACHE_ROOT)) if (dir !== releaseId) rmSync(join(CACHE_ROOT, dir), { recursive: true, force: true });
+export function pruneReleaseCache(releaseId: string, cacheRoot: string | null = useCache ? CACHE_ROOT : null): void {
+  if (!cacheRoot || !existsSync(cacheRoot)) return;
+  for (const dir of readdirSync(cacheRoot)) if (dir !== releaseId) rmSync(join(cacheRoot, dir), { recursive: true, force: true });
 }
 
-/** One agency's route file from the release: the cached copy when there is one, else fetched and cached. */
+type RouteFile = { features: Feature[] };
+const isRouteFile = (data: unknown): data is RouteFile => Array.isArray((data as RouteFile | null)?.features);
+
+/**
+ * One agency's route file from the release: the cached copy when there is one, else fetched and
+ * cached. Only a complete file (it parses and has a features array) is cached; a leftover .part file
+ * from a stopped run is never read.
+ */
 export async function getReleaseAgency(
   release: { releaseId: string; agencyPrefix: string },
   slug: string,
   cacheRoot: string | null = useCache ? CACHE_ROOT : null,
-): Promise<{ features: Feature[] }> {
+): Promise<RouteFile> {
   const url = `${base}/${release.agencyPrefix}/${slug}.json`;
-  if (!cacheRoot) return getJson<{ features: Feature[] }>(url);
+  if (!cacheRoot) return (await fetchJson(url, isRouteFile)).data;
   const dir = join(cacheRoot, release.releaseId);
   const file = join(dir, `${slug}.json`);
   if (existsSync(file)) {
     try {
-      return JSON.parse(readFileSync(file, 'utf8')) as { features: Feature[] };
+      const cached: unknown = JSON.parse(readFileSync(file, 'utf8'));
+      if (isRouteFile(cached)) return cached;
     } catch {
-      rmSync(file, { force: true }); // unreadable: fetch it again
+      // unreadable: fetched again below
     }
+    rmSync(file, { force: true });
   }
-  const text = await getText(url);
-  const data = JSON.parse(text) as { features: Feature[] };
+  const { text, data } = await fetchJson(url, isRouteFile);
   mkdirSync(dir, { recursive: true });
   // Write then rename, so a run stopped mid-write never leaves a truncated file behind.
   writeFileSync(`${file}.part`, text);
@@ -88,23 +96,27 @@ export async function getReleaseAgency(
   return data;
 }
 
-async function getText(url: string): Promise<string> {
+/** Fetch and parse, retrying a failed request, a bad status, unparseable JSON or a failed shape check alike. */
+async function fetchJson<T>(url: string, check: (data: unknown) => data is T): Promise<{ text: string; data: T }> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= 4; attempt++) {
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-      return await res.text();
+      const text = await res.text();
+      const data: unknown = JSON.parse(text);
+      if (!check(data)) throw new Error(`Unexpected JSON shape for ${url}`);
+      return { text, data };
     } catch (err) {
       lastError = err;
-      await new Promise(r => setTimeout(r, 1500 * attempt));
+      if (attempt < 4) await new Promise(r => setTimeout(r, 1500 * attempt));
     }
   }
   throw lastError;
 }
 
 async function getJson<T>(url: string): Promise<T> {
-  return JSON.parse(await getText(url)) as T;
+  return (await fetchJson(url, (data: unknown): data is T => data != null)).data;
 }
 
 export function summarize(
