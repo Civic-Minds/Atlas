@@ -122,6 +122,9 @@ function RoutesTable({ s }: { s: AgencySummary }) {
   );
 }
 
+/** The network's worst stops shown (the summary may hold more; older files had 15). */
+const TOP_STOPS = 10;
+
 function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank yet.</p>;
   return (
@@ -137,7 +140,6 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
           { key: 'dir', header: 'Direction', cell: r => titleCase(r.direction) },
           { key: 'late', header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
           { key: 'typical', header: 'Typical', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
-          { key: 'p90', header: '1 in 10 later than', worst: r => r.p90Min, cell: r => mins(r.p90Min) },
           { key: 'n', header: 'Departures', cell: r => r.n.toLocaleString() },
         ]}
       />
@@ -219,8 +221,8 @@ export default function LiveAgencyPage() {
           <RoutesTable s={s} />
         </Section>
 
-        <Section id="agency-stops" title="Stops where the most cars leave late" intro={`The ${s.worstStops.length} stops with the highest share of departures 5.5+ minutes late, across all analysed routes.`}>
-          <StopsTable s={s} rows={s.worstStops} />
+        <Section id="agency-stops" title="Stops where the most cars leave late" intro={`The ${Math.min(s.worstStops.length, TOP_STOPS)} stops with the highest share of departures 5.5+ minutes late, across all analysed routes.`}>
+          <StopsTable s={s} rows={s.worstStops.slice(0, TOP_STOPS)} />
         </Section>
 
         <Section id="agency-delay" title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there.">

@@ -129,7 +129,7 @@ export function agencySummary(input: {
   top?: { stops?: number; stretches?: number };
 }): AgencySummary {
   const { agency, routes } = input;
-  const topStops = input.top?.stops ?? 15, topStretches = input.top?.stretches ?? 10;
+  const topStops = input.top?.stops ?? 10, topStretches = input.top?.stretches ?? 10;
   const withWeekly = routes.filter(r => r.v3.weekly);
   const weekly = withWeekly.length ? (() => {
     const thisWeek = combineWeeks(withWeekly.map(r => r.v3.weekly!.thisWeek));
