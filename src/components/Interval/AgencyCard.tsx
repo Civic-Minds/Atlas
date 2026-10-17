@@ -17,7 +17,7 @@ import { headwayEveryRange } from '../../utils/headwayText';
 import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
-import { routeListDisplay } from '../../utils/effectiveHeadway';
+import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
 import { CARD_TITLE, CardDirectionRow, CardHelpNotice, CardReportButton } from './cardUi';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
@@ -322,7 +322,7 @@ function RouteListSection({
             headway={r.headway ?? undefined}
             headwayLabel={r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined}
             limited={r.limited || r.noRegular === true}
-            limitedLabel={r.noRegular ? 'no regular service' : undefined}
+            limitedLabel={r.noRegular ? NO_REGULAR_SERVICE_LABEL : undefined}
             subLabel={isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName })
                 ? 'Rail replacement bus'
                 : undefined}

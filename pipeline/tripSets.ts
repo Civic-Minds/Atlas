@@ -28,6 +28,7 @@ import {
   hasSustainedFrequentService,
   medianHeadwayInWindow,
   hasSustainedServiceInWindow,
+  isSustainedHeadway,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
@@ -311,6 +312,8 @@ export interface StretchPeriod {
   sustained: boolean | null;
   /** D8 shadow: sustained, and service runs on both sides of the period's midpoint. */
   sustainedMid: boolean | null;
+  /** The value is one gap between departures, not a repeated cadence (see isOneGapPeriod). */
+  oneGap: boolean;
 }
 
 const PERIOD_WINDOWS = TIME_PERIODS.map(p => ({ key: p.key as PeriodKey, start: p.startHour * 60, end: p.endHour * 60 }));
@@ -334,6 +337,34 @@ export function periodSustainedMid(times: readonly number[]): Partial<Record<Per
   return out;
 }
 
+/**
+ * An unsteady period's value (its longest wait) is one gap between departures when no other gap
+ * around it repeats it (TTC 10 weekday midday to Victoria Park: 09:07, 14:22, 14:52 shows 315; TTC
+ * 166 to Milvan 302). The gaps are those between the period's departures and the departure on each
+ * side of it; a gap repeats the value when the settled steadiness test calls neither one a real gap
+ * over the other. A slow cadence repeats (MBTA 18 AM to Ashmont: 07:04, 08:28, then 09:52, every
+ * 84; Halifax 401 PM every 99) and keeps its number, and so does regular service with one gap
+ * inside it. A value that is only a late start or early end, matching no gap, is not one gap.
+ */
+export function isOneGapPeriod(times: readonly number[], start: number, end: number, value: number | null, sustained: boolean | undefined): boolean {
+  // Steady periods show their cadence; unsteady ones, and those too thin to judge (two departures), show the wait.
+  if (value == null || sustained === true) return false;
+  const all = [...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b);
+  const inWindow = all.filter(t => t >= start && t <= end);
+  if (inWindow.length === 0) return false;
+  const before = all.filter(t => t < start);
+  const after = all.filter(t => t > end);
+  const seq = [...before.slice(-1), ...inWindow, ...after.slice(0, 1)];
+  const gaps = seq.slice(1).map((t, i) => t - seq[i]);
+  const near = (g: number) => isSustainedHeadway([value], g) && isSustainedHeadway([g], value);
+  if (gaps.filter(near).length !== 1) return false;
+  // Regular service around the gap keeps its cadence (TransLink 147 Saturday AM: 06:26, then every
+  // 30 from 07:26): the gap stands alone only when the rest of the period has fewer than the three
+  // departures a period value needs.
+  const otherInWindow = inWindow.slice(1).map((t, i) => t - inWindow[i]).filter(g => !near(g));
+  return otherInWindow.length < 2;
+}
+
 export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
   const times = [...s.times];
   const headways = computePeriodHeadways(times);
@@ -352,6 +383,7 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
       coverage: coverage[key] ?? null,
       sustained: sustained[key] ?? null,
       sustainedMid: sustainedWithMidpoint([...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b), sustained[key], start, end),
+      oneGap: runs && isOneGapPeriod(times, start, end, value, sustained[key]),
     };
   }
   return out;
@@ -422,6 +454,8 @@ export function nightOnlyTrips(trips: readonly DirectionTrip[]): DirectionTrip[]
 export interface DirectionRollup {
   period: Record<PeriodKey, {
     value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null;
+    /** The direction value comes from a counting stretch whose value is one gap (isOneGapPeriod). */
+    oneGap: boolean;
     /**
      * Step 5a filter value: the worst counting stretch, each read as the tile rule reads a row
      * (steady with a full-window wait of PERIOD_COVERAGE_MAX_HEADWAY or less: its headway; else its
@@ -464,6 +498,8 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       coverage: counting.length > 0 ? Math.max(...counting.map(p => p.coverage ?? 0)) : null,
       sustained: counting.length > 0 ? counting.every(p => p.sustained === true) : null,
       sustainedMid: counting.length > 0 ? counting.every(p => p.sustainedMid === true) : null,
+      // The worst counting stretch sets the value; it is one gap when that stretch's is.
+      oneGap: counting.length > 0 && counting.some(p => p.oneGap && p.value === Math.max(...counting.map(c => c.value!))),
       mainValue: main[key].counts ? main[key].value : null,
       filterValue: null,
       runs: false,
@@ -660,6 +696,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchPeriodCoverage',
   'stretchPeriodSustained',
   'stretchPeriodSustainedMid',
+  'stretchPeriodOneGap',
   'stretchRoutePeriodHeadway',
   'stretchPeriodRange',
   'stretchNight30',
@@ -733,6 +770,7 @@ export function stampStretchShadow(
     p.stretchPeriodCoverage = byPeriod(k => dir.period[k].coverage);
     p.stretchPeriodSustained = byPeriod(k => dir.period[k].sustained);
     p.stretchPeriodSustainedMid = byPeriod(k => dir.period[k].sustainedMid);
+    p.stretchPeriodOneGap = byPeriod(k => dir.period[k].oneGap);
     p.stretchRoutePeriodHeadway = byPeriod(k => route.period[k].value);
     p.stretchPeriodRange = byPeriod(k => route.period[k].range);
     p.stretchNight30 = route.night30;
