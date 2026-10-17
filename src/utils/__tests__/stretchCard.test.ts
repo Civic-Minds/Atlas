@@ -140,6 +140,10 @@ describe('hasRegularServiceInPeriod (#750)', () => {
     const route8Inbound = { directionId: 1, directionFilterHeadwayByPeriod: { amPeak: null }, routeFilterHeadwayByPeriod: { amPeak: null } } as unknown as ShapeProperties;
     expect(hasRegularServiceInPeriod(route8Inbound, 'amPeak')).toBe(false);
   });
+  it('a direction value that is one gap is no regular service (TTC 10 midday to Victoria Park)', () => {
+    const oneGap = { directionId: 0, directionFilterHeadwayByPeriod: { midday: 315 }, routeFilterHeadwayByPeriod: { midday: 315 }, stretchPeriodOneGap: { midday: true } } as unknown as ShapeProperties;
+    expect(hasRegularServiceInPeriod(oneGap, 'midday')).toBe(false);
+  });
   it('falls back to the route filter, and to true for older data without filter fields', () => {
     const routeOnly = { routeFilterHeadwayByPeriod: { evening: null, midday: 12 } } as unknown as ShapeProperties;
     expect(hasRegularServiceInPeriod(routeOnly, 'evening')).toBe(false);

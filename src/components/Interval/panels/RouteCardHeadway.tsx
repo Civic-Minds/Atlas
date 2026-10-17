@@ -722,8 +722,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       const directionValue = period !== 'all'
                         ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
                         : undefined;
-                      const rowNoRegular = noRegularService && hoveredHour == null
-                        && (typeof directionValue !== 'number' || displayH == null);
+                      // A number that is one gap between a few departures is not a cadence (TTC 10 weekday
+                      // midday to Victoria Park, 09:07 then 14:22: "every 315"); a row with a steady value
+                      // of its own keeps it.
+                      const oneGap = hoveredHour == null && period !== 'all'
+                        && d.stretchPeriodOneGap?.[period as keyof NonNullable<ShapeProperties['stretchPeriodOneGap']>] === true
+                        && !(variantH === undefined && directionFallback == null && d.headwayByPeriodSustained?.[period as keyof NonNullable<ShapeProperties['headwayByPeriodSustained']>] === true);
+                      const rowNoRegular = (noRegularService && hoveredHour == null
+                        && (typeof directionValue !== 'number' || displayH == null)) || oneGap;
                       const isLimited = rowNoRegular
                         ? true
                         : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);

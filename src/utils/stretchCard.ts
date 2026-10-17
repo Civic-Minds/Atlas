@@ -97,6 +97,8 @@ export function routeContract(features: readonly ShapeProperties[], period: Time
  */
 export function hasRegularServiceInPeriod(f: ShapeProperties, period: TimePeriod): boolean {
   if (period === 'all') return true;
+  // A direction value that is one gap between a few departures is no cadence, as on the route card.
+  if (f.stretchPeriodOneGap?.[period as PeriodKey] === true) return false;
   const byDirection = f.directionFilterHeadwayByPeriod;
   if (byDirection && Object.prototype.hasOwnProperty.call(byDirection, period)) return typeof byDirection[period as PeriodKey] === 'number';
   const contract = routeContract([f], period);

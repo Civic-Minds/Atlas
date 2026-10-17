@@ -77,6 +77,8 @@ export interface RouteProperties {
   routeRunsByPeriod?: Partial<Record<PeriodKey, boolean>>;
   /** Each direction's own filter value. */
   directionFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
+  /** The direction's value is one gap between departures, not a cadence (pipeline isOneGapPeriod). Display only. */
+  stretchPeriodOneGap?: Partial<Record<PeriodKey, boolean>>;
   /** The route's range, [best stretch, worst] ("every 8–25"); null: one number. Display only. */
   stretchPeriodRange?: Partial<Record<PeriodKey, [number, number] | null>>;
   /** What this feature is on the card: the direction's main stretch, a tail, or a variant (a short turn: no destination row). */
