@@ -26,10 +26,11 @@ const MIN_N = 30;
 
 function Delta({ k }: { k: Kpi }) {
   if (!k.delta) return <span className="text-xs text-[var(--text-dim)]">No comparison with last week</span>;
-  const tone = k.delta.tone === 'better' ? 'text-[var(--status-positive-text)]' : k.delta.tone === 'worse' ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-muted)]';
+  const mark = k.delta.tone === 'better' ? 'text-[var(--status-positive-text)]' : k.delta.tone === 'worse' ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-muted)]';
   return (
-    <span className="flex items-baseline text-xs tracking-tight">
-      <span className={`whitespace-nowrap font-bold ${tone}`} aria-label={k.delta.spoken} title={k.delta.spoken}>{k.delta.text}</span>
+    <span className="flex items-baseline gap-1 text-xs tracking-tight" aria-label={k.delta.spoken} title={k.delta.spoken}>
+      {k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`text-2xs ${mark}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
+      <span className="whitespace-nowrap font-bold text-[var(--text-muted)]">{k.delta.text}</span>
     </span>
   );
 }
@@ -38,7 +39,7 @@ function Delta({ k }: { k: Kpi }) {
 /** The Yesterday tiles: the same five figures for one day, against the same weekday a week before (CIV-278). */
 export function YesterdayTiles({ y, tiles }: { y: LiveYesterday; tiles?: Kpi[] }) {
   if (!y.weekly.thisWeek.healthyDates.length) return <p className="mt-5 text-sm text-[var(--text-muted)]">{NOT_ENOUGH_YESTERDAY}</p>;
-  const ks = (tiles ?? kpiTiles(y.weekly, y.daily)).map(k => (k.delta ? { ...k, delta: { ...k.delta, text: againstLastWeekday(k.delta.text, y.compareDate) } } : k));
+  const ks = (tiles ?? kpiTiles(y.weekly, y.daily)).map(k => (k.delta ? { ...k, delta: { ...k.delta, text: againstLastWeekday(k.delta.text, y.compareDate), spoken: againstLastWeekday(k.delta.spoken, y.compareDate) } } : k));
   // The comparison is named in the page subtitle ("Thursday, Oct 15, compared with Thursday, Oct 8"), not under the tiles.
   return <KpiTiles tiles={ks} caption={y.weekly.comparable ? '' : NOT_ENOUGH_YESTERDAY} />;
 }

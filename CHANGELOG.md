@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Live tiles read "last week 10%" with a small coloured arrow, and one colouring rule covers every tile (local only)**: the change line leads with last week's value, and only the arrow is coloured. Before, only Run time coloured: Late and Service delivered were judged against the spread between days, but Run time, Extra wait and Bunching against small fixed amounts that ordinary day-to-day swings beat. Now every measure is judged against its own day-to-day spread (CIV-279).
 - **Late says "more than 5½ min late" everywhere (local only)**: some captions and intros still said 5 min or 5.5+.
 - **Stop names are always in normal case and wrap instead of ending in "..." (local only)**: the Extra wait list showed "RONCESVALLES AVE AT HOWARD PARK AVE".
 - **The planner's bottom note no longer runs under the zoom buttons, and "12a" stays inside the late-by-hour card (local only)**.

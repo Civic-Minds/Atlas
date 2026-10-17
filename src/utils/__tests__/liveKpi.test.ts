@@ -5,16 +5,44 @@ import type { LiveV3 } from '../../../shared/liveDashboard';
 
 describe('kpiDelta', () => {
   it('colours only changes bigger than the fixed amount for each figure', () => {
-    expect(kpiDelta('late', 0.21, 0.2, true, true)).toMatchObject({ text: '▲ 1 pt', tone: 'same' });
-    expect(kpiDelta('delivered', 0.997, 0.998, false, true)).toMatchObject({ text: '▼ 0.1 pt', tone: 'same' });
+    expect(kpiDelta('late', 0.21, 0.2, true, true)).toMatchObject({ text: '1 pt', arrow: 'up', tone: 'same' });
+    expect(kpiDelta('delivered', 0.997, 0.998, false, true)).toMatchObject({ text: '0.1 pt', arrow: 'down', tone: 'same' });
     expect(kpiDelta('late', 0.25, 0.2, true, true)).toMatchObject({ tone: 'worse' });
     expect(kpiDelta('late', 0.15, 0.2, true, true)).toMatchObject({ tone: 'better' });
     expect(kpiDelta('delivered', 0.97, 0.99, false, true)).toMatchObject({ tone: 'worse' });
-    expect(kpiDelta('tripTime', 28, 30, true, false)).toMatchObject({ text: '▼ 2 min', tone: 'better' });
+    expect(kpiDelta('tripTime', 28, 30, true, false)).toMatchObject({ text: '2 min', arrow: 'down', tone: 'better' });
   });
   it('says same when nothing changed and nothing when a week is missing', () => {
     expect(kpiDelta('late', 0.2, 0.2, true, true)).toMatchObject({ text: 'same', tone: 'same' });
     expect(kpiDelta('late', 0.2, null, true, true)).toBeNull();
+  });
+});
+
+describe('kpiDelta wording', () => {
+  it('reads label first, then last week\'s value, with the direction kept apart as the arrow', () => {
+    expect(kpiDelta('tripTime', 31, 32, true, false, null, '32 min')).toMatchObject({ text: 'last week 32 min', arrow: 'down', spoken: expect.stringMatching(/^last week 32 min, down 1 min/) });
+    expect(kpiDelta('late', 0.3, 0.2, true, true, null, '20%')).toMatchObject({ text: 'last week 20%', arrow: 'up', tone: 'worse' });
+    expect(kpiDelta('late', 0.2, 0.2, true, true, null, '20%')).toMatchObject({ text: 'same as last week', arrow: 'none' });
+  });
+});
+
+describe('one colouring rule for every tile', () => {
+  const week = (over: object, dates: string[]) => ({ days: 7, dates, healthyDates: dates, late: { share: 0.2, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 32, overMin: 2 }, extraWait: { minutes: 1.2, gaps: 500 }, bunching: { share: 0.2, gaps: 600 }, delivered: { share: 0.99, seen: 990, notSeen: 10, unknown: 0 }, ...over });
+  const dates = ['2026-10-08', '2026-10-09', '2026-10-10', '2026-10-11', '2026-10-12'];
+  const mk = (now: object): NonNullable<LiveV3['weekly']> => ({ minHealthyDays: 4, health: [], thisWeek: week(now, dates), lastWeek: week({}, dates), comparable: true });
+  // Every measure moves by about the same fraction of its own day-to-day spread.
+  const spread = { late: [0.19, 0.2, 0.21, 0.2, 0.2], tripTime: [31.9, 32, 32.1, 32, 32], extraWait: [1.19, 1.2, 1.21, 1.2, 1.2], bunching: [0.19, 0.2, 0.21, 0.2, 0.2], delivered: [0.989, 0.99, 0.991, 0.99, 0.99] };
+  it('colours a change bigger than the measure\'s own spread, and only those', () => {
+    const big = kpiTiles(mk({ late: { share: 0.27, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 34, overMin: 4 }, extraWait: { minutes: 2, gaps: 500 }, bunching: { share: 0.26, gaps: 600 }, delivered: { share: 0.95, seen: 950, notSeen: 50, unknown: 0 } }), spread);
+    expect(big.map(t => t.delta?.tone)).toEqual(['worse', 'worse', 'worse', 'worse', 'worse']);
+    // A change inside the spread stays grey for every tile, whatever the unit (the old fixed 1 min coloured a 1.1 min run time move).
+    const noisy = { late: [0.1, 0.3, 0.2, 0.15, 0.25], tripTime: [28, 36, 32, 30, 34], extraWait: [0.4, 2, 1.2, 0.9, 1.5], bunching: [0.1, 0.3, 0.2, 0.15, 0.25], delivered: [0.95, 1, 0.99, 0.97, 0.98] };
+    const small = kpiTiles(mk({ late: { share: 0.22, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 33.1, overMin: 3 }, extraWait: { minutes: 1.8, gaps: 500 }, bunching: { share: 0.23, gaps: 600 }, delivered: { share: 0.98, seen: 980, notSeen: 20, unknown: 0 } }), noisy);
+    expect(small.map(t => t.delta?.tone)).toEqual(['same', 'same', 'same', 'same', 'same']);
+  });
+  it('falls back to the fixed stand-ins only for a measure with fewer than 3 good days', () => {
+    const t = kpiTiles(mk({ tripTime: { n: 40, scheduledMin: 30, typicalMin: 33.5, overMin: 3 } }), { ...spread, tripTime: [32, 33] });
+    expect(t[1].delta).toMatchObject({ tone: 'worse', spoken: expect.not.stringMatching(/usual day-to-day/) });
   });
 });
 
@@ -28,8 +56,8 @@ describe('kpiTiles', () => {
   it('makes the five tiles with sample sizes and no colour for small moves', () => {
     const tiles = kpiTiles(w);
     expect(tiles.map(t => t.label)).toEqual(['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']);
-    expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: '▲ 20% last week', tone: 'same' } });
-    expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: '▼ 99.8% last week', tone: 'same' } });
+    expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: 'last week 20%', arrow: 'up', tone: 'same' } });
+    expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: 'last week 99.8%', arrow: 'down', tone: 'same' } });
   });
   it('says how far the typical run time is from the timetable, in whole minutes', () => {
     const run = (typicalMin: number, scheduledMin: number) => kpiTiles({ ...w, thisWeek: { ...w.thisWeek, tripTime: { n: 40, scheduledMin, typicalMin, overMin: 0 } } })[1].sub;

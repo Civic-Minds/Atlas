@@ -24,8 +24,12 @@ describe('Live dashboard view', () => {
     render(<LiveDashboardView v3={v3} data={one} band="all" dir={null} uncertain={[]} note={null} title="TTC 510" filters={<div>filters</div>} toFull={() => {}} />);
     const tiles = within(screen.getByRole('region', { name: /This week compared with last week/ })).getAllByRole('listitem');
     expect(tiles).toHaveLength(5);
-    expect(within(tiles[0]).getByText('▲ 20% last week').className).toMatch(/text-muted/);
-    expect(within(tiles[4]).getByText('▼ 99.8% last week').className).toMatch(/text-muted/);
+    expect(within(tiles[0]).getByText('last week 20%').className).toMatch(/text-muted/);
+    expect(within(tiles[4]).getByText('last week 99.8%').className).toMatch(/text-muted/);
+    // The direction is a small mark apart from the text, grey too for a change inside the noise.
+    expect(tiles[0].querySelector('[data-tone]')!.textContent).toBe('▲');
+    expect(tiles[4].querySelector('[data-tone]')!.textContent).toBe('▼');
+    expect(tiles[0].querySelector('[data-tone]')!.className).toMatch(/text-muted/);
     expect(tiles[0].getAttribute('title')).toMatch(/900 departures this week/);
     expect(screen.getByRole('table', { name: /five stops/ }).querySelectorAll('tbody tr')).toHaveLength(5);
     expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(expect.arrayContaining(['All days', 'Weekdays', 'Weekends']));

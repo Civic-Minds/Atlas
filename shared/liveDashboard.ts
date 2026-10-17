@@ -143,6 +143,8 @@ export interface LiveV3 {
     byDay: Array<{ date: string; healthy: boolean; share: number | null; seen: number; notSeen: number; unknown: number; byDirection: Record<string, number | null> }>;
     overall: DeliveredFigures & { byDirection: Record<string, DeliveredFigures> };
   };
+  /** One day at a time, the same figures as a week (CIV-278): each day's measures and whether it was a good day. */
+  daily?: Record<string, { healthy: boolean } & Pick<WeekMetrics, 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered'>>;
   weekly?: { minHealthyDays: number; health: Array<{ date: string; snapshots: number; healthy: boolean }>; thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean };
   /** Stops, build-up and adherence for each time of day. The top-level `adherence`, `stops` and `buildup` are the 'all' entry. */
   bands: Record<DashboardBand, DashboardBandData>;
@@ -385,12 +387,12 @@ export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'deliv
 /** One comparison line per measure, this week against last, with a plain up or down. The same rule for every measure. */
 /**
  * The week-change colouring rule, shared by the dashboard (src/utils/liveKpi.ts) and the full analysis page, so both
- * always agree. A change is coloured only when it is bigger than normal noise. Where the file holds a value per day
- * (late share, trips that ran), the noise is measured: twice the standard error of the difference of the two weekly
- * means, from the day-to-day spread (dailyNoise). Elsewhere a fixed amount stands in (FIXED_NOISE, provisional until the
- * analysis stores daily values for those measures too).
+ * always agree. A change is coloured only when it is bigger than normal noise, for every measure the same way: twice
+ * the standard error of the difference of the two weekly means, from that measure's day-to-day spread (dailyNoise).
+ * The analysis file holds a value per day for all five measures. A fixed amount (FIXED_NOISE) stands in only where
+ * fewer than 3 good days leave no spread to measure (or an older file has no daily values).
  */
-export const NOISE_RULE = 'Only when bigger than the usual day-to-day change: Late and Delivered by more than the spread between days, Bunching by more than 2 points, Run time by more than 1 min, Extra wait by more than half a minute. Smaller changes stay grey.';
+export const NOISE_RULE = 'Only when bigger than the usual day-to-day change: Late, Run time, Extra wait, Bunching and Delivered each by more than the spread between days. Smaller changes stay grey.';
 
 /**
  * PROVISIONAL: smallest change that counts, in the figure's own unit (share as 0-1, or minutes), for measures without
@@ -412,10 +414,27 @@ export function dailyNoise(daily: readonly number[], nThis: number, nLast: numbe
   return 2 * sd * Math.sqrt(1 / nThis + 1 / nLast);
 }
 
-/** This week's daily values on days with good recordings, where the file has them (late share, trips that ran). */
-export function weekDailyValues(v3: LiveV3): { late: number[]; delivered: number[] } {
-  const ok = new Set(v3.weekly?.thisWeek.healthyDates ?? []);
+/** Each measure's value on each good day, in the figure's own unit (share 0-1, or minutes): the day-to-day spread behind the noise. */
+export type DailyValues = Partial<Record<CompareKey, number[]>>;
+
+/** One value per good day for each measure, from per-day figures (late share, typical trip minutes, extra wait minutes, bunching share, trips that ran). */
+export function dailyValuesOf(days: ReadonlyArray<Pick<NonNullable<LiveV3['daily']>[string], 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered'>>): Required<DailyValues> {
+  const pick = <T,>(f: (d: (typeof days)[number]) => T | null | undefined, v: (x: T) => number) => days.flatMap(d => { const x = f(d); return x == null ? [] : [v(x)]; });
   return {
+    late: pick(d => (d.late && d.late.n > 0 ? d.late : null), x => x.share),
+    tripTime: pick(d => (d.tripTime && d.tripTime.n > 0 ? d.tripTime : null), x => x.typicalMin),
+    extraWait: pick(d => (d.extraWait && d.extraWait.gaps > 0 ? d.extraWait : null), x => x.minutes),
+    bunching: pick(d => (d.bunching && d.bunching.gaps > 0 ? d.bunching : null), x => x.share),
+    delivered: pick(d => d.delivered, x => x.share),
+  };
+}
+
+/** This week's daily values on days with good recordings, where the file has them. */
+export function weekDailyValues(v3: LiveV3): Required<DailyValues> {
+  const ok = new Set(v3.weekly?.thisWeek.healthyDates ?? []);
+  const perDay = dailyValuesOf(Object.entries(v3.daily ?? {}).filter(([d, x]) => ok.has(d) && x.healthy).map(([, x]) => x));
+  return {
+    ...perDay,
     late: v3.bands.all.adherence.timepoints.all.byDate.filter(d => ok.has(d.date) && d.n > 0).map(d => d.lateShare),
     delivered: (v3.serviceDelivered?.byDay ?? []).flatMap(d => (ok.has(d.date) && d.share != null ? [d.share] : [])),
   };

@@ -85,9 +85,9 @@ This is how the Live route page (the dashboard and the full analysis at `/apps/l
 ## This week compared with last week
 
 - **Weeks.** "This week" is the last 7 days and "last week" the 7 before. Only good days count, and each week needs at least 4 of them.
-- **Colouring.** A change is coloured only when it is bigger than usual day to day; smaller changes stay grey. The rule is the same in the dashboard and the full analysis (`weekChangeTone` in `shared/liveDashboard.ts`).
-  - **Late and service delivered** have a value per day. The change must be more than twice the standard error of the difference between the two weekly averages, worked out from the spread between days.
-  - **Bunching, run time and extra wait** have no daily values yet, so fixed amounts stand in: 2 points, 1 minute and half a minute. These are provisional until the analysis stores daily values for them too.
+- **Colouring.** A change is coloured only when it is bigger than usual day to day; smaller changes stay grey. The tile's change line reads "last week 10%" (last week's value), and only its small arrow takes the colour. The rule is the same for every tile on every surface (`weekChangeTone` in `shared/liveDashboard.ts`).
+  - Every measure (late, run time, extra wait, bunching, service delivered) has a value per day in the analysis file (`daily`). The change must be more than twice the standard error of the difference between the two weekly averages, worked out from that measure's own spread between days.
+  - Only when a measure has fewer than 3 good days to measure the spread (or an older file has no daily values) does a fixed amount stand in: 2 points, 1 minute, half a minute, 1 point for service delivered.
 
 ## Small samples and less exact stops
 

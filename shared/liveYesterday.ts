@@ -4,7 +4,7 @@
  * the tiles, their change lines and the day-to-day noise rule are reused unchanged. Built by scripts/live-yesterday.ts
  * (published to R2 under atlas/live/<agency>/yesterday/) and by the local API.
  */
-import type { LiveV3, WeekMetrics } from './liveDashboard';
+import { dailyValuesOf, type DailyValues, type LiveV3, type WeekMetrics } from './liveDashboard';
 import { combineWeeks } from './liveAgency';
 
 export interface DayFigures extends Omit<WeekMetrics, 'dates' | 'healthyDates'> {
@@ -22,7 +22,8 @@ export interface LiveYesterday {
   /** The weekly block's shape, with this day as "this week" and the same weekday a week earlier as "last week". */
   weekly: NonNullable<LiveV3['weekly']>;
   /** Late share and trips that ran on each good day in the archive window: the day-to-day noise. */
-  daily: { late: number[]; delivered: number[] };
+  /** Every measure's value on each good day, for the noise (published files from before CIV-279 hold only late and delivered). */
+  daily: DailyValues & { late: number[]; delivered: number[] };
   lateByHour: DayFigures['lateByHour'];
 }
 
@@ -51,10 +52,7 @@ export function yesterdayFromV3(v3: LiveV3, agency: string, route: string, date?
       lastWeek: asWeek(compareDate, daily[compareDate]),
       comparable: !!daily[day]?.healthy && !!daily[compareDate]?.healthy,
     },
-    daily: {
-      late: good.flatMap(d => (daily[d].late && daily[d].late!.n > 0 ? [daily[d].late!.share] : [])),
-      delivered: good.flatMap(d => (daily[d].delivered ? [daily[d].delivered!.share] : [])),
-    },
+    daily: { ...dailyValuesOf(good.map(d => daily[d])) },
     lateByHour: daily[day].lateByHour,
   };
 }
@@ -71,7 +69,7 @@ export function agencyYesterday(agency: string, routes: readonly LiveYesterday[]
     schema: 1, agency, route: null, date: same[0].date, compareDate: same[0].compareDate,
     weekly: { minHealthyDays: 1, health: [], thisWeek, lastWeek, comparable: thisWeek.healthyDates.length > 0 && lastWeek.healthyDates.length > 0 },
     // The network's noise: each route's day-to-day spread pooled (a conservative stand-in until the network's own days are stored).
-    daily: { late: same.flatMap(r => r.daily.late), delivered: same.flatMap(r => r.daily.delivered) },
+    daily: { late: same.flatMap(r => r.daily.late), delivered: same.flatMap(r => r.daily.delivered), tripTime: same.flatMap(r => r.daily.tripTime ?? []), extraWait: same.flatMap(r => r.daily.extraWait ?? []), bunching: same.flatMap(r => r.daily.bunching ?? []) },
     lateByHour: [...hours].sort((a, b) => a[0] - b[0]).map(([hour, x]) => ({ hour, n: x.n, lateShare: x.n ? x.late / x.n : 0 })),
   };
 }

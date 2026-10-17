@@ -4,7 +4,7 @@
  * route, so a quiet route does not count as much as the 504. Every figure says how many of the agency's routes it covers.
  * Pure: the builder script (scripts/live-agency-summary.ts) reads the files, this turns them into the page's numbers.
  */
-import { rankStops, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
+import { dailyValuesOf, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
 
 /** Stops and stretches need this many measurements to be ranked (the route page's rule). */
 export const AGENCY_MIN_N = 30;
@@ -57,7 +57,7 @@ export interface AgencySummary {
   held: Array<{ route: string }>;
   weekly: { thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean; minHealthyDays: number } | null;
   /** Network late share per day of this week (days with good recordings), for the change's noise. */
-  daily: { late: number[]; delivered: number[] };
+  daily: Required<DailyValues>;
   routes: AgencyRouteRow[];
   worstStops: AgencyHotspotStop[];
   delayStarts: AgencyHotspotStretch[];
@@ -108,8 +108,14 @@ export function runTimeOver(t: WeekMetrics['tripTime']): number | null {
 }
 
 /** The network's late share for each of this week's good days: all routes' late departures over all their departures. */
-function networkDaily(inputs: readonly AgencyRouteInput[], healthy: readonly string[]): { late: number[]; delivered: number[] } {
+function networkDaily(inputs: readonly AgencyRouteInput[], healthy: readonly string[]): Required<DailyValues> {
   const late: number[] = [], delivered: number[] = [];
+  // The other three measures: each good day's routes added up, as the week's are (combineWeeks).
+  const days = healthy.flatMap(d => {
+    const rows = inputs.flatMap(({ v3 }) => (v3.daily?.[d] ? [{ days: 1, dates: [d], healthyDates: [d], ...v3.daily[d] }] : []));
+    return rows.length ? [combineWeeks(rows)] : [];
+  });
+  const rest = dailyValuesOf(days);
   for (const d of healthy) {
     let n = 0, l = 0, seen = 0, total = 0;
     for (const { v3 } of inputs) {
@@ -121,7 +127,7 @@ function networkDaily(inputs: readonly AgencyRouteInput[], healthy: readonly str
     if (n > 0) late.push(l / n);
     if (total > 0) delivered.push(seen / total);
   }
-  return { late, delivered };
+  return { late, delivered, tripTime: rest.tripTime, extraWait: rest.extraWait, bunching: rest.bunching };
 }
 
 const dirLabel = (v3: LiveV3, d: number) => v3.directionLabels[String(d)] ?? `Direction ${d}`;
@@ -195,7 +201,7 @@ export function agencySummary(input: {
     covered: routes.map(r => r.route),
     held: (input.held ?? []).map(h => ({ route: h.route })),
     weekly,
-    daily: weekly ? networkDaily(routes, weekly.thisWeek.healthyDates) : { late: [], delivered: [] },
+    daily: weekly ? networkDaily(routes, weekly.thisWeek.healthyDates) : { late: [], delivered: [], tripTime: [], extraWait: [], bunching: [] },
     routes: rows,
     worstStops,
     delayStarts,
