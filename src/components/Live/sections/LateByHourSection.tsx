@@ -16,6 +16,10 @@ import { DAYS, pct } from './figures';
 
 /** Fewer departures than this and an hour's bar is faded. */
 const MIN_N = 30;
+/** A figure resting on fewer good days than this reads as thin: dimmed, with the tile's hover text. */
+export const MIN_GOOD_DAYS = 3;
+export const THIN_HINT = 'Few measurements: treat with care.';
+export const isThin = (days: number | undefined | null) => days != null && days > 0 && days < MIN_GOOD_DAYS;
 
 /**
  * The late-by-hour figures for one kind of day, narrowed to a direction when `dir` is set: the one place they are read,
@@ -26,7 +30,7 @@ const MIN_N = 30;
 export function lateByHourModel(v3: LiveV3, data: DashboardBandData, dir: number | null) {
   const healthy = healthyDatesOf(v3);
   const blockOf = (d: DayKind) => data.adherence.timepoints[d];
-  const countsFor = (d: DayKind): { n: number; lateShare: number; earlyShare: number } | null => {
+  const countsFor = (d: DayKind): { n: number; lateShare: number; earlyShare: number; days?: number } | null => {
     const b = blockOf(d);
     if (dir != null) return b.byDirection[String(dir)] ?? null;
     // A file with no per-date counts keeps the totals.
@@ -40,12 +44,15 @@ export function lateByHourModel(v3: LiveV3, data: DashboardBandData, dir: number
 export const routeLateHours = (v3: LiveV3): HourValue[] => lateByHourModel(v3, v3.bands.all, null).sparkHours('all', 'all');
 
 /** The route's overall late share, good days, all times of day. */
+/** Good days behind the route's late figures. */
+export const routeLateDays = (v3: LiveV3): number => healthyCounts(v3.bands.all.adherence.timepoints.all.byDate, healthyDatesOf(v3), 'all')?.days ?? 0;
+
 export const routeLateOverall = (v3: LiveV3): number | null => healthyCounts(v3.bands.all.adherence.timepoints.all.byDate, healthyDatesOf(v3), 'all')?.lateShare ?? null;
 
 /** The Yesterday view's figures for one day, in place of the week's. */
 export interface OneDay { label: string; late: { share: number; n: number; days: number } | null; hours: HourValue[] }
 
-type MiniProps = { chart: 'mini'; hours: readonly HourValue[]; band: DashboardBand; overall: number | null };
+type MiniProps = { chart: 'mini'; hours: readonly HourValue[]; band: DashboardBand; overall: number | null; /** Good days behind the figure; fewer than 3 dims it. */ days?: number };
 type Props = {
   /**
    * `spark` is the dashboard's line chart per kind of day (`allOnly` keeps All days; `oneDay` shows one day);
@@ -59,7 +66,7 @@ type Props = {
   day?: DayKind; allOnly?: boolean; oneDay?: OneDay;
 };
 
-interface DayChart { kind: string; label: string; late: { share: number; n: number; days: number } | null; hours: HourValue[] }
+interface DayChart { kind: string; label: string; late: { share: number; n: number; days: number } | null; hours: HourValue[]; /** Rests on fewer than 3 good days. */ thin?: boolean }
 
 /**
  * The one late-by-hour chart: late-share bars coloured by the strip's three steps on a % axis, the departures in a thin
@@ -76,7 +83,7 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote, daysTitle }
       <div className={`mt-4 grid gap-x-8 gap-y-6 ${cols.length > 1 ? 'md:grid-cols-3' : ''}`}>
         {cols.map(c => {
           return (
-            <div key={c.kind} className="min-w-0">
+            <div key={c.kind} className={`min-w-0 ${c.thin ? 'opacity-60' : ''}`} title={c.thin ? THIN_HINT : undefined}>
               {!withLabels && cols.length > 1 && <div className="text-sm font-bold">{c.label}</div>}
               {withLabels && (
                 <>
@@ -113,7 +120,7 @@ function Spark({ v3, data, band, dir, allOnly = false, oneDay, title }: Props & 
   const healthy = healthyDatesOf(v3);
   const cols: DayChart[] = oneDay ? [{ kind: 'all', label: oneDay.label, late: oneDay.late, hours: oneDay.hours }] : DAYS.filter(([kind]) => !allOnly || kind === 'all').map(([kind, label]) => {
     const late = lateForDays(m.blockOf(kind).byDate, healthy, kind);
-    return { kind, label, late, hours: m.sparkHours(kind, band) };
+    return { kind, label, late, hours: m.sparkHours(kind, band), thin: !oneDay && isThin(late?.days) };
   });
   return (
     <section aria-labelledby="dash-days" className="mt-10">
@@ -127,9 +134,9 @@ function Spark({ v3, data, band, dir, allOnly = false, oneDay, title }: Props & 
   );
 }
 
-function Tile({ label, value, sub }: { label: string; value: string; sub: string }) {
+function Tile({ label, value, sub, thin = false }: { label: string; value: string; sub: string; thin?: boolean }) {
   return (
-    <div className={TILE}>
+    <div className={`${TILE} ${thin ? 'opacity-60' : ''}`} title={thin ? THIN_HINT : undefined}>
       <div className="text-xs font-bold text-[var(--text-muted)]">{label}</div>
       <div className="mt-1 text-3xl font-black tracking-tight">{value}</div>
       <div className="mt-1 text-xs text-[var(--text-dim)]">{sub}</div>
@@ -144,7 +151,7 @@ function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
   if (!(all && all.n > 0)) return <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time.</p>;
   const cols: DayChart[] = DAYS.map(([kind, label]) => {
     const c = m.countsFor(kind);
-    return { kind, label, late: c && c.n > 0 ? { share: c.lateShare, n: c.n, days: 0 } : null, hours: m.sparkHours(kind, 'all') };
+    return { kind, label, late: c && c.n > 0 ? { share: c.lateShare, n: c.n, days: c.days ?? 0 } : null, hours: m.sparkHours(kind, 'all'), thin: isThin(c?.days) };
   });
   return (
     <>
@@ -153,7 +160,7 @@ function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
         {DAYS.map(([k, label]) => {
           const c = m.countsFor(k);
           return c && c.n > 0
-            ? <Tile key={k} label={label} value={pct(c.lateShare)} sub={`late, of ${c.n.toLocaleString()} · ${pct(c.earlyShare)} ahead`} />
+            ? <Tile key={k} label={label} value={pct(c.lateShare)} sub={`late, of ${c.n.toLocaleString()} · ${pct(c.earlyShare)} ahead`} thin={isThin(c.days)} />
             : <Tile key={k} label={label} value="–" sub="too few departures" />;
         })}
       </div>
@@ -170,10 +177,10 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
   const c = m.countsFor(day);
   const label = DAYS.find(([k]) => k === day)![1];
   if (!c || c.n === 0) return <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time.</p>;
-  const col: DayChart = { kind: day, label, late: { share: c.lateShare, n: c.n, days: 0 }, hours: m.sparkHours(day, band) };
+  const col: DayChart = { kind: day, label, late: { share: c.lateShare, n: c.n, days: c.days ?? 0 }, hours: m.sparkHours(day, band), thin: isThin(c.days) };
   return (
     <div className="mt-4 grid items-start gap-6 md:grid-cols-[14rem_minmax(0,1fr)]">
-      <div className={TILE}>
+      <div className={`${TILE} ${isThin(c.days) ? 'opacity-60' : ''}`} title={isThin(c.days) ? THIN_HINT : undefined}>
         <div className="text-xs font-bold text-[var(--text-muted)]">{label}</div>
         <div className="mt-1 text-3xl font-black tracking-tight">{pct(c.lateShare)}</div>
         <div className="mt-1 text-xs text-[var(--text-dim)]">late, of {c.n.toLocaleString()} · {pct(c.earlyShare)} ahead</div>
@@ -185,11 +192,11 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
 }
 
 /** The tool panel's card: late share by hour over the whole 5am-4am day, the chosen time of day shaded. */
-function Mini({ hours, band, overall }: Omit<MiniProps, 'chart'>) {
+function Mini({ hours, band, overall, days }: Omit<MiniProps, 'chart'>) {
   if (!hours.length) return null;
   const max = Math.max(0.1, ...hours.filter(h => h.n >= 30).map(h => h.value));
   return (
-    <Widget title={LATE_BY_HOUR_TITLE} size="medium">
+    <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined}>
       <HourSpark
         barColor={lateShareColor} height={24} values={hours} scale={{ min: 0, max: Math.ceil(max * 10) / 10 }} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
         hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= 30))}
@@ -206,7 +213,7 @@ function Mini({ hours, band, overall }: Omit<MiniProps, 'chart'>) {
  * is drawn (see Props). The title is the caller's (the surfaces word it differently).
  */
 export default function LateByHourSection(props: Props | MiniProps): ReactNode {
-  if (props.chart === 'mini') return <Mini hours={props.hours} band={props.band} overall={props.overall} />;
+  if (props.chart === 'mini') return <Mini hours={props.hours} band={props.band} overall={props.overall} days={props.days} />;
   const { chart, v3, data, band, dir, title = LATE_BY_HOUR_TITLE, id, shrink, boundary, before, day } = props;
   if (chart === 'spark') return <Spark {...props} title={title} />;
   const body = day ? <BarsOne v3={v3} data={data} band={band} dir={dir} day={day} /> : <BarsAll v3={v3} data={data} dir={dir} />;

@@ -8,9 +8,9 @@ export type WidgetSize = 'small' | 'medium' | 'large';
  * A widget bigger than a figure tile: the same surface, radius, padding, border and title as the Live figure tiles
  * (TILE), with a chart or a list as its one thing. Small figure tiles are KpiTile itself.
  */
-export default function Widget({ title, size: _size = 'medium', children, className = '', action }: { title: string; size?: WidgetSize; children: ReactNode; className?: string; /** A small control at the end of the title row. */ action?: ReactNode }) {
+export default function Widget({ title, size: _size = 'medium', children, className = '', action, hint }: { title: string; size?: WidgetSize; children: ReactNode; className?: string; /** A small control at the end of the title row. */ action?: ReactNode; /** Hover text for the whole widget. */ hint?: string }) {
   return (
-    <section aria-label={title} className={`${TILE} flex h-full min-h-0 flex-col overflow-hidden !p-3 ${className}`.trim()}>
+    <section aria-label={title} title={hint} className={`${TILE} flex h-full min-h-0 flex-col overflow-hidden !p-3 ${className}`.trim()}>
       <div className="flex shrink-0 items-center justify-between gap-2">
         <h3 className="m-0 truncate text-sm font-bold text-[var(--text-muted)]">{title}</h3>
         {action}
