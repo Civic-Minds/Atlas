@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
-import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, isSparseOvernightWindow, periodHeadwayInWindow, sparseOvernightHeadway } from '../headway-utils';
+import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, isSustainedHeadway, isSparseOvernightWindow, periodHeadwayInWindow, sparseOvernightHeadway } from '../headway-utils';
 import { decidePeriod } from '../routeGrading';
 import { overnightPeriodValues } from '../overnightTerminal';
 import { processGtfsBuffer } from '../process-core';
@@ -65,6 +65,13 @@ describe('sparse overnight window (#897)', () => {
     expect(isSparseOvernightWindow(at('26:00', '26:10', '27:10'))).toBe(true);
     // 2 and 20: 1.82x but only 9 minutes over the mean: steady.
     expect(isSparseOvernightWindow(at('26:00', '26:02', '26:22'))).toBe(false);
+    // 10 and 57 sits on the boundary: against the exact mean (33.5) the longest gap is 1.70x, against
+    // the rounded value the period shows (34) it is 1.68x. The rounded value decides, as in the
+    // steadiness flag, so the window is steady and keeps its 34.
+    expect(isSustainedHeadway([10, 57], 34)).toBe(true);
+    expect(isSustainedHeadway([10, 57], 33.5)).toBe(false);
+    expect(isSparseOvernightWindow(at('26:00', '26:10', '27:07'))).toBe(false);
+    expect(periodHeadwayInWindow(at('26:00', '26:10', '27:07'), 'overnight')).toBe(34);
   });
 
   it('leaves even, two-, four-departure and daytime windows alone', () => {

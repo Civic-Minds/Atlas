@@ -569,7 +569,8 @@ export function isSparseOvernightWindow(departureTimes: readonly number[]): bool
     .sort((a, b) => a - b);
   if (times.length !== 3) return false;
   const gaps = [times[1] - times[0], times[2] - times[1]];
-  return !isSustainedHeadway(gaps, (gaps[0] + gaps[1]) / 2);
+  // The rounded value, as computePeriodSustained reads it, so the two never disagree.
+  return !isSustainedHeadway(gaps, Math.round((gaps[0] + gaps[1]) / 2));
 }
 
 /**
