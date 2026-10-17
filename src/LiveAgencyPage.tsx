@@ -10,7 +10,7 @@ import { liveDashboardPath } from './hooks/useLiveDashboard';
 import { routesByMode } from '../shared/agencyPages';
 import { RouteNameCell } from './pageParts';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
-import { weekNotComparableLine, weekWindowLine } from './utils/liveKpi';
+import { weekNotComparableLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import { shortStopName } from './utils/stopLabel';
@@ -22,9 +22,8 @@ import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { builtText, coveredRoutesText, liveSubtitle, METHOD_GROUPS } from '../shared/liveWording';
-import MethodFootnote, { Term } from './components/Live/MethodFootnote';
-import { bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from './components/Live/methodLines';
+import { coveredRoutesText, liveSubtitle } from '../shared/liveWording';
+import MethodSection from './components/Live/sections/MethodSection';
 
 /** One column grid for every table on the page, so the first column, Route and Direction line up from table to table (widths in rem; the number columns share the rest of the width equally). */
 const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
@@ -225,27 +224,7 @@ export default function LiveAgencyPage() {
           <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" />
         </Section>
 
-        <MethodFootnote id="agency-method" groups={[
-          { label: METHOD_GROUPS.numbers, items: [
-            lateLine,
-            runTimeLine(),
-            extraWaitLine,
-            bunchingLine(),
-            deliveredLine(),
-            delaysStartLine,
-          ] },
-          { label: METHOD_GROUPS.data, items: [
-            w && weekWindowLine({ ...w, health: [] }),
-            positionsLine,
-            tripMatchLine(),
-            <Term t="Covered">{coverage}{s.held.length ? ` (${s.held.map(h => h.route).join(', ')} not included)` : ''}.</Term>,
-            networkFiguresLine,
-            stopsLine,
-            builtText(s.generatedAt) + '.',
-          ] },
-          { label: METHOD_GROUPS.colours, items: [w && colourLine] },
-          { label: METHOD_GROUPS.limits, items: [recordingGapsLine] },
-        ]} after={<p className="mt-2 text-xs"><ArrowLink href="/about/docs#glossary">What these terms mean</ArrowLink></p>} />
+        <MethodSection scope="agency" s={s} />
       </article>
     </PageShell>
   );

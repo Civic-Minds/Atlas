@@ -25,14 +25,13 @@ import LiveExplorePage from './LiveExplorePage';
 import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts/ProfileBars';
 import HourBars from './components/charts/HourBars';
 import { KpiRow } from './LiveDashboardView';
-import { weekWindowLine } from './utils/liveKpi';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
-import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { builtText, LATE_BY_HOUR_TITLE, lateCount, lateHourLine, liveSubtitle, METHOD_GROUPS } from '../shared/liveWording';
-import MethodFootnote, { Term } from './components/Live/MethodFootnote';
-import { bunchingLine, colourLine, deliveredLine, extraWaitLine, lateAtStopLine, lateLine, positionsLine, recordingGapsLine, runTimeLine, tripMatchLine } from './components/Live/methodLines';
+import { PageTitle } from './components/ui/PageTitle';
+import { LATE_BY_HOUR_TITLE, lateCount, lateHourLine, liveSubtitle } from '../shared/liveWording';
+import Section from './components/Live/sections/Section';
+import MethodSection from './components/Live/sections/MethodSection';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -64,15 +63,6 @@ const axisMin = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 
 export type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 
-
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-  return (
-    <section className="mt-12" aria-labelledby={id}>
-      <SectionTitle id={id}>{title}</SectionTitle>
-      {children}
-    </section>
-  );
-}
 
 function Tile({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
@@ -506,44 +496,6 @@ export function routeSubtitle(v3: LiveV3, agency: string): string {
   return liveSubtitle({ thisWeek: v3.window.dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${v3.totals.runs.toLocaleString()} trips`, agency });
 }
 
-export function Method({ data }: { data: Ready }) {
-  const { v3 } = data;
-  const [first, last] = [v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1]];
-  const lo = v3.leftOut;
-  const unknown = v3.serviceDelivered?.overall.unknown ?? 0;
-  return (
-    <MethodFootnote id="method" collapsible groups={[
-      { label: METHOD_GROUPS.numbers, items: [
-        lateLine,
-        lateAtStopLine(v3.thresholds.lateAtOrAboveMin, Math.abs(v3.thresholds.earlyAtOrBelowMin)),
-        runTimeLine(true),
-        extraWaitLine,
-        bunchingLine(Math.round(v3.thresholds.bunchedGapSec / 60)),
-        deliveredLine(true),
-        <Term t="Where delay builds up">the biggest jump in delay that holds for the next few stops (3 stops or about 1 km).</Term>,
-        <Term t="Linked to">measured in the same stretch, not the cause.</Term>,
-      ] },
-      { label: METHOD_GROUPS.data, items: [
-        `Last ${v3.window.days} service days, ${dateRangeText(first, last)}: ${v3.totals.runs.toLocaleString()} trips and ${v3.totals.stopPassages.toLocaleString()} stop departures.`,
-        v3.weekly && weekWindowLine(v3.weekly),
-        positionsLine,
-        tripMatchLine(true),
-        data.replacementBuses && <Term t="Replacement buses">this route is run by replacement buses in this timetable, so every figure describes the buses.</Term>,
-        `${builtText(data.generatedAt)}.`,
-      ] },
-      { label: METHOD_GROUPS.colours, items: [v3.weekly && colourLine] },
-      { label: METHOD_GROUPS.limits, items: [
-        recordingGapsLine,
-        <Term t="Near a limit">vehicles are seen only about once a minute, so the {pct(v3.uncertainty.nearCutoffShare)} of trips leaving the end of the line within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit could land on either side of it.</Term>,
-        lo && lo.noTimetableTrip > 0 && <Term t="Unscheduled trips">{lo.noTimetableTrip.toLocaleString()} runs ({pct(lo.noTimetableTrip / (lo.kept + lo.noTimetableTrip + lo.excluded))} of the vehicle trips seen) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the {lo.kept.toLocaleString()} timetabled trips kept.</Term>,
-        lo && lo.excluded > 0 && <Term t="Other services">{lo.excluded.toLocaleString()} runs by {lo.excludedLabel ?? 'another service'} that share this route number are left out.</Term>,
-        <Term t="Mismatched trip numbers">{pct(v3.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</Term>,
-        unknown > 0 && <Term t="Unjudged trips">{unknown.toLocaleString()} trips that could not be judged are left out of Delivered.</Term>,
-      ] },
-    ]} />
-  );
-}
-
 export const BOUNDARY = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
 
 function AnalysisPage() {
@@ -622,7 +574,7 @@ function AnalysisPage() {
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWait v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} gaps={gaps} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
-        <ErrorBoundary label="How this is measured could not be drawn."><Method data={data} /></ErrorBoundary>
+        <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
         </>)}
       </article>
     </PageShell>

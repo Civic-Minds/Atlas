@@ -18,7 +18,7 @@ import PageShell from './components/ui/PageShell';
 import SortableDataTable from './components/ui/SortableDataTable';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
-import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import { PageTitle } from './components/ui/PageTitle';
 import LiveOffNotice from './components/LiveOffNotice';
 import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts/ProfileBars';
 import HourBars from './components/charts/HourBars';
@@ -27,7 +27,9 @@ import type { RouteStripMode } from './components/Live/RouteStrip';
 import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
 import { delayText, type RouteStripStop } from './components/Live/routeStripModel';
 import { KpiRow } from './LiveDashboardView';
-import { BOUNDARY, Method, routeSubtitle, withNiceNames } from './LiveRoutePage';
+import Section from './components/Live/sections/Section';
+import MethodSection from './components/Live/sections/MethodSection';
+import { BOUNDARY, routeSubtitle, withNiceNames } from './LiveRoutePage';
 import { lateCount, lateHourLine, LATE_BY_HOUR_TITLE } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
@@ -43,15 +45,6 @@ type Selection = { dir: number; kind: 'stop'; stopId: string } | { dir: number; 
 
 const dirsOf = (v3: LiveV3, dir: number | null) => Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b).filter(d => dir == null || d === dir);
 const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
-
-function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
-  return (
-    <section className="mt-12 min-w-0" aria-labelledby={id}>
-      <SectionTitle id={id}>{title}</SectionTitle>
-      {children}
-    </section>
-  );
-}
 
 export const Group = PillGroup;
 
@@ -528,29 +521,29 @@ export default function LiveExplorePage() {
         <Main v3={v3} band={band} dir={dir} uncertain={uncertain} sel={sel} setSel={setPicked} />
       </ErrorBoundary>
 
-      <Section id="x-late" title={LATE_BY_HOUR_TITLE}>
+      <Section shrink id="x-late" title={LATE_BY_HOUR_TITLE}>
         <div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>
         <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><Late data={bandData} dir={dir} day={day} band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
       </Section>
-      <Section id="x-runtime" title="Run time">
+      <Section shrink id="x-runtime" title="Run time">
         <ErrorBoundary label={BOUNDARY('Run time')}><RunTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
       </Section>
-      <Section id="x-buildup" title="Where delays build up">
+      <Section shrink id="x-buildup" title="Where delays build up">
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
       </Section>
-      <Section id="x-wait" title="Extra wait">
+      <Section shrink id="x-wait" title="Extra wait">
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWait v3={v3} band={band} dir={dir} /></ErrorBoundary>
       </Section>
-      <Section id="x-bunching" title="Where bunching forms">
+      <Section shrink id="x-bunching" title="Where bunching forms">
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} /></ErrorBoundary>
       </Section>
-      <Section id="x-delivered" title="Service delivered">
+      <Section shrink id="x-delivered" title="Service delivered">
         <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
       </Section>
-      <Section id="x-stops" title="Stops with the most delay">
+      <Section shrink id="x-stops" title="Stops with the most delay">
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} onPick={pickStop} canPick={onStrip} /></ErrorBoundary>
       </Section>
-      <ErrorBoundary label="How this is measured could not be drawn."><Method data={data} /></ErrorBoundary>
+      <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
     </article>,
   );
 }
