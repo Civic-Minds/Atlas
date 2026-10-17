@@ -32,7 +32,7 @@ const BUNCHING_SPLIT_CAPTION = 'too close · too far apart';
 const pct1 = (x: number) => `${clean(Math.round(x * 1000) / 10)}%`;
 
 /**
- * The change line: "down from 10% last week", "up from 5% faster last week", or "same as last week". `lastText` is last
+ * The change line: "▼ from 10% last week", "▲ from 5% faster last week", or "same as last week". `lastText` is last
  * week's value as the tile writes it; without it the line gives the size of the change ("▲ 1 pt"). `isShare` figures are
  * 0-1 and change in points; the rest in minutes.
  */
@@ -47,7 +47,7 @@ export function kpiDelta(key: CompareKey, now: number | null, before: number | n
   const word = isShare ? (mag === 1 ? 'point' : 'points') : 'min';
   return {
     arrow: up ? 'up' : 'down',
-    text: lastText ? `${up ? 'up' : 'down'} from ${lastText} last week` : `${up ? '▲' : '▼'} ${clean(mag)} ${unit}`,
+    text: lastText ? `${up ? '▲' : '▼'} from ${lastText} last week` : `${up ? '▲' : '▼'} ${clean(mag)} ${unit}`,
     tone,
     spoken: `${up ? 'up' : 'down'} ${clean(mag)} ${word} from last week${big ? (measured ? ', a bigger change than usual day to day' : '') : (measured ? ', within the usual day-to-day change' : ', a small change')}`,
   };

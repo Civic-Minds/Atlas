@@ -21,7 +21,7 @@ const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 % 24 < 1
  * to every chart in a row so their bars compare. Values below zero hang under a dashed zero line. Hours with no data are
  * left empty, not drawn as zero. The whole chart is one focusable unit with a summary label, and a table view.
  */
-export default function HourSpark({ values, scale, color, format, ariaLabel, unit, valueHeader, minN = 30, hours, height = H, hoverLine, departures = false }: {
+export default function HourSpark({ values, scale, color, format, ariaLabel, unit, valueHeader, minN = 30, hours, height = H, hoverLine, departures = false, shade }: {
   values: readonly HourValue[];
   scale: { min: number; max: number };
   /** CSS colour (a token). */
@@ -36,6 +36,8 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
   hoverLine?: (clock: string, v: HourValue) => string;
   /** Draw the departures in each hour as a thin grey line over the bars (the late charts, CIV-282). */
   departures?: boolean;
+  /** Hours (0-23) to shade behind the bars, for a chosen time of day drawn over the whole day. */
+  shade?: (hour: number) => boolean;
   /** Bar area height in px (taller when the chart has a whole row to itself). */
   height?: number;
   /** The hour axis (GTFS hours); charts side by side pass the same one. Default: liveChartHours for these values. */
@@ -62,11 +64,11 @@ export default function HourSpark({ values, scale, color, format, ariaLabel, uni
             {scale.min < 0 && <div className="pointer-events-none absolute inset-x-0 border-t border-dashed border-[var(--text-dim)] opacity-60" style={{ bottom: zeroPx }} />}
             {axis.map(gtfsHour => {
               const v = byHour.get(gtfsHour % 24);
-              if (!v) return <div key={gtfsHour} className="min-w-0 flex-1" />;
+              if (!v) return <div key={gtfsHour} className={`min-w-0 flex-1 rounded-sm ${shade?.(gtfsHour % 24) ? 'bg-[var(--bg-btn-hover)]' : ''}`} />;
               const top = pos(Math.max(v.value, 0));
               const bottom = pos(Math.min(v.value, 0));
               return (
-                <div key={gtfsHour} className={`relative h-full min-w-0 flex-1 rounded-sm ${hover === v.hour ? 'bg-[var(--bg-btn-hover)]' : ''}`} onPointerEnter={() => setHover(v.hour)} onPointerDown={() => setHover(v.hour)}>
+                <div key={gtfsHour} className={`relative h-full min-w-0 flex-1 rounded-sm ${hover === v.hour || shade?.(v.hour) ? 'bg-[var(--bg-btn-hover)]' : ''}`} onPointerEnter={() => setHover(v.hour)} onPointerDown={() => setHover(v.hour)}>
                   <div
                     className={`absolute left-1/2 w-[60%] max-w-[12px] min-w-[3px] -translate-x-1/2 rounded-sm ${v.n >= minN ? 'opacity-90' : 'opacity-35'}`}
                     style={{ bottom, height: Math.max(2, top - bottom), background: color }}

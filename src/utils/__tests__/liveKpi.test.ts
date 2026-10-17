@@ -24,8 +24,8 @@ describe('kpiTiles', () => {
   it('makes the five tiles with sample sizes and no colour for small moves', () => {
     const tiles = kpiTiles(w);
     expect(tiles.map(t => t.label)).toEqual(['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']);
-    expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: 'up from 20% last week', tone: 'same' } });
-    expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: 'down from 99.8% last week', tone: 'same' } });
+    expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: '▲ from 20% last week', tone: 'same' } });
+    expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: '▼ from 99.8% last week', tone: 'same' } });
   });
   it('says how far the typical run time is from the timetable, in whole minutes', () => {
     const run = (typicalMin: number, scheduledMin: number) => kpiTiles({ ...w, thisWeek: { ...w.thisWeek, tripTime: { n: 40, scheduledMin, typicalMin, overMin: 0 } } })[1].sub;

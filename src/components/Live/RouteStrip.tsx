@@ -58,15 +58,37 @@ function useWidth() {
   return [ref, width] as const;
 }
 
-function swatchStyle(mode: RouteStripMode, step: Step | null, uncertain: boolean): CSSProperties {
+export function swatchStyle(mode: RouteStripMode, step: Step | null, uncertain: boolean): CSSProperties {
   if (step == null) return { background: 'transparent', border: '1.5px dashed var(--text-dim)' };
   const c = stepColor(mode, step);
   if (uncertain) return { background: `repeating-linear-gradient(135deg, ${c} 0 1.5px, transparent 1.5px 3.5px)`, border: `1.5px solid ${c}` };
   return { background: c, boxShadow: '0 0 0 1px var(--strip-ring)' };
 }
 
-function Swatch({ mode, step, uncertain = false, faded = false }: { mode: RouteStripMode; step: Step | null; uncertain?: boolean; faded?: boolean }) {
+export function Swatch({ mode, step, uncertain = false, faded = false }: { mode: RouteStripMode; step: Step | null; uncertain?: boolean; faded?: boolean }) {
   return <span aria-hidden="true" className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ ...swatchStyle(mode, step, uncertain), opacity: faded ? 0.35 : 1 }} />;
+}
+
+/**
+ * The key under a strip: one line that wraps only where it runs out of room (phones), each key kept together. Shared
+ * by the straight and the branch strip so the two always read the same.
+ */
+export function StripLegend({ modes, anyUncertain, anyFaded, anyMissing, minN }: { modes: readonly RouteStripMode[]; anyUncertain: boolean; anyFaded: boolean; anyMissing: boolean; minN: number }) {
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-[var(--text-legend)]">
+      {modes.map(mode => (
+        <span key={mode} className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
+          <span className="font-bold text-[var(--text-secondary)]">{LEGEND_TITLE[mode]}:</span>
+          {legendSteps(mode).map(step => (
+            <span key={step} className="inline-flex items-center gap-1"><Swatch mode={mode} step={step} />{stepLabel(mode, step)}</span>
+          ))}
+        </span>
+      ))}
+      {anyUncertain && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} uncertain />Less exact</span>}
+      {anyFaded && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} faded />Fewer than {minN} departures or gaps</span>}
+      {anyMissing && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={null} />Not measured</span>}
+    </div>
+  );
 }
 
 function valueText(stop: RouteStripStop, mode: RouteStripMode): string {
@@ -162,22 +184,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
     if (e.type === 'pointerdown') onSelect?.(at);
   };
 
-  const legend = (
-    // One line that wraps only where it runs out of room (phones): each key stays together.
-    <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-[var(--text-legend)]">
-      {tracks.map(t => (
-        <span key={t.mode} className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
-          <span className="font-bold text-[var(--text-secondary)]">{LEGEND_TITLE[t.mode]}:</span>
-          {legendSteps(t.mode).map(step => (
-            <span key={step} className="inline-flex items-center gap-1"><Swatch mode={t.mode} step={step} />{stepLabel(t.mode, step)}</span>
-          ))}
-        </span>
-      ))}
-      {anyUncertain && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} uncertain />Less exact</span>}
-      {anyFaded && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} faded />Fewer than {minN} departures or gaps</span>}
-      {anyMissing && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={null} />Not measured</span>}
-    </div>
-  );
+  const legend = <StripLegend modes={modes} anyUncertain={anyUncertain} anyFaded={anyFaded} anyMissing={anyMissing} minN={minN} />;
 
   const table = (
     <div id={tableId} className="sr-only">
@@ -286,7 +293,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
   );
 }
 
-function Tooltip({ stop, x, width, top }: { stop: RouteStripStop; x: number; width: number; top: number }) {
+export function Tooltip({ stop, x, width, top }: { stop: RouteStripStop; x: number; width: number; top: number }) {
   const w = Math.min(260, width);
   const left = Math.max(0, Math.min(width - w, x - w / 2));
   const d = stopDetail(stop);

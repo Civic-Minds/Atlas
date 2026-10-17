@@ -23,22 +23,23 @@ import LiveOffNotice from './components/LiveOffNotice';
 import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts/ProfileBars';
 import HourBars from './components/charts/HourBars';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
-import RouteStrip, { routeStripFromV3, type RouteStripMode } from './components/Live/RouteStrip';
-import { delayText, type RouteStripDirection } from './components/Live/routeStripModel';
+import type { RouteStripMode } from './components/Live/RouteStrip';
+import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
+import { delayText, type RouteStripStop } from './components/Live/routeStripModel';
 import { KpiRow } from './LiveDashboardView';
 import { BOUNDARY, Method, routeSubtitle, withNiceNames } from './LiveRoutePage';
 import { lateCount, lateHourLine } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
-const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
+export const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
 const MINUS = '−';
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', MINUS);
 const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 
 /** What is open in the detail panel: a stop (by its place in the direction's strip) or a marked stretch. */
-type Selection = { dir: number; kind: 'stop'; index: number } | { dir: number; kind: 'stretch'; mode: RouteStripMode };
+type Selection = { dir: number; kind: 'stop'; stopId: string } | { dir: number; kind: 'stretch'; mode: RouteStripMode };
 
 const dirsOf = (v3: LiveV3, dir: number | null) => Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b).filter(d => dir == null || d === dir);
 const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
@@ -52,7 +53,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
   );
 }
 
-function Group({ label, options, value, onChange }: { label: string; options: ReadonlyArray<readonly [string, string]>; value: string; onChange: (v: string) => void }) {
+export function Group({ label, options, value, onChange }: { label: string; options: ReadonlyArray<readonly [string, string]>; value: string; onChange: (v: string) => void }) {
   return (
     <div className="flex flex-wrap gap-1.5" role="group" aria-label={label}>
       {options.map(([k, text]) => <Pill key={k} size="segment" selected={value === k} onClick={() => onChange(k)}>{text}</Pill>)}
@@ -82,9 +83,8 @@ function Block({ title, children }: { title?: string; children: ReactNode }) {
 }
 
 /** Everything known about the picked stop or stretch, for the time of day chosen above. */
-function DetailPanel({ v3, band, sel, strips, data }: { v3: LiveV3; band: DashboardBand; sel: Selection; strips: RouteStripDirection[]; data: DashboardBandData }) {
-  const strip = strips.find(s => s.directionId === sel.dir);
-  if (!strip) return null;
+function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: DashboardBand; sel: Selection; stops: Map<string, RouteStripStop>; data: DashboardBandData }) {
+  const strip = { label: v3.directionLabels[String(sel.dir)] };
   const buildup = data.buildup.find(b => b.directionId === sel.dir);
   const bunchBand = v3.bunching.find(b => b.directionId === sel.dir)?.bands[band];
   const nice = (n: string) => shortStopName(n);
@@ -121,7 +121,7 @@ function DetailPanel({ v3, band, sel, strips, data }: { v3: LiveV3; band: Dashbo
     );
   }
 
-  const s = strip.stops[sel.index];
+  const s = stops.get(sel.stopId);
   if (!s) return null;
   const full = data.stops.find(x => x.stopId === s.stopId && x.directionId === sel.dir);
   const bunch = bunchBand?.stops.find(x => x.stopId === s.stopId);
@@ -175,24 +175,24 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
 }) {
   const data = v3.bands[band];
   const dirs = dirsOf(v3, dir);
-  const strips = useMemo(() => dirs.map(d => routeStripFromV3(v3, d, band, uncertain)), [v3, band, uncertain, dir]); // eslint-disable-line react-hooks/exhaustive-deps
+  const stops = useMemo(() => directionStopsById(v3, sel.dir, band, uncertain), [v3, sel.dir, band, uncertain]);
   return (
     <div id="x-strip" className="mt-6 scroll-mt-4 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
       <div className="min-w-0 space-y-8">
-        {strips.map(d => (
-          <div key={d.directionId} className="min-w-0">
-            <h3 className="mb-1 text-base font-black">{d.label}</h3>
-            <RouteStrip
-              stops={d.stops} directionLabel={d.label} delaysStart={d.delaysStart} bunchingForms={d.bunchingForms}
-              selected={sel.dir === d.directionId && sel.kind === 'stop' ? sel.index : null}
-              onSelect={index => setSel({ dir: d.directionId, kind: 'stop', index })}
-              selectedStretch={sel.dir === d.directionId && sel.kind === 'stretch' ? sel.mode : null}
-              onSelectStretch={mode => setSel({ dir: d.directionId, kind: 'stretch', mode })}
+        {dirs.map(d => (
+          <div key={d} className="min-w-0">
+            <h3 className="mb-1 text-base font-black">{v3.directionLabels[String(d)]}</h3>
+            <DirectionStrip
+              v3={v3} directionId={d} band={band} uncertain={uncertain}
+              selectedId={sel.dir === d && sel.kind === 'stop' ? sel.stopId : null}
+              onSelect={stopId => setSel({ dir: d, kind: 'stop', stopId })}
+              selectedStretch={sel.dir === d && sel.kind === 'stretch' ? sel.mode : null}
+              onSelectStretch={mode => setSel({ dir: d, kind: 'stretch', mode })}
             />
           </div>
         ))}
       </div>
-      <DetailPanel v3={v3} band={band} sel={sel} strips={strips} data={data} />
+      <DetailPanel v3={v3} band={band} sel={sel} stops={stops} data={data} />
     </div>
   );
 }
@@ -484,7 +484,8 @@ export default function LiveExplorePage() {
     for (const d of dirsOf(v3, dir)) {
       if (bandData.buildup.find(b => b.directionId === d)?.forms) return { dir: d, kind: 'stretch', mode: 'delay' } as Selection;
     }
-    return { dir: firstDir, kind: 'stop', index: 0 };
+    const first = [...directionStopsById(v3, firstDir, band, uncertain).keys()][0];
+    return { dir: firstDir, kind: 'stop', stopId: first };
   })();
   const sel: Selection = (() => {
     if (!picked || (dir != null && picked.dir !== dir)) return fallback;
@@ -497,11 +498,10 @@ export default function LiveExplorePage() {
 
   // A stop picked in a table opens in the panel, and the strip scrolls into view.
   // Stops off the strip's usual pattern are not on it, so their names stay plain text.
-  const stripIndex = (d: number, stopId: string) => routeStripFromV3(v3, d, band, uncertain).stops.findIndex(s => s.stopId === stopId);
+  const onStrip = (d: number, stopId: string) => directionStopsById(v3, d, band, uncertain).has(stopId);
   const pickStop = (d: number, stopId: string) => {
-    const index = stripIndex(d, stopId);
-    if (index < 0) return;
-    setPicked({ dir: d, kind: 'stop', index });
+    if (!onStrip(d, stopId)) return;
+    setPicked({ dir: d, kind: 'stop', stopId });
     document.getElementById('x-strip')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
@@ -554,7 +554,7 @@ export default function LiveExplorePage() {
         <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
       </Section>
       <Section id="x-stops" title="Stops with the most delay">
-        <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} onPick={pickStop} canPick={(d, id) => stripIndex(d, id) >= 0} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} onPick={pickStop} canPick={onStrip} /></ErrorBoundary>
       </Section>
       <ErrorBoundary label="How this is measured could not be drawn."><Method data={data} /></ErrorBoundary>
     </article>,
