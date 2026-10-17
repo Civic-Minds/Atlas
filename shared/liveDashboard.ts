@@ -332,7 +332,7 @@ export function extraWaitSentence(stops: ReadonlyArray<{ name: string; extraWait
   const ranked = stops.filter(s => s.gaps >= 30).sort((a, b) => b.extraWaitMin - a.extraWaitMin);
   const top = ranked[0];
   if (!top) return null;
-  if (top.extraWaitMin < 0.5) return `${directionLabel}: riders wait about as long as the timetable promises at every stop.`;
+  if (top.extraWaitMin < 0.5) return `${directionLabel}: riders wait about as long as scheduled at every stop.`;
   return `${directionLabel}: riders at ${top.name} wait about ${m1(Math.round(top.extraWaitMin * 2) / 2)} min longer than scheduled.`;
 }
 

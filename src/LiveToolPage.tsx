@@ -27,7 +27,7 @@ import LateByHourWidget from './components/Live/tool/LateByHourWidget';
 import ProblemsWidget from './components/Live/tool/ProblemsWidget';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData from './components/Live/tool/useNetworkData';
-import { KpiTile } from './LiveDashboardView';
+import { KpiRows, KpiTile } from './LiveDashboardView';
 import { BANDS, Group } from './LiveExplorePage';
 import { withNiceNames } from './LiveRoutePage';
 
@@ -83,7 +83,7 @@ function MapCard({ title, lines }: { title: string; lines: string[] }) {
   );
 }
 
-const PANEL_PAD = { top: 24, bottom: 24, left: 320, right: 410 };
+const PANEL_PAD = { top: 24, bottom: 24, left: 410, right: 410 };
 const NARROW_PAD = { top: 56, bottom: 24, left: 24, right: 24 };
 const weekly = (v3: LiveV3) => (v3.weekly ? kpiTiles(v3.weekly, weekDailyValues(v3)) : []);
 
@@ -101,11 +101,12 @@ const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.m
 /** The late-by-hour values of a route's whole day. */
 const routeHours = (v3: LiveV3) => v3.bands.all.adherence.timepoints.all.byHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));
 
-/** The network's summary, always on the left: the week's tiles at half width, late departures by hour at full width. */
+/** The network's summary, always on the left: the week's figures as one-line rows, then late departures by hour. */
 function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const hours = networkHours(s);
+  const tiles = agencyKpiTiles(s);
   return [
-    ...tileWidgets(agencyKpiTiles(s)),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <KpiRows tiles={tiles} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourWidget hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} /> }] : []),
   ];
 }
@@ -205,7 +206,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
       {direction}
       <div className="absolute inset-0">{mapEl}</div>
       <div className="pointer-events-none absolute inset-3 flex gap-3">
-        <div className="pointer-events-auto flex w-72 shrink-0 flex-col gap-3">
+        <div className="pointer-events-auto flex w-[24.5rem] shrink-0 flex-col gap-3">
           <WidgetPanel widgets={summary} />
           <OverviewList s={s} measure={measure} route={route} network={network} onPick={r => { setRoute(r); setPick(null); }} />
         </div>

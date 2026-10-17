@@ -999,7 +999,7 @@ const runningTimeV3 = {
   byHour: Object.fromEntries(directionsSeen.map(d => [String(d), [...new Set(windowRunTimes.filter(r => r.directionId === d).map(r => r.startHour % 24))].sort((a, b) => a - b)
     .map(h => ({ hour: h, ...rtFor(windowRunTimes.filter(r => r.directionId === d && r.startHour % 24 === h))! }))])),
 };
-// Extra wait: at each stop, how much longer riders wait than the timetable promises (average wait from actual gaps minus from scheduled gaps), where service is every 15 min or better.
+// Extra wait: at each stop, how much longer riders wait than scheduled (average wait from actual gaps minus from scheduled gaps), where service is every 15 min or better.
 const EXTRA_WAIT_MAX_SCHEDULED_SEC = 900;
 const extraWaitV3 = Object.fromEntries(BANDS.map(band => [band, [...headwayByStop].flatMap(([key, m]) => {
   const [stopId, dir] = key.split('|');

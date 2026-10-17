@@ -88,7 +88,7 @@ describe('running time, extra wait, service delivered', () => {
   it('names the stop where riders wait longest, in half minutes, or says waits match the timetable', () => {
     const stops = [{ name: 'Spadina & Queens Quay', extraWaitMin: 2.1, gaps: 500 }, { name: 'Other', extraWaitMin: 0.4, gaps: 500 }, { name: 'Thin', extraWaitMin: 9, gaps: 5 }];
     expect(extraWaitSentence(stops, 'Northbound')).toBe('Northbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.');
-    expect(extraWaitSentence([{ name: 'A', extraWaitMin: 0.2, gaps: 100 }], 'Northbound')).toMatch(/about as long as the timetable promises/);
+    expect(extraWaitSentence([{ name: 'A', extraWaitMin: 0.2, gaps: 100 }], 'Northbound')).toMatch(/about as long as scheduled/);
     expect(extraWaitSentence([], 'Northbound')).toBeNull();
   });
   it('says how many scheduled trips ran, among those we can judge', () => {

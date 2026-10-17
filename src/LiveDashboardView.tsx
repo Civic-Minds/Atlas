@@ -92,6 +92,24 @@ export function KpiTile({ k, className = '' }: { k: Kpi; className?: string }) {
   );
 }
 
+/** The week's figures as one-line rows for a narrow column: the name, the figure, the change from last week. What each figure counts is in the hover text. */
+export function KpiRows({ tiles }: { tiles: Kpi[] }) {
+  return (
+    <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-2`}>
+      <ul className="m-0 grid grid-cols-[max-content_max-content_minmax(0,1fr)] gap-x-1.5 p-0">
+        {tiles.map(k => (
+          <li key={k.key} className={`col-span-3 grid list-none grid-cols-subgrid items-baseline border-b border-[var(--border-primary)] py-1.5 last:border-b-0 ${k.n < MIN_N ? 'opacity-60' : ''}`}
+            title={`${k.sub}. ${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}>
+            <span className="text-xs font-bold text-[var(--text-muted)]">{k.label}</span>
+            <span className="text-sm font-black tracking-tight">{k.value}</span>
+            <Delta k={k} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 /** The tiles row itself: the route dashboard and the agency dashboard show their figures the same way. */
 export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption?: string | null }) {
   return (

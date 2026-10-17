@@ -72,7 +72,7 @@ This is how the Live route page (the dashboard and the full analysis at `/apps/l
 
 ### Extra wait
 
-- How much longer riders wait than the timetable promises, worked out from the gaps between vehicles at each stop.
+- How much longer riders wait than scheduled, worked out from the gaps between vehicles at each stop.
 - The method: the average wait a rider arriving at random would have with the actual gaps, minus the same with the timetable's gaps, weighted by how long each stretch of service lasts.
 - Shown only where the timetable has a vehicle every 15 minutes or better, and at stops with at least 10 gaps.
 

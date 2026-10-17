@@ -413,7 +413,7 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
   );
 }
 
-/** Extra wait: how much longer riders wait than the timetable promises, at stops with service every 15 minutes or better. */
+/** Extra wait: how much longer riders wait than scheduled, at stops with service every 15 minutes or better. */
 function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
   const all = v3.extraWait?.[band];
   if (!all) return null;
@@ -423,7 +423,7 @@ function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: nu
   const worst = all.filter(s => (dir == null || s.directionId === dir) && s.gaps >= 30).sort((a, b) => b.extraWaitMin - a.extraWaitMin).slice(0, 10);
   return (
     <Section id="wait" title="Extra wait">
-      <p className="mt-2 text-sm text-[var(--text-muted)]">How much longer riders wait than the timetable promises, where a vehicle is due every 15 minutes or better.</p>
+      <p className="mt-2 text-sm text-[var(--text-muted)]">How much longer riders wait than scheduled, where a vehicle is due every 15 minutes or better.</p>
       {all.length === 0 ? <p className="mt-3 text-sm text-[var(--text-muted)]">No stop on this route has a vehicle every 15 minutes or better in this time of day.</p> : (
         <>
           <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
