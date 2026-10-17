@@ -75,7 +75,7 @@ export interface WeekMetrics {
   late: { share: number; n: number } | null;
   tripTime: { n: number; scheduledMin: number; typicalMin: number; overMin: number } | null;
   extraWait: { minutes: number; gaps: number } | null;
-  bunching: { share: number; gaps: number } | null;
+  bunching: { share: number; gaps: number; /** Too close (CIV-302); absent in older files. */ bunched?: number; /** Too far apart. */ gapped?: number } | null;
   delivered: { share: number; seen: number; notSeen: number; unknown: number } | null;
 }
 export interface DeliveredFigures { seen: number; notSeen: number; unknown: number; share: number | null }

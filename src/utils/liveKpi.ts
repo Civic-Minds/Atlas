@@ -26,6 +26,9 @@ export interface Kpi {
 const round1 = (x: number) => Math.round(x * 10) / 10;
 const clean = (x: number) => String(round1(x)).replace('-', '−');
 const pct0 = (x: number) => `${Math.round(x * 100)}%`;
+/** The Bunching tile shows its two parts when the file has them (CIV-302): "7% · 21%" over "too close · too far apart". */
+const bunchSplit = (b: { bunched?: number; gapped?: number }) => b.bunched != null && b.gapped != null;
+const BUNCHING_SPLIT_CAPTION = 'too close · too far apart';
 const pct1 = (x: number) => `${clean(Math.round(x * 1000) / 10)}%`;
 
 /**
@@ -72,9 +75,9 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
       compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false, null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null) : null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null),
     mk('extraWait', 'Extra wait', t.extraWait ? `${clean(t.extraWait.minutes)} min` : '–', 'longer wait than the timetable promises', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
       compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false, null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),
-    mk('bunching', 'Bunching', t.bunching ? pct0(t.bunching.share) : '–', 'of gaps between cars bunched or too long', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
+    mk('bunching', 'Bunching', t.bunching ? (bunchSplit(t.bunching) ? `${pct0(t.bunching.bunched!)} · ${pct0(t.bunching.gapped!)}` : pct0(t.bunching.share)) : '–', t.bunching && bunchSplit(t.bunching) ? BUNCHING_SPLIT_CAPTION : 'of gaps between cars bunched or too long', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
       compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true, null, l.bunching ? pct0(l.bunching.share) : null) : null, l.bunching ? pct0(l.bunching.share) : null),
-    mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', t.delivered ? `of scheduled trips ran (${t.delivered.seen.toLocaleString()} of ${(t.delivered.seen + t.delivered.notSeen).toLocaleString()})` : 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
+    mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', t.delivered ? 'of scheduled trips ran' : 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
       compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, dailyNoise(daily.delivered, nThis, nLast), l.delivered?.share != null ? pct1(l.delivered.share) : null) : null, l.delivered?.share != null ? pct1(l.delivered.share) : null),
   ];
   return tiles.filter(k => k.value !== '–');

@@ -36,6 +36,9 @@ export interface AgencyRouteRow {
   /** Running time over the timetable, as a share of the scheduled time (0.06 = 6% longer). */
   runTimeOver: number | null;
   bunchingShare: number | null;
+  /** Its two parts, too close and too far apart (CIV-302), when the analysis has them. */
+  bunchedShare?: number | null;
+  gappedShare?: number | null;
   deliveredShare: number | null;
   /** Late share by hour of day, all days, at timepoints. */
   lateByHour: Array<{ hour: number; value: number; n: number }>;
@@ -91,7 +94,10 @@ export function combineWeeks(weeks: readonly WeekMetrics[]): WeekMetrics {
       overMin: sum(trip.map(x => x.overMin * x.n)) / tripN,
     } : null,
     extraWait: gapsW > 0 ? { minutes: sum(wait.map(x => x.minutes * x.gaps)) / gapsW, gaps: gapsW } : null,
-    bunching: gapsB > 0 ? { share: sum(bunch.map(x => x.share * x.gaps)) / gapsB, gaps: gapsB } : null,
+    bunching: gapsB > 0 ? {
+      share: sum(bunch.map(x => x.share * x.gaps)) / gapsB, gaps: gapsB,
+      ...(bunch.every(x => x.bunched != null && x.gapped != null) ? { bunched: sum(bunch.map(x => x.bunched! * x.gaps)) / gapsB, gapped: sum(bunch.map(x => x.gapped! * x.gaps)) / gapsB } : {}),
+    } : null,
     delivered: seen + notSeen > 0 ? { share: seen / (seen + notSeen), seen, notSeen, unknown } : null,
   };
 }
@@ -148,6 +154,7 @@ export function agencySummary(input: {
       lateLastWeek: v3.weekly?.comparable ? l?.late?.share ?? null : null,
       runTimeOver: runTimeOver(t?.tripTime ?? null),
       bunchingShare: t?.bunching?.share ?? null,
+      ...(t?.bunching?.bunched != null && t.bunching.gapped != null ? { bunchedShare: t.bunching.bunched, gappedShare: t.bunching.gapped } : {}),
       deliveredShare: t?.delivered?.share ?? null,
       lateByHour: block.byHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n })),
     };

@@ -1003,13 +1003,13 @@ const weeks = weekSplit(allValidDates, healthV3);
 function weekMetrics(days: readonly string[]) {
   const ds = new Set(days);
   const tp = adherenceReport(runDelays.filter(r => ds.has(r.date)), { tripStartsOnly: true }).overall;
-  let ewtSum = 0, ewtW = 0, bad = 0, gaps = 0;
+  let ewtSum = 0, ewtW = 0, bad = 0, gaps = 0, close = 0, far = 0;
   for (const [key, m] of headwayByStop) {
     const wins = (m.get('all') ?? []).filter(w => ds.has(w.date));
     const stat = headwayBandStat(wins);
     if (stat && stat.excessWaitSec != null && stat.scheduledMedianGapSec <= EXTRA_WAIT_MAX_SCHEDULED_SEC && stat.gaps >= 10) { ewtSum += stat.excessWaitSec * stat.gaps; ewtW += stat.gaps; }
     const sb = stopBunching(key.split('|')[0], wins);
-    bad += sb.badShare * sb.n; gaps += sb.n;
+    bad += sb.badShare * sb.n; gaps += sb.n; close += sb.bunchedShare * sb.n; far += sb.gappedShare * sb.n;
   }
   const rt = runTimeStat(mainRunTimes.filter(r => ds.has(r.date)));
   const dv = delivered(tripOutcomes.filter(o => ds.has(o.date)));
@@ -1018,7 +1018,8 @@ function weekMetrics(days: readonly string[]) {
     late: tp.n ? { share: r3(tp.lateShare), n: tp.n } : null,
     tripTime: rt && { n: rt.n, scheduledMin: rt.scheduledMin, typicalMin: rt.typicalMin, overMin: rt.overMin },
     extraWait: ewtW ? { minutes: r1(ewtSum / ewtW / 60), gaps: ewtW } : null,
-    bunching: gaps ? { share: r3(bad / gaps), gaps } : null,
+    // The two parts of the bunching share: gaps too close (under 2 min) and too far apart (over twice the timetable's).
+    bunching: gaps ? { share: r3(bad / gaps), gaps, bunched: r3(close / gaps), gapped: r3(far / gaps) } : null,
     delivered: dv.share == null ? null : { share: r3(dv.share), seen: dv.seen, notSeen: dv.notSeen, unknown: dv.unknown },
   };
 }

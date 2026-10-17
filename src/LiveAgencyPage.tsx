@@ -112,7 +112,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
               { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
               { key: 'lastWeek', header: 'Last week', className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: 'Run time', cell: r => pctSigned(r.runTimeOver) },
-              { key: 'bunching', sortable: true, header: 'Bunching', cell: r => pct(r.bunchingShare) },
+              { key: 'bunching', sortable: true, header: 'Bunching', cell: r => (r.bunchedShare != null && r.gappedShare != null ? `${pct(r.bunchedShare)} · ${pct(r.gappedShare)}` : pct(r.bunchingShare)) },
               { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
             ]}
           />
