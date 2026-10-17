@@ -99,6 +99,15 @@ describe('findVariantFamily', () => {
     expect(findVariantFamily([feature('8A', '8A', 30), feature('8B', '8B', 30)], '8A', 'midday', 'other')?.members.length).toBe(2);
   });
 
+  // CIV-115: Thunder Bay 3M only touches 3C/3J at a terminal; 3C and 3J stay one family.
+  it('leaves Thunder Bay 3M out of the 3C/3J family (CIV-115)', () => {
+    const features = [feature('3C', '3C', 30), feature('3J', '3J', 30), feature('3M', '3M', 30)];
+    expect(findVariantFamily(features, '3C', 'midday', 'thunder-bay')?.members.map(m => m.shortName)).toEqual(['3C', '3J']);
+    expect(findVariantFamily(features, '3J', 'midday', 'thunder-bay')?.members.map(m => m.shortName)).toEqual(['3C', '3J']);
+    expect(findVariantFamily(features, '3M', 'midday', 'thunder-bay')).toBeNull();
+    expect(findVariantFamily(features, '3C', 'midday', 'other')?.members.map(m => m.shortName)).toEqual(['3C', '3J', '3M']);
+  });
+
   // #448: the exclusion list stays the authority even when geometry alone would say "real
   // trunk" -- Windsor's live data has 14+ shared stops in the correct order (a genuine shared
   // downtown corridor), yet 1A and 1C are still confirmed-separate routes. If the geometry

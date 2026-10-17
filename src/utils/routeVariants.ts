@@ -32,6 +32,15 @@ const EXCLUDED_VARIANT_FAMILIES = new Set<string>([
   'laredo::7', // El Metro 7A "LC / El Cuatro" and 7B "LC / La Drillera" share only a 1 km downtown approach to the transit center, then run to Wilhelm/Zaragoza vs Gonzalez/Pinder (CIV-115)
 ]);
 
+/**
+ * Single members to leave out of an otherwise real family, keyed by `${agencySlug}::${shortName}`.
+ * For a route that only touches the family's branches at a terminal, where EXCLUDED_VARIANT_FAMILIES
+ * would split the real branches too (CIV-115). The member itself then forms no family.
+ */
+const EXCLUDED_VARIANT_MEMBERS = new Set<string>([
+  'thunder-bay::3M', // 3M (Memorial) shares only 3 terminal stops (about 0.6 km) with 3C/3J, the shared-trunk minimum; its buses interline with them, while 3C/3J share 31 stops along Red River Rd (CIV-115)
+]);
+
 export interface VariantFamily {
   base: string;
   members: { shortName: string; routeId: string; headway: number | null; routeVariant?: string }[];
@@ -54,6 +63,8 @@ export function findVariantFamily(
   if (!m) return null;
   const base = m[1];
   if (agencySlug && EXCLUDED_VARIANT_FAMILIES.has(`${agencySlug}::${base}`)) return null;
+  const excludedMember = (sn: string) => !!agencySlug && EXCLUDED_VARIANT_MEMBERS.has(`${agencySlug}::${sn}`);
+  if (excludedMember(shortName)) return null;
 
   // Some feeds keep one route number for the whole family and put the branch code on trips.
   const explicitByVariant = new Map<string, { routeId: string; best: number | null }>();
@@ -80,6 +91,7 @@ export function findVariantFamily(
     const sn = p.routeShortName;
     if (!sn || !p.routeId) continue;
     if (sn !== base && !(BASE_RE.test(sn) && sn.match(BASE_RE)![1] === base)) continue;
+    if (excludedMember(sn)) continue;
     const hw = routeFilterHeadway(p, period);
     const cur = byShort.get(sn);
     if (!cur) byShort.set(sn, { routeId: String(p.routeId), best: hw, shapes: [p] });
