@@ -58,8 +58,8 @@ const SPAN_VARIES_HOURS = 3;
 
 /**
  * The agencies counted on an area page (they have a page: weekday midday service), each with only the
- * routes counted there. CIV-274: a route counts in every area where at least AREA_ROUTE_MIN_STOPS of
- * its stops fall inside the official boundary (`areas`, from build-agency-page-summaries), whichever
+ * routes counted there. CIV-274: a route counts in every area where it stops at two places (more than
+ * AREA_SAME_PLACE_METERS apart) inside the official boundary (`areas`, from build-agency-page-summaries), whichever
  * agency runs it; an agency is listed when one of its routes counts. Summaries without area tags
  * (older files) fall back to the area's own agency list.
  */

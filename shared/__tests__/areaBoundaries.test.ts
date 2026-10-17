@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AREA_ROUTE_MIN_STOPS, AREA_SAME_PLACE_METERS, areasForStops, inAreaBoundary, type AreaBoundaries } from '../areaBoundaries';
+import { AREA_SAME_PLACE_METERS, areasForStops, inAreaBoundary, type AreaBoundaries } from '../areaBoundaries';
 import { areaAgencySummaries } from '../areaPages';
 import type { AgencyPageSummary } from '../agencyPages';
 
@@ -16,7 +16,7 @@ describe('area boundaries (CIV-274)', () => {
     expect(inAreaBoundary(5, 5, boundaries.metro)).toBe(false);
     expect(inAreaBoundary(15, 5, boundaries.metro)).toBe(false);
   });
-  it(`counts a route in an area with ${AREA_ROUTE_MIN_STOPS}+ stops inside, not with a single terminal stop`, () => {
+  it(`counts a route in an area with 2+ stops inside, not with a single terminal stop`, () => {
     // Fraser Valley 66 to Lougheed: two stops in the metro, the rest outside.
     expect(areasForStops([[1, 1], [2, 2], [15, 5], [25, 5], [26, 5]], boundaries)).toEqual(['east', 'metro']);
     // A ferry or coach terminal: one stop clips the edge.
@@ -29,6 +29,11 @@ describe('area boundaries (CIV-274)', () => {
     expect(areasForStops([...tsawwassen, [-123.5, 48.85]], coast)).toEqual([]);
     // Bowen Island: Horseshoe Bay and Snug Cove are two places 4.5 km apart.
     expect(areasForStops([[-123.27251, 49.37401], [-123.27161, 49.37599], [-123.3321, 49.37964]], coast)).toEqual(['vancouver']);
+    // A chain of stops 200 m apart covers more than one place, whatever order they are listed in.
+    const chain: Array<[number, number]> = [0, 1, 2].map(i => [-123.1 + i * 0.00275, 49.26]);
+    expect(areasForStops(chain, coast)).toEqual(['vancouver']);
+    expect(areasForStops([chain[1], chain[0], chain[2]], coast)).toEqual(['vancouver']);
+    expect(areasForStops([chain[0], chain[1]], coast)).toEqual([]);
     // Bus stops about 300 m apart along a street are separate places.
     expect(areasForStops([[-123.1, 49.26], [-123.096, 49.26]], coast)).toEqual(['vancouver']);
   });
