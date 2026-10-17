@@ -2,7 +2,7 @@ import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, typ
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
-  LEGEND_TITLE, MIN_N, delayText, legendSteps, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
+  LEGEND_TITLE, MIN_N, delayText, delayInterpolated, lessExactOn, legendSteps, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
 } from './routeStripModel';
 
@@ -84,7 +84,7 @@ export function StripLegend({ modes, anyUncertain, anyFaded, anyMissing, minN }:
           ))}
         </span>
       ))}
-      {anyUncertain && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} uncertain />Less exact</span>}
+      {anyUncertain && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={0} uncertain />Less exact</span>}
       {anyFaded && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} faded />Fewer than {minN} departures or gaps</span>}
       {anyMissing && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={null} />Not measured</span>}
     </div>
@@ -92,6 +92,7 @@ export function StripLegend({ modes, anyUncertain, anyFaded, anyMissing, minN }:
 }
 
 function valueText(stop: RouteStripStop, mode: RouteStripMode): string {
+  if (mode === 'delay' && delayInterpolated(stop)) return 'less exact';
   const v = stopValue(stop, mode);
   if (v == null) return 'not measured';
   return mode === 'delay' ? delayText(v) : `${pct(v)} of gaps off`;
@@ -103,6 +104,8 @@ interface Track {
   steps: (Step | null)[];
   stretch: StretchSpan | null;
   faded: (s: RouteStripStop) => boolean;
+  /** Drawn hatched (less exact) on this track. */
+  hatched: (s: RouteStripStop) => boolean;
 }
 
 /**
@@ -123,6 +126,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
     mode,
     steps: stops.map(s => stopStep(s, mode)),
     stretch: mode === 'delay' ? stretchSpan(stops, delaysStart, 'delaysStart') : stretchSpan(stops, bunchingForms, 'bunchingForms'),
+    hatched: (s: RouteStripStop) => lessExactOn(s, mode),
     faded: (s: RouteStripStop) => stopN(s, mode) > 0 && stopN(s, mode) < minN,
   })), [modes, stops, delaysStart, bunchingForms, minN]);
   const summary = useMemo(() => tracks.map((t, k) => {
@@ -132,7 +136,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
   const phone = useMediaQuery('(max-width: 479px)');
   const vertical = phone || (width > 0 && width < verticalBelow);
   const count = stops.length;
-  const anyUncertain = stops.some(s => s.uncertain);
+  const anyUncertain = stops.some(s => modes.some(m => lessExactOn(s, m)));
   const anyFaded = tracks.some(t => stops.some(t.faded));
   const anyMissing = tracks.some(t => t.steps.some(s => s == null));
 
@@ -198,7 +202,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
             { key: 'late', header: 'Late', cell: r => (r.s.lateShare != null && r.s.n > 0 ? pct(r.s.lateShare) : '') },
             { key: 'bunch', header: 'Gaps off', cell: r => (r.s.bunchingShare != null && (r.s.bunchingN ?? r.s.n) > 0 ? pct(r.s.bunchingShare) : 'not measured') },
             { key: 'n', header: 'Departures', cell: r => r.s.n.toLocaleString() },
-            { key: 'note', header: 'Note', cell: r => [r.s.uncertain ? 'less exact' : '', r.s.n < minN ? 'few departures' : ''].filter(Boolean).join(', ') },
+            { key: 'note', header: 'Note', cell: r => [modes.some(m => lessExactOn(r.s, m)) ? 'less exact' : '', r.s.n < minN ? 'few departures' : ''].filter(Boolean).join(', ') },
           ]}
         />
     </div>
@@ -255,7 +259,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
                     key={`${s.stopId}-${i}`}
                     className="absolute rounded-full transition-transform"
                     style={{
-                      ...swatchStyle(t.mode, t.steps[i], !!s.uncertain),
+                      ...swatchStyle(t.mode, t.steps[i], t.hatched(s)),
                       width: dot, height: dot, left: xs[i] - dot / 2, top: lineY(k) - dot / 2,
                       opacity: t.faded(s) ? 0.35 : 1,
                       transform: active === i ? 'scale(1.45)' : undefined,
@@ -322,7 +326,7 @@ function TrackDots({ tracks, s, i, last, size, active, centred }: { tracks: read
             {inStretch && (i === t.stretch!.from || i === t.stretch!.to) && <span className="pointer-events-none absolute h-0.5 w-1.5 bg-[var(--text-secondary)]" style={{ left: k === 0 ? bx : bx - 5, top: centred }} />}
             <span
               className="absolute rounded-full"
-              style={{ ...swatchStyle(t.mode, t.steps[i], !!s.uncertain), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(${centred} - ${size / 2}px)`, opacity: t.faded(s) ? 0.35 : 1, outline: active ? '2px solid var(--text-primary)' : undefined, outlineOffset: 2 }}
+              style={{ ...swatchStyle(t.mode, t.steps[i], t.hatched(s)), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(${centred} - ${size / 2}px)`, opacity: t.faded(s) ? 0.35 : 1, outline: active ? '2px solid var(--text-primary)' : undefined, outlineOffset: 2 }}
             />
           </Fragment>
         );

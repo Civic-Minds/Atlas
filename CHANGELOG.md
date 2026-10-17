@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Live route strips colour delay only at timepoints (local only)**: every in-between stop (its timetable time is interpolated) is drawn hatched grey under the existing "Less exact" key, and its popover says "Less exact" with no typical delay or late share, so it no longer reads "Usually on time" beside a late share.
 - **The Live terms are in the Docs glossary (local only)**: Late, Run time, Extra wait, Bunching and the rest read the same there as under "How this is measured" on the agency page, which now links to them ("What these terms mean"); a link into a Docs section now lands on it (CIV-304).
 - **Live reports show the rolling 7 days only (local only)**: the This week / Yesterday menu is gone from the agency report and route pages; the week-against-last-week comparisons stay (CIV-301 cancelled).
 - **Extra wait reads "than scheduled" everywhere on Live (local only)**: the tile caption, the route page's Extra wait intro and the route sentence all say "longer wait than scheduled" in place of "than the timetable promises".

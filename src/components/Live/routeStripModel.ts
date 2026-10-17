@@ -89,9 +89,15 @@ export function stepFor(mode: RouteStripMode, value: number | null): Step | null
  * its times are approximate, so leaving before them is not early running and reads as on time (live-timepoint-method).
  */
 export function stopStep(stop: RouteStripStop, mode: RouteStripMode): Step | null {
+  if (mode === 'delay' && delayInterpolated(stop)) return 0;
   const step = stepFor(mode, stopValue(stop, mode));
   return step === 'early' && stop.timepoint === false ? 0 : step;
 }
+
+/** Delay is coloured only at timepoints: elsewhere the timetable's time is interpolated, so the stop is drawn hatched grey. */
+export const delayInterpolated = (stop: RouteStripStop): boolean => stop.timepoint === false;
+/** Drawn hatched ("Less exact") on this track. */
+export const lessExactOn = (stop: RouteStripStop, mode: RouteStripMode): boolean => !!stop.uncertain || (mode === 'delay' && delayInterpolated(stop));
 
 const MINUS = '−';
 const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', MINUS);
@@ -213,13 +219,15 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
   if (stops.length === 0) return `${directionLabel}: no stops measured.`;
   const counts = new Map<Step, number>();
   let missing = 0;
+  let interpolated = 0;
   for (const s of stops) {
+    if (mode === 'delay' && delayInterpolated(s)) { interpolated++; continue; }
     const step = stopStep(s, mode);
     if (step == null) missing++; else counts.set(step, (counts.get(step) ?? 0) + 1);
   }
   const what = mode === 'delay' ? 'Typical delay' : 'Share of gaps too short or too long';
   const steps = legendSteps(mode).filter(st => st !== 'early' || counts.has('early')).map(st => `${counts.get(st) ?? 0} ${stepLabel(mode, st).toLowerCase()}`).join(', ');
-  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${stops.length} stops: ${steps}${missing ? `, ${missing} not measured` : ''}.`];
+  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${stops.length} stops: ${steps}${interpolated ? `, ${interpolated} less exact` : ''}${missing ? `, ${missing} not measured` : ''}.`];
   if (stretch) parts.push(`${stretch.label} between ${stops[stretch.from].name} and ${stops[stretch.to].name}.`);
   parts.push('Use the left and right arrow keys to hear each stop.');
   return parts.join(' ');
@@ -228,14 +236,16 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
 /** The text for one stop on hover, focus or tap. */
 export function stopDetail(stop: RouteStripStop): { name: string; lines: string[] } {
   const lines: string[] = [];
-  if (stop.n > 0 && stop.delayMin != null) {
-    const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(num(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
+  if (delayInterpolated(stop)) { /* No typical delay or late share where the timetable's time is interpolated: the stop is marked Less exact below. */ }
+  else if (stop.n > 0 && stop.delayMin != null) {
+    const usual = Math.abs(stop.delayMin) < 0.05 ? USUALLY_ON_TIME : usuallyOffBy(num(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
     lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(pct(stop.lateShare))}` : usual);
   } else lines.push('Delay not measured');
   const bn = stop.bunchingN ?? stop.n;
   if (stop.bunchedShare != null && stop.gappedShare != null && bn > 0) lines.push(bunchedAndLong(pct(stop.bunchedShare), pct(stop.gappedShare)));
   else if (stop.bunchingShare != null && bn > 0) lines.push(`${pct(stop.bunchingShare)} of gaps too short or too long`);
   if (stop.uncertain) lines.push('Less exact here: vehicles report their location less often');
+  else if (delayInterpolated(stop)) lines.push('Less exact');
   return { name: stop.name, lines };
 }
 

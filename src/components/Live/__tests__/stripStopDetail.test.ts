@@ -29,14 +29,15 @@ describe('early step (CIV-283)', () => {
 });
 
 describe('early only at timed stops', () => {
-  it('shows 1+ min early as early at a timepoint, and as on time where the timetable time is approximate', async () => {
+  it('shows delay at a timepoint, and a hatched Less exact stop with no delay or late share where the timetable time is interpolated', async () => {
     const { stopStep, stopDetail } = await import('../routeStripModel');
     const s = { stopId: 'x', name: 'X', delayMin: -1.8, lateShare: 0.05, bunchingShare: null, n: 500 };
     expect(stopStep({ ...s, timepoint: true }, 'delay')).toBe('early');
     expect(stopStep({ ...s, timepoint: false }, 'delay')).toBe(0);
     expect(stopStep({ ...s }, 'delay')).toBe('early'); // older files without the flag keep the early step
-    expect(stopStep({ ...s, delayMin: 4, timepoint: false }, 'delay')).toBe(2);
-    expect(stopDetail({ ...s, timepoint: false }).lines[0]).toBe('Usually on time · 5% late');
+    expect(stopStep({ ...s, delayMin: 4, timepoint: false }, 'delay')).toBe(0); // hatched, not coloured
+    expect(stopDetail({ ...s, timepoint: false }).lines).toEqual(['Less exact']);
+    expect(stopDetail({ ...s, timepoint: false }).lines.join(' ')).not.toMatch(/Usually|late/);
     expect(stopDetail({ ...s, timepoint: true }).lines[0]).toBe('Usually 1.8 min early · 5% late');
   });
 });
