@@ -1,0 +1,2 @@
+route_id,route_short_name,route_long_name,route_desc,route_type,route_color,route_text_color,route_url
+40-13201,40,Metro Local Line,DOWNTOWN LA-SBAY GALLERIA VIA KING BL-HAWTHORNE BL,3,,,

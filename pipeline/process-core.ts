@@ -2360,13 +2360,24 @@ export async function processGtfsBuffer(
       for (const times of stopMetricMap.values()) { deps += times.length; daytime += times.filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end).length; }
       return daytime * 2 >= deps;
     };
-    // CIV-234: a drop-off-only stop (#879) is left out too, as from the stop grades: its list is
-    // arrivals, which never set the headline, period or hour floor (the last stop already was).
+    // CIV-234: a drop-off-only stop (#879) further along the line is left out, as from the stop
+    // grades: its list is arrivals, which never set the headline, period or hour floor (the last
+    // stop already was). A drop-off-only FIRST stop stays: it is a layover whose times are the
+    // trips' starts (LA Metro 40's first ~25 stops board every 30 in the evening, TransLink 7's
+    // Dunbar end every 15 in the PM peak). Its reading is capped by the first stop riders can
+    // board (firstStopFloorCap), which serves those same trips and may pool more: LA Metro 210's
+    // layover reads one pattern's 20 at midday where the next stops board every 10.
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
       const poolCount = new Set(pool).size;
-      return drawnPatternStops().slice(0, -1).map(p => p.stopId)
-        .filter(stopId => !dropOffOnlyStops.has(stopId) && new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+      const drawn = drawnPatternStops().slice(0, -1).map(p => p.stopId);
+      return drawn.filter((stopId, i) => (i === 0 || !dropOffOnlyStops.has(stopId)) && new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+    };
+    /** CIV-234: for a drop-off-only first stop, the first drawn stop riders can board, whose lower reading caps it. */
+    const firstStopFloorCap = (stopId: string): string | undefined => {
+      const drawn = drawnPatternStops().slice(0, -1).map(p => p.stopId);
+      if (stopId !== drawn[0] || !dropOffOnlyStops.has(stopId)) return undefined;
+      return drawn.find(id => !dropOffOnlyStops.has(id));
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
@@ -2709,7 +2720,11 @@ export async function processGtfsBuffer(
       const worstDrawnStopHw = (): number | undefined => {
         const vals = servedByFewerTrips(headlinePool)
           .filter(stopId => !ownFallbackHw.has(stopId) && stopHasReading(stopId))
-          .map(stopId => allStopHw[stopId])
+          .map(stopId => {
+            const cap = firstStopFloorCap(stopId);
+            const capH = cap != null ? allStopHw[cap] : undefined;
+            return capH != null && allStopHw[stopId] != null ? Math.min(allStopHw[stopId], capH) : allStopHw[stopId];
+          })
           .filter((v): v is number => v != null);
         return vals.length ? Math.max(...vals) : undefined;
       };
@@ -2936,7 +2951,7 @@ export async function processGtfsBuffer(
           const thin = thinPoolFallbackPeriodHw.get(stopId)?.get(pk);
           if (ownFallbackPeriodHw.get(stopId)?.has(pk) && !thin) continue;
           const stopH = allStopPeriodHw[stopId]?.[pk] ?? (pk === 'overnight' ? sparseOvernightStopHw[stopId] : undefined);
-          const candidate: PeriodValue | null = thin ?? (stopH == null ? null : {
+          let candidate: PeriodValue | null = thin ?? (stopH == null ? null : {
             ...(allStopPeriodHw[stopId]?.[pk] == null ? { sparse: true } : {}),
             headway: stopH,
             coverage: allStopPeriodCoverageHw[stopId]?.[pk] ?? null,
@@ -2944,6 +2959,13 @@ export async function processGtfsBuffer(
             sustained: allStopPeriodSustained[stopId]?.[pk],
           });
           if (candidate?.headway == null) continue;
+          // CIV-234: a drop-off-only first stop reads no worse than the first boarding stop, whose
+          // companions then follow the value.
+          const cap = firstStopFloorCap(stopId);
+          const capH = cap != null ? allStopPeriodHw[cap]?.[pk] : undefined;
+          if (cap != null && capH != null && capH < candidate.headway) {
+            candidate = { headway: capH, coverage: allStopPeriodCoverageHw[cap]?.[pk] ?? null, maxGap: allStopPeriodMaxGaps[cap]?.[pk] ?? null, sustained: allStopPeriodSustained[cap]?.[pk] };
+          }
           if (worstDrawnStop == null || candidate.headway > (worstDrawnStop.headway ?? -Infinity)) worstDrawnStop = candidate;
         }
       }
@@ -3030,6 +3052,10 @@ export async function processGtfsBuffer(
           // #897: a withheld sparse overnight value still stands in, so the hour chart keeps its floor.
           if (own.some(t => t >= h * 60 && t < h * 60 + 60)) { v = allStopPeriodHw[stopId]?.[pk] ?? (pk === 'overnight' ? sparseOvernightStopHw[stopId] ?? null : null); standIn = v != null; }
         }
+        // CIV-234: capped by the first boarding stop's hour, as the period value is.
+        const cap = firstStopFloorCap(stopId);
+        const capV = cap != null ? allStopHourHw[cap]?.[h] ?? null : null;
+        if (v != null && capV != null && capV < v) { v = capV; standIn = false; }
         if (v != null && (floor == null || v > floor.headway)) floor = { headway: v, stopId, standIn };
       }
       return floor;
