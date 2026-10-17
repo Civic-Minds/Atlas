@@ -28,18 +28,18 @@ export default function OverviewList({ s, measure, route, network, onPick }: { s
   // Every route is listed: the route list is the only route picker. Nothing scrolls, so a list taller than its room is clipped at the bottom.
   const shown = rows;
   return (
-    <section aria-label="Routes" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-4 shadow-lg backdrop-blur">
+    <section aria-label="Routes" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 shadow-lg backdrop-blur">
       <div className="flex shrink-0 items-baseline justify-between text-xs font-bold text-[var(--text-muted)]">
         <span>Routes</span>
         <span>{MEASURES.find(([k]) => k === measure)![1]}</span>
       </div>
-      <ul className="m-0 mt-2 min-h-0 flex-1 overflow-hidden p-0">
+      <ul className="m-0 mt-1 min-h-0 flex-1 overflow-hidden p-0">
         {shown.map(({ r, f }) => {
           const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency.toUpperCase() });
           return (
             <li key={r.route} className="list-none">
               <button type="button" onClick={() => onPick(r.route)} aria-current={r.route === route ? 'true' : undefined}
-                className={`grid w-full grid-cols-[2.75rem_minmax(0,1fr)_auto] items-baseline gap-x-2 rounded-xl px-2 py-1.5 text-left text-sm ${r.route === route ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>
+                className={`grid w-full grid-cols-[2.75rem_minmax(0,1fr)_auto] items-baseline gap-x-2 rounded-xl px-2 py-0.5 text-left text-sm ${r.route === route ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>
                 <span className="font-bold">{l.primary}</span>
                 <span className="truncate text-[var(--text-secondary)]">{l.secondary}</span>
                 <span className="tabular-nums">{f?.text ?? '–'}</span>

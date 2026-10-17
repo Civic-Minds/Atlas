@@ -96,10 +96,10 @@ export function KpiTile({ k, className = '', math, bare = false }: { k: Kpi; cla
 /** The week's figures as rows for a narrow column: the name, the figure, the change from last week; under it, the line that explains the math where there is one. */
 export function KpiRows({ tiles, math, caption }: { tiles: Kpi[]; /** Per tile key, the line that explains how the figure is worked out. */ math?: Partial<Record<Kpi['key'], string>>; caption?: string | null }) {
   return (
-    <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-2`}>
+    <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-1.5`}>
       <ul className="m-0 p-0">
         {tiles.map(k => (
-          <li key={k.key} className={`list-none border-b border-[var(--border-primary)] py-1.5 last:border-b-0 ${k.n < MIN_N ? 'opacity-60' : ''}`}
+          <li key={k.key} className={`list-none border-b border-[var(--border-primary)] py-1 last:border-b-0 ${k.n < MIN_N ? 'opacity-60' : ''}`}
             title={`${k.sub}. ${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}>
             <div className="grid grid-cols-[max-content_max-content_minmax(0,1fr)] items-baseline gap-x-1.5">
               <span className="text-xs font-bold text-[var(--text-muted)]">{k.label}</span>

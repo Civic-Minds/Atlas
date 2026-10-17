@@ -213,7 +213,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
       {direction}
       <div className="absolute inset-0">{mapEl}</div>
       <div className="pointer-events-none absolute inset-3 flex gap-3">
-        <div className="pointer-events-auto flex w-[24.5rem] shrink-0 flex-col gap-3">
+        <div className="pointer-events-auto flex w-[24.5rem] shrink-0 flex-col gap-2">
           <WidgetPanel widgets={summary} />
           <OverviewList s={s} measure={measure} route={route} network={network} onPick={r => { setRoute(r); setPick(null); }} />
         </div>
