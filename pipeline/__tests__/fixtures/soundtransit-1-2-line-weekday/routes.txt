@@ -1,0 +1,3 @@
+agency_id,route_id,route_short_name,route_long_name,route_type,route_desc,route_url,route_color,route_text_color
+40,100479,1 Line,Lynnwood - Federal Way,0,1 Line runs between Lynnwood City Center Station and Federal Way Downtown Station seven days a week,https://www.soundtransit.org/1,28813F,FFFFFF
+40,2LINE,2 Line,Lynnwood - Downtown Redmond,0,2 Line runs between Lynnwood City Center Station and Downtown Redmond Station seven days a week,https://www.soundtransit.org/2,007CAD,FFFFFF

@@ -1,0 +1,6 @@
+service_id,date,exception_type
+LLR_2026-10-19_20260903_Link_Fall26PHActive_Weekday,20261126,2
+LLR_2026-10-19_20260903_Link_Fall26PHActive_Weekday,20261127,2
+LLR_2026-10-19_20260903_Link_Fall26PHActive_Weekday,20270101,2
+LLR_2026-10-19_20260903_Link_Fall26PHActive_Weekday,20270118,2
+LLR_2026-10-19_20260903_Link_Fall26PHActive_Weekday,20270215,2

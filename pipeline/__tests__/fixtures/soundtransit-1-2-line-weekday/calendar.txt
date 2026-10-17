@@ -1,0 +1,2 @@
+service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
+LLR_2026-10-19_20260903_Link_Fall26PHActive_Weekday,1,1,1,1,1,0,0,20261019,20270326

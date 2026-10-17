@@ -2070,7 +2070,18 @@ export async function processGtfsBuffer(
     // Channel: 3 own and 2 from a same-stop-list shape are every 33, not every 51). The stop's
     // published value and companions still follow the own list, as for any fallback.
     const thinPoolFallbackPeriodHw = new Map<string, Map<PeriodKey, PeriodValue>>();
-    for (const [stopId, times] of stopMetricMap) {
+    // CIV-226: a platform whose parent station this row's trips also reach is graded as the
+    // station. Departures are copied up to the parent (first visit per trip), so the station's
+    // list holds this row's trips from every platform, while each platform holds only those that
+    // use it: Sound Transit's 1 Line alternates Federal Way Downtown platforms S07-T1 and S07-T2,
+    // each every 20 against a train every 10, and the platforms set the line's tier (60).
+    const gradeSource = (stopId: string): string => {
+      const parent = childToParent.get(stopId);
+      return parent && parent !== stopId && stopMetricMap.has(parent) ? parent : stopId;
+    };
+    for (const [stopId, stopTimes] of stopMetricMap) {
+      const src = gradeSource(stopId);
+      const times = src === stopId ? stopTimes : stopMetricMap.get(src)!;
       times.sort((a, b) => a - b);
       // Prefer midday (9–15h) then PM peak (15–19h) rather than a raw all-day window.
       // An all-day median is skewed by peak clusters: Halifax 330 inbound has 9 AM trips
@@ -2090,8 +2101,8 @@ export async function processGtfsBuffer(
       // A pooled stop (#690) reads the merged list with the pooled rule (pooledHeadwayInWindow:
       // never better than the mean gap, even gaps only); where that publishes nothing the stop
       // keeps its own pattern's value, as before.
-      const isPooled = pooled?.pooledStops.has(stopId) === true;
-      const own = isPooled ? [...(metricStopMap.get(stopId) ?? [])].sort((a, b) => a - b) : times;
+      const isPooled = pooled?.pooledStops.has(src) === true;
+      const own = isPooled ? [...(metricStopMap.get(src) ?? [])].sort((a, b) => a - b) : times;
       let usedOwnFallback = false;
       const windowHw = (start: number, end: number, allDay = false): number | null => {
         usedOwnFallback = false;
@@ -2351,7 +2362,7 @@ export async function processGtfsBuffer(
     // reading stop and the stop grades' headway cap).
     const routeTierScale = (): readonly number[] => getTiersForCriteria(featureRoute?.route_type ?? '', DEFAULT_CRITERIA.dayTypes[day as DayType]?.tiers ?? SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides);
     const stopHasReading = (stopId: string): boolean => {
-      const sorted = [...new Set(stopMetricMap.get(stopId) ?? [])].sort((a, b) => a - b);
+      const sorted = [...new Set(stopMetricMap.get(gradeSource(stopId)) ?? [])].sort((a, b) => a - b);
       const daytime = sorted.filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end);
       return daytime.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES;
     };
@@ -2365,7 +2376,7 @@ export async function processGtfsBuffer(
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
       const poolCount = new Set(pool).size;
-      return drawnPatternStops().slice(0, -1).map(p => p.stopId).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+      return drawnPatternStops().slice(0, -1).map(p => p.stopId).filter(stopId => new Set(stopMetricMap.get(gradeSource(stopId)) ?? []).size < poolCount);
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
@@ -2451,7 +2462,8 @@ export async function processGtfsBuffer(
           // card, but it is not graded (#879: RFTA L's terminal read the drawn shape's hourly
           // arrivals while all 37 trips of the destination end there every 30).
           if (dropOffOnlyStops.has(stopId)) continue;
-          const times = stopMetricMap.get(stopId);
+          // CIV-226: a platform is graded on its station's list (gradeSource).
+          const times = stopMetricMap.get(gradeSource(stopId));
           if (!times || times.length === 0 || !stopHasReading(stopId)) continue;
           const headway = allStopHw[stopId];
           if (headway == null) continue;
@@ -2477,7 +2489,7 @@ export async function processGtfsBuffer(
           // better grade stands. Own every 15 from 07:00 to 19:00 plus a sibling every 15 from
           // 20:00 to 22:00 merged to a list with a 19:00-20:00 hole and graded 60; that hole is
           // the edge of the own service, not a gap in it.
-          const ownTimes = metricStopMap.get(stopId);
+          const ownTimes = metricStopMap.get(gradeSource(stopId));
           const ownGraded = ownTimes && ownTimes !== times ? scopedTerminalHeadline(ownTimes, day as DayType, featureRoute?.route_type ?? '', railFeature) : null;
           const best = [graded?.tier, ownGraded?.tier].filter((t): t is string => t != null)
             .sort((a, b) => (TIER_RANK[a] ?? 99) - (TIER_RANK[b] ?? 99))[0];
@@ -2645,7 +2657,8 @@ export async function processGtfsBuffer(
     // Headline period uses trip-dispatch midday when that's denser than times-at-terminus-in-window:
     // long trip runtimes drop late-midday departures from the terminal clock window (GO 94).
     if (feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
-      const terminalId = onShape[onShape.length - 1]?.stopId;
+      // CIV-226: a terminal platform reads as its station (gradeSource).
+      const terminalId = onShape.length > 0 ? gradeSource(onShape[onShape.length - 1].stopId) : undefined;
       // The headline reads the own pattern at the terminal (allStopHw may hold a pooled value
       // there, #690) or the qualifying destination pool.
       const ownTerminalTimes = (terminalId ? metricStopMap.get(terminalId) : undefined) ?? [];
@@ -2858,7 +2871,9 @@ export async function processGtfsBuffer(
     // when ANY part of it meets the active threshold (pairs with AI-97 shape clipping).
     // #865: the period values read the last pooled stop where the drawn terminal alone does not
     // pool and a sibling pattern ends at another terminal nearby (terminalReadsSibling).
-    const terminalStopId = terminalReadsSibling().reads ? terminalReadsSibling().lastPooled ?? onShape[onShape.length - 1]?.stopId : onShape[onShape.length - 1]?.stopId;
+    // CIV-226: a terminal platform reads as its station (gradeSource).
+    const drawnLastStop = onShape.length > 0 ? gradeSource(onShape[onShape.length - 1].stopId) : undefined;
+    const terminalStopId = terminalReadsSibling().reads ? terminalReadsSibling().lastPooled ?? drawnLastStop : drawnLastStop;
     const terminalPeriodHw = terminalStopId ? allStopPeriodHw[terminalStopId] : undefined;
     const featHeadsign = feature.properties.headsign as string | null;
     const hsStopMap = featHeadsign
@@ -3028,7 +3043,7 @@ export async function processGtfsBuffer(
         let standIn = false;
         if (v == null && pk != null) {
           // The period value stands in only where the stop really has a departure this hour.
-          const own = stopMetricMap.get(stopId) ?? [];
+          const own = stopMetricMap.get(gradeSource(stopId)) ?? [];
           // #897: a withheld sparse overnight value still stands in, so the hour chart keeps its floor.
           if (own.some(t => t >= h * 60 && t < h * 60 + 60)) { v = allStopPeriodHw[stopId]?.[pk] ?? (pk === 'overnight' ? sparseOvernightStopHw[stopId] ?? null : null); standIn = v != null; }
         }
