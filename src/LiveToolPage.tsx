@@ -101,14 +101,25 @@ const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.m
 /** The late-by-hour values of a route's whole day. */
 const routeHours = (v3: LiveV3) => v3.bands.all.adherence.timepoints.all.byHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));
 
-/** The widgets with nothing selected, in priority order: the network's tiles, late by hour, the stops where most cars leave late. */
-function networkWidgets(s: AgencySummary, band: DashboardBand, onStop: (route: string, dir: number, stopId: string) => void): PanelWidget[] {
+/** The network's summary, always on the left: the week's tiles at half width, late departures by hour at full width. */
+function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const hours = networkHours(s);
-  const rows = s.worstStops.slice(0, 3).map(x => ({ key: `${x.route}-${x.stopId}-${x.directionId}`, label: shortStopName(titleCase(x.name)), sub: x.routeLabel, value: pct(x.lateShare), onPick: () => onStop(x.route, x.directionId, x.stopId) }));
   return [
     ...tileWidgets(agencyKpiTiles(s)),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourWidget hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} /> }] : []),
-    ...(rows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops where the most cars leave late" rows={rows} /> }] : []),
+  ];
+}
+
+/** The widgets with nothing selected: the network's worst places, each a clickable list at full width. */
+function networkWidgets(s: AgencySummary, onOpen: (route: string, dir: number, pick: MapPick) => void): PanelWidget[] {
+  const label = (r: string) => s.routes.find(x => x.route === r)?.label ?? r;
+  const stopRows = s.worstStops.slice(0, 5).map(x => ({ key: `${x.route}-${x.stopId}-${x.directionId}`, label: shortStopName(titleCase(x.name)), sub: x.routeLabel, value: pct(x.lateShare), onPick: () => onOpen(x.route, x.directionId, { kind: 'stop', stopId: x.stopId }) }));
+  const stretchRows = (list: AgencySummary['delayStarts'], value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: `${shortStopName(titleCase(x.fromName))} to ${shortStopName(titleCase(x.toName))}`, sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
+  const delays = stretchRows(s.delayStarts, mins), bunching = stretchRows(s.bunchingForms, pct);
+  return [
+    ...(stopRows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops where the most cars leave late" rows={stopRows} /> }] : []),
+    ...(delays.length ? [{ key: 'delays', size: 'medium' as const, node: <ProblemsWidget title="Where delays start" rows={delays} /> }] : []),
+    ...(bunching.length ? [{ key: 'bunching', size: 'medium' as const, node: <ProblemsWidget title="Where bunching forms" rows={bunching} /> }] : []),
   ];
 }
 
@@ -160,8 +171,8 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
     ? pick?.kind === 'segment' ? <MapCard title={`${shortStopName(stops.get(pick.fromStopId)?.name ?? pick.fromStopId)} to ${shortStopName(stops.get(pick.toStopId)?.name ?? pick.toStopId)}`} lines={segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)} />
       : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked)} /> : null
     : null;
-  const openStop = (r: string, d: number, stopId: string) => { setRoute(r); setDir(d); setPick({ kind: 'stop', stopId }); };
-  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick }) : !route ? networkWidgets(s, band, openStop) : [];
+  const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
+  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick }) : !route ? networkWidgets(s, (r, d, p) => { setRoute(r); setDir(d); setPick(p); }) : [];
   const mapEl = (
     <RouteMap
       model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={wide ? PANEL_PAD : NARROW_PAD}
@@ -183,7 +194,8 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
             <div className="absolute inset-0">{mapEl}</div>
             <div className="pointer-events-none absolute inset-3"><Key measure={measure} />{note}</div>
           </div>
-          <WidgetPanel className="p-3" widgets={widgets} />
+          <WidgetPanel className="p-3" widgets={[...summary, ...widgets]} />
+          <div className="flex p-3 pt-0"><OverviewList s={s} measure={measure} route={route} network={network} onPick={r => { setRoute(r); setPick(null); }} /></div>
         </div>
       </div>
     );
@@ -193,7 +205,10 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
       {direction}
       <div className="absolute inset-0">{mapEl}</div>
       <div className="pointer-events-none absolute inset-3 flex gap-3">
-        <div className="pointer-events-auto flex w-72 shrink-0 flex-col"><OverviewList s={s} measure={measure} route={route} network={network} onPick={r => { setRoute(r); setPick(null); }} /></div>
+        <div className="pointer-events-auto flex w-72 shrink-0 flex-col gap-3">
+          <WidgetPanel widgets={summary} />
+          <OverviewList s={s} measure={measure} route={route} network={network} onPick={r => { setRoute(r); setPick(null); }} />
+        </div>
         <div className="relative min-w-0 flex-1">
           <Key measure={measure} />
           {note}
