@@ -22,7 +22,7 @@ import {
 import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
 import { BUNCHED_GAP_SEC, MIN_GAPS, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
-import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
+import { dayHealth, delivered, goodDates, keepGoodDays, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
@@ -794,6 +794,14 @@ console.log(`v2: trip instances ${tripInstances} (short pieces left out ${tripsS
 const windowDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d)).sort().slice(-DAYS);
 const inWindow = new Set(windowDates);
 const windowRuns = runDelays.filter(r => inWindow.has(r.date));
+// Which days of the archive are healthy (good recordings). The window keeps all its dates, but the stop lists, run time by hour,
+// delay build-up, bunching, extra wait and each direction's late share count only the good ones (CIV-318), the same set the weekly tiles use.
+const snapshotsByDate = new Map<string, number>();
+for (const t of snapshotTimes) { const d = serviceDateOf(t); if (scheduleKeyForDate(d)) snapshotsByDate.set(d, (snapshotsByDate.get(d) ?? 0) + 1); }
+const healthV3 = dayHealth(snapshotsByDate);
+const goodWindowDates = goodDates(windowDates, healthV3);
+const inGoodDays = new Set(goodWindowDates);
+const goodRuns = keepGoodDays(runDelays, inGoodDays);
 const isWeekend = (d: string) => { const g = new Date(`${d}T12:00:00Z`).getUTCDay(); return g === 0 || g === 6; };
 const stopOrder = new Map<number, string[]>();
 const alongOf = new Map<string, number>(); // `${direction}|${stop}` -> metres along the busiest pattern
@@ -868,8 +876,8 @@ const adherenceFor = (rs: readonly RunDelays[]) => ({
   },
 });
 // Every section can be filtered by time of day: the same analysis on the departures that fall in each period.
-const bandRuns = (band: TimeBand | 'all') => (band === 'all' ? windowRuns
-  : windowRuns.map(r => ({ ...r, stops: r.stops.filter(x => bandForHour(x.hour) === band) })).filter(r => r.stops.length > 0));
+const bandRuns = (band: TimeBand | 'all') => (band === 'all' ? goodRuns
+  : goodRuns.map(r => ({ ...r, stops: r.stops.filter(x => bandForHour(x.hour) === band) })).filter(r => r.stops.length > 0));
 const bandsV3 = Object.fromEntries(BANDS.map(band => {
   const rs = bandRuns(band);
   return [band, { ...stopsAndBuildup(rs), adherence: adherenceFor(rs) }];
@@ -878,10 +886,10 @@ const stopStatsV3 = bandsV3.all.stops;
 const buildupV3 = bandsV3.all.buildup;
 
 // Bunching (B4): gaps between consecutive vehicles at each stop, per direction and band, then what lines up with it.
-const windowHolds = holds.filter(h => inWindow.has(serviceDateOf(h.start)) && !feedDown(h.start) && !feedDown(h.end) && !feedDown((h.start + h.end) / 2));
-const windowShortTurns = shortTurnEvents.filter(e => inWindow.has(e.date));
-const windowSegments = aggregateSegments(observations.filter(o => inWindow.has(o.date)), scheduled, scheduleKeyForDate, hourOf);
-const perDay = (n: number) => (windowDates.length ? n / windowDates.length : 0);
+const windowHolds = holds.filter(h => inGoodDays.has(serviceDateOf(h.start)) && !feedDown(h.start) && !feedDown(h.end) && !feedDown((h.start + h.end) / 2));
+const windowShortTurns = keepGoodDays(shortTurnEvents, inGoodDays);
+const windowSegments = aggregateSegments(keepGoodDays(observations, inGoodDays), scheduled, scheduleKeyForDate, hourOf);
+const perDay = (n: number) => (goodWindowDates.length ? n / goodWindowDates.length : 0);
 // Stops only a regular branch serves (CIV-311): gap figures only, no forms/gradual for them.
 const branchOnlyOf = (dir: number, order: string[]) => branchOnlyStops(
   regularPatterns([...patterns.values()].filter(p => p.directionId === dir).map(q => ({ stops: q.stops.map(st => st.stopId), trips: tripsPerShape.get(q.id) ?? 0 }))), order);
@@ -889,7 +897,7 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
   directionId: dir,
   bands: Object.fromEntries(BANDS.map(band => {
     const stops = order.map(stopId => {
-      const wins: GapWindow[] = (headwayByStop.get(`${stopId}|${dir}`)?.get(band) ?? []).filter(w => inWindow.has(w.date));
+      const wins: GapWindow[] = (headwayByStop.get(`${stopId}|${dir}`)?.get(band) ?? []).filter(w => inGoodDays.has(w.date));
       return { ...stopBunching(stopId, wins), alongM: alongOf.get(`${dir}|${stopId}`) };
     });
     const profile = bunchingProfile(stops, stopId => terminalStops.has(stopId));
@@ -920,7 +928,7 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
       biggestRise: describe(profile.biggestRise),
       stops: stops.map((s, i) => ({ ...stopInfo(s.stopId), order: i, n: s.n, bunchedShare: r3(s.bunchedShare), gappedShare: r3(s.gappedShare), badShare: r3(s.badShare), medianGapSec: s.medianGapSec == null ? null : Math.round(s.medianGapSec), spread: r1(s.spread) })),
       branchStops: branchOnlyOf(dir, order).map(stopId => {
-        const wins: GapWindow[] = (headwayByStop.get(`${stopId}|${dir}`)?.get(band) ?? []).filter(w => inWindow.has(w.date));
+        const wins: GapWindow[] = (headwayByStop.get(`${stopId}|${dir}`)?.get(band) ?? []).filter(w => inGoodDays.has(w.date));
         const s = stopBunching(stopId, wins);
         return { ...stopInfo(stopId), n: s.n, bunchedShare: r3(s.bunchedShare), gappedShare: r3(s.gappedShare), badShare: r3(s.badShare), medianGapSec: s.medianGapSec == null ? null : Math.round(s.medianGapSec), spread: r1(s.spread) };
       }),
@@ -976,7 +984,7 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
     const key = `${span[0]}|${span[span.length - 1]}`;
     if (seenSpans.has(key)) continue;
     seenSpans.add(key);
-    const rows = runTimesBetween(d, span[0], span[span.length - 1]).filter(r => inWindow.has(r.date));
+    const rows = runTimesBetween(d, span[0], span[span.length - 1]).filter(r => inGoodDays.has(r.date));
     const stat = runTimeStat(rows);
     if (!stat) continue;
     branchLines.push({
@@ -991,34 +999,32 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   stretchInfo[String(d)] = {
     fromStopId: a, toStopId: b, fromName: stopInfo(a).name, toName: stopInfo(b).name, stops: stretch.length, routeStops: longest?.stops.length ?? stretch.length,
     fullRoute: !!longest && longest.stops[0]?.stopId === a && longest.stops[longest.stops.length - 1]?.stopId === b,
-    mainPatternTrips: mainPatternRunTimes.filter(r => r.directionId === d && inWindow.has(r.date)).length,
-    trips: mainRunTimes.filter(r => r.directionId === d && inWindow.has(r.date)).length,
+    mainPatternTrips: mainPatternRunTimes.filter(r => r.directionId === d && inGoodDays.has(r.date)).length,
+    trips: mainRunTimes.filter(r => r.directionId === d && inGoodDays.has(r.date)).length,
   };
 }
 console.log(`runtime branches: ${Object.entries(branchesByDir).map(([d, bs]) => bs.map(x => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) n ${x.all.n}`).join('; ')).join('; ') || 'none'}`);
 console.log(`runtime stretch: ${Object.entries(stretchInfo).map(([d, x]) => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) trips ${x.mainPatternTrips} -> ${x.trips}`).join('; ')}`);
 const windowRunTimes = mainRunTimes.filter(r => inWindow.has(r.date));
-const directionsSeen = [...new Set(windowRunTimes.map(r => r.directionId))].sort();
+const goodRunTimes = keepGoodDays(mainRunTimes, inGoodDays);
+const directionsSeen = [...new Set(goodRunTimes.map(r => r.directionId))].sort();
 const rtFor = (rows: readonly RunTimeRow[]) => runTimeStat(rows);
 const runningTimeV3 = {
   stretch: stretchInfo,
   branches: branchesByDir,
-  bands: Object.fromEntries(BANDS.map(band => [band, Object.fromEntries(directionsSeen.map(d => [String(d), rtFor(windowRunTimes.filter(r => r.directionId === d && (band === 'all' || bandForHour(r.startHour) === band)))]))])),
-  byHour: Object.fromEntries(directionsSeen.map(d => [String(d), [...new Set(windowRunTimes.filter(r => r.directionId === d).map(r => r.startHour % 24))].sort((a, b) => a - b)
-    .map(h => ({ hour: h, ...rtFor(windowRunTimes.filter(r => r.directionId === d && r.startHour % 24 === h))! }))])),
+  bands: Object.fromEntries(BANDS.map(band => [band, Object.fromEntries(directionsSeen.map(d => [String(d), rtFor(goodRunTimes.filter(r => r.directionId === d && (band === 'all' || bandForHour(r.startHour) === band)))]))])),
+  byHour: Object.fromEntries(directionsSeen.map(d => [String(d), [...new Set(goodRunTimes.filter(r => r.directionId === d).map(r => r.startHour % 24))].sort((a, b) => a - b)
+    .map(h => ({ hour: h, ...rtFor(goodRunTimes.filter(r => r.directionId === d && r.startHour % 24 === h))! }))])),
 };
 // Extra wait: at each stop, how much longer riders wait than scheduled (average wait from actual gaps minus from scheduled gaps), where service is every 15 min or better.
 const EXTRA_WAIT_MAX_SCHEDULED_SEC = 900;
 const extraWaitV3 = Object.fromEntries(BANDS.map(band => [band, [...headwayByStop].flatMap(([key, m]) => {
   const [stopId, dir] = key.split('|');
-  const stat = headwayBandStat((m.get(band) ?? []).filter(w => inWindow.has(w.date)));
+  const stat = headwayBandStat((m.get(band) ?? []).filter(w => inGoodDays.has(w.date)));
   if (!stat || stat.excessWaitSec == null || stat.scheduledMedianGapSec > EXTRA_WAIT_MAX_SCHEDULED_SEC || stat.gaps < 10) return [];
   return [{ directionId: Number(dir), ...stopInfo(stopId), order: orderIndex(Number(dir), stopId), scheduledGapMin: r1(stat.scheduledMedianGapSec / 60), extraWaitMin: r1(stat.excessWaitSec / 60), gaps: stat.gaps }];
 }).sort((a, b) => a.directionId - b.directionId || a.order - b.order)]));
 // Which days of the archive are healthy, then the same measures for this week and last week.
-const snapshotsByDate = new Map<string, number>();
-for (const t of snapshotTimes) { const d = serviceDateOf(t); if (scheduleKeyForDate(d)) snapshotsByDate.set(d, (snapshotsByDate.get(d) ?? 0) + 1); }
-const healthV3 = dayHealth(snapshotsByDate);
 const allValidDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d)).sort();
 const weeks = weekSplit(allValidDates, healthV3);
 function weekMetrics(days: readonly string[]) {
@@ -1084,7 +1090,7 @@ for (const d of [...stopOrder.keys()].sort((a, b) => a - b)) {
 
 // By hour of day, for each stop on a regular pattern: [departures, late share, gaps, bunched share, too-long share, extra wait min], or null for an hour with nothing. Index = hour 0-23.
 const lateByStopHour = new Map<string, { n: number; late: number }>();
-for (const r of windowRuns) for (const st of r.stops) {
+for (const r of goodRuns) for (const st of r.stops) {
   const k = `${r.directionId}|${st.stopId}|${st.hour % 24}`;
   const c = lateByStopHour.get(k) ?? { n: 0, late: 0 };
   c.n++; if (st.delaySec / 60 >= LATE_AT_OR_ABOVE_MIN) c.late++;
@@ -1096,7 +1102,7 @@ for (const [d, ps] of Object.entries(patternsV3)) {
   for (const id of new Set(ps.flatMap(q => q.stops.map(x => x.stopId)))) {
     const row = Array.from({ length: 24 }, (_, h) => {
       const late = lateByStopHour.get(`${d}|${id}|${h}`);
-      const wins = (headwayByStopHour.get(`${id}|${d}`)?.get(h) ?? []).filter(w => inWindow.has(w.date));
+      const wins = (headwayByStopHour.get(`${id}|${d}`)?.get(h) ?? []).filter(w => inGoodDays.has(w.date));
       const sb = stopBunching(id, wins);
       const stat = headwayBandStat(wins);
       const extra = stat && stat.excessWaitSec != null && stat.scheduledMedianGapSec <= EXTRA_WAIT_MAX_SCHEDULED_SEC && stat.gaps >= 5 ? r1(stat.excessWaitSec / 60) : null;
@@ -1124,7 +1130,7 @@ for (const [d, ps] of Object.entries(patternsV3)) {
 
 const v3 = {
   schema: 3,
-  window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS },
+  window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS, goodDates: goodWindowDates },
   thresholds: { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_AT_OR_ABOVE_MIN, bunchedGapSec: BUNCHED_GAP_SEC },
   method: 'Delay at a stop = the time the car left it (interpolated between archived positions, at the point 25 m past the stop on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Departure, not arrival: at terminals a car arrives and waits, which would look early. Trips are matched by trip number; a run 15+ min off its own trip is reassigned when another scheduled trip on the same pattern fits within 3 min at 80% of stops, otherwise dropped; passages over an hour off are dropped. Estimated from positions: the TTC feed has no delay values. Positions come about every minute, so each time is interpolated; ' + Math.round(nearCutoffShare * 100) + '% of timepoint departures fall within 0.75 min of an on-time cutoff, where a small error can change the label. "Early" means the car left before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
   leftOut: {

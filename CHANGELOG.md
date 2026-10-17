@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Worst stops, run time by hour, delay build-up, bunching, extra wait and one direction's late share now count only good days (local only)**: they still included days with recording gaps, so a bad day could move them while the tiles ignored it (CIV-318). Needs the analysis re-run.
 - **Bunching tile shows last week in the same two parts (local only)**: "last week 12% · 7%" under "14% · 8%", with the arrow from the two weeks' totals; before it showed one total that read as a different measure.
 - **No arrow when the numbers match (local only)**: a tile whose this-week and last-week figures read the same now says "same as last week" instead of an arrow next to an equal number.
 - **The planner's left "Late departures by hour" fills its card (local only)**: bars scale to the chart's own tallest hour, which is labelled (as on the right), and the card says "4 of 7 days counted"; the route list below it shrinks to make room.

@@ -84,3 +84,14 @@ export function weekSplit(dates: readonly string[], health: readonly DayHealth[]
   const ok = new Set(health.filter(h => h.healthy).map(h => h.date));
   return { thisWeek, lastWeek, thisHealthy: thisWeek.filter(d => ok.has(d)), lastHealthy: lastWeek.filter(d => ok.has(d)) };
 }
+
+/** The window's dates that are healthy days: the days every Live section counts, in the window's order. Empty when none is healthy. */
+export function goodDates(windowDates: readonly string[], health: readonly DayHealth[]): string[] {
+  const ok = new Set(health.filter(h => h.healthy).map(h => h.date));
+  return windowDates.filter(d => ok.has(d));
+}
+
+/** The rows that belong to a good day. The input is never changed, so per-day tables keep every day. */
+export function keepGoodDays<T extends { date: string }>(rows: readonly T[], good: ReadonlySet<string>): T[] {
+  return rows.filter(r => good.has(r.date));
+}
