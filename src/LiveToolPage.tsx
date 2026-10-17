@@ -101,7 +101,8 @@ function networkHours(s: AgencySummary) {
 const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 /** The lines that explain how a figure is worked out (a threshold or a rule), shown with the figure. Late's own caption already says it. */
 const MATH: Partial<Record<Kpi['key'], string>> = { tripTime: `${cap(RUN_TIME_TEXT)}.`, extraWait: cap(EXTRA_WAIT_TEXT), bunching: cap(bunchingText()) };
-const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.map(k => ({ key: `tile-${k.key}`, size: 'small', tile: true, node: <KpiTile k={k} math={MATH[k.key]} /> }));
+/** The route panel's tiles are bare (figure and change): the explanations are shown once, on the left. */
+const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.map(k => ({ key: `tile-${k.key}`, size: 'small', tile: true, node: <KpiTile k={k} bare /> }));
 
 /** The late-by-hour values of a route's whole day. */
 const routeHours = (v3: LiveV3) => v3.bands.all.adherence.timepoints.all.byHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));

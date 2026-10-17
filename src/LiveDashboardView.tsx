@@ -80,14 +80,14 @@ function WeekMethod({ v3, toFull }: { v3: LiveV3; toFull: (hash: string) => void
 }
 
 /** One figure tile: title, big number, caption and the change line. The base look of every Live card. */
-export function KpiTile({ k, className = '', math }: { k: Kpi; className?: string; /** A line that explains how the figure is worked out (a threshold or a rule), under the caption. */ math?: string }) {
+export function KpiTile({ k, className = '', math, bare = false }: { k: Kpi; className?: string; /** A line that explains how the figure is worked out (a threshold or a rule), under the caption. */ math?: string; /** The figure and its change only, no caption: where the explanation is shown once elsewhere. */ bare?: boolean }) {
   const faded = k.n < MIN_N;
   return (
     <li className={`${TILE} flex list-none flex-col px-2.5 ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
       <div className="text-sm font-bold text-[var(--text-muted)]">{k.label}</div>
       <div className="mt-1 text-3xl font-black tracking-tight">{k.value}</div>
-      <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.sub}</div>
-      {math && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{math}</div>}
+      {!bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.sub}</div>}
+      {math && !bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{math}</div>}
       <div className="mt-auto pt-2"><Delta k={k} /></div>
     </li>
   );
