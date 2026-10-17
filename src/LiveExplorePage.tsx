@@ -514,7 +514,7 @@ export default function LiveExplorePage() {
             {routeSubtitle(v3, agency)}
           </p>
         </div>
-        {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
+        {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
       </div>
       {(() => {
         const f = freshness(v3, route, Date.now());

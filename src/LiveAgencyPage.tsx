@@ -202,7 +202,7 @@ export default function LiveAgencyPage() {
               {shown ? `${shown.weekly.comparable ? dayComparedWith(shown.date, shown.compareDate) : dayText(shown.date)} · ${coverage} · ${estimatedNote(agency)}` : liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency })}
             </p>
           </div>
-          {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
+          {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
         </div>
         <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label={`${PERIOD_PILLS.week} or ${PERIOD_PILLS.yesterday}`}>
           <Pill size="segment" selected={day === 'week'} onClick={() => setDay('week')}>{PERIOD_PILLS.week}</Pill>

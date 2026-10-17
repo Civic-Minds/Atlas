@@ -612,7 +612,7 @@ function AnalysisPage() {
               {shownYesterday ? `${shownYesterday.weekly.comparable ? dayComparedWith(shownYesterday.date, shownYesterday.compareDate) : dayText(shownYesterday.date)} · ${(shownYesterday.weekly.thisWeek.late?.n ?? 0).toLocaleString()} trips · ${estimatedNote(agency)}` : routeSubtitle(v3, agency)}
             </p>
           </div>
-          {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
+          {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
         </div>
         {(() => {
           const f = freshness(v3, route, Date.now());
