@@ -11,7 +11,7 @@ import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { devOnly, liveReportTitle, withoutDevHint } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { isMajorStop, shortStopName } from './utils/stopLabel';
+import { shortStopName } from './utils/stopLabel';
 import { TILE } from './pageStyles';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
@@ -20,7 +20,6 @@ import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import LiveOffNotice from './components/LiveOffNotice';
-import ProfileBars, { sharedScale, type ProfilePoint } from './components/charts/ProfileBars';
 import HourBars from './components/charts/HourBars';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import type { RouteStripMode } from './components/Live/RouteStrip';
@@ -31,6 +30,7 @@ import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
+import BunchingSection from './components/Live/sections/BunchingSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
 import { BANDS, dirsOf, mins, pct } from './components/Live/sections/figures';
 import { BOUNDARY, routeSubtitle, withNiceNames } from './LiveRoutePage';
@@ -262,43 +262,6 @@ function WorstStops({ v3, data, dir, uncertain, onPick, canPick }: { v3: LiveV3;
   );
 }
 
-function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: DashboardBand }) {
-  const rows = v3.bunching.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
-  const pointsOf = (data: (typeof rows)[number]['bands'][string]): ProfilePoint[] => data.stops.filter(s => s.n >= 10).map(s => ({ label: s.name, short: shortStopName(s.name), major: isMajorStop(s.name), y: s.bunchedShare, y2: s.gappedShare, n: s.n }));
-  const scale = sharedScale(rows.flatMap(b => (b.bands[band] ? [pointsOf(b.bands[band])] : [])));
-  return (
-    <div className={`mt-4 grid gap-x-10 gap-y-8 ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
-      {rows.map(b => {
-        const label = v3.directionLabels[String(b.directionId)];
-        const data = b.bands[band];
-        if (!data) return null;
-        const points = pointsOf(data);
-        const stretch = data.forms ?? data.biggestRise;
-        const markIdx = stretch ? points.findIndex(p => p.label === data.stops.find(s => s.stopId === stretch.toStopId)?.name) : -1;
-        return (
-          <div key={b.directionId} className="min-w-0">
-            <h3 className="text-base font-black">{label}</h3>
-            {points.length > 1 && (
-              <ProfileBars
-                ariaLabel={`${label}: share of gaps that are too close together or too far apart, stop by stop.`}
-                points={points}
-                formatY={y => pct(y)}
-                unit="gaps"
-                valueHeader="Gaps off the timetable"
-                caption="How often vehicles arrive too close together or too far apart, at each stop."
-                axisTitle="Share of gaps"
-                scale={scale}
-                series={[{ name: 'Too close together', color: 'var(--strip-bunching-2)' }, { name: 'Too far apart', color: 'var(--strip-bunching-1)' }]}
-                marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? 'Forms here' : 'Biggest rise' }] : []}
-              />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
@@ -391,9 +354,7 @@ export default function LiveExplorePage() {
       </Section>
       <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY('Where delays build up')} />
       <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY('Extra wait')} />
-      <Section shrink id="x-bunching" title="Where bunching forms">
-        <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} /></ErrorBoundary>
-      </Section>
+      <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY('Where bunching forms')} />
       <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY('Service delivered')} />
       <Section shrink id="x-stops" title="Stops with the most delay">
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} onPick={pickStop} canPick={onStrip} /></ErrorBoundary>
