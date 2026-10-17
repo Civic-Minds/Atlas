@@ -625,7 +625,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // value at the row, so it gives none here either; the card would otherwise print its full-
     // window wait as "every N" (MBTA 23 Sunday overnight to Ashmont: every 196). A sparse main
     // stretch leaves the direction without a value, a sparse tail drops out.
-    const sparse = (s: Stretch) => key === 'overnight' && isSparseOvernightWindow(s.times);
+    const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
     const counting = [main[key], ...tails.map(t => t[key])]
       .filter((p, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(d.tails[i - 1])));
     const values = counting.map(filterOf).filter((v): v is number => v != null);
