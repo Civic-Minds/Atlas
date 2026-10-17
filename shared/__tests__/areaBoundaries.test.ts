@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AREA_ROUTE_MIN_STOPS, areasForStops, inAreaBoundary, type AreaBoundaries } from '../areaBoundaries';
+import { AREA_ROUTE_MIN_STOPS, AREA_SAME_PLACE_METERS, areasForStops, inAreaBoundary, type AreaBoundaries } from '../areaBoundaries';
 import { areaAgencySummaries } from '../areaPages';
 import type { AgencyPageSummary } from '../agencyPages';
 
@@ -21,6 +21,16 @@ describe('area boundaries (CIV-274)', () => {
     expect(areasForStops([[1, 1], [2, 2], [15, 5], [25, 5], [26, 5]], boundaries)).toEqual(['east', 'metro']);
     // A ferry or coach terminal: one stop clips the edge.
     expect(areasForStops([[9, 9], [25, 5], [26, 5]], boundaries)).toEqual(['east']);
+  });
+  it(`counts stops within ${AREA_SAME_PLACE_METERS} m of each other as one place`, () => {
+    const coast: AreaBoundaries = { vancouver: { bbox: [48.9, -123.4, 49.5, -122.4], polygons: [[square(-123.4, 48.9, -122.4, 49.5)]] } };
+    // BC Ferries Southern Gulf Islands: Tsawwassen's terminal, stop and Berth 2 (within 200 m) are one place.
+    const tsawwassen: Array<[number, number]> = [[-123.13033, 49.00689], [-123.13227, 49.00662], [-123.12942, 49.00621]];
+    expect(areasForStops([...tsawwassen, [-123.5, 48.85]], coast)).toEqual([]);
+    // Bowen Island: Horseshoe Bay and Snug Cove are two places 4.5 km apart.
+    expect(areasForStops([[-123.27251, 49.37401], [-123.27161, 49.37599], [-123.3321, 49.37964]], coast)).toEqual(['vancouver']);
+    // Bus stops about 300 m apart along a street are separate places.
+    expect(areasForStops([[-123.1, 49.26], [-123.096, 49.26]], coast)).toEqual(['vancouver']);
   });
 });
 

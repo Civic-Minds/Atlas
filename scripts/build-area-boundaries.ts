@@ -2,8 +2,8 @@
  * Builds shared/data/area-boundaries.json: the official boundary of every paged area (config/areas,
  * page: true), simplified, for counting each route on the areas where its stops are (CIV-274).
  *
- * Same public services as build-areas.ts: Statistics Canada 2021 CMAs/CAs and US Census CBSAs
- * (TIGERweb). An area's official feature is found by probing its centre and its agencies' centres and
+ * Statistics Canada 2021 CMAs/CAs (digital boundary files, which include coastal water) and US Census
+ * CBSAs (TIGERweb, water included). An area's official feature is found by probing its centre and its agencies' centres and
  * matching the official name; a merged area ("Toronto + Hamilton + Oshawa") is the union of its parts.
  * READ ONLY: nothing here touches R2. Run by hand after build-areas.ts, review, commit:
  *
@@ -14,7 +14,10 @@ import type { AreaConfig } from '../shared/areas';
 import type { AreaBoundaries, AreaPolygon } from '../shared/areaBoundaries';
 
 const TIGER = ['https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/CBSA/MapServer/3/query', 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/CBSA/MapServer/4/query'];
-const STATCAN = 'https://geo.statcan.gc.ca/geo_wa/rest/services/2021/Cartographic_boundary_files/MapServer/6/query';
+// The digital boundary files, not the cartographic ones: a CMA's digital boundary takes in its coastal
+// water, as TIGER's CBSAs do, so a ferry terminal or waterfront stop on the shore is inside its area
+// (the cartographic file stops at the shoreline: BC Ferries Bowen Island read as outside Vancouver).
+const STATCAN = 'https://geo.statcan.gc.ca/geo_wa/rest/services/2021/Digital_boundary_files/MapServer/6/query';
 const OUT = 'shared/data/area-boundaries.json';
 /** Douglas-Peucker tolerance in degrees (about 100 m): small next to a metro area, and keeps the file small. */
 const SIMPLIFY_DEG = 0.001;
