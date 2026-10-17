@@ -349,7 +349,17 @@ const hourName = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'a
 export function runningTimeSentence(label: string, r: RunTimeFigures | null | undefined, atHour?: number): string {
   if (!r) return `${label}: too few trips were measured over the main stretch to say.`;
   if (r.n < 30) return `${label}: too few trips (${r.n}) were measured from end to end to say.`;
-  return `${label}: scheduled ${Math.round(r.scheduledMin)} min · usually ${Math.round(r.typicalMin)} · 1 in 10 over ${Math.round(r.p90Min)} min${atHour != null ? ` at ${hourName(atHour)}` : ''}.`;
+  return `${label}: ${runningTimeFigures(r)}${atHour != null ? ` at ${hourName(atHour)}` : ''}.`;
+}
+
+/** The figures of that sentence without the label: "scheduled 34 min · usually 31 · 1 in 10 over 37 min". A missing figure is left out, never invented. */
+export function runningTimeFigures(r: { scheduledMin?: number | null; typicalMin?: number | null; p90Min?: number | null }): string {
+  const ok = (x: number | null | undefined): x is number => typeof x === 'number' && Number.isFinite(x);
+  const parts: string[] = [];
+  if (ok(r.scheduledMin)) parts.push(`scheduled ${Math.round(r.scheduledMin)} min`);
+  if (ok(r.typicalMin)) parts.push(`usually ${Math.round(r.typicalMin)}${parts.length ? '' : ' min'}`);
+  if (ok(r.p90Min)) parts.push(`1 in 10 over ${Math.round(r.p90Min)} min`);
+  return parts.join(' · ');
 }
 
 /** The stop where riders wait longest, as a sentence; null when no stop has service every 15 minutes or better. */
