@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { branchPatterns, mainStretchStops, reliableStretch, stationOrLoop } from '../mainStretch';
+import { branchOnlyStops, branchPatterns, mainStretchStops, reliableStretch, stationOrLoop } from '../mainStretch';
 
 describe('mainStretchStops', () => {
   it('keeps the stops every regular pattern serves, so a common short turn sets the stretch', () => {
@@ -58,5 +58,17 @@ describe('branchPatterns', () => {
     expect(branchPatterns([pat(['A', 'B', 'C'], 60), near], ['A', 'B', 'C'], 5, 1000)).toEqual([]);
     const rare = pat(['A', 'B', 'C', 'Z1', 'Z2', 'Z3', 'Z4', 'Z5'], 5);
     expect(branchPatterns([pat(['A', 'B', 'C'], 95), rare], ['A', 'B', 'C'], 5, 1000)).toEqual([]);
+  });
+});
+
+describe('branchOnlyStops (CIV-311)', () => {
+  it('lists stops of non-main regular patterns that are not on the main pattern, once each, in order', () => {
+    const main = ['a', 'b', 'T1', 'T2', 'y', 'z'];
+    const regular = [{ stops: main }, { stops: ['c', 'd', 'T1', 'T2', 'w'] }, { stops: ['d', 'T2', 'w', 'v'] }];
+    expect(branchOnlyStops(regular, main)).toEqual(['c', 'd', 'w', 'v']);
+  });
+  it('is empty with one pattern or when every stop is on the main pattern', () => {
+    expect(branchOnlyStops([{ stops: ['a', 'b'] }], ['a', 'b'])).toEqual([]);
+    expect(branchOnlyStops([{ stops: ['a', 'b'] }, { stops: ['b', 'a'] }], ['a', 'b'])).toEqual([]);
   });
 });

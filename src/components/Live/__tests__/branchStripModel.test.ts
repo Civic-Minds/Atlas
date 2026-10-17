@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { branchesOf, columnsOf, sharedRun } from '../branchStripModel';
+import { allBranchStops, branchStripFromV3, branchesOf, columnsOf, sharedRun } from '../branchStripModel';
+import type { LiveV3 } from '../../../../shared/liveDashboard';
 import type { RouteStripStop } from '../routeStripModel';
 
 const stop = (stopId: string): RouteStripStop => ({ stopId, name: `Stop ${stopId}`, delayMin: 0, lateShare: 0, bunchingShare: null, n: 100 });
@@ -48,5 +49,32 @@ describe('columnsOf', () => {
     expect(cols.filter(c => '12345'.includes(c)).join('')).toBe('12345');
     // each line keeps its own stops in route order
     m.lines.forEach(l => expect(l.map(s => cols.indexOf(s.stopId))).toEqual([...l.map(s => cols.indexOf(s.stopId))].sort((a, b) => a - b)));
+  });
+});
+
+describe('branchStripFromV3 bunching join (CIV-311)', () => {
+  const st = (stopId: string, order: number) => ({ stopId, name: `Stop ${stopId}`, directionId: 0, order, n: 100, medianMin: 1, lateShare: 0.1, timepoint: false });
+  const bs = (stopId: string, n: number, bunched: number, gapped: number) => ({ stopId, name: stopId, n, bunchedShare: bunched, gappedShare: gapped, badShare: bunched + gapped, medianGapSec: 300 });
+  const v3 = {
+    directionLabels: { '0': 'Eastbound' },
+    stops: [st('a', 0), st('b', 1), st('c', 2), st('x', -1), st('y', -1), st('z', -1)], buildup: [],
+    patterns: { '0': [{ main: true, trips: 10, stops: pat([...'abc']).stops }, { main: false, trips: 6, stops: pat([...'abxyz']).stops }] },
+    bunching: [{ directionId: 0, bands: { all: {
+      stops: ['a', 'b', 'c'].map((id, i) => ({ ...bs(id, 80, 0.1, 0.1), order: i })),
+      branchStops: [bs('x', 80, 0.1, 0.25), bs('y', 12, 0.5, 0)],
+    } } }],
+  } as unknown as LiveV3;
+  it('reads branch-only stops from branchStops and leaves unmeasured ones unmeasured', () => {
+    const m = branchStripFromV3(v3, 0, 'all')!;
+    const by = new Map(allBranchStops(m).map(s => [s.stopId, s]));
+    expect(by.get('x')).toMatchObject({ bunchingShare: 0.35, bunchedShare: 0.1, gappedShare: 0.25, bunchingN: 80 });
+    expect(by.get('y')).toMatchObject({ bunchingN: 12 });
+    expect(by.get('z')).toMatchObject({ bunchingShare: null, bunchingN: 0 });
+    expect(by.get('a')).toMatchObject({ bunchingShare: 0.2, bunchingN: 80 });
+  });
+  it('still works on a file without branchStops', () => {
+    const old = JSON.parse(JSON.stringify(v3)); delete old.bunching[0].bands.all.branchStops;
+    const by = new Map(allBranchStops(branchStripFromV3(old, 0, 'all')!).map(s => [s.stopId, s]));
+    expect(by.get('x')).toMatchObject({ bunchingShare: null, bunchingN: 0 });
   });
 });

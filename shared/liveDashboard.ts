@@ -102,6 +102,8 @@ export interface DashboardBunchingBand {
   forms: DashboardBunchingStretch | null;
   biggestRise: DashboardBunchingStretch | null;
   stops: Array<{ stopId: string; name: string; order: number; n: number; badShare: number; bunchedShare: number; gappedShare: number; medianGapSec: number | null }>;
+  /** Stops only a branch serves: gap figures only, no order and no part in `kind`/`forms`. Absent in files from before CIV-311. */
+  branchStops?: Array<{ stopId: string; name: string; n: number; badShare: number; bunchedShare: number; gappedShare: number; medianGapSec: number | null }>;
 }
 export interface LiveV3 {
   schema: 3;

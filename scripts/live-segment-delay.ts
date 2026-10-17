@@ -23,7 +23,7 @@ import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type Run
 import { BUNCHED_GAP_SEC, MIN_GAPS, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
-import { branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
+import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 
@@ -882,6 +882,9 @@ const windowHolds = holds.filter(h => inWindow.has(serviceDateOf(h.start)) && !f
 const windowShortTurns = shortTurnEvents.filter(e => inWindow.has(e.date));
 const windowSegments = aggregateSegments(observations.filter(o => inWindow.has(o.date)), scheduled, scheduleKeyForDate, hourOf);
 const perDay = (n: number) => (windowDates.length ? n / windowDates.length : 0);
+// Stops only a regular branch serves (CIV-311): gap figures only, no forms/gradual for them.
+const branchOnlyOf = (dir: number, order: string[]) => branchOnlyStops(
+  regularPatterns([...patterns.values()].filter(p => p.directionId === dir).map(q => ({ stops: q.stops.map(st => st.stopId), trips: tripsPerShape.get(q.id) ?? 0 }))), order);
 const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
   directionId: dir,
   bands: Object.fromEntries(BANDS.map(band => {
@@ -916,6 +919,11 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
       forms: describe(profile.forms),
       biggestRise: describe(profile.biggestRise),
       stops: stops.map((s, i) => ({ ...stopInfo(s.stopId), order: i, n: s.n, bunchedShare: r3(s.bunchedShare), gappedShare: r3(s.gappedShare), badShare: r3(s.badShare), medianGapSec: s.medianGapSec == null ? null : Math.round(s.medianGapSec), spread: r1(s.spread) })),
+      branchStops: branchOnlyOf(dir, order).map(stopId => {
+        const wins: GapWindow[] = (headwayByStop.get(`${stopId}|${dir}`)?.get(band) ?? []).filter(w => inWindow.has(w.date));
+        const s = stopBunching(stopId, wins);
+        return { ...stopInfo(stopId), n: s.n, bunchedShare: r3(s.bunchedShare), gappedShare: r3(s.gappedShare), badShare: r3(s.badShare), medianGapSec: s.medianGapSec == null ? null : Math.round(s.medianGapSec), spread: r1(s.spread) };
+      }),
     }];
   })),
 }));

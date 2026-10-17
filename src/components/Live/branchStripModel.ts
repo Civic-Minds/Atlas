@@ -111,7 +111,7 @@ export function columnsOf(lines: ReadonlyArray<ReadonlyArray<{ stopId: string }>
 
 /**
  * One direction with its branches, for one time of day. Stops on any regular pattern get their figures from the analysis'
- * stop list; bunching is only measured along the main pattern, so branch stops have none ("not measured").
+ * stop list; bunching for branch-only stops comes from the band's `branchStops` (gap figures only, no forms).
  */
 export function branchStripFromV3(v3: LiveV3, directionId: number, band: DashboardBand = 'all', uncertain: readonly UncertainStart[] = []): BranchModel | null {
   const patterns = v3.patterns?.[String(directionId)];
@@ -120,19 +120,23 @@ export function branchStripFromV3(v3: LiveV3, directionId: number, band: Dashboa
   const bandData = v3.bands?.[band] ?? { stops: v3.stops, buildup: v3.buildup };
   const lessExact = uncertain.find(u => u.directionId === directionId)?.stops ?? 0;
   const byId = new Map(bandData.stops.filter(s => s.directionId === directionId).map(s => [s.stopId, s]));
+  const branchBunching = new Map((v3.bunching.find(b => b.directionId === directionId)?.bands[band]?.branchStops ?? []).map(s => [s.stopId, s]));
   const mainById = new Map(straight.stops.map(s => [s.stopId, s]));
   const stopFor = (s: { stopId: string; name: string }): RouteStripStop => {
     const main = mainById.get(s.stopId);
     if (main) return main;
     const st = byId.get(s.stopId);
+    const b = branchBunching.get(s.stopId);
     return {
       stopId: s.stopId,
       name: titleCase(s.name),
       delayMin: st && st.n > 0 ? st.medianMin : null,
       lateShare: st && st.n > 0 ? st.lateShare : null,
-      bunchingShare: null,
+      bunchingShare: b && b.n > 0 ? b.badShare : null,
+      bunchedShare: b && b.n > 0 ? b.bunchedShare : null,
+      gappedShare: b && b.n > 0 ? b.gappedShare : null,
       n: st?.n ?? 0,
-      bunchingN: 0,
+      bunchingN: b?.n ?? 0,
       uncertain: !!st && st.order >= 0 && st.order < lessExact,
       timepoint: st?.timepoint,
     };

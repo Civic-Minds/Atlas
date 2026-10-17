@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Branch stops show their own bunching (local only)**: stops only a branch serves (the 504 Broadview branch, the 510 spur) now have measured too-close / too-far-apart gaps instead of "Not measured". Needs the analysis re-run. Branches get gap figures only, no "forms here" verdict.
 - **The route header fits one line at desktop width (local only)**: "…· data up to Oct 14" no longer wraps to a second line; "View on Live map" moved up beside the title.
 - **Stops tables fit a phone (local only)**: on the Dashboard, Full analysis and Explore the stops tables (and the delay-stretch table) fit the screen with no sideways scrolling; the less important columns are left out at that width, with their figures in the row's hover text.
 - **The planner shows run time as dots, and "data up to" (local only)**: the right panel's Run time card draws the picked direction's main pattern as one dot on a line (with its stretch line and legend), like the route pages, and the planner's top bar says "data up to Oct 14" for the picked route or the network, in the caution colour when stale.
