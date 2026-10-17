@@ -208,12 +208,15 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
         dirMap.set(dirId, periods);
       }
       for (const [pk, v] of Object.entries(byPeriod) as [PeriodKey, number | null | undefined][]) {
-        if (v == null) continue;
+        // #897: a sparse overnight window withholds its value but keeps its unsteady flag. Its
+        // coverage still speaks for the direction (an unsteady candidate never sets the headway).
+        const withheld = v == null && sustained?.[pk] === false;
+        if (v == null && !withheld) continue;
         const list = periods.get(pk) ?? [];
         // Not real cadence for this window (edge bunch / barely-running short-turn) is kept as a
         // candidate only so it still counts as the direction's main service below.
         list.push({
-          hw: v,
+          hw: v ?? Infinity,
           coverage: f.properties.periodCoverageHeadway?.[pk],
           tier: f.properties.tier,
           sustained: sustained?.[pk] !== false,

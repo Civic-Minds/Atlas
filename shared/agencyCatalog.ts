@@ -36,6 +36,8 @@ export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   searchAliases?: string[];
   cities?: string[];
   timezone?: string | null;
+  /** CIV-251: wins over the feed's agency_timezone (see shared/agencyTimezone.ts). */
+  timezoneOverride?: string;
   manualFeedSource?: boolean;
 }
 
