@@ -1,10 +1,10 @@
 # How Live measures a route
 
-This is how the Live route page (the dashboard and the full analysis at `/apps/live/<agency>/<route>`) gets its numbers. Live is local-only: it is off in every deployment (see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md)). The analysis is built by `npm run live:analyze -- <route>` (`scripts/live-segment-delay.ts`); the page reads the file it writes through `/api/live-dashboard`. Shared rules and wording live in `shared/liveDashboard.ts` and `shared/routeMetrics.ts`.
+This is how the Live route page (the dashboard and the full analysis at `/apps/live/<agency>/<route>`) gets its numbers. Live is local-only: it is off in every deployment (see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md)). The analysis is built by `npm run live:analyze -- <route>` (`scripts/live-segment-delay.ts`); the page reads the file it writes through `/api/live-dashboard`, a local-only endpoint (`local-api/`, served by `npm run dev:api`, never deployed). Shared rules and wording live in `shared/liveDashboard.ts` and `shared/routeMetrics.ts`.
 
 ## Where the numbers come from
 
-- **Positions, not reported delays.** The TTC feed sends no delay values, so Live works delays out itself. It uses the archived vehicle positions (one snapshot about every 30 seconds, kept 30 days in the `atlas-live` bucket) and the agency's timetable (GTFS).
+- **Positions, not reported delays.** The TTC feed sends no delay values, so Live works delays out itself. It uses the archived vehicle positions (one snapshot a minute, kept 30 days in the `atlas-live` bucket) and the agency's timetable (GTFS).
 - **Window.** The last 7 service days by default. The page always says which days, how many trips and how many stop departures it is based on.
 - **Good days only.** A day counts as good when the archive holds at least 90% of the snapshots a typical day has. Measures that compare days or weeks leave the other days out, and the page names them.
 

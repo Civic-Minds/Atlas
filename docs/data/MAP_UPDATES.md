@@ -33,9 +33,9 @@ This refreshes the GTFS feed, rebuilds the PMTiles and History artifacts, verifi
 
 If a release build fails, the previous `atlas/release.json` remains active. This is intentional: a failed or partial refresh must not become a public map/data combination.
 
-To regenerate derived artifacts from archived feeds without downloading new ones (including hidden agencies), see [`DATA_REPROCESSING.md`](../operations/DATA_REPROCESSING.md).
+To regenerate derived artifacts from archived feeds without downloading new ones (including hidden agencies), see [`DATA_REPROCESSING.md`](../operations/DATA_REPROCESSING.md). Full rebuilds run in the cloud by default with the `rebuild-release.yml` workflow (dry run, then publish); keep local runs for exact before/after scans and small checks.
 
-For a local rebuild check without writing to R2, run `npm run build-pmtiles -- --dry-run`. The command still downloads the current public artifacts and runs the real tippecanoe/tile-join build, but leaves the result at `tmp/geojson-build/atlas.pmtiles` for inspection.
+For a small local check without writing to R2, run `npm run build-pmtiles -- --dry-run`. The command still downloads the current public artifacts and runs the real tippecanoe/tile-join build, but leaves the result at `tmp/geojson-build/atlas.pmtiles` for inspection.
 
 ---
 

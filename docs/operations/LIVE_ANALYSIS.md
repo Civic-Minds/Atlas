@@ -7,7 +7,7 @@ vehicle positions and the timetable.
 
 `npm run live:analyze -- 505` (or several routes, or `all`; `--days 14` for a longer window). It reads `../_live-data`
 (`archive/` = archived positions, `gtfs/candidates/surface` = the TTC surface timetable) and writes
-`../_live-data/out/ttc-<route>-segments.json`, which `/api/live-segments` serves.
+`../_live-data/out/ttc-<route>-segments.json`, which the local-only `/api/live-segments` serves (`local-api/`, never deployed).
 
 ## What it measures (the `v3` block)
 
@@ -47,8 +47,8 @@ recomputes random stop departures (25 m past the stop) from the raw archive and 
 
 ## The page
 
-`/apps/live/<agency>/<route>` (local only, same switch as Live) shows B1 to B4 and the method from the `v3` block, through
-`/api/live-dashboard?agency=ttc&route=505`. The answer always has a status (`ready`, `held`, `no_analysis`, `unknown_route`) and a plain
+`/apps/live/<agency>/<route>` (local only, same switch as Live) shows B1 to B4 and the method from the `v3` block, through the local-only
+`/api/live-dashboard?agency=ttc&route=505` (`local-api/`, never deployed). The answer always has a status (`ready`, `held`, `no_analysis`, `unknown_route`) and a plain
 reason. Routes held back until a known problem is fixed are listed in `shared/liveDashboard.ts` (`LIVE_DASHBOARD_HOLD`: 512).
 
 Routes that share a number with another service: the 506 runs streetcars and, in parallel, 506B replacement buses, so `live:analyze` passes `--exclude-headsign "replacement bus"` for it and analyses the streetcars only. Runs under trip numbers missing from the timetable (the 501's unscheduled buses) are never matched. Both counts are in `v3.leftOut` and shown on the page.
