@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
 import { delayAmount } from '../shared/headwayText';
 import type { AgencySummary } from '../shared/liveAgency';
-import { rankStops, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
+import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
@@ -25,6 +25,7 @@ import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPane
 import OverviewList from './components/Live/tool/OverviewList';
 import LateByHourWidget from './components/Live/tool/LateByHourWidget';
 import ProblemsWidget from './components/Live/tool/ProblemsWidget';
+import { worstStopRows } from './components/Live/sections/WorstStopsSection';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData, { type ReadyRoute } from './components/Live/tool/useNetworkData';
 import { KpiRows, KpiTile } from './LiveDashboardView';
@@ -137,14 +138,14 @@ function routeWidgets({ data, v3, dir, band, setPick }: {
   data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; setPick: (p: MapPick | null) => void;
 }): PanelWidget[] {
   const bandData = v3.bands[band] as DashboardBandData;
-  const worst = rankStops(bandData.stops, dir, data.uncertainStart ?? []).slice(0, 3);
+  const worst = worstStopRows(v3, bandData, dir, data.uncertainStart ?? [], 3, stopId => setPick({ kind: 'stop', stopId }));
   const hours = routeHours(v3);
   const hasRunTime = !!v3.runningTime?.bands[band]?.[String(dir)];
   return [
     ...tileWidgets(weekly(v3)),
     ...(hasRunTime ? [{ key: 'run-time', size: 'small' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourWidget hours={hours} band={band} overall={v3.bands.all.adherence.timepoints.all.overall?.lateShare ?? null} /> }] : []),
-    ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops with the most delay" rows={worst.map(x => ({ key: x.stopId, label: shortStopName(titleCase(x.name)), value: pct(x.lateShare), onPick: () => setPick({ kind: 'stop', stopId: x.stopId }) }))} /> }] : []),
+    ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops with the most delay" rows={worst} /> }] : []),
   ];
 }
 

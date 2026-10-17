@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
-import { branchFigures, branchRunTimeLine, dateRangeText, rankStops, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { branchFigures, branchRunTimeLine, dateRangeText, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, weekNotComparableLine, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
-import SortableDataTable from './components/ui/SortableDataTable';
 import { withoutDevHint } from './lib/liveReportData';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
@@ -21,6 +20,7 @@ import LegendItem from './components/ui/LegendItem';
 import { SectionTitle } from './components/ui/PageTitle';
 import { lateCount, lateHourLine } from '../shared/liveWording';
 import MethodSection from './components/Live/sections/MethodSection';
+import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
 import { NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText } from '../shared/liveWording';
@@ -261,31 +261,6 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
   );
 }
 
-function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; toFull: (hash: string) => void }) {
-  const top = useMemo(() => rankStops(data.stops, dir, uncertain).slice(0, 5), [data, dir, uncertain]);
-  return (
-    <div className="min-w-0">
-      <SectionTitle>Stops most often late</SectionTitle>
-      {top.length ? (
-        <div className="mt-3">
-          <SortableDataTable
-            caption="The five stops with the highest share of late departures"
-            defaultSort="late"
-            rows={top}
-            rowKey={s => `${s.stopId}-${s.directionId}`}
-            columns={[
-              { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal truncate', cell: s => <span title={s.name}>{s.name}</span> },
-              ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-              { key: 'late', header: 'Late', worst: s => s.lateShare, cell: s => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
-            ]}
-          />
-        </div>
-      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank.</p>}
-      <p className="mt-3"><ArrowLink href="?view=analysis#b2" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('b2'); }}>Every stop, in Full analysis</ArrowLink></p>
-    </div>
-  );
-}
-
 export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, toFull, lite = false, yesterday = null }: {
   v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[]; note: string | null; title: string;
   /** The direction and time-of-day pills: they sit below the week figures, above the parts they change. */
@@ -316,9 +291,8 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad('Run time')}><TripTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
       <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
-      <section className="mt-10 max-w-xl" aria-label="The stops most often late">
-        <ErrorBoundary label={bad('The stop list')}><WorstStops v3={v3} data={data} dir={dir} uncertain={uncertain} toFull={toFull} /></ErrorBoundary>
-      </section>
+      <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title="Stops most often late" boundary={bad('The stop list')}
+        footerLink={{ text: 'Every stop, in Full analysis', href: '?view=analysis#b2', onClick: () => toFull('b2') }} />
       <MethodSection scope="week" v3={v3} toFull={toFull} />
     </>
   );

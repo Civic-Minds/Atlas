@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, freshness, rankStops, runningTimeSentence,
-  type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3, type UncertainStart,
+  branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, freshness, runningTimeSentence,
+  type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { useLiveGaps } from './hooks/useLiveGaps';
@@ -16,7 +16,6 @@ import { shortStopName } from './utils/stopLabel';
 import { liveChartHours } from './utils/sparklinePeriods';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
-import SortableDataTable from './components/ui/SortableDataTable';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
@@ -30,6 +29,7 @@ import { PageTitle } from './components/ui/PageTitle';
 import { LATE_BY_HOUR_TITLE, lateCount, lateHourLine, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
+import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
@@ -128,46 +128,6 @@ function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: numbe
 }
 
 /** B2: stops with the most delay, ranked by how often vehicles leave 5.5+ min late. One table with a small bar in each row. */
-function WorstStops({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[] }) {
-  const ranked = useMemo(() => rankStops(data.stops, dir, uncertain), [data, dir, uncertain]);
-  const top = ranked.slice(0, 10);
-  const both = dir == null;
-  const hidden = uncertain.filter(u => dir == null || u.directionId === dir);
-  return (
-    <Section id="b2" title="Stops with the most delay">
-      <p className="mt-2 text-sm text-[var(--text-muted)]">Stops ranked by how often vehicles leave {v3.thresholds.lateAtOrAboveMin}+ minutes late (stops with 30+ departures).</p>
-      {top.length ? (
-        <div className="mt-4 overflow-x-auto">
-          <SortableDataTable
-            caption="Stops ranked by the share of late departures"
-            defaultSort="late"
-            rows={top}
-            rowKey={s => `${s.stopId}-${s.directionId}`}
-            columns={[
-              { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal truncate', cell: s => <span title={s.name}>{s.name}</span> },
-              ...(both ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-              { key: 'late', header: 'Late', worst: s => s.lateShare, cell: s => (
-                <span className="inline-flex items-center gap-2">
-                  <span className="block h-2 w-20 rounded-sm bg-[var(--control-inactive-bg)]" aria-hidden="true"><span className="block h-full rounded-sm bg-[var(--accent)] opacity-90" style={{ width: `${Math.max(2, s.lateShare * 100)}%` }} /></span>
-                  {pct(s.lateShare)}
-                </span>
-              ) },
-              { key: 'median', header: 'Typical delay', worst: s => s.medianMin, cell: s => mins(s.medianMin) },
-              { key: 'p90', header: '1 in 10 later than', width: 10, worst: s => s.p90Min, cell: s => mins(s.p90Min) },
-              { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
-            ]}
-          />
-        </div>
-      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank.</p>}
-      {hidden.length > 0 && (
-        <p className="mt-2 max-w-2xl text-xs text-[var(--text-dim)]">
-          Not ranked: the first {hidden[0].stops} stops {hidden.length === 1 ? v3.directionLabels[String(hidden[0].directionId)].toLowerCase() : 'in some directions'}, where delay is less exact (see the note above).
-        </p>
-      )}
-    </Section>
-  );
-}
-
 const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'a' : 'p'}`;
 
 /** This week against last week: five tiles, each a number, a label and a change chip coloured only beyond normal noise. */
@@ -303,7 +263,7 @@ function AnalysisPage() {
         <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><Adherence data={bandData} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Run time')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops with the most delay" id="b2" intro notRanked p90Width={10} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Service delivered')}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>

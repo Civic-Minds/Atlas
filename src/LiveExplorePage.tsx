@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, freshness, linkValueText, rankStops,
+  LINK_LABELS, freshness, linkValueText,
   type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { delayAmount, headwayAmount } from '../shared/headwayText';
@@ -15,7 +15,6 @@ import { shortStopName } from './utils/stopLabel';
 import { TILE } from './pageStyles';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
-import SortableDataTable from './components/ui/SortableDataTable';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
@@ -27,6 +26,7 @@ import DirectionStrip, { directionStopsById } from './components/Live/DirectionS
 import { delayText, type RouteStripStop } from './components/Live/routeStripModel';
 import { KpiRow } from './LiveDashboardView';
 import Section from './components/Live/sections/Section';
+import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import MethodSection from './components/Live/sections/MethodSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
@@ -234,34 +234,6 @@ function RunTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: numb
   );
 }
 
-function WorstStops({ v3, data, dir, uncertain, onPick, canPick }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; onPick: (directionId: number, stopId: string) => void; canPick: (directionId: number, stopId: string) => boolean }) {
-  const top = useMemo(() => rankStops(data.stops, dir, uncertain).slice(0, 10), [data, dir, uncertain]);
-  if (!top.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank.</p>;
-  return (
-    <div className="mt-4 overflow-x-auto">
-      <SortableDataTable
-        caption="Stops ranked by the share of late departures"
-        defaultSort="late"
-        rows={top}
-        rowKey={s => `${s.stopId}-${s.directionId}`}
-        columns={[
-          { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline">{s.name}</button> },
-          ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-          { key: 'late', header: 'Late', worst: s => s.lateShare, cell: s => (
-            <span className="inline-flex items-center gap-2">
-              <span className="block h-2 w-20 rounded-sm bg-[var(--control-inactive-bg)]" aria-hidden="true"><span className="block h-full rounded-sm bg-[var(--accent)] opacity-90" style={{ width: `${Math.max(2, s.lateShare * 100)}%` }} /></span>
-              {pct(s.lateShare)}
-            </span>
-          ) },
-          { key: 'median', header: 'Typical delay', worst: s => s.medianMin, cell: s => mins(s.medianMin) },
-          { key: 'p90', header: '1 in 10 later than', worst: s => s.p90Min, cell: s => mins(s.p90Min) },
-          { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
-        ]}
-      />
-    </div>
-  );
-}
-
 export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
@@ -356,9 +328,7 @@ export default function LiveExplorePage() {
       <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY('Extra wait')} />
       <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY('Where bunching forms')} />
       <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY('Service delivered')} />
-      <Section shrink id="x-stops" title="Stops with the most delay">
-        <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} onPick={pickStop} canPick={onStrip} /></ErrorBoundary>
-      </Section>
+      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops with the most delay" id="x-stops" shrink boundary={BOUNDARY('Stops with the most delay')} onPick={pickStop} canPick={onStrip} />
       <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
     </article>,
   );
