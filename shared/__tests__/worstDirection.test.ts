@@ -194,6 +194,20 @@ describe('stampWorstDirectionHeadways', () => {
     expect(features[1].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(150);
   });
 
+  it('keeps a withheld sparse overnight period in the coverage pool (#897, TTC 504 weekday)', () => {
+    // The Distillery pattern's overnight value is withheld (null, still unsteady); a sibling's
+    // unsteady 10 must not drop its 221-minute wait from the route's stamp.
+    const features = [
+      feat({ routeShortName: '504', day: 'Weekday', directionId: 0, tier: '10', headway: 10, headwayByPeriod: { overnight: null }, headwayByPeriodSustained: { overnight: false }, periodCoverageHeadway: { overnight: 221 } }),
+      feat({ routeShortName: '504', day: 'Weekday', directionId: 0, tier: '10', headway: 10, headwayByPeriod: { overnight: 10 }, headwayByPeriodSustained: { overnight: false }, periodCoverageHeadway: { overnight: 143 } }),
+      feat({ routeShortName: '504', day: 'Weekday', directionId: 1, tier: '10', headway: 10, headwayByPeriod: { overnight: 10 }, headwayByPeriodSustained: { overnight: true }, periodCoverageHeadway: { overnight: 100 } }),
+    ];
+    stampWorstDirectionHeadways(features);
+    expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(221);
+    // The withheld period never sets the headway stamp.
+    expect(features[0].properties.worstDirectionHeadwayByPeriod?.overnight).toBe(10);
+  });
+
   it('stamps routes that publish no short name by route id (rail lines like MBTA Red, Metro-North)', () => {
     const red = (directionId: number, midday: number, routeId = 'Red') => ({
       properties: { routeShortName: '', routeId, day: 'Weekday', directionId, headway: midday, headwayByPeriod: { midday } },
