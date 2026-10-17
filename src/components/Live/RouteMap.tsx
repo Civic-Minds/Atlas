@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import MapZoomButtons from '../MapZoomButtons';
 import { getMapStyle } from '../../lib/mapStyle';
 import type { MapMeasure, RouteMapModel } from './routeMapModel';
 
@@ -24,6 +25,8 @@ interface Props {
   frameKey: string;
   /** Pixels at each edge the map keeps clear when framing (panels floating over it). */
   padding?: { top: number; bottom: number; left: number; right: number };
+  /** Distance of the zoom buttons from the right edge, px: the main map's 12, more where a panel floats over the map's right side. */
+  controlsRight?: number | string;
   className?: string;
 }
 
@@ -39,7 +42,7 @@ function stepColor(measure: MapMeasure, step: 0 | 1 | 2 | null): string {
  * with a dot at each stop in the same colour. Segments and stops can be clicked; the picked one is marked. A segment or
  * stop with no value is drawn grey. Frames the route whenever `frameKey` changes.
  */
-export default function RouteMap({ model, measure, selected, onPick, anchor = null, card = null, centerOn = null, highlightRoute = null, frameKey, padding, className = '' }: Props) {
+export default function RouteMap({ model, measure, selected, onPick, anchor = null, card = null, centerOn = null, highlightRoute = null, frameKey, padding, controlsRight = 12, className = '' }: Props) {
   const box = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
@@ -101,7 +104,6 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
     const map = new maplibregl.Map({ container: box.current, style: getMapStyle(light), center: [-79.38, 43.65], zoom: 11, attributionControl: false });
     mapRef.current = map;
     if (import.meta.env.DEV) (window as unknown as { __routeMap?: maplibregl.Map }).__routeMap = map;
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-left');
     map.on('load', () => {
       const halo = light ? '#ffffff' : '#111827';
       map.addSource('segments', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
@@ -144,6 +146,9 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
   return (
     <div className={`relative h-full w-full overflow-hidden ${className}`.trim()}>
       <div ref={box} className="h-full w-full" role="img" aria-label="Map of the route, coloured by the chosen measure" />
+      <div className="pointer-events-auto absolute bottom-6 z-20" style={{ right: controlsRight }}>
+        <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
+      </div>
       {at && card && (
         <div className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)] shadow-2xl"
           style={{ left: Math.max(8, Math.min(at.w - 260 - 8, at.x - 130)), top: at.y, width: 260, transform: at.y < 280 ? 'translateY(16px)' : 'translateY(calc(-100% - 16px))' }}>

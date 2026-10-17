@@ -37,7 +37,7 @@ This is how the Live route page (the dashboard and the full analysis at `/apps/l
 
 ## The questions the page answers
 
-### How well it keeps to its timetable (B1)
+### Late departures by hour (B1)
 
 - The share of trips that left the end of the line late, for all days, weekdays and weekends side by side.
 - Below that, an hourly chart for each kind of day: the share of departures ahead, on time and late in each hour.

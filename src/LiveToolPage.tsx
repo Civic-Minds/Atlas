@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
 import { delayAmount } from '../shared/headwayText';
@@ -16,18 +17,14 @@ import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { kpiTiles } from './utils/liveKpi';
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasBrand from './components/AtlasBrand';
-import RoutePicker from './components/Live/RoutePicker';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
-import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
 import OverviewList from './components/Live/tool/OverviewList';
 import LateByHourWidget from './components/Live/tool/LateByHourWidget';
 import ProblemsWidget from './components/Live/tool/ProblemsWidget';
-import StopHourWidget from './components/Live/tool/StopHourWidget';
-import StringLineView from './components/Live/tool/StringLineView';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData from './components/Live/tool/useNetworkData';
 import { KpiTile } from './LiveDashboardView';
@@ -115,32 +112,25 @@ function networkWidgets(s: AgencySummary, band: DashboardBand, onStop: (route: s
   ];
 }
 
-/** The widgets for a route, in priority order: the picked stop or segment, the tiles, late by hour, run time, stops by hour, the worst stops. Whatever the window is too short for goes to a later page. */
-function routeWidgets({ route, data, v3, dir, band, measure, pick, stops, setPick, onStringLine }: {
-  onStringLine: () => void; route: string; data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; stops: ReturnType<typeof directionStopsById>; setPick: (p: MapPick | null) => void;
+/** The widgets for a route: the week's tiles and the run time summary at half width, late by hour and the worst stops at full width. A picked stop or segment shows in the map popover only. */
+function routeWidgets({ data, v3, dir, band, setPick }: {
+  data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; setPick: (p: MapPick | null) => void;
 }): PanelWidget[] {
   const bandData = v3.bands[band] as DashboardBandData;
   const worst = rankStops(bandData.stops, dir, data.uncertainStart ?? []).slice(0, 3);
-  const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
-  const sel = pick?.kind === 'segment'
-    ? { title: `${shortStopName(stops.get(pick.fromStopId)?.name ?? pick.fromStopId)} to ${shortStopName(stops.get(pick.toStopId)?.name ?? pick.toStopId)}`, lines: segmentLines(bandData, dir, pick.fromStopId, pick.toStopId) }
-    : picked ? { title: picked.name, lines: stopLines(v3, band, dir, picked) } : null;
   const hours = routeHours(v3);
-  const hasRunTime = (v3.runningTime?.byHour[String(dir)] ?? []).filter(h => h.n >= 1).length >= 2;
-  const hasHeat = measure !== 'runTime' && [...stops.keys()].some(id => v3.stopHours?.[String(dir)]?.[id]);
+  const hasRunTime = !!v3.runningTime?.bands[band]?.[String(dir)];
   return [
-    ...(sel ? [{ key: 'selection', size: 'medium' as const, node: <Widget title={sel.title} size="medium"><div className="space-y-0.5 text-sm text-[var(--text-secondary)]">{sel.lines.map(l => <div key={l}>{l}</div>)}</div></Widget> }] : []),
     ...tileWidgets(weekly(v3)),
+    ...(hasRunTime ? [{ key: 'run-time', size: 'small' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourWidget hours={hours} band={band} overall={v3.bands.all.adherence.timepoints.all.overall?.lateShare ?? null} /> }] : []),
-    ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
-    ...(hasHeat ? [{ key: 'stops-hour', size: 'large' as const, node: <StopHourWidget v3={v3} dir={dir} stops={stops} measure={measure} selectedStopId={pick?.kind === 'stop' ? pick.stopId : null} onPick={id => setPick({ kind: 'stop', stopId: id })} onStringLine={onStringLine} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops with the most delay" rows={worst.map(x => ({ key: x.stopId, label: shortStopName(titleCase(x.name)), value: pct(x.lateShare), onPick: () => setPick({ kind: 'stop', stopId: x.stopId }) }))} /> }] : []),
   ];
 }
 
 /** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
-function Body({ agency, s, route, setRoute, dir, setDir, band, measure, pick, setPick }: {
-  agency: string; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure, pick, setPick }: {
+  agency: string; dirSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const wide = useMediaQuery('(min-width: 1024px)');
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
@@ -171,51 +161,45 @@ function Body({ agency, s, route, setRoute, dir, setDir, band, measure, pick, se
       : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked)} /> : null
     : null;
   const openStop = (r: string, d: number, stopId: string) => { setRoute(r); setDir(d); setPick({ kind: 'stop', stopId }); };
-  const [stringOpen, setStringOpen] = useState(false);
-  useEffect(() => { setStringOpen(false); }, [route, shown]);
-  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ route: route!, data: ready, v3, dir: shown, band, measure, pick, stops, setPick, onStringLine: () => setStringOpen(true) }) : !route ? networkWidgets(s, band, openStop) : [];
+  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick }) : !route ? networkWidgets(s, band, openStop) : [];
   const mapEl = (
     <RouteMap
       model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={wide ? PANEL_PAD : NARROW_PAD}
+      controlsRight={wide ? 'calc(24.5rem + 24px)' : 12}
       onPick={p => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); }}
       frameKey={route ? `${route}-${shown}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
     />
   );
-  const direction = ids.length > 1 && (
-    <div className="pointer-events-auto rounded-full border border-[var(--border-primary)] bg-[var(--bg-header)] px-2 py-1 shadow-sm">
-      <Group label="Direction" value={String(shown)} onChange={v => { setDir(Number(v)); setPick(null); }} options={ids.map(d => [String(d), v3!.directionLabels[String(d)]] as const)} />
-    </div>
-  );
+  // The direction switch sits in the top bar with the other pills.
+  const direction = ids.length > 1 && dirSlot ? createPortal(<Group label="Direction" value={String(shown)} onChange={v => { setDir(Number(v)); setPick(null); }} options={ids.map(d => [String(d), v3!.directionLabels[String(d)]] as const)} />, dirSlot) : null;
   const note = ready?.note && <p className="pointer-events-none absolute bottom-0 left-0 right-0 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
-  const overlay = stringOpen && v3 && route && <StringLineView agency={agency} route={route} v3={v3} dir={shown} onClose={() => setStringOpen(false)} />;
   if (!wide) {
-    // Narrow screens: the map on top, the widgets as swipeable pages under it, the route list behind the route picker. The page may scroll; no panel does.
+    // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
     return (
       <div className="relative min-h-0 flex-1">
+        {direction}
         <div className="absolute inset-0 overflow-y-auto">
           <div className="relative h-[55vh] min-h-[22rem]">
             <div className="absolute inset-0">{mapEl}</div>
-            <div className="pointer-events-none absolute inset-3"><Key measure={measure} />{ids.length > 1 && <div className="absolute right-0 top-0">{direction}</div>}{note}</div>
+            <div className="pointer-events-none absolute inset-3"><Key measure={measure} />{note}</div>
           </div>
-          <WidgetPanel swipe rows={2} className="p-3" widgets={widgets} />
+          <WidgetPanel className="p-3" widgets={widgets} />
         </div>
-        {overlay}
       </div>
     );
   }
   return (
     <div className="relative min-h-0 flex-1">
+      {direction}
       <div className="absolute inset-0">{mapEl}</div>
       <div className="pointer-events-none absolute inset-3 flex gap-3">
         <div className="pointer-events-auto flex w-72 shrink-0 flex-col"><OverviewList s={s} measure={measure} route={route} network={network} onPick={r => { setRoute(r); setPick(null); }} /></div>
         <div className="relative min-w-0 flex-1">
           <Key measure={measure} />
-          {ids.length > 1 && <div className="absolute left-1/2 top-0 -translate-x-1/2">{direction}</div>}
           {note}
         </div>
         <WidgetPanel className="pointer-events-auto w-[24.5rem] shrink-0" widgets={widgets} />
       </div>
-      {overlay}
     </div>
   );
 }
@@ -228,6 +212,7 @@ export default function LiveToolPage() {
   const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
   const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) ? (m as MapMeasure) : 'late'; });
+  const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
   const [pick, setPick] = useState<MapPick | null>(() => {
     const stop = readParam('stop'), seg = readParam('seg');
     if (stop) return { kind: 'stop', stopId: stop };
@@ -252,11 +237,11 @@ export default function LiveToolPage() {
       <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2">
         <a href="/" aria-label="Atlas by Civic Minds"><AtlasBrand /></a>
         <button type="button" onClick={() => { setRoute(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
-        <RoutePicker s={s} route={route} onPick={r => { setRoute(r); setPick(null); }} />
+        <div ref={setDirSlot} className="contents" />
         <Group label="Measure" value={measure} onChange={v => setMeasure(v as MapMeasure)} options={MEASURES} />
         <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
       </header>
-      <Body agency={agency} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} pick={pick} setPick={setPick} />
+      <Body agency={agency} dirSlot={dirSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} pick={pick} setPick={setPick} />
     </>,
   );
 }

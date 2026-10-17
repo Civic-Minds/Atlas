@@ -30,7 +30,7 @@ import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { builtText, lateCount, lateHourLine, liveSubtitle, METHOD_GROUPS, dayComparedWith, dayText, estimatedNote, weekOfText } from '../shared/liveWording';
+import { builtText, LATE_BY_HOUR_TITLE, lateCount, lateHourLine, liveSubtitle, METHOD_GROUPS, dayComparedWith, dayText, estimatedNote, weekOfText } from '../shared/liveWording';
 import { useLiveYesterday } from './hooks/useLiveYesterday';
 import PeriodSubtitle from './components/Live/PeriodSubtitle';
 import MethodFootnote, { Term } from './components/Live/MethodFootnote';
@@ -118,7 +118,7 @@ function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: numbe
   const all = countsFor('all');
   const parts = [{ name: 'Ahead', color: 'var(--status-caution-text)' }, { name: 'On time', color: 'var(--status-positive-text)' }, { name: 'Late', color: 'var(--status-negative-text)' }];
   return (
-    <Section id="b1" title="How well it keeps to its timetable">
+    <Section id="b1" title={LATE_BY_HOUR_TITLE}>
       {all && all.n > 0 ? (
         <>
           <p className="mt-2 text-sm text-[var(--text-muted)]">Share of trips that left the end of the line more than 5 min late.</p>
@@ -631,7 +631,7 @@ function AnalysisPage() {
         ) : (<>
         <Filters v3={v3} dir={dir} setDir={setDir} />
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Adherence data={bandData} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><Adherence data={bandData} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Run time')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>

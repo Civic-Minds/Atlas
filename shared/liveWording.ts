@@ -6,6 +6,8 @@ import { dateRangeText } from './liveDashboard';
  */
 
 /** The Late tile's caption under its percentage. */
+/** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
+export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 export const LATE_TILE_CAPTION = 'of trips left the end of the line more than 5 min late';
 
 /** The week a page's figures cover, as its subtitle opens: "Week of Oct 8–14". */

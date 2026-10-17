@@ -28,7 +28,7 @@ import DirectionStrip, { directionStopsById } from './components/Live/DirectionS
 import { delayText, type RouteStripStop } from './components/Live/routeStripModel';
 import { KpiRow } from './LiveDashboardView';
 import { BOUNDARY, Method, routeSubtitle, withNiceNames } from './LiveRoutePage';
-import { lateCount, lateHourLine } from '../shared/liveWording';
+import { lateCount, lateHourLine, LATE_BY_HOUR_TITLE } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -534,9 +534,9 @@ export default function LiveExplorePage() {
         <Main v3={v3} band={band} dir={dir} uncertain={uncertain} sel={sel} setSel={setPicked} />
       </ErrorBoundary>
 
-      <Section id="x-late" title="How well it keeps to its timetable">
+      <Section id="x-late" title={LATE_BY_HOUR_TITLE}>
         <div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>
-        <ErrorBoundary label={BOUNDARY('How well it keeps to its timetable')}><Late data={bandData} dir={dir} day={day} band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><Late data={bandData} dir={dir} day={day} band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
       </Section>
       <Section id="x-runtime" title="Run time">
         <ErrorBoundary label={BOUNDARY('Run time')}><RunTime v3={v3} band={band} dir={dir} /></ErrorBoundary>

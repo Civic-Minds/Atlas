@@ -52,7 +52,7 @@ describe('Live route dashboard', () => {
     // U9: a link is shown as a link, never as a verdict.
     expect(document.body.textContent).not.toMatch(/caused by|because of/i);
     // B1: all days, weekdays and weekends side by side, each the share late with its count; no pill swaps a number.
-    const b1 = screen.getByRole('region', { name: /How well it keeps to its timetable/ });
+    const b1 = screen.getByRole('region', { name: /Late departures by hour/ });
     expect(within(b1).getByText('All days', { selector: 'div' }).nextElementSibling!.textContent).toBe('9%');
     expect(within(b1).getAllByText(/late, of 1,000/).length).toBeGreaterThan(0);
     expect(within(b1).getByText('Weekdays', { selector: 'div' })).toBeTruthy();
@@ -79,7 +79,7 @@ describe('Live route dashboard', () => {
     expect(screen.queryByRole('button', { name: 'AM peak' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Weekends' })).toBeNull();
     // All days, weekdays and weekends: three hourly charts side by side.
-    const b1 = screen.getByRole('region', { name: /How well it keeps/ });
+    const b1 = screen.getByRole('region', { name: /Late departures by hour/ });
     expect(within(b1).getAllByRole('img').length).toBe(3);
     expect(screen.getAllByText('By time of day').length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'Westbound' }));
@@ -187,7 +187,7 @@ describe('Live route dashboard', () => {
     const broken = { ...ready, v3: { ...v3, bands: { ...v3.bands, all: { ...v3.bands.all, buildup: undefined as unknown as LiveV3['buildup'] } } }, uncertainStart: undefined as unknown as UncertainStart[] };
     renderPage(broken);
     expect(await screen.findByText(/Where delays build up could not be drawn/)).toBeTruthy();
-    expect(screen.getByRole('region', { name: /How well it keeps to its timetable/ })).toBeTruthy();
+    expect(screen.getByRole('region', { name: /Late departures by hour/ })).toBeTruthy();
     expect(screen.getByText('How this is measured')).toBeTruthy();
     vi.restoreAllMocks();
   });
