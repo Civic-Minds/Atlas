@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **A corrected agency time zone survives the next feed refresh**: Gold Coast, Spokane and Washington County feeds carry a same-offset zone from across the border, and each refresh copied it back over the fix.
 - **Live hour charts end cleanly after midnight (local only)**: run time, late by hour and the hour sparklines run 5 am to 4 am in one line and stop at the last hour with enough trips, so no stray marks float past 12a or under the line labels; charts side by side share one axis.
 - **Live route pages: a new full-width analysis view (`?view=explore`)**: the route strip with a detail panel for any stop or stretch, one set of filters for direction and time of day, and every chart on one page; stop names in the worst-stops table open that stop in the panel.
 - **Live reports are easy to share**: `?view=lite` is one short screen per route (the week's tiles, the route strip, late by hour, a link to the full analysis), and a pasted Live report link now previews with the route's name and its share of late departures for the week, from a page written at build time.

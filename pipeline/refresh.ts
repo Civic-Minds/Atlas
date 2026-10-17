@@ -67,6 +67,7 @@ import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { peekFeedDates } from './archiveSelection.js';
 import { tryArchiveUnchangedFeed } from './archiveIfMissing.js';
+import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
 import {
   applyOverrides,
   blockReason,
@@ -232,6 +233,7 @@ interface AgencyEntry {
   region?: string | null;
   center: [number, number];
   timezone?: string | null;
+  timezoneOverride?: string;
   url: string;
   stopsUrl: string;
   corridorsUrl?: string;
@@ -514,7 +516,7 @@ async function refreshAgency(
   const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
   const { feedExpiry, feedVersion, timezone } = primary;
   agency.feedQuality = primary.feedQuality;
-  agency.timezone = timezone ?? agency.timezone;
+  agency.timezone = resolveAgencyTimezone(timezone, agency);
 
   // Stop points count as features, so check route lines too: a stops-only result was
   // stamped "current" with 0 routes (#634).
