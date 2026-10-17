@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DashboardBandData, LiveV3 } from '../../../../shared/liveDashboard';
 import { healthyCounts, healthyLateByHour } from '../../../../shared/liveDashboard';
-import { runTimeDiffText } from '../../../../shared/liveWording';
+import { risePointsText, runTimeDiffText } from '../../../../shared/liveWording';
 import LateByHourSection, { daysCountedOf, isThin, rowMax, lateByHourModel, routeLateDays, routeLateHours, routeLateOverall } from '../sections/LateByHourSection';
 
 // 2026-10-10 and 2026-10-11 are a Saturday and a Sunday. 2026-10-11 has gaps in the recordings (not a good day).
@@ -80,6 +80,9 @@ describe('visible days, peak label and run time wording', () => {
     const peaks = container.querySelectorAll('[data-peak]');
     expect(peaks).toHaveLength(1);
     expect(peaks[0].textContent).toBe('9%'); // the 20% hour has only 5 departures: not the peak
+  });
+  it('writes a rise in a share in points', () => {
+    expect([risePointsText(0.31), risePointsText(0.045), risePointsText(0)]).toEqual(['+31 pt', '+5 pt', '0 pt']);
   });
   it('writes run time against the timetable in minutes', () => {
     expect(runTimeDiffText(-2)).toBe('2 min faster than the timetable');

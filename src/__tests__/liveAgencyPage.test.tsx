@@ -25,7 +25,7 @@ describe('Live agency page', () => {
     render(<MemoryRouter initialEntries={['/apps/live/ttc']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);
     const bunching = within(await screen.findByRole('region', { name: 'Where bunching forms' }));
     expect(bunching.getByRole('columnheader', { name: /Added/ })).toBeTruthy();
-    expect(bunching.getByText('33%')).toBeTruthy();
+    expect(bunching.getByText('+33 pt')).toBeTruthy();
     const delays = within(screen.getByRole('region', { name: 'Where delays start' }));
     expect(delays.getByText('+2.4 min')).toBeTruthy();
   });

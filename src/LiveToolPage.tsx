@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
 
 import { minutesText } from '../shared/liveFormat';
-import { LATE_SHORT, LATE_THRESHOLD } from '../shared/liveWording';
+import { LATE_SHORT, LATE_THRESHOLD, risePointsText } from '../shared/liveWording';
 import type { AgencySummary } from '../shared/liveAgency';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -109,11 +109,11 @@ const MATH: Partial<Record<Kpi['key'], string>> = { late: LATE_SHORT, extraWait:
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The route panel's tiles are bare (figure and change): the explanations are shown once, on the left. */
-const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.map((k, i) => ({
+const tileWidgets = (tiles: ReturnType<typeof weekly>, legend: boolean): PanelWidget[] => tiles.map((k, i) => ({
   key: `tile-${k.key}`, size: 'small' as const, tile: true,
   node: (
     <>
-      <KpiTile k={k} bare />
+      <KpiTile k={k} bare caption={legend && k.key === 'bunching'} />
       {/* The week's figures cover the whole route, while Run time and the stops follow the direction pills. Said once, in the 12px gap under the last row of tiles (from the row's left tile, for any number of tiles), so it takes no height. */}
       {i === tiles.length - (tiles.length % 2 || 2) && <span className="pointer-events-none absolute left-2 top-full whitespace-nowrap text-xs leading-3 text-[var(--text-dim)]">{BOTH_DIRECTIONS}</span>}
     </>
@@ -135,7 +135,7 @@ function networkWidgets(s: AgencySummary, onOpen: (route: string, dir: number, p
   const label = (r: string) => s.routes.find(x => x.route === r)?.label ?? r;
   const stopRows = s.worstStops.slice(0, 5).map(x => ({ key: `${x.route}-${x.stopId}-${x.directionId}`, label: shortStopName(titleCase(x.name)), sub: x.routeLabel, value: pct(x.lateShare), onPick: () => onOpen(x.route, x.directionId, { kind: 'stop', stopId: x.stopId }) }));
   const stretchRows = (list: AgencySummary['delayStarts'], value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: `${shortStopName(titleCase(x.fromName))} to ${shortStopName(titleCase(x.toName))}`, sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
-  const delays = stretchRows(s.delayStarts, mins), bunching = stretchRows(s.bunchingForms, pct);
+  const delays = stretchRows(s.delayStarts, mins), bunching = stretchRows(s.bunchingForms, risePointsText);
   return [
     ...(stopRows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" intro={`The ${stopRows.length} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`} rows={stopRows} /> }] : []),
     ...(delays.length ? [{ key: 'delays', size: 'medium' as const, node: <ProblemsWidget title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there." rows={delays} /> }] : []),
@@ -147,15 +147,15 @@ function networkWidgets(s: AgencySummary, onOpen: (route: string, dir: number, p
 const headingWidget = (text: string): PanelWidget => ({ key: 'heading-agency', size: 'medium', node: <h2 className="m-0 truncate text-sm font-bold text-[var(--text-primary)]">{text}</h2> });
 
 /** The widgets for a route: the week's tiles and the run time summary at half width, late by hour and the worst stops at full width. A picked stop or segment shows in the map popover only. */
-function routeWidgets({ data, v3, dir, band, setPick }: {
-  data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; setPick: (p: MapPick | null) => void;
+function routeWidgets({ data, v3, dir, band, setPick, legend }: {
+  data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; setPick: (p: MapPick | null) => void; /** Room for the Bunching tile's "too close · too far apart" line. */ legend: boolean;
 }): PanelWidget[] {
   const bandData = v3.bands[band] as DashboardBandData;
   const worst = worstStopRows(v3, bandData, dir, data.uncertainStart ?? [], 3, stopId => setPick({ kind: 'stop', stopId }));
   const hours = routeLateHours(v3);
   const hasRunTime = !!v3.runningTime?.bands[band]?.[String(dir)];
   return [
-    ...tileWidgets(weekly(v3)),
+    ...tileWidgets(weekly(v3), legend),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} ofDays={routeLateOfDays(v3)} scope={BOTH_DIRECTIONS} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" rows={worst} /> }] : []),
@@ -213,8 +213,26 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
     ? pick?.kind === 'segment' ? <MapCard title={`${shortStopName(stops.get(pick.fromStopId)?.name ?? pick.fromStopId)} to ${shortStopName(stops.get(pick.toStopId)?.name ?? pick.toStopId)}`} lines={segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)} />
       : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked)} /> : null
     : null;
+  // The Bunching tile's legend line is shown only where the right panel has room for it (it never scrolls or clips); its text is the tile's hover title either way.
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [legend, setLegend] = useState(false);
+  const LEGEND_PX = 18;
+  useLayoutEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    // The panel's content height is where its last widget ends (scrollHeight is never less than the panel's own height).
+    const measure = () => {
+      const last = el.lastElementChild?.getBoundingClientRect().bottom ?? 0;
+      setLegend(el.getBoundingClientRect().bottom - (last - (legend ? LEGEND_PX : 0)) >= LEGEND_PX);
+    };
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  });
   const summary = useMemo(() => [headingWidget(agency.toUpperCase()), ...summaryWidgets(s, band)], [s, band, agency]);
-  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick }) : !route ? networkWidgets(s, (r, d, p) => { setRoute(r); setDir(d); setPick(p); }) : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
+  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick, legend }) : !route ? networkWidgets(s, (r, d, p) => { setRoute(r); setDir(d); setPick(p); }) : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
   // The map note sits over the map's bottom edge: the route is framed above it (its measured height plus its inset and a gap).
   const [noteEl, setNoteEl] = useState<HTMLElement | null>(null);
   const [noteH, setNoteH] = useState(0);
@@ -272,7 +290,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
           <Key measure={measure} />
           {note}
         </div>
-        <WidgetPanel className="pointer-events-auto w-[24.5rem] shrink-0" widgets={widgets} />
+        <WidgetPanel panelRef={panelRef} className="pointer-events-auto w-[24.5rem] shrink-0" widgets={widgets} />
       </div>
     </div>
   );

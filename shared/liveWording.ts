@@ -86,3 +86,6 @@ export const RECORDING_GAPS = "days with gaps in our recordings are left out, an
 
 /** Run time against the timetable in whole minutes: "2 min faster than the timetable" (the tile's caption), or without the tail in a table cell. */
 export const runTimeDiffText = (diffMin: number, tail = true): string => (diffMin === 0 ? 'same as the timetable' : `${Math.abs(diffMin)} min ${diffMin < 0 ? 'faster' : 'slower'}${tail ? ' than the timetable' : ''}`);
+
+/** A rise in a share, in percentage points: "+31 pt" (the unit the tiles use for a change in a share). */
+export const risePointsText = (rise: number): string => `${rise > 0 ? '+' : ''}${Math.round(rise * 100)} pt`;

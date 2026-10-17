@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **"Where bunching forms" gives the rise as "+31 pt" in the agency table and the planner (local only)**: it read "31%" (or "33%" from an older file), which looked like a share; it is the rise in points between two stops.
+- **The planner's Bunching tile names its two parts where the panel has room (local only)**: "too close · too far apart" shows under the figure at 1440x900 and is always its hover text.
 - **The Summary page ends with "How this is measured" (local only)**: open and compact, with the days counted on their own line, as on the Dashboard; still no view switcher.
 - **Long stop names under the run-time and delay charts wrap instead of ending in "..." (local only)**: "Queens Quay/Ferry Docks Station" on the 510 was cut.
 - **A thin hour no longer flattens the late-by-hour charts (local only)**: the row's scale follows hours with 30+ departures; a faded bar that runs past it is cut at the chart's top with a small chevron (its value is still in the hover text). The 510 weekend no longer forces a 70% axis.

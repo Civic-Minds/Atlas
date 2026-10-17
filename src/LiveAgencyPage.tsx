@@ -24,7 +24,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
-import { coveredRoutesText, LATE_THRESHOLD, liveSubtitle, runTimeDiffText } from '../shared/liveWording';
+import { coveredRoutesText, LATE_THRESHOLD, liveSubtitle, risePointsText, runTimeDiffText } from '../shared/liveWording';
 import { tenth } from '../shared/liveFormat';
 import MethodSection from './components/Live/sections/MethodSection';
 
@@ -224,7 +224,7 @@ export default function LiveAgencyPage() {
         </Section>
 
         <Section id="agency-bunching" title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up.">
-          <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" valueHeader="Added" format={x => pct(x)} />
+          <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" valueHeader="Added" format={risePointsText} />
         </Section>
 
         <MethodSection scope="agency" s={s} />
