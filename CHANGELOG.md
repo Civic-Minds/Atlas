@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The Live terms are in the Docs glossary (local only)**: Late, Run time, Extra wait, Bunching and the rest read the same there as under "How this is measured" on the agency page, which now links to them ("What these terms mean"); a link into a Docs section now lands on it (CIV-304).
 - **Live reports show the rolling 7 days only (local only)**: the This week / Yesterday menu is gone from the agency report and route pages; the week-against-last-week comparisons stay (CIV-301 cancelled).
 - **Extra wait reads "than scheduled" everywhere on Live (local only)**: the tile caption, the route page's Extra wait intro and the route sentence all say "longer wait than scheduled" in place of "than the timetable promises".
 - **Live planner: everything shown at once (local only)**: the left side has the network's week figures as one-line rows and late departures by hour above the route list (the only route picker), the right side only what is selected (a route's tiles, run time summary, late by hour and worst stops, or the network's three worst-places lists), widgets two across or full width with no paging or collapsing, each with the lines that explain its math (thresholds and rules) and full stretch names; zoom sits on the right like the main map and the direction pills join the one-line top bar.

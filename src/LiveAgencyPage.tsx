@@ -24,7 +24,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import { builtText, coveredRoutesText, liveSubtitle, METHOD_GROUPS } from '../shared/liveWording';
 import MethodFootnote, { Term } from './components/Live/MethodFootnote';
-import { bunchingLine, colourLine, deliveredLine, extraWaitLine, lateAtStopLine, lateLine, positionsLine, recordingGapsLine, runTimeLine, tripMatchLine } from './components/Live/methodLines';
+import { bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateAtStopLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from './components/Live/methodLines';
 
 /** One column grid for every table on the page, so the first column, Route and Direction line up from table to table (widths in rem; the number columns share the rest of the width equally). */
 const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
@@ -233,20 +233,20 @@ export default function LiveAgencyPage() {
             extraWaitLine,
             bunchingLine(),
             deliveredLine(),
-            <Term t="Where delays start">the stretch where delay jumps and stays up; directions where delay builds slowly have no single place and are left out.</Term>,
+            delaysStartLine,
           ] },
           { label: METHOD_GROUPS.data, items: [
             w && weekWindowLine({ ...w, health: [] }),
             positionsLine,
             tripMatchLine(),
             <Term t="Covered">{coverage}{s.held.length ? ` (${s.held.map(h => h.route).join(', ')} not included)` : ''}.</Term>,
-            <Term t="Network figures">every departure, trip or gap on the covered routes added up, not an average of route figures, so busy routes weigh more.</Term>,
-            <Term t="Stops">at least 30 departures, at most 3 from one route direction.</Term>,
+            networkFiguresLine,
+            stopsLine,
             builtText(s.generatedAt) + '.',
           ] },
           { label: METHOD_GROUPS.colours, items: [w && colourLine] },
           { label: METHOD_GROUPS.limits, items: [recordingGapsLine] },
-        ]} />
+        ]} after={<p className="mt-2 text-xs"><ArrowLink href="/about/docs#glossary">What these terms mean</ArrowLink></p>} />
       </article>
     </PageShell>
   );

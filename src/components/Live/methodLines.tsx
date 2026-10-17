@@ -32,3 +32,8 @@ export const tripMatchLine = (rule = false) => (
 
 export const colourLine = NOISE_RULE;
 export const recordingGapsLine = <Term t="Recording gaps">{RECORDING_GAPS}</Term>;
+
+/** The agency page's own lines, here so the Docs glossary can be checked against them. */
+export const delaysStartLine = <Term t="Where delays start">the stretch where delay jumps and stays up; directions where delay builds slowly have no single place and are left out.</Term>;
+export const networkFiguresLine = <Term t="Network figures">every departure, trip or gap on the covered routes added up, not an average of route figures, so busy routes weigh more.</Term>;
+export const stopsLine = <Term t="Stops">at least 30 departures, at most 3 from one route direction.</Term>;
