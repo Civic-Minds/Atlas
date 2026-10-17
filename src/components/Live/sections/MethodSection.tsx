@@ -5,7 +5,7 @@ import { builtText, coveredRoutesText, METHOD_GROUPS } from '../../../../shared/
 import { weekWindowLine } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { Term } from '../MethodFootnote';
-import { bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateAtStopLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
+import { aheadLine, bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -42,7 +42,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
       <MethodFootnote id="method" collapsible groups={[
       { label: METHOD_GROUPS.numbers, items: [
         lateLine,
-        lateAtStopLine(v3.thresholds.lateAtOrAboveMin, Math.abs(v3.thresholds.earlyAtOrBelowMin)),
+        aheadLine(Math.abs(v3.thresholds.earlyAtOrBelowMin)),
         runTimeLine(true),
         extraWaitLine,
         bunchingLine(Math.round(v3.thresholds.bunchedGapSec / 60)),

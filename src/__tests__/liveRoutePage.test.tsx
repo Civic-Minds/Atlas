@@ -73,6 +73,10 @@ describe('Live route dashboard', () => {
     // Method.
     expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
     expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
+    // One Late definition (no second "Late at a stop" line), then what ahead means, from the file's own limit.
+    expect(screen.getAllByText(/more than 5½ min behind the timetable/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/Late at a stop/)).toBeNull();
+    expect(screen.getAllByText(/more than 5½ min behind the timetable.*? Ahead means 1\.5\+ minutes before it\./).length).toBeGreaterThan(0);
   });
 
   it('has no time-of-day toggle: the whole day, a per-period list where the answer differs, and the direction in the address', async () => {
