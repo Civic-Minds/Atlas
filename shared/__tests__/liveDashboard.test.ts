@@ -9,7 +9,8 @@ describe('dashboardUnavailable', () => {
     expect(dashboardUnavailable('ttc', '512')!.reason).toBe(LIVE_DASHBOARD_HOLD['ttc::512']);
   });
   it('says how to build a route that has no analysis, and nothing for one that has it', () => {
-    expect(dashboardUnavailable('burlington', '1')!.reason).toMatch(/npm run live:analyze -- 1/);
+    expect(dashboardUnavailable('burlington', '1')!.reason).not.toMatch(/npm run/);
+    expect(dashboardUnavailable('burlington', '1')!.devHint).toMatch(/npm run live:analyze -- 1/);
     expect(dashboardUnavailable('ttc', '505')).toBeNull();
   });
 });
@@ -54,10 +55,12 @@ describe('freshness', () => {
   it('is quiet when the newest day is recent', () => {
     expect(freshness(v3(['2026-10-13', '2026-10-14']), '505', noon('2026-10-15'))).toMatchObject({ stale: false, text: 'Data up to 2026-10-14.' });
   });
-  it('warns, and says how to rebuild, after more than two days', () => {
+  it('warns, with the rebuild command kept apart as a developer hint, after more than two days', () => {
     const f = freshness(v3(['2026-10-10']), '505', noon('2026-10-15'));
     expect(f.stale).toBe(true);
-    expect(f.text).toMatch(/Data up to 2026-10-10, 5 days ago.*npm run live:analyze -- 505/);
+    expect(f.text).toBe('Data up to 2026-10-10, 5 days ago.');
+    expect(f.text).not.toMatch(/npm run/);
+    expect(f.devHint).toMatch(/npm run live:analyze -- 505/);
   });
   it('says so when there are no days at all', () => {
     expect(freshness(v3([]), '505', 0).stale).toBe(true);

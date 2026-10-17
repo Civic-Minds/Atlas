@@ -195,11 +195,11 @@ export function qualityHold(v3: LiveV3): string | null {
 }
 
 /** Why the dashboard has nothing for this route, or null when it should. `analysed`: an analysis file exists for it. */
-export function dashboardUnavailable(agency: string, route: string, analysed = hasLiveAnalysis(agency, route)): { status: 'held' | 'no_analysis' | 'unknown_route'; reason: string } | null {
+export function dashboardUnavailable(agency: string, route: string, analysed = hasLiveAnalysis(agency, route)): { status: 'held' | 'no_analysis' | 'unknown_route'; reason: string; /** The developer command that builds it: for dev builds and the console, never the page. */ devHint?: string } | null {
   const hold = dashboardHold(agency, route);
   if (hold) return { status: 'held', reason: hold };
   if (!analysed) {
-    return { status: 'no_analysis', reason: `No analysis is built for ${agency.toUpperCase()} ${route} yet. It needs saved vehicle locations and the timetable for the route; build it with "npm run live:analyze -- ${route}".` };
+    return { status: 'no_analysis', reason: `No analysis is built for ${agency.toUpperCase()} ${route} yet. It needs saved vehicle locations and the timetable for the route.`, devHint: `npm run live:analyze -- ${route}` };
   }
   return null;
 }
@@ -312,19 +312,20 @@ export interface Freshness {
   stale: boolean;
   /** Plain sentence for the page; for a stale analysis it also says how to rebuild. */
   text: string;
+  /** The developer command that rebuilds the analysis: for dev builds and the console, never the page. */
+  devHint?: string;
 }
 
-/** "Data up to <date>", and a warning when it is more than two days old. `route` is for the rebuild command. */
+/** "Data up to <date>", and a warning when it is more than two days old. `route` is for the developer rebuild command (`devHint`). */
 export function freshness(v3: LiveV3, route: string, now: number): Freshness {
   const upTo = v3.window.dates[v3.window.dates.length - 1] ?? null;
-  if (!upTo) return { upTo: null, daysOld: null, stale: true, text: `This analysis has no days in it. Rebuild it with "npm run live:analyze -- ${route}".` };
+  if (!upTo) return { upTo: null, daysOld: null, stale: true, text: 'This analysis has no days in it.', devHint: `npm run live:analyze -- ${route}` };
   const daysOld = Math.floor((now - Date.parse(`${upTo}T12:00:00Z`)) / 86_400_000);
   const stale = daysOld > STALE_AFTER_DAYS;
   return {
     upTo, daysOld, stale,
-    text: stale
-      ? `Data up to ${upTo}, ${daysOld} days ago. Rebuild it with "npm run live:analyze -- ${route}" (needs fresh saved vehicle locations).`
-      : `Data up to ${upTo}.`,
+    text: stale ? `Data up to ${upTo}, ${daysOld} days ago.` : `Data up to ${upTo}.`,
+    devHint: stale ? `npm run live:analyze -- ${route} (needs fresh saved vehicle locations)` : undefined,
   };
 }
 
@@ -346,7 +347,7 @@ const hourName = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'a
 
 /** "Scheduled 22 min · usually 27 · 1 in 10 over 34 min" (with the hour when one is given). */
 export function runningTimeSentence(label: string, r: RunTimeFigures | null | undefined, atHour?: number): string {
-  if (!r) return `${label}: too few trips were measured over the main stretch to say. Rebuilding the analysis with npm run live:analyze measures them.`;
+  if (!r) return `${label}: too few trips were measured over the main stretch to say.`;
   if (r.n < 30) return `${label}: too few trips (${r.n}) were measured from end to end to say.`;
   return `${label}: scheduled ${Math.round(r.scheduledMin)} min · usually ${Math.round(r.typicalMin)} · 1 in 10 over ${Math.round(r.p90Min)} min${atHour != null ? ` at ${hourName(atHour)}` : ''}.`;
 }

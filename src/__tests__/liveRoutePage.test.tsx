@@ -176,7 +176,7 @@ describe('Live route dashboard', () => {
       unmount();
       vi.setSystemTime(new Date('2026-10-25T20:00:00Z'));
       renderPage(ready);
-      expect(await screen.findByRole('status')).toHaveProperty('textContent', expect.stringMatching(/Data up to 2026-10-14, 11 days ago.*npm run live:analyze -- 505/));
+      expect(await screen.findByRole('status')).toHaveProperty('textContent', expect.stringMatching(/^Data up to 2026-10-14, 11 days ago\.$/));
     } finally {
       vi.useRealTimers();
     }
