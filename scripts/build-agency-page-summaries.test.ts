@@ -1,5 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { displayNameFor, primaryCity, summarize } from './build-agency-page-summaries';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { displayNameFor, getReleaseAgency, primaryCity, pruneReleaseCache, summarize } from './build-agency-page-summaries';
 import { bandCounts, FREQUENCY_BANDS } from '../shared/agencyPages';
 
 function line(name: string, directionId: number, midday: number | null, extra: Record<string, unknown> = {}) {
@@ -142,4 +145,121 @@ describe('summarize: areas per route (CIV-274)', () => {
   it('leaves areas out without boundaries', () => {
     expect(summarize([line('66', 0, 30)] as any, 'x', null).routes[0].areas).toBeUndefined();
   });
+});
+
+describe('release cache (CIV-315)', () => {
+  const release = { releaseId: 'release-test', agencyPrefix: 'atlas/releases/release-test/agencies' };
+  const dirs: string[] = [];
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    for (const d of dirs.splice(0)) rmSync(d, { recursive: true, force: true });
+  });
+  const cacheRoot = () => { const d = mkdtempSync(join(tmpdir(), 'agency-pages-cache-')); dirs.push(d); return d; };
+
+  it('fetches each agency once and reads it from the cache after that', async () => {
+    const root = cacheRoot();
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ features: [{ geometry: { type: 'Point' }, properties: {} }] })));
+    vi.stubGlobal('fetch', fetchMock);
+    const first = await getReleaseAgency(release, 'ttc', root);
+    const second = await getReleaseAgency(release, 'ttc', root);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(second).toEqual(first);
+    expect(readdirSync(join(root, 'release-test'))).toEqual(['ttc.json']);
+  });
+
+  const routeFile = JSON.stringify({ features: [{ geometry: { type: 'Point' }, properties: {} }] });
+
+  it('caches nothing when every download is incomplete, after retrying', async () => {
+    vi.useFakeTimers();
+    try {
+      const root = cacheRoot();
+      const fetchMock = vi.fn(async () => new Response('{"features": ['));
+      vi.stubGlobal('fetch', fetchMock);
+      const pending = expect(getReleaseAgency(release, 'ttc', root)).rejects.toThrow();
+      await vi.runAllTimersAsync();
+      await pending;
+      expect(fetchMock).toHaveBeenCalledTimes(4);
+      expect(existsSync(join(root, 'release-test', 'ttc.json'))).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('retries a truncated download and caches the complete one', async () => {
+    vi.useFakeTimers();
+    try {
+      const root = cacheRoot();
+      const fetchMock = vi.fn()
+        .mockResolvedValueOnce(new Response('{"features": ['))
+        .mockResolvedValueOnce(new Response(routeFile));
+      vi.stubGlobal('fetch', fetchMock);
+      const pending = getReleaseAgency(release, 'ttc', root);
+      await vi.runAllTimersAsync();
+      expect((await pending).features).toHaveLength(1);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(existsSync(join(root, 'release-test', 'ttc.json'))).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not cache JSON without a features array', async () => {
+    vi.useFakeTimers();
+    try {
+      const root = cacheRoot();
+      vi.stubGlobal('fetch', vi.fn(async () => new Response('{"error":"not found"}')));
+      const pending = expect(getReleaseAgency(release, 'ttc', root)).rejects.toThrow(/shape/);
+      await vi.runAllTimersAsync();
+      await pending;
+      expect(existsSync(join(root, 'release-test', 'ttc.json'))).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('fetches again over a corrupt cached file', async () => {
+    const root = cacheRoot();
+    mkdirSync(join(root, 'release-test'), { recursive: true });
+    writeFileSync(join(root, 'release-test', 'ttc.json'), '{"features": [');
+    const fetchMock = vi.fn(async () => new Response(routeFile));
+    vi.stubGlobal('fetch', fetchMock);
+    expect((await getReleaseAgency(release, 'ttc', root)).features).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect((await getReleaseAgency(release, 'ttc', root)).features).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores a leftover .part file', async () => {
+    const root = cacheRoot();
+    mkdirSync(join(root, 'release-test'), { recursive: true });
+    writeFileSync(join(root, 'release-test', 'ttc.json.part'), routeFile);
+    const fetchMock = vi.fn(async () => new Response(routeFile));
+    vi.stubGlobal('fetch', fetchMock);
+    await getReleaseAgency(release, 'ttc', root);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(readdirSync(join(root, 'release-test'))).toEqual(['ttc.json']);
+  });
+
+  it('does not read another release from the cache', async () => {
+    const root = cacheRoot();
+    const fetchMock = vi.fn(async () => new Response(routeFile));
+    vi.stubGlobal('fetch', fetchMock);
+    await getReleaseAgency(release, 'ttc', root);
+    await getReleaseAgency({ releaseId: 'release-next', agencyPrefix: 'atlas/releases/release-next/agencies' }, 'ttc', root);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls.map(c => String(c[0]))).toEqual([
+      expect.stringContaining('release-test/agencies/ttc.json'),
+      expect.stringContaining('release-next/agencies/ttc.json'),
+    ]);
+  });
+
+  it('prunes every release folder but the current one', () => {
+    const root = cacheRoot();
+    for (const id of ['release-old', 'release-test', 'release-older']) mkdirSync(join(root, id));
+    writeFileSync(join(root, 'release-test', 'ttc.json'), routeFile);
+    pruneReleaseCache('release-test', root);
+    expect(readdirSync(root)).toEqual(['release-test']);
+    expect(readdirSync(join(root, 'release-test'))).toEqual(['ttc.json']);
+  });
+
 });
