@@ -156,8 +156,9 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
     expect(screen.getByTitle(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
     expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
-    expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
-    expect(screen.getByText('97% of scheduled trips ran (194 of 200).')).toBeTruthy();
+    // The extra wait sentence is gone from Full analysis (the table gives the figures); Method keeps the definition.
+    expect(screen.queryByText(/riders at Spadina & Queens Quay wait about/)).toBeNull();
+    expect(screen.queryByText(/of scheduled trips ran \(194 of 200\)/)).toBeNull(); // the week tile says it; the section keeps the chart and the skipped-days note
     expect(screen.getByText(/Not counted: Oct 14/)).toBeTruthy();
   });
 

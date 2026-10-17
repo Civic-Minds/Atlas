@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { extraWaitSentence, type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
+import { type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
 import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
@@ -30,7 +30,10 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
   if (!m && full) return null;
   const frame = (children: ReactNode) => <Section id={full ? 'wait' : 'x-wait'} title="Extra wait" shrink={!full} boundary={boundary}>{children}</Section>;
   if (!m) return frame(null);
-  const { all, dirs, pointsOf, scale, worst } = m;
+  const { all, dirs, pointsOf, scale } = m;
+  // The Full analysis lists the five longest waits (the rest are in the chart's hover text); Explore lists ten.
+  const worst = full ? m.worst.slice(0, 5) : m.worst;
+  const points0 = Math.max(0, ...dirs.map(d => pointsOf(d).length));
   if (all.length === 0) {
     return frame(<>
       {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How much longer riders wait than scheduled, where a vehicle is due every 15 minutes or better.</p>}
@@ -43,19 +46,19 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
       {dirs.map(d => {
         const label = v3.directionLabels[String(d)];
         const points = pointsOf(d);
-        const sentence = full ? extraWaitSentence(all.filter(s => s.directionId === d), label) : null;
         return (
           <div key={d} className="min-w-0">
             <h3 className="text-base font-black">{label}</h3>
-            {sentence && <p className="mt-1 text-sm leading-6">{sentence}</p>}
             {points.length > 1 && (
               <ProfileBars
-                ariaLabel={full ? `${label}: extra wait at each stop along the route. ${sentence ?? ''}` : `${label}: extra wait at each stop along the route.`}
+                ariaLabel={`${label}: extra wait at each stop along the route.`}
                 points={points}
                 formatY={y => `${num(y)} min`}
                 unit="gaps"
                 valueHeader="Extra wait"
-                caption="How much longer riders wait than the timetable says, at each stop."
+                caption={full ? undefined : 'How much longer riders wait than the timetable says, at each stop.'}
+                fadedNote={!full}
+                peakLabel={full}
                 axisTitle="Extra minutes"
                 scale={scale}
               />
@@ -64,6 +67,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
         );
       })}
     </div>
+    {full && points0 > 1 && <p className="mt-2 text-xs text-[var(--text-dim)]">Paler bars rest on fewer than 30 gaps.</p>}
     {worst.length > 0 && (
       <div className="mt-5 sm:overflow-x-auto">
         <SortableDataTable

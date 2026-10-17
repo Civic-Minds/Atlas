@@ -44,8 +44,12 @@ interface ProfileBarsProps {
   /** What `n` counts (trips, gaps): bars with fewer than `minN` fade, and one caption says so. */
   unit: string;
   minN?: number;
-  /** One short sentence saying what the bars are; the faded-bar sentence is added after it. */
-  caption: string;
+  /** One short sentence saying what the bars are; the faded-bar sentence is added after it. Left out where the section already says it. */
+  caption?: string;
+  /** The faded-bar sentence ("Paler bars rest on fewer than 30 ..."). A section that draws several charts says it once itself. Default: yes. */
+  fadedNote?: boolean;
+  /** Write the value of the tallest bar (with enough samples) above it: a number only. */
+  peakLabel?: boolean;
   /** One line above the chart saying what it shows, so the chart does not have to be decoded. */
   takeaway?: string;
   /** Small line above the plot naming the axis, for example "Delay at the stop (above the line is late)". */
@@ -116,7 +120,7 @@ function usePlotWidth() {
  * stop names that never overlap (the ends, the marked stretch, major stops), and a shaded, striped look for points that
  * are measured less exactly. The values are also in a table for screen readers.
  */
-export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
+export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
   const [plotRef, plotWidth] = usePlotWidth();
   const tableId = useId();
   if (points.length < 2) return null;
@@ -143,13 +147,14 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
     major: points.flatMap((p, i) => (p.major ? [i] : [])),
   });
   const labelRows = Math.max(1, ...labels.map(l => Math.ceil((names[l.index].length * 6.5 + 4) / (labelWidths[l.index] - 8))));
+  const peak = peakLabel ? points.reduce<number | null>((best, p, i) => ((p.n == null || p.n >= minN) && (best == null || p.y + (p.y2 ?? 0) > points[best].y + (points[best].y2 ?? 0)) ? i : best), null) : null;
   const zeroInside = axis.min < 0;
   return (
     <figure className="m-0">
       {takeaway && <p className="mt-2 text-sm font-bold leading-6">{takeaway}</p>}
       <div role="img" aria-label={ariaLabel} tabIndex={0} aria-describedby={tableId} className="mt-2">
         {axisTitle && <div className="mb-1 pl-16 text-xs text-[var(--text-dim)]" aria-hidden="true">{axisTitle}</div>}
-        <div className={`flex gap-2 ${marks.length ? 'pt-5' : ''}`} aria-hidden="true">
+        <div className={`flex gap-2 ${marks.length || peakLabel ? 'pt-5' : ''}`} aria-hidden="true">
           <div className="relative w-14 shrink-0 text-right text-xs text-[var(--text-dim)]" style={{ height: H }}>
             {axis.ticks.map(t => (
               <span key={t} className="absolute right-0 translate-y-1/2 whitespace-nowrap leading-none" style={{ bottom: pos(t) }}>{t === 0 && zeroLabel ? zeroLabel : formatY(t)}</span>
@@ -184,6 +189,9 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
                     {whiskers && p.lo != null && p.hi != null && (
                       <div className="absolute left-1/2 w-px -translate-x-1/2 bg-[var(--text-muted)] opacity-30" style={{ bottom: pos(p.lo), height: Math.max(1, pos(p.hi) - pos(p.lo)) }} />
                     )}
+                    {peak === i && (
+                      <span data-peak className={`pointer-events-none absolute whitespace-nowrap text-xs font-bold leading-3 text-[var(--text-secondary)] ${i < 2 ? 'left-0' : i > count - 3 ? 'right-0' : 'left-1/2 -translate-x-1/2'}`} style={{ bottom: top + (p.y2 ? pos(p.y2) - pos(0) : 0) + 2 }}>{formatY(p.y + (p.y2 ?? 0))}</span>
+                    )}
                     {marked && (
                       <span className={`pointer-events-none absolute -top-5 whitespace-nowrap text-xs font-bold text-[var(--status-caution-text)] ${i < count / 4 ? 'left-0' : i > (count * 3) / 4 ? 'right-0' : 'left-1/2 -translate-x-1/2'}`}>{markAt.get(i)}</span>
                     )}
@@ -202,7 +210,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
         </div>
       </div>
       <figcaption className="mt-1 text-xs text-[var(--text-dim)]">
-        {caption} Paler bars rest on fewer than {minN} {unit}.
+        {caption ? `${caption} ` : ''}{fadedNote ? `Paler bars rest on fewer than ${minN} ${unit}.` : ''}
         {runs.length > 0 && lessExactNote && <span className="mt-1 flex items-center gap-1"><span className="inline-block h-2 w-3 rounded-sm" style={{ background: stripe(color0) }} aria-hidden="true" />Striped bars: {lessExactNote}</span>}
         {series && series.length > 1 && (
           <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1">

@@ -168,10 +168,7 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
             {compact ? (
               hours.length > 1 && <div className="mt-4"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts.`} /></div>
             ) : hours.length > 1 ? (
-              <>
-                <p className="mt-4 text-sm font-bold">{runTimeTakeaway(label, hours)}</p>
-                <div className="mt-2"><RunTimeChart hours={hours} axis={axis} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${full ? sentence : runTimeTakeaway(label, hours)}`} /></div>
-              </>
+              <div className="mt-4"><RunTimeChart hours={hours} axis={axis} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${full ? sentence : runTimeTakeaway(label, hours)}`} /></div>
             ) : !full && <p className="mt-1 text-sm text-[var(--text-muted)]">Too few trips were measured {BAND_WORDS[band]} to draw this.</p>}
           </div>
         );

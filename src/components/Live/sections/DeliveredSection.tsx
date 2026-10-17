@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { dateRangeText, deliveredSentence, type LiveV3 } from '../../../../shared/liveDashboard';
+import { dateRangeText, type LiveV3 } from '../../../../shared/liveDashboard';
 import { TILE } from '../../../pageStyles';
 import ProfileBars, { type ProfilePoint } from '../../charts/ProfileBars';
 import Section from './Section';
@@ -41,7 +41,6 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
   );
   if (full) {
     return frame(<>
-      {overall && <p className="mt-2 text-sm">{deliveredSentence(overall, dir == null ? undefined : v3.directionLabels[String(dir)])}</p>}
       {points.length > 1 && <div className="mt-4 max-w-2xl">{chart}</div>}
       <p className="mt-2 text-xs text-[var(--text-dim)]">Trips during gaps in our recordings aren't counted.{skipped.length > 0 && <> Not counted: {skipped.map(d => dateRangeText(d.date, d.date)).join(', ')} (gaps in our recordings).</>}</p>
     </>);

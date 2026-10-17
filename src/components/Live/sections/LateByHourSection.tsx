@@ -177,7 +177,6 @@ function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
         })}
       </div>
       <h3 className="mt-6 text-base font-black">By hour of the day</h3>
-      <p className="mt-1 text-sm text-[var(--text-muted)]">How many departures are late in each hour.</p>
       <ChartRow cols={cols} withLabels={false} showNote />
     </>
   );

@@ -9,6 +9,8 @@ import { SectionTitle } from '../../ui/PageTitle';
 import SortableDataTable from '../../ui/SortableDataTable';
 import Section from './Section';
 import { mins, pct } from './figures';
+import { lateShareColor } from '../lateShare';
+import LegendItem from '../../ui/LegendItem';
 
 /** The one derivation of the worst-stops list (the stops ranked by share of late departures), so every surface lists the same stops. */
 export function worstStopsModel(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number) {
@@ -42,12 +44,8 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
 }): ReactNode {
   const { top, hidden, both, directionLabels } = useMemo(() => worstStopsModel(v3, data, dir, uncertain, limit), [v3, data, dir, uncertain, limit]);
   const full = columns === 'full';
-  const bar = (share: number) => (
-    <span className="inline-flex items-center gap-2">
-      <span className="block h-2 w-20 rounded-sm max-sm:hidden bg-[var(--control-inactive-bg)]" aria-hidden="true"><span className="block h-full rounded-sm bg-[var(--accent)] opacity-90" style={{ width: `${Math.max(2, share * 100)}%` }} /></span>
-      {pct(share)}
-    </span>
-  );
+  // The share, with the strip's three late colours as a dot (the Full analysis: no bar repeating the number).
+  const bar = (share: number) => <LegendItem color={lateShareColor(share)} className="gap-2">{pct(share)}</LegendItem>;
   const table = top.length ? (
     <div className={`${full ? 'mt-4' : 'mt-3'} sm:overflow-x-auto`}>
       <SortableDataTable
