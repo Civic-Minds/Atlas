@@ -39,7 +39,7 @@ import {
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
-import { hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, routeAllDayContract, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
+import { directionFallbackHeadway, hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, routeAllDayContract, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
@@ -697,12 +697,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const dimmed = maxHeadway !== Infinity && !featurePassesHeadwayFilter(d, period, maxHeadway);
                     return (() => {
                       const variantH = hoveredHour == null ? variantRowHeadway(d, period) : undefined;
-                      // A stretch row the card cannot read a cadence for (its own gaps are uneven) takes its direction's filter value.
+                      // A stretch row the card cannot read a cadence for (its own gaps are uneven) takes its direction's
+                      // typical gap, never the filter's worst wait (#962).
                       const ownH = hoveredHour != null
                         ? branchDisplayHourHeadway(d, hoveredHour) ?? routeCardDisplayHeadway(d, period)
                         : routeCardDisplayHeadway(d, period);
                       const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all'
-                        ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
+                        ? directionFallbackHeadway(d, period)
                         : undefined;
                       const allDayH = allDay?.filterValue != null && hoveredHour == null ? allDay.filterValue : undefined;
                       // All day: every row reads the route's all-day value, the number the lists and the map filter use.

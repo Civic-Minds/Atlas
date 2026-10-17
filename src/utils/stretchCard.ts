@@ -41,10 +41,26 @@ export function variantOnlyRow(features: readonly ShapeProperties[]): ShapePrope
   return [...features].sort((a, b) => (b.stopOrder?.length ?? 0) - (a.stopOrder?.length ?? 0))[0];
 }
 
-/** The direction's filter value for a variant-only row: a number, or null for no regular service. Undefined when absent. */
+/**
+ * #962: what a row with no value of its own shows from its direction: the typical gap (the
+ * direction's own period value), never the full-window worst wait. The direction's filter value
+ * is that worst wait when its stretches are not steady, or steady with a wait over an hour: an
+ * eligibility bound for the filter, not a cadence (TransLink 407 weekday midday read "every 269"
+ * against a typical 169). A one-gap period (#955) still reads no regular service (isOneGapRow).
+ * Undefined when the data has no direction value; null when the direction has none.
+ */
+export function directionFallbackHeadway(f: ShapeProperties, period: TimePeriod): number | null | undefined {
+  if (period === 'all') return undefined;
+  const key = period as PeriodKey;
+  const value = f.directionFilterHeadwayByPeriod?.[key];
+  if (value == null) return value;
+  return f.stretchPeriodHeadway?.[key] ?? value;
+}
+
+/** The direction's value for a variant-only row: a number, or null for no regular service. Undefined when absent. */
 export function variantRowHeadway(f: ShapeProperties, period: TimePeriod): number | null | undefined {
   if (f.stretchRole !== 'variant' || period === 'all') return undefined;
-  return f.directionFilterHeadwayByPeriod?.[period as PeriodKey];
+  return directionFallbackHeadway(f, period);
 }
 
 export interface RouteContract {

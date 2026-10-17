@@ -5,6 +5,7 @@ import { partPeriodText, routeListDisplay } from '../../../utils/effectiveHeadwa
 import StopRouteGroup from '../panels/StopRouteGroup';
 import { hasRegularServiceInPeriod } from '../../../utils/stretchCard';
 import { RouteCardHeadway } from '../panels/RouteCardHeadway';
+import { headwayAbout } from '../../../utils/headwayText';
 
 const renderRows = (directions: ShapeProperties[], period: 'midday' | 'pmPeak' | 'all', slug = 'ttc') => render(
   <RouteCardHeadway
@@ -185,5 +186,28 @@ describe('route card rows word part-period and one-gap service (#934)', () => {
     ]} period="midday" showAgency={false} onOpenRoute={() => {}} />);
     expect(screen.getByText('until 9:37am, every 12 min')).toBeTruthy();
     expect(screen.queryByText(/about every 12 min/)).toBeNull();
+  });
+});
+
+// #962: a row with no value of its own shows its direction's typical gap, never the filter's worst wait.
+describe('the direction fallback shows the typical gap (#962)', () => {
+  // TransLink 407 weekday midday to Gilbert: the filter's worst wait 269, the typical gap 169.
+  const t407 = {
+    routeId: '407', routeShortName: '407', routeType: 3, day: 'Weekday', stretchRole: 'main', stretchIndex: 0, directionId: 0,
+    headsign: 'Gilbert via Vulcan Way', tier: 'infrequent', serviceClass: 'regular', headway: 60,
+    routeFilterHeadwayByPeriod: { midday: 269 }, routeRunsByPeriod: { midday: true },
+    headwayByPeriod: { midday: null }, headwayByPeriodSustained: {}, periodCoverageHeadway: { midday: 269 },
+    directionFilterHeadwayByPeriod: { midday: 269 }, stretchPeriodOneGap: { midday: false },
+    stretchPeriodHeadway: { midday: 169 }, stretchPeriodSustained: { midday: false }, stretchPeriodRange: { midday: null },
+  } as unknown as ShapeProperties;
+  it('TransLink 407 midday reads about every 169, not 269', () => {
+    renderRows([t407], 'midday', 'translink');
+    expect(screen.queryByText(headwayAbout(269))).toBeNull();
+    expect(screen.getByText(headwayAbout(169))).toBeTruthy();
+  });
+  it('a one-gap direction still reads no regular service', () => {
+    renderRows([{ ...t407, stretchPeriodOneGap: { midday: true } } as unknown as ShapeProperties], 'midday', 'translink');
+    expect(screen.queryByText(/about every \d+ min/)).toBeNull();
+    expect(screen.getAllByText(LONG).length).toBeGreaterThan(0);
   });
 });
