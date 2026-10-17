@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react';
-import { buildupSentence, buildupTakeaway, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
+import { buildupTakeaway, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
 import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
+import { useMediaQuery } from '../../../hooks/useMediaQuery';
+import DirectionStrip from '../DirectionStrip';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
 import { mins, pct } from './figures';
@@ -25,8 +27,10 @@ export function buildupModel(data: DashboardBandData, dir: number | null, uncert
  * a sentence and takeaway, the answer for each time of day); `compact` is the Explore section, which keeps its own
  * section id and guards the content with `boundary`.
  */
-export default function BuildupSection({ v3, data, dir, uncertain, detail, boundary }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; detail: 'full' | 'compact'; boundary?: string }): ReactNode {
+export default function BuildupSection({ v3, data, dir, uncertain, detail, boundary, band = 'all' }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; detail: 'full' | 'compact'; boundary?: string; band?: DashboardBand }): ReactNode {
   const full = detail === 'full';
+  // On a phone the strip would be a long vertical list of every stop: the bar chart stays there.
+  const phone = useMediaQuery('(max-width: 479px)');
   const { rows, lessExactStops, pointsOf, scale } = buildupModel(data, dir, uncertain);
   return (
     <Section id={full ? 'b3' : 'x-buildup'} title="Where delays build up" shrink={!full} boundary={boundary}>
@@ -36,13 +40,19 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
           const label = v3.directionLabels[String(b.directionId)];
           const points = pointsOf(b);
           const marked = b.forms ? points.findIndex(p => p.label === b.forms!.toName) : -1;
+          // The five stretches that add the most; the Full analysis lists the top three (all five are in the Explore table).
           const worst = [...b.stretches].filter(s => s.n >= 30).sort((a, c) => c.medianAddedMin - a.medianAddedMin).slice(0, 5);
           return (
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
+              {full && !phone ? (
+                // The route strip carries the delay at every stop and the marked stretch; the figures the old takeaway line gave are its hover text.
+                <div className="mt-2" title={buildupTakeaway(b, lessExactStops(b.directionId))}>
+                  <DirectionStrip v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['delay']} />
+                </div>
+              ) : (
               <ProfileBars
-                ariaLabel={full ? `${label}: typical delay at each stop along the route. ${buildupSentence(label, b)}` : `${label}: typical delay at each stop along the route.`}
-                takeaway={full ? buildupTakeaway(b, lessExactStops(b.directionId)) : undefined}
+                ariaLabel={`${label}: typical delay at each stop along the route.`}
                 axisTitle="Minutes late"
                 points={points}
                 formatY={mins}
@@ -56,6 +66,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                 lessExactNote="the first stops are in the tunnel, where we see the vehicles less often, so these are rough."
                 marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
               />
+              )}
               {full && (
                 <PerPeriod
                   title="By time of day"
@@ -72,7 +83,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                   narrowFit
                   caption={`${label}: the stretches that add the most delay`}
                   defaultSort="added"
-                  rows={worst}
+                  rows={full ? worst.slice(0, 3) : worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={full ? [
                     { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal break-words', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{shortStopName(s.fromName)} to {shortStopName(s.toName)}</span> },

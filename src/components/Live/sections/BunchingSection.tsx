@@ -1,9 +1,11 @@
 import { useState, type ReactNode } from 'react';
-import { LINK_LABELS, bunchingSentence, linkValueText, type DashboardBand, type DashboardBunchingBand, type LiveV3 } from '../../../../shared/liveDashboard';
+import { LINK_LABELS, bunchingSentence, linkValueText, type DashboardBand, type DashboardBunchingBand, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
 import type { LiveGaps, StopGaps } from '../../../hooks/useLiveGaps';
 import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import GapsChart from '../../charts/GapsChart';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
+import { useMediaQuery } from '../../../hooks/useMediaQuery';
+import DirectionStrip from '../DirectionStrip';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
 import { pct } from './figures';
@@ -47,8 +49,10 @@ function GapsBlock({ data, gaps, label }: { data: DashboardBunchingBand; gaps: R
  * day); `compact` is the Explore section (the chart only), which keeps its own section id and guards the content
  * with `boundary`. `gaps` is only used by `full`.
  */
-export default function BunchingSection({ v3, dir, band, gaps, detail, boundary }: { v3: LiveV3; dir: number | null; band: DashboardBand; gaps?: LiveGaps | null; detail: 'full' | 'compact'; boundary?: string }): ReactNode {
+export default function BunchingSection({ v3, dir, band, gaps, detail, boundary, uncertain = [] }: { v3: LiveV3; dir: number | null; band: DashboardBand; gaps?: LiveGaps | null; detail: 'full' | 'compact'; boundary?: string; uncertain?: UncertainStart[] }): ReactNode {
   const full = detail === 'full';
+  // On a phone the strip would be a long vertical list of every stop: the bar chart stays there.
+  const phone = useMediaQuery('(max-width: 479px)');
   const { rows, pointsOf, scale } = bunchingModel(v3, dir, band);
   return (
     <Section id={full ? 'b4' : 'x-bunching'} title="Where bunching forms" shrink={!full} boundary={boundary}>
@@ -66,9 +70,10 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary 
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
               {full && <p className="mt-1 text-sm leading-6">{bunchingSentence(label, data)}</p>}
-              {points.length > 1 && (
+              {full && !phone && <DirectionStrip className="mt-2" v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['bunching']} />}
+              {(!full || phone) && points.length > 1 && (
                 <ProfileBars
-                  ariaLabel={full ? `${label}: share of gaps that are too close together or too far apart, stop by stop. ${bunchingSentence(label, data)}` : `${label}: share of gaps that are too close together or too far apart, stop by stop.`}
+                  ariaLabel={`${label}: share of gaps that are too close together or too far apart, stop by stop.`}
                   points={points}
                   formatY={y => pct(y)}
                   unit="gaps"
@@ -83,16 +88,15 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary 
               {full && <GapsBlock data={data} gaps={gaps?.directions[String(b.directionId)]} label={label} />}
               {full && stretch && (
                 <>
-                  <p className="mt-3 text-sm">{data.kind === 'forms' ? 'It forms' : 'Its biggest rise is'} between {stretch.fromName} and {stretch.toName}.</p>
-                  <h4 className="mt-1 text-sm font-black">{linked.length ? 'Linked to' : 'Nothing measured here is linked to it'}</h4>
-                  <ul className="mt-1 space-y-1 text-sm">
+                  <h4 className="mt-3 text-sm font-black">{linked.length ? 'Linked to' : 'Nothing measured here is linked to it'}</h4>
+                  <dl className="mt-1 grid grid-cols-[1fr_auto] gap-x-4 gap-y-0.5 text-sm">
                     {stretch.links.map(l => (
-                      <li key={l.kind} className={l.linked ? '' : 'text-[var(--text-dim)]'}>
-                        {l.value == null ? 'Not measured' : l.linked ? 'Linked' : 'Not linked'}: {LINK_LABELS[l.kind]} ({linkValueText(l.kind, l.value)})
-                      </li>
+                      <div key={l.kind} className={`contents ${l.linked ? '' : 'text-[var(--text-dim)]'}`}>
+                        <dt>{LINK_LABELS[l.kind]}</dt>
+                        <dd className="m-0 whitespace-nowrap text-right">{l.value == null ? 'Not measured' : l.linked ? 'Linked' : 'Not linked'} ({linkValueText(l.kind, l.value)})</dd>
+                      </div>
                     ))}
-                  </ul>
-                  <p className="mt-1 text-xs text-[var(--text-dim)]">Linked means it was measured in this stretch, not that it is the cause.</p>
+                  </dl>
                 </>
               )}
               {full && (
@@ -110,6 +114,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary 
           );
         })}
       </div>
+      {full && rows.some(b => (b.bands[band]?.forms ?? b.bands[band]?.biggestRise)) && <p className="mt-3 text-xs text-[var(--text-dim)]">Linked means it was measured in this stretch, not that it is the cause.</p>}
     </Section>
   );
 }

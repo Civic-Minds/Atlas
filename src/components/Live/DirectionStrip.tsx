@@ -16,12 +16,14 @@ export function directionStopsById(v3: LiveV3, directionId: number, band: Dashbo
  * One direction's strip: the branch-aware strip when the route runs more than one regular pattern (a trunk that forks),
  * the straight strip otherwise. Stops are picked by stop id either way.
  */
-export default function DirectionStrip({ v3, directionId, band, uncertain, className, selectedId = null, onSelect, selectedStretch = null, onSelectStretch }: {
+export default function DirectionStrip({ v3, directionId, band, uncertain, className, modes, selectedId = null, onSelect, selectedStretch = null, onSelectStretch }: {
   v3: LiveV3;
   directionId: number;
   band: DashboardBand;
   uncertain: readonly UncertainStart[];
   className?: string;
+  /** The tracks to draw (default: delay, then bunching). */
+  modes?: readonly RouteStripMode[];
   selectedId?: string | null;
   onSelect?: (stopId: string) => void;
   selectedStretch?: RouteStripMode | null;
@@ -29,10 +31,10 @@ export default function DirectionStrip({ v3, directionId, band, uncertain, class
 }) {
   const branch = useMemo(() => branchStripFromV3(v3, directionId, band, uncertain), [v3, directionId, band, uncertain]);
   const straight = useMemo(() => routeStripFromV3(v3, directionId, band, uncertain), [v3, directionId, band, uncertain]);
-  if (branch) return <BranchStrip className={className} model={branch} selected={selectedId} onSelect={onSelect} />;
+  if (branch) return <BranchStrip className={className} modes={modes} model={branch} selected={selectedId} onSelect={onSelect} />;
   return (
     <RouteStrip
-      className={className}
+      className={className} modes={modes}
       stops={straight.stops} directionLabel={straight.label} delaysStart={straight.delaysStart} bunchingForms={straight.bunchingForms}
       selected={selectedId ? straight.stops.findIndex(s => s.stopId === selectedId) : null}
       onSelect={onSelect ? i => onSelect(straight.stops[i].stopId) : undefined}

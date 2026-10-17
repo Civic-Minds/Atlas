@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Full analysis draws where delay builds up and where bunching forms on the route strip (local only, CIV-319)**: dots on a line with the marked stretch, side by side for the two directions, instead of two long bar charts per section; each direction lists its top three stretches, the "Linked to" lists are four compact rows, and "Linked means it was measured in this stretch, not that it is the cause" is said once. Phones keep the bar charts. The page is about 600px shorter (504: 5,091 to 4,484px at 1280 wide).
 - **Full analysis says less (local only, CIV-319)**: the late-by-hour, run time, extra wait and service delivered sections no longer restate in a sentence what their charts and the week tiles show; the extra wait table lists the five longest waits (it said 1.5 min where its own table said 1.6); the stops list drops the bar that repeated each percentage (a colour dot shows the strip's three steps); identical time-of-day answers are one row; the extra wait chart labels its peak.
 - **"Where bunching forms" gives the rise as "+31 pt" in the agency table and the planner (local only)**: it read "31%" (or "33%" from an older file), which looked like a share; it is the rise in points between two stops.
 - **The planner's Bunching tile names its two parts where the panel has room (local only)**: "too close · too far apart" shows under the figure at 1440x900 and is always its hover text.

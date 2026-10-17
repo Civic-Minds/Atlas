@@ -183,7 +183,7 @@ function AnalysisPage() {
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops most often late')}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops most often late" id="b2" intro notRanked p90Width={10} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Where bunching forms')}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Where bunching forms')}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Service delivered')}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
         <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
         </>)}

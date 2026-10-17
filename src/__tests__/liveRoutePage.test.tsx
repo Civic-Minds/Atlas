@@ -59,17 +59,22 @@ describe('Live route dashboard', () => {
     expect(within(b1).getAllByText(/late, of 1,000/).length).toBeGreaterThan(0);
     expect(within(b1).getAllByText('Weekdays', { selector: 'div' }).length).toBeGreaterThan(0);
     expect(within(b1).getAllByText('Weekends', { selector: 'div' }).length).toBeGreaterThan(0);
-    // B3: one takeaway line per chart that says what the chart shows, and the table of stretches.
-    expect(screen.getByText(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3, and stays up/)).toBeTruthy();
-    expect(screen.getByText(/^Delay stays about the same from end to end/)).toBeTruthy();
+    // B3: the route strip carries the delay; the takeaway's figures are its hover text, and the table of stretches follows.
+    expect(screen.getByTitle(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3, and stays up/)).toBeTruthy();
+    expect(screen.getByTitle(/^Delay stays about the same from end to end/)).toBeTruthy();
+    // The stretches that add the most delay: at most three per direction on this page (the rest are in Explore's table).
+    for (const t of screen.getAllByRole('table', { name: /the stretches that add the most delay/ })) expect(t.querySelectorAll('tbody tr').length).toBeLessThanOrEqual(3);
     // B2: ranked by late share, one table, with the sample size.
     const b2 = screen.getByRole('region', { name: /Stops most often late/ });
     expect(within(b2).getAllByRole('row').length).toBeGreaterThan(2);
     expect(within(b2).queryByRole('list')).toBeNull();
     // B4: forms sentence, every link with its number, linked wording.
-    expect(screen.getAllByText(/bunching forms between Stop 2 and Stop 3/).length).toBeGreaterThanOrEqual(2); // the paragraph, plus each chart's table caption
-    expect(screen.getAllByText(/Linked: Vehicles standing still in this stretch \(0\.6 a day\)/).length).toBe(2);
-    expect(screen.getAllByText(/Not linked: Uneven departures at the terminal \(5% of gaps off\)/).length).toBe(2);
+    expect(screen.getAllByText(/bunching forms between Stop 2 and Stop 3/).length).toBeGreaterThanOrEqual(1); // the caption above each strip
+    // Four compact rows per direction (the thing, then Linked or Not linked with its number); the caveat is said once.
+    expect(screen.getAllByText('Vehicles standing still in this stretch').length).toBe(2);
+    expect(screen.getAllByText('Linked (0.6 a day)').length).toBe(2);
+    expect(screen.getAllByText('Not linked (5% of gaps off)').length).toBe(2);
+    expect(screen.getAllByText(/^Linked means it was measured in this stretch, not that it is the cause\.$/).length).toBe(1);
     // Method.
     expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
     expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
@@ -109,8 +114,9 @@ describe('Live route dashboard', () => {
     expect(screen.getAllByText(/Roncesvalles Ave at Queen St W/).length).toBeGreaterThan(0);
     // One plain caption per chart (no ranges), merged with what the bars are.
     expect(screen.getByText(/^Faded bars are based on fewer than 30 departures\./)).toBeTruthy();
-    expect(screen.getAllByText(/Paler bars rest on fewer than 30 trips\./).length).toBe(2);
-    expect(screen.getAllByText(/Paler bars rest on fewer than 30 gaps\./).length).toBe(2);
+    // The faded-bar rule is said once per section row, not under every chart.
+    expect(screen.queryAllByText(/Paler bars rest on fewer than 30 trips\./).length).toBeLessThanOrEqual(1);
+    expect(screen.queryAllByText(/Paler bars rest on fewer than 30 gaps\./).length).toBeLessThanOrEqual(1);
     expect(document.body.textContent).not.toMatch(/Each (bar|point) is \d/);
     expect(document.body.textContent).not.toMatch(/near here/);
     // Each figure is one focusable unit with a summary; each chart can be read as a table.
