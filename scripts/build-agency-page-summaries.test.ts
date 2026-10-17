@@ -1,5 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { displayNameFor, primaryCity, summarize } from './build-agency-page-summaries';
+import { existsSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { displayNameFor, getReleaseAgency, primaryCity, summarize } from './build-agency-page-summaries';
 import { bandCounts, FREQUENCY_BANDS } from '../shared/agencyPages';
 
 function line(name: string, directionId: number, midday: number | null, extra: Record<string, unknown> = {}) {
@@ -141,5 +144,33 @@ describe('summarize: areas per route (CIV-274)', () => {
   });
   it('leaves areas out without boundaries', () => {
     expect(summarize([line('66', 0, 30)] as any, 'x', null).routes[0].areas).toBeUndefined();
+  });
+});
+
+describe('release cache (CIV-315)', () => {
+  const release = { releaseId: 'release-test', agencyPrefix: 'atlas/releases/release-test/agencies' };
+  const dirs: string[] = [];
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    for (const d of dirs.splice(0)) rmSync(d, { recursive: true, force: true });
+  });
+  const cacheRoot = () => { const d = mkdtempSync(join(tmpdir(), 'agency-pages-cache-')); dirs.push(d); return d; };
+
+  it('fetches each agency once and reads it from the cache after that', async () => {
+    const root = cacheRoot();
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ features: [{ geometry: { type: 'Point' }, properties: {} }] })));
+    vi.stubGlobal('fetch', fetchMock);
+    const first = await getReleaseAgency(release, 'ttc', root);
+    const second = await getReleaseAgency(release, 'ttc', root);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(second).toEqual(first);
+    expect(readdirSync(join(root, 'release-test'))).toEqual(['ttc.json']);
+  });
+
+  it('caches nothing when the download is not valid JSON', async () => {
+    const root = cacheRoot();
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{"features": [')));
+    await expect(getReleaseAgency(release, 'ttc', root)).rejects.toThrow();
+    expect(existsSync(join(root, 'release-test', 'ttc.json'))).toBe(false);
   });
 });
