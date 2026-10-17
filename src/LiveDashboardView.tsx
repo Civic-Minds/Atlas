@@ -186,6 +186,8 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={null} allOnly oneDay={yesterday ? yesterdayHours(yesterday) : undefined} /></ErrorBoundary>
       <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
+      {/* The week's method, open: how the figures above are counted (not shown over a single day, whose days counted say nothing about it). */}
+      {!yesterday && <ErrorBoundary label={bad('How this is measured')}><MethodSection scope="week" v3={v3} toFull={toFull} /></ErrorBoundary>}
     </>
   );
   return (

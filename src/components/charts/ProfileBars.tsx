@@ -134,7 +134,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
   const runs: Array<{ from: number; to: number }> = [];
   points.forEach((p, i) => { if (p.lessExact) { const last = runs[runs.length - 1]; if (last && last.to === i - 1) last.to = i; else runs.push({ from: i, to: i }); } });
   const names = points.map(p => p.short ?? p.label);
-  // Generous per-character width, capped; each name is also cut to its width with an ellipsis, so names never overlap.
+  // Generous per-character width, capped; a longer name wraps onto more lines inside its width (never cut with an ellipsis), so names never overlap.
   const labelWidths = names.map(n => Math.min(n.length * 7.2 + 8, 132));
   const labels = pickAxisLabels({
     count, width: plotWidth, max: Math.max(2, Math.min(maxLabels, Math.floor(plotWidth / 90))),
@@ -142,6 +142,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
     marked: marks.map(m => m.index),
     major: points.flatMap((p, i) => (p.major ? [i] : [])),
   });
+  const labelRows = Math.max(1, ...labels.map(l => Math.ceil((names[l.index].length * 6.5 + 4) / (labelWidths[l.index] - 8))));
   const zeroInside = axis.min < 0;
   return (
     <figure className="m-0">
@@ -192,10 +193,10 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
             </div>
           </div>
         </div>
-        <div className="relative mt-1 h-5 pl-16" aria-hidden="true">
+        <div className="relative mt-1 pl-16" style={{ height: labelRows * 16 + 4 }} aria-hidden="true">
           <div className="relative h-full overflow-hidden">
             {labels.map(l => (
-              <span key={l.index} className="absolute top-0 truncate whitespace-nowrap text-xs text-[var(--text-dim)]" style={{ left: l.left, maxWidth: labelWidths[l.index] }}>{names[l.index]}</span>
+              <span key={l.index} className="absolute top-0 whitespace-normal break-words text-xs leading-4 text-[var(--text-dim)]" style={{ left: l.left, maxWidth: labelWidths[l.index] }}>{names[l.index]}</span>
             ))}
           </div>
         </div>

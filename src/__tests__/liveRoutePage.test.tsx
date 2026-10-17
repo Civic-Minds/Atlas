@@ -213,6 +213,17 @@ describe('Live route dashboard', () => {
     vi.restoreAllMocks();
   });
 
+  it('ends the Summary view with the open method and its own days-counted line', async () => {
+    window.history.replaceState(null, '', '/apps/live/ttc/505');
+    const wk = { days: 7, dates: ['2026-10-08', '2026-10-09', '2026-10-10'], healthyDates: ['2026-10-08', '2026-10-09'], late: null, tripTime: null, extraWait: null, bunching: null, delivered: null };
+    renderPage({ ...ready, v3: { ...v3, weekly: { minHealthyDays: 1, health: [], comparable: true, thisWeek: wk, lastWeek: wk } } } as LiveDashboardResponse);
+    await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
+    expect(screen.getByText('How this is measured')).toBeTruthy();
+    expect(screen.getByText(/^\d+ of \d+ days counted this week, \d+ of \d+ last week\.$/).className).toMatch(/block/);
+    expect(document.querySelector('details')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Summary' })).toBeNull(); // still no view switcher on the shareable page
+  });
+
   it('says why when there is nothing to show', async () => {
     const { unmount } = renderPage({ status: 'held', reason: "The 512 isn't included yet." }, '/apps/live/ttc/512');
     expect(await screen.findByText("The 512 isn't included yet.")).toBeTruthy();
