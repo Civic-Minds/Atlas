@@ -29,6 +29,7 @@ const EXCLUDED_VARIANT_FAMILIES = new Set<string>([
   'barrie::8', // Barrie Transit 8A "RVH/Yonge" and 8B "Crosstown/Essa" are separate routes that share only their two end stops (CIV-115)
   'goraleigh::15', // GoRaleigh 15 "WakeMed" and 15L "Trawick Connector" are separate routes, the same connector pattern as goraleigh::11 (CIV-115)
   'laredo::8', // El Metro 8A "Medical Center" and 8B "Villa Del Sol / Cheyenne" share only the 9 stops leaving the transit center, then serve different corridors, like windsor::1 (CIV-115)
+  'laredo::7', // El Metro 7A "LC / El Cuatro" and 7B "LC / La Drillera" share only a 1 km downtown approach to the transit center, then run to Wilhelm/Zaragoza vs Gonzalez/Pinder (CIV-115)
 ]);
 
 export interface VariantFamily {

@@ -88,10 +88,13 @@ describe('findVariantFamily', () => {
   });
 
   // CIV-115: separate routes that share a number stem, confirmed against each agency's GTFS.
-  it('does not group Barrie 8A/8B, GoRaleigh 15/15L or Laredo 8A/8B (CIV-115)', () => {
+  it('does not group Barrie 8A/8B, GoRaleigh 15/15L or Laredo 7A/7B and 8A/8B (CIV-115)', () => {
     expect(findVariantFamily([feature('8A', '8A', 30), feature('8B', '8B', 30)], '8A', 'midday', 'barrie')).toBeNull();
     expect(findVariantFamily([feature('15', '15', 30), feature('15L', '15L', 30)], '15', 'midday', 'goraleigh')).toBeNull();
     expect(findVariantFamily([feature('8A', '8A', 60), feature('8B', '8B', 60)], '8B', 'midday', 'laredo')).toBeNull();
+    expect(findVariantFamily([feature('7A', '7A', 60), feature('7B', '7B', 60)], '7A', 'midday', 'laredo')).toBeNull();
+    // Laredo 2A/2B share 5 km of San Bernardo before splitting: real branches, still grouped.
+    expect(findVariantFamily([feature('2A', '2A', 60), feature('2B', '2B', 60)], '2A', 'midday', 'laredo')?.members.length).toBe(2);
     // The exclusion is per agency: the same names elsewhere still group.
     expect(findVariantFamily([feature('8A', '8A', 30), feature('8B', '8B', 30)], '8A', 'midday', 'other')?.members.length).toBe(2);
   });
