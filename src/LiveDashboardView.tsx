@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../shared/config';
-import { branchFigures, branchRunTimeLine, dateRangeText, runTimeStretchLabel, runTimeTileStretch, runTimeTakeaway, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { dateRangeText, runTimeTileStretch, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, lateForDays, weekNotComparableLine, type DayKind, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import { withoutDevHint } from './lib/liveReportData';
 import HourSpark, { type HourValue } from './components/charts/HourSpark';
-import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import DirectionStrip from './components/Live/DirectionStrip';
 import { routeStripFromV3 } from './components/Live/routeStripModel';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { titleCase } from './utils/format';
 import { shortStopName } from './utils/stopLabel';
 import { liveChartHours } from './utils/sparklinePeriods';
 import { useMediaQuery } from './hooks/useMediaQuery';
@@ -20,6 +18,7 @@ import LegendItem from './components/ui/LegendItem';
 import { SectionTitle } from './components/ui/PageTitle';
 import { lateCount, lateHourLine } from '../shared/liveWording';
 import MethodSection from './components/Live/sections/MethodSection';
+import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
@@ -29,7 +28,6 @@ const pct = (x: number) => `${Math.round(x * 100)}%`;
 const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', '−');
 const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 const MIN_N = 30;
-const BAND_WORDS: Record<DashboardBand, string> = { all: 'all day', amPeak: 'in the AM peak', midday: 'at midday', pmPeak: 'in the PM peak', evening: 'in the evening' };
 const DAY_KINDS: [DayKind, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
 
 
@@ -162,44 +160,6 @@ function Days({ v3, data, band, dir, allOnly = false, oneDay }: { v3: LiveV3; da
 }
 
 /** Run time against the schedule by the hour a trip starts, one chart per direction on one scale. */
-function TripTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
-  const rt = v3.runningTime;
-  const groups = dirsOf(v3, dir).map(d => ({
-    d,
-    label: v3.directionLabels[String(d)],
-    hours: (rt?.byHour[String(d)] ?? []).filter(h => h.n > 0 && (band === 'all' || periodKeyForHour(h.hour) === band)),
-  }));
-  const scale = runTimeScale(groups.map(g => g.hours));
-  return (
-    <section aria-labelledby="dash-runtime" className="mt-10">
-      <SectionTitle id="dash-runtime">Run time</SectionTitle>
-      <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, {BAND_WORDS[band]}, over the stops every regular trip serves, so short turns count too.</p>
-      <div className={`mt-4 grid gap-x-10 gap-y-8 ${groups.length > 1 ? 'lg:grid-cols-2' : ''}`}>
-        {groups.map(g => (
-          <div key={g.d} className="min-w-0">
-            <h3 className="text-base font-black">{g.label}</h3>
-            {runTimeStretchLabel(rt?.stretch?.[String(g.d)], n => shortStopName(titleCase(n))) && <p className="text-sm text-[var(--text-muted)]">{runTimeStretchLabel(rt?.stretch?.[String(g.d)], n => shortStopName(titleCase(n)))}</p>}
-            {g.hours.length > 1 ? (
-              <>
-                <p className="mt-1 text-sm font-bold">{runTimeTakeaway(g.label, g.hours)}</p>
-                <div className="mt-2"><RunTimeChart hours={g.hours} axis={liveChartHours(h => groups.some(gg => gg.hours.some(x => x.hour === h && x.n >= 5)))} scale={scale} ariaLabel={`${g.label}: run time against the schedule by the hour the trip starts. ${runTimeTakeaway(g.label, g.hours)}`} /></div>
-              </>
-            ) : <p className="mt-1 text-sm text-[var(--text-muted)]">Too few trips were measured {BAND_WORDS[band]} to draw this.</p>}
-            {(rt?.branches?.[String(g.d)] ?? []).length > 0 && (
-              <div className="mt-3">
-                <h4 className="text-sm font-black">Longer patterns, each end to end</h4>
-                <ul className="mt-1 space-y-1 text-sm text-[var(--text-secondary)]">
-                  {rt!.branches![String(g.d)].flatMap(b => { const f = branchFigures(b, band); return f ? [<li key={`${b.fromStopId}-${b.toStopId}`} className={f.n < 30 ? 'text-[var(--text-dim)]' : ''}>{branchRunTimeLine(b, n => shortStopName(titleCase(n)), f)}{f.n < 30 ? ' Few trips: treat with care.' : ''}</li>] : []; })}
-                </ul>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 /** Each direction as a line of stops coloured by typical delay or by bunching, with where it starts marked. */
 const PERIODS: [DashboardBand, string][] = [['amPeak', 'AM peak'], ['midday', 'midday'], ['pmPeak', 'PM peak'], ['evening', 'evening']];
 /** A period's marked stretch counts as "elsewhere" when it ends this many stops or more from the all-day one. */
@@ -289,7 +249,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
         {filters}
       </div>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>
-      <ErrorBoundary label={bad('Run time')}><TripTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
+      <ErrorBoundary label={bad('Run time')}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
       <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
       <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title="Stops most often late" boundary={bad('The stop list')}
         footerLink={{ text: 'Every stop, in Full analysis', href: '?view=analysis#b2', onClick: () => toFull('b2') }} />

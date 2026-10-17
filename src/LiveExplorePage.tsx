@@ -20,13 +20,13 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import LiveOffNotice from './components/LiveOffNotice';
 import HourBars from './components/charts/HourBars';
-import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import type { RouteStripMode } from './components/Live/RouteStrip';
 import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
 import { delayText, type RouteStripStop } from './components/Live/routeStripModel';
 import { KpiRow } from './LiveDashboardView';
 import Section from './components/Live/sections/Section';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
+import RunTimeSection from './components/Live/sections/RunTimeSection';
 import MethodSection from './components/Live/sections/MethodSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
@@ -210,30 +210,6 @@ function Late({ data, dir, day, band, lateMin }: { data: DashboardBandData; dir:
   );
 }
 
-function RunTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
-  const rt = v3.runningTime;
-  if (!rt) return null;
-  const dirs = dirsOf(v3, dir);
-  const hoursOf = (d: number) => (rt.byHour[String(d)] ?? []).filter(h => h.n >= 1 && (band === 'all' || periodKeyForHour(h.hour) === band));
-  const scale = runTimeScale(dirs.map(hoursOf));
-  return (
-    <div className={`mt-4 grid gap-x-10 gap-y-8 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
-      {dirs.map(d => {
-        const label = v3.directionLabels[String(d)];
-        const hours = hoursOf(d);
-        const f = rt.bands[band]?.[String(d)];
-        return (
-          <div key={d} className="min-w-0">
-            <h3 className="text-base font-black">{label}</h3>
-            {f && <div className="text-sm text-[var(--text-muted)]">Usually {Math.round(f.typicalMin)} min · timetable {Math.round(f.scheduledMin)} · 1 in 10 over {Math.round(f.p90Min)}</div>}
-            {hours.length > 1 && <div className="mt-2"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts.`} /></div>}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
@@ -321,9 +297,7 @@ export default function LiveExplorePage() {
         <div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>
         <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><Late data={bandData} dir={dir} day={day} band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
       </Section>
-      <Section shrink id="x-runtime" title="Run time">
-        <ErrorBoundary label={BOUNDARY('Run time')}><RunTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
-      </Section>
+      <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY('Run time')} />
       <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY('Where delays build up')} />
       <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY('Extra wait')} />
       <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY('Where bunching forms')} />

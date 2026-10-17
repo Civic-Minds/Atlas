@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { ATLAS_MODE, FEATURES, periodKeyForHour } from '../shared/config';
+import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
-  branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, freshness, runningTimeSentence,
+  freshness,
   type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -12,7 +12,6 @@ import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
-import { shortStopName } from './utils/stopLabel';
 import { liveChartHours } from './utils/sparklinePeriods';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
@@ -22,13 +21,13 @@ import LiveDashboardView from './LiveDashboardView';
 import LiveExplorePage from './LiveExplorePage';
 import HourBars from './components/charts/HourBars';
 import { KpiRow } from './LiveDashboardView';
-import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import { LATE_BY_HOUR_TITLE, lateCount, lateHourLine, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
+import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
@@ -140,49 +139,6 @@ function WeekCompare({ v3 }: { v3: LiveV3 }) {
   );
 }
 
-/** How long the whole trip takes against the timetable, by direction and hour. */
-function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
-  const rt = v3.runningTime;
-  if (!rt) return null;
-  const dirs = dirsOf(v3, dir);
-  const hoursOf = (d: number) => (rt.byHour[String(d)] ?? []).filter(h => h.n >= 1 && (band === 'all' || periodKeyForHour(h.hour) === band));
-  const scale = runTimeScale(dirs.map(hoursOf));
-  return (
-    <Section id="runtime" title="Run time">
-      <p className="mt-2 text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, by the hour it starts, over the stops every regular trip serves, so short turns count too.</p>
-      <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
-        {dirs.map(d => {
-          const label = v3.directionLabels[String(d)];
-          const figures = rt.bands[band]?.[String(d)];
-          const hours = hoursOf(d);
-          const axis = liveChartHours(h => dirs.some(dd => hoursOf(dd).some(x => x.hour === h && x.n >= 5)));
-          return (
-            <div key={d} className="min-w-0">
-              <h3 className="text-base font-black">{label}</h3>
-              {runTimeStretchLabel(rt.stretch?.[String(d)], n => shortStopName(titleCase(n))) && <p className="text-sm text-[var(--text-muted)]">{runTimeStretchLabel(rt.stretch?.[String(d)], n => shortStopName(titleCase(n)))}</p>}
-              <p className="mt-1 text-sm leading-6">{withoutDevHint(runningTimeSentence(label, figures))}</p>
-              {hours.length > 1 && (
-                <>
-                  <p className="mt-1 text-sm font-bold">{runTimeTakeaway(label, hours)}</p>
-                  <div className="mt-2"><RunTimeChart hours={hours} axis={axis} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${withoutDevHint(runningTimeSentence(label, figures))}`} /></div>
-                </>
-              )}
-              {(rt.branches?.[String(d)] ?? []).length > 0 && (
-                <div className="mt-3">
-                  <h4 className="text-sm font-black">Longer patterns, each end to end</h4>
-                  <ul className="mt-1 space-y-1 text-sm text-[var(--text-secondary)]">
-                    {rt.branches![String(d)].flatMap(b => { const f = branchFigures(b, band); return f ? [<li key={`${b.fromStopId}-${b.toStopId}`} className={f.n < 30 ? 'text-[var(--text-dim)]' : ''}>{branchRunTimeLine(b, n => shortStopName(titleCase(n)), f)}{f.n < 30 ? ' Few trips: treat with care.' : ''}</li>] : []; })}
-                  </ul>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </Section>
-  );
-}
-
 /** The route pages' subtitle (full analysis and explore): the week, the trip count, where the figures come from. */
 export function routeSubtitle(v3: LiveV3, agency: string): string {
   const w = v3.weekly;
@@ -261,7 +217,7 @@ function AnalysisPage() {
         <Filters v3={v3} dir={dir} setDir={setDir} />
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><Adherence data={bandData} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Run time')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Run time')}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops with the most delay" id="b2" intro notRanked p90Width={10} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>

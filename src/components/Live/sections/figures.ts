@@ -12,3 +12,6 @@ export const dirsOf = (v3: LiveV3, dir: number | null) => Object.keys(v3.directi
 
 /** The time-of-day choices, "All day" first. */
 export const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
+
+/** A time of day in a sentence ("all day", "in the AM peak"). */
+export const BAND_WORDS: Record<DashboardBand, string> = { all: 'all day', amPeak: 'in the AM peak', midday: 'at midday', pmPeak: 'in the PM peak', evening: 'in the evening' };
