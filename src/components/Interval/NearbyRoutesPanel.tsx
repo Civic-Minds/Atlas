@@ -3,6 +3,7 @@ import { headwayToTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { fmtHeadway, titleCase } from '../../utils/format';
 import { headwayEveryRange } from '../../utils/headwayText';
+import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { PANEL_Z_INDEX, PANEL_TITLE } from '../../styles';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
@@ -76,7 +77,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   )}
                   {r.headway == null && (r.limited || r.noRegular) && (
                     <span className="text-xs font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
-                      {r.noRegular ? 'no regular service' : 'limited'}
+                      {r.noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'}
                     </span>
                   )}
                 </div>

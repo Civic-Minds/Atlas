@@ -8,7 +8,7 @@ import Panel from '../ui/Panel';
 import { shortenAgencyName, routeLabels } from '../../utils/format';
 import { splitRouteKey } from '../../utils/routeKey';
 import RouteListRow from '../RouteListRow';
-import { routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
+import { NO_REGULAR_SERVICE_SHORT_LABEL, routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
 
 // Reusable/helper interfaces for route snippets
@@ -70,7 +70,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
-        {noRegular ? 'no regular service' : 'limited'}
+        {noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'}
       </span>
     );
   }

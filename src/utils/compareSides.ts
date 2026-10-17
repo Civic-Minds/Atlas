@@ -2,6 +2,7 @@ import type { DayType } from '../../shared/dayTypes';
 import { PERIOD_LABELS, type TimePeriod } from '../hooks/useIntervalStats';
 import { describeDayAndPeriod } from './mapExportDetails';
 import { headwayAbout, headwayOrBetter } from './headwayText';
+import { NO_REGULAR_SERVICE_LABEL } from './effectiveHeadway';
 
 /** One side of compare mode: its own day, time and frequency threshold (CIV-19). */
 export interface CompareSide {
@@ -68,7 +69,7 @@ export interface CompareRowFacts {
 
 function routeFrequencyWords(row: CompareRowFacts): string {
   if (!row.runs) return 'no service';
-  if (row.headway == null) return 'no regular service';
+  if (row.headway == null) return NO_REGULAR_SERVICE_LABEL;
   return headwayAbout(row.headway);
 }
 

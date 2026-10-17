@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **"No regular service" now reads "no regular service during this period"**: on route cards, agency lists and comparisons, so it is clear the route runs at other times.
 - **A branch that runs keeps its row when the rest of the route does not**: route cards marked every row "no regular service" whenever the route as a whole had none, hiding SF Muni 8's Fisherman's Wharf branch that runs every 8 in the PM peak; stop cards follow the same row ([#954](https://github.com/Civic-Minds/Atlas/issues/954)).
 - **Live hour charts end cleanly after midnight (local only)**: run time, late by hour and the hour sparklines run 5 am to 4 am in one line and stop at the last hour with enough trips, so no stray marks float past 12a or under the line labels; charts side by side share one axis.
 - **Live route pages: a new full-width analysis view (`?view=explore`)**: the route strip with a detail panel for any stop or stretch, one set of filters for direction and time of day, and every chart on one page; stop names in the worst-stops table open that stop in the panel.

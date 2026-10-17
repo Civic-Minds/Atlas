@@ -23,7 +23,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
 import { branchStackColor } from '../../../utils/colors';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
@@ -247,7 +247,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const allDay = period === 'all' ? routeAllDayContract(currentRoute.directions) : undefined;
   const noRegularService = (contract != null && contract.filterValue == null && contract.runs)
     || (allDay != null && allDay.filterValue == null);
-  const noRegularLabel = allDay?.limited ? 'limited' : 'no regular service';
+  const noRegularLabel = allDay?.limited ? 'limited' : NO_REGULAR_SERVICE_LABEL;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
@@ -357,7 +357,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   // rows below; the slower direction decides, as everywhere else on the card.
   const scheduleHeadline = (() => {
     if (contract) {
-      if (contract.filterValue == null) return contract.runs ? 'Scheduled: no regular service' : null;
+      if (contract.filterValue == null) return contract.runs ? `Scheduled: ${NO_REGULAR_SERVICE_LABEL}` : null;
       return `Scheduled: ${contract.range ? headwayAboutRange(contract.range[0], contract.range[1]) : headwayAbout(contract.filterValue)}`;
     }
     const cores = displayGroups.map(group => {

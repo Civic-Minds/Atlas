@@ -46,7 +46,7 @@ describe('route card rows when the route has no regular service (#954)', () => {
   it("shows a row's own direction value; a row without one still reads no regular service", () => {
     renderCard('pmPeak');
     expect(screen.getByText('about every 8 min')).toBeTruthy();
-    expect(screen.getAllByText('no regular service').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('no regular service during this period').length).toBeGreaterThan(0);
     // City College's own pattern number (40) is not its direction value and stays hidden.
     expect(screen.queryByText(/every 40 min/)).toBeNull();
   });

@@ -325,7 +325,12 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
     && features.some(feature => routeCardDisplayLimited(feature, period));
 }
 
-/** The filter says the route has no regular service in this period: lists say "no regular service", never a number. */
+/** The words every card and list shows where the filter says a route has no regular service in the period. */
+export const NO_REGULAR_SERVICE_LABEL = 'no regular service during this period';
+/** The same, short, for the narrow Nearby and search rows, where the long words do not fit. */
+export const NO_REGULAR_SERVICE_SHORT_LABEL = 'no regular service';
+
+/** The filter says the route has no regular service in this period: lists say NO_REGULAR_SERVICE_LABEL, never a number. */
 export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   const contract = routeContract(features, period);
   return contract != null && contract.filterValue == null && contract.runs;
