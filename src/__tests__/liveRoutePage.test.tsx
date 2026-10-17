@@ -63,7 +63,7 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3, and stays up/)).toBeTruthy();
     expect(screen.getByText(/^Delay stays about the same from end to end/)).toBeTruthy();
     // B2: ranked by late share, one table, with the sample size.
-    const b2 = screen.getByRole('region', { name: /Stops with the most delay/ });
+    const b2 = screen.getByRole('region', { name: /Stops most often late/ });
     expect(within(b2).getAllByRole('row').length).toBeGreaterThan(2);
     expect(within(b2).queryByRole('list')).toBeNull();
     // B4: forms sentence, every link with its number, linked wording.
@@ -167,7 +167,7 @@ describe('Live route dashboard', () => {
     expect(screen.getByText('Delay at the first few stops is less exact.')).toBeTruthy();
     expect(screen.getByText(/Not ranked: the first 4 stops/)).toBeTruthy();
     // Westbound (direction 1) has 3 fixture stops, all within the first 4, so only eastbound rows are ranked.
-    const b2 = screen.getByRole('region', { name: /Stops with the most delay/ });
+    const b2 = screen.getByRole('region', { name: /Stops most often late/ });
     expect(within(b2).queryAllByText('Westbound').length).toBe(0);
   });
 

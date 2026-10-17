@@ -4,7 +4,7 @@
  * route, so a quiet route does not count as much as the 504. Every figure says how many of the agency's routes it covers.
  * Pure: the builder script (scripts/live-agency-summary.ts) reads the files, this turns them into the page's numbers.
  */
-import { dailyValuesOf, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
+import { dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
 
 /** Stops and stretches need this many measurements to be ranked (the route page's rule). */
 export const AGENCY_MIN_N = 30;
@@ -162,7 +162,8 @@ export function agencySummary(input: {
       bunchingShare: t?.bunching?.share ?? null,
       ...(t?.bunching?.bunched != null && t.bunching.gapped != null ? { bunchedShare: t.bunching.bunched, gappedShare: t.bunching.gapped } : {}),
       deliveredShare: t?.delivered?.share ?? null,
-      lateByHour: block.byHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n })),
+      // The route's good days only, like its tiles (the all-days hours when the file has no per-day figures).
+      lateByHour: (healthyLateByHour(v3, 'all') ?? block.byHour).filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n })),
     };
   }).sort((a, b) => (b.lateShare ?? -1) - (a.lateShare ?? -1) || a.route.localeCompare(b.route, undefined, { numeric: true }));
 

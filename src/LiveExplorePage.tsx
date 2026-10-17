@@ -269,7 +269,7 @@ export default function LiveExplorePage() {
       <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY('Extra wait')} />
       <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY('Where bunching forms')} />
       <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY('Service delivered')} />
-      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops with the most delay" id="x-stops" shrink boundary={BOUNDARY('Stops with the most delay')} onPick={pickStop} canPick={onStrip} />
+      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops most often late" id="x-stops" shrink boundary={BOUNDARY('Stops most often late')} onPick={pickStop} canPick={onStrip} />
       <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
     </article>,
   );

@@ -3,7 +3,7 @@
  * A change is coloured only when it is bigger than normal noise: the rule (weekChangeTone, dailyNoise, NOISE_RULE) lives
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
-import { dailyNoise, dateRangeText, weekChangeTone, type CompareKey, type DailyValues, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
+import { isWeekendDate, dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
 import { LATE_TILE_CAPTION } from '../../shared/liveWording';
 import { tenth } from '../../shared/liveFormat';
 export { NOISE_RULE } from '../../shared/liveDashboard';
@@ -109,16 +109,13 @@ export function weekWindowLine(w: NonNullable<LiveV3['weekly']>): string {
   return w.comparable ? base : `Not enough days of good recordings to compare two weeks: each needs at least ${w.minHealthyDays}. ${base}`;
 }
 
-export type DayKind = 'all' | 'weekday' | 'weekend';
-export const isWeekendDate = (d: string) => { const g = new Date(`${d}T12:00:00Z`).getUTCDay(); return g === 0 || g === 6; };
+export { isWeekendDate, type DayKind };
 
 /**
  * Late share for one kind of day, from the per-date counts over this week's days with good recordings, so the
  * "All days" figure is the same number as the Late tile.
  */
 export function lateForDays(byDate: ReadonlyArray<{ date: string; n: number; late: number }>, healthyDates: readonly string[], kind: DayKind): { share: number; n: number; days: number } | null {
-  const ok = new Set(healthyDates);
-  const rows = byDate.filter(d => ok.has(d.date) && (kind === 'all' || (kind === 'weekend') === isWeekendDate(d.date)));
-  const n = rows.reduce((a, d) => a + d.n, 0);
-  return n > 0 ? { share: rows.reduce((a, d) => a + d.late, 0) / n, n, days: rows.length } : null;
+  const c = healthyCounts(byDate, healthyDates, kind);
+  return c ? { share: c.lateShare, n: c.n, days: c.days } : null;
 }

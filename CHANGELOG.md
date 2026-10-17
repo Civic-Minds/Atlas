@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Late shares count the same days on every Live page (local only)**: Full analysis, Explore, the hour charts and the planner now count only days with good recordings, like the tiles, so the same figure matches everywhere (TTC 504: 8.5% became 9.3%; 510: 13.6% became 16.2%). The stop lists, run time by hour, build-up, bunching and extra wait still include every day until the analysis stores them per day (CIV-284, CIV-293).
+- **The stops list is called "Stops most often late" everywhere (local only)**: Full analysis, Explore and the planner said "Stops with the most delay" (CIV-293).
 - **Live tiles read "last week 10%" with a small coloured arrow, and one colouring rule covers every tile (local only)**: the change line leads with last week's value, and only the arrow is coloured. Before, only Run time coloured: Late and Service delivered were judged against the spread between days, but Run time, Extra wait and Bunching against small fixed amounts that ordinary day-to-day swings beat. Now every measure is judged against its own day-to-day spread (CIV-279).
 - **Late says "more than 5½ min late" everywhere (local only)**: some captions and intros still said 5 min or 5.5+.
 - **Stop names are always in normal case and wrap instead of ending in "..." (local only)**: the Extra wait list showed "RONCESVALLES AVE AT HOWARD PARK AVE".

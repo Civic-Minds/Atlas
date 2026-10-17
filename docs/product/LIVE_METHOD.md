@@ -6,7 +6,7 @@ This is how the Live route page (the dashboard and the full analysis at `/apps/l
 
 - **Positions, not reported delays.** The TTC feed sends no delay values, so Live works delays out itself. It uses the archived vehicle positions (one snapshot about every minute, measured at 1,440 snapshots a day, and a vehicle's own position advances at a median of 61 seconds; kept 30 days in the `atlas-live` bucket) and the agency's timetable (GTFS).
 - **Window.** The last 7 service days by default. The page always says which days, how many trips and how many stop departures it is based on.
-- **Good days only.** A day counts as good when the archive holds at least 90% of the snapshots a typical day has. Measures that compare days or weeks leave the other days out, and the page names them.
+- **Good days only.** A day counts as good when the archive holds at least 90% of the snapshots a typical day has. The tiles and every late share (by kind of day, by hour, the route and network figures in the planner) count only this week's good days, so the same figure reads the same everywhere. The analysis stores some measures only as totals over all 7 days (the stop lists, run time by hour, where delay builds up, bunching, extra wait, and a single direction's late share), so those still include days with recording gaps until the analysis stores them per day.
 
 ## When a vehicle left a stop
 
@@ -39,10 +39,10 @@ This is how the Live route page (the dashboard and the full analysis at `/apps/l
 
 ### Late departures by hour (B1)
 
-- The share of trips that left the end of the line late, for all days, weekdays and weekends side by side.
+- The share of trips that left the end of the line late, for all days, weekdays and weekends side by side (good days only).
 - Below that, an hourly chart for each kind of day: the share of departures ahead, on time and late in each hour.
 
-### Stops with the most delay (B2)
+### Stops most often late (B2)
 
 - Stops ranked by the share of departures 5.5+ minutes late.
 - Only stops with at least 30 departures are ranked. The typical delay and the delay that 1 in 10 departures exceed sit beside each one.

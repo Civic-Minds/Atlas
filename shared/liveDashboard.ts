@@ -144,7 +144,7 @@ export interface LiveV3 {
     overall: DeliveredFigures & { byDirection: Record<string, DeliveredFigures> };
   };
   /** One day at a time, the same figures as a week (CIV-278): each day's measures and whether it was a good day. */
-  daily?: Record<string, { healthy: boolean } & Pick<WeekMetrics, 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered'>>;
+  daily?: Record<string, { healthy: boolean; lateByHour?: Array<{ hour: number; n: number; lateShare: number }> } & Pick<WeekMetrics, 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered'>>;
   weekly?: { minHealthyDays: number; health: Array<{ date: string; snapshots: number; healthy: boolean }>; thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean };
   /** Stops, build-up and adherence for each time of day. The top-level `adherence`, `stops` and `buildup` are the 'all' entry. */
   bands: Record<DashboardBand, DashboardBandData>;
@@ -412,6 +412,41 @@ export function dailyNoise(daily: readonly number[], nThis: number, nLast: numbe
   const mean = daily.reduce((a, x) => a + x, 0) / daily.length;
   const sd = Math.sqrt(daily.reduce((a, x) => a + (x - mean) ** 2, 0) / (daily.length - 1));
   return 2 * sd * Math.sqrt(1 / nThis + 1 / nLast);
+}
+
+export type DayKind = 'all' | 'weekday' | 'weekend';
+export const isWeekendDate = (d: string) => { const g = new Date(`${d}T12:00:00Z`).getUTCDay(); return g === 0 || g === 6; };
+const ofKind = (d: string, kind: DayKind) => kind === 'all' || (kind === 'weekend') === isWeekendDate(d);
+
+/** The days every Live surface counts: this week's days with good recordings (all the window's days for a file without the weekly block). */
+export const healthyDatesOf = (v3: LiveV3): string[] => v3.weekly?.thisWeek.healthyDates ?? v3.window.dates;
+
+/**
+ * Late and ahead counts for one kind of day over the good days only, from the per-date counts of an adherence block
+ * (the whole route or one time of day). Null when no day of that kind is left.
+ */
+export function healthyCounts(byDate: ReadonlyArray<{ date: string; n: number; late: number; early?: number }>, healthyDates: readonly string[], kind: DayKind): { n: number; late: number; early: number; lateShare: number; earlyShare: number; days: number } | null {
+  const ok = new Set(healthyDates);
+  const rows = byDate.filter(d => ok.has(d.date) && ofKind(d.date, kind));
+  const n = rows.reduce((a, d) => a + d.n, 0);
+  if (n <= 0) return null;
+  const late = rows.reduce((a, d) => a + d.late, 0), early = rows.reduce((a, d) => a + (d.early ?? 0), 0);
+  return { n, late, early, lateShare: late / n, earlyShare: early / n, days: rows.length };
+}
+
+/**
+ * Late share by the hour a trip starts over the good days only, for one kind of day, from the per-day figures the
+ * analysis stores (`daily`). Null for a file without them: the caller then keeps the all-days hours.
+ */
+export function healthyLateByHour(v3: LiveV3, kind: DayKind): Array<{ hour: number; n: number; lateShare: number }> | null {
+  if (!v3.daily) return null;
+  const ok = new Set(healthyDatesOf(v3));
+  const sums = new Map<number, { n: number; late: number }>();
+  for (const [date, day] of Object.entries(v3.daily)) {
+    if (!ok.has(date) || !day.healthy || !ofKind(date, kind)) continue;
+    for (const h of day.lateByHour ?? []) { const x = sums.get(h.hour) ?? { n: 0, late: 0 }; x.n += h.n; x.late += h.lateShare * h.n; sums.set(h.hour, x); }
+  }
+  return [...sums].filter(([, x]) => x.n > 0).sort((a, b) => a[0] - b[0]).map(([hour, x]) => ({ hour, n: x.n, lateShare: x.late / x.n }));
 }
 
 /** Each measure's value on each good day, in the figure's own unit (share 0-1, or minutes): the day-to-day spread behind the noise. */
