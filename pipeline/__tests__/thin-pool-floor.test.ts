@@ -28,7 +28,9 @@ describe('thin-pool fallback stops floor the period values', () => {
     // or the own list's 51.
     expect(sat.stopPeriodHeadways[sat.stopOrder[0]].amPeak).toBe(51);
     expect(sat.headwayByPeriod.amPeak).toBe(33);
-    expect(sat.headwayByPeriod.midday).toBe(24);
+    // CIV-234: midday read 24 from stop 13247's own arrivals; every trip only drops off there, so
+    // the floor leaves it out and midday reads the boardable service (GTFS: every 12-13).
+    expect(sat.headwayByPeriod.midday).toBe(14);
   });
 
   it('TriMet 6 weekday toward Goose Hollow: the Hayden Meadows loop, served by no other pattern, floors the evening at its own 32', async () => {

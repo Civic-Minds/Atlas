@@ -2360,10 +2360,13 @@ export async function processGtfsBuffer(
       for (const times of stopMetricMap.values()) { deps += times.length; daytime += times.filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end).length; }
       return daytime * 2 >= deps;
     };
+    // CIV-234: a drop-off-only stop (#879) is left out too, as from the stop grades: its list is
+    // arrivals, which never set the headline, period or hour floor (the last stop already was).
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
       const poolCount = new Set(pool).size;
-      return drawnPatternStops().slice(0, -1).map(p => p.stopId).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+      return drawnPatternStops().slice(0, -1).map(p => p.stopId)
+        .filter(stopId => !dropOffOnlyStops.has(stopId) && new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
