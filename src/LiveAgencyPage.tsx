@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
-import { dateRangeText } from '../shared/liveDashboard';
 import type { LiveAgencyResponse } from '../local-api/live-agency';
 import { devOnly, liveAgencyDataUrl, liveDataMissing, liveReportTitle, withoutDevHint } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
@@ -20,12 +19,10 @@ import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
 import SortableDataTable from './components/ui/SortableDataTable';
 import LiveOffNotice from './components/LiveOffNotice';
-import { KpiTiles, YesterdayTiles } from './LiveDashboardView';
+import { KpiTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { builtText, coveredRoutesText, liveSubtitle, METHOD_GROUPS, dayComparedWith, dayText, estimatedNote, weekOfText } from '../shared/liveWording';
-import { useLiveYesterday } from './hooks/useLiveYesterday';
-import PeriodSubtitle from './components/Live/PeriodSubtitle';
+import { builtText, coveredRoutesText, liveSubtitle, METHOD_GROUPS } from '../shared/liveWording';
 import MethodFootnote, { Term } from './components/Live/MethodFootnote';
 import { bunchingLine, colourLine, deliveredLine, extraWaitLine, lateAtStopLine, lateLine, positionsLine, recordingGapsLine, runTimeLine, tripMatchLine } from './components/Live/methodLines';
 
@@ -177,10 +174,6 @@ export default function LiveAgencyPage() {
   const { agency = '' } = useParams();
   // Live off: no request at all, only the notice.
   const state = useLiveAgency(FEATURES.liveReports ? agency : '');
-  // This week / Yesterday (CIV-278), kept in the address; Yesterday swaps the tiles only.
-  const [day, setDay] = useState<'week' | 'yesterday'>(() => (new URLSearchParams(window.location.search).get('day') === 'yesterday' ? 'yesterday' : 'week'));
-  useEffect(() => { syncUrlParams({ day: day === 'yesterday' ? 'yesterday' : null }); }, [day]);
-  const yesterday = useLiveYesterday(FEATURES.liveReports ? agency : null, null, day === 'yesterday');
   useEffect(() => {
     if (!agency) return;
     applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
@@ -198,7 +191,6 @@ export default function LiveAgencyPage() {
   const w = s.weekly;
   const dates = w?.thisWeek.dates ?? [];
   const tiles = agencyKpiTiles(s);
-  const shown = day === 'yesterday' ? yesterday : null;
   return (
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
@@ -206,18 +198,13 @@ export default function LiveAgencyPage() {
           <div className="min-w-0">
             <PageTitle>{name}</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              <PeriodSubtitle
-                text={shown ? `${shown.weekly.comparable ? dayComparedWith(shown.date, shown.compareDate) : dayText(shown.date)} · ${coverage} · ${estimatedNote(agency)}` : liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency })}
-                dateLabel={shown ? dayText(shown.date) : dates.length ? weekOfText(dates[0], dates[dates.length - 1]) : ''}
-                value={day}
-                onChange={setDay}
-              />
+              {liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency })}
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
         </div>
         <ErrorBoundary>
-          {shown ? <YesterdayTiles y={shown} tiles={agencyKpiTiles({ ...s, weekly: shown.weekly, daily: shown.daily })} /> : w && tiles.length
+          {w && tiles.length
             ? <KpiTiles tiles={tiles} caption={weekNotComparableLine({ ...w, health: [] })} />
             : <p className="mt-5 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in the analysis files yet. Rebuild them with npm run live:analyze.')}</p>}
         </ErrorBoundary>
