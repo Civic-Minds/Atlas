@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, dateRangeText, freshness, linkValueText, rankStops,
+  LINK_LABELS, freshness, linkValueText, rankStops,
   type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { delayAmount, headwayAmount } from '../shared/headwayText';
@@ -29,6 +29,7 @@ import { delayText, type RouteStripStop } from './components/Live/routeStripMode
 import { KpiRow } from './LiveDashboardView';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
+import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import { dirsOf, mins, num, pct } from './components/Live/sections/figures';
 import { BOUNDARY, routeSubtitle, withNiceNames } from './LiveRoutePage';
@@ -352,36 +353,6 @@ function Bunching({ v3, dir, band }: { v3: LiveV3; dir: number | null; band: Das
   );
 }
 
-function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
-  const sd = v3.serviceDelivered;
-  if (!sd) return null;
-  const overall = dir == null ? sd.overall : sd.overall.byDirection[String(dir)];
-  const days = sd.byDay.filter(d => d.healthy);
-  const points: ProfilePoint[] = days.map(d => ({ label: dateRangeText(d.date, d.date), y: dir == null ? d.share ?? 0 : d.byDirection[String(dir)] ?? 0, n: d.seen + d.notSeen }));
-  if (points.length < 2) return null;
-  return (
-    <div className="mt-4 grid items-start gap-6 md:grid-cols-[14rem_minmax(0,1fr)]">
-      {overall?.share != null && (
-        <div className={TILE}>
-          <div className="text-xs font-bold text-[var(--text-muted)]">Ran</div>
-          <div className="mt-1 text-3xl font-black tracking-tight">{Math.round(overall.share * 1000) / 10}%</div>
-          <div className="mt-1 text-xs text-[var(--text-dim)]">{(overall.seen + overall.notSeen).toLocaleString()} trips</div>
-        </div>
-      )}
-      <ProfileBars
-        ariaLabel="Share of scheduled trips that ran, day by day"
-        points={points}
-        formatY={y => `${Math.round(y * 1000) / 10}%`}
-        unit="trips"
-        valueHeader="Ran"
-        rowHeader="Day"
-        caption="How many of the scheduled trips ran, each day."
-        scale={{ min: 0.9, max: 1 }}
-      />
-    </div>
-  );
-}
-
 export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
@@ -479,9 +450,7 @@ export default function LiveExplorePage() {
       <Section shrink id="x-bunching" title="Where bunching forms">
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} /></ErrorBoundary>
       </Section>
-      <Section shrink id="x-delivered" title="Service delivered">
-        <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
-      </Section>
+      <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY('Service delivered')} />
       <Section shrink id="x-stops" title="Stops with the most delay">
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} onPick={pickStop} canPick={onStrip} /></ErrorBoundary>
       </Section>

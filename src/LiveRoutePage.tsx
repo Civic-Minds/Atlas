@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, bunchingSentence, buildupTakeaway, dateRangeText, deliveredSentence, extraWaitSentence, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
+  LINK_LABELS, branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, bunchingSentence, buildupTakeaway, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -32,8 +32,9 @@ import { PageTitle } from './components/ui/PageTitle';
 import { LATE_BY_HOUR_TITLE, lateCount, lateHourLine, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
+import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
-import { dirsOf, mins, num, pct } from './components/Live/sections/figures';
+import { dirsOf, mins, pct } from './components/Live/sections/figures';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -397,36 +398,6 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
   );
 }
 
-/** Service delivered: the share of scheduled trips that ran, by day, only on days with healthy recordings. */
-function Delivered({ v3, dir }: { v3: LiveV3; dir: number | null }) {
-  const sd = v3.serviceDelivered;
-  if (!sd) return null;
-  const overall = dir == null ? sd.overall : sd.overall.byDirection[String(dir)];
-  const days = sd.byDay.filter(d => d.healthy);
-  const skipped = sd.byDay.filter(d => !d.healthy);
-  const points: ProfilePoint[] = days.map(d => ({ label: dateRangeText(d.date, d.date), y: dir == null ? d.share ?? 0 : d.byDirection[String(dir)] ?? 0, n: d.seen + d.notSeen }));
-  return (
-    <Section id="delivered" title="Service delivered">
-      {overall && <p className="mt-2 text-sm">{deliveredSentence(overall, dir == null ? undefined : v3.directionLabels[String(dir)])}</p>}
-      {points.length > 1 && (
-        <div className="mt-4 max-w-2xl">
-          <ProfileBars
-            ariaLabel="Share of scheduled trips that ran, day by day"
-            points={points}
-            formatY={y => `${Math.round(y * 1000) / 10}%`}
-            unit="trips"
-            valueHeader="Ran"
-            rowHeader="Day"
-            caption="How many of the scheduled trips ran, each day."
-            scale={{ min: 0.9, max: 1 }}
-          />
-        </div>
-      )}
-      <p className="mt-2 text-xs text-[var(--text-dim)]">Trips during gaps in our recordings aren't counted.{skipped.length > 0 && <> Not counted: {skipped.map(d => dateRangeText(d.date, d.date)).join(', ')} (gaps in our recordings).</>}</p>
-    </Section>
-  );
-}
-
 /** The route pages' subtitle (full analysis and explore): the week, the trip count, where the figures come from. */
 export function routeSubtitle(v3: LiveV3, agency: string): string {
   const w = v3.weekly;
@@ -510,7 +481,7 @@ function AnalysisPage() {
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} gaps={gaps} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Service delivered')}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
         <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
         </>)}
       </article>
