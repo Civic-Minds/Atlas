@@ -11,8 +11,8 @@
  *
  * Days the GTFS calendar doesn't cover are dropped, not guessed.
  */
-import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'fs';
+import { dirname, join } from 'path';
 import { buildShape, haversineM, projectOntoShape, type Shape } from '../shared/shapeProjection.js';
 import {
   SEGMENT_DEFAULTS, TRIP_STOP_STATUS_LABELS, aggregateSegments, bandForHour, classifyTripStops, isTurnBack, standingStillExcess, detectHolds, headwayBandStat, headwayWindows, median, projectRun, segmentKey,
@@ -1231,3 +1231,16 @@ for (const [key, m] of headwayByStop) {
 }
 writeFileSync(OUT.replace(/-segments\.json$/, '-gaps.json'), JSON.stringify({ schema: 1, agency: 'ttc', route: ROUTE, dates: windowDates, directions: gapsOut }));
 console.log(`dates ${usedDates.length} (${usedDates[0]}..${usedDates[usedDates.length - 1]}), runs matched ${runsMatched}/${runsTotal} (no timetable trip: ${runsUnmatched}), passes ${observations.length}, segments ${stats.length}, headway windows ${windowsKept}/${windowsTotal}, outages ${outages.length}`);
+
+// The agency page reads one summary of every route's analysis. Any run of this script rebuilds it, and drops it if the
+// rebuild fails, so a summary can never be older than the route files beside it (CIV-305).
+{
+  const dir = dirname(OUT);
+  try {
+    const { writeAgencySummary } = await import('./live-agency-summary');
+    console.log(writeAgencySummary('ttc', GTFS, dir));
+  } catch (e) {
+    rmSync(join(dir, 'ttc-agency.json'), { force: true });
+    console.error(`live-segment-delay: could not rebuild the agency summary (${(e as Error).message}); removed the old one so it cannot go stale. Run "npx tsx scripts/live-agency-summary.ts ttc".`);
+  }
+}

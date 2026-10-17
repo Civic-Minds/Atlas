@@ -40,11 +40,8 @@ export function readCsv(text: string): Record<string, string>[] {
   return body.map(r => Object.fromEntries(keys.map((k, i) => [k, (r[i] ?? '').trim()])));
 }
 
-function main() {
-  const agency = process.argv[2] ?? 'ttc';
-  const data = resolve(process.env.LIVE_DATA ?? '../_live-data');
-  const gtfs = resolve(data, 'gtfs/candidates/surface');
-  const out = resolve(data, 'out');
+/** Builds and writes `<out>/<agency>-agency.json` from the route files in `out` (the timetable in `gtfs`). Returns the line the CLI prints. */
+export function writeAgencySummary(agency: string, gtfs: string, out: string): string {
   const routesTxt = readCsv(readFileSync(resolve(gtfs, 'routes.txt'), 'utf8'));
   const byShort = new Map(routesTxt.map(r => [r.route_short_name || r.route_id, r]));
   const totalRoutes = byShort.size;
@@ -86,7 +83,13 @@ function main() {
 
   const file = resolve(out, `${agency}-agency.json`);
   writeFileSync(file, JSON.stringify(summary));
-  console.log(`live-agency-summary: ${summary.covered.length} of ${totalRoutes} ${agency} routes (${held.length} held${missing.length ? `, no analysis file: ${missing.join(', ')}` : ''}) -> ${file}`);
+  return `live-agency-summary: ${summary.covered.length} of ${totalRoutes} ${agency} routes (${held.length} held${missing.length ? `, no analysis file: ${missing.join(', ')}` : ''}) -> ${file}`;
+}
+
+function main() {
+  const agency = process.argv[2] ?? 'ttc';
+  const data = resolve(process.env.LIVE_DATA ?? '../_live-data');
+  console.log(writeAgencySummary(agency, resolve(data, 'gtfs/candidates/surface'), resolve(data, 'out')));
 }
 
 if (process.argv[1] && resolve(process.argv[1]).endsWith('live-agency-summary.ts')) main();

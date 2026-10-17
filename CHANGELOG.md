@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The Live agency summary can no longer be older than its route files (local only)**: every route analysis run rebuilds it (or removes it if that fails), and the local API refuses a summary older than any route file, so the left list and network figures can't disagree with the route pages (CIV-305).
 - **The planner's Run time label follows the time of day (local only)**: with AM peak picked it ends "…, AM peak" instead of "all trips".
 - **Every Live switcher is the same pill group (local only)**: the planner's top bar, the route pages' view and direction switches, the full analysis filters and the phone direction switch share one component, with the same height, selected state and spacing between groups (CIV-307).
 - **Switching routes in the planner moves the map and no longer flashes the side panel (local only)**: the map fits the new route (and the whole network from TTC) clear of the side panels, direction changes keep the view, and the previous figures stay until the new route's arrive, swapped in place; every route's file is fetched once with the network, so a pick is instant.

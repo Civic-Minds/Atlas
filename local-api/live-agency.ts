@@ -2,7 +2,7 @@
  * Local only: the Live agency dashboard's data (CIV-262), the file scripts/live-agency-summary.ts writes from the route
  * analysis files. Always answers with a status; `reason` is a plain sentence (what is missing and what to do).
  */
-import { readFile } from 'fs/promises';
+import { readFile, readdir, stat } from 'fs/promises';
 import { resolve } from 'path';
 import { agencyHasLiveAnalysis } from '../shared/livePollingConfig.js';
 import type { AgencySummary } from '../shared/liveAgency.js';
@@ -22,8 +22,13 @@ async function handler(req: Request): Promise<Response> {
   if (!/^[a-z0-9-]+$/.test(agency) || !agencyHasLiveAnalysis(agency)) return json({ status: 'unknown_agency', reason: `Live has no route analysis for ${agency}.` }, 404);
   const dir = process.env.LIVE_SEGMENTS_DIR ?? resolve('../_live-data/out');
   try {
-    const summary = JSON.parse(await readFile(resolve(dir, `${agency}-agency.json`), 'utf8')) as AgencySummary;
+    const file = resolve(dir, `${agency}-agency.json`);
+    const summary = JSON.parse(await readFile(file, 'utf8')) as AgencySummary;
     if (summary.schema !== 1) throw new Error('old file');
+    // A summary older than any route file beside it describes routes that have since been re-run: treat it as missing.
+    const built = (await stat(file)).mtimeMs;
+    const routeFiles = (await readdir(dir)).filter(f => f.startsWith(`${agency}-`) && f.endsWith('-segments.json'));
+    for (const f of routeFiles) if ((await stat(resolve(dir, f))).mtimeMs > built) throw new Error('stale summary');
     return json({ status: 'ready', summary });
   } catch {
     return json({ status: 'no_analysis', reason: `No agency summary for ${agency.toUpperCase()} yet. Build it with "npx tsx scripts/live-agency-summary.ts ${agency}" after the route analyses (npm run live:analyze).` });
