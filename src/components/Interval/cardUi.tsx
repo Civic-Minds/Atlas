@@ -613,6 +613,7 @@ export function CardSummaryRow({
   live,
   headwaySuffix,
   below,
+  text,
 }: {
   label: React.ReactNode;
   onClick?: () => void;
@@ -620,6 +621,8 @@ export function CardSummaryRow({
   live?: boolean;
   headwaySuffix?: string;
   below?: React.ReactNode;
+  /** Words in place of the headway badge (#934 part-period: "until 9:37am, every 12 min"). */
+  text?: string;
 }) {
   const labelCls = `${CARD_LIST_ROUTE} block text-left w-full`;
   return (
@@ -634,7 +637,9 @@ export function CardSummaryRow({
         )}
         {below}
       </div>
-      {headway != null && <HeadwayBadge headway={headway} live={live} suffix={headwaySuffix} />}
+      {text != null
+        ? <span className="text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap">{text}</span>
+        : headway != null && <HeadwayBadge headway={headway} live={live} suffix={headwaySuffix} />}
     </div>
   );
 }

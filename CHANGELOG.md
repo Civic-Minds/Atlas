@@ -15,6 +15,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Live route pages: a new full-width analysis view (`?view=explore`)**: the route strip with a detail panel for any stop or stretch, one set of filters for direction and time of day, and every chart on one page; stop names in the worst-stops table open that stop in the panel.
 - **Live reports are easy to share**: `?view=lite` is one short screen per route (the week's tiles, the route strip, late by hour, a link to the full analysis), and a pasted Live report link now previews with the route's name and its share of late departures for the week, from a page written at build time.
 - Frequencies always read in minutes (e.g. 'every 120 min'), so a column of values no longer mixes hours and minutes.
+- **Route cards say when service starts or ends instead of a long wait**: a period that only starts late or ends early around steady service now reads "from 7:17am, every 9 min" rather than "every 77" (SF Muni 8BX, [#934](https://github.com/Civic-Minds/Atlas/issues/934)). The map and filters are unchanged.
+- **Route cards describe uneven periods instead of "limited" or an average**: a route that runs only part of a period reads "until 9:37am, every 12 min", and service with one long gap reads "every 10 min, with a 45 min gap". The map and filters are unchanged.
 - **"On this page" highlights the section you are reading** on Docs, Terms, Privacy and Changelog, so you can see where you are in long pages.
 - **The top bar stays put while you scroll on agency, area and agencies pages**, as it already did on Docs, Terms and Privacy, so navigation is always one tap away.
 - **Agencies page: country lists use the same three-column layout as Regions on wide screens.**

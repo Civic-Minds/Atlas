@@ -23,7 +23,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, routeCardCoverageText, routeCardPeriodShapeText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
 import { branchStackColor } from '../../../utils/colors';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
@@ -711,6 +711,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         ? headwayAboutRange(contract.range[0], directionFallback)
                         : undefined;
                       const displayH = variantH !== undefined ? variantH : directionFallback ?? ownH;
+                      // #934 and D6: the main stretch's row names a late start, an early end or one gap inside
+                      // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.
+                      // A period that is one gap between a few departures (#955) has no cadence to word.
+                      const edgeText = hoveredHour == null && variantH === undefined && allDayH == null && d.stretchRole === 'main' && !isOneGapRow(d, period)
+                        ? routeCardPeriodShapeText(d, period)
+                        : undefined;
                       const label = branchLabel(group, d, gi);
                       if (!label && !collapseGroups && displayH == null) return null;
                       const trunkHw = hoveredHour == null && period !== 'all'
@@ -733,9 +739,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             label={label}
                             headway={rowNoRegular ? undefined : displayH ?? undefined}
-                            limitedLabel={rowNoRegular ? noRegularLabel : undefined}
+                            limitedLabel={isLimited && edgeText ? edgeText : rowNoRegular ? noRegularLabel : undefined}
                             colorHeadway={hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined}
-                            headwayLabel={hoveredHour == null && variantH === undefined ? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period)) : undefined}
+                            headwayLabel={hoveredHour == null && variantH === undefined ? (edgeText ?? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period))) : undefined}
                             trunkHeadway={trunkHw}
                             edgeGapAllowance={d.edgeGapAllowance}
                             onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}

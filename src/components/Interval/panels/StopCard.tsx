@@ -24,6 +24,8 @@ export interface StopBranch {
   headsign: string | null;
   service: HeadwayMetric;
   directionId: number;
+  /** #934: part-period wording shown in place of a number, as on the route card's row. */
+  periodText?: string;
 }
 
 export interface StopRoute {

@@ -55,7 +55,8 @@ export default function StopRouteGroup({
         directionId: branch.directionId,
         multipleDirections: hasMultipleDirections,
       }),
-      hw: branchHeadway(branch, period),
+      // #934: part-period wording replaces the number, as on the route card's row.
+      hw: branch.periodText ? null : branchHeadway(branch, period),
     }))
     .filter(item => item.label);
 
@@ -67,7 +68,7 @@ export default function StopRouteGroup({
   const live = isLivePollingRoute(slug, shortName);
 
   const single = items.length === 1;
-  const compact = items.length > 1 && allSame;
+  const compact = items.length > 1 && allSame && !items.some(i => i.periodText);
 
   if (single) {
     const item = items[0];
@@ -76,6 +77,7 @@ export default function StopRouteGroup({
         label={routeLabel}
         onClick={() => onOpenRoute(item.rKey)}
         headway={item.hw}
+        text={item.periodText}
         live={live}
         below={(
           <CardSublineButton onClick={() => onOpenRoute(item.rKey)} className="mt-0.5">
@@ -130,6 +132,8 @@ export default function StopRouteGroup({
             key={`${item.rKey}::${item.directionId}::${item.headsign ?? ''}`}
             label={item.label}
             headway={item.hw ?? undefined}
+            limited={item.periodText != null}
+            limitedLabel={item.periodText}
             live={live}
             onClick={() => onOpenRoute(item.rKey)}
           />

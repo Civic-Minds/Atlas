@@ -4,8 +4,9 @@ import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
-import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange } from './headwayText';
+import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
 import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
+import { clockText } from '../content/researchRules';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -136,6 +137,35 @@ export function routeCardCoverageText(p: ShapeProperties, period: TimePeriod): s
   // Coverage is a filter-eligibility metric, not a rider-facing headway. A route
   // can run every 10 minutes within a shorter service span inside this period.
   return undefined;
+}
+
+/**
+ * #934 and D6: the main stretch's row names a late start or early end ("from 7:17am, every 9 min")
+ * or one gap inside steady service ("every 5 min, with a 169 min gap") instead of a long wait or
+ * "limited". Wording: headwayPeriodShape.
+ */
+export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod): string | undefined {
+  if (period === 'all') return undefined;
+  const edge = p.stretchPeriodEdge?.[period];
+  if (edge && (edge.from != null || edge.until != null)) {
+    return headwayPeriodShape({
+      from: edge.from != null ? clockText(edge.from) : undefined,
+      until: edge.until != null ? clockText(edge.until) : undefined,
+      every: edge.every,
+    });
+  }
+  const gap = p.stretchPeriodGap?.[period];
+  return gap ? headwayPeriodShape({ every: gap.every, gap: gap.gap }) : undefined;
+}
+
+/**
+ * #934: the part-period wording for a direction with no value in the period ("until 9:37am, every
+ * 12 min"): the route card's main-stretch row shows it, and the stop card the same, so both agree.
+ */
+export function partPeriodText(p: ShapeProperties, period: TimePeriod): string | undefined {
+  if (period === 'all' || p.stretchRole !== 'main') return undefined;
+  if (typeof p.directionFilterHeadwayByPeriod?.[period] === 'number') return undefined;
+  return p.stretchPeriodEdge?.[period] ? routeCardPeriodShapeText(p, period) : undefined;
 }
 
 export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): string | undefined {

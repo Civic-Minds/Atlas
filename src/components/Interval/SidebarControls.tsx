@@ -7,7 +7,7 @@ import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
 import { routeLabels, shortenAgencyName, searchOverlayHidesPanel } from '../../utils/format';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
-import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, partPeriodText, routeCardDisplayHeadway, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
 import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT } from '../../utils/agencySearch';
@@ -593,7 +593,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
 
     const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
-    type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; directionId: number };
+    type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; directionId: number; periodText?: string };
     // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
     const sharedIndexBySlug = new Map(Object.entries(nonCorridorLayers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
 
@@ -610,8 +610,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
+        // #934: a direction the route only runs on one side of the period shows the route card's
+        // words ("until 9:37am, every 12 min") instead of a cadence, at a stop its shape serves.
+        const periodText = partPeriodText(p, period);
         // No cadence at the stop for a period the route card says has no regular service (#750).
-        if (!hasRegularServiceInPeriod(p, period)) continue;
+        if (!periodText && !hasRegularServiceInPeriod(p, period)) continue;
 
         // Only include features whose shape actually covers any of the sibling stops.
         let stopHw: number | undefined = undefined;
@@ -619,13 +622,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         for (const sId of siblingIds) {
           const service = buildRouteStopMetric(p, sId, sharedIndexBySlug.get(slug));
           const hw = metricValueForPeriod(service, period);
-          if (hw != null) {
-            stopHw = hw;
+          if (hw != null || (periodText && p.stopHeadways?.[sId] != null)) {
+            stopHw = hw ?? undefined;
             matchingStopId = sId;
             break; // Use the first matching sibling stop ID that this route serves
           }
         }
-        if (stopHw == null || !matchingStopId) continue;
+        if ((stopHw == null && !periodText) || !matchingStopId) continue;
 
         const dirId = (p as any).directionId ?? 0;
         const facts = buildRouteFacts(p, slug);
@@ -650,10 +653,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           entry.branches.set(branchKey, {
             rKey: facts.key,
             headsign: p.headsign ?? null,
-            service: service.value == null && p.headway != null
+            service: service.value == null && p.headway != null && !periodText
               ? { ...service, value: p.headway, provenance: 'all-day-summary' }
               : service,
             directionId: dirId,
+            ...(periodText ? { periodText } : {}),
           });
         }
       }
@@ -668,7 +672,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         routeType: v.routeType,
         branches: Array.from(v.branches.values())
           .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
-          .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, directionId: b.directionId })),
+          .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}) })),
       }));
   }, [currentStop, nonCorridorLayers, currentDay, period]);
 
