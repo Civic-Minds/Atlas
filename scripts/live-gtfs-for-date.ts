@@ -22,6 +22,7 @@ import JSZip from 'jszip';
 import { peekFeedDates } from '../pipeline/archiveSelection.js';
 import { resolveArchiveZip } from './handcheck/resolve-archive-zip.js';
 import { torontoDate } from './live-fetch-archive.js';
+import { LIVE_SURFACE_PREFIX } from './live-store-surface-gtfs.js';
 
 /** Distinct trip ids in the archived positions files for one date (all routes). */
 export function archiveTripIds(archiveDir: string, date: string): Set<string> {
@@ -78,6 +79,22 @@ function guard(archiveDir: string, date: string, tripsTxt: string, minShare: num
   return true;
 }
 
+/** The stored surface zip that starts on or before `date` (keys are named by feed start), downloaded once into `cache`. */
+async function pickSurfaceZip(date: string, cache: string): Promise<{ zip: string; key: string; reason: string }> {
+  const { r2GetArchiveBuffer, r2ListArchiveObjects } = await import('../pipeline/r2.js');
+  const keys = (await r2ListArchiveObjects(LIVE_SURFACE_PREFIX)).map(o => o.key).filter(k => /\d{4}-\d{2}-\d{2}\.zip$/.test(k)).sort();
+  const key = keys.filter(k => basename(k, '.zip') <= date).pop();
+  if (!key) { console.error(`live-gtfs: no stored surface GTFS in ${LIVE_SURFACE_PREFIX} starts on or before ${date}`); process.exit(1); }
+  mkdirSync(cache, { recursive: true });
+  const local = join(cache, basename(key));
+  if (!existsSync(local)) {
+    const body = await r2GetArchiveBuffer(key);
+    if (!body) { console.error(`live-gtfs: could not read ${key}`); process.exit(1); }
+    writeFileSync(local, body);
+  }
+  return { zip: local, key, reason: 'latest stored TTC surface GTFS starting on or before the date' };
+}
+
 async function main() {
   await import('../pipeline/loadEnv.js');
   const argv = process.argv.slice(2);
@@ -95,7 +112,11 @@ async function main() {
   const target = resolve(args.target);
   const slug = args.slug ?? 'ttc';
   const ymd = date.replace(/-/g, '');
-  const picked = await resolveArchiveZip(slug, resolve(args.cache ?? join(process.env.RUNNER_TEMP ?? '../_feeds', 'archive-cache')), ymd);
+  // Default source: the stored TTC surface GTFS (gtfs/live/ttc-surface/, live-store-surface-gtfs.ts), the timetable whose
+  // trip numbers match the live feed. --source archive uses the reprocess's GTFS archive instead (a different TTC feed).
+  const picked = (args.source ?? 'live-surface') === 'archive'
+    ? await resolveArchiveZip(slug, resolve(args.cache ?? join(process.env.RUNNER_TEMP ?? '../_feeds', 'archive-cache')), ymd)
+    : await pickSurfaceZip(date, resolve(args.cache ?? join(process.env.RUNNER_TEMP ?? '../_feeds', 'surface-cache')));
   const buf = readFileSync(picked.zip);
   const dates = await peekFeedDates(buf);
   console.log(`live-gtfs: ${picked.key ?? picked.zip} (${picked.reason}); feed ${dates.feedVersion ?? '?'} ${dates.feedStart ?? '?'}-${dates.feedExpiry ?? '?'}`);

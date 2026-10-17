@@ -73,6 +73,8 @@ jobs:
           key: live-archive-${{ steps.day.outputs.day }}
 
       - name: Get the timetable for yesterday and check it matches the positions
+        # The stored TTC surface GTFS (gtfs/live/ttc-surface/, archive bucket). When the TTC publishes a new one, store it
+        # by hand: npx tsx scripts/live-store-surface-gtfs.ts <surfacegtfs.zip>. The 90% trip-number guard fails the run if it is stale.
         run: npx tsx scripts/live-gtfs-for-date.ts --target "$LIVE_DATA/gtfs/candidates/surface" --archive "$LIVE_DATA/archive"
 
       - name: Build and publish yesterday
