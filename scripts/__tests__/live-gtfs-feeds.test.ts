@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { PATTERN_MERGE_REQUIRES_SAME_STOPS, assertDistinctFeeds, canonicalShapeIds, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates, type FeedCoverage } from '../live-gtfs-feeds';
+import { PATTERN_MERGE_REQUIRES_SAME_STOPS, assertDistinctFeeds, droppedDaysWarning, canonicalShapeIds, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates, type FeedCoverage } from '../live-gtfs-feeds';
 
 const csv = (path: string) => {
   const [head, ...rows] = readFileSync(path, 'utf8').trim().split('\n') as string[];
@@ -148,5 +148,18 @@ describe('known limit: a stop change at a feed change', () => {
     expect(remap.get('A:s')).toBe('A:s');
     expect(remap.get('B:s')).toBe('B:s');
     expect(PATTERN_MERGE_REQUIRES_SAME_STOPS).toBe(true);
+  });
+});
+
+describe('days one timetable does not cover', () => {
+  it('names each dropped day in a loud warning, and says nothing when none is dropped', () => {
+    expect(droppedDaysWarning([], 'S1 (20260930-20261031)')).toBeNull();
+    const w = droppedDaysWarning(['2026-11-02', '2026-11-01'], 'S1 (20260930-20261031)')!;
+    expect(w).toMatch(/WARNING/);
+    expect(w).toMatch(/LEFT OUT/);
+    expect(w).toMatch(/these 2 days/);
+    expect(w).toContain('2026-11-01, 2026-11-02'); // sorted
+    expect(w).toContain('S1 (20260930-20261031)');
+    expect(droppedDaysWarning(['2026-11-01'], 'S1')).toMatch(/does not cover this day/);
   });
 });

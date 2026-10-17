@@ -116,3 +116,10 @@ export function feedsOverlapping(feeds: readonly FeedCoverage[], first: string, 
   const hit = feeds.filter(f => f.start <= b && f.end >= a);
   return hit.length ? hit : [...feeds];
 }
+
+/** The stderr warning for days a single timetable does not cover (they are left out of the analysis), or null when there are none. */
+export function droppedDaysWarning(dates: readonly string[], feedDescription: string): string | null {
+  if (!dates.length) return null;
+  const list = [...dates].sort();
+  return `live-segment-delay: WARNING: the timetable (${feedDescription}) ${list.length === 1 ? 'does not cover this day' : `covers none of these ${list.length} days`}, so ${list.length === 1 ? 'it is' : 'they are'} LEFT OUT of the analysis: ${list.join(', ')}. Pass the feed that covers ${list.length === 1 ? 'it' : 'them'} (--gtfs a,b) to include ${list.length === 1 ? 'it' : 'them'}.`;
+}

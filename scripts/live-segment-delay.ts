@@ -27,7 +27,7 @@ import { dayHealth, delivered, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type Ru
 import { branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
-import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
+import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, droppedDaysWarning, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
@@ -495,6 +495,12 @@ if (STRICT) {
     process.exit(1);
   }
   console.log(`timetables: ${describeFeeds(FEEDS)}`);
+}
+// One timetable: days it does not cover are still left out, as always, but never quietly.
+if (!STRICT) {
+  const dropped = [...allRunDates].filter(d => d >= firstLocal && d <= lastLocal && activeServices(d) === null);
+  const warning = droppedDaysWarning(dropped, describeFeeds(FEEDS));
+  if (warning) console.error(warning);
 }
 
 const scheduledAt = new Map<string, { tripId: string; t: number }[]>(); // `${svcDate}|${stop}|${dir}`
