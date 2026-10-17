@@ -1998,6 +1998,17 @@ export async function processGtfsBuffer(
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
       : null;
     const stopMetricMap: Map<string, number[]> = pooled?.map ?? metricStopMap;
+    // CIV-53: the same pool without contributor trips, for the #771 floor's "served by fewer
+    // trips" count only. Contributors add departures to the stop values, but they must not lift a
+    // stop out of the floor: LA Metro 40 weekday PM fell to 10 while every stop of the row read
+    // 20-23 when the count included them.
+    const eligibleStopMap: Map<string, number[]> = pooled
+      ? buildPooledStopMap(metricStopMap, (() => {
+        const sharers = stopSharersFor(poolKey).get(ownMember!);
+        if (!sharers) return sharers;
+        return new Map([...sharers].map(([station, members]) => [station, new Set([...members].filter(m => !m.endsWith('|contrib')))]));
+      })(), key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent, stopDepsBySharedMember.get(`${poolKey}::${ownMember}`)).map
+      : stopMetricMap;
     // Drop-off-only stops of the drawn shape (#879): own stop times all pickup_type 1. Only
     // when the feature reads its own shape map; a headsign or group fallback already pools.
     const dropOffOnlyStops: ReadonlySet<string> = !railFeature && featureShape && shapeMap != null && metricStopMap === shapeMap
@@ -2392,7 +2403,7 @@ export async function processGtfsBuffer(
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
       const poolCount = new Set(pool).size;
-      return drawnPatternStops().slice(0, -1).map(p => p.stopId).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+      return drawnPatternStops().slice(0, -1).map(p => p.stopId).filter(stopId => new Set(eligibleStopMap.get(stopId) ?? []).size < poolCount);
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
