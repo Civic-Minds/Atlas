@@ -502,13 +502,14 @@ export interface StretchPeriodEdge {
 
 /**
  * The edge reading of one period at a stretch's reference stop, or null. Only when `value` (the
- * direction's filter value) is over PERIOD_COVERAGE_MAX_HEADWAY, is that stretch's full-window wait, an edge gap sets it, and the gaps
- * between departures pass the steadiness gap test: the card can then say when service starts or
- * ends instead of "every 77". Read like computePeriodCoverageHeadways' window.
+ * direction's filter value) is that stretch's full-window wait, an edge gap sets it (a steady
+ * period reads its spacing, not its wait, so it never does), and the gaps between departures pass
+ * the steadiness gap test: the card can then say when service starts or ends instead of "every
+ * 77". One edge only: a period that both starts late and ends early keeps the plain reading.
+ * Read like computePeriodCoverageHeadways' window.
  */
 export function periodEdge(stretchTimes: readonly number[], start: number, end: number, value: number | null): StretchPeriodEdge | null {
-  // Only a wait past PERIOD_COVERAGE_MAX_HEADWAY: a shorter one already reads as a plain spacing.
-  if (value == null || value <= PERIOD_COVERAGE_MAX_HEADWAY) return null;
+  if (value == null) return null;
   const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
   if (t.length < 3) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);
@@ -518,10 +519,10 @@ export function periodEdge(stretchTimes: readonly number[], start: number, end: 
   if (Math.ceil(Math.max(lead, trail, inner)) !== value || inner >= value) return null;
   const every = medianHeadwayInWindow(t, start, end, 3);
   if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
-  const edge: StretchPeriodEdge = { every };
-  if (lead === value) edge.from = t[0];
-  if (trail === value) edge.until = t[t.length - 1];
-  return edge;
+  // The wait is rounded up to whole minutes; frequencies.txt spacing can leave fractional times.
+  const fromEdge = Math.ceil(lead) === value, untilEdge = Math.ceil(trail) === value;
+  if (fromEdge === untilEdge) return null;
+  return fromEdge ? { from: t[0], every } : { until: t[t.length - 1], every };
 }
 
 /**

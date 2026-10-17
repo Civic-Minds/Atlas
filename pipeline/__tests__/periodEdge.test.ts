@@ -22,8 +22,23 @@ describe('periodEdge (#934)', () => {
     const t = [437, 445, 453, 483, 491, 499, 507, 515, 523, 531];
     expect(periodEdge(t, 360, 540, 77)).toBeNull();
   });
-  it('none at 60 or less: a short start gap already reads as a plain spacing', () => {
-    expect(periodEdge([372, 382, 392, 402, 412, 422, 432, 442, 452, 462, 472, 482, 492, 502, 512, 522, 532], 360, 540, 12)).toBeNull();
+  it('none for a steady period: its value is its spacing (10), not its wait', () => {
+    expect(periodEdge([372, 382, 392, 402, 412, 422, 432, 442, 452, 462, 472, 482, 492, 502, 512, 522, 532], 360, 540, 10)).toBeNull();
+  });
+  it('a late start under an hour reads the same way, with no fixed minute cut-off (every 5 from 6:45: wait 45)', () => {
+    const t = Array.from({ length: 28 }, (_, i) => 405 + i * 5);
+    expect(periodEdge(t, 360, 540, 45)).toEqual({ from: 405, every: 5 });
+  });
+  it('none when the period both starts late and ends early (one edge only)', () => {
+    const t = Array.from({ length: 10 }, (_, i) => 420 + i * 3); // 7:00-7:27 in 6-9: waits 60 and 93
+    expect(periodEdge(t, 360, 540, 93)).toEqual({ until: 447, every: 3 });
+    // LA Metro SoFi Express Sunday PM shape: 16:15-17:45 every 3, so both waits are 75.
+    const both = Array.from({ length: 31 }, (_, i) => 975 + i * 3);
+    expect(periodEdge(both, 900, 1140, 75)).toBeNull();
+  });
+  it('fractional frequencies.txt times: the rounded-up wait still names the edge', () => {
+    const t = Array.from({ length: 12 }, (_, i) => 437.5 + i * 8.5);
+    expect(periodEdge(t, 360, 540, 78)).toEqual({ from: 437.5, every: 9 });
   });
   it('none with fewer than 3 departures', () => {
     expect(periodEdge([437, 445], 360, 540, 95)).toBeNull();

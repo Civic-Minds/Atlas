@@ -158,6 +158,16 @@ export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod)
   return gap ? headwayPeriodShape({ every: gap.every, gap: gap.gap }) : undefined;
 }
 
+/**
+ * #934: the part-period wording for a direction with no value in the period ("until 9:37am, every
+ * 12 min"): the route card's main-stretch row shows it, and the stop card the same, so both agree.
+ */
+export function partPeriodText(p: ShapeProperties, period: TimePeriod): string | undefined {
+  if (period === 'all' || p.stretchRole !== 'main') return undefined;
+  if (typeof p.directionFilterHeadwayByPeriod?.[period] === 'number') return undefined;
+  return p.stretchPeriodEdge?.[period] ? routeCardPeriodShapeText(p, period) : undefined;
+}
+
 export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): string | undefined {
   if (!hasPeriodCoverage(p, period) || period === 'all') return undefined;
   const range = routeCardDisplayHeadwayRange(p, period);

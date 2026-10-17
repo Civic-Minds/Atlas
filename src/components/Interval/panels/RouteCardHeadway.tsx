@@ -711,7 +711,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         ? headwayAboutRange(contract.range[0], directionFallback)
                         : undefined;
                       const displayH = variantH !== undefined ? variantH : directionFallback ?? ownH;
-                      // #934: the main stretch's row names a late start or early end instead of the long wait.
                       // #934 and D6: the main stretch's row names a late start, an early end or one gap inside
                       // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.
                       // A period that is one gap between a few departures (#955) has no cadence to word.
