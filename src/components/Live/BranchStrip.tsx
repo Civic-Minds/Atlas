@@ -3,7 +3,7 @@ import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { isMajorStop } from '../../utils/stopLabel';
 import {
-  MIN_N, delayText, labelWidth, pct, shortStopName, stopDetail, stopN, stopStep, stretchSpan,
+  MIN_N, delayText, labelWidth, lessExactOn, pct, shortStopName, stopDetail, stopN, stopStep, stretchSpan,
   type RouteStripMode, type RouteStripStop, type Step,
 } from './routeStripModel';
 import { StripLegend, Tooltip, swatchStyle } from './RouteStrip';
@@ -96,7 +96,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const stops = useMemo(() => allBranchStops(model), [model]);
   const lay = useMemo(() => layout(model), [model]);
   const faded = (s: RouteStripStop, mode: RouteStripMode) => stopN(s, mode) > 0 && stopN(s, mode) < minN;
-  const anyUncertain = stops.some(s => modes.some(m => !!s.uncertain));
+  const anyUncertain = stops.some(s => modes.some(m => lessExactOn(s, m)));
   const anyFaded = stops.some(s => modes.some(m => faded(s, m)));
   const anyMissing = stops.some(s => modes.some(m => stopStep(s, m) == null));
   const activeStop = stops.find(s => s.stopId === active) ?? null;
@@ -217,7 +217,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
             key={`${mode}-${stop.stopId}`}
             className="absolute rounded-full transition-transform"
             style={{
-              ...swatchStyle(mode, stopStep(stop, mode), !!stop.uncertain),
+              ...swatchStyle(mode, stopStep(stop, mode), lessExactOn(stop, mode)),
               width: dot, height: dot, left: xOf(slot) - dot / 2, top: yOf(row, t) - dot / 2,
               opacity: faded(stop, mode) ? 0.35 : 1,
               transform: hot || on ? 'scale(1.45)' : undefined,
@@ -318,7 +318,7 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
                 {rails}
                 {modes.map((m, k) => {
                   const size = named ? 10 : 6;
-                  return <span key={m} className="absolute rounded-full" style={{ ...swatchStyle(m, stopStep(s, m), !!s.uncertain), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(50% - ${size / 2}px)`, opacity: stopN(s, m) > 0 && stopN(s, m) < minN ? 0.35 : 1, outline: on ? '2px solid var(--accent)' : undefined, outlineOffset: 1 }} />;
+                  return <span key={m} className="absolute rounded-full" style={{ ...swatchStyle(m, stopStep(s, m), lessExactOn(s, m)), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(50% - ${size / 2}px)`, opacity: stopN(s, m) > 0 && stopN(s, m) < minN ? 0.35 : 1, outline: on ? '2px solid var(--accent)' : undefined, outlineOffset: 1 }} />;
                 })}
                 {sec.branch && <span className="pointer-events-none absolute bottom-0 top-0 w-0.5 bg-[var(--text-secondary)]" style={{ left: NAME_LEFT - 10 }} />}
                 {named && <span className="min-w-0 flex-1 break-words py-0.5 text-sm leading-5 text-[var(--text-secondary)]">{shortStopName(s.name)}</span>}
