@@ -32,11 +32,12 @@ import { PageTitle } from './components/ui/PageTitle';
 import { LATE_BY_HOUR_TITLE, lateCount, lateHourLine, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
+import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
+import { dirsOf, mins, num, pct } from './components/Live/sections/figures';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
 const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
-const MINUS = '−';
 
 /** Stop names come upper-case or mixed from the feed; show them the way the map does. */
 export function withNiceNames(v3: LiveV3): LiveV3 {
@@ -55,11 +56,8 @@ export function withNiceNames(v3: LiveV3): LiveV3 {
     bunching: v3.bunching.map(d => ({ ...d, bands: Object.fromEntries(Object.entries(d.bands).map(([k, band]) => [k, { ...band, forms: stretch(band.forms), biggestRise: stretch(band.biggestRise), stops: band.stops.map(x => ({ ...x, name: t(x.name) })) }])) })),
   };
 }
-const pct = (x: number) => `${Math.round(x * 100)}%`;
-const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', MINUS);
-const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 /** Axis value with its unit, with a real minus sign. */
-const axisMin = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
+const axisMin = mins;
 
 export type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 
@@ -75,7 +73,7 @@ function Tile({ label, value, sub }: { label: string; value: string; sub: string
 }
 
 function Filters({ v3, dir, setDir }: { v3: LiveV3; dir: number | null; setDir: (d: number | null) => void }) {
-  const dirs = Object.keys(v3.directionLabels).map(Number).sort();
+  const dirs = dirsOf(v3, null);
   return (
     <div className={`mt-5 ${PILL_ROW}`} role="group" aria-label="Filters">
       <PillGroup label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
@@ -360,7 +358,7 @@ function WeekCompare({ v3 }: { v3: LiveV3 }) {
 function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
   const rt = v3.runningTime;
   if (!rt) return null;
-  const dirs = Object.keys(v3.directionLabels).map(Number).sort().filter(d => dir == null || d === dir);
+  const dirs = dirsOf(v3, dir);
   const hoursOf = (d: number) => (rt.byHour[String(d)] ?? []).filter(h => h.n >= 1 && (band === 'all' || periodKeyForHour(h.hour) === band));
   const scale = runTimeScale(dirs.map(hoursOf));
   return (
@@ -395,67 +393,6 @@ function RunningTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: 
           );
         })}
       </div>
-    </Section>
-  );
-}
-
-/** Extra wait: how much longer riders wait than scheduled, at stops with service every 15 minutes or better. */
-function ExtraWait({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: number | null }) {
-  const all = v3.extraWait?.[band];
-  if (!all) return null;
-  const dirs = Object.keys(v3.directionLabels).map(Number).sort().filter(d => dir == null || d === dir);
-  const pointsOf = (d: number): ProfilePoint[] => all.filter(s => s.directionId === d).map(s => ({ label: s.name, short: shortStopName(s.name), major: isMajorStop(s.name), y: Math.max(0, s.extraWaitMin), n: s.gaps }));
-  const scale = sharedScale(dirs.map(pointsOf));
-  const worst = all.filter(s => (dir == null || s.directionId === dir) && s.gaps >= 30).sort((a, b) => b.extraWaitMin - a.extraWaitMin).slice(0, 10);
-  return (
-    <Section id="wait" title="Extra wait">
-      <p className="mt-2 text-sm text-[var(--text-muted)]">How much longer riders wait than scheduled, where a vehicle is due every 15 minutes or better.</p>
-      {all.length === 0 ? <p className="mt-3 text-sm text-[var(--text-muted)]">No stop on this route has a vehicle every 15 minutes or better in this time of day.</p> : (
-        <>
-          <div className={`mt-4 grid gap-6 ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
-            {dirs.map(d => {
-              const label = v3.directionLabels[String(d)];
-              const points = pointsOf(d);
-              const sentence = extraWaitSentence(all.filter(s => s.directionId === d), label);
-              return (
-                <div key={d} className="min-w-0">
-                  <h3 className="text-base font-black">{label}</h3>
-                  {sentence && <p className="mt-1 text-sm leading-6">{sentence}</p>}
-                  {points.length > 1 && (
-                    <ProfileBars
-                      ariaLabel={`${label}: extra wait at each stop along the route. ${sentence ?? ''}`}
-                      points={points}
-                      formatY={y => `${num(y)} min`}
-                      unit="gaps"
-                      valueHeader="Extra wait"
-                      caption="How much longer riders wait than the timetable says, at each stop."
-                      axisTitle="Extra minutes"
-                      scale={scale}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          {worst.length > 0 && (
-            <div className="mt-5 overflow-x-auto">
-              <SortableDataTable
-                caption="Stops where riders wait longest compared with the timetable"
-                defaultSort="extra"
-                rows={worst}
-                rowKey={s => `${s.stopId}-${s.directionId}`}
-                columns={[
-                  { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal truncate', cell: s => <span title={s.name}>{s.name}</span> },
-                  ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-                  { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => `${num(s.extraWaitMin)} min` },
-                  { key: 'sched', header: 'Scheduled every', cell: s => `${num(s.scheduledGapMin)} min` },
-                  { key: 'n', header: 'Gaps', cell: s => s.gaps.toLocaleString() },
-                ]}
-              />
-            </div>
-          )}
-        </>
-      )}
     </Section>
   );
 }
@@ -571,7 +508,7 @@ function AnalysisPage() {
         <ErrorBoundary label={BOUNDARY('Run time')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWait v3={v3} band={band} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} gaps={gaps} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Service delivered')}><Delivered v3={v3} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
