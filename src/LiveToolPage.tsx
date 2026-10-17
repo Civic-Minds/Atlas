@@ -31,7 +31,8 @@ import { KpiRows, KpiTile } from './LiveDashboardView';
 import { EXTRA_WAIT_TEXT, RUN_TIME_TEXT, bunchingText } from './components/Live/methodLines';
 import { NOISE_RULE } from '../shared/liveDashboard';
 import { LATE_DEFINITION } from '../shared/liveWording';
-import { BANDS, Group } from './LiveExplorePage';
+import { BANDS } from './LiveExplorePage';
+import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import { withNiceNames } from './LiveRoutePage';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -198,7 +199,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
     />
   );
   // The direction switch sits in the top bar with the other pills.
-  const direction = ids.length > 1 && dirSlot ? createPortal(<Group label="Direction" value={String(shown)} onChange={v => { setDir(Number(v)); setPick(null); }} options={ids.map(d => [String(d), v3!.directionLabels[String(d)]] as const)} />, dirSlot) : null;
+  const direction = ids.length > 1 && dirSlot ? createPortal(<PillGroup label="Direction" value={String(shown)} onChange={v => { setDir(Number(v)); setPick(null); }} options={ids.map(d => [String(d), v3!.directionLabels[String(d)]] as const)} />, dirSlot) : null;
   const note = ready?.note && <p className="pointer-events-none absolute bottom-0 left-0 right-0 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
   if (!wide) {
     // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
@@ -265,12 +266,12 @@ export default function LiveToolPage() {
   const s = state.data.summary;
   return shell(
     <>
-      <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2">
+      <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2`}>
         <a href="/" aria-label="Atlas by Civic Minds"><AtlasBrand /></a>
         <button type="button" onClick={() => { setRoute(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
         <div ref={setDirSlot} className="contents" />
-        <Group label="Measure" value={measure} onChange={v => setMeasure(v as MapMeasure)} options={MEASURES} />
-        <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
+        <PillGroup label="Measure" value={measure} onChange={v => setMeasure(v as MapMeasure)} options={MEASURES} />
+        <PillGroup label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
       </header>
       <Body agency={agency} dirSlot={dirSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} pick={pick} setPick={setPick} />
     </>,

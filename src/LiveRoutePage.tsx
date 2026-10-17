@@ -18,7 +18,7 @@ import { liveChartHours } from './utils/sparklinePeriods';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import SortableDataTable from './components/ui/SortableDataTable';
-import Pill from './components/ui/Pill';
+import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
 import LiveExplorePage from './LiveExplorePage';
@@ -87,11 +87,9 @@ function Tile({ label, value, sub }: { label: string; value: string; sub: string
 function Filters({ v3, dir, setDir }: { v3: LiveV3; dir: number | null; setDir: (d: number | null) => void }) {
   const dirs = Object.keys(v3.directionLabels).map(Number).sort();
   return (
-    <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3" role="group" aria-label="Filters">
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Direction">
-        <Pill size="segment" selected={dir == null} onClick={() => setDir(null)}>Both directions</Pill>
-        {dirs.map(d => <Pill key={d} size="segment" selected={dir === d} onClick={() => setDir(d)}>{v3.directionLabels[String(d)]}</Pill>)}
-      </div>
+    <div className={`mt-5 ${PILL_ROW}`} role="group" aria-label="Filters">
+      <PillGroup label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
+        options={[['both', 'Both directions'], ...dirs.map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
     </div>
   );
 }
@@ -607,10 +605,8 @@ function AnalysisPage() {
           return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{withoutDevHint(f.text)}</p> : null;
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
-        {view !== 'lite' && <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="View">
-          <Pill size="segment" selected={false} onClick={() => setView('lite')}>Summary</Pill>
-          <Pill size="segment" selected={view === 'dashboard'} onClick={() => setView('dashboard')}>Dashboard</Pill>
-          <Pill size="segment" selected={view === 'analysis'} onClick={() => setView('analysis')}>Full analysis</Pill>
+        {view !== 'lite' && <div className={`mt-4 ${PILL_ROW}`}>
+          <PillGroup label="View" value={view} onChange={v => setView(v as 'lite' | 'dashboard' | 'analysis')} options={[['lite', 'Summary'], ['dashboard', 'Dashboard'], ['analysis', 'Full analysis']]} />
         </div>}
         {view !== 'analysis' ? (
           <LiveDashboardView lite={view === 'lite'} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}

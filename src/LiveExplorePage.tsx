@@ -16,7 +16,7 @@ import { TILE } from './pageStyles';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import SortableDataTable from './components/ui/SortableDataTable';
-import Pill from './components/ui/Pill';
+import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -53,13 +53,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
   );
 }
 
-export function Group({ label, options, value, onChange }: { label: string; options: ReadonlyArray<readonly [string, string]>; value: string; onChange: (v: string) => void }) {
-  return (
-    <div className="flex flex-wrap gap-1.5" role="group" aria-label={label}>
-      {options.map(([k, text]) => <Pill key={k} size="segment" selected={value === k} onClick={() => onChange(k)}>{text}</Pill>)}
-    </div>
-  );
-}
+export const Group = PillGroup;
 
 function Fact({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
@@ -524,7 +518,7 @@ export default function LiveExplorePage() {
 
       <ErrorBoundary label={BOUNDARY('This week compared with last week')}><KpiRow v3={v3} /></ErrorBoundary>
 
-      <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3" role="group" aria-label="Filters">
+      <div className={`mt-6 ${PILL_ROW}`} role="group" aria-label="Filters">
         <Group label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
           options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
         <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />

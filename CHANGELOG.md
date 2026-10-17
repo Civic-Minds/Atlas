@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Every Live switcher is the same pill group (local only)**: the planner's top bar, the route pages' view and direction switches, the full analysis filters and the phone direction switch share one component, with the same height, selected state and spacing between groups (CIV-307).
 - **Switching routes in the planner moves the map and no longer flashes the side panel (local only)**: the map fits the new route (and the whole network from TTC) clear of the side panels, direction changes keep the view, and the previous figures stay until the new route's arrive, swapped in place; every route's file is fetched once with the network, so a pick is instant.
 - **The planner's Run time line names its direction (local only)**: "Westbound: Usually 31 min · timetable 34 · 1 in 10 over 37", so it is clearly not the whole-route figure on the tile.
 - **Every route shows in the planner's left list (local only)**: tighter spacing in the summary and the list lets all nine TTC routes fit at laptop sizes with nothing cut, so any route can be picked.

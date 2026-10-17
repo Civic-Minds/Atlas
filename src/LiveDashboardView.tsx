@@ -9,7 +9,7 @@ import HourSpark, { type HourValue } from './components/charts/HourSpark';
 import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import DirectionStrip from './components/Live/DirectionStrip';
 import { routeStripFromV3 } from './components/Live/routeStripModel';
-import Pill from './components/ui/Pill';
+import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import { shortStopName } from './utils/stopLabel';
@@ -253,8 +253,8 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
         Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.
       </p>
       {pickable && (
-        <div className="mt-3 flex flex-wrap gap-1.5" role="group" aria-label="Direction shown">
-          {all.map((d, i) => <Pill key={d.directionId} size="segment" selected={i === Math.min(phoneDir, all.length - 1)} onClick={() => setPhoneDir(i)}>{d.label}</Pill>)}
+        <div className={`mt-3 ${PILL_ROW}`}>
+          <PillGroup label="Direction shown" value={String(Math.min(phoneDir, all.length - 1))} onChange={v => setPhoneDir(Number(v))} options={all.map((d, i) => [String(i), d.label] as const)} />
         </div>
       )}
       {dirs.length ? (
