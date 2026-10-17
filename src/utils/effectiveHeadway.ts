@@ -5,7 +5,7 @@ import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange } from './headwayText';
-import { routeAllDayContract, routeContract } from './stretchCard';
+import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -242,6 +242,8 @@ function routeListCadence(features: readonly ShapeProperties[], period: TimePeri
   // the D1 range ("every 8–25") as the shared-stretch range: its low end is the best stretch, its high end the filter value.
   const contract = routeContract(features, period);
   if (contract) {
+    // #955: a route value that is one gap between a few departures is no cadence.
+    if (routeValueIsOneGap(features, period)) return { headway: null, shared: null };
     const { filterValue, range } = contract;
     return { headway: filterValue, shared: filterValue != null && range && range[0] < filterValue ? range[0] : null };
   }
@@ -318,6 +320,7 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
   // The filter's null (runs or not) means no number and no "limited" either.
   const contract = routeContract(features, period);
   if (contract != null && contract.filterValue == null) return false;
+  if (routeValueIsOneGap(features, period)) return false;
   // All day: no all-day value is "limited" when a direction does not run at midday (step 6), else no number.
   const allDay = period === 'all' ? routeAllDayContract(features) : undefined;
   if (allDay) return allDay.filterValue == null && allDay.limited;
@@ -333,7 +336,7 @@ export const NO_REGULAR_SERVICE_SHORT_LABEL = 'no regular service';
 /** The filter says the route has no regular service in this period: lists say NO_REGULAR_SERVICE_LABEL, never a number. */
 export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   const contract = routeContract(features, period);
-  return contract != null && contract.filterValue == null && contract.runs;
+  return (contract != null && contract.filterValue == null && contract.runs) || routeValueIsOneGap(features, period);
 }
 
 export interface RouteListDisplay {

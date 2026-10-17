@@ -2,6 +2,7 @@ import { anyFeaturePassesRouteFilter, passesRouteFilter, type ShapeProperties } 
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import type { CompareRouteRow } from '../components/Interval/compareTypes';
 import type { CompareSide } from './compareSides';
+import { routeValueIsOneGap } from './stretchCard';
 
 /** The filters both sides share; day, time and frequency come from the side itself. */
 type RouteFilters = Omit<Parameters<typeof passesRouteFilter>[2], 'day' | 'period' | 'maxHeadway'>;
@@ -31,6 +32,8 @@ export function buildCompareRow(
     .map(f => routeFilterHeadway(f.properties as object, side.period))
     .filter((value): value is number => value != null);
   const best = values.length > 0 ? Math.round(Math.min(...values)) : null;
-  const headway = best != null && best <= MAX_SHOWN_HEADWAY ? best : null;
+  // #955: a route value that is one gap between a few departures is no frequency, as on the card.
+  const oneGap = routeValueIsOneGap(features.map(f => f.properties as ShapeProperties), side.period);
+  const headway = best != null && best <= MAX_SHOWN_HEADWAY && !oneGap ? best : null;
   return { label, settings: side, headway, passes, runs: features.length > 0 };
 }

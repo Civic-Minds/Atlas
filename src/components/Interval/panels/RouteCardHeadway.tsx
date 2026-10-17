@@ -39,7 +39,7 @@ import {
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
-import { hasStretchRoles, routeAllDayContract, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
+import { hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, routeAllDayContract, routeContract, routeValueIsOneGap, variantRowHeadway } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
@@ -358,6 +358,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const scheduleHeadline = (() => {
     if (contract) {
       if (contract.filterValue == null) return contract.runs ? `Scheduled: ${NO_REGULAR_SERVICE_LABEL}` : null;
+      if (routeValueIsOneGap(currentRoute.directions, period)) return `Scheduled: ${NO_REGULAR_SERVICE_LABEL}`;
       return `Scheduled: ${contract.range ? headwayAboutRange(contract.range[0], contract.range[1]) : headwayAbout(contract.filterValue)}`;
     }
     const cores = displayGroups.map(group => {
@@ -716,20 +717,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       const trunkHw = hoveredHour == null && period !== 'all'
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
-                      // #954: when the route has no regular service in the period, a row still shows its own
-                      // direction value when it has one (SF Muni 8 PM: Fisherman's Wharf every 8); every
-                      // other row, and All day, reads as the route does.
-                      const directionValue = period !== 'all'
-                        ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
-                        : undefined;
-                      // A number that is one gap between a few departures is not a cadence (TTC 10 weekday
-                      // midday to Victoria Park, 09:07 then 14:22: "every 315"); a row with a steady value
-                      // of its own keeps it.
-                      const oneGap = hoveredHour == null && period !== 'all'
-                        && d.stretchPeriodOneGap?.[period as keyof NonNullable<ShapeProperties['stretchPeriodOneGap']>] === true
-                        && !(variantH === undefined && directionFallback == null && d.headwayByPeriodSustained?.[period as keyof NonNullable<ShapeProperties['headwayByPeriodSustained']>] === true);
-                      const rowNoRegular = (noRegularService && hoveredHour == null
-                        && (typeof directionValue !== 'number' || displayH == null)) || oneGap;
+                      // The stop card's rule (hasRegularServiceInPeriod), so the two cards agree. #954: when
+                      // the route has no regular service in the period, a row still shows its own direction
+                      // value when it has one (SF Muni 8 PM: Fisherman's Wharf every 8), on data that carries
+                      // the one-gap flag; every other row, and All day, reads as the route does. #955: a number
+                      // that is one gap between a few departures is not a cadence (TTC 10 weekday midday to
+                      // Victoria Park, 09:07 then 14:22: "every 315"); a row with a steady value of its own keeps it.
+                      const rowNoRegular = hoveredHour == null && (
+                        (noRegularService && (period === 'all' || !hasRegularServiceInPeriod(d, period) || displayH == null))
+                        || isOneGapRow(d, period));
                       const isLimited = rowNoRegular
                         ? true
                         : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);
@@ -739,7 +735,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             label={label}
                             headway={rowNoRegular ? undefined : displayH ?? undefined}
                             limitedLabel={rowNoRegular ? noRegularLabel : undefined}
-                            colorHeadway={hoveredHour == null ? branchFilterHeadway : undefined}
+                            colorHeadway={hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined}
                             headwayLabel={hoveredHour == null && variantH === undefined ? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period)) : undefined}
                             trunkHeadway={trunkHw}
                             edgeGapAllowance={d.edgeGapAllowance}

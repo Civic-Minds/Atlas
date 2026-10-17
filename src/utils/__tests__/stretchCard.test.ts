@@ -134,8 +134,11 @@ describe('hasRegularServiceInPeriod (#750)', () => {
   it('keeps a direction with its own number when the route has no regular service (#954, SF Muni 8)', () => {
     // The route value is empty (the other direction has a long gap); this direction still runs steadily, and the
     // route card now shows its row, so the stop card agrees.
-    const route8Outbound = { directionId: 0, directionFilterHeadwayByPeriod: { amPeak: 9 }, routeFilterHeadwayByPeriod: { amPeak: null } } as unknown as ShapeProperties;
+    const route8Outbound = { directionId: 0, directionFilterHeadwayByPeriod: { amPeak: 9 }, routeFilterHeadwayByPeriod: { amPeak: null }, stretchPeriodOneGap: { amPeak: false } } as unknown as ShapeProperties;
     expect(hasRegularServiceInPeriod(route8Outbound, 'amPeak')).toBe(true);
+    // Data without the one-gap flag (before the rebuild) keeps the route's value first, as main does.
+    const { stretchPeriodOneGap: _, ...unflagged } = route8Outbound as any;
+    expect(hasRegularServiceInPeriod(unflagged as ShapeProperties, 'amPeak')).toBe(false);
     // The direction without a number still has none.
     const route8Inbound = { directionId: 1, directionFilterHeadwayByPeriod: { amPeak: null }, routeFilterHeadwayByPeriod: { amPeak: null } } as unknown as ShapeProperties;
     expect(hasRegularServiceInPeriod(route8Inbound, 'amPeak')).toBe(false);
