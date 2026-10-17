@@ -1,0 +1,49 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+304,2,50839329,East - 304 King towards Broadview Station,,0,2236150,1122330,1,2
+304,2,50839335,East - 304 King towards Broadview Station,,0,2236149,1122330,1,2
+304,2,50839312,East - 304 King Short Turn towards Broadview and Queen,S,0,2236143,1122325,1,2
+304,2,50839334,East - 304 King towards Broadview Station,,0,2236148,1122330,1,2
+304,2,50839333,East - 304 King towards Broadview Station,,0,2236151,1122330,1,2
+304,2,50839332,East - 304 King towards Broadview Station,,0,2236147,1122330,1,2
+304,2,50839331,East - 304 King towards Broadview Station,,0,2236146,1122330,1,2
+304,2,50839328,East - 304 King towards Broadview Station,,0,2236144,1122330,1,2
+304,2,50839327,East - 304 King towards Broadview Station,,0,2236145,1122330,1,2
+304,2,50839326,East - 304 King towards Broadview Station,,0,2236187,1122330,1,2
+304,2,50839325,East - 304 King towards Broadview Station,,0,2236186,1122330,1,2
+304,2,50839324,East - 304 King towards Broadview Station,,0,2236185,1122330,1,2
+304,2,50839323,East - 304 King towards Broadview Station,,0,2236188,1122330,1,2
+304,2,50839322,East - 304 King towards Broadview Station,,0,2236150,1122330,1,2
+304,2,50839321,East - 304 King towards Broadview Station,,0,2236149,1122330,1,2
+304,2,50839320,East - 304 King towards Broadview Station,,0,2236148,1122330,1,2
+304,2,50839330,East - 304 King towards Broadview Station,,0,2236151,1122330,1,2
+304,2,50839319,East - 304 King Short Turn towards Broadview and Queen,S,0,2236147,1122331,1,2
+304,2,50839318,East - 304 King Short Turn towards Broadview and Queen,S,0,2236146,1122331,1,2
+304,2,50839313,East - 304 King Short Turn towards Broadview and Queen,S,0,2236144,1122331,1,2
+304,2,50839317,East - 304 King Short Turn towards Broadview and Queen,S,0,2236145,1122331,1,2
+304,2,50839316,East - 304 King Short Turn towards Broadview and Queen,S,0,2236187,1122331,1,2
+304,2,50839315,East - 304 King Short Turn towards Broadview and Queen,S,0,2236186,1122331,1,2
+304,2,50839314,East - 304 King Short Turn towards Broadview and Queen,S,0,2236185,1122331,1,2
+304,2,50839343,West - 304 King Short Turn towards Broadview and Queen,S,1,2236153,1122334,1,2
+304,2,50839342,West - 304 King Short Turn towards Broadview and Queen,S,1,2236152,1122334,1,2
+304,2,50839353,West - 304 King towards Dundas West Station,,1,2236144,1122335,1,2
+304,2,50839357,West - 304 King towards Dundas West Station,,1,2236145,1122335,1,2
+304,2,50839356,West - 304 King towards Dundas West Station,,1,2236187,1122335,1,2
+304,2,50839355,West - 304 King towards Dundas West Station,,1,2236186,1122335,1,2
+304,2,50839354,West - 304 King towards Dundas West Station,,1,2236185,1122335,1,2
+304,2,50839352,West - 304 King towards Dundas West Station,,1,2236188,1122335,1,2
+304,2,50839351,West - 304 King towards Dundas West Station,,1,2236150,1122335,1,2
+304,2,50839350,West - 304 King towards Dundas West Station,,1,2236149,1122335,1,2
+304,2,50839349,West - 304 King towards Dundas West Station,,1,2236148,1122335,1,2
+304,2,50839348,West - 304 King towards Dundas West Station,,1,2236151,1122335,1,2
+304,2,50839347,West - 304 King towards Dundas West Station,,1,2236147,1122335,1,2
+304,2,50839346,West - 304 King towards Dundas West Station,,1,2236146,1122335,1,2
+304,2,50839358,West - 304 King towards Dundas West Station,,1,2236144,1122335,1,2
+304,2,50839359,West - 304 King towards Dundas West Station,,1,2236145,1122335,1,2
+304,2,50839345,West - 304 King towards Dundas West Station,,1,2236187,1122335,1,2
+304,2,50839340,West - 304 King towards Dundas West Station,,1,2236186,1122335,1,2
+304,2,50839339,West - 304 King towards Dundas West Station,,1,2236185,1122335,1,2
+304,2,50839341,West - 304 King Short Turn towards Broadview and Queen,S,1,2236188,1122334,1,2
+304,2,50839338,West - 304 King Short Turn towards Broadview and Queen,S,1,2236150,1122334,1,2
+304,2,50839337,West - 304 King Short Turn towards Broadview and Queen,S,1,2236149,1122334,1,2
+304,2,50839336,West - 304 King Short Turn towards Broadview and Queen,S,1,2236148,1122334,1,2
+304,2,50839344,West - 304 King Short Turn towards Broadview and Queen,S,1,2236151,1122334,1,2
