@@ -29,7 +29,6 @@ import {
   isSustainedHeadway,
   medianHeadwayInWindow,
   hasSustainedServiceInWindow,
-  isSustainedHeadway,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';

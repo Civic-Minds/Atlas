@@ -125,6 +125,13 @@ describe('a number that is one gap between a few departures (#955)', () => {
     expect(hasRegularServiceInPeriod(steady, 'midday')).toBe(true);
   });
 
+  it('a one-gap period shows no regular service, never the #934 gap or edge wording', () => {
+    const both = { ...vicPark, stretchPeriodGap: { midday: { every: 30, gap: 315 } }, stretchPeriodEdge: { midday: { from: 862, every: 30 } } } as unknown as ShapeProperties;
+    renderRows([both], 'midday');
+    expect(screen.getByText(LONG)).toBeTruthy();
+    expect(screen.queryByText(/gap|from /)).toBeNull();
+  });
+
   it('keeps a slow cadence the pipeline does not flag (MBTA 18 AM every 84)', () => {
     const mbta18 = { ...vicPark, routeId: '18', routeShortName: '18', headsign: 'Ashmont', headway: 84, headwayByPeriod: { midday: null },
       routeFilterHeadwayByPeriod: { midday: 84 }, directionFilterHeadwayByPeriod: { midday: 84 }, stretchPeriodHeadway: { midday: 84 },
