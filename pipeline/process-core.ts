@@ -26,6 +26,7 @@ import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequenc
 import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
+import { haversineDistance } from './utils.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
@@ -676,6 +677,8 @@ export { MIN_THIN_REPLACING_DEPARTURES } from './featureDedupe.js';
 
 /** #728: the destination pool at a line's terminal must have this many unique departures (and more than the drawn shape) before its every-gap grade can lift the line's tier. */
 export const MIN_POOLED_TIER_DEPARTURES = 8;
+/** #865: a sibling pattern's terminal this close to the drawn terminal is the same destination for the line's period values. */
+export const SIBLING_TERMINAL_MAX_METERS = 250;
 
 /**
  * A midday reading, the test behind "limited" for a variant of a line with midday service
@@ -2248,6 +2251,62 @@ export async function processGtfsBuffer(
     const drawnPatternStops = (): Array<{ stopId: string; t: number }> => drawnPatternStopsMemo ??= isMapless
       ? maplessStopProjection
       : projectStopsOntoShape([...stopMetricMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
+    // #865: the drawn terminal is the one drawn stop that does not pool, while a sibling pattern
+    // under the same headsign ends at another terminal within SIBLING_TERMINAL_MAX_METERS
+    // (Brantford 3073 to Lynden Park Mall: Sinclair Blvd 203 m from Brantford Medical Centre,
+    // every other stop pooled every 30 all day, the Sinclair terminal alone with no midday).
+    // The line then reads its period values at the last pooled stop, and the terminal's missing
+    // grade does not refuse the tier lift. The terminal's own geometry and service stay drawn.
+    let terminalReadsSiblingMemo: { reads: boolean; terminal: string | null; lastPooled: string | null } | null = null;
+    const terminalReadsSibling = () => terminalReadsSiblingMemo ??= (() => {
+      const none = { reads: false, terminal: null, lastPooled: null };
+      if (railFeature || isMapless || !pooled || !featureHeadsign) return none;
+      const drawn = drawnPatternStops();
+      if (drawn.length < 3) return none;
+      const terminal = drawn[drawn.length - 1].stopId;
+      if (pooled.pooledStops.has(terminal)) return none;
+      // A terminal with a grade of its own speaks for the line: the route tier stays the worst drawn
+      // stop's (King County Metro 107's Renton bays grade 60 and 30 on their own trips). Only an
+      // ungraded terminal (Brantford 9's Sinclair stop: no midday reading) defers to the sibling.
+      if (publishedStopTiers ? publishedStopTiers[terminal] != null : stopHasReading(terminal)) return none;
+      const before = drawn.slice(0, -1);
+      if (!before.some(p => pooled.pooledStops.has(p.stopId))) return none;
+      if (!before.every(p => pooled.pooledStops.has(p.stopId) || !stopHasReading(p.stopId))) return none;
+      const lastPooled = [...before].reverse().find(p => pooled.pooledStops.has(p.stopId))?.stopId ?? null;
+      if (!lastPooled) return none;
+      if (!stopTimeIdxByTrip || !tripsByHsKey) buildBranchIndex();
+      const here = stopsById.get(terminal);
+      if (!here) return none;
+      const sts = gtfs.stopTimes ?? [];
+      const station = (stopId: string) => childToParent.get(stopId) ?? stopId;
+      const drawnStations = new Set(drawn.map(p => station(p.stopId)));
+      const beforeStations = before.map(p => station(p.stopId));
+      const hsTrips = tripsByHsKey!.get(`${shortName}::${dirId}::${day}::${featureHeadsign}`) ?? [];
+      // A drop-off-only terminal never pools by design (#879's class), so it is not this case.
+      let terminalBoards = false;
+      // The sibling is another terminal, not a short turn: its last stop is not a drawn stop, it
+      // serves every drawn stop but the terminal (Brantford 3073: 33 of 34), and it ends within
+      // SIBLING_TERMINAL_MAX_METERS of the drawn terminal.
+      let nearSibling = false;
+      for (const tid of hsTrips) {
+        const idx = stopTimeIdxByTrip!.get(tid);
+        if (!idx || idx.length === 0) continue;
+        let last = idx[0];
+        for (const i of idx) if (Number(sts[i].stop_sequence) > Number(sts[last].stop_sequence)) last = i;
+        const lastStop = sts[last].stop_id;
+        if (station(lastStop) === station(terminal)) {
+          if (sts[last].pickup_type?.trim() !== '1') terminalBoards = true;
+          continue;
+        }
+        if (nearSibling || drawnStations.has(station(lastStop))) continue;
+        const served = new Set(idx.map(i => station(sts[i].stop_id)));
+        if (!beforeStations.every(s => served.has(s))) continue;
+        const there = stopsById.get(lastStop);
+        if (there && haversineDistance(here.lat, here.lon, there.lat, there.lon) <= SIBLING_TERMINAL_MAX_METERS) nearSibling = true;
+      }
+      return nearSibling && terminalBoards ? { reads: true, terminal, lastPooled } : none;
+    })();
+    const settleStopIds = (ids: readonly string[]): string[] => terminalReadsSibling().reads ? ids.filter(id => id !== terminalReadsSibling().terminal) : [...ids];
     // A variant of a line with midday service elsewhere (a short turn, a peak branch, a
     // peak-only rail pattern) is limited and has no headline: its own terminal has no midday
     // reading while another pattern of the same route, direction and day has one (manager's
@@ -2569,7 +2628,7 @@ export async function processGtfsBuffer(
         // Stops with a reading but no published value (saint-john 12: six trips whose all-day
         // sample rejects its 4-hour holes) keep phase 2's own headline.
       }
-      settleTierOnStops(coverageStops.map(p => p.stopId).filter(stopId => !dropOffOnlyStops.has(stopId)));
+      settleTierOnStops(settleStopIds(coverageStops.map(p => p.stopId).filter(stopId => !dropOffOnlyStops.has(stopId))));
       continue;
     }
 
@@ -2774,7 +2833,7 @@ export async function processGtfsBuffer(
       }
       // An ungraded drawn stop refuses the lift, so drop-off-only stops (ungraded by design,
       // #879) are left out of the list the lift walks; the pool's stop scope keeps them.
-      settleTierOnStops(coverageStops.map(p => p.stopId).filter(stopId => !dropOffOnlyStops.has(stopId)), featureHeadsign && coverageStops.length > 1 ? (() => {
+      settleTierOnStops(settleStopIds(coverageStops.map(p => p.stopId).filter(stopId => !dropOffOnlyStops.has(stopId))), featureHeadsign && coverageStops.length > 1 ? (() => {
         const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
         const drawnIds = coverageStops.map(p => p.stopId);
         return {
@@ -2797,7 +2856,9 @@ export async function processGtfsBuffer(
     //
     // minStopHeadwayByPeriod uses all on-shape stops so the filter correctly shows the route
     // when ANY part of it meets the active threshold (pairs with AI-97 shape clipping).
-    const terminalStopId = onShape[onShape.length - 1]?.stopId;
+    // #865: the period values read the last pooled stop where the drawn terminal alone does not
+    // pool and a sibling pattern ends at another terminal nearby (terminalReadsSibling).
+    const terminalStopId = terminalReadsSibling().reads ? terminalReadsSibling().lastPooled ?? onShape[onShape.length - 1]?.stopId : onShape[onShape.length - 1]?.stopId;
     const terminalPeriodHw = terminalStopId ? allStopPeriodHw[terminalStopId] : undefined;
     const featHeadsign = feature.properties.headsign as string | null;
     const hsStopMap = featHeadsign
