@@ -667,3 +667,24 @@ describe('step 6 review: all-day value and limited service from the stretch, not
     expect(saturday[0].routeAllDayHeadway).toBeLessThan(999999);
   });
 });
+
+describe('a sparse overnight window gives the direction no value (#961)', () => {
+  // A trunk every 20 by day; overnight (26:00-30:00) only the trips listed. #897 withholds a window
+  // of exactly three departures around a hole of hours at the row, so the direction value read by
+  // the card's fallback must not print its full-window wait either (MBTA 23 Sunday: every 196).
+  const coords = new Map<string, [number, number]>();
+  const trunk = Array.from({ length: 10 }, (_, i) => `t${i}`);
+  trunk.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+  const build = (night: number[]) => {
+    const out: DirectionTrip[] = [];
+    for (let m = 360; m <= 1380; m += 20) out.push({ tripId: `a${m}`, visits: trunk.map((stopId, i) => ({ stopId, minutes: m + i })) });
+    for (const m of night) out.push({ tripId: `n${m}`, visits: trunk.map((stopId, i) => ({ stopId, minutes: m + i })) });
+    return directionStretches('k', out, id => coords.get(id));
+  };
+  it('three overnight departures around a hole (gaps 10 and 200) have no value', () => {
+    expect(rollupDirection(build([1570, 1580, 1780]))!.period.overnight.filterValue).toBeNull();
+  });
+  it('three steady overnight departures keep theirs', () => {
+    expect(rollupDirection(build([1600, 1680, 1760]))!.period.overnight.filterValue).toBe(80);
+  });
+});
