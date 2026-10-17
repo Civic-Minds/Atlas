@@ -72,3 +72,10 @@ export function hourAtOn(hours: readonly number[], clientX: number, rect: { left
   const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
   return hours[Math.min(Math.floor(fraction * hours.length), hours.length - 1)];
 }
+
+/** The period names the hour charts' period band shows: the Live switchers' own names. */
+export const PERIOD_BAND_LABELS: Record<string, string> = { amPeak: 'AM peak', midday: 'Midday', pmPeak: 'PM peak', evening: 'Evening', late: 'Late' };
+
+/** What the pointer is on across a row of hour charts: an hour (with its period), or a whole period named on the band. Shared so every chart highlights the same thing. */
+export interface HourHover { hour: number | null; period: string | null }
+export const hoverOfHour = (hour: number): HourHover => ({ hour, period: HOUR_TO_PERIOD[hour % 24] ?? HOUR_TO_PERIOD[hour] ?? null });

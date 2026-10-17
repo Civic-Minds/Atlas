@@ -53,10 +53,10 @@ describe('Live route dashboard', () => {
     expect(document.body.textContent).not.toMatch(/caused by|because of/i);
     // B1: all days, weekdays and weekends side by side, each the share late with its count; no pill swaps a number.
     const b1 = screen.getByRole('region', { name: /Late departures by hour/ });
-    expect(within(b1).getByText('All days', { selector: 'div' }).nextElementSibling!.textContent).toBe('9%');
+    expect(within(b1).getAllByText('All days', { selector: 'div' })[0].nextElementSibling!.textContent).toBe('9%');
     expect(within(b1).getAllByText(/late, of 1,000/).length).toBeGreaterThan(0);
-    expect(within(b1).getByText('Weekdays', { selector: 'div' })).toBeTruthy();
-    expect(within(b1).getByText('Weekends', { selector: 'div' })).toBeTruthy();
+    expect(within(b1).getAllByText('Weekdays', { selector: 'div' }).length).toBeGreaterThan(0);
+    expect(within(b1).getAllByText('Weekends', { selector: 'div' }).length).toBeGreaterThan(0);
     // B3: one takeaway line per chart that says what the chart shows, and the table of stretches.
     expect(screen.getByText(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3, and stays up/)).toBeTruthy();
     expect(screen.getByText(/^Delay stays about the same from end to end/)).toBeTruthy();
@@ -102,7 +102,7 @@ describe('Live route dashboard', () => {
     expect(screen.queryByText(/RONCESVALLES/)).toBeNull();
     expect(screen.getAllByText(/Roncesvalles Ave at Queen St W/).length).toBeGreaterThan(0);
     // One plain caption per chart (no ranges), merged with what the bars are.
-    expect(screen.getByText('Paler bars rest on fewer than 30 departures.')).toBeTruthy();
+    expect(screen.getByText(/^Faded bars are based on fewer than 30 departures\./)).toBeTruthy();
     expect(screen.getAllByText(/Paler bars rest on fewer than 30 trips\./).length).toBe(2);
     expect(screen.getAllByText(/Paler bars rest on fewer than 30 gaps\./).length).toBe(2);
     expect(document.body.textContent).not.toMatch(/Each (bar|point) is \d/);
