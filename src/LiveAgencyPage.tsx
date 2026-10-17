@@ -23,9 +23,9 @@ import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles, YesterdayTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { builtText, coveredRoutesText, liveSubtitle, METHOD_GROUPS, dayComparedWith, dayText, estimatedNote, PERIOD_PILLS } from '../shared/liveWording';
+import { builtText, coveredRoutesText, liveSubtitle, METHOD_GROUPS, dayComparedWith, dayText, estimatedNote, weekOfText } from '../shared/liveWording';
 import { useLiveYesterday } from './hooks/useLiveYesterday';
-import Pill from './components/ui/Pill';
+import PeriodSubtitle from './components/Live/PeriodSubtitle';
 import MethodFootnote, { Term } from './components/Live/MethodFootnote';
 import { bunchingLine, colourLine, deliveredLine, extraWaitLine, lateAtStopLine, lateLine, positionsLine, recordingGapsLine, runTimeLine, tripMatchLine } from './components/Live/methodLines';
 
@@ -199,14 +199,15 @@ export default function LiveAgencyPage() {
           <div className="min-w-0">
             <PageTitle>{name}</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {shown ? `${shown.weekly.comparable ? dayComparedWith(shown.date, shown.compareDate) : dayText(shown.date)} · ${coverage} · ${estimatedNote(agency)}` : liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency })}
+              <PeriodSubtitle
+                text={shown ? `${shown.weekly.comparable ? dayComparedWith(shown.date, shown.compareDate) : dayText(shown.date)} · ${coverage} · ${estimatedNote(agency)}` : liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency })}
+                dateLabel={shown ? dayText(shown.date) : dates.length ? weekOfText(dates[0], dates[dates.length - 1]) : ''}
+                value={day}
+                onChange={setDay}
+              />
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
-        </div>
-        <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label={`${PERIOD_PILLS.week} or ${PERIOD_PILLS.yesterday}`}>
-          <Pill size="segment" selected={day === 'week'} onClick={() => setDay('week')}>{PERIOD_PILLS.week}</Pill>
-          <Pill size="segment" selected={day === 'yesterday'} onClick={() => setDay('yesterday')}>{PERIOD_PILLS.yesterday}</Pill>
         </div>
         <ErrorBoundary>
           {shown ? <YesterdayTiles y={shown} tiles={agencyKpiTiles({ ...s, weekly: shown.weekly, daily: shown.daily })} /> : w && tiles.length

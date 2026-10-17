@@ -30,8 +30,9 @@ import RunTimeChart, { runTimeScale } from './components/charts/RunTimeChart';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { builtText, lateCount, lateHourLine, liveSubtitle, METHOD_GROUPS, dayComparedWith, dayText, estimatedNote, PERIOD_PILLS } from '../shared/liveWording';
+import { builtText, lateCount, lateHourLine, liveSubtitle, METHOD_GROUPS, dayComparedWith, dayText, estimatedNote, weekOfText } from '../shared/liveWording';
 import { useLiveYesterday } from './hooks/useLiveYesterday';
+import PeriodSubtitle from './components/Live/PeriodSubtitle';
 import MethodFootnote, { Term } from './components/Live/MethodFootnote';
 import { bunchingLine, colourLine, deliveredLine, extraWaitLine, lateAtStopLine, lateLine, positionsLine, recordingGapsLine, runTimeLine, tripMatchLine } from './components/Live/methodLines';
 
@@ -596,12 +597,6 @@ function AnalysisPage() {
   const bandData = v3.bands?.[band] as DashboardBandData;
   const uncertain = data.uncertainStart ?? [];
   const shownYesterday = view === 'lite' && day === 'yesterday' ? yesterday : null;
-  const periodPills = (
-    <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label={`${PERIOD_PILLS.week} or ${PERIOD_PILLS.yesterday}`}>
-      <Pill size="segment" selected={day === 'week'} onClick={() => setDay('week')}>{PERIOD_PILLS.week}</Pill>
-      <Pill size="segment" selected={day === 'yesterday'} onClick={() => setDay('yesterday')}>{PERIOD_PILLS.yesterday}</Pill>
-    </div>
-  );
   return (
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
@@ -609,7 +604,12 @@ function AnalysisPage() {
           <div className="min-w-0">
             <PageTitle>{data.routeTitle || title}</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {shownYesterday ? `${shownYesterday.weekly.comparable ? dayComparedWith(shownYesterday.date, shownYesterday.compareDate) : dayText(shownYesterday.date)} · ${(shownYesterday.weekly.thisWeek.late?.n ?? 0).toLocaleString()} trips · ${estimatedNote(agency)}` : routeSubtitle(v3, agency)}
+              <PeriodSubtitle
+                text={shownYesterday ? `${shownYesterday.weekly.comparable ? dayComparedWith(shownYesterday.date, shownYesterday.compareDate) : dayText(shownYesterday.date)} · ${(shownYesterday.weekly.thisWeek.late?.n ?? 0).toLocaleString()} trips · ${estimatedNote(agency)}` : routeSubtitle(v3, agency)}
+                dateLabel={shownYesterday ? dayText(shownYesterday.date) : v3.window.dates.length ? weekOfText(v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1]) : ''}
+                value={day}
+                onChange={view === 'lite' ? setDay : undefined}
+              />
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
@@ -625,7 +625,7 @@ function AnalysisPage() {
           <Pill size="segment" selected={view === 'analysis'} onClick={() => setView('analysis')}>Full analysis</Pill>
         </div>}
         {view !== 'analysis' ? (
-          <LiveDashboardView lite={view === 'lite'} yesterday={shownYesterday} periodPills={periodPills} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}
+          <LiveDashboardView lite={view === 'lite'} yesterday={shownYesterday} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}
             filters={<Filters v3={v3} dir={dir} setDir={setDir} />}
             toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
         ) : (<>

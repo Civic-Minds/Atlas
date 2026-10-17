@@ -273,7 +273,7 @@ function WorstStops({ v3, data, dir, uncertain, toFull }: { v3: LiveV3; data: Da
   );
 }
 
-export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, toFull, lite = false, yesterday = null, periodPills = null }: {
+export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, toFull, lite = false, yesterday = null }: {
   v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[]; note: string | null; title: string;
   /** The direction and time-of-day pills: they sit below the week figures, above the parts they change. */
   filters: ReactNode;
@@ -282,14 +282,11 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
   lite?: boolean;
   /** The lite view's Yesterday figures, when the Yesterday pill is on. */
   yesterday?: LiveYesterday | null;
-  /** The This week / Yesterday pills, shown above the tiles in the lite view. */
-  periodPills?: ReactNode;
 }) {
   const bad = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
   // The lite view (?view=lite), made to share: the week's tiles, the route strip, late by hour and a way into the rest.
   if (lite) return (
     <>
-      {periodPills}
       <ErrorBoundary label={bad('The week comparison')}>{yesterday ? <YesterdayTiles y={yesterday} /> : <KpiRow v3={v3} />}</ErrorBoundary>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={null} allOnly oneDay={yesterday ? yesterdayHours(yesterday) : undefined} /></ErrorBoundary>
