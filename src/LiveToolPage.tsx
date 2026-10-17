@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
@@ -26,7 +26,7 @@ import OverviewList from './components/Live/tool/OverviewList';
 import LateByHourWidget from './components/Live/tool/LateByHourWidget';
 import ProblemsWidget from './components/Live/tool/ProblemsWidget';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
-import useNetworkData from './components/Live/tool/useNetworkData';
+import useNetworkData, { type ReadyRoute } from './components/Live/tool/useNetworkData';
 import { KpiRows, KpiTile } from './LiveDashboardView';
 import { EXTRA_WAIT_TEXT, RUN_TIME_TEXT, bunchingText } from './components/Live/methodLines';
 import { NOISE_RULE } from '../shared/liveDashboard';
@@ -154,9 +154,16 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
   const wide = useMediaQuery('(min-width: 1024px)');
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
   const network = useNetworkData(agency, routes);
-  const state = useLiveDashboard(route ? agency : null, route);
-  const ready = route && state.kind === 'done' && state.data.status === 'ready' ? state.data : null;
+  // A route whose file was already fetched with the network opens at once; otherwise it is fetched. Until the new route's
+  // data is there the previous route's stays on screen and is swapped in place (no blank panel, no map jump).
+  const own = useLiveDashboard(route && !network.has(route) ? agency : null, route);
+  const fetched = route && own.kind === 'done' && own.data.status === 'ready' && own.data.route === route ? own.data : null;
+  const fresh: ReadyRoute | null = route ? network.get(route) ?? fetched : null;
+  const last = useRef<ReadyRoute | null>(null);
+  if (fresh) last.current = fresh;
+  const ready: ReadyRoute | null = route ? fresh ?? last.current : null;
   const v3 = useMemo(() => { if (!ready) return null; try { return withNiceNames(ready.v3); } catch { return ready.v3; } }, [ready]);
+  const networkV3 = useMemo(() => new Map([...network].map(([r, b]) => [r, b.v3])), [network]);
   const ids = v3 ? Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b) : [];
   const shown = v3 ? (dir != null && ids.includes(dir) ? dir : ids[0]) : 0;
   const uncertain = ready?.uncertainStart ?? [];
@@ -164,7 +171,8 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
   const model: RouteMapModel = useMemo(() => {
     if (v3) return routeMapModel(v3, shown, band, measure);
     const segments: MapSegment[] = [];
-    for (const [r, n3] of network) {
+    for (const [r, nb] of network) {
+      const n3 = nb.v3;
       const dirs = Object.keys(n3.directionLabels).map(Number).sort((a, b) => a - b);
       dirs.forEach((d, k) => { for (const seg of routeMapModel(n3, d, band, measure).segments) segments.push({ ...seg, route: r, label: r, offset: dirs.length > 1 ? (k === 0 ? 2.5 : -2.5) : 0 }); });
     }
@@ -186,7 +194,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
       model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={wide ? PANEL_PAD : NARROW_PAD}
       controlsRight={wide ? 'calc(24.5rem + 24px)' : 12}
       onPick={p => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); }}
-      frameKey={route ? `${route}-${shown}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
+      frameKey={ready && route ? `route-${ready.route}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
     />
   );
   // The direction switch sits in the top bar with the other pills.
@@ -203,7 +211,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
             <div className="pointer-events-none absolute inset-3"><Key measure={measure} />{note}</div>
           </div>
           <WidgetPanel className="p-3" widgets={[...summary, ...widgets]} />
-          <div className="flex p-3 pt-0"><OverviewList s={s} measure={measure} route={route} network={network} onPick={r => { setRoute(r); setPick(null); }} /></div>
+          <div className="flex p-3 pt-0"><OverviewList s={s} measure={measure} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} /></div>
         </div>
       </div>
     );
@@ -215,7 +223,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
       <div className="pointer-events-none absolute inset-3 flex gap-3">
         <div className="pointer-events-auto flex w-[24.5rem] shrink-0 flex-col gap-2">
           <WidgetPanel widgets={summary} />
-          <OverviewList s={s} measure={measure} route={route} network={network} onPick={r => { setRoute(r); setPick(null); }} />
+          <OverviewList s={s} measure={measure} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />
         </div>
         <div className="relative min-w-0 flex-1">
           <Key measure={measure} />
