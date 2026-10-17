@@ -607,7 +607,7 @@ function AnalysisPage() {
       <article className="pb-16 pt-10 sm:pt-14">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <PageTitle>{title}: how it is running</PageTitle>
+            <PageTitle>{data.routeTitle || title}</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
               {shownYesterday ? `${shownYesterday.weekly.comparable ? dayComparedWith(shownYesterday.date, shownYesterday.compareDate) : dayText(shownYesterday.date)} · ${(shownYesterday.weekly.thisWeek.late?.n ?? 0).toLocaleString()} trips · ${estimatedNote(agency)}` : routeSubtitle(v3, agency)}
             </p>

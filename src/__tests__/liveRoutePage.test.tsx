@@ -48,7 +48,7 @@ describe('Live route dashboard', () => {
 
   it('shows B1 to B4 and the method, each figure with its sample size', async () => {
     renderPage(ready);
-    expect(await screen.findByRole('heading', { name: /TTC 505: how it is running/ })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 1, name: 'TTC 505' })).toBeTruthy();
     // U9: a link is shown as a link, never as a verdict.
     expect(document.body.textContent).not.toMatch(/caused by|because of/i);
     // B1: all days, weekdays and weekends side by side, each the share late with its count; no pill swaps a number.
@@ -75,7 +75,7 @@ describe('Live route dashboard', () => {
 
   it('has no time-of-day toggle: the whole day, a per-period list where the answer differs, and the direction in the address', async () => {
     renderPage(ready);
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     expect(screen.queryByRole('button', { name: 'AM peak' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Weekends' })).toBeNull();
     // All days, weekdays and weekends: three hourly charts side by side.
@@ -90,7 +90,7 @@ describe('Live route dashboard', () => {
   it('opens on the view and direction in the address', async () => {
     window.history.replaceState(null, '', '/apps/live/ttc/505?view=analysis&dir=0');
     renderPage(ready);
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     expect(screen.getByRole('button', { name: 'Eastbound' }).getAttribute('aria-pressed')).toBe('true');
   });
 
@@ -98,7 +98,7 @@ describe('Live route dashboard', () => {
     const loud = { ...v3, stops: v3.stops.map(x => ({ ...x, name: 'RONCESVALLES AVE AT QUEEN ST W' })) };
     loud.bands = { ...v3.bands, all: { ...v3.bands.all, stops: loud.stops } };
     renderPage({ ...ready, v3: loud });
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     expect(screen.queryByText(/RONCESVALLES/)).toBeNull();
     expect(screen.getAllByText(/Roncesvalles Ave at Queen St W/).length).toBeGreaterThan(0);
     // One plain caption per chart (no ranges), merged with what the bars are.
@@ -127,7 +127,7 @@ describe('Live route dashboard', () => {
       weekly: { minHealthyDays: 4, health: [], comparable: true, thisWeek: week(0.09, 0.96), lastWeek: week(0.12, 0.99) },
     };
     renderPage({ ...ready, v3: rich });
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     // This week against last week: the dashboard's own tiles (same labels and change rule as the dashboard view).
     const weekRegion = screen.getAllByRole('region', { name: /This week compared with last week/ })[0];
     for (const label of ['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
@@ -149,14 +149,14 @@ describe('Live route dashboard', () => {
 
   it('says how many runs were left out and why, so the figures are honest about what they cover', async () => {
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the 900 timetabled trips kept/)).toBeTruthy();
     expect(screen.getByText(/500 runs by replacement buses that share this route number are left out/)).toBeTruthy();
   });
 
   it('says the 510 first stops are less exact and leaves them out of the ranking', async () => {
     renderPage({ ...ready, uncertainStart: [{ directionId: 1, stops: 4 }], note: 'Delay at the first few stops is less exact.' });
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     expect(screen.getByText('Delay at the first few stops is less exact.')).toBeTruthy();
     expect(screen.getByText(/Not ranked: the first 4 stops/)).toBeTruthy();
     // Westbound (direction 1) has 3 fixture stops, all within the first 4, so only eastbound rows are ranked.

@@ -197,7 +197,7 @@ export default function LiveAgencyPage() {
       <article className="pb-16 pt-10 sm:pt-14">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <PageTitle>{name}: how the network is running</PageTitle>
+            <PageTitle>{name}</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
               {shown ? `${shown.weekly.comparable ? dayComparedWith(shown.date, shown.compareDate) : dayText(shown.date)} · ${coverage} · ${estimatedNote(agency)}` : liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency })}
             </p>
