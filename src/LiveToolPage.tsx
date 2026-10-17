@@ -14,7 +14,7 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import { shortStopName } from './utils/stopLabel';
 import { titleCase } from './utils/format';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
-import { kpiTiles } from './utils/liveKpi';
+import { kpiTiles, type Kpi } from './utils/liveKpi';
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasBrand from './components/AtlasBrand';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
@@ -28,6 +28,8 @@ import ProblemsWidget from './components/Live/tool/ProblemsWidget';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData from './components/Live/tool/useNetworkData';
 import { KpiRows, KpiTile } from './LiveDashboardView';
+import { EXTRA_WAIT_TEXT, RUN_TIME_TEXT, bunchingText } from './components/Live/methodLines';
+import { NOISE_RULE } from '../shared/liveDashboard';
 import { BANDS, Group } from './LiveExplorePage';
 import { withNiceNames } from './LiveRoutePage';
 
@@ -96,7 +98,10 @@ function networkHours(s: AgencySummary) {
   }).filter(x => x.n > 0);
 }
 
-const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.map(k => ({ key: `tile-${k.key}`, size: 'small', tile: true, node: <KpiTile k={k} /> }));
+const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+/** The lines that explain how a figure is worked out (a threshold or a rule), shown with the figure. Late's own caption already says it. */
+const MATH: Partial<Record<Kpi['key'], string>> = { tripTime: `${cap(RUN_TIME_TEXT)}.`, extraWait: cap(EXTRA_WAIT_TEXT), bunching: cap(bunchingText()) };
+const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.map(k => ({ key: `tile-${k.key}`, size: 'small', tile: true, node: <KpiTile k={k} math={MATH[k.key]} /> }));
 
 /** The late-by-hour values of a route's whole day. */
 const routeHours = (v3: LiveV3) => v3.bands.all.adherence.timepoints.all.byHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));
@@ -106,7 +111,7 @@ function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const hours = networkHours(s);
   const tiles = agencyKpiTiles(s);
   return [
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <KpiRows tiles={tiles} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <KpiRows tiles={tiles} math={MATH} caption={NOISE_RULE} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourWidget hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} /> }] : []),
   ];
 }
@@ -118,9 +123,9 @@ function networkWidgets(s: AgencySummary, onOpen: (route: string, dir: number, p
   const stretchRows = (list: AgencySummary['delayStarts'], value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: `${shortStopName(titleCase(x.fromName))} to ${shortStopName(titleCase(x.toName))}`, sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
   const delays = stretchRows(s.delayStarts, mins), bunching = stretchRows(s.bunchingForms, pct);
   return [
-    ...(stopRows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops where the most cars leave late" rows={stopRows} /> }] : []),
-    ...(delays.length ? [{ key: 'delays', size: 'medium' as const, node: <ProblemsWidget title="Where delays start" rows={delays} /> }] : []),
-    ...(bunching.length ? [{ key: 'bunching', size: 'medium' as const, node: <ProblemsWidget title="Where bunching forms" rows={bunching} /> }] : []),
+    ...(stopRows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops where the most cars leave late" intro={`The ${stopRows.length} stops with the highest share of departures 5.5+ minutes late, across all analysed routes.`} rows={stopRows} /> }] : []),
+    ...(delays.length ? [{ key: 'delays', size: 'medium' as const, node: <ProblemsWidget title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there." rows={delays} /> }] : []),
+    ...(bunching.length ? [{ key: 'bunching', size: 'medium' as const, node: <ProblemsWidget title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up." rows={bunching} /> }] : []),
   ];
 }
 

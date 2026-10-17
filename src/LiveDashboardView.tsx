@@ -80,32 +80,37 @@ function WeekMethod({ v3, toFull }: { v3: LiveV3; toFull: (hash: string) => void
 }
 
 /** One figure tile: title, big number, caption and the change line. The base look of every Live card. */
-export function KpiTile({ k, className = '' }: { k: Kpi; className?: string }) {
+export function KpiTile({ k, className = '', math }: { k: Kpi; className?: string; /** A line that explains how the figure is worked out (a threshold or a rule), under the caption. */ math?: string }) {
   const faded = k.n < MIN_N;
   return (
     <li className={`${TILE} flex list-none flex-col px-2.5 ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
       <div className="text-sm font-bold text-[var(--text-muted)]">{k.label}</div>
       <div className="mt-1 text-3xl font-black tracking-tight">{k.value}</div>
       <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.sub}</div>
-      <div className="mt-auto pt-3"><Delta k={k} /></div>
+      {math && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{math}</div>}
+      <div className="mt-auto pt-2"><Delta k={k} /></div>
     </li>
   );
 }
 
-/** The week's figures as one-line rows for a narrow column: the name, the figure, the change from last week. What each figure counts is in the hover text. */
-export function KpiRows({ tiles }: { tiles: Kpi[] }) {
+/** The week's figures as rows for a narrow column: the name, the figure, the change from last week; under it, the line that explains the math where there is one. */
+export function KpiRows({ tiles, math, caption }: { tiles: Kpi[]; /** Per tile key, the line that explains how the figure is worked out. */ math?: Partial<Record<Kpi['key'], string>>; caption?: string | null }) {
   return (
     <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-2`}>
-      <ul className="m-0 grid grid-cols-[max-content_max-content_minmax(0,1fr)] gap-x-1.5 p-0">
+      <ul className="m-0 p-0">
         {tiles.map(k => (
-          <li key={k.key} className={`col-span-3 grid list-none grid-cols-subgrid items-baseline border-b border-[var(--border-primary)] py-1.5 last:border-b-0 ${k.n < MIN_N ? 'opacity-60' : ''}`}
+          <li key={k.key} className={`list-none border-b border-[var(--border-primary)] py-1.5 last:border-b-0 ${k.n < MIN_N ? 'opacity-60' : ''}`}
             title={`${k.sub}. ${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}>
-            <span className="text-xs font-bold text-[var(--text-muted)]">{k.label}</span>
-            <span className="text-sm font-black tracking-tight">{k.value}</span>
-            <Delta k={k} />
+            <div className="grid grid-cols-[max-content_max-content_minmax(0,1fr)] items-baseline gap-x-1.5">
+              <span className="text-xs font-bold text-[var(--text-muted)]">{k.label}</span>
+              <span className="text-sm font-black tracking-tight">{k.value}</span>
+              <Delta k={k} />
+            </div>
+            {[k.key === 'late' || k.key === 'bunching' ? k.sub : null, math?.[k.key]].filter(Boolean).map(line => <div key={line} className="text-xs leading-4 text-[var(--text-dim)]">{line}</div>)}
           </li>
         ))}
       </ul>
+      {caption && <p className="m-0 mt-1.5 text-xs leading-4 text-[var(--text-dim)]">{caption}</p>}
     </section>
   );
 }

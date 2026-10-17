@@ -4,6 +4,7 @@ import { lateCount, lateHourLine, LATE_BY_HOUR_TITLE } from '../../../../shared/
 import { liveChartHours } from '../../../utils/sparklinePeriods';
 import HourSpark, { type HourValue } from '../../charts/HourSpark';
 import Widget from './Widget';
+import { lateAtStopLine } from '../methodLines';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 
@@ -20,6 +21,7 @@ export default function LateByHourWidget({ hours, band, overall }: { hours: read
         hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)}
         ariaLabel={`Share of departures late by hour of the day${overall != null ? `, ${pct(overall)} late overall` : ''}.`}
       />
+      <div className="mt-1 text-xs leading-4 text-[var(--text-dim)]">{lateAtStopLine()}</div>
     </Widget>
   );
 }
