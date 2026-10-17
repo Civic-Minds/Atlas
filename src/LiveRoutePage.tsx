@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES, periodKeyForHour } from '../shared/config';
 import {
-  LINK_LABELS, branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, bunchingSentence, buildupTakeaway, freshness, buildupSentence, linkValueText, rankStops, runningTimeSentence,
+  LINK_LABELS, branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, bunchingSentence, freshness, linkValueText, rankStops, runningTimeSentence,
   type DashboardBand, type DashboardBandData, type DashboardBunchingBand, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -32,13 +32,14 @@ import { PageTitle } from './components/ui/PageTitle';
 import { LATE_BY_HOUR_TITLE, lateCount, lateHourLine, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
+import BuildupSection from './components/Live/sections/BuildupSection';
+import PerPeriod, { PERIOD_BANDS_ONLY } from './components/Live/sections/PerPeriod';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import { dirsOf, mins, pct } from './components/Live/sections/figures';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
-const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
 
 /** Stop names come upper-case or mixed from the feed; show them the way the map does. */
 export function withNiceNames(v3: LiveV3): LiveV3 {
@@ -83,20 +84,6 @@ function Filters({ v3, dir, setDir }: { v3: LiveV3; dir: number | null; setDir: 
   );
 }
 
-/** A section's answer for each time of day, as a compact list (no toggle): "AM peak: builds up by King St West". */
-function PerPeriod({ title, rows }: { title: string; rows: Array<{ key: string; label: string; text: string }> }) {
-  if (!rows.length) return null;
-  return (
-    <div className="mt-3">
-      <h4 className="text-sm font-black">{title}</h4>
-      <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 text-sm">
-        {rows.map(r => <div key={r.key} className="contents"><dt className="text-[var(--text-muted)]">{r.label}</dt><dd className="m-0">{r.text}</dd></div>)}
-      </dl>
-    </div>
-  );
-}
-const PERIOD_BANDS_ONLY = BANDS.filter(([k]) => k !== 'all');
-
 /** B1: how well the route keeps to its timetable, at timepoints (where the timetable really schedules a time). */
 function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: number | null; lateMin: number }) {
   const countsFor = (d: Day) => { const b = data.adherence.timepoints[d]; return dir == null ? b.overall : b.byDirection[String(dir)]; };
@@ -138,74 +125,6 @@ function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: numbe
           </div>
         </>
       ) : <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time.</p>}
-    </Section>
-  );
-}
-
-/** B3: where delays build up. One chart per direction, on a shared scale. */
-function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[] }) {
-  const rows = data.buildup.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
-  // Stops at the start of a direction that are measured poorly (510 northbound under Union Station) are drawn as less exact.
-  const lessExactStops = (d: number) => uncertain.find(u => u.directionId === d)?.stops ?? 0;
-  const pointsOf = (b: (typeof rows)[number]): ProfilePoint[] => b.stretches.filter(s => s.n >= 10).map((s, i) => ({
-    label: s.toName, short: shortStopName(s.toName), major: isMajorStop(s.toName), lessExact: i < lessExactStops(b.directionId) - 1,
-    y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n,
-  }));
-  const scale = sharedScale(rows.map(pointsOf));
-  return (
-    <Section id="b3" title="Where delays build up">
-      <p className="mt-2 text-sm text-[var(--text-muted)]">How late vehicles leave each stop along the route, and where that delay jumps and stays up.</p>
-      <div className={`mt-4 grid gap-6 ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
-        {rows.map(b => {
-          const label = v3.directionLabels[String(b.directionId)];
-          const points = pointsOf(b);
-          const marked = b.forms ? points.findIndex(p => p.label === b.forms!.toName) : -1;
-          const worst = [...b.stretches].filter(s => s.n >= 30).sort((a, c) => c.medianAddedMin - a.medianAddedMin).slice(0, 5);
-          return (
-            <div key={b.directionId} className="min-w-0">
-              <h3 className="text-base font-black">{label}</h3>
-              <ProfileBars
-                ariaLabel={`${label}: typical delay at each stop along the route. ${buildupSentence(label, b)}`}
-                takeaway={buildupTakeaway(b, lessExactStops(b.directionId))}
-                axisTitle="Minutes late"
-                points={points}
-                formatY={axisMin}
-                unit="trips"
-                valueHeader="Typical delay"
-                caption="How late vehicles usually leave each stop: above the line is late, below is early."
-                whiskers={false}
-                zero
-                zeroLabel="On time"
-                scale={scale}
-                lessExactNote="the first stops are in the tunnel, where we see the vehicles less often, so these are rough."
-                marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
-              />
-              <PerPeriod
-                title="By time of day"
-                rows={PERIOD_BANDS_ONLY.flatMap(([k, name]) => {
-                  const pb = v3.bands[k]?.buildup.find(x => x.directionId === b.directionId);
-                  if (!pb) return [];
-                  const text = pb.kind === 'forms' && pb.forms ? `builds up by ${shortStopName(pb.forms.toName)} (${mins(pb.forms.medianAddedMin)})` : pb.kind === 'gradual' ? 'builds slowly, no single stretch' : pb.kind === 'none' ? 'stays about level' : 'too few trips';
-                  return [{ key: k, label: name, text }];
-                })}
-              />
-              <div className="mt-3 overflow-x-auto">
-                <SortableDataTable
-                  caption={`${label}: the stretches that add the most delay`}
-                  defaultSort="added"
-                  rows={worst}
-                  rowKey={s => `${s.fromStopId}-${s.toStopId}`}
-                  columns={[
-                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal truncate', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{shortStopName(s.fromName)} to {shortStopName(s.toName)}</span> },
-                    { key: 'added', header: 'Typical added', width: 7, worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: 'Trips where it grows', width: 10, worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
-                  ]}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
     </Section>
   );
 }
@@ -477,7 +396,7 @@ function AnalysisPage() {
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><Adherence data={bandData} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Run time')}><RunningTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Where delays build up')}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStops v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} gaps={gaps} /></ErrorBoundary>

@@ -31,13 +31,14 @@ import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
-import { dirsOf, mins, num, pct } from './components/Live/sections/figures';
+import BuildupSection from './components/Live/sections/BuildupSection';
+import { BANDS, dirsOf, mins, pct } from './components/Live/sections/figures';
 import { BOUNDARY, routeSubtitle, withNiceNames } from './LiveRoutePage';
 import { lateCount, lateHourLine, LATE_BY_HOUR_TITLE } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
-export const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']];
+export { BANDS };
 
 /** What is open in the detail panel: a stop (by its place in the direction's strip) or a marked stretch. */
 type Selection = { dir: number; kind: 'stop'; stopId: string } | { dir: number; kind: 'stretch'; mode: RouteStripMode };
@@ -233,61 +234,6 @@ function RunTime({ v3, band, dir }: { v3: LiveV3; band: DashboardBand; dir: numb
   );
 }
 
-function Buildup({ v3, data, dir, uncertain }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[] }) {
-  const rows = data.buildup.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
-  const lessExactStops = (d: number) => uncertain.find(u => u.directionId === d)?.stops ?? 0;
-  const pointsOf = (b: (typeof rows)[number]): ProfilePoint[] => b.stretches.filter(s => s.n >= 10).map((s, i) => ({
-    label: s.toName, short: shortStopName(s.toName), major: isMajorStop(s.toName), lessExact: i < lessExactStops(b.directionId) - 1,
-    y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n,
-  }));
-  const scale = sharedScale(rows.map(pointsOf));
-  return (
-    <>
-      <div className={`mt-4 grid gap-x-10 gap-y-8 ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
-        {rows.map(b => {
-          const label = v3.directionLabels[String(b.directionId)];
-          const points = pointsOf(b);
-          const marked = b.forms ? points.findIndex(p => p.label === b.forms!.toName) : -1;
-          const worst = [...b.stretches].filter(s => s.n >= 30).sort((a, c) => c.medianAddedMin - a.medianAddedMin).slice(0, 5);
-          return (
-            <div key={b.directionId} className="min-w-0">
-              <h3 className="text-base font-black">{label}</h3>
-              <ProfileBars
-                ariaLabel={`${label}: typical delay at each stop along the route.`}
-                axisTitle="Minutes late"
-                points={points}
-                formatY={y => `${y > 0 ? '+' : ''}${num(y)} min`}
-                unit="trips"
-                valueHeader="Typical delay"
-                caption="How late vehicles usually leave each stop: above the line is late, below is early."
-                whiskers={false}
-                zero
-                zeroLabel="On time"
-                scale={scale}
-                lessExactNote="the first stops are in the tunnel, where we see the vehicles less often, so these are rough."
-                marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
-              />
-              <div className="mt-3 overflow-x-auto">
-                <SortableDataTable
-                  caption={`${label}: the stretches that add the most delay`}
-                  defaultSort="added"
-                  rows={worst}
-                  rowKey={s => `${s.fromStopId}-${s.toStopId}`}
-                  columns={[
-                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => `${s.fromName} to ${s.toName}` },
-                    { key: 'added', header: 'Typical added', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: 'Trips where it grows', worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
-                  ]}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </>
-  );
-}
-
 function WorstStops({ v3, data, dir, uncertain, onPick, canPick }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; onPick: (directionId: number, stopId: string) => void; canPick: (directionId: number, stopId: string) => boolean }) {
   const top = useMemo(() => rankStops(data.stops, dir, uncertain).slice(0, 10), [data, dir, uncertain]);
   if (!top.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank.</p>;
@@ -443,9 +389,7 @@ export default function LiveExplorePage() {
       <Section shrink id="x-runtime" title="Run time">
         <ErrorBoundary label={BOUNDARY('Run time')}><RunTime v3={v3} band={band} dir={dir} /></ErrorBoundary>
       </Section>
-      <Section shrink id="x-buildup" title="Where delays build up">
-        <ErrorBoundary label={BOUNDARY('Where delays build up')}><Buildup v3={v3} data={bandData} dir={dir} uncertain={uncertain} /></ErrorBoundary>
-      </Section>
+      <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY('Where delays build up')} />
       <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY('Extra wait')} />
       <Section shrink id="x-bunching" title="Where bunching forms">
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><Bunching v3={v3} dir={dir} band={band} /></ErrorBoundary>

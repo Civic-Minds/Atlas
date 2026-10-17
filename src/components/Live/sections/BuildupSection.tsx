@@ -1,0 +1,93 @@
+import type { ReactNode } from 'react';
+import { buildupSentence, buildupTakeaway, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
+import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
+import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
+import SortableDataTable from '../../ui/SortableDataTable';
+import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
+import Section from './Section';
+import { mins, pct } from './figures';
+
+/** The one derivation of where delay builds up, so every surface draws the same numbers. */
+export function buildupModel(data: DashboardBandData, dir: number | null, uncertain: UncertainStart[]) {
+  const rows = data.buildup.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
+  // Stops at the start of a direction that are measured poorly (510 northbound under Union Station) are drawn as less exact.
+  const lessExactStops = (d: number) => uncertain.find(u => u.directionId === d)?.stops ?? 0;
+  const pointsOf = (b: (typeof rows)[number]): ProfilePoint[] => b.stretches.filter(s => s.n >= 10).map((s, i) => ({
+    label: s.toName, short: shortStopName(s.toName), major: isMajorStop(s.toName), lessExact: i < lessExactStops(b.directionId) - 1,
+    y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n,
+  }));
+  const scale = sharedScale(rows.map(pointsOf));
+  return { rows, lessExactStops, pointsOf, scale };
+}
+
+/**
+ * B3: where delays build up, one chart per direction on a shared scale. `full` is the Full analysis section (intro,
+ * a sentence and takeaway, the answer for each time of day); `compact` is the Explore section, which keeps its own
+ * section id and guards the content with `boundary`.
+ */
+export default function BuildupSection({ v3, data, dir, uncertain, detail, boundary }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; detail: 'full' | 'compact'; boundary?: string }): ReactNode {
+  const full = detail === 'full';
+  const { rows, lessExactStops, pointsOf, scale } = buildupModel(data, dir, uncertain);
+  return (
+    <Section id={full ? 'b3' : 'x-buildup'} title="Where delays build up" shrink={!full} boundary={boundary}>
+      {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How late vehicles leave each stop along the route, and where that delay jumps and stays up.</p>}
+      <div className={`mt-4 grid ${full ? 'gap-6' : 'gap-x-10 gap-y-8'} ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
+        {rows.map(b => {
+          const label = v3.directionLabels[String(b.directionId)];
+          const points = pointsOf(b);
+          const marked = b.forms ? points.findIndex(p => p.label === b.forms!.toName) : -1;
+          const worst = [...b.stretches].filter(s => s.n >= 30).sort((a, c) => c.medianAddedMin - a.medianAddedMin).slice(0, 5);
+          return (
+            <div key={b.directionId} className="min-w-0">
+              <h3 className="text-base font-black">{label}</h3>
+              <ProfileBars
+                ariaLabel={full ? `${label}: typical delay at each stop along the route. ${buildupSentence(label, b)}` : `${label}: typical delay at each stop along the route.`}
+                takeaway={full ? buildupTakeaway(b, lessExactStops(b.directionId)) : undefined}
+                axisTitle="Minutes late"
+                points={points}
+                formatY={mins}
+                unit="trips"
+                valueHeader="Typical delay"
+                caption="How late vehicles usually leave each stop: above the line is late, below is early."
+                whiskers={false}
+                zero
+                zeroLabel="On time"
+                scale={scale}
+                lessExactNote="the first stops are in the tunnel, where we see the vehicles less often, so these are rough."
+                marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
+              />
+              {full && (
+                <PerPeriod
+                  title="By time of day"
+                  rows={PERIOD_BANDS_ONLY.flatMap(([k, name]) => {
+                    const pb = v3.bands[k]?.buildup.find(x => x.directionId === b.directionId);
+                    if (!pb) return [];
+                    const text = pb.kind === 'forms' && pb.forms ? `builds up by ${shortStopName(pb.forms.toName)} (${mins(pb.forms.medianAddedMin)})` : pb.kind === 'gradual' ? 'builds slowly, no single stretch' : pb.kind === 'none' ? 'stays about level' : 'too few trips';
+                    return [{ key: k, label: name, text }];
+                  })}
+                />
+              )}
+              <div className="mt-3 overflow-x-auto">
+                <SortableDataTable
+                  caption={`${label}: the stretches that add the most delay`}
+                  defaultSort="added"
+                  rows={worst}
+                  rowKey={s => `${s.fromStopId}-${s.toStopId}`}
+                  columns={full ? [
+                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal truncate', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{shortStopName(s.fromName)} to {shortStopName(s.toName)}</span> },
+                    { key: 'added', header: 'Typical added', width: 7, worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
+                    { key: 'grows', header: 'Trips where it grows', width: 10, worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
+                  ] : [
+                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => `${s.fromName} to ${s.toName}` },
+                    { key: 'added', header: 'Typical added', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
+                    { key: 'grows', header: 'Trips where it grows', worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
+                  ]}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
