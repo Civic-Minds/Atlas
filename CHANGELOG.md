@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The route page header is one line (local only)**: "Week of Oct 8–14, compared with Oct 1–7 · 3,454 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14" on every route view; the rebuild command no longer appears in page text (developers still get it in a dev-only line and the console), and the late-by-hour title is "Late departures by hour" everywhere (CIV-310).
 - **The Live agency summary can no longer be older than its route files (local only)**: every route analysis run rebuilds it (or removes it if that fails), and the local API refuses a summary older than any route file, so the left list and network figures can't disagree with the route pages (CIV-305).
 - **The planner's Run time label follows the time of day (local only)**: with AM peak picked it ends "…, AM peak" instead of "all trips".
 - **Every Live switcher is the same pill group (local only)**: the planner's top bar, the route pages' view and direction switches, the full analysis filters and the phone direction switch share one component, with the same height, selected state and spacing between groups (CIV-307).

@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
 import type { LiveAgencyResponse } from '../local-api/live-agency';
-import { devOnly, liveAgencyDataUrl, liveDataMissing, liveReportTitle, withoutDevHint } from './lib/liveReportData';
+import { devOnly, liveAgencyDataUrl, liveDataMissing, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { liveDashboardPath } from './hooks/useLiveDashboard';
@@ -22,6 +22,8 @@ import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import DevHint from './components/Live/DevHint';
+import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import { coveredRoutesText, liveSubtitle } from '../shared/liveWording';
 import MethodSection from './components/Live/sections/MethodSection';
 
@@ -205,7 +207,7 @@ export default function LiveAgencyPage() {
         <ErrorBoundary>
           {w && tiles.length
             ? <KpiTiles tiles={tiles} caption={weekNotComparableLine({ ...w, health: [] })} />
-            : <p className="mt-5 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in the analysis files yet. Rebuild them with npm run live:analyze.')}</p>}
+            : <><p className="mt-5 text-sm text-[var(--text-muted)]">This week against last week is not in the analysis files yet.</p><DevHint hint={ANALYZE_DEV_HINT} /></>}
         </ErrorBoundary>
 
         <Section id="agency-routes" title="Routes" intro="Every analysed route, worst first.">

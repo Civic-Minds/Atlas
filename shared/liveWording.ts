@@ -47,13 +47,13 @@ export const estimatedNote = (agency: string): string => `estimated from vehicle
 
 /**
  * A Live page subtitle (approved by Ryan): "Week of Oct 8–14, compared with Oct 1–7 · 9 TTC streetcar routes ·
- * estimated from vehicle positions, not reported by the TTC". `middle` is the page's own count (routes or trips);
+ * estimated from vehicle positions, not reported by the TTC · data up to Oct 14". `middle` is the page's own count (routes or trips);
  * "compared with" only when the two weeks can be compared.
  */
-export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readonly string[] | null; middle: string; agency: string }): string {
+export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readonly string[] | null; middle: string; agency: string; /** The newest day in the figures (YYYY-MM-DD): ends the line as "data up to Oct 14". */ upTo?: string | null }): string {
   const t = o.thisWeek, l = o.lastWeek;
   const week = t.length ? weekOfText(t[0], t[t.length - 1]) + (l?.length ? `, ${changesComparedWith(l[0], l[l.length - 1])}` : '') : '';
-  return [week, o.middle, estimatedNote(o.agency)].filter(Boolean).join(' · ');
+  return [week, o.middle, estimatedNote(o.agency), o.upTo ? `data up to ${dateRangeText(o.upTo, o.upTo)}` : ''].filter(Boolean).join(' · ');
 }
 
 /** "9 TTC streetcar routes": the routes a page covers, naming the mode only when every one is a streetcar (GTFS route_type 0). */

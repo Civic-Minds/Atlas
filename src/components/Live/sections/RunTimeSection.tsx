@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { periodKeyForHour } from '../../../../shared/config';
 import { branchFigures, branchRunTimeLine, runTimeStretchLabel, runTimeTakeaway, runningTimeSentence, type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
-import { withoutDevHint } from '../../../lib/liveReportData';
 import { titleCase } from '../../../utils/format';
 import { shortStopName } from '../../../utils/stopLabel';
 import { liveChartHours } from '../../../utils/sparklinePeriods';
@@ -63,7 +62,7 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
         const hours = hoursOf(d);
         const f = rt?.bands[band]?.[String(d)];
         const stretch = runTimeStretchOf(v3, d);
-        const sentence = full ? withoutDevHint(runningTimeSentence(label, f)) : null;
+        const sentence = full ? runningTimeSentence(label, f) : null;
         return (
           <div key={d} className="min-w-0">
             <h3 className="text-base font-black">{label}</h3>

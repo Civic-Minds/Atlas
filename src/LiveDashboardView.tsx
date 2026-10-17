@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { dateRangeText, runTimeTileStretch, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, weekNotComparableLine, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
-import { withoutDevHint } from './lib/liveReportData';
+import { ANALYZE_DEV_HINT } from './lib/liveReportData';
+import DevHint from './components/Live/DevHint';
 import DirectionStrip from './components/Live/DirectionStrip';
 import { routeStripFromV3 } from './components/Live/routeStripModel';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
@@ -18,7 +19,7 @@ import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
-import { NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText } from '../shared/liveWording';
+import { LATE_BY_HOUR_TITLE, NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText } from '../shared/liveWording';
 
 const MIN_N = 30;
 
@@ -51,7 +52,7 @@ export const yesterdayHours = (y: LiveYesterday) => ({
 
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
-  if (!w) return <p className="mt-4 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in this analysis file. Rebuild it with npm run live:analyze.')}</p>;
+  if (!w) return <><p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file.</p><DevHint hint={ANALYZE_DEV_HINT} /></>;
   return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3))} caption={weekNotComparableLine(w)} />;
 }
 
@@ -175,13 +176,13 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
   /** The lite view's Yesterday figures, when the Yesterday pill is on. */
   yesterday?: LiveYesterday | null;
 }) {
-  const bad = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
+  const bad = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
   // The lite view (?view=lite), made to share: the week's tiles, the route strip, late by hour and a way into the rest.
   if (lite) return (
     <>
       <ErrorBoundary label={bad('The week comparison')}>{yesterday ? <YesterdayTiles y={yesterday} /> : <KpiRow v3={v3} />}</ErrorBoundary>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
-      <ErrorBoundary label={bad('Late by day and hour')}><LateByHourSection chart="spark" title="Late, by day and hour" v3={v3} data={data} band={band} dir={null} allOnly oneDay={yesterday ? yesterdayHours(yesterday) : undefined} /></ErrorBoundary>
+      <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={null} allOnly oneDay={yesterday ? yesterdayHours(yesterday) : undefined} /></ErrorBoundary>
       <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
     </>
   );
@@ -194,7 +195,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
       </div>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad('Run time')}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
-      <ErrorBoundary label={bad('Late by day and hour')}><LateByHourSection chart="spark" title="Late, by day and hour" v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
+      <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
       <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title="Stops most often late" boundary={bad('The stop list')}
         footerLink={{ text: 'Every stop, in Full analysis', href: '?view=analysis#b2', onClick: () => toFull('b2') }} />
       <MethodSection scope="week" v3={v3} toFull={toFull} />

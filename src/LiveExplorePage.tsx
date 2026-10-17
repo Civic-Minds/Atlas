@@ -8,7 +8,8 @@ import {
 import { delayAmount, headwayAmount } from '../shared/headwayText';
 import { SITE_URL } from '../shared/seo';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
-import { devOnly, liveReportTitle, withoutDevHint } from './lib/liveReportData';
+import { devOnly, liveReportTitle } from './lib/liveReportData';
+import DevHint from './components/Live/DevHint';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { shortStopName } from './utils/stopLabel';
@@ -250,7 +251,7 @@ export default function LiveExplorePage() {
       </div>
       {(() => {
         const f = freshness(v3, route, Date.now());
-        return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{withoutDevHint(f.text)}</p> : null;
+        return f.stale ? <><p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{f.text}</p><DevHint hint={f.devHint} /></> : null;
       })()}
       {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
 

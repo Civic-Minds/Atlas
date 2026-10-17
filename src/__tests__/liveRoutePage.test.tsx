@@ -133,7 +133,7 @@ describe('Live route dashboard', () => {
     for (const label of ['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
     // The subtitle names both weeks; no separate line under the tiles. The method says it once, in groups.
-    expect(screen.getByText('Week of Oct 8–14, compared with Oct 1–7 · 1,234 trips · estimated from vehicle positions, not reported by the TTC')).toBeTruthy();
+    expect(screen.getByText('Week of Oct 8–14, compared with Oct 1–7 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
     expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
     expect(screen.getByText(/This week is .+ and last week is .+: \d+ of \d+ days counted this week, \d+ of \d+ last week\./)).toBeTruthy();
     expect(screen.getAllByText(/days with gaps in our recordings are left out/).length).toBe(1);
@@ -171,7 +171,7 @@ describe('Live route dashboard', () => {
     vi.setSystemTime(new Date('2026-10-15T20:00:00Z'));
     try {
       const { unmount } = renderPage(ready);
-      expect(await screen.findByText('Week of Oct 8–14 · 1,234 trips · estimated from vehicle positions, not reported by the TTC')).toBeTruthy();
+      expect(await screen.findByText('Week of Oct 8–14 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
       expect(screen.queryByRole('status')).toBeNull();
       unmount();
       vi.setSystemTime(new Date('2026-10-25T20:00:00Z'));

@@ -16,5 +16,6 @@ describe('Live wording', () => {
     const t = ['2026-10-08', '2026-10-14'], l = ['2026-10-01', '2026-10-07'];
     expect(liveSubtitle({ thisWeek: t, lastWeek: l, middle: '9 TTC streetcar routes', agency: 'ttc' })).toBe('Week of Oct 8–14, compared with Oct 1–7 · 9 TTC streetcar routes · estimated from vehicle positions, not reported by the TTC');
     expect(liveSubtitle({ thisWeek: t, lastWeek: null, middle: '2,553 trips', agency: 'ttc' })).toBe('Week of Oct 8–14 · 2,553 trips · estimated from vehicle positions, not reported by the TTC');
+    expect(liveSubtitle({ thisWeek: t, lastWeek: l, middle: '3,454 trips', agency: 'ttc', upTo: '2026-10-14' })).toBe('Week of Oct 8–14, compared with Oct 1–7 · 3,454 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14');
   });
 });

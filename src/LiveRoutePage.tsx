@@ -7,7 +7,8 @@ import {
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { useLiveGaps } from './hooks/useLiveGaps';
-import { devOnly, liveReportTitle, withoutDevHint } from './lib/liveReportData';
+import { devOnly, liveReportTitle } from './lib/liveReportData';
+import DevHint from './components/Live/DevHint';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { syncUrlParams } from './utils/syncUrlParams';
@@ -83,10 +84,10 @@ function WeekCompare({ v3 }: { v3: LiveV3 }) {
 /** The route pages' subtitle (full analysis and explore): the week, the trip count, where the figures come from. */
 export function routeSubtitle(v3: LiveV3, agency: string): string {
   const w = v3.weekly;
-  return liveSubtitle({ thisWeek: v3.window.dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${v3.totals.runs.toLocaleString()} trips`, agency });
+  return liveSubtitle({ thisWeek: v3.window.dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${v3.totals.runs.toLocaleString()} trips`, agency, upTo: v3.window.dates[v3.window.dates.length - 1] });
 }
 
-export const BOUNDARY = (what: string) => withoutDevHint(`${what} could not be drawn: the analysis file may be from an older version. Rebuild it with npm run live:analyze.`);
+export const BOUNDARY = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
 
 function AnalysisPage() {
   const { agency = '', route = '' } = useParams();
@@ -144,7 +145,7 @@ function AnalysisPage() {
         </div>
         {(() => {
           const f = freshness(v3, route, Date.now());
-          return f.stale ? <p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{withoutDevHint(f.text)}</p> : null;
+          return f.stale ? <><p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{f.text}</p><DevHint hint={f.devHint} /></> : null;
         })()}
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         {view !== 'lite' && <div className={`mt-4 ${PILL_ROW}`}>
