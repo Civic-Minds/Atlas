@@ -89,17 +89,43 @@ export function routeContract(features: readonly ShapeProperties[], period: Time
 }
 
 /**
- * Whether a route direction has regular service in the period, by the same filter values the route card reads: false
- * when the route's value is empty (the card then shows no rows) or this direction's value is empty. True for all
- * day and for older data without the filter fields. The stop card uses it so a stop never shows a cadence for a period
- * the route card says has no regular service (#750: SF Muni 8AX/8BX midday and evening, and outbound in the AM).
+ * Whether a route direction has regular service in the period, by the same filter values the route card reads: this
+ * direction's own value when the data has one (the card shows a row with a value even when the route's is empty, #954:
+ * SF Muni 8 PM, Fisherman's Wharf every 8), otherwise the route's. True for all day and for older data without the
+ * filter fields. The stop card uses it so a stop never shows a cadence for a period the route card says has no regular
+ * service (#750: SF Muni 8AX/8BX midday and evening, and outbound in the AM).
  */
 export function hasRegularServiceInPeriod(f: ShapeProperties, period: TimePeriod): boolean {
   if (period === 'all') return true;
-  // The route card hides every row when the route's value is empty, so that comes first; then this direction's own value.
-  const contract = routeContract([f], period);
-  if (contract != null && contract.filterValue == null) return false;
+  // #955: a direction value that is one gap between a few departures is no cadence, as on the route card,
+  // unless the row has a steady value of its own.
+  if (isOneGapRow(f, period)) return false;
+  // #954 shows a direction's own value when the route's is empty, only on data that carries the one-gap flag:
+  // older data keeps the route's value first, so no one-gap number appears before the rebuild.
+  if (f.stretchPeriodOneGap === undefined) {
+    const contract = routeContract([f], period);
+    if (contract != null && contract.filterValue == null) return false;
+  }
   const byDirection = f.directionFilterHeadwayByPeriod;
   if (byDirection && Object.prototype.hasOwnProperty.call(byDirection, period)) return typeof byDirection[period as PeriodKey] === 'number';
-  return true;
+  const contract = routeContract([f], period);
+  return !(contract != null && contract.filterValue == null);
+}
+
+/** #955: the row's direction value is one gap between a few departures and the row has no steady value of its own. */
+export function isOneGapRow(f: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all') return false;
+  const key = period as PeriodKey;
+  return f.stretchPeriodOneGap?.[key] === true && f.headwayByPeriodSustained?.[key] !== true;
+}
+
+/**
+ * #955: the route's period value is one gap between a few departures: the direction that sets it (its value is the
+ * route's) is flagged. Lists, compare and the card's scheduled line then say no regular service, as the card's rows do.
+ */
+export function routeValueIsOneGap(features: readonly ShapeProperties[], period: TimePeriod): boolean {
+  const contract = routeContract(features, period);
+  if (contract?.filterValue == null) return false;
+  const key = period as PeriodKey;
+  return features.some(f => f.stretchPeriodOneGap?.[key] === true && f.directionFilterHeadwayByPeriod?.[key] === contract.filterValue);
 }

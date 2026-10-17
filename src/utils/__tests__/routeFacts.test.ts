@@ -147,3 +147,22 @@ describe('routeFacts', () => {
     }, 'late')).toBeNull();
   });
 });
+
+describe('route facts cache (CIV-218)', () => {
+  const base = { routeId: '10', routeShortName: '10', directionId: 0, headsign: 'Victoria Park', day: 'Weekday', tier: '30', headway: 30,
+    headwayByPeriod: { midday: 30 } } as any;
+  it('returns the same facts for the same properties object, per agency', () => {
+    expect(buildRouteServiceSummary(base)).toBe(buildRouteServiceSummary(base));
+    expect(buildRouteFacts(base, 'ttc')).toBe(buildRouteFacts(base, 'ttc'));
+    expect(buildRouteFacts(base, 'ttc')).not.toBe(buildRouteFacts(base, 'yrt'));
+    expect(buildRouteFacts(base, 'yrt').agencySlug).toBe('yrt');
+  });
+  it('new data is a new object and is read fresh', () => {
+    const before = buildRouteServiceSummary(base);
+    const next = { ...base, headwayByPeriod: { midday: 15 }, headway: 15 };
+    expect(buildRouteServiceSummary(next)).not.toBe(before);
+    expect(metricValueForPeriod(buildRouteServiceSummary(next).branch, 'midday')).toBe(15);
+    expect(metricValueForPeriod(buildRouteServiceSummary(base).branch, 'midday')).toBe(30);
+  });
+});
+

@@ -80,3 +80,20 @@ describe('compare rows on the stretch filter fields (frequency focus step 7)', (
     expect(buildCompareRow('A', { day: 'Weekday', period: 'all', maxHeadway: 30 }, features, 'x', filters).headway).toBe(20);
   });
 });
+
+describe('a route value that is one gap between a few departures (#955)', () => {
+  const feature = (oneGap: boolean): GeoJSON.Feature => ({
+    type: 'Feature', geometry: { type: 'LineString', coordinates: [[0, 0], [0, 1]] },
+    properties: {
+      routeId: 'x', routeShortName: 'X', day: 'Weekday', directionId: 0, headsign: 'North', tier: 'infrequent', serviceClass: 'regular',
+      headway: 100, headwayByPeriod: { midday: 50 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 100 },
+      routeFilterHeadwayByPeriod: { midday: 100 }, routeRunsByPeriod: { midday: true }, directionFilterHeadwayByPeriod: { midday: 100 },
+      stretchPeriodOneGap: { midday: oneGap },
+    },
+  });
+  it('shows no frequency in compare, as on the card and in lists', () => {
+    const side = { day: 'Weekday' as const, period: 'midday' as const, maxHeadway: Infinity };
+    expect(buildCompareRow('A', side, [feature(false)], 'test', filters).headway).toBe(100);
+    expect(buildCompareRow('A', side, [feature(true)], 'test', filters).headway).toBeNull();
+  });
+});
