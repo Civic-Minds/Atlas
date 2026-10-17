@@ -24,7 +24,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
-import { coveredRoutesText, liveSubtitle } from '../shared/liveWording';
+import { coveredRoutesText, LATE_THRESHOLD, liveSubtitle } from '../shared/liveWording';
 import { tenth } from '../shared/liveFormat';
 import MethodSection from './components/Live/sections/MethodSection';
 
@@ -137,7 +137,7 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
         defaultSort="late"
         rowKey={r => `${r.route}-${r.directionId}-${r.stopId}`}
         columns={[
-          { key: 'stop', header: 'Stop', rowHeader: true, width: FIRST_COL, className: 'font-normal truncate', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
+          { key: 'stop', header: 'Stop', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
           { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => titleCase(r.direction) },
           { key: 'late', header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
@@ -162,7 +162,7 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
-          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal truncate', cell: r => <span title={`${stop(r.fromName)} to ${stop(r.toName)}`}>{stop(r.fromName)} to {stop(r.toName)}</span> },
+          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => <span title={`${stop(r.fromName)} to ${stop(r.toName)}`}>{stop(r.fromName)} to {stop(r.toName)}</span> },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
           { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => titleCase(r.direction) },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),
@@ -215,7 +215,7 @@ export default function LiveAgencyPage() {
           <RoutesTable s={s} />
         </Section>
 
-        <Section id="agency-stops" title="Stops where the most cars leave late" intro={`The ${Math.min(s.worstStops.length, TOP_STOPS)} stops with the highest share of departures 5.5+ minutes late, across all analysed routes.`}>
+        <Section id="agency-stops" title="Stops where the most cars leave late" intro={`The ${Math.min(s.worstStops.length, TOP_STOPS)} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`}>
           <StopsTable s={s} rows={s.worstStops.slice(0, TOP_STOPS)} />
         </Section>
 

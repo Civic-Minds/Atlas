@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
 
 import { minutesText } from '../shared/liveFormat';
+import { LATE_SHORT, LATE_THRESHOLD } from '../shared/liveWording';
 import type { AgencySummary } from '../shared/liveAgency';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -22,6 +23,7 @@ import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
+import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
 import OverviewList from './components/Live/tool/OverviewList';
 import LateByHourSection, { routeLateHours, routeLateOverall } from './components/Live/sections/LateByHourSection';
@@ -101,7 +103,7 @@ function networkHours(s: AgencySummary) {
 }
 
 /** The left panel's one-line explanations (approved by Ryan, 2026-10-17): Run time and Service delivered have none. */
-const MATH: Partial<Record<Kpi['key'], string>> = { late: "more than 5½ min late (TTC's 5-min standard + 30 s)", extraWait: 'from the gaps between vehicles', bunching: 'gaps under 2 min or over 2× scheduled' };
+const MATH: Partial<Record<Kpi['key'], string>> = { late: LATE_SHORT, extraWait: 'from the gaps between vehicles', bunching: 'gaps under 2 min or over 2× scheduled' };
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The route panel's tiles are bare (figure and change): the explanations are shown once, on the left. */
@@ -124,7 +126,7 @@ function networkWidgets(s: AgencySummary, onOpen: (route: string, dir: number, p
   const stretchRows = (list: AgencySummary['delayStarts'], value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: `${shortStopName(titleCase(x.fromName))} to ${shortStopName(titleCase(x.toName))}`, sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
   const delays = stretchRows(s.delayStarts, mins), bunching = stretchRows(s.bunchingForms, pct);
   return [
-    ...(stopRows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops where the most cars leave late" intro={`The ${stopRows.length} stops with the highest share of departures 5.5+ minutes late, across all analysed routes.`} rows={stopRows} /> }] : []),
+    ...(stopRows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops where the most cars leave late" intro={`The ${stopRows.length} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`} rows={stopRows} /> }] : []),
     ...(delays.length ? [{ key: 'delays', size: 'medium' as const, node: <ProblemsWidget title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there." rows={delays} /> }] : []),
     ...(bunching.length ? [{ key: 'bunching', size: 'medium' as const, node: <ProblemsWidget title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up." rows={bunching} /> }] : []),
   ];
@@ -146,13 +148,24 @@ function routeWidgets({ data, v3, dir, band, setPick }: {
   ];
 }
 
+/** The right panel while a picked route's figures are on their way: the page's own word and soft grey blocks where the figures will be. */
+function LoadingWidget() {
+  return (
+    <Widget title="Loading…" size="medium">
+      <div aria-busy="true" className="flex flex-col gap-3">
+        {[40, 72, 56].map(h => <div key={h} className="rounded-lg bg-[var(--bg-btn-hover)]" style={{ height: h }} />)}
+      </div>
+    </Widget>
+  );
+}
+
 /** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
 function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band, measure, pick, setPick }: {
   agency: string; dirSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const wide = useMediaQuery('(min-width: 1024px)');
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
-  const network = useNetworkData(agency, routes);
+  const network = useNetworkData(agency, routes, route);
   // A route whose file was already fetched with the network opens at once; otherwise it is fetched. Until the new route's
   // data is there the previous route's stays on screen and is swapped in place (no blank panel, no map jump).
   const own = useLiveDashboard(route && !network.has(route) ? agency : null, route);
@@ -187,7 +200,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band
       : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked)} /> : null
     : null;
   const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
-  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick }) : !route ? networkWidgets(s, (r, d, p) => { setRoute(r); setDir(d); setPick(p); }) : [];
+  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick }) : !route ? networkWidgets(s, (r, d, p) => { setRoute(r); setDir(d); setPick(p); }) : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
   const mapEl = (
     <RouteMap
       model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={wide ? PANEL_PAD : NARROW_PAD}
@@ -200,7 +213,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band
   const direction = ids.length > 1 && dirSlot ? createPortal(<PillGroup label="Direction" value={String(shown)} onChange={v => { setDir(Number(v)); setPick(null); }} options={ids.map(d => [String(d), v3!.directionLabels[String(d)]] as const)} />, dirSlot) : null;
   // The newest day in the figures, in the header: the picked route's, or the network summary's week.
   const upTo = dataSlot ? createPortal(<DataUpTo dates={v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? []} route={v3 ? ready?.route : ''} />, dataSlot) : null;
-  const note = ready?.note && <p className="pointer-events-none absolute bottom-0 left-0 right-0 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
+  const note = ready?.note && <p className="pointer-events-none absolute bottom-0 left-0 right-10 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
   if (!wide) {
     // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
     return (

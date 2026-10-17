@@ -91,6 +91,16 @@ describe('shortenAgencyName', () => {
   });
 });
 
+describe('titleCase on stop names', () => {
+  it('turns all-caps stop names into normal title case', () => {
+    expect(titleCase('RONCESVALLES AVE AT HOWARD PARK AVE SOUTH SIDE')).toBe('Roncesvalles Ave at Howard Park Ave South Side');
+    expect(titleCase('KING ST W AT SPADINA AVE')).toBe('King St W at Spadina Ave');
+    expect(titleCase('QUEEN ST E AT MCNAB RD')).toBe('Queen St E at McNab Rd');
+    expect(titleCase("DUNDAS ST W AT O'CONNOR DR")).toBe("Dundas St W at O'Connor Dr");
+    expect(titleCase('TTC SUBWAY AT BAY ST (NORTH SIDE)')).toBe('TTC Subway at Bay St (North Side)');
+  });
+});
+
 describe('titleCase', () => {
   it('title-cases three-letter service names while preserving short route codes', () => {
     expect(titleCase('MCKNIGHT')).toBe('McKnight');

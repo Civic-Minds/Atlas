@@ -10,7 +10,11 @@ import { dateRangeText } from './liveDashboard';
 export const LATE_DEFINITION = "more than 5½ min behind the timetable: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute.";
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
-export const LATE_TILE_CAPTION = 'of trips left the end of the line more than 5 min late';
+/** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
+export const LATE_THRESHOLD = 'more than 5½ min late';
+/** The short line for the tool's left panel and tile maths: the threshold and where it comes from. */
+export const LATE_SHORT = `${LATE_THRESHOLD} (TTC's 5-min standard + 30 s)`;
+export const LATE_TILE_CAPTION = `of trips left the end of the line ${LATE_THRESHOLD}`;
 
 /** The week a page's figures cover, as its subtitle opens: "Week of Oct 8–14". */
 export const weekOfText = (from: string, to: string): string => `Week of ${dateRangeText(from, to)}`;

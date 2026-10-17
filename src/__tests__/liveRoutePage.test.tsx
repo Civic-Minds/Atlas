@@ -1,6 +1,7 @@
 import { render, screen, within, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { clearLiveDashboardCache } from '../lib/liveDashboardFetch';
 import type { AdherenceBlock, LiveDashboardResponse, LiveV3, UncertainStart } from '../../shared/liveDashboard';
 
 vi.mock('../../shared/config', async importOriginal => {
@@ -40,6 +41,7 @@ function renderPage(response: LiveDashboardResponse | Error, path = '/apps/live/
 
 describe('Live route dashboard', () => {
   beforeEach(() => {
+    clearLiveDashboardCache();
     window.history.replaceState(null, '', '/apps/live/ttc/505?view=analysis');
     vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));

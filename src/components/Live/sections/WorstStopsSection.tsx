@@ -1,5 +1,6 @@
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { rankStops, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
+import { LATE_THRESHOLD } from '../../../../shared/liveWording';
 import { shortStopName } from '../../../utils/stopLabel';
 import { titleCase } from '../../../utils/format';
 import ErrorBoundary from '../../ErrorBoundary';
@@ -59,7 +60,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
         columns={[
           onPick && canPick
             ? { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline">{s.name}</button> }
-            : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal max-sm:break-words sm:truncate', cell: s => <span title={s.name}>{s.name}</span> },
+            : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name}>{s.name}</span> },
           ...(both ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
           full
             ? { key: 'late', header: 'Late', worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
@@ -73,7 +74,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
       />
     </div>
   ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{EMPTY}</p>;
-  const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">Stops ranked by how often vehicles leave {v3.thresholds.lateAtOrAboveMin}+ minutes late (stops with 30+ departures).</p>;
+  const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">Stops ranked by how often vehicles leave {LATE_THRESHOLD} (stops with 30+ departures).</p>;
   const note = notRanked && hidden.length > 0 && (
     <p className="mt-2 max-w-2xl text-xs text-[var(--text-dim)]">
       Not ranked: the first {hidden[0].stops} stops {hidden.length === 1 ? directionLabels[String(hidden[0].directionId)].toLowerCase() : 'in some directions'}, where delay is less exact (see the note above).

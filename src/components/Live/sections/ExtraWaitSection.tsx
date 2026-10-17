@@ -74,7 +74,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
           rows={worst}
           rowKey={s => `${s.stopId}-${s.directionId}`}
           columns={[
-            { key: 'stop', header: 'Stop', rowHeader: true, className: full ? 'font-normal max-sm:break-words sm:truncate' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
+            { key: 'stop', header: 'Stop', rowHeader: true, className: full ? 'font-normal break-words' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
             ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
             { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => `${num(s.extraWaitMin)} min` },
             { key: 'sched', header: 'Scheduled every', narrowHide: true, cell: s => `${num(s.scheduledGapMin)} min` },

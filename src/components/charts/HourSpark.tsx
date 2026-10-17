@@ -121,9 +121,13 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
             )}
           </div>
           <div className="mt-1 flex gap-px" style={{ marginLeft: ml }}>
-            {axis.map(h => (
-              <div key={h} className="min-w-0 flex-1 text-center"><span className="text-xs text-[var(--text-dim)]">{SPARKLINE_HOUR_LABELS[h]}</span></div>
-            ))}
+            {axis.map((h, i) => {
+              // The first and last labels hang from the chart's edge, so a label wider than its hour never runs past the card.
+              const edge = i === axis.length - 1 && i > 0 ? 'right-0' : i === 0 && axis.length > 1 ? 'left-0' : 'left-1/2 -translate-x-1/2';
+              return (
+                <div key={h} className="relative h-4 min-w-0 flex-1"><span className={`absolute top-0 whitespace-nowrap text-xs leading-4 text-[var(--text-dim)] ${SPARKLINE_HOUR_LABELS[h] ? edge : ''}`}>{SPARKLINE_HOUR_LABELS[h]}</span></div>
+              );
+            })}
           </div>
           {periodBand && <PeriodBand axis={axis} period={hv?.period ?? null} onHover={setHv} style={{ marginLeft: ml }} />}
         </div>

@@ -35,22 +35,23 @@ import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import { dirsOf, mins } from './components/Live/sections/figures';
 
 
-/** Stop names come upper-case or mixed from the feed; show them the way the map does. */
+/** The stop-name fields of a v3 file; every one of them is shown in normal case. */
+const NAME_KEYS = new Set(['name', 'fromName', 'toName']);
+/** Big per-stop number tables that hold no names, left alone. */
+const NO_NAMES = new Set(['stopHours', 'segmentLines']);
+const niceDeep = (x: unknown, key = ''): unknown => {
+  if (typeof x === 'string') return NAME_KEYS.has(key) ? titleCase(x) : x;
+  if (Array.isArray(x)) return x.map(v => niceDeep(v, key));
+  if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, NO_NAMES.has(k) ? v : niceDeep(v, k)]));
+  return x;
+};
+/**
+ * Stop names come upper-case or mixed from the feed (the TTC analysis has "RONCESVALLES AVE AT HOWARD PARK AVE SOUTH SIDE");
+ * this is the one place every Live surface gets them in normal case, wherever a name sits in the file (stops, bands, build-up,
+ * bunching, extra wait, patterns, run time stretches and branches).
+ */
 export function withNiceNames(v3: LiveV3): LiveV3 {
-  const t = titleCase;
-  const stretch = <S extends { fromName: string; toName: string }>(x: S | null): S | null => (x ? { ...x, fromName: t(x.fromName), toName: t(x.toName) } : x);
-  const bandData = (b: DashboardBandData): DashboardBandData => ({
-    ...b,
-    stops: b.stops.map(x => ({ ...x, name: t(x.name) })),
-    buildup: b.buildup.map(d => ({ ...d, forms: stretch(d.forms), start: stretch(d.start), biggest: stretch(d.biggest), stretches: d.stretches.map(x => stretch(x)!) })),
-  });
-  return {
-    ...v3,
-    stops: v3.stops.map(x => ({ ...x, name: t(x.name) })),
-    buildup: bandData({ stops: [], adherence: v3.adherence, buildup: v3.buildup }).buildup,
-    bands: Object.fromEntries(Object.entries(v3.bands).map(([k, b]) => [k, bandData(b)])) as LiveV3['bands'],
-    bunching: v3.bunching.map(d => ({ ...d, bands: Object.fromEntries(Object.entries(d.bands).map(([k, band]) => [k, { ...band, forms: stretch(band.forms), biggestRise: stretch(band.biggestRise), stops: band.stops.map(x => ({ ...x, name: t(x.name) })) }])) })),
-  };
+  return niceDeep(v3) as LiveV3;
 }
 /** Axis value with its unit, with a real minus sign. */
 const axisMin = mins;
@@ -58,7 +59,7 @@ const axisMin = mins;
 export type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 
 
-/** B2: stops with the most delay, ranked by how often vehicles leave 5.5+ min late. One table with a small bar in each row. */
+/** B2: stops with the most delay, ranked by how often vehicles leave more than 5½ min late. One table with a small bar in each row. */
 const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'a' : 'p'}`;
 
 /** This week against last week: five tiles, each a number, a label and a change chip coloured only beyond normal noise. */

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Late says "more than 5½ min late" everywhere (local only)**: some captions and intros still said 5 min or 5.5+.
+- **Stop names are always in normal case and wrap instead of ending in "..." (local only)**: the Extra wait list showed "RONCESVALLES AVE AT HOWARD PARK AVE".
+- **The planner's bottom note no longer runs under the zoom buttons, and "12a" stays inside the late-by-hour card (local only)**.
+- **Branch strip row names no longer touch when they wrap to two lines (local only)**.
+- **The late-by-hour "Hover over an hour" hint is gone where the time-of-day band already explains it (local only)**; hovering the days figure explains a dropped day ("6 of 7 days counted this week").
+- **The planner opens a picked route faster (local only)**: its file is downloaded once, ahead of the other eight (it was fetched up to three times, all at once), and the right panel shows grey blocks under "Loading…" meanwhile.
 - **Branch stops show their own bunching (local only)**: stops only a branch serves (the 504 Broadview branch, the 510 spur) now have measured too-close / too-far-apart gaps instead of "Not measured". Needs the analysis re-run. Branches get gap figures only, no "forms here" verdict.
 - **The route header fits one line at desktop width (local only)**: "…· data up to Oct 14" no longer wraps to a second line; "View on Live map" moved up beside the title.
 - **Stops tables fit a phone (local only)**: on the Dashboard, Full analysis and Explore the stops tables (and the delay-stretch table) fit the screen with no sideways scrolling; the less important columns are left out at that width, with their figures in the row's hover text.

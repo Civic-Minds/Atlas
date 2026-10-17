@@ -95,6 +95,12 @@ export function weekNotComparableLine(w: NonNullable<LiveV3['weekly']>): string 
   return w.comparable ? null : `${range(w.thisWeek)}: too few days of good recordings to compare with ${range(w.lastWeek)}`;
 }
 
+/** "6 of 7 days counted this week" (the existing method wording), or null when every day of the week counted. */
+export function daysCountedText(w: NonNullable<LiveV3['weekly']>): string | null {
+  const t = w.thisWeek;
+  return t.healthyDates.length < t.dates.length ? `${t.healthyDates.length} of ${t.dates.length} days counted this week` : null;
+}
+
 /** The two weeks and how many days of each were counted, for "How this is measured" (the recording-gaps rule is a Limits line). */
 export function weekWindowLine(w: NonNullable<LiveV3['weekly']>): string {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');

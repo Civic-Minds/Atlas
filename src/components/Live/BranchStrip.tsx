@@ -25,7 +25,9 @@ export interface BranchStripProps {
 const INSET = 10;
 const GUTTER = 128;
 /** One line (pattern) of one measure. */
-const ROW_H = 24;
+const ROW_H_ONE = 24;
+/** The row height when a line's name wraps to two lines in the gutter, so neighbouring names never touch. */
+const ROW_H_TWO_LINE = 32;
 /** The measure's name above its group of lines. */
 const HEAD_H = 18;
 /** Extra height above a group that carries a marked stretch (its bracket and name). */
@@ -33,6 +35,17 @@ const BRACKET_H = 28;
 const LABEL_H = 22;
 const GROUP_GAP = 10;
 const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunching: 'Bunching' };
+
+let measurer: CanvasRenderingContext2D | null | undefined;
+/** Whether a line's name needs two lines in the gutter (measured in the gutter's own 12px type; about 6px a letter where there is no canvas). */
+function nameWraps(name: string): boolean {
+  if (measurer === undefined) {
+    try { measurer = typeof document === 'undefined' || /jsdom/i.test(navigator.userAgent) ? null : document.createElement('canvas').getContext('2d'); } catch { measurer = null; }
+    if (measurer) measurer.font = '12px Inter, system-ui, sans-serif';
+  }
+  const w = measurer ? measurer.measureText(name).width : name.length * 6;
+  return w > GUTTER - 8;
+}
 
 function useWidth() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -147,6 +160,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
     return span ? { label: span.label, a: colOf.get(mainStops[span.from].stopId)!, b: colOf.get(mainStops[span.to].stopId)! } : null;
   }), [modes, mainStops, model, colOf]);
   const nLines = model.lines.length;
+  const ROW_H = rowNames.some(nameWraps) ? ROW_H_TWO_LINE : ROW_H_ONE;
   const groupTop: number[] = [];
   let y = 0;
   modes.forEach((_, t) => { groupTop.push(y); y += HEAD_H + (marks[t] ? BRACKET_H : 0) + nLines * ROW_H + GROUP_GAP; });

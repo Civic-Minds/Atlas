@@ -174,6 +174,8 @@ export function titleCase(s: string): string {
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
     // Mc surnames in all-caps feeds: "MCKNIGHT" -> "McKnight"
     .replace(/\bMc(\p{L})/gu, (_, c: string) => 'Mc' + c.toUpperCase())
+    // "O'CONNOR" -> "O'Connor"
+    .replace(/\bO'(\p{L})/gu, (_, c: string) => "O'" + c.toUpperCase())
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");
 }
