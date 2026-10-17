@@ -37,7 +37,7 @@ import { effectiveFeedExpiry } from './feedFreshness.js';
 import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
-import { isRailLikeRoute } from '../shared/modes.js';
+import { effectiveMode, isRailLikeRoute } from '../shared/modes.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
@@ -1033,6 +1033,14 @@ export async function processGtfsBuffer(
     routeLongName: route.route_long_name,
     routeShortName: route.route_short_name,
   })).map(route => route.route_id));
+  // CIV-226: routes whose platforms are graded as their station (gradeSource): rail and light rail
+  // (route types 0-2). Bus terminals stay per bay: Brampton 50 and 50A end at different bays of
+  // Gore Meadows with different run times, and one merged list read every 9 against every 30.
+  const stationGradedRouteIds = new Set((gtfs.routes ?? []).filter(route => [0, 1, 2].includes(effectiveMode({
+    routeType: route.route_type,
+    routeLongName: route.route_long_name,
+    routeShortName: route.route_short_name,
+  }))).map(route => route.route_id));
   // A pattern: route_id + shape for buses (every trip on the feature's own shape, as in its
   // shape-scoped stop metrics), route_id + headsign for rail (headsign-scoped metrics).
   const sharedPatternKey = (routeId: string, headsign: string | null, shapeId: string | null | undefined): string | null => {
@@ -2076,6 +2084,7 @@ export async function processGtfsBuffer(
     // use it: Sound Transit's 1 Line alternates Federal Way Downtown platforms S07-T1 and S07-T2,
     // each every 20 against a train every 10, and the platforms set the line's tier (60).
     const gradeSource = (stopId: string): string => {
+      if (!stationGradedRouteIds.has(feature.properties.routeId as string)) return stopId;
       const parent = childToParent.get(stopId);
       return parent && parent !== stopId && stopMetricMap.has(parent) ? parent : stopId;
     };
