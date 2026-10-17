@@ -6,6 +6,8 @@ import { dateRangeText } from './liveDashboard';
  */
 
 /** The Late tile's caption under its percentage. */
+/** What Late means, once, for every page, panel and the glossary (approved by Ryan 2026-10-17). Reads after "Late:". */
+export const LATE_DEFINITION = "more than 5½ min behind the timetable: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute.";
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 export const LATE_TILE_CAPTION = 'of trips left the end of the line more than 5 min late';

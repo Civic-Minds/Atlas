@@ -2,15 +2,13 @@
  * The Live terms, in the words the Live agency page's "How this is measured" uses (a test keeps the two identical).
  * The Docs page's Glossary shows them. `text` reads after "Term:".
  */
-import { LATE_AT_OR_ABOVE_MIN } from './liveDelayStatus.js';
 import { NOISE_RULE } from './liveDashboard.js';
-import { RECORDING_GAPS } from './liveWording.js';
+import { LATE_DEFINITION, RECORDING_GAPS } from './liveWording.js';
 
 export interface LiveTerm { term: string; text: string }
 
 export const LIVE_GLOSSARY: readonly LiveTerm[] = [
-  { term: 'Late', text: 'trips that left the end of the line more than 5 min late.' },
-  { term: 'Late at a stop', text: `left the stop ${LATE_AT_OR_ABOVE_MIN}+ minutes after the timetable.` },
+  { term: 'Late', text: LATE_DEFINITION },
   { term: 'Run time', text: 'the typical trip over the main stretch against its scheduled time.' },
   { term: 'Extra wait', text: 'how much longer riders wait than the timetable says, worked out from the gaps between vehicles at each stop.' },
   { term: 'Bunching', text: "gaps under 2 minutes or over twice the timetable's." },

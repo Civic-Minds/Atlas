@@ -4,7 +4,7 @@ This is how the Live route page (the dashboard and the full analysis at `/apps/l
 
 ## Where the numbers come from
 
-- **Positions, not reported delays.** The TTC feed sends no delay values, so Live works delays out itself. It uses the archived vehicle positions (one snapshot about every 30 seconds, kept 30 days in the `atlas-live` bucket) and the agency's timetable (GTFS).
+- **Positions, not reported delays.** The TTC feed sends no delay values, so Live works delays out itself. It uses the archived vehicle positions (one snapshot about every minute, measured at 1,440 snapshots a day, and a vehicle's own position advances at a median of 61 seconds; kept 30 days in the `atlas-live` bucket) and the agency's timetable (GTFS).
 - **Window.** The last 7 service days by default. The page always says which days, how many trips and how many stop departures it is based on.
 - **Good days only.** A day counts as good when the archive holds at least 90% of the snapshots a typical day has. Measures that compare days or weeks leave the other days out, and the page names them.
 
@@ -30,7 +30,7 @@ This is how the Live route page (the dashboard and the full analysis at `/apps/l
 - **Ahead (early):** 1.5 or more minutes before it.
 - **On time:** anything in between.
 - **Same limits as the Live map**, so the page and the map never disagree (`thresholds` in the analysis file).
-- **History of the numbers.** They came in with the first Live map (commit 947d00de, 2026-06-27) with no stated reason. They are most likely the TTC's own on-time window (1 minute early to 5 minutes late) plus half a minute for rounding.
+- **History of the numbers.** They came in with the first Live map (commit 947d00de, 2026-06-27) with no stated reason. Their reason is now stated: Late is more than 5½ minutes behind the timetable, the TTC's 5-minute standard plus 30 seconds, half the one-minute gap between snapshots (Ryan, 2026-10-17).
 - **Lateness is the reliable figure.** Vehicles often wait to leave on time, so the headline is the share late (or not late). "Ahead" is shown as a quieter note.
 - **The headline counts trips leaving the end of the line.** Late is the share of trips that left their first stop (the end of the line) 5.5+ minutes after the timetable, the TTC's own measure: its Daily Customer Service Report counts "on time departures from end terminals", from 1 minute early to 5 minutes late (pw.ttc.ca, checked 2026-10-16). By hour, it is the hour the trip starts.
 - **Why not every stop, or the timepoints.** On the TTC almost every timepoint is a trip's first or last stop, and every other stop's time is marked approximate. A delay against those approximate times is not a real measure of keeping to the timetable (on 504 most in-between stops look 1-2 min early; against a straight-line schedule most of that goes away). Per-stop figures (the route strip, the stop tables) still show delay at every stop, but they show "1+ min early" only at timepoints, and early elsewhere as on time. Details: `_reports/live-timepoint-method.md`.

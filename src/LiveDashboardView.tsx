@@ -106,7 +106,7 @@ export function KpiRows({ tiles, math, caption }: { tiles: Kpi[]; /** Per tile k
               <span className="text-sm font-black tracking-tight">{k.value}</span>
               <Delta k={k} />
             </div>
-            {[k.key === 'late' || k.key === 'bunching' ? k.sub : null, math?.[k.key]].filter(Boolean).map(line => <div key={line} className="text-xs leading-4 text-[var(--text-dim)]">{line}</div>)}
+            {[k.key === 'bunching' || (k.key === 'late' && !math?.late) ? k.sub : null, math?.[k.key]].filter(Boolean).map(line => <div key={line} className="text-xs leading-4 text-[var(--text-dim)]">{line}</div>)}
           </li>
         ))}
       </ul>

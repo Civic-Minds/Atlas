@@ -24,7 +24,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import { builtText, coveredRoutesText, liveSubtitle, METHOD_GROUPS } from '../shared/liveWording';
 import MethodFootnote, { Term } from './components/Live/MethodFootnote';
-import { bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateAtStopLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from './components/Live/methodLines';
+import { bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from './components/Live/methodLines';
 
 /** One column grid for every table on the page, so the first column, Route and Direction line up from table to table (widths in rem; the number columns share the rest of the width equally). */
 const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
@@ -228,7 +228,6 @@ export default function LiveAgencyPage() {
         <MethodFootnote id="agency-method" groups={[
           { label: METHOD_GROUPS.numbers, items: [
             lateLine,
-            lateAtStopLine(),
             runTimeLine(),
             extraWaitLine,
             bunchingLine(),
