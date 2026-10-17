@@ -33,7 +33,7 @@ const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 export const weekdayOf = (date: string): string => WEEKDAYS[new Date(`${date}T12:00:00Z`).getUTCDay()];
 /** "Thursday, Oct 15": a single day where the weekly view says "Week of Oct 8–14". */
 export const dayText = (date: string): string => `${weekdayOf(date)}, ${dateRangeText(date, date)}`;
-/** A tile's change line against the same weekday a week before: "▲ from 9% last week" becomes "▲ from 9% last Thursday". */
+/** A tile's change line against the same weekday a week before: "▲ 9% last week" becomes "▲ 9% last Thursday". */
 export const againstLastWeekday = (line: string, compareDate: string): string => line.replace(/last week$/, `last ${weekdayOf(compareDate)}`);
 /** The Yesterday subtitle's opening, like the week's "Week of Oct 8–14, compared with Oct 1–7": "Thursday, Oct 15, compared with Thursday, Oct 8". */
 export const dayComparedWith = (date: string, compareDate: string): string => `${dayText(date)}, compared with ${dayText(compareDate)}`;

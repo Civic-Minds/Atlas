@@ -25,7 +25,7 @@ describe('yesterdayFromV3', () => {
 describe('Yesterday wording', () => {
   it('names the day and the weekday it is compared with', () => {
     expect(dayText('2026-10-15')).toBe('Thursday, Oct 15');
-    expect(againstLastWeekday('▲ from 9% last week', '2026-10-08')).toBe('▲ from 9% last Thursday');
+    expect(againstLastWeekday('▲ 9% last week', '2026-10-08')).toBe('▲ 9% last Thursday');
     expect(dayComparedWith('2026-10-15', '2026-10-08')).toBe('Thursday, Oct 15, compared with Thursday, Oct 8');
   });
 });
