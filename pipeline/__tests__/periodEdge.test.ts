@@ -45,6 +45,19 @@ describe('periodEdge (#934)', () => {
   });
 });
 
+describe('the spacing reads alternating gaps as the period values do (#772)', () => {
+  it('TTC 506 Saturday late at 1102: 506 and 506B a minute apart every 10 read every 9, not the plain median 3', () => {
+    const sat = [1380.8, 1381.8, 1390.8, 1391.8, 1400.8, 1401.8, 1410.8, 1411.8, 1420.8, 1421.8, 1430.8, 1431.8, 1440.8, 1441.8, 1450.8, 1451.8,
+      1460.8, 1461.8, 1470.8, 1471.8, 1480.8, 1481.8, 1490.8, 1491.8, 1500.8, 1501.8, 1510.8, 1511.8, 1520.8, 1523.8, 1530.8, 1531.8];
+    expect(periodEdge(sat, 1380, 1560, 29)).toEqual({ until: 1531.8, every: 9 });
+  });
+  it('TTC 300 Sunday AM (the Bloor-Danforth replacement every 4-5 until 8:16) keeps every 4', () => {
+    const sun = [364.8, 369.8, 374.8, 379.8, 384.8, 389.8, 394.8, 399.8, 404.8, 409.8, 414.8, 419.8, 423.8, 428.8, 432.8, 436.8, 440.8,
+      444.8, 448.8, 452.8, 456.8, 460.8, 464.8, 468.8, 472.8, 476.8, 480.8, 484.8, 488.8, 492.8, 496.8];
+    expect(periodEdge(sun, 360, 540, 44)?.every).toBe(4);
+  });
+});
+
 describe('periodPartialEdge (#934: part of the period, D8)', () => {
   it('service only after the midpoint reads from the first departure', () => {
     expect(periodPartialEdge([465, 475, 485, 495, 505, 515, 525, 535], 360, 540)).toEqual({ from: 465, every: 10 });

@@ -517,7 +517,7 @@ export function periodEdge(stretchTimes: readonly number[], start: number, end: 
   const trail = end - t[t.length - 1];
   const inner = Math.max(...gaps);
   if (Math.ceil(Math.max(lead, trail, inner)) !== value || inner >= value) return null;
-  const every = medianHeadwayInWindow(t, start, end, 3);
+  const every = medianHeadwayInWindow(t, start, end, 3, true);
   if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
   // The wait is rounded up to whole minutes; frequencies.txt spacing can leave fractional times.
   const fromEdge = Math.ceil(lead) === value, untilEdge = Math.ceil(trail) === value;
@@ -538,7 +538,7 @@ export function periodPartialEdge(stretchTimes: readonly number[], start: number
   const before = t[t.length - 1] < mid;
   if (!after && !before) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);
-  const every = medianHeadwayInWindow(t, start, end, 3);
+  const every = medianHeadwayInWindow(t, start, end, 3, true);
   if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
   return after ? { from: t[0], every } : { until: t[t.length - 1], every };
 }
@@ -561,7 +561,7 @@ export function periodOneGap(stretchTimes: readonly number[], start: number, end
   const mid = (start + end) / 2;
   if (!(t[0] < mid && t[t.length - 1] >= mid)) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);
-  const every = medianHeadwayInWindow(t, start, end, 3);
+  const every = medianHeadwayInWindow(t, start, end, 3, true);
   if (every == null || every <= 0 || isSustainedHeadway(gaps, every)) return null;
   const gap = Math.max(...gaps);
   const rest = [...gaps];
