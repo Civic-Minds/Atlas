@@ -71,7 +71,7 @@ export function KpiTile({ k, className = '', math, bare = false }: { k: Kpi; cla
 }
 
 /** The week's figures as rows for a narrow column: the name, the figure, the change from last week; under it, the line that explains the math where there is one. */
-export function KpiRows({ tiles, math, caption }: { tiles: Kpi[]; /** Per tile key, the line that explains how the figure is worked out. */ math?: Partial<Record<Kpi['key'], string>>; caption?: string | null }) {
+export function KpiRows({ tiles, math, caption, captionTitle }: { tiles: Kpi[]; /** Per tile key, the line that explains how the figure is worked out. */ math?: Partial<Record<Kpi['key'], string>>; caption?: string | null; /** Hover text for the caption (the full rule behind it). */ captionTitle?: string }) {
   return (
     <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-1.5`}>
       <ul className="m-0 p-0">
@@ -83,11 +83,11 @@ export function KpiRows({ tiles, math, caption }: { tiles: Kpi[]; /** Per tile k
               <span className="text-sm font-black tracking-tight">{k.value}</span>
               <Delta k={k} />
             </div>
-            {[k.key === 'bunching' || (k.key === 'late' && !math?.late) ? k.sub : null, math?.[k.key]].filter(Boolean).map(line => <div key={line} className="text-xs leading-4 text-[var(--text-dim)]">{line}</div>)}
+            {[(k.key === 'bunching' && !math?.bunching) || (k.key === 'late' && !math?.late) ? k.sub : null, math?.[k.key]].filter(Boolean).map(line => <div key={line} className="text-xs leading-4 text-[var(--text-dim)]">{line}</div>)}
           </li>
         ))}
       </ul>
-      {caption && <p className="m-0 mt-1.5 text-xs leading-4 text-[var(--text-dim)]">{caption}</p>}
+      {caption && <p className="m-0 mt-1.5 text-xs leading-4 text-[var(--text-dim)]" title={captionTitle}>{caption}</p>}
     </section>
   );
 }

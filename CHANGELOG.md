@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The planner's left panel is lighter (local only)**: each figure keeps one short line (Late: "more than 5½ min late (TTC's 5-min standard + 30 s)"), Run time and Service delivered have none, and the colour note is "Grey = within normal day-to-day change" with the full rule on hover.
 - **The route page header is one line (local only)**: "Week of Oct 8–14, compared with Oct 1–7 · 3,454 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14" on every route view; the rebuild command no longer appears in page text (developers still get it in a dev-only line and the console), and the late-by-hour title is "Late departures by hour" everywhere (CIV-310).
 - **The Live agency summary can no longer be older than its route files (local only)**: every route analysis run rebuilds it (or removes it if that fails), and the local API refuses a summary older than any route file, so the left list and network figures can't disagree with the route pages (CIV-305).
 - **The planner's Run time label follows the time of day (local only)**: with AM peak picked it ends "…, AM peak" instead of "all trips".

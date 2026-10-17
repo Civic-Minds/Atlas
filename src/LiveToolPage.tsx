@@ -29,9 +29,7 @@ import { worstStopRows } from './components/Live/sections/WorstStopsSection';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData, { type ReadyRoute } from './components/Live/tool/useNetworkData';
 import { KpiRows, KpiTile } from './LiveDashboardView';
-import { EXTRA_WAIT_TEXT, RUN_TIME_TEXT, bunchingText } from './components/Live/methodLines';
 import { NOISE_RULE } from '../shared/liveDashboard';
-import { LATE_DEFINITION } from '../shared/liveWording';
 import { BANDS } from './LiveExplorePage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import { withNiceNames } from './LiveRoutePage';
@@ -101,9 +99,10 @@ function networkHours(s: AgencySummary) {
   }).filter(x => x.n > 0);
 }
 
-const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
-/** The lines that explain how a figure is worked out (a threshold or a rule), shown with the figure. Late's own caption already says it. */
-const MATH: Partial<Record<Kpi['key'], string>> = { late: cap(LATE_DEFINITION), tripTime: `${cap(RUN_TIME_TEXT)}.`, extraWait: cap(EXTRA_WAIT_TEXT), bunching: cap(bunchingText()) };
+/** The left panel's one-line explanations (approved by Ryan, 2026-10-17): Run time and Service delivered have none. */
+const MATH: Partial<Record<Kpi['key'], string>> = { late: "more than 5½ min late (TTC's 5-min standard + 30 s)", extraWait: 'from the gaps between vehicles', bunching: 'gaps under 2 min or over 2× scheduled' };
+/** Under the left panel's tiles; the full rule is its hover text. */
+const NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The route panel's tiles are bare (figure and change): the explanations are shown once, on the left. */
 const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.map(k => ({ key: `tile-${k.key}`, size: 'small', tile: true, node: <KpiTile k={k} bare /> }));
 
@@ -112,7 +111,7 @@ function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const hours = networkHours(s);
   const tiles = agencyKpiTiles(s);
   return [
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <KpiRows tiles={tiles} math={MATH} caption={NOISE_RULE} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <KpiRows tiles={tiles} math={MATH} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} /> }] : []),
   ];
 }
