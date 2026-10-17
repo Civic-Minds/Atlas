@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { branchesOf, sharedRun } from '../branchStripModel';
+import { branchesOf, columnsOf, sharedRun } from '../branchStripModel';
 import type { RouteStripStop } from '../routeStripModel';
 
 const stop = (stopId: string): RouteStripStop => ({ stopId, name: `Stop ${stopId}`, delayMin: 0, lateShare: 0, bunchingShare: null, n: 100 });
@@ -36,5 +36,17 @@ describe('branchesOf', () => {
   it('has no branches for one pattern or identical patterns', () => {
     expect(branchesOf([pat([...'123'])], s => stop(s.stopId))).toBeNull();
     expect(branchesOf([pat([...'123']), pat([...'123'])], s => stop(s.stopId))).toBeNull();
+  });
+});
+
+describe('columnsOf', () => {
+  it('gives every stop one column, shared stops in the same column on every line', () => {
+    const m = branchesOf([pat([...'ab12345yz']), pat([...'cde12345w'])], s => stop(s.stopId))!;
+    expect(m.lines.map(idsOf)).toEqual(['ab12345yz', 'cde12345w']);
+    const cols = columnsOf(m.lines);
+    expect(cols.length).toBe(new Set(cols).size);
+    expect(cols.filter(c => '12345'.includes(c)).join('')).toBe('12345');
+    // each line keeps its own stops in route order
+    m.lines.forEach(l => expect(l.map(s => cols.indexOf(s.stopId))).toEqual([...l.map(s => cols.indexOf(s.stopId))].sort((a, b) => a - b)));
   });
 });

@@ -28,6 +28,8 @@ export interface BranchModel {
   ends: RouteStripStop[][];
   /** The stops where patterns begin and end, so each branch is named by its end stop. */
   endLabels: BranchEnd[];
+  /** Every regular pattern as its own line of stops in route order (the main pattern first), for the stacked strip. */
+  lines: RouteStripStop[][];
   delaysStart: RouteStripStretch | null;
   bunchingForms: RouteStripStretch | null;
 }
@@ -54,7 +56,7 @@ export function sharedRun(ids: readonly string[], others: ReadonlyArray<readonly
 export function branchesOf(
   patterns: ReadonlyArray<{ stops: ReadonlyArray<{ stopId: string; name: string }> }>,
   stopFor: (s: { stopId: string; name: string }) => RouteStripStop,
-): Pick<BranchModel, 'trunk' | 'starts' | 'ends' | 'endLabels'> | null {
+): Pick<BranchModel, 'trunk' | 'starts' | 'ends' | 'endLabels' | 'lines'> | null {
   if (patterns.length < 2) return null;
   const ids = patterns.map(p => p.stops.map(s => s.stopId));
   const run = sharedRun(ids[0], ids);
@@ -84,7 +86,27 @@ export function branchesOf(
     if (tail.length) add(tail[tail.length - 1], 'end', Math.max(0, ends.findIndex(f => keyOf(f) === keyOf(tail))));
     else add(trunk[trunk.length - 1], 'end', 0, true);
   });
-  return { trunk, starts, ends, endLabels };
+  const seenLines = new Set<string>();
+  const lines = patterns.map(p => p.stops.map(stopFor)).filter(l => { const k = keyOf(l); if (seenLines.has(k)) return false; seenLines.add(k); return true; });
+  return { trunk, starts, ends, endLabels, lines };
+}
+
+/**
+ * The columns of the stacked strip: every distinct stop gets one column, in route order, so a stop several lines share
+ * sits in the same column on each. A stop a line does not serve leaves its column empty on that line.
+ */
+export function columnsOf(lines: ReadonlyArray<ReadonlyArray<{ stopId: string }>>): string[] {
+  const cols: string[] = [];
+  for (const line of lines) {
+    let pos = -1;
+    for (const s of line) {
+      const at = cols.indexOf(s.stopId);
+      if (at >= 0) { pos = at; continue; }
+      cols.splice(pos + 1, 0, s.stopId);
+      pos += 1;
+    }
+  }
+  return cols;
 }
 
 /**
