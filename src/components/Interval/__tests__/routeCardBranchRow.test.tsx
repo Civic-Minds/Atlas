@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { ShapeProperties } from '../../../hooks/useIntervalStats';
 import { partPeriodText, routeListDisplay } from '../../../utils/effectiveHeadway';
 import StopRouteGroup from '../panels/StopRouteGroup';
-import { hasRegularServiceInPeriod } from '../../../utils/stretchCard';
+import { directionFallbackHeadway, hasRegularServiceInPeriod } from '../../../utils/stretchCard';
 import { RouteCardHeadway } from '../panels/RouteCardHeadway';
 import { headwayAbout } from '../../../utils/headwayText';
 
@@ -209,5 +209,21 @@ describe('the direction fallback shows the typical gap (#962)', () => {
     renderRows([{ ...t407, stretchPeriodOneGap: { midday: true } } as unknown as ShapeProperties], 'midday', 'translink');
     expect(screen.queryByText(/about every \d+ min/)).toBeNull();
     expect(screen.getAllByText(LONG).length).toBeGreaterThan(0);
+  });
+});
+
+describe('directionFallbackHeadway: the typical gap only for an unsteady direction (#962)', () => {
+  const row = (dir: number, typical: number, steady: boolean) => ({
+    stretchRole: 'main', directionFilterHeadwayByPeriod: { amPeak: dir }, stretchPeriodHeadway: { amPeak: typical }, stretchPeriodSustained: { amPeak: steady },
+  }) as unknown as ShapeProperties;
+  it('TransLink 407 midday shape: unsteady, worst wait 269 over a typical 169, reads 169', () => {
+    expect(directionFallbackHeadway(row(269, 169, false), 'amPeak')).toBe(169);
+  });
+  it('steady part-period service keeps its worst wait (CTA 28 AM 85 over 15, Brantford 9 PM 120 over 30)', () => {
+    expect(directionFallbackHeadway(row(85, 15, true), 'amPeak')).toBe(85);
+    expect(directionFallbackHeadway(row(120, 30, true), 'amPeak')).toBe(120);
+  });
+  it('MBTA 18 AM keeps 84 (unsteady, typical gap equal to the wait)', () => {
+    expect(directionFallbackHeadway(row(84, 84, false), 'amPeak')).toBe(84);
   });
 });

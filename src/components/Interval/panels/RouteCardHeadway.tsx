@@ -698,7 +698,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     return (() => {
                       const variantH = hoveredHour == null ? variantRowHeadway(d, period) : undefined;
                       // A stretch row the card cannot read a cadence for (its own gaps are uneven) takes its direction's
-                      // typical gap, never the filter's worst wait (#962).
+                      // typical gap when its unsteady worst wait is longer (#962), else its filter value.
                       const ownH = hoveredHour != null
                         ? branchDisplayHourHeadway(d, hoveredHour) ?? routeCardDisplayHeadway(d, period)
                         : routeCardDisplayHeadway(d, period);

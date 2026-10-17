@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
-- **Route card rows show a route's typical gap, not its longest wait**: a row without its own number printed the direction's longest wait as "every N", so TransLink 407 at midday read about every 270 instead of about every 180 ([#962](https://github.com/Civic-Minds/Atlas/issues/962)).
+- **Route card rows show an uneven route's typical gap, not its longest wait**: a row without its own number printed the direction's longest wait as "every N", so SEPTA 51 in the evening read about every 90 instead of about every 35 ([#962](https://github.com/Civic-Minds/Atlas/issues/962)).
 - **Routes that only share a number are no longer grouped as one route**: Barrie 8A/8B, GoRaleigh 15/15L, Laredo 7A/7B and 8A/8B, and Thunder Bay 3M (beside 3C/3J) go to different places, so no combined frequency is shown for them.
 - **A corrected agency time zone survives the next feed refresh**: Gold Coast, Spokane and Washington County feeds carry a same-offset zone from across the border, and each refresh copied it back over the fix.
 - **Overnight rows no longer show a made-up wait for three buses around a long gap**: route and stop cards averaged a close pair and a hole of hours into a number like every 116 that no rider waits (TTC 504 weekday, CTA 55 Sunday stops), so that overnight period now shows no number ([#897](https://github.com/Civic-Minds/Atlas/issues/897)).
