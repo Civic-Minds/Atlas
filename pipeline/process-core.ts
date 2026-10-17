@@ -2581,6 +2581,8 @@ export async function processGtfsBuffer(
       }
       if (overnight) {
         feature.properties.headwayByPeriod = { ...(feature.properties.headwayByPeriod as HeadwayByPeriod), overnight: overnight.headway };
+        // #961: the night-route path (#896) skips the period loop below, so mark a withheld row here.
+        if (overnight.headway == null && overnight.withheld != null) withheldOvernightFeatures.add(feature);
         feature.properties.periodCoverageHeadway = { ...(feature.properties.periodCoverageHeadway as HeadwayByPeriod), overnight: overnight.coverage };
         feature.properties.maxGapByPeriod = { ...(feature.properties.maxGapByPeriod as HeadwayByPeriodMaxGap), overnight: overnight.maxGap };
         const sustained = { ...(feature.properties.headwayByPeriodSustained as HeadwayByPeriodSustained) };

@@ -1,0 +1,103 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+9856,9856,Dundas St West at Bloor St West,,43.656442,-79.452572,,,,,,2
+9855,9855,Edna Ave at Dundas St West,,43.657134,-79.453027,,,,,,1
+4187,4187,King St West at Strachan Ave,,43.641936,-79.412095,,,,,,1
+4186,4186,King St West at Spencer Ave,,43.638134,-79.430997,,,,,,2
+4190,4190,King St West at Tecumseth St,,43.643488,-79.405049,,,,,,2
+4571,4571,Roncesvalles Ave at Fermanagh Ave,,43.646167,-79.448917,,,,,,2
+3039,3039,Queen St East at Carroll St,,43.658422,-79.352103,,,,,,1
+4569,4569,Roncesvalles Ave at Boustead Ave South Side,,43.653079,-79.45167,,,,,,2
+4142,4142,King St East at River St,,43.657079,-79.35597,,,,,,2
+4568,4568,Roncesvalles Ave at Dundas St West,,43.653173,-79.451549,,,,,,2
+4141,4141,King St East at Parliament St,,43.65291,-79.363021,,,,,,1
+4164,4164,King St West at Dowling Ave,,43.636552,-79.438719,,,,,,2
+4139,4139,King St East at Ontario St,,43.651864,-79.365876,,,,,,1
+4143,4143,King St East at Sackville St,,43.6543,-79.360379,,,,,,1
+4194,4194,King St West at Wilson Park Rd,,43.636938,-79.442453,,,,,,2
+4148,4148,King St East at Sumach St,,43.65528,-79.358705,,,,,,1
+4146,4146,King St East at Sherbourne St,,43.651347,-79.368135,,,,,,1
+3372,3372,Broadview Ave at Dundas St East,,43.662248,-79.351175,,,,,,2
+11021,11021,King St West at Sudbury St,,43.641064,-79.417183,,,,,,2
+4179,4179,King St West at Niagara St,,43.642987,-79.407539,,,,,,1
+4189,4189,King St West at Tecumseth St,,43.643296,-79.405362,,,,,,2
+4188,4188,King St West at Strachan Ave,,43.642127,-79.411783,,,,,,1
+3371,3371,Broadview Ave at Danforth Ave,,43.676342,-79.359041,,,,,,2
+4178,4178,King St West at Niagara St,,43.642809,-79.40776,,,,,,1
+1769,1769,Broadview Ave at Wolfrey Ave,,43.674457,-79.357342,,,,,,2
+3032,3032,Queen St East at Broadview Ave,,43.658746,-79.35006,,,,,,1
+1761,1761,Broadview Ave at Millbrook Cres,,43.671897,-79.354734,,,,,,2
+9317,9317,Broadview Ave at Mountstephen St,,43.663942,-79.35187,,,,,,2
+3374,3374,Broadview Ave at Queen St East,,43.659107,-79.350021,,,,,,2
+1760,1760,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,,43.668079,-79.353319,,,,,,2
+4166,4166,King St West at Dufferin St,,43.639085,-79.427001,,,,,,2
+4167,4167,King St West at Dufferin St,,43.638819,-79.427487,,,,,,2
+1759,1759,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,,43.667664,-79.353308,,,,,,2
+4175,4175,King St West at Jefferson Ave,,43.640065,-79.422082,,,,,,2
+4169,4169,King St West at Dunn Ave,,43.637837,-79.433063,,,,,,2
+10176,10176,King St West at Portland St,,43.644527,-79.39994,,,,,,1
+4162,4162,King St West at Shaw St,,43.641309,-79.415217,,,,,,1
+4168,4168,King St West at Dunn Ave,,43.637647,-79.433376,,,,,,2
+4155,4155,King St West at Atlantic Ave,,43.640051,-79.421415,,,,,,1
+13890,13890,King St West at Spencer Ave,,43.63831,-79.430761,,,,,,2
+2032,2032,Dufferin Gate Loop,,43.634401,-79.425872,,,,,,1
+1757,1757,Broadview Ave at Gerrard St East,,43.665274,-79.352444,,,,,,2
+1755,1755,Broadview Ave at Danforth Ave,,43.676051,-79.358601,,,,,,2
+4181,4181,King St West at Peter St,,43.646161,-79.39201,,,,,,1
+3038,3038,Queen St East at Carroll St,,43.658204,-79.352454,,,,,,2
+4156,4156,King St West at Bathurst St,,43.644142,-79.40189,,,,,,1
+4174,4174,King St West at Jameson Ave,,43.637264,-79.435861,,,,,,2
+4144,4144,King St East at Sackville St,,43.654602,-79.360165,,,,,,1
+1756,1756,Broadview Ave at Dundas St East,,43.6626,-79.351506,,,,,,2
+1767,1767,Broadview Ave at Withrow Ave,,43.669859,-79.353435,,,,,,2
+1763,1763,Broadview Ave at Jack Layton Way,,43.666481,-79.353132,,,,,,2
+2150,2150,Dundas St West at Bloor St West,,43.6561,-79.45233,,,,,,2
+4573,4573,Roncesvalles Ave at Galley Ave,,43.642982,-79.447845,,,,,,2
+4140,4140,King St East at Parliament St,,43.652556,-79.363371,,,,,,1
+9318,9318,Broadview Ave at Mountstephen St,,43.664096,-79.35214,,,,,,2
+4576,4576,Roncesvalles Ave at Grenadier Rd,,43.648639,-79.449872,,,,,,2
+4145,4145,King St East at Sherbourne St,,43.651169,-79.368367,,,,,,1
+1762,1762,Broadview Ave at Millbrook Cres,,43.672144,-79.355165,,,,,,2
+4163,4163,King St West at Shaw St,,43.641529,-79.414775,,,,,,2
+2071,2071,Dufferin St at Liberty St,,43.636946,-79.426505,,,,,,1
+11596,11596,King St West at Queen St West,,43.638597,-79.445863,,,,,,1
+13344,13344,King St West at Sudbury St,,43.640853,-79.417479,,,,,,1
+4578,4578,Roncesvalles Ave at Howard Park Ave,,43.651156,-79.450841,,,,,,2
+1768,1768,Broadview Ave at Wolfrey Ave,,43.674192,-79.356904,,,,,,2
+4574,4574,Roncesvalles Ave at Garden Ave,,43.643538,-79.447901,,,,,,2
+4193,4193,King St West at Wilson Park Rd West Side,,43.637035,-79.442107,,,,,,2
+1766,1766,Broadview Ave at Withrow Ave,,43.669638,-79.35303,,,,,,2
+4149,4149,King St East at Sumach St,,43.655658,-79.358336,,,,,,2
+4165,4165,King St West at Dowling Ave,,43.636773,-79.438379,,,,,,2
+4173,4173,King St West at Jameson Ave,,43.637078,-79.436215,,,,,,2
+4582,4582,Roncesvalles Ave at Queen St West,,43.638925,-79.446287,,,,,,2
+1758,1758,Broadview Ave at Gerrard St East,,43.665663,-79.352794,,,,,,2
+14400,14400,King St West at Joe Shuster Way,,43.639804,-79.423411,,,,,,2
+14639,14639,Broadview Station,,43.677013,-79.358147,,,,,,1
+14665,14665,Dundas West Station,,43.656821,-79.453463,,,,,,1
+14992,14992,Roncesvalles Ave at Marion St South Side,,43.640654,-79.446945,,,,,,2
+14993,14993,Roncesvalles Ave at High Park Blvd South Side,,43.645921,-79.448985,,,,,,2
+14994,14994,Roncesvalles Ave at Grenadier Rd,,43.648885,-79.450121,,,,,,2
+15038,15038,Roncesvalles Ave at Marion St North Side,,43.641432,-79.447086,,,,,,2
+15039,15039,Roncesvalles Ave at Howard Park Ave South Side,,43.650939,-79.450927,,,,,,2
+15059,15059,Roncesvalles Ave at Queen St West North Side,,43.639232,-79.44617,,,,,,2
+15351,15351,King St East at Lower River St,,43.65673,-79.356254,,,,,,2
+15352,15352,King St East at Ontario St,,43.651647,-79.366167,,,,,,1
+15353,15353,King St West at Joe Shuster Way,,43.639591,-79.423721,,,,,,2
+15516,15516,Dufferin St at King St West,,43.638676,-79.42715,,,,,,1
+15635,15635,King St West at Jarvis St West Side,,43.650391,-79.372454,,,,,,1
+15636,15636,King St West at Jarvis St East Side,,43.650541,-79.371287,,,,,,1
+15637,15637,King St West at Yonge St West Side - King Station,,43.649058,-79.378565,,,,,,1
+15638,15638,King St West at Yonge St East Side - King Station,,43.649232,-79.377256,,,,,,1
+15639,15639,King St West at Bay St West Side,,43.648622,-79.380619,,,,,,1
+15640,15640,King St West at Bay St East Side,,43.648724,-79.379621,,,,,,1
+15641,15641,King St West at Simcoe St - St. Andrew Station,,43.647487,-79.385957,,,,,,1
+15642,15642,King St West at York St - St Andrew Station,,43.647809,-79.383692,,,,,,1
+15643,15643,King St West at John St West Side,,43.646538,-79.390161,,,,,,1
+15644,15644,King St West at John St East Side,,43.646614,-79.389267,,,,,,1
+15646,15646,King St West at Blue Jays Way East Side,,43.646101,-79.391644,,,,,,2
+15647,15647,King St West at Spadina Ave West Side,,43.64537,-79.395811,,,,,,1
+15648,15648,King St West at Spadina Ave East Side,,43.645507,-79.394296,,,,,,1
+15649,15649,King St West at Portland St East Side,,43.644458,-79.399504,,,,,,1
+15650,15650,King St West at Bathurst St East Side,,43.64399,-79.401815,,,,,,1
+12537,12537,King St East at Church St East Side,,43.649982,-79.373826,,,,,,1
+12538,12538,King St East at Church St West Side,,43.64984,-79.374971,,,,,,1
