@@ -14,6 +14,7 @@ import {
 } from './agencyPages';
 import { modeLabelSortIndex } from './modes';
 import { BETA_BUILD } from './config';
+import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL } from './seo';
@@ -197,8 +198,17 @@ export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDa
 }
 
 /** The map link: `?area=<slug>` selects the area's agencies and fits the map to it (the app does the framing). */
-export function areaMapHref(d: Pick<AreaPageData, 'area'>): string {
-  return `/?${new URLSearchParams({ area: d.area.slug }).toString()}`;
+/**
+ * The map link for an area page: the area's own agencies (`?area=`), plus `agencies=` listing every
+ * agency counted on the page when that adds one (CIV-274: Fraser Valley on Vancouver), so the map
+ * shows the same service the page counts. The map reads `agencies` first and still fits to the area.
+ */
+export function areaMapHref(d: Pick<AreaPageData, 'area'> & Partial<Pick<AreaPageData, 'agencies'>>, areas = AREA_INDEX): string {
+  const params = new URLSearchParams({ [AREA_PARAM]: d.area.slug });
+  const listed = areas[d.area.slug]?.agencies ?? [];
+  const extra = (d.agencies ?? []).map(a => a.slug).filter(s => !listed.includes(s));
+  if (extra.length > 0) params.set('agencies', [...listed, ...extra].join(','));
+  return `/?${params.toString()}`;
 }
 
 export function resolveAreaSeo(

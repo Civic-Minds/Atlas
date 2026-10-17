@@ -71,7 +71,16 @@ describe('buildAreaPageData', () => {
   });
 
   it('opens the map with ?area= so the app selects the area and fits it', () => {
-    expect(areaMapHref(d)).toBe('/?area=toronto');
+    const index = { toronto: { name: 'Toronto', cities: [], page: true, agencies: d.agencies.map(a => a.slug), bbox: [0, 0, 1, 1] } } as any;
+    expect(areaMapHref(d, index)).toBe('/?area=toronto');
+  });
+
+  it('adds every counted agency to the map link when the page counts one the area does not list (CIV-274)', () => {
+    const index = { vancouver: { name: 'Vancouver', cities: [], page: true, agencies: ['translink'], bbox: [0, 0, 1, 1] } } as any;
+    const area = { slug: 'vancouver' } as any;
+    const row = (slug: string) => ({ slug, name: slug, totalRoutes: 1, modes: {} });
+    expect(areaMapHref({ area, agencies: [row('translink'), row('bc-fraser-valley')] }, index)).toBe('/?area=vancouver&agencies=translink%2Cbc-fraser-valley');
+    expect(areaMapHref({ area, agencies: [row('translink')] }, index)).toBe('/?area=vancouver');
   });
 
   it('has a canonical, noindex outside public, and BreadcrumbList plus Dataset JSON-LD', () => {
