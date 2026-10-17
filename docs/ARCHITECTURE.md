@@ -26,7 +26,7 @@ Per-agency working artifacts (inputs to each release build):
 - `atlas/live-polling/{slug}.json` — live-polling sidecar, when the feed produces one
 - `atlas/go-stops.json` — GO rail stops (separate extract, `pipeline/extract-go-stops.ts`)
 
-Shared indexes: `atlas/agencies.json`, `atlas/hidden-routes.json`, `atlas/feed-refresh-meta.json`, `atlas/night-service.json`, `atlas/frequent-service.json`, `atlas/history-config.json`.
+Shared indexes: `atlas/agencies.json`, `atlas/hidden-routes.json`, `atlas/feed-refresh-meta.json`, `atlas/night-service.json`, `atlas/history-config.json`.
 
 Written by: `pipeline/refresh.ts`, `pipeline/process-gtfs.ts`, `pipeline/restore-active-feeds.ts`, `pipeline/reprocess-derived-artifacts.ts --write` (per-agency artifacts); `pipeline/build-pmtiles.ts` (immutable release); `pipeline/publish-data-release.ts` (`release.json` pointer, only after checks pass); `pipeline/build-history.ts` (`history-config.json`)
 Read by: browser directly via `VITE_R2_PUBLIC_URL` (default `https://data.transitatlas.fyi`); map tiles always from `https://data.transitatlas.fyi`
