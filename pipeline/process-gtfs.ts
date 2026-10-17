@@ -46,6 +46,7 @@ import {
 } from './countryLaunchGate.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
 import { clearDataRefreshHandoff, writeDataRefreshMarker } from './dataRefreshMarker.js';
+import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -288,7 +289,7 @@ async function main() {
       ...prev,
       name: agencyName,
       center,
-      timezone: timezone ?? prev.timezone,
+      timezone: resolveAgencyTimezone(timezone, { timezone: prev.timezone, timezoneOverride: agencyConfig.timezoneOverride ?? prev.timezoneOverride }),
       lastFeedExpiry: feedExpiry,
       lastPeekedExpiry: calendarExpiry,
       lastFeedVersion: feedVersion,
@@ -303,7 +304,7 @@ async function main() {
     }
     index.agencies[existing] = updated;
   } else {
-    index.agencies.push({ slug, name: agencyName, center, timezone, feedUrl: null, lastFeedExpiry: feedExpiry, lastPeekedExpiry: calendarExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd(), feedQuality });
+    index.agencies.push({ slug, name: agencyName, center, timezone: resolveAgencyTimezone(timezone, agencyConfig), feedUrl: null, lastFeedExpiry: feedExpiry, lastPeekedExpiry: calendarExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd(), feedQuality });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   const savedAgency = index.agencies.find(a => a.slug === slug);

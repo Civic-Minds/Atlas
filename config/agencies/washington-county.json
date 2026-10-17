@@ -20,6 +20,7 @@
     "Washington County, Tennessee"
   ],
   "timezone": "America/New_York",
+  "timezoneOverride": "America/New_York",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-03",

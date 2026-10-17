@@ -22,6 +22,7 @@
     "Ventura, California"
   ],
   "timezone": "America/Los_Angeles",
+  "timezoneOverride": "America/Los_Angeles",
   "lastRawArchiveKey": "20260808-26a2b10b0d954217",
   "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,

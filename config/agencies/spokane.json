@@ -27,6 +27,7 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270116",
   "timezone": "America/Los_Angeles",
+  "timezoneOverride": "America/Los_Angeles",
   "feedQuality": {
     "status": "healthy",
     "score": 100,

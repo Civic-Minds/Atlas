@@ -21,6 +21,7 @@ export interface AgencyFeedConfig {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  timezoneOverride?: string;
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
