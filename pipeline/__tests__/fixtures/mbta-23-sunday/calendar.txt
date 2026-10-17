@@ -1,0 +1,2 @@
+service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
+BUS20264-hbc46047-Sunday-02,0,0,0,0,0,0,1,20261004,20261101

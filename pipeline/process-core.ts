@@ -1129,6 +1129,8 @@ export async function processGtfsBuffer(
   // they did when they were one-off, so their peak trips never lift another line's readings
   // (lacmta 105 to Marlton/King read 10, the trunk's peak, for a weekday PM pattern every ~20).
   const rushHourOnlyFeatures = new Set<GeoJsonFeature>();
+  // #961: rows whose own overnight value #897 withheld as a sparse window.
+  const withheldOvernightFeatures = new Set<GeoJsonFeature>();
   const featureBranchTripCount = new Map<GeoJsonFeature, number>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
@@ -2579,6 +2581,8 @@ export async function processGtfsBuffer(
       }
       if (overnight) {
         feature.properties.headwayByPeriod = { ...(feature.properties.headwayByPeriod as HeadwayByPeriod), overnight: overnight.headway };
+        // #961: the night-route path (#896) skips the period loop below, so mark a withheld row here.
+        if (overnight.headway == null && overnight.withheld != null) withheldOvernightFeatures.add(feature);
         feature.properties.periodCoverageHeadway = { ...(feature.properties.periodCoverageHeadway as HeadwayByPeriod), overnight: overnight.coverage };
         feature.properties.maxGapByPeriod = { ...(feature.properties.maxGapByPeriod as HeadwayByPeriodMaxGap), overnight: overnight.maxGap };
         const sustained = { ...(feature.properties.headwayByPeriodSustained as HeadwayByPeriodSustained) };
@@ -2961,6 +2965,7 @@ export async function processGtfsBuffer(
         branchSparse: branchSparseH != null,
       });
       if (period.withheld != null) sparseOvernightDecided = period.withheld;
+      if (pk === 'overnight' && period.withheld != null && period.headway == null) withheldOvernightFeatures.add(feature);
       periodMedians[pk] = period.headway;
       periodCoverage[pk] = period.coverage;
       periodMaxGaps[pk] = period.maxGap;
@@ -3119,6 +3124,15 @@ export async function processGtfsBuffer(
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
       return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
     }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}));
+    // #961: a row whose own overnight value #897 withheld carries no direction overnight value
+    // either, so the card's fallback cannot print the window's wait as "every N". The stretch
+    // check in tripSets reads the reference stop, where the window can look different from the
+    // row's own (MBTA 23 Sunday to Ashmont: 86 trips through stop 412, own value withheld, the
+    // direction value 196).
+    for (const feature of withheldOvernightFeatures) {
+      const byDirection = feature.properties.directionFilterHeadwayByPeriod as Partial<Record<PeriodKey, number | null>> | undefined;
+      if (byDirection && byDirection.overnight != null) byDirection.overnight = null;
+    }
     // A partial-weekday route-day (#710) keeps today's filter: its stretch reads one weekday, while
     // its service runs on others and continues on the next day's service after midnight.
     const partialRouteDays = new Set([...partialWeekdayFeatures].map(f => {

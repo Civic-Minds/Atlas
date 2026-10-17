@@ -19,7 +19,7 @@ git pull --ff-only origin main
 git switch -c fix/short-description
 ```
 
-New worktree: `scripts/new-worktree.sh <name> <branch>` creates it under `../Atlas-worktrees/` from `origin/main` and links `.env.local` to the main checkout's key-free `.env.dev-public` (never the full `.env.local`, which holds R2 write keys).
+New worktree: `scripts/new-worktree.sh <name> <branch>` creates it under `../Atlas-worktrees/` from `origin/main` and links `.env.local` to the main checkout's key-free `.env.dev-public` (never the full `.env.local`, which holds R2 write keys). Then run `npm ci`, or symlink `node_modules` from another worktree on the same lockfile.
 
 ## Deployments
 

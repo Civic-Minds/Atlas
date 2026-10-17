@@ -1,0 +1,62 @@
+stop_id,stop_code,stop_name,stop_desc,platform_code,platform_name,stop_lat,stop_lon,zone_id,stop_address,stop_url,level_id,location_type,parent_station,wheelchair_boarding,municipality,on_street,at_street,vehicle_type
+11148,11148,Malcolm X Blvd @ Madison Park HS,,,,42.33129,-71.09112,LocalBus,,https://www.mbta.com/stops/11148,,0,,1,Boston,Malcolm X Blvd,King Street,3
+11149,11149,Malcolm X Blvd @ O'Bryant HS,,,,42.330732,-71.08842,LocalBus,,https://www.mbta.com/stops/11149,,0,,1,Boston,Malcolm X Blvd,Roxbury Street,3
+11257,11257,Malcolm X Blvd @ King St,,,,42.331197,-71.092692,LocalBus,,https://www.mbta.com/stops/11257,,0,,1,Boston,Malcolm X Blvd,King Street,3
+11259,11259,Malcolm X Blvd @ Shawmut Ave,,,,42.329483,-71.086203,LocalBus,,https://www.mbta.com/stops/11259,,0,,1,Boston,Malcolm X Blvd,Shawmut Avenue,3
+11323,11323,Malcolm X Blvd opp O'Bryant HS,,,,42.330801,-71.089207,LocalBus,,https://www.mbta.com/stops/11323,,0,,0,Boston,Malcolm X Blvd,Roxbury Street,3
+1148,1148,Malcolm X Blvd @ Shawmut Ave,,,,42.329687,-71.08613,LocalBus,,https://www.mbta.com/stops/1148,,0,,1,Boston,Malcolm X Blvd,Shawmut Avenue,3
+1224,1224,Tremont St opp Prentiss St,,,,42.332706,-71.092343,LocalBus,,https://www.mbta.com/stops/1224,,0,,1,Boston,Tremont Street,,3
+1259,1259,Malcolm X Blvd opp Madison Park HS,,,,42.33109,-71.090881,LocalBus,,https://www.mbta.com/stops/1259,,0,,1,Boston,Malcolm X Blvd,King Street,3
+21148,21148,Malcolm X Blvd @ Tremont St,,,,42.331345,-71.093318,LocalBus,,https://www.mbta.com/stops/21148,,0,,1,Boston,Malcolm X Blvd,King Street,3
+21151,21151,Warren St @ Kearsarge Ave,,,,42.327349,-71.083021,LocalBus,,https://www.mbta.com/stops/21151,,0,,1,Boston,Warren Street,Kearsarge Avenue,3
+367,367,Talbot Ave @ Dorchester Ave,,,,42.286785,-71.064648,LocalBus,,https://www.mbta.com/stops/367,,0,,1,Boston,Talbot Avenue,,3
+369,369,Talbot Ave @ Welles Ave,,,,42.289266,-71.067273,LocalBus,,https://www.mbta.com/stops/369,,0,,1,Boston,Talbot Avenue,Welles Avenue,3
+371,371,Talbot Ave @ Centre St,,,,42.29017,-71.070633,LocalBus,,https://www.mbta.com/stops/371,,0,,1,Boston,Talbot Avenue,Centre Street,3
+386,386,Warren St @ Sunderland St,,,,42.310509,-71.083162,LocalBus,,https://www.mbta.com/stops/386,,0,,1,Boston,Warren Street,Crawford Street,3
+387,387,Warren St @ Intervale St,,,,42.31207,-71.082867,LocalBus,,https://www.mbta.com/stops/387,,0,,1,Boston,Warren Street,Intervale Street,3
+388,388,Warren St @ Gaston St,,,,42.313452,-71.08356,LocalBus,,https://www.mbta.com/stops/388,,0,,1,Boston,Warren Street,Gaston Street,3
+390,390,Warren St @ Quincy St,,,,42.316257,-71.082891,LocalBus,,https://www.mbta.com/stops/390,,0,,1,Boston,Warren Street,Townsend Street,3
+392,392,Warren St @ Maywood St,,,,42.318157,-71.081788,LocalBus,,https://www.mbta.com/stops/392,,0,,1,Boston,Warren Street,Maywood Street,3
+393,393,Warren St @ Woodbine St,,,,42.319956,-71.08138,LocalBus,,https://www.mbta.com/stops/393,,0,,1,Boston,Warren Street,Woodbine Street,3
+394,394,Warren St @ Waverly St,,,,42.321585,-71.081813,LocalBus,,https://www.mbta.com/stops/394,,0,,1,Boston,Warren Street,Copeland Street,3
+395,395,Warren St @ Whiting St,,,,42.323909,-71.082602,LocalBus,,https://www.mbta.com/stops/395,,0,,1,Boston,Warren Street,Walnut Avenue,3
+396,396,Warren St @ Moreland St,,,,42.325547,-71.083166,LocalBus,,https://www.mbta.com/stops/396,,0,,1,Boston,Warren Street,Regent Street,3
+40001,40001,Warren St @ Dabney Pl,,,,42.325557,-71.083487,LocalBus,,https://www.mbta.com/stops/40001,,0,,1,Boston,Warren Street,Regent Street,3
+401,401,Warren St @ Walnut Ave,,,,42.323923,-71.082883,LocalBus,,https://www.mbta.com/stops/401,,0,,1,Boston,Warren Street,Walnut Avenue,3
+404,404,Warren St opp Waverly St,,,,42.321536,-71.082102,LocalBus,,https://www.mbta.com/stops/404,,0,,1,Boston,Warren Street,Copeland Street,3
+405,405,Warren St opp Woodbine St,,,,42.319932,-71.081628,LocalBus,,https://www.mbta.com/stops/405,,0,,1,Boston,Warren Street,,3
+406,406,Warren St @ ML King Blvd,,,,42.318133,-71.08212,LocalBus,,https://www.mbta.com/stops/406,,0,,1,Boston,Warren Street,Martin Luther King Boulevard,3
+407,407,Warren St @ Townsend St,,,,42.316227,-71.083032,LocalBus,,https://www.mbta.com/stops/407,,0,,1,Boston,Warren Street,,3
+410,410,Warren St @ Waumbeck St,,,,42.313262,-71.083653,LocalBus,,https://www.mbta.com/stops/410,,0,,1,Boston,Warren Street,Elm Hill Avenue,3
+411,411,Warren St @ Brunswick St,,,,42.311705,-71.082984,LocalBus,,https://www.mbta.com/stops/411,,0,,1,Boston,Warren Street,Brunswick Street,3
+412,412,Warren St @ Crawford St,,,,42.310421,-71.083262,LocalBus,,https://www.mbta.com/stops/412,,0,,1,Boston,Warren Street,Crawford Street,3
+426,426,Talbot Ave @ Lithgow St,,,,42.289943,-71.069975,LocalBus,,https://www.mbta.com/stops/426,,0,,1,Boston,Talbot Avenue,Lithgow Street,3
+428,428,Talbot Ave @ Welles Ave,,,,42.288794,-71.066708,LocalBus,,https://www.mbta.com/stops/428,,0,,1,Boston,Talbot Avenue,Alban Street,3
+430,430,Talbot Ave @ Dorchester Ave,,,,42.286651,-71.064759,LocalBus,,https://www.mbta.com/stops/430,,0,,1,Boston,Talbot Avenue,,3
+457,457,Washington St @ Kenwood St,,,,42.291897,-71.071663,LocalBus,,https://www.mbta.com/stops/457,,0,,1,Boston,Washington Street,Aspinwall Road,3
+458,458,Washington St @ Melville Ave,,,,42.293626,-71.071811,LocalBus,,https://www.mbta.com/stops/458,,0,,1,Boston,Washington Street,Wheatland Avenue,3
+460,460,Washington St @ Park St,,,,42.295815,-71.072087,LocalBus,,https://www.mbta.com/stops/460,,0,,1,Boston,Washington Street,Kenberma Road,3
+461,461,Washington St opp Algonquin St,,,,42.297456,-71.072446,LocalBus,,https://www.mbta.com/stops/461,,0,,1,Boston,Washington Street,Bradlee Street,3
+463,463,Washington St @ Bowdoin St,,,,42.299691,-71.073911,LocalBus,,https://www.mbta.com/stops/463,,0,,1,Boston,Washington Street,Bowdoin Avenue,3
+465,465,Washington St @ Vassar St,,,,42.301053,-71.076167,LocalBus,,https://www.mbta.com/stops/465,,0,,1,Boston,Washington Street,Harvard Avenue,3
+467,467,Washington Street @ Four Corners / Geneva Station,,,,42.303388,-71.078466,LocalBus,,https://www.mbta.com/stops/467,,0,,1,Boston,Washington Street,Erie Street,3
+468,468,Washington St @ Columbia Rd,,,,42.305459,-71.0807,LocalBus,,https://www.mbta.com/stops/468,,0,,1,Boston,Washington Street,Columbia Road,3
+469,469,Washington St @ Joe L Smith Way,,,,42.306307,-71.081517,LocalBus,,https://www.mbta.com/stops/469,,0,,1,Boston,Washington Street,Bishop Joe L Smith,3
+470,470,Washington St @ Blue Hill Ave,,,,42.307741,-71.082638,LocalBus,,https://www.mbta.com/stops/470,,0,,1,Boston,Washington Street,,3
+471,471,Washington St @ Blue Hill Ave,,,,42.307823,-71.082867,LocalBus,,https://www.mbta.com/stops/471,,0,,1,Boston,Washington Street,,3
+472,472,Washington St @ Jeremiah Burke HS,,,,42.306279,-71.081657,LocalBus,,https://www.mbta.com/stops/472,,0,,1,Boston,Washington Street,Bishop Joe L Smith,3
+473,473,Washington St @ Columbia Rd,,,,42.305298,-71.080324,LocalBus,,https://www.mbta.com/stops/473,,0,,1,Boston,Washington Street,Columbia Road,3
+475,475,Washington Street @ Four Corners / Geneva Station,,,,42.302806,-71.078215,LocalBus,,https://www.mbta.com/stops/475,,0,,1,Boston,Washington Street,Eldon Street,3
+477,477,Washington St @ Vassar St,,,,42.300873,-71.076116,LocalBus,,https://www.mbta.com/stops/477,,0,,1,Boston,Washington Street,Harvard Avenue,3
+478,478,Washington St @ Harvard St,,,,42.299101,-71.073547,LocalBus,,https://www.mbta.com/stops/478,,0,,1,Boston,Washington Street,Harvard Street,3
+480,480,Washington St @ Algonquin St,,,,42.297467,-71.072631,LocalBus,,https://www.mbta.com/stops/480,,0,,1,Boston,Washington Street,Bradlee Street,3
+482,482,Washington St @ Park St,,,,42.295233,-71.072162,LocalBus,,https://www.mbta.com/stops/482,,0,,1,Boston,Washington Street,Regina Road,3
+483,483,Washington St @ Wheatland Ave,,,,42.293648,-71.07199,LocalBus,,https://www.mbta.com/stops/483,,0,,1,Boston,Washington Street,Wheatland Avenue,3
+485,485,Washington St @ Southern Ave,,,,42.291386,-71.071797,LocalBus,,https://www.mbta.com/stops/485,,0,,1,Boston,Washington Street,Kenwood Street,3
+place-asmnl,,Ashmont,,,,42.28452,-71.063777,,"Dorchester Ave and Ashmont St, Boston, MA 02124",https://www.mbta.com/stops/place-asmnl,,1,,1,Boston,,,
+334,334,Ashmont,Ashmont - Busway,,Busway,42.284195,-71.063879,LocalBus,,https://www.mbta.com/stops/place-asmnl,level_ground,0,place-asmnl,1,Boston,Busway,,3
+place-nubn,,Nubian,,,,42.329544,-71.083982,,"Washington St and Dudley St, Roxbury, MA",https://www.mbta.com/stops/place-nubn,,1,,1,Boston,,,
+64000,64000,Nubian,,,,42.329513,-71.083736,LocalBus,,https://www.mbta.com/stops/place-nubn,,0,place-nubn,1,Boston,Busway,,3
+place-rugg,,Ruggles,,,,42.336377,-71.088961,CR-zone-1A,"1150 Tremont St, Roxbury, MA 02120",https://www.mbta.com/stops/place-rugg,,1,,1,Boston,,,
+17861,17861,Ruggles,Ruggles - Upper Busway,,Upper Busway,42.336855,-71.089449,LocalBus,,https://www.mbta.com/stops/place-rugg,level_1_ground,0,place-rugg,1,Boston,,,3
+17863,17863,Ruggles,Ruggles - Lower Busway Berth A2,A2,Lower Busway Berth A2,42.336359,-71.08922,LocalBus,,https://www.mbta.com/stops/place-rugg,level_ground,0,place-rugg,1,Boston,,,3

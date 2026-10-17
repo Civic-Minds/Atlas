@@ -2,7 +2,43 @@
 
 Use this workflow when `process-core.ts` adds or changes a derived route field. A PMTiles rebuild alone is not enough: it only packages the already-published route JSON, and the normal refresh skips feeds whose schedule identity has not changed.
 
-## Dry run
+## Default: run it on GitHub Actions
+
+Full rebuilds run in the cloud by default: start a dry run, review its report, then start a publish run. The `Rebuild data release` workflow (`.github/workflows/rebuild-release.yml`) is manual only and uses the same R2 secrets as `refresh-feeds.yml`. The local commands below do the same steps; see [Running it locally](#running-it-locally) for when to use them.
+
+```bash
+# Dry run: reprocess + PMTiles dry run. Writes nothing to R2.
+gh workflow run rebuild-release.yml -f ref=<branch or SHA> -f mode=dry-run
+# Same, plus the regenerated JSON of two agencies as an artifact
+gh workflow run rebuild-release.yml -f ref=<branch or SHA> -f mode=dry-run -f agencies="ttc translink"
+# Publish: reprocess --write, build-pmtiles, verify, build-history, publish-data-release
+gh workflow run rebuild-release.yml -f ref=main -f mode=publish -f allow="communitytransit:drop"
+```
+
+- **Inputs:** `ref` (default `main`), `mode` (`dry-run` default, or `publish`), `allow` (space-separated `<slug>:<flag>`, passed to the reprocess and to `publish-data-release`), `concurrency` (agencies in parallel, 1-4, default 2), `start_at` and `resume_run_id` (publish only, see Resuming). `agencies` (dry run only): space-separated slugs whose regenerated JSON (routes, stops, corridors, trips, stops-meta) is uploaded as the `rebuild-agencies-dry-run-*` artifact, to check a pipeline fix on real agencies before publishing; a slug with no output (refused, failed or unknown) is listed in the job summary.
+- **Dry run:** runs the code of any branch, so it never sees a write-capable credential. It uses a read-only R2 token (repository secrets `R2_RO_ACCESS_KEY_ID` and `R2_RO_SECRET_ACCESS_KEY`: an R2 API token with Object Read only, scoped to the data and archive buckets) and a read-only GitHub token with no stored login. It fails at the start, with a message, if those two secrets are missing. It uploads `tmp/derived-reprocess/report.json` and the release diff (`tmp/release-diff/*.md`, `*.json`) as the `rebuild-report-dry-run-*` artifact. Read it before publishing, then repeat each reviewed `--allow` in the publish run. Refused agencies are a normal outcome (the reprocess exits 1 when any is refused): the run still builds the PMTiles dry run and uploads the report, and fails only on a crash or an agency with status `failed`. The job summary lists processed, refused (with reasons), failed and the red release gate flags.
+- **Publish:** a separate job with the write keys. It writes public R2 data, so get explicit approval immediately before starting it. It refuses unless `ref` is the current tip of main. It opens the same two small pull requests the weekly refresh does (feed expiry stamps, agency pages) and auto-merges the agency pages one. Agencies the reprocess refuses (expired or older-than-live zip, or a release gate flag such as GRT mode-lost) are a normal outcome, as in the dry run: they keep their live data, and a run where every agency was written or refused goes on to the tiles. A real error (a crash with no report, or an agency with status `failed`) still stops the run before any tiles are built; the expiry stamps still go into their pull request either way. The job summary lists written, refused (with reasons) and failed.
+- **No overlap:** it shares the `atlas-data-release` concurrency group with the weekly refresh, so the two queue behind each other and never run at once. Do not start a publish run close to Monday 06:00 UTC.
+- **Time:** one job with a 345 minute limit (GitHub's cap is 360). The last local full run was about 55 minutes of reprocess plus the tile build; the tile build and history timings on a runner are not measured yet.
+
+### Resuming a publish run
+
+The runner is thrown away at the end of a run, so a run saves what a later stage needs as artifacts (kept 14 days): `rebuild-stamps-<run id>` (the feed expiry stamps and the commit) and `rebuild-manifest-<run id>` (the release manifest that `verify-pmtiles-remote` and `publish-data-release` read, and the commit). To resume, run again with `mode=publish`, `ref=main`, `start_at` and `resume_run_id=<the earlier run id>`:
+
+| `start_at` | Starts at | Needs | Notes |
+|---|---|---|---|
+| `reprocess` | the beginning | nothing | Rewrites every agency's artifacts in R2. |
+| `pmtiles` | `build-pmtiles` | optional `resume_run_id` (for the stamps) | Agency artifacts are already in R2. Builds a new release id each time; an unpublished one is just an unused upload. |
+| `history` | `build-history` | `resume_run_id` of a run that finished `build-pmtiles` | Reuses that run's release manifest. |
+| `publish` | `publish-data-release` | `resume_run_id` of a run that finished `build-pmtiles` | Reuses that run's manifest. |
+
+A resume refuses when main has moved past the commit the earlier run built, because the manifest and the stamps belong to that build; start again from `reprocess` then. Not every stage is free to repeat: `build-history` writes `atlas/history-config.json` to the live bucket as soon as it runs, before the release is published.
+
+## Running it locally
+
+Use local runs only for exact before/after scans and small checks (for example one agency with `--only-slug`), not for full rebuilds. Run them throttled with `nice -n 15`.
+
+### Dry run
 
 This reads the newest archived GTFS snapshot for every production-visible agency and writes regenerated artifacts to `tmp/derived-reprocess/`:
 
@@ -36,7 +72,7 @@ The recovery report records the URL, feed dates, feature count, quality score,
 and any unresolved blocker. A recovered local input is not approval to publish
 it.
 
-## Publish
+### Publish
 
 After reviewing the dry-run report, publish the regenerated agency artifacts and then rebuild the verified release:
 
@@ -53,38 +89,6 @@ npm run publish-data-release
 A reprocess does not leave the refresh handoff marker that `build-pmtiles` normally requires, so this intentional repack needs `--allow-stale-data`. `build-pmtiles` checks full agency coverage locally before uploading an immutable release under `atlas/releases/{id}/`; `verify-pmtiles-remote` smoke-tests the upload, and only `publish-data-release` moves `atlas/release.json` to make it live.
 
 These commands write public R2 data. Get explicit approval immediately before running the `--write` or publish commands.
-
-## Running it on GitHub Actions
-
-The same sequence runs in the cloud, so a full rebuild does not need a laptop. The `Rebuild data release` workflow (`.github/workflows/rebuild-release.yml`) is manual only and uses the same R2 secrets as `refresh-feeds.yml`. It runs once it is on main.
-
-```bash
-# Dry run: reprocess + PMTiles dry run. Writes nothing to R2.
-gh workflow run rebuild-release.yml -f ref=<branch or SHA> -f mode=dry-run
-# Same, plus the regenerated JSON of two agencies as an artifact
-gh workflow run rebuild-release.yml -f ref=<branch or SHA> -f mode=dry-run -f agencies="ttc translink"
-# Publish: reprocess --write, build-pmtiles, verify, build-history, publish-data-release
-gh workflow run rebuild-release.yml -f ref=main -f mode=publish -f allow="communitytransit:drop"
-```
-
-- **Inputs:** `ref` (default `main`), `mode` (`dry-run` default, or `publish`), `allow` (space-separated `<slug>:<flag>`, passed to the reprocess and to `publish-data-release`), `concurrency` (agencies in parallel, 1-4, default 2), `start_at` and `resume_run_id` (publish only, see Resuming). `agencies` (dry run only): space-separated slugs whose regenerated JSON (routes, stops, corridors, trips, stops-meta) is uploaded as the `rebuild-agencies-dry-run-*` artifact, to check a pipeline fix on real agencies before publishing; a slug with no output (refused, failed or unknown) is listed in the job summary.
-- **Dry run:** runs the code of any branch, so it never sees a write-capable credential. It uses a read-only R2 token (repository secrets `R2_RO_ACCESS_KEY_ID` and `R2_RO_SECRET_ACCESS_KEY`: an R2 API token with Object Read only, scoped to the data and archive buckets) and a read-only GitHub token with no stored login. It fails at the start, with a message, if those two secrets are missing. It uploads `tmp/derived-reprocess/report.json` and the release diff (`tmp/release-diff/*.md`, `*.json`) as the `rebuild-report-dry-run-*` artifact. Read it before publishing, then repeat each reviewed `--allow` in the publish run. Refused agencies are a normal outcome (the reprocess exits 1 when any is refused): the run still builds the PMTiles dry run and uploads the report, and fails only on a crash or an agency with status `failed`. The job summary lists processed, refused (with reasons), failed and the red release gate flags.
-- **Publish:** a separate job with the write keys. It refuses unless `ref` is the current tip of main. It opens the same two small pull requests the weekly refresh does (feed expiry stamps, agency pages) and auto-merges the agency pages one. Agencies the reprocess refuses (expired or older-than-live zip, or a release gate flag such as GRT mode-lost) are a normal outcome, as in the dry run: they keep their live data, and a run where every agency was written or refused goes on to the tiles. A real error (a crash with no report, or an agency with status `failed`) still stops the run before any tiles are built; the expiry stamps still go into their pull request either way. The job summary lists written, refused (with reasons) and failed.
-- **No overlap:** it shares the `atlas-data-release` concurrency group with the weekly refresh, so the two queue behind each other and never run at once. Do not start a publish run close to Monday 06:00 UTC.
-- **Time:** one job with a 345 minute limit (GitHub's cap is 360). The last local full run was about 55 minutes of reprocess plus the tile build; the tile build and history timings on a runner are not measured yet.
-
-### Resuming a publish run
-
-The runner is thrown away at the end of a run, so a run saves what a later stage needs as artifacts (kept 14 days): `rebuild-stamps-<run id>` (the feed expiry stamps and the commit) and `rebuild-manifest-<run id>` (the release manifest that `verify-pmtiles-remote` and `publish-data-release` read, and the commit). To resume, run again with `mode=publish`, `ref=main`, `start_at` and `resume_run_id=<the earlier run id>`:
-
-| `start_at` | Starts at | Needs | Notes |
-|---|---|---|---|
-| `reprocess` | the beginning | nothing | Rewrites every agency's artifacts in R2. |
-| `pmtiles` | `build-pmtiles` | optional `resume_run_id` (for the stamps) | Agency artifacts are already in R2. Builds a new release id each time; an unpublished one is just an unused upload. |
-| `history` | `build-history` | `resume_run_id` of a run that finished `build-pmtiles` | Reuses that run's release manifest. |
-| `publish` | `publish-data-release` | `resume_run_id` of a run that finished `build-pmtiles` | Reuses that run's manifest. |
-
-A resume refuses when main has moved past the commit the earlier run built, because the manifest and the stamps belong to that build; start again from `reprocess` then. Not every stage is free to repeat: `build-history` writes `atlas/history-config.json` to the live bucket as soon as it runs, before the release is published.
 
 ## Release diff gate
 
