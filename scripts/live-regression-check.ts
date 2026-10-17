@@ -1,8 +1,8 @@
 /**
  * Standing regression cases for Live: the TTC 501 and 507 analyses, pinned to hand-checked values.
  *   npx tsx scripts/live-regression-check.ts            (reads ../_live-data/out, or LIVE_DATA/out)
- * Exits non-zero, naming each difference, when a pinned output moves. live:analyze runs it after every rebuild.
- * The pinned values live in scripts/handcheck/live-regression-cases.json; change them only after a new hand-check.
+ * Exits non-zero, naming each difference, when a pinned output moves. Run it by hand after a rebuild: it is not wired into live-analyze.sh.
+ * The pinned values live in scripts/handcheck/live-regression-cases.json. Today's file is a SNAPSHOT (scripts/live-regression-snapshot.ts), not hand-checked: replace it with hand-checked values, and change them only after a new hand-check.
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -62,4 +62,4 @@ if (problems.length) {
   console.error(`live regression: ${problems.length} pinned output(s) moved:\n  ${problems.join('\n  ')}`);
   process.exit(1);
 }
-console.log(`live regression: ${cases.cases.map(c => c.route).join(', ')} match their hand-checked values`);
+console.log(`live regression: ${cases.cases.map(c => c.route).join(', ')} match their pinned values`);
