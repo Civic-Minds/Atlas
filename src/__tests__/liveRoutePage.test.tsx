@@ -69,7 +69,7 @@ describe('Live route dashboard', () => {
     expect(screen.getAllByText(/Linked: Vehicles standing still in this stretch \(0\.6 a day\)/).length).toBe(2);
     expect(screen.getAllByText(/Not linked: Uneven departures at the terminal \(5% of gaps off\)/).length).toBe(2);
     // Method.
-    expect(screen.getByText(/^Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\.$/)).toBeTruthy();
+    expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
     expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
   });
 
@@ -135,9 +135,10 @@ describe('Live route dashboard', () => {
     // The subtitle names both weeks; no separate line under the tiles. The method says it once, in groups.
     expect(screen.getByText('Week of Oct 8–14, compared with Oct 1–7 · 1,234 trips · estimated from vehicle positions, not reported by the TTC')).toBeTruthy();
     expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
-    expect(screen.getByText(/^This week is .+ and last week is .+: \d+ of \d+ days counted this week, \d+ of \d+ last week\.$/)).toBeTruthy();
+    expect(screen.getByText(/This week is .+ and last week is .+: \d+ of \d+ days counted this week, \d+ of \d+ last week\./)).toBeTruthy();
     expect(screen.getAllByText(/days with gaps in our recordings are left out/).length).toBe(1);
-    for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByRole('heading', { name: g })).toBeTruthy();
+    // One paragraph: each group opens with its bold run-in label.
+    for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByText(`${g}.`, { selector: 'strong' })).toBeTruthy();
     expect(screen.queryByText(/trip time/i)).toBeNull();
     expect(screen.getByText(/3 trips that could not be judged are left out of Delivered/)).toBeTruthy();
     expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();

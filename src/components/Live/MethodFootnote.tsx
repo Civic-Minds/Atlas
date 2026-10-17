@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 
 /** One group of "How this is measured": a small label, then one line per item. Falsy items are skipped. */
 export interface MethodGroup { label: string; items: ReactNode[] }
@@ -10,27 +10,28 @@ export function Term({ t, children }: { t: string; children: ReactNode }) {
 
 /**
  * "How this is measured" at the foot of every Live page: one look everywhere, small muted type (12px, tight lines), compact, full content
- * width, the groups in two columns on wider screens. The notes come in labelled groups (METHOD_GROUPS in shared/liveWording), one line per item, no bullets.
+ * width, as one paragraph. The notes come in labelled groups (METHOD_GROUPS in shared/liveWording), one line per item, no bullets.
  * `collapsible` folds it behind its title (the route pages); the agency page shows it open. `after` sits below.
  */
 export default function MethodFootnote({ id, collapsible = false, groups, after }: { id?: string; collapsible?: boolean; groups: MethodGroup[]; after?: ReactNode }) {
   const title = 'How this is measured';
+  // One compact paragraph (CIV-303): each group opens with its bold run-in label, the notes follow inline.
   const body = (
-    <div className="mt-2 grid gap-x-8 gap-y-2 md:grid-cols-2">
-      {groups.map(g => {
-        const items = g.items.filter(Boolean);
-        if (!items.length) return null;
-        return (
-          <div key={g.label} className="min-w-0">
-            <h3 className="text-xs font-semibold text-[var(--text-secondary)]">{g.label}</h3>
-            <ul className="mt-0.5 list-none space-y-0.5 text-xs leading-4 text-[var(--text-muted)]">
-              {items.map((item, i) => <li key={i}>{item}</li>)}
-            </ul>
-          </div>
-        );
-      })}
-      {after && <div className="md:col-span-2">{after}</div>}
-    </div>
+    <>
+      <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">
+        {groups.map(g => {
+          const items = g.items.filter(Boolean);
+          if (!items.length) return null;
+          return (
+            <Fragment key={g.label}>
+              <strong className="font-semibold text-[var(--text-secondary)]">{g.label}.</strong>{' '}
+              {items.map((item, i) => <Fragment key={i}>{item}{' '}</Fragment>)}
+            </Fragment>
+          );
+        })}
+      </p>
+      {after}
+    </>
   );
   return collapsible ? (
     <details className="mt-12 border-t border-[var(--border-primary)] pt-3" id={id}>
