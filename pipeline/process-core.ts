@@ -965,6 +965,11 @@ export async function processGtfsBuffer(
   // by headsign for rail, the same scope as each feature's own stop metrics. Read only by
   // annotateSharedStretches; no existing value uses it.
   const stopDepsBySharedMember = new Map<string, Map<string, number[]>>();
+  // CIV-53: departures of headsigns that draw no eligible feature (a span or irregular pattern),
+  // keyed like stopDepsBySharedMember but with a '|contrib' member. They join the per-stop pools
+  // (#690, FREQUENCY_RULES rule 2: every trip that serves the stop) as extra departures only: they
+  // own no row and stay out of middayMembers and annotateSharedStretches, which read the map above.
+  const stopDepsByContributor = new Map<string, Map<string, number[]>>();
   // The patterns of each route direction and day with a midday reading at some stop, built
   // once from stopDepsBySharedMember after the stop_times pass. A pattern whose own terminal
   // has no midday reading while a sibling here has one is a variant (short turn, peak branch)
@@ -1047,6 +1052,14 @@ export async function processGtfsBuffer(
     if (!sharedEligibleHeadsigns.has(`${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.routeId}::${grp.headsign ?? ''}`)) return null;
     const member = sharedPatternKey(grp.routeId, grp.headsign, grp.shapeId);
     return member ? `${grp.shortName}::${grp.dirId}::${grp.dayType}::${member}` : null;
+  };
+  // CIV-53: the pool key of a trip under a headsign no eligible feature draws: a contributor to the
+  // per-stop pools only (stopDepsByContributor). Its own member key, so it never merges into an
+  // eligible pattern's own departures when the two share a shape.
+  const contributorMemberKey = (grp: { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null; shapeId: string | null }): string | null => {
+    if (sharedEligibleHeadsigns.has(`${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.routeId}::${grp.headsign ?? ''}`)) return null;
+    const member = sharedPatternKey(grp.routeId, grp.headsign, grp.shapeId);
+    return member ? `${grp.shortName}::${grp.dirId}::${grp.dayType}::${member}|contrib` : null;
   };
 
   // A frequency-based trip has one representative stop-time sequence, while
@@ -1362,6 +1375,7 @@ export async function processGtfsBuffer(
           const hsKey = grp.headsign ? `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}` : null;
           const shKey = grp.shapeId ? `${grp.shapeId}::${grp.dayType}` : null;
           const smKey = sharedMemberKey(grp);
+          const contribKey = smKey ? null : contributorMemberKey(grp);
           const pushDep = (maps: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
             let map = maps.get(key);
             if (!map) { map = new Map(); maps.set(key, map); }
@@ -1378,6 +1392,7 @@ export async function processGtfsBuffer(
             if (shKey && grp.inShape) pushDep(stopDepsByShapeGroup, shKey, stopId, mins);
             // Drop-off-only stop times (pickup_type 1) are not departures a rider can take.
             if (smKey && grp.inGroup && pooledOk && st.pickup_type?.trim() !== '1') pushDep(stopDepsBySharedMember, smKey, stopId, mins);
+            if (contribKey && grp.inGroup && pooledOk && st.pickup_type?.trim() !== '1') pushDep(stopDepsByContributor, contribKey, stopId, mins);
             // Night-service-only shift (#297) -- see stopDepsByGroupNight declaration above.
             if (night) {
               if (grp.inGroup && pooledOk) pushDep(stopDepsByGroupNight, gKey, stopId, mins + 1440);
@@ -1553,6 +1568,8 @@ export async function processGtfsBuffer(
     if (grp.shapeId && grp.inShape && pickupAllowed) markBoardable(`${grp.shapeId}::${grp.dayType}`, stopId);
     const smKey = sharedMemberKey(grp);
     if (smKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsBySharedMember, smKey, stopId, mins);
+    const contribKey = smKey ? null : contributorMemberKey(grp);
+    if (contribKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsByContributor, contribKey, stopId, mins);
     if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
       const shifted = mins + 1440;
       if (grp.inGroup) pushUnique(stopDepsByGroupNight, groupKey, stopId, shifted);
@@ -1731,44 +1748,56 @@ export async function processGtfsBuffer(
   // only; every value above is unchanged. Each pattern's stop sequence comes from its
   // longest trip that runs on the group's day (first visit per stop).
   const sharedPatternTrip = new Map<string, { poolKey: string; routeId: string; headsigns: Set<string>; tripId: string; stops: number }>();
+  // CIV-53: the same for contributor patterns (stopDepsByContributor), read only by the per-stop pools.
+  const contributorPatternTrip = new Map<string, { poolKey: string; routeId: string; headsigns: Set<string>; tripId: string; stops: number }>();
   for (const trip of gtfs.trips ?? []) {
     const stops = stopTimesByTripId.get(trip.trip_id)?.length ?? 0;
     if (stops < 2) continue;
     for (const grp of tripGroupByTripId.get(trip.trip_id) ?? []) {
-      // Same trips as the pooled departures: eligible headsigns on the group's day.
-      if (!grp.inGroup || !sharedMemberKey(grp)) continue;
+      // Same trips as the pooled departures: eligible headsigns on the group's day, or contributors.
+      if (!grp.inGroup) continue;
+      const contributor = !sharedMemberKey(grp);
+      if (contributor && !contributorMemberKey(grp)) continue;
       const member = sharedPatternKey(grp.routeId, grp.headsign, grp.shapeId);
       if (!member) continue;
       const poolKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
-      const key = `${poolKey}::${member}`;
-      const prev = sharedPatternTrip.get(key);
-      if (!prev) sharedPatternTrip.set(key, { poolKey, routeId: grp.routeId, headsigns: new Set([grp.headsign ?? '']), tripId: trip.trip_id, stops });
+      const key = contributor ? `${poolKey}::${member}|contrib` : `${poolKey}::${member}`;
+      const target = contributor ? contributorPatternTrip : sharedPatternTrip;
+      const prev = target.get(key);
+      if (!prev) target.set(key, { poolKey, routeId: grp.routeId, headsigns: new Set([grp.headsign ?? '']), tripId: trip.trip_id, stops });
       else {
         prev.headsigns.add(grp.headsign ?? '');
         if (stops > prev.stops) { prev.tripId = trip.trip_id; prev.stops = stops; }
       }
     }
   }
-  const sharedPatternsByPool = new Map<string, Array<{ memberKey: string; routeId: string; headsigns: string[]; tripId: string }>>();
-  for (const [key, entry] of sharedPatternTrip) {
-    const list = sharedPatternsByPool.get(entry.poolKey) ?? [];
-    list.push({ memberKey: key.slice(entry.poolKey.length + 2), routeId: entry.routeId, headsigns: [...entry.headsigns].sort(), tripId: entry.tripId });
-    sharedPatternsByPool.set(entry.poolKey, list);
-  }
+  const patternsByPool = (trips: typeof sharedPatternTrip) => {
+    const byPool = new Map<string, Array<{ memberKey: string; routeId: string; headsigns: string[]; tripId: string }>>();
+    for (const [key, entry] of trips) {
+      const list = byPool.get(entry.poolKey) ?? [];
+      list.push({ memberKey: key.slice(entry.poolKey.length + 2), routeId: entry.routeId, headsigns: [...entry.headsigns].sort(), tripId: entry.tripId });
+      byPool.set(entry.poolKey, list);
+    }
+    return byPool;
+  };
+  const sharedPatternsByPool = patternsByPool(sharedPatternTrip);
+  const contributorPatternsByPool = patternsByPool(contributorPatternTrip);
 
   // Patterns of each route group, direction and day, with each pattern's stop sequence: read by
   // the per-stop pools below (#690) and by annotateSharedStretches after the loop.
-  const sharedPatternsOf = (poolKey: string): SharedStretchPattern[] => (sharedPatternsByPool.get(poolKey) ?? []).map(pattern => ({
+  const patternsOf = (byPool: typeof sharedPatternsByPool, poolKey: string): SharedStretchPattern[] => (byPool.get(poolKey) ?? []).map(pattern => ({
     memberKey: pattern.memberKey,
     routeId: pattern.routeId,
     headsigns: pattern.headsigns,
     stopOrder: firstVisitStopTimes(stopTimesByTripId.get(pattern.tripId) ?? []).map(st => st.stop_id),
   }));
+  const sharedPatternsOf = (poolKey: string): SharedStretchPattern[] => patternsOf(sharedPatternsByPool, poolKey);
   // #690: which patterns pool with a feature's own pattern at each station, per route group.
   const stopSharersByPool = new Map<string, ReadonlyMap<string, StopSharers>>();
   const stopSharersFor = (poolKey: string): ReadonlyMap<string, StopSharers> => {
     let hit = stopSharersByPool.get(poolKey);
-    if (!hit) { hit = computeStopSharers(sharedPatternsOf(poolKey), stopsById, childToParent); stopSharersByPool.set(poolKey, hit); }
+    // CIV-53: contributor patterns share stations like any other, so their departures join.
+    if (!hit) { hit = computeStopSharers([...sharedPatternsOf(poolKey), ...patternsOf(contributorPatternsByPool, poolKey)], stopsById, childToParent); stopSharersByPool.set(poolKey, hit); }
     return hit;
   };
 
@@ -1965,7 +1994,7 @@ export async function processGtfsBuffer(
       : null;
     const ownIsPattern = railFeature ? (headsignMap != null && metricStopMap === headsignMap) : (shapeMap != null && metricStopMap === shapeMap);
     const pooled = ownMember && ownIsPattern && stopDepsBySharedMember.has(`${poolKey}::${ownMember}`)
-      ? buildPooledStopMap(metricStopMap, stopSharersFor(poolKey).get(ownMember), key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent,
+      ? buildPooledStopMap(metricStopMap, stopSharersFor(poolKey).get(ownMember), key => stopDepsBySharedMember.get(`${poolKey}::${key}`) ?? stopDepsByContributor.get(`${poolKey}::${key}`), childToParent,
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
       : null;
     const stopMetricMap: Map<string, number[]> = pooled?.map ?? metricStopMap;

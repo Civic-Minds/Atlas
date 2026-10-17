@@ -1,0 +1,213 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+63,10,966793,59th-Columbia via Produce Market,,0,7351,317737,1,1
+63,10,966794,59th-Columbia via Produce Market,,0,7651,317737,1,1
+63,10,966795,59th-Columbia via Produce Market,,0,7652,317737,1,1
+63,10,966796,59th-Columbia,,0,7653,317742,1,1
+63,10,966797,Overbrook Rail Station,,0,7351,317745,1,1
+63,336010,966798,Overbrook Rail Station,,0,7852,317745,1,1
+63,10,966799,Overbrook Rail Station,,0,7651,317745,1,1
+63,10,966800,63rd-Malvern,,0,7652,317743,1,1
+63,10,966801,Overbrook Rail Station,,0,7655,317745,1,1
+63,10,966803,Overbrook Rail Station via Produce Market,,0,7653,317744,1,1
+63,10,966804,Lankenau Medical Center,,0,7656,317739,1,1
+63,10,966841,Overbrook Rail Station,,0,7275,317745,1,1
+63,10,966802,63rd-Malvern,,0,7654,317743,1,1
+63,10,966805,Lankenau Medical Center,,0,7659,317739,1,1
+63,10,966846,Overbrook Rail Station,,0,7660,317745,1,1
+63,10,966806,Overbrook Rail Station,,0,7351,317745,1,1
+63,10,966807,63rd-Malvern,,0,7662,317743,1,1
+63,10,966808,Lankenau Medical Center via Produce Market,,0,7663,317746,1,1
+63,10,966809,Overbrook Rail Station,,0,7852,317745,1,1
+63,10,966850,63rd-Malvern,,0,7665,317743,1,1
+63,10,966811,Overbrook Rail Station,,0,7651,317732,1,1
+63,10,966810,63rd-Malvern,,0,7666,317743,1,1
+63,10,966812,Overbrook Rail Station,,0,7652,317745,1,1
+63,10,966813,Lankenau Medical Center,,0,7657,317739,1,1
+63,10,966814,Overbrook Rail Station,,0,7658,317732,1,1
+63,10,966792,63rd-Malvern,,0,7655,317743,1,1
+63,10,966815,Overbrook Rail Station,,0,7653,317732,1,1
+63,10,966816,Overbrook Rail Station,,0,7275,317745,1,1
+63,10,966817,Overbrook Rail Station,,0,7656,317732,1,1
+63,10,966818,Lankenau Medical Center,,0,7654,317739,1,1
+63,10,966819,Overbrook Rail Station,,0,7664,317732,1,1
+63,10,966759,Overbrook Rail Station via Produce Market,,0,7660,317744,1,1
+63,10,966760,Overbrook Rail Station,,0,7659,317732,1,1
+63,10,966761,Overbrook Rail Station,,0,7662,317745,1,1
+63,10,966762,Lankenau Medical Center,,0,7852,317740,1,1
+63,10,966763,Overbrook Rail Station,,0,7665,317745,1,1
+63,10,966842,Overbrook Rail Station,,0,7666,317745,1,1
+63,10,966764,Overbrook Rail Station,,0,7663,317732,1,1
+63,10,966765,Overbrook Rail Station,,0,7651,317745,1,1
+63,10,966766,Lankenau Medical Center,,0,7652,317740,1,1
+63,10,966849,Overbrook Rail Station,,0,7657,317745,1,1
+63,10,966767,Overbrook Rail Station,,0,7658,317732,1,1
+63,10,966755,Overbrook Rail Station,,0,7653,317745,1,1
+63,10,966770,Overbrook Rail Station,,0,7656,317732,1,1
+63,10,966769,Lankenau Medical Center via Produce Market,,0,7654,317746,1,1
+63,10,966768,Overbrook Rail Station,,0,7664,317732,1,1
+63,10,966844,Overbrook Rail Station,,0,7660,317745,1,1
+63,10,966771,Overbrook Rail Station via Produce Market,,0,7659,317738,1,1
+63,10,966773,Overbrook Rail Station,,0,7667,317745,1,1
+63,10,966772,Lankenau Medical Center,,0,7668,317740,1,1
+63,10,966774,Overbrook Rail Station,,0,7669,317745,1,1
+63,10,966843,Overbrook Rail Station,,0,7666,317732,1,1
+63,10,966756,Overbrook Rail Station,,0,7671,317745,1,1
+63,10,966757,Overbrook Rail Station,,0,7670,317732,1,1
+63,10,966848,Overbrook Rail Station,,0,7673,317745,1,1
+63,10,966776,Lankenau Medical Center,,0,7657,317740,1,1
+63,10,966775,Overbrook Rail Station,,0,7674,317745,1,1
+63,10,966777,Overbrook Rail Station,,0,7675,317732,1,1
+63,10,966749,Overbrook Rail Station,,0,7676,317745,1,1
+63,10,966852,Overbrook Rail Station,,0,7679,317741,1,1
+63,10,966838,Lankenau Medical Center,,0,7654,317740,1,1
+63,10,966847,Overbrook Rail Station,,0,7680,317745,1,1
+63,10,966750,Overbrook Rail Station,,0,7681,317732,1,1
+63,10,966845,Overbrook Rail Station,,0,7659,317745,1,1
+63,10,966751,Overbrook Rail Station,,0,7672,317732,1,1
+63,10,966752,Overbrook Rail Station,,0,7667,317745,1,1
+63,10,966754,Lankenau Medical Center,,0,7683,317740,1,1
+63,10,966753,Overbrook Rail Station,,0,7668,317745,1,1
+63,10,966837,Overbrook Rail Station,,0,7666,317732,1,1
+63,10,966851,Overbrook Rail Station,,0,7669,317745,1,1
+63,10,966788,Overbrook Rail Station,,0,7671,317745,1,1
+63,10,966786,Overbrook Rail Station,,0,7678,317732,1,1
+63,10,966787,Overbrook Rail Station,,0,7673,317745,1,1
+63,10,966789,Lankenau Medical Center,,0,7657,317740,1,1
+63,10,966790,Overbrook Rail Station,,0,7674,317745,1,1
+63,10,966791,Overbrook Rail Station,,0,7675,317732,1,1
+63,33710,966853,Overbrook Rail Station,,0,7684,317745,1,1
+63,10,966835,Overbrook Rail Station,,0,7679,317732,1,1
+63,10,966834,Lankenau Medical Center,,0,7680,317739,1,1
+63,10,966833,Overbrook Rail Station,,0,7654,317732,1,1
+63,10,966832,Overbrook Rail Station,,0,7681,317745,1,1
+63,10,966831,Overbrook Rail Station,,0,7659,317732,1,1
+63,10,966830,Overbrook Rail Station via Produce Market,,0,7672,317744,1,1
+63,10,966829,Overbrook Rail Station,,0,7667,317732,1,1
+63,10,966828,Lankenau Medical Center,,0,7668,317739,1,1
+63,10,966827,Overbrook Rail Station,,0,7685,317732,1,1
+63,10,966826,Overbrook Rail Station,,0,7678,317745,1,1
+63,10,966839,Overbrook Rail Station,,0,7673,317732,1,1
+63,10,966825,Lankenau Medical Center,,0,7675,317739,1,1
+63,10,966779,Overbrook Rail Station,,0,7684,317732,1,1
+63,10,966778,Overbrook Rail Station,,0,7679,317745,1,1
+63,10,966840,Overbrook Rail Station,,0,7680,317732,1,1
+63,10,966758,Lankenau Medical Center,,0,7681,317739,1,1
+63,10,966780,Overbrook Rail Station,,0,7672,317732,1,1
+63,10,966781,Overbrook Rail Station,,0,7667,317745,1,1
+63,10,966782,Lankenau Medical Center,,0,7685,317740,1,1
+63,10,966784,Overbrook Rail Station,,0,7678,317745,1,1
+63,10,966785,Lankenau Medical Center,,0,7675,317740,1,1
+63,10,966783,Lankenau Medical Center,,0,7679,317739,1,1
+63,10,966820,Lankenau Medical Center,,0,7681,317740,1,1
+63,10,966821,Overbrook Rail Station,,0,7685,317745,1,1
+63,10,966822,Overbrook Rail Station,,0,7675,317732,1,1
+63,10,966823,Overbrook Rail Station,,0,7679,317745,1,1
+63,10,966824,59th-Columbia,,0,7685,317731,1,1
+63,10,966891,Food Center via Produce Market,,1,7351,317759,1,1
+63,10,966892,Food Center via Produce Market,,1,7651,317759,1,1
+63,10,966894,Food Center,,1,7652,317760,1,1
+63,10,966895,Food Center,,1,7653,317760,1,1
+63,10,966896,Food Center,,1,7654,317764,1,1
+63,10,966897,Food Center,,1,7351,317764,1,1
+63,10,966898,Food Center,,1,7852,317764,1,1
+63,10,966899,Columbus Commons,,1,7651,317749,1,1
+63,10,966927,Food Center,,1,7652,317761,1,1
+63,10,966952,Food Center,,1,7657,317764,1,1
+63,10,966854,Columbus Commons,,1,7658,317749,1,1
+63,10,966900,Food Center,,1,7655,317764,1,1
+63,10,966856,Food Center,,1,7661,317761,1,1
+63,10,966855,Columbus Commons,,1,7653,317749,1,1
+63,10,966915,Food Center,,1,7275,317764,1,1
+63,10,966914,Columbus Commons,,1,7656,317754,1,1
+63,10,966917,Food Center,,1,7654,317761,1,1
+63,10,966920,Columbus Commons,,1,7664,317749,1,1
+63,10,966949,Food Center,,1,7660,317764,1,1
+63,10,966919,Food Center,,1,7662,317761,1,1
+63,10,966916,Columbus Commons,,1,7659,317754,1,1
+63,10,966918,Columbus Commons,,1,7351,317749,1,1
+63,10,966955,Food Center,,1,7665,317761,1,1
+63,10,966922,Columbus Commons,,1,7852,317749,1,1
+63,10,966921,Columbus Commons,,1,7663,317754,1,1
+63,10,966923,Food Center,,1,7666,317761,1,1
+63,10,966924,Food Center,,1,7651,317764,1,1
+63,10,966925,Columbus Commons,,1,7652,317749,1,1
+63,10,966926,Food Center,,1,7657,317751,1,1
+63,10,966893,Columbus Commons,,1,7658,317749,1,1
+63,10,966928,Food Center,,1,7653,317764,1,1
+63,10,966929,Columbus Commons,,1,7656,317749,1,1
+63,10,966930,Food Center,,1,7654,317751,1,1
+63,10,966931,Columbus Commons,,1,7664,317749,1,1
+63,10,966950,Food Center,,1,7660,317764,1,1
+63,10,966932,Columbus Commons,,1,7659,317749,1,1
+63,10,966933,Food Center,,1,7662,317764,1,1
+63,10,966934,Columbus Commons,,1,7852,317754,1,1
+63,10,966935,Food Center,,1,7665,317764,1,1
+63,10,966947,Columbus Commons,,1,7666,317749,1,1
+63,10,966936,Food Center via Produce Market,,1,7663,317763,1,1
+63,10,966937,Columbus Commons via Produce Market,,1,7651,317765,1,1
+63,10,966938,Food Center,,1,7652,317751,1,1
+63,10,966954,Columbus Commons,,1,7657,317749,1,1
+63,10,966939,Food Center,,1,7658,317764,1,1
+63,10,966902,Columbus Commons,,1,7653,317749,1,1
+63,10,966942,Food Center,,1,7656,317764,1,1
+63,33710,966958,Broad-Oregon,,1,7358,317748,1,1
+63,10,966941,Columbus Commons,,1,7654,317754,1,1
+63,10,966940,Food Center,,1,7664,317764,1,1
+63,10,966951,Columbus Commons,,1,7660,317749,1,1
+63,10,966943,Food Center,,1,7659,317764,1,1
+63,10,966906,Columbus Commons via Produce Market,,1,7672,317765,1,1
+63,10,966901,Food Center,,1,7667,317764,1,1
+63,10,966905,Columbus Commons,,1,7668,317754,1,1
+63,10,966907,Food Center,,1,7669,317764,1,1
+63,10,966948,Columbus Commons,,1,7666,317749,1,1
+63,10,966903,Food Center,,1,7671,317764,1,1
+63,10,966909,Columbus Commons via Produce Market,,1,7670,317765,1,1
+63,10,966962,20th-Oregon,,1,7677,317755,1,1
+63,10,966963,Columbus Commons,,1,7678,317747,1,1
+63,10,966908,Food Center,,1,7673,317764,1,1
+63,10,966911,Columbus Commons,,1,7657,317754,1,1
+63,10,966910,Food Center,,1,7674,317764,1,1
+63,10,966912,Columbus Commons,,1,7675,317749,1,1
+63,33710,966959,Broad-Oregon,,1,7682,317762,1,1
+63,10,966913,Food Center,,1,7676,317764,1,1
+63,10,966944,Columbus Commons via Produce Market,,1,7679,317765,1,1
+63,10,966953,Food Center,,1,7680,317764,1,1
+63,10,966857,Columbus Commons,,1,7654,317754,1,1
+63,10,966858,Food Center,,1,7681,317764,1,1
+63,10,966859,Columbus Commons,,1,7659,317749,1,1
+63,10,966860,Food Center,,1,7672,317764,1,1
+63,10,966861,Columbus Commons,,1,7667,317749,1,1
+63,10,966862,Food Center,,1,7668,317764,1,1
+63,10,966863,Columbus Commons,,1,7683,317754,1,1
+63,10,966864,Food Center,,1,7666,317764,1,1
+63,10,966957,Food Center,,1,7669,317764,1,1
+63,10,966866,Columbus Commons,,1,7671,317749,1,1
+63,10,966865,Food Center,,1,7678,317764,1,1
+63,10,966867,Columbus Commons via Produce Market,,1,7673,317765,1,1
+63,10,966956,Food Center,,1,7674,317764,1,1
+63,10,966868,Columbus Commons,,1,7657,317754,1,1
+63,10,966869,Food Center,,1,7675,317764,1,1
+63,10,966870,Columbus Commons,,1,7684,317749,1,1
+63,10,966904,Food Center,,1,7679,317764,1,1
+63,10,966871,Columbus Commons,,1,7680,317754,1,1
+63,10,966872,Food Center,,1,7681,317764,1,1
+63,10,966873,Columbus Commons,,1,7672,317749,1,1
+63,10,966945,Food Center,,1,7667,317764,1,1
+63,10,966874,Food Center,,1,7668,317751,1,1
+63,10,966875,Columbus Commons,,1,7685,317749,1,1
+63,10,966876,Food Center,,1,7678,317764,1,1
+63,10,966946,Food Center,,1,7673,317764,1,1
+63,10,966877,Columbus Commons,,1,7675,317754,1,1
+63,10,966878,Food Center,,1,7679,317764,1,1
+63,10,966879,Columbus Commons,,1,7680,317749,1,1
+63,10,966880,Food Center,,1,7681,317751,1,1
+63,10,966881,Columbus Commons,,1,7667,317749,1,1
+63,10,966882,Food Center,,1,7685,317751,1,1
+63,10,966883,Food Center,,1,7678,317764,1,1
+63,10,966884,Columbus Commons,,1,7675,317754,1,1
+63,10,966885,Food Center,,1,7679,317751,1,1
+63,10,966886,Food Center,,1,7681,317751,1,1
+63,10,966887,Columbus Commons,,1,7685,317749,1,1
+63,10,966888,Food Center,,1,7675,317764,1,1
+63,10,966889,Food Center,,1,7679,317764,1,1
+63,10,966890,Food Center,,1,7685,317760,1,1
