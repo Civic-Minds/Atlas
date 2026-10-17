@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../../shared/config';
+import { minutesText } from '../../../../shared/liveFormat';
 import type { LiveV3 } from '../../../../shared/liveDashboard';
 import type { RouteStripStop } from '../routeStripModel';
 import { mapStep, type MapMeasure } from '../routeMapModel';
@@ -33,7 +34,7 @@ export default function StopHourWidget({ v3, dir, stops, measure, selectedStopId
             const on = s.stopId === selectedStopId;
             return (
               <button key={`${s.stopId}-${gh}`} type="button" tabIndex={-1} onClick={() => onPick(s.stopId)}
-                title={`${s.name}, ${SPARKLINE_HOUR_LABELS[gh] ?? gh % 24}${v != null ? `: ${m === 'extraWait' ? `${Math.round(v * 10) / 10} min` : pct(v)}` : ''}`}
+                title={`${s.name}, ${SPARKLINE_HOUR_LABELS[gh] ?? gh % 24}${v != null ? `: ${m === 'extraWait' ? minutesText(v) : pct(v)}` : ''}`}
                 className="block h-full min-h-0 rounded-[1px] p-0"
                 style={{ background: step == null ? 'var(--border-primary)' : `var(--strip-${fam}-${step})`, opacity: step == null ? 0.35 : 1, outline: on ? '1px solid var(--text-primary)' : undefined }} />
             );

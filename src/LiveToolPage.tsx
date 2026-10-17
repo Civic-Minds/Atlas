@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
-import { delayAmount } from '../shared/headwayText';
+
+import { minutesText } from '../shared/liveFormat';
 import type { AgencySummary } from '../shared/liveAgency';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -67,7 +68,7 @@ function Key({ measure }: { measure: MapMeasure }) {
 /** The lines of a stop's card: the trimmed figures the strip's hover shows, then its extra wait where it has one. */
 function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStripStop): string[] {
   const extra = v3.extraWait?.[band]?.find(x => x.directionId === dir && x.stopId === stop.stopId);
-  return [...stopDetail(stop).lines, ...(extra ? [`Extra wait ${delayAmount(Math.max(0, extra.extraWaitMin))}`] : [])];
+  return [...stopDetail(stop).lines, ...(extra ? [`Extra wait ${minutesText(Math.max(0, extra.extraWaitMin))}`] : [])];
 }
 
 /** The lines of a segment's card: only the segment, never its start stop. */

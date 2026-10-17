@@ -5,6 +5,7 @@
  */
 import { dailyNoise, dateRangeText, weekChangeTone, type CompareKey, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
 import { LATE_TILE_CAPTION } from '../../shared/liveWording';
+import { tenth } from '../../shared/liveFormat';
 export { NOISE_RULE } from '../../shared/liveDashboard';
 
 export type KpiTone = 'better' | 'worse' | 'same';
@@ -24,7 +25,7 @@ export interface Kpi {
 }
 
 const round1 = (x: number) => Math.round(x * 10) / 10;
-const clean = (x: number) => String(round1(x)).replace('-', '−');
+const clean = tenth;
 const pct0 = (x: number) => `${Math.round(x * 100)}%`;
 /** The Bunching tile shows its two parts when the file has them (CIV-302): "7% · 21%" over "too close · too far apart". */
 const bunchSplit = (b: { bunched?: number; gapped?: number }) => b.bunched != null && b.gapped != null;

@@ -1,9 +1,9 @@
 import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
+import { tenth } from '../../../../shared/liveFormat';
 
-const MINUS = '−';
 export const pct = (x: number) => `${Math.round(x * 100)}%`;
 /** A figure to one decimal, with a real minus sign. */
-export const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', MINUS);
+export const num = tenth;
 /** A signed minutes value ("+3.2 min"), also used as the axis value. */
 export const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 

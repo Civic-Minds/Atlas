@@ -2,14 +2,14 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
-  LINK_LABELS, freshness, linkValueText,
+  LINK_LABELS, linkValueText,
   type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
-import { delayAmount, headwayAmount } from '../shared/headwayText';
+import { headwayAmount } from '../shared/headwayText';
+import { minutesText } from '../shared/liveFormat';
 import { SITE_URL } from '../shared/seo';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
-import DevHint from './components/Live/DevHint';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { shortStopName } from './utils/stopLabel';
@@ -33,7 +33,7 @@ import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
 import { BANDS, dirsOf, mins, pct } from './components/Live/sections/figures';
-import { BOUNDARY, routeSubtitle, withNiceNames } from './LiveRoutePage';
+import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
 import { LATE_BY_HOUR_TITLE } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
@@ -134,7 +134,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
       )}
       {extra && (
         <Block>
-          <Fact label="Extra wait" value={delayAmount(Math.max(0, extra.extraWaitMin))} sub={`Scheduled every ${headwayAmount(extra.scheduledGapMin)}`} />
+          <Fact label="Extra wait" value={minutesText(Math.max(0, extra.extraWaitMin))} sub={`Scheduled every ${headwayAmount(extra.scheduledGapMin)}`} />
         </Block>
       )}
       {into && into.n > 0 && (
@@ -244,15 +244,12 @@ export default function LiveExplorePage() {
         <div className="min-w-0">
           <PageTitle>{data.routeTitle || title}</PageTitle>
           <p className="mt-1 text-sm text-[var(--text-muted)]">
-            {routeSubtitle(v3, agency)}
+            <RouteSubtitle v3={v3} agency={agency} route={route} />
           </p>
         </div>
         {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
       </div>
-      {(() => {
-        const f = freshness(v3, route, Date.now());
-        return f.stale ? <><p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{f.text}</p><DevHint hint={f.devHint} /></> : null;
-      })()}
+      <RouteDevHint v3={v3} route={route} />
       {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
 
       <ErrorBoundary label={BOUNDARY('This week compared with last week')}><KpiRow v3={v3} /></ErrorBoundary>

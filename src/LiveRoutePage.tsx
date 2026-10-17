@@ -77,6 +77,25 @@ export function routeSubtitle(v3: LiveV3, agency: string): string {
   return liveSubtitle({ thisWeek: v3.window.dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${v3.totals.runs.toLocaleString()} trips`, agency, upTo: v3.window.dates[v3.window.dates.length - 1] });
 }
 
+/**
+ * The subtitle line. When the analysis is stale, its "data up to Oct 14" segment takes the caution colour and carries
+ * role=status; the age ("Data up to 2026-10-14, 3 days ago.") is that segment's hover text, not a line of its own.
+ */
+export function RouteSubtitle({ v3, agency, route }: { v3: LiveV3; agency: string; route: string }) {
+  const f = freshness(v3, route, Date.now());
+  const line = routeSubtitle(v3, agency);
+  const at = line.lastIndexOf(' · data up to ');
+  if (!f.stale) return <>{line}</>;
+  const stale = 'font-bold text-[var(--status-caution-text)]';
+  if (at < 0) return <>{line}{line ? ' · ' : ''}<span role="status" title={f.text} className={stale}>{f.text}</span></>;
+  return <>{line.slice(0, at)} · <span role="status" title={f.text} className={stale}>{line.slice(at + 3)}</span></>;
+}
+
+/** The rebuild command for a stale analysis: developer hints only (?dev=1), under the header. */
+export function RouteDevHint({ v3, route }: { v3: LiveV3; route: string }) {
+  return <DevHint hint={freshness(v3, route, Date.now()).devHint} className="mt-2" />;
+}
+
 export const BOUNDARY = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
 
 function AnalysisPage() {
@@ -128,15 +147,12 @@ function AnalysisPage() {
           <div className="min-w-0">
             <PageTitle>{data.routeTitle || title}</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {routeSubtitle(v3, agency)}
+              <RouteSubtitle v3={v3} agency={agency} route={route} />
             </p>
           </div>
           {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
         </div>
-        {(() => {
-          const f = freshness(v3, route, Date.now());
-          return f.stale ? <><p className="mt-2 text-sm font-bold text-[var(--status-caution-text)]" role="status">{f.text}</p><DevHint hint={f.devHint} /></> : null;
-        })()}
+        <RouteDevHint v3={v3} route={route} />
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         {view !== 'lite' && <div className={`mt-4 ${PILL_ROW}`}>
           <PillGroup label="View" value={view} onChange={v => setView(v as 'lite' | 'dashboard' | 'analysis')} options={[['lite', 'Summary'], ['dashboard', 'Dashboard'], ['analysis', 'Full analysis']]} />

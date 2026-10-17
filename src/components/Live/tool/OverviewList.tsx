@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { minutesText } from '../../../../shared/liveFormat';
 import type { AgencyRouteRow, AgencySummary } from '../../../../shared/liveAgency';
 import type { LiveV3 } from '../../../../shared/liveDashboard';
 import { routeLabels } from '../../../utils/format';
@@ -13,7 +14,7 @@ function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure):
     case 'late': return r.lateShare == null ? null : { value: r.lateShare, text: pct(r.lateShare) };
     case 'runTime': return r.runTimeOver == null ? null : { value: r.runTimeOver, text: signed(r.runTimeOver) };
     case 'bunching': return r.bunchingShare == null ? null : { value: r.bunchingShare, text: pct(r.bunchingShare) };
-    default: { const w = v3?.weekly?.thisWeek.extraWait; return w ? { value: w.minutes, text: `${Math.round(w.minutes * 10) / 10} min` } : null; }
+    default: { const w = v3?.weekly?.thisWeek.extraWait; return w ? { value: w.minutes, text: minutesText(w.minutes) } : null; }
   }
 }
 

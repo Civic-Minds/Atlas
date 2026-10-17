@@ -1,3 +1,4 @@
+import { devHintsOn } from '../lib/devHints';
 import React from 'react';
 import { ANALYZE_DEV_HINT } from '../lib/liveReportData';
 
@@ -22,7 +23,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error('[ErrorBoundary]', this.props.label ?? 'view', error, info.componentStack);
     // Developers get the rebuild command here; the page text never carries it.
-    if (import.meta.env.DEV && this.props.label?.includes('older version')) console.info(`[Live] Rebuild the analysis with ${ANALYZE_DEV_HINT}`);
+    if (devHintsOn() && this.props.label?.includes('older version')) console.info(`[Live] Rebuild the analysis with ${ANALYZE_DEV_HINT}`);
   }
 
   private handleRetry = () => {

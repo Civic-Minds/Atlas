@@ -133,7 +133,8 @@ describe('Live route dashboard', () => {
     for (const label of ['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
     // The subtitle names both weeks; no separate line under the tiles. The method says it once, in groups.
-    expect(screen.getByText('Week of Oct 8–14, compared with Oct 1–7 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
+    // (The page is stale by the real clock here, so the last segment is its own element; the line reads the same.)
+    expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === 'Week of Oct 8–14, compared with Oct 1–7 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
     expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
     expect(screen.getByText(/This week is .+ and last week is .+: \d+ of \d+ days counted this week, \d+ of \d+ last week\./)).toBeTruthy();
     expect(screen.getAllByText(/days with gaps in our recordings are left out/).length).toBe(1);
@@ -178,7 +179,15 @@ describe('Live route dashboard', () => {
       unmount();
       vi.setSystemTime(new Date('2026-10-25T20:00:00Z'));
       renderPage(ready);
-      expect(await screen.findByRole('status')).toHaveProperty('textContent', expect.stringMatching(/^Data up to 2026-10-14, 11 days ago\.$/));
+      // Staleness is the header line's own "data up to" segment (caution colour, role=status); the age is its hover text. No second line.
+      const status = await screen.findByRole('status');
+      expect(status.textContent).toBe('data up to Oct 14');
+      expect(status.getAttribute('title')).toBe('Data up to 2026-10-14, 11 days ago.');
+      expect(status.className).toContain('status-caution');
+      expect(status.parentElement?.textContent).toBe('Week of Oct 8–14 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14');
+      expect(document.body.textContent).not.toMatch(/11 days ago/);
+      // Developer hints stay off by default, even in a dev build; ?dev=1 turns them on.
+      expect(document.body.textContent).not.toMatch(/Dev:|live:analyze/);
     } finally {
       vi.useRealTimers();
     }

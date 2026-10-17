@@ -48,7 +48,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
     </span>
   );
   const table = top.length ? (
-    <div className={full ? 'mt-4 overflow-x-auto' : 'mt-3'}>
+    <div className={`${full ? 'mt-4' : 'mt-3'} overflow-x-auto`}>
       <SortableDataTable
         caption={full ? 'Stops ranked by the share of late departures' : 'The five stops with the highest share of late departures'}
         defaultSort="late"

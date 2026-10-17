@@ -4,6 +4,7 @@
  * the plain-language sentences, so the page and the tests share one wording.
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
+import { tenth } from './liveFormat.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -342,7 +343,7 @@ export function toCsv(header: readonly string[], rows: ReadonlyArray<ReadonlyArr
 
 // --- running time, extra wait, service delivered and the week-over-week comparison ---
 
-const m1 = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', '\u2212');
+const m1 = tenth;
 const hourName = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'am' : 'pm'}`;
 
 /** "Scheduled 22 min · usually 27 · 1 in 10 over 34 min" (with the hour when one is given). */
