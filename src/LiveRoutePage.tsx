@@ -12,31 +12,27 @@ import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
-import { liveChartHours } from './utils/sparklinePeriods';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
 import LiveExplorePage from './LiveExplorePage';
-import HourBars from './components/charts/HourBars';
 import { KpiRow } from './LiveDashboardView';
-import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
-import { LATE_BY_HOUR_TITLE, lateCount, lateHourLine, liveSubtitle } from '../shared/liveWording';
+import { LATE_BY_HOUR_TITLE, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
+import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
-import { dirsOf, mins, pct } from './components/Live/sections/figures';
+import { dirsOf, mins } from './components/Live/sections/figures';
 
-type Day = 'all' | 'weekday' | 'weekend';
-const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
 
 /** Stop names come upper-case or mixed from the feed; show them the way the map does. */
 export function withNiceNames(v3: LiveV3): LiveV3 {
@@ -61,16 +57,6 @@ const axisMin = mins;
 export type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 
 
-function Tile({ label, value, sub }: { label: string; value: string; sub: string }) {
-  return (
-    <div className={TILE}>
-      <div className="text-xs font-bold text-[var(--text-muted)]">{label}</div>
-      <div className="mt-1 text-3xl font-black tracking-tight">{value}</div>
-      <div className="mt-1 text-xs text-[var(--text-dim)]">{sub}</div>
-    </div>
-  );
-}
-
 function Filters({ v3, dir, setDir }: { v3: LiveV3; dir: number | null; setDir: (d: number | null) => void }) {
   const dirs = dirsOf(v3, null);
   return (
@@ -78,51 +64,6 @@ function Filters({ v3, dir, setDir }: { v3: LiveV3; dir: number | null; setDir: 
       <PillGroup label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
         options={[['both', 'Both directions'], ...dirs.map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
     </div>
-  );
-}
-
-/** B1: how well the route keeps to its timetable, at timepoints (where the timetable really schedules a time). */
-function Adherence({ data, dir, lateMin }: { data: DashboardBandData; dir: number | null; lateMin: number }) {
-  const countsFor = (d: Day) => { const b = data.adherence.timepoints[d]; return dir == null ? b.overall : b.byDirection[String(dir)]; };
-  const all = countsFor('all');
-  const parts = [{ name: 'Ahead', color: 'var(--status-caution-text)' }, { name: 'On time', color: 'var(--status-positive-text)' }, { name: 'Late', color: 'var(--status-negative-text)' }];
-  return (
-    <Section id="b1" title={LATE_BY_HOUR_TITLE}>
-      {all && all.n > 0 ? (
-        <>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">Share of trips that left the end of the line more than 5 min late.</p>
-          <div className="mt-3 grid max-w-2xl grid-cols-3 gap-2">
-            {DAYS.map(([k, label]) => {
-              const c = countsFor(k);
-              return c && c.n > 0
-                ? <Tile key={k} label={label} value={pct(c.lateShare)} sub={`late, of ${c.n.toLocaleString()} · ${pct(c.earlyShare)} ahead`} />
-                : <Tile key={k} label={label} value="–" sub="too few departures" />;
-            })}
-          </div>
-          <h3 className="mt-6 text-base font-black">By hour of the day</h3>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">How many departures are ahead, on time or late in each hour. Hover over an hour to see its time of day.</p>
-          <div className="mt-3 grid gap-6 md:grid-cols-3">
-            {DAYS.map(([k, label]) => {
-              const c = countsFor(k);
-              const axis = liveChartHours(h => DAYS.some(([d]) => (data.adherence.timepoints[d].byHour.find(x => x.hour === h)?.n ?? 0) >= 30));
-              return (
-                <HourBars
-                  hoverLine={(t, c) => lateHourLine(t, lateCount(c.parts[2], c.n), c.n)}
-                  departures
-                  hours={axis}
-                  key={k}
-                  title={label}
-                  showKey={k === 'weekend'}
-                  ariaLabel={`${label}: share of departures ahead of the timetable, on time and late, by hour of the day. ${c ? pct(c.lateShare) : '–'} late overall.`}
-                  parts={parts}
-                  columns={data.adherence.timepoints[k].byHour.map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
-                />
-              );
-            })}
-          </div>
-        </>
-      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time.</p>}
-    </Section>
   );
 }
 
@@ -216,7 +157,7 @@ function AnalysisPage() {
         ) : (<>
         <Filters v3={v3} dir={dir} setDir={setDir} />
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><Adherence data={bandData} dir={dir} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="bars" id="b1" title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Run time')}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where delays build up')}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops with the most delay')}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops with the most delay" id="b2" intro notRanked p90Width={10} /></ErrorBoundary>

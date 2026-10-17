@@ -15,3 +15,6 @@ export const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', 
 
 /** A time of day in a sentence ("all day", "in the AM peak"). */
 export const BAND_WORDS: Record<DashboardBand, string> = { all: 'all day', amPeak: 'in the AM peak', midday: 'at midday', pmPeak: 'in the PM peak', evening: 'in the evening' };
+
+/** The kinds of day, "All days" first. */
+export const DAYS: ['all' | 'weekday' | 'weekend', string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];

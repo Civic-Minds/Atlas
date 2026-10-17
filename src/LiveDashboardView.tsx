@@ -1,34 +1,26 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { periodKeyForHour } from '../shared/config';
 import { dateRangeText, runTimeTileStretch, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
-import { kpiTiles, lateForDays, weekNotComparableLine, type DayKind, type Kpi } from './utils/liveKpi';
+import { kpiTiles, weekNotComparableLine, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import { withoutDevHint } from './lib/liveReportData';
-import HourSpark, { type HourValue } from './components/charts/HourSpark';
 import DirectionStrip from './components/Live/DirectionStrip';
 import { routeStripFromV3 } from './components/Live/routeStripModel';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { shortStopName } from './utils/stopLabel';
-import { liveChartHours } from './utils/sparklinePeriods';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
-import LegendItem from './components/ui/LegendItem';
 import { SectionTitle } from './components/ui/PageTitle';
-import { lateCount, lateHourLine } from '../shared/liveWording';
 import MethodSection from './components/Live/sections/MethodSection';
+import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
 import { NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText } from '../shared/liveWording';
 
-const pct = (x: number) => `${Math.round(x * 100)}%`;
-const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', '−');
-const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 const MIN_N = 30;
-const DAY_KINDS: [DayKind, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
 
 
 function Delta({ k }: { k: Kpi }) {
@@ -111,54 +103,6 @@ export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption?: string | 
   );
 }
 
-/** Late share and lateness by hour for all days, weekdays and weekends, side by side on one scale. */
-function Days({ v3, data, band, dir, allOnly = false, oneDay }: { v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; /** The lite view: the All days chart only. */ allOnly?: boolean; /** The Yesterday view: that day's figures in place of the week's. */ oneDay?: { label: string; late: { share: number; n: number; days: number } | null; hours: HourValue[] } }) {
-  const healthy = v3.weekly?.thisWeek.healthyDates ?? v3.window.dates;
-  const cols = oneDay ? [{ kind: 'all' as const, label: oneDay.label, late: oneDay.late, hours: oneDay.hours }] : DAY_KINDS.filter(([kind]) => !allOnly || kind === 'all').map(([kind, label]) => {
-    const block = data.adherence.timepoints[kind];
-    const late = lateForDays(block.byDate, healthy, kind);
-    const hours: HourValue[] = block.byHour.filter(h => h.n > 0 && (band === 'all' || periodKeyForHour(h.hour) === band)).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));
-    return { kind, label, late, hours };
-  });
-  const max = Math.max(0.1, ...cols.flatMap(c => c.hours.filter(h => h.n >= MIN_N).map(h => h.value)));
-  const scale = { min: 0, max: Math.ceil(max * 10) / 10 };
-  return (
-    <section aria-labelledby="dash-days" className="mt-10">
-      <SectionTitle id="dash-days">Late, by day and hour</SectionTitle>
-      <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
-        How often trips leave the end of the line more than 5 min late, by kind of day and the hour they start.
-        {dir != null && ' Both directions: this view is not split by direction yet.'}
-      </p>
-      <div className={`mt-4 grid gap-x-8 gap-y-6 ${allOnly ? '' : 'md:grid-cols-3'}`}>
-        {cols.map(c => (
-          <div key={c.kind} className="min-w-0">
-            <div className="flex items-baseline justify-between gap-2">
-              <h3 className="text-base font-black">{c.label}</h3>
-              <span className="text-sm text-[var(--text-dim)]">{c.late ? `${c.late.days} ${c.late.days === 1 ? 'day' : 'days'}` : ''}</span>
-            </div>
-            {c.late && c.late.n > 0 ? (
-              <>
-                <div className="mt-1 text-2xl font-black tracking-tight" title={`${c.late.n.toLocaleString()} departures`}>{pct(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>
-                <div className="mt-2">
-                  {c.hours.length ? (
-                    <HourSpark departures height={allOnly ? 120 : undefined} hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)} values={c.hours} hours={liveChartHours(h => cols.some(cc => (cc.hours.find(x => x.hour === h)?.n ?? 0) >= 30))} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
-                      ariaLabel={`${c.label}: share of departures late by hour of the day, ${pct(c.late.share)} late overall.`} />
-                  ) : <p className="text-sm text-[var(--text-muted)]">No departures in this part of the day.</p>}
-                </div>
-              </>
-            ) : <p className="mt-1 text-sm text-[var(--text-muted)]">No {c.label.toLowerCase()} with good recordings this week.</p>}
-          </div>
-        ))}
-      </div>
-      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
-        <LegendItem color="var(--status-negative-text)">Late %</LegendItem>
-        <LegendItem kind="line" color="var(--text-dim)">Departures</LegendItem>
-      </div>
-      {!allOnly && <p className="mt-2 text-xs text-[var(--text-dim)]">Faded bars are based on fewer than {MIN_N} departures. The percentages count only days with good recordings, as the tiles do; the hourly bars count every day of the week.</p>}
-    </section>
-  );
-}
-
 /** Run time against the schedule by the hour a trip starts, one chart per direction on one scale. */
 /** Each direction as a line of stops coloured by typical delay or by bunching, with where it starts marked. */
 const PERIODS: [DashboardBand, string][] = [['amPeak', 'AM peak'], ['midday', 'midday'], ['pmPeak', 'PM peak'], ['evening', 'evening']];
@@ -237,7 +181,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
     <>
       <ErrorBoundary label={bad('The week comparison')}>{yesterday ? <YesterdayTiles y={yesterday} /> : <KpiRow v3={v3} />}</ErrorBoundary>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
-      <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={null} allOnly oneDay={yesterday ? yesterdayHours(yesterday) : undefined} /></ErrorBoundary>
+      <ErrorBoundary label={bad('Late by day and hour')}><LateByHourSection chart="spark" title="Late, by day and hour" v3={v3} data={data} band={band} dir={null} allOnly oneDay={yesterday ? yesterdayHours(yesterday) : undefined} /></ErrorBoundary>
       <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
     </>
   );
@@ -250,7 +194,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
       </div>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad('Run time')}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
-      <ErrorBoundary label={bad('Late by day and hour')}><Days v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
+      <ErrorBoundary label={bad('Late by day and hour')}><LateByHourSection chart="spark" title="Late, by day and hour" v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
       <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title="Stops most often late" boundary={bad('The stop list')}
         footerLink={{ text: 'Every stop, in Full analysis', href: '?view=analysis#b2', onClick: () => toFull('b2') }} />
       <MethodSection scope="week" v3={v3} toFull={toFull} />

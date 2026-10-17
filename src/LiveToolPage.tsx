@@ -23,7 +23,7 @@ import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure, type MapSegm
 import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
 import OverviewList from './components/Live/tool/OverviewList';
-import LateByHourWidget from './components/Live/tool/LateByHourWidget';
+import LateByHourSection, { routeLateHours, routeLateOverall } from './components/Live/sections/LateByHourSection';
 import ProblemsWidget from './components/Live/tool/ProblemsWidget';
 import { worstStopRows } from './components/Live/sections/WorstStopsSection';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
@@ -107,16 +107,13 @@ const MATH: Partial<Record<Kpi['key'], string>> = { late: cap(LATE_DEFINITION), 
 /** The route panel's tiles are bare (figure and change): the explanations are shown once, on the left. */
 const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.map(k => ({ key: `tile-${k.key}`, size: 'small', tile: true, node: <KpiTile k={k} bare /> }));
 
-/** The late-by-hour values of a route's whole day. */
-const routeHours = (v3: LiveV3) => v3.bands.all.adherence.timepoints.all.byHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n }));
-
 /** The network's summary, always on the left: the week's figures as one-line rows, then late departures by hour. */
 function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const hours = networkHours(s);
   const tiles = agencyKpiTiles(s);
   return [
     ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <KpiRows tiles={tiles} math={MATH} caption={NOISE_RULE} /> }] : []),
-    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourWidget hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} /> }] : []),
+    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} /> }] : []),
   ];
 }
 
@@ -139,12 +136,12 @@ function routeWidgets({ data, v3, dir, band, setPick }: {
 }): PanelWidget[] {
   const bandData = v3.bands[band] as DashboardBandData;
   const worst = worstStopRows(v3, bandData, dir, data.uncertainStart ?? [], 3, stopId => setPick({ kind: 'stop', stopId }));
-  const hours = routeHours(v3);
+  const hours = routeLateHours(v3);
   const hasRunTime = !!v3.runningTime?.bands[band]?.[String(dir)];
   return [
     ...tileWidgets(weekly(v3)),
     ...(hasRunTime ? [{ key: 'run-time', size: 'small' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
-    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourWidget hours={hours} band={band} overall={v3.bands.all.adherence.timepoints.all.overall?.lateShare ?? null} /> }] : []),
+    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops with the most delay" rows={worst} /> }] : []),
   ];
 }

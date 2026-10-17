@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router';
-import { ATLAS_MODE, FEATURES, periodKeyForHour } from '../shared/config';
+import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
   LINK_LABELS, freshness, linkValueText,
   type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart,
@@ -19,14 +19,13 @@ import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import LiveOffNotice from './components/LiveOffNotice';
-import HourBars from './components/charts/HourBars';
 import type { RouteStripMode } from './components/Live/RouteStrip';
 import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
 import { delayText, type RouteStripStop } from './components/Live/routeStripModel';
 import { KpiRow } from './LiveDashboardView';
-import Section from './components/Live/sections/Section';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
+import LateByHourSection from './components/Live/sections/LateByHourSection';
 import MethodSection from './components/Live/sections/MethodSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
@@ -34,7 +33,7 @@ import BunchingSection from './components/Live/sections/BunchingSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
 import { BANDS, dirsOf, mins, pct } from './components/Live/sections/figures';
 import { BOUNDARY, routeSubtitle, withNiceNames } from './LiveRoutePage';
-import { lateCount, lateHourLine, LATE_BY_HOUR_TITLE } from '../shared/liveWording';
+import { LATE_BY_HOUR_TITLE } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
 const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
@@ -184,32 +183,6 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
   );
 }
 
-/** Share of departures ahead, on time and late by hour for the chosen kind of day. */
-function Late({ data, dir, day, band, lateMin }: { data: DashboardBandData; dir: number | null; day: Day; band: DashboardBand; lateMin: number }) {
-  const block = data.adherence.timepoints[day];
-  const c = dir == null ? block.overall : block.byDirection[String(dir)];
-  const label = DAYS.find(([k]) => k === day)![1];
-  const parts = [{ name: 'Ahead', color: 'var(--status-caution-text)' }, { name: 'On time', color: 'var(--status-positive-text)' }, { name: 'Late', color: 'var(--status-negative-text)' }];
-  if (!c || c.n === 0) return <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time.</p>;
-  return (
-    <div className="mt-4 grid items-start gap-6 md:grid-cols-[14rem_minmax(0,1fr)]">
-      <div className={TILE}>
-        <div className="text-xs font-bold text-[var(--text-muted)]">{label}</div>
-        <div className="mt-1 text-3xl font-black tracking-tight">{pct(c.lateShare)}</div>
-        <div className="mt-1 text-xs text-[var(--text-dim)]">late, of {c.n.toLocaleString()} · {pct(c.earlyShare)} ahead</div>
-        <div className="mt-1 text-xs text-[var(--text-dim)]">{lateMin}+ min</div>
-      </div>
-      <HourBars
-                  hoverLine={(t, c) => lateHourLine(t, lateCount(c.parts[2], c.n), c.n)}
-                  departures
-        ariaLabel={`${label}: share of departures ahead of the timetable, on time and late, by hour of the day. ${pct(c.lateShare)} late overall.`}
-        parts={parts}
-        columns={block.byHour.filter(h => band === 'all' || periodKeyForHour(h.hour) === band).map(h => ({ hour: h.hour, n: h.n, parts: [h.earlyShare, h.onTimeShare, h.lateShare] }))}
-      />
-    </div>
-  );
-}
-
 export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
@@ -293,10 +266,8 @@ export default function LiveExplorePage() {
         <Main v3={v3} band={band} dir={dir} uncertain={uncertain} sel={sel} setSel={setPicked} />
       </ErrorBoundary>
 
-      <Section shrink id="x-late" title={LATE_BY_HOUR_TITLE}>
-        <div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>
-        <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><Late data={bandData} dir={dir} day={day} band={band} lateMin={v3.thresholds.lateAtOrAboveMin} /></ErrorBoundary>
-      </Section>
+      <LateByHourSection chart="bars" id="x-late" shrink title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} day={day} boundary={BOUNDARY(LATE_BY_HOUR_TITLE)}
+        before={<div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>} />
       <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY('Run time')} />
       <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY('Where delays build up')} />
       <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY('Extra wait')} />
