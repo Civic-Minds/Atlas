@@ -1,19 +1,20 @@
 import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
 import { titleCase } from '../../../utils/format';
 import { shortStopName } from '../../../utils/stopLabel';
-import { PatternRows, RowLegend } from '../sections/RunTimeSection';
+import { PatternRows, RowLegend, runTimeStretchOf } from '../sections/RunTimeSection';
 import { runTimeRowScale, runTimeRows } from '../sections/runTimeRows';
 import Widget from './Widget';
 
-/** The picked direction's run time as dots on a line, the same rows as the Run time section: the main stretch, then the longer patterns. */
+/** The picked direction's main pattern as one dot on a line, the same row as the Run time section's (longer patterns stay on the route pages). */
 export default function RunTimeWidget({ v3, dir, band }: { v3: LiveV3; dir: number; band: DashboardBand }) {
   if (!v3.runningTime?.bands[band]?.[String(dir)]) return null;
-  const rows = runTimeRows(v3, band, [dir], n => shortStopName(titleCase(n)))[dir] ?? [];
-  const scale = runTimeRowScale(rows);
+  const rows = (runTimeRows(v3, band, [dir], n => shortStopName(titleCase(n)))[dir] ?? []).filter(r => r.main);
+  const stretch = runTimeStretchOf(v3, dir);
   return (
     <Widget title="Run time" size="medium" action={<RowLegend dense inline />}>
-      <div className="text-sm leading-5 text-[var(--text-secondary)]">{v3.directionLabels[String(dir)]}</div>
-      <PatternRows rows={rows} scale={scale} dense />
+      <div className="text-xs font-bold leading-4 text-[var(--text-secondary)]">{v3.directionLabels[String(dir)]}</div>
+      {stretch && <div className="text-xs leading-4 text-[var(--text-muted)]">{stretch}</div>}
+      <PatternRows rows={rows} scale={runTimeRowScale(rows)} dense hideMainLabel={!!stretch} />
     </Widget>
   );
 }

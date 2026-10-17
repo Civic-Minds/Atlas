@@ -7,7 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 - **The route header fits one line at desktop width (local only)**: "…· data up to Oct 14" no longer wraps to a second line; "View on Live map" moved up beside the title.
 - **Stops tables fit a phone (local only)**: on the Dashboard, Full analysis and Explore the stops tables (and the delay-stretch table) fit the screen with no sideways scrolling; the less important columns are left out at that width, with their figures in the row's hover text.
-- **The planner shows run time as dots, and "data up to" (local only)**: the right panel's Run time card draws the picked direction's patterns as dots on a line, like the route pages, and the planner's top bar says "data up to Oct 14" for the picked route or the network, in the caution colour when stale.
+- **The planner shows run time as dots, and "data up to" (local only)**: the right panel's Run time card draws the picked direction's main pattern as one dot on a line (with its stretch line and legend), like the route pages, and the planner's top bar says "data up to Oct 14" for the picked route or the network, in the caution colour when stale.
 - **Run-time dots show their numbers (local only)**: the usual and timetable minutes sit at the dot and the tick, the slow end's number at the tail, and "min" on the scale, placed so no two numbers touch; the stretch line "Run time over 22 stops, … all trips" is back above each direction's rows.
 - **Run time tile says "both directions" (local only)**: the route pages' Run time tile now says what it covers.
 - **The late-by-hour chart's top number no longer touches the hover hint above it (local only)**.

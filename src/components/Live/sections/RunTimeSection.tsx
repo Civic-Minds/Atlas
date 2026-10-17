@@ -116,7 +116,7 @@ export function PatternRows({ rows, scale, dense = false, hideMainLabel = false 
   const shown = rows.filter(r => !r.thin || !r.main);
   if (!shown.length) return null;
   return (
-    <div className="mt-2">
+    <div className={dense ? 'mt-1' : 'mt-2'}>
       <div className={`relative ${GUTTER}`}>
         <div className="pointer-events-none absolute inset-y-0 left-0" style={{ right: 28 }} aria-hidden="true">
           <div className="absolute inset-y-0" style={{ left: INSET, right: INSET }}>
