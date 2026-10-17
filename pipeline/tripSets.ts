@@ -561,7 +561,11 @@ export function periodOneGap(stretchTimes: readonly number[], start: number, end
   const mid = (start + end) / 2;
   if (!(t[0] < mid && t[t.length - 1] >= mid)) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);
+  // One gap inside steady service only where the plain median and the #772 reading agree: where
+  // the gaps alternate, the reading rises toward the long gaps (GO 33 PM: every 69, with a 158 min
+  // gap), which is not steady service with one gap, so no wording and the card keeps its wait.
   const every = medianHeadwayInWindow(t, start, end, 3, true);
+  if (every !== medianHeadwayInWindow(t, start, end, 3)) return null;
   if (every == null || every <= 0 || isSustainedHeadway(gaps, every)) return null;
   const gap = Math.max(...gaps);
   const rest = [...gaps];

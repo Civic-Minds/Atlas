@@ -51,6 +51,10 @@ describe('the spacing reads alternating gaps as the period values do (#772)', ()
       1460.8, 1461.8, 1470.8, 1471.8, 1480.8, 1481.8, 1490.8, 1491.8, 1500.8, 1501.8, 1510.8, 1511.8, 1520.8, 1523.8, 1530.8, 1531.8];
     expect(periodEdge(sat, 1380, 1560, 29)).toEqual({ until: 1531.8, every: 9 });
   });
+  it('GO 33 weekday PM to York Mills (15:31, 15:40, 18:18, 18:58): no one-gap wording where the readings disagree', () => {
+    // Plain median 40, the #772 reading 69: not steady service with one gap, so the card keeps its wait.
+    expect(periodOneGap([931, 940, 1098, 1138], 900, 1140)).toBeNull();
+  });
   it('TTC 300 Sunday AM (the Bloor-Danforth replacement every 4-5 until 8:16) keeps every 4', () => {
     const sun = [364.8, 369.8, 374.8, 379.8, 384.8, 389.8, 394.8, 399.8, 404.8, 409.8, 414.8, 419.8, 423.8, 428.8, 432.8, 436.8, 440.8,
       444.8, 448.8, 452.8, 456.8, 460.8, 464.8, 468.8, 472.8, 476.8, 480.8, 484.8, 488.8, 492.8, 496.8];
