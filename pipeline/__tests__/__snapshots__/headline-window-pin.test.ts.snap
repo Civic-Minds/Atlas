@@ -46,6 +46,7 @@ exports[`processed fixture output is pinned > matches the recorded hash for ever
   "mata-42-sunday": "262 features 9eb3a09db5df",
   "mata-42-weekday": "518 features 6ff7b659af1c",
   "mbta-1-indigenous-peoples-day": "4 features 2e44df1a2828",
+  "mbta-23-sunday": "63 features 8d7f6c0bd9f3",
   "mbta-436-weekday": "122 features 6b4a2f68e7c7",
   "mbta-455-wonderland": "72 features b448aefff5d5",
   "mbta-7-weekday": "40 features 0389dc7aee15",
