@@ -55,6 +55,14 @@ describe('route card rows when the route has no regular service (#954)', () => {
     expect(screen.queryByText(/every 40 min/)).toBeNull();
   });
 
+  it('a direction without pipeline fields stays hidden when the route has no regular service, as on main', () => {
+    const bare = { routeId: '8', routeShortName: '8', routeType: 3, day: 'Weekday', tier: '10', serviceClass: 'regular', directionId: 1,
+      headsign: "Fisherman's Wharf", headway: 12, headwayByPeriod: { pmPeak: 12 }, headwayByPeriodSustained: { pmPeak: true } } as unknown as ShapeProperties;
+    renderRows([cityCollege, bare], 'pmPeak', 'sfmta');
+    expect(screen.queryByText(/every 12 min/)).toBeNull();
+    expect(screen.getAllByText(LONG).length).toBe(2);
+  });
+
   it('keeps every row hidden on data without the one-gap flag (before the rebuild), as main does', () => {
     const strip = (f: ShapeProperties) => { const { stretchPeriodOneGap: _, ...rest } = f as any; return rest as ShapeProperties; };
     renderRows([strip(cityCollege), strip(wharf)], 'pmPeak', 'sfmta');
@@ -91,7 +99,7 @@ const desplaines = { ...cta1, directionId: 1, headsign: 'Desplaines & Harrison T
   directionFilterHeadwayByPeriod: { midday: 326 }, stretchPeriodHeadway: { midday: 326 } } as unknown as ShapeProperties;
 
 describe('a number that is one gap between a few departures (#955)', () => {
-  it('TTC 10 midday: no row, list or scheduled line says every 315', () => {
+  it('TTC 10 midday: no row or list says every 315', () => {
     renderRows([vicPark, donMills], 'midday');
     expect(screen.queryByText(/315/)).toBeNull();
     expect(screen.getAllByText(LONG).length).toBeGreaterThanOrEqual(2);
@@ -108,11 +116,11 @@ describe('a number that is one gap between a few departures (#955)', () => {
   });
 
   it('a flagged row with a steady value of its own keeps it, on the route card and the stop card', () => {
-    const steady = { ...vicPark, headwayByPeriod: { midday: 70 }, headwayByPeriodSustained: { midday: true },
-      routeFilterHeadwayByPeriod: { midday: 70 }, directionFilterHeadwayByPeriod: { midday: 70 } } as unknown as ShapeProperties;
+    // The row's own steady value (30) differs from the route and direction value (315).
+    const steady = { ...vicPark, headwayByPeriod: { midday: 30 }, headwayByPeriodSustained: { midday: true } } as unknown as ShapeProperties;
     renderRows([steady], 'midday');
-    // Shown in the card's rounded style (70 reads about every 60).
-    expect(screen.getByText(/about every \d+ min/)).toBeTruthy();
+    expect(screen.getByText(/about every 30 min/)).toBeTruthy();
+    expect(screen.queryByText(/315/)).toBeNull();
     expect(screen.queryByText(LONG)).toBeNull();
     expect(hasRegularServiceInPeriod(steady, 'midday')).toBe(true);
   });

@@ -39,7 +39,7 @@ import {
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
-import { hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, routeAllDayContract, routeContract, routeValueIsOneGap, variantRowHeadway } from '../../../utils/stretchCard';
+import { hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, routeAllDayContract, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
@@ -358,7 +358,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const scheduleHeadline = (() => {
     if (contract) {
       if (contract.filterValue == null) return contract.runs ? `Scheduled: ${NO_REGULAR_SERVICE_LABEL}` : null;
-      if (routeValueIsOneGap(currentRoute.directions, period)) return `Scheduled: ${NO_REGULAR_SERVICE_LABEL}`;
       return `Scheduled: ${contract.range ? headwayAboutRange(contract.range[0], contract.range[1]) : headwayAbout(contract.filterValue)}`;
     }
     const cores = displayGroups.map(group => {
@@ -724,7 +723,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       // that is one gap between a few departures is not a cadence (TTC 10 weekday midday to
                       // Victoria Park, 09:07 then 14:22: "every 315"); a row with a steady value of its own keeps it.
                       const rowNoRegular = hoveredHour == null && (
-                        (noRegularService && (period === 'all' || !hasRegularServiceInPeriod(d, period) || displayH == null))
+                        (noRegularService && (period === 'all' || d.stretchPeriodOneGap === undefined || !hasRegularServiceInPeriod(d, period) || displayH == null))
                         || isOneGapRow(d, period));
                       const isLimited = rowNoRegular
                         ? true
