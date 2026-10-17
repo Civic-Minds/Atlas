@@ -13,6 +13,7 @@ import {
   type AgencyPageSummary,
 } from './agencyPages';
 import { modeLabelSortIndex } from './modes';
+import { BETA_BUILD } from './config';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL } from './seo';
@@ -54,9 +55,24 @@ export interface AreaPageData {
 
 const SPAN_VARIES_HOURS = 3;
 
-/** Agencies of the area that have a page (weekday midday service), in the area's own order. */
-export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies'>, all: ReadonlyMap<string, AgencyPageSummary>): AgencyPageSummary[] {
-  return area.agencies.map(s => all.get(s)).filter((a): a is AgencyPageSummary => !!a && a.routes.some(r => r.midday != null));
+/**
+ * The agencies counted on an area page (they have a page: weekday midday service), each with only the
+ * routes counted there. CIV-274: a route counts in every area where at least AREA_ROUTE_MIN_STOPS of
+ * its stops fall inside the official boundary (`areas`, from build-agency-page-summaries), whichever
+ * agency runs it; an agency is listed when one of its routes counts. Summaries without area tags
+ * (older files) fall back to the area's own agency list.
+ */
+export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies' | 'slug'>, all: ReadonlyMap<string, AgencyPageSummary>): AgencyPageSummary[] {
+  const hasPage = (a: AgencyPageSummary) => a.routes.some(r => r.midday != null);
+  const tagged = [...all.values()].some(a => a.routes.some(r => r.areas !== undefined));
+  if (!tagged) return area.agencies.map(s => all.get(s)).filter((a): a is AgencyPageSummary => !!a && hasPage(a));
+  const out: AgencyPageSummary[] = [];
+  for (const a of all.values()) {
+    if ((a.betaOnly && !BETA_BUILD) || !hasPage(a)) continue;
+    const routes = a.routes.filter(r => r.areas?.includes(area.slug));
+    if (routes.length > 0) out.push({ ...a, routes, routeCount: routes.length });
+  }
+  return out;
 }
 
 export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, AgencyPageSummary>, releaseDate: string | null): AreaPageData {

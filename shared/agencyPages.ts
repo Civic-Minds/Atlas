@@ -30,6 +30,8 @@ export interface AgencyPageRoute {
   limited?: Array<'am' | 'midday' | 'pm' | 'evening' | 'overnight'>;
   /** Lower end of a shared-stretch range per period, where alternating branches combine (display only). */
   shared?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', number>>;
+  /** CIV-274: paged areas (config/areas slugs) with at least AREA_ROUTE_MIN_STOPS of this route's stops inside. */
+  areas?: string[];
 }
 
 export interface AgencyPageIdentity {

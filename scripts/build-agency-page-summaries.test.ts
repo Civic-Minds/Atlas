@@ -127,3 +127,19 @@ describe('stretch filter fields (frequency focus step 7)', () => {
     expect(r.limited ?? []).not.toContain('midday');
   });
 });
+
+describe('summarize: areas per route (CIV-274)', () => {
+  const sq: Array<[number, number]> = [[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]];
+  const boundaries = { metro: { bbox: [0, 0, 10, 10] as [number, number, number, number], polygons: [[sq]] } };
+  const stop = (id: string, lon: number, lat: number, routeIds: string[]) => ({ geometry: { type: 'Point', coordinates: [lon, lat] }, properties: { stopId: id, routeIds } });
+  it('tags a route with the areas holding 2+ of its stops, from every direction', () => {
+    const s = summarize([
+      line('66', 0, 30), line('66', 1, 30), line('21', 0, 30),
+      stop('a', 1, 1, ['66']), stop('b', 2, 2, ['66']), stop('c', 20, 5, ['66', '21']), stop('d', 9, 9, ['21']),
+    ] as any, 'x', null, boundaries);
+    expect(Object.fromEntries(s.routes.map(r => [r.name, r.areas]))).toEqual({ '21': [], '66': ['metro'] });
+  });
+  it('leaves areas out without boundaries', () => {
+    expect(summarize([line('66', 0, 30)] as any, 'x', null).routes[0].areas).toBeUndefined();
+  });
+});
