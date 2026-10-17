@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
 import { TIME_PERIODS } from '../../shared/config';
 
 describe('computePeriodCoverageHeadways', () => {
@@ -567,5 +567,44 @@ describe('TIER_RANK', () => {
     // Surface tiers keep their relative steps (releaseDiff counts route shifts in steps).
     expect(TIER_RANK['20'] - TIER_RANK['10']).toBe(2);
     expect(TIER_RANK['8']).toBeDefined();
+  });
+});
+
+describe('headlineWindowValue (same values as the old pasted chains)', () => {
+  // The chains this helper replaced, written out in full as the reference.
+  const oldChain = (times: number[], typical: boolean, allDay: boolean) =>
+    medianHeadwayInWindow(times, 540, 900, 3, typical)
+      ?? medianHeadwayInWindow(times, 900, 1140, 3, typical)
+      ?? (allDay ? sustainedMedianHeadwayInWindow(times, 360, 1320, 3, undefined, typical) : null);
+  const every = (start: number, end: number, gap: number) => {
+    const out: number[] = [];
+    for (let t = start; t <= end; t += gap) out.push(t);
+    return out;
+  };
+  const samples: Record<string, number[]> = {
+    empty: [],
+    middayEvery10: every(540, 900, 10),
+    pmPeakOnly: every(930, 1130, 15),
+    allDayOnly: [370, 700 + 400, 1300],
+    thin: [600, 700],
+    alternating: [540, 548, 570, 578, 600, 608, 630, 638, 660],
+    overnight: every(120, 300, 30),
+    holeAtMidday: [545, 560, 880, 895, 1000, 1010, 1030],
+  };
+
+  for (const [name, times] of Object.entries(samples)) {
+    for (const typical of [false, true]) {
+      for (const allDay of [true, false]) {
+        it(`${name} (typical=${typical}, allDay=${allDay})`, () => {
+          expect(headlineWindowValue(times, { typical, allDay })).toBe(oldChain(times, typical, allDay));
+        });
+      }
+    }
+  }
+
+  it('names the windows the pipeline reads', () => {
+    expect(HEADLINE_WINDOWS).toEqual({ midday: { start: 540, end: 900 }, pmPeak: { start: 900, end: 1140 }, allDay: { start: 360, end: 1320 } });
+    expect(RAIL_TIER_WINDOW).toEqual({ start: 570, end: 870 });
+    expect(HEADLINE_MIN_DEPARTURES).toBe(3);
   });
 });

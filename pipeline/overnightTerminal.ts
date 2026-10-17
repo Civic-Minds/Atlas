@@ -1,5 +1,5 @@
 import type { DayType } from '../shared/dayTypes.js';
-import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, sparseOvernightHeadway } from './headway-utils.js';
+import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, HEADLINE_WINDOWS, sparseOvernightHeadway } from './headway-utils.js';
 
 /**
  * The day type whose early-morning trips carry on a day type's night (#896): Saturday night runs
@@ -35,7 +35,7 @@ export function overnightWindowTimes(own: readonly number[], nextDay: readonly n
  */
 export function isNightRouteDirection(stopTimes: Iterable<readonly number[]>): boolean {
   const all = [...stopTimes];
-  return !all.some(times => times.some(t => t >= 540 && t < 1140)) && all.some(times => times.some(t => t >= 1380));
+  return !all.some(times => times.some(t => t >= HEADLINE_WINDOWS.midday.start && t < HEADLINE_WINDOWS.pmPeak.end)) && all.some(times => times.some(t => t >= 1380));
 }
 
 /**

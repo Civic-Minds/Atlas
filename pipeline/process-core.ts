@@ -23,7 +23,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -369,9 +369,7 @@ export function selectTerminalDepartureTimes(
 function pooledTerminalHeadway(times: readonly number[] | undefined): number | null {
   if (!times || times.length === 0) return null;
   const sorted = [...times].sort((a, b) => a - b);
-  return medianHeadwayInWindow(sorted, 540, 900, 3, true)
-    ?? medianHeadwayInWindow(sorted, 900, 1140, 3, true)
-    ?? sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true);
+  return headlineWindowValue(sorted, { typical: true });
 }
 
 /**
@@ -384,10 +382,10 @@ function pooledTerminalHeadway(times: readonly number[] | undefined): number | n
  */
 export function railMiddayTier(times: readonly number[], day: DayType, routeType: string, tiers: readonly number[]): string | null {
   const sorted = [...new Set(times)].sort((a, b) => a - b);
-  const windowed = sorted.filter(t => t >= 570 && t <= 870);
+  const windowed = sorted.filter(t => t >= RAIL_TIER_WINDOW.start && t <= RAIL_TIER_WINDOW.end);
   if (windowed.length < 3) return null;
   const span = windowed[windowed.length - 1] - windowed[0];
-  if (span <= BURST_MAX_SPAN_MINUTES || span / (870 - 570) < 0.4) return null;
+  if (span <= BURST_MAX_SPAN_MINUTES || span / (RAIL_TIER_WINDOW.end - RAIL_TIER_WINDOW.start) < 0.4) return null;
   const gaps = windowed.slice(1).map((t, i) => t - windowed[i]);
   const tier = determineTierWithEdgeGapAllowance(
     gaps, windowed.length, windowed[windowed.length - 1] - windowed[0], [...tiers],
@@ -407,16 +405,15 @@ export function scopedTerminalHeadline(
   // Unique times: phase 1 drops duplicate departures, and a zero-minute gap would loosen the
   // every-gap allowance (wsf 73 Bainbridge: 161 trips, 23 distinct times).
   const sorted = [...new Set(times ?? [])].sort((a, b) => a - b);
-  const hasDaytime = (medianHeadwayInWindow(sorted, 540, 900, 3)
-    ?? medianHeadwayInWindow(sorted, 900, 1140, 3)) != null;
+  const hasDaytime = headlineWindowValue(sorted, { allDay: false }) != null;
   if (!hasDaytime) return null;
   // The sample must be all-day service, not a burst of its own (cta 82 Homan & Congress: three
   // PM short turns minutes apart would read 8): at least four departures over 6-22h, spread
   // over more than phase 2's burst span.
-  const daytime = sorted.filter(t => t >= 360 && t <= 1320);
+  const daytime = sorted.filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end);
   if (new Set(daytime).size < MIN_ALL_DAY_TERMINAL_DEPARTURES
     || daytime[daytime.length - 1] - daytime[0] <= BURST_MAX_SPAN_MINUTES) return null;
-  const headway = sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true);
+  const headway = sustainedMedianHeadwayInWindow(sorted, HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, HEADLINE_MIN_DEPARTURES, undefined, true);
   if (headway == null) return null;
   const dayConfig = DEFAULT_CRITERIA.dayTypes[day];
   if (railLike || !dayConfig) return { headway, tier: null };
@@ -689,7 +686,7 @@ export const SIBLING_TERMINAL_MAX_METERS = 250;
  * all day (SEPTA 40 eastbound Lombard / via Pine St, CTA 26 and 20, TTC 134).
  */
 export function hasMiddayReading(times: readonly number[] | undefined): boolean {
-  const midday = [...new Set(times ?? [])].filter(t => t >= 540 && t <= 900).sort((a, b) => a - b);
+  const midday = [...new Set(times ?? [])].filter(t => t >= HEADLINE_WINDOWS.midday.start && t <= HEADLINE_WINDOWS.midday.end).sort((a, b) => a - b);
   return midday.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES && midday[midday.length - 1] - midday[0] > BURST_MAX_SPAN_MINUTES;
 }
 
@@ -789,19 +786,6 @@ export async function processGtfsBuffer(
   const results = analyzed.map(result =>
     options?.slug === 'niagara' ? normalizeNrtAnalysisResult(result) : result,
   );
-
-  // Build lookup from (route::dir::DayType) → departure times for period headway computation.
-  // When multiple raw entries cover the same route/dir/dayType (Mon–Fri), keep the one with
-  // the most trips as the representative day.
-  const rawByDayType = new Map<string, number[]>();
-  for (const r of raw) {
-    const dayType = (['Monday','Tuesday','Wednesday','Thursday','Friday'] as const).includes(r.day as never)
-      ? 'Weekday'
-      : r.day === 'Saturday' ? 'Saturday' : 'Sunday';
-    const k = `${r.route}::${r.dir}::${dayType}`;
-    const existing = rawByDayType.get(k);
-    if (!existing || r.departureTimes.length > existing.length) rawByDayType.set(k, r.departureTimes);
-  }
 
   // Per-stop headway computation (AI-96): map serviceId → dayTypes, then tripId → groups,
   // so each service block contributes to every applicable weekday/weekend bucket.
@@ -1183,7 +1167,6 @@ export async function processGtfsBuffer(
       : `${groupName}::${result.dir}::${result.day}::${branchKey}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const incumbent = dedupedPattern.get(dedupeKey);
-    const isRailRoute = String(route?.route_type) === '2';
     const initialPeriodHeadways = computePeriodHeadways(result.times);
     const notRated = result.partialWeekday || result.previousNightTailOnly || result.serviceClass === 'irregular' || result.tier === 'span';
     const newHeadway = notRated ? null : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
@@ -1213,7 +1196,7 @@ export async function processGtfsBuffer(
       dedupeHeadway: newDedupeHeadway,
       headway: newHeadway,
       departures: new Set(result.times).size,
-      hasDaytime: result.times.some(t => t >= 540 && t < 1140),
+      hasDaytime: result.times.some(t => t >= HEADLINE_WINDOWS.midday.start && t < HEADLINE_WINDOWS.pmPeak.end),
       runsInDay: runsInDay(initialPeriodHeadways),
       runsMidday: initialPeriodHeadways.midday != null,
       runsOnRepDay: newRunsOnRepDay,
@@ -1866,8 +1849,6 @@ export async function processGtfsBuffer(
   const rowRunsAtNight = new Map<GeoJsonFeature, boolean>();
   const rowNightStops = new Map<GeoJsonFeature, string[]>();
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
-    // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
-    feature.properties.frequentService = false;
     feature.properties.researchFrequentService = { daytime15: false, daytime30: false, extended15: false, extended30: false };
     feature.properties.nightService30 = false;
     feature.properties.nightService60 = false;
@@ -1955,14 +1936,12 @@ export async function processGtfsBuffer(
           // route's pre-dawn pieces never become a daytime headline (TTC 354: 30 -> 10).
           && [...headsignMap.values()].some(times => {
             const sorted = [...times].sort((a, b) => a - b);
-            return (medianHeadwayInWindow(sorted, 540, 900, 3) ?? medianHeadwayInWindow(sorted, 900, 1140, 3)) != null;
+            return headlineWindowValue(sorted, { allDay: false }) != null;
           });
       })()
       && ![...ownShapeMap.values()].some(times => {
         const sorted = [...times].sort((a, b) => a - b);
-        return (medianHeadwayInWindow(sorted, 540, 900, 3)
-          ?? medianHeadwayInWindow(sorted, 900, 1140, 3)
-          ?? sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3)) != null;
+        return headlineWindowValue(sorted) != null;
       });
     const shapeMap = !shapeOffRepresentativeDay && !shapeIsThinHeadsignFragment ? ownShapeMap : undefined;
     // Rail feeds commonly publish several physical shapes for one displayed line and
@@ -2126,17 +2105,15 @@ export async function processGtfsBuffer(
         if (isPooled && v != null) usedOwnFallback = true;
         return v;
       };
-      const hw = windowHw(540, 900)             // midday 9–15h
-              ?? windowHw(900, 1140)            // PM peak 15–19h
-              ?? windowHw(360, 1320, true);     // last resort: raw all-day 6–22h
+      const hw = windowHw(HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end)   // midday 9–15h
+              ?? windowHw(HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end)   // PM peak 15–19h
+              ?? windowHw(HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, true);   // last resort: raw all-day 6–22h
       if (hw != null) allStopHw[stopId] = hw;
 
       // The plain values feed the #772 branch decision, which compares the own pattern's stops
       // with a shared terminal: they read the own list at a pooled stop too (ttc 38 weekday: the
       // pooled terminal's plain 7 would have beaten the branch's 15).
-      const hwPlain = medianHeadwayInWindow(own, 540, 900, 3)
-              ?? medianHeadwayInWindow(own, 900, 1140, 3)
-              ?? sustainedMedianHeadwayInWindow(own, 360, 1320, 3);
+      const hwPlain = headlineWindowValue(own);
       if (hwPlain != null) allStopHwPlain[stopId] = hwPlain;
       const middayPlain = medianHeadwayInWindow(forCrossMidnightWindow(own, PERIODS.midday.end), PERIODS.midday.start, PERIODS.midday.end, 3);
       if (middayPlain != null) allStopMiddayHwPlain[stopId] = middayPlain;
@@ -2212,9 +2189,7 @@ export async function processGtfsBuffer(
     const ownStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = { ...allStopPeriodHw };
     for (const stopId of pooled?.pooledStops ?? []) {
       const own = [...(metricStopMap.get(stopId) ?? [])].sort((a, b) => a - b);
-      const hw = medianHeadwayInWindow(own, 540, 900, 3, true)
-        ?? medianHeadwayInWindow(own, 900, 1140, 3, true)
-        ?? sustainedMedianHeadwayInWindow(own, 360, 1320, 3, undefined, true);
+      const hw = headlineWindowValue(own, { typical: true });
       if (hw != null) ownStopHw[stopId] = hw; else delete ownStopHw[stopId];
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
@@ -2340,7 +2315,7 @@ export async function processGtfsBuffer(
         // midday reading at its origin but three arrivals at its last stop is not a variant
         // (dayton 06 Saturday via Pentagon, every two hours, both directions went dark).
         if (hasMiddayReading(times)) return false;
-        deps += times.length; daytime += times.filter(t => t >= 360 && t <= 1320).length;
+        deps += times.length; daytime += times.filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end).length;
       }
       if (deps === 0 || daytime * 2 < deps) return false;
       const siblings = middayMembers(poolKey);
@@ -2375,14 +2350,14 @@ export async function processGtfsBuffer(
     const routeTierScale = (): readonly number[] => getTiersForCriteria(featureRoute?.route_type ?? '', DEFAULT_CRITERIA.dayTypes[day as DayType]?.tiers ?? SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides);
     const stopHasReading = (stopId: string): boolean => {
       const sorted = [...new Set(stopMetricMap.get(stopId) ?? [])].sort((a, b) => a - b);
-      const daytime = sorted.filter(t => t >= 360 && t <= 1320);
+      const daytime = sorted.filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end);
       return daytime.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES;
     };
     // The line runs by day when at least half of its stop departures fall in 6-22h; a night
     // route (actransit 800 Sunday) keeps its overnight headline and is never "limited" here.
     const lineRunsByDay = (): boolean => {
       let deps = 0, daytime = 0;
-      for (const times of stopMetricMap.values()) { deps += times.length; daytime += times.filter(t => t >= 360 && t <= 1320).length; }
+      for (const times of stopMetricMap.values()) { deps += times.length; daytime += times.filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end).length; }
       return daytime * 2 >= deps;
     };
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
@@ -2746,8 +2721,8 @@ export async function processGtfsBuffer(
       // many (cta J14 Saturday to Madison & Jefferson: four trips on a 32-stop shape, terminal
       // pooled every 10, own departures read 455). A real branch (ttc 38 from Rouge Hill, 81
       // own departures against a terminal pooled every 7) is not sparse and keeps #772's rule.
-      const ownTerminalDaytime = terminalId ? new Set([...(metricStopMap.get(terminalId) ?? [])].filter(t => t >= 360 && t <= 1320)).size : 0;
-      const mergedTerminalDaytime = terminalId ? new Set([...(stopMetricMap.get(terminalId) ?? [])].filter(t => t >= 360 && t <= 1320)).size : 0;
+      const ownTerminalDaytime = terminalId ? new Set([...(metricStopMap.get(terminalId) ?? [])].filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end)).size : 0;
+      const mergedTerminalDaytime = terminalId ? new Set([...(stopMetricMap.get(terminalId) ?? [])].filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end)).size : 0;
       const ownTerminalHasReading = !terminalId || (ownTerminalDaytime >= MIN_ALL_DAY_TERMINAL_DEPARTURES
         && !(ownTerminalDaytime < MIN_POOLED_TIER_DEPARTURES && mergedTerminalDaytime >= 2 * ownTerminalDaytime));
       const lineHasReading = railFeature || isMapless || !terminalId || !lineRunsByDay() || poolUsed || scoped != null
@@ -2897,9 +2872,6 @@ export async function processGtfsBuffer(
     // Frequent Network (#294 follow-on): entirely within normal (non-extended-hour) GTFS notation,
     // so unlike Night Service this needs no service_id union across the midnight boundary --
     // terminalRawTimes alone is the right input. Weekday only, per docs/research/frequent-service-research-2026-09/CRITERIA.md.
-    feature.properties.frequentService = (day === 'Weekday' && terminalRawTimes)
-      ? hasSustainedFrequentService(terminalRawTimes)
-      : false;
     feature.properties.researchFrequentService = terminalRawTimes
       ? computeResearchFrequentService(terminalRawTimes)
       : { daytime15: false, daytime30: false, extended15: false, extended30: false };

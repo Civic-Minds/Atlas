@@ -31,10 +31,13 @@ import { agencyShortLabel, trimRedundantCity } from '../shared/agencyPages';
 import { computeConnections, extractStops, type AgencyStops } from './agency-connections';
 import { countryForRegion } from '../shared/regionCountry';
 import { agencyDisplayParts } from '../src/utils/format';
+import { areasForStops, type AreaBoundaries } from '../shared/areaBoundaries';
 
 const OUT = 'shared/data/agency-pages.json';
 // Slugs with a page, small enough for the map bundle (the agency card links only to real pages).
 const SLUGS_OUT = 'shared/data/agency-page-slugs.json';
+// CIV-274: official boundaries of the paged areas (scripts/build-area-boundaries.ts).
+const BOUNDARIES = 'shared/data/area-boundaries.json';
 const base = (process.env.R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
 const only = new Set(process.argv.slice(2).filter(arg => !arg.startsWith('--')));
 
@@ -61,6 +64,8 @@ export function summarize(
   features: Feature[],
   slug: string,
   lastRefreshedAt: string | null,
+  /** CIV-274: each route is tagged with the paged areas where enough of its stops are. */
+  boundaries?: AreaBoundaries,
 ): Pick<AgencyPageSummary, 'routeCount' | 'routes' | 'span' | 'lastRefreshedAt' | 'sat' | 'sun'> {
   const lines = features.filter(f => f.geometry?.type === 'LineString' && f.properties.day === 'Weekday');
   normalizeRouteFilterFeatures(lines);
@@ -70,9 +75,11 @@ export function summarize(
   // Per route: its direction/branch rows, so the numbers come from the shared list rule (routeListDisplay:
   // the map's number, the slower direction's; "limited" when it runs but has no trustworthy cadence).
   const rows = new Map<string, ShapeProperties[]>();
+  const keyOfRouteId = new Map<string, string>();
   for (const f of lines) {
     const p = f.properties;
     const key = routeGroupKey(p.routeShortName, p.routeId);
+    if (p.routeId != null) keyOfRouteId.set(String(p.routeId), key);
     const shortName = typeof p.routeShortName === 'string' ? p.routeShortName.trim() : '';
     const longName = typeof p.routeLongName === 'string' && p.routeLongName.trim() ? p.routeLongName.trim() : null;
     const prev = routes.get(key);
@@ -103,6 +110,21 @@ export function summarize(
     }
     if (limited.length) r.limited = limited;
     if (Object.keys(shared).length) r.shared = shared;
+  }
+  if (boundaries) {
+    // A route's stops: the stop points that list it, over every direction and branch it runs on weekdays.
+    const stopsOf = new Map<string, Array<[number, number]>>();
+    for (const f of features) {
+      if (f.geometry?.type !== 'Point') continue;
+      const c = (f.geometry as unknown as { coordinates?: [number, number] }).coordinates;
+      if (!Array.isArray(c) || c.length < 2) continue;
+      const keys = new Set(((f.properties.routeIds as string[] | undefined) ?? []).map(id => keyOfRouteId.get(String(id))).filter((k): k is string => !!k));
+      for (const k of keys) (stopsOf.get(k) ?? stopsOf.set(k, []).get(k)!).push([c[0], c[1]]);
+    }
+    for (const [key, r] of routes) {
+      const areas = areasForStops(stopsOf.get(key) ?? [], boundaries);
+      r.areas = areas;
+    }
   }
   const hasDay = (day: string) => features.some(f => f.geometry?.type === 'LineString' && f.properties.day === day
     && Object.values((f.properties.headwayByHour as Record<string, number | null> | undefined) ?? {}).some(v => v != null));
@@ -185,6 +207,7 @@ async function main() {
   const publicSlugs = new Set((JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')) as Catalog).agencies.map(a => a.slug));
   for (const a of catalog.agencies) a.betaOnly = publicSlugs.has(a.slug) ? undefined : true;
   const previous: AgencyPageSummaries | null = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : null;
+  const boundaries: AreaBoundaries | undefined = existsSync(BOUNDARIES) ? JSON.parse(readFileSync(BOUNDARIES, 'utf8')) : undefined;
 
   // --identity-only: refresh names, cities and short names from config with no network.
   if (process.argv.includes('--identity-only')) {
@@ -210,7 +233,7 @@ async function main() {
         const data = await getJson<{ features: Feature[] }>(`${base}/${release.agencyPrefix}/${a.slug}.json`);
         const { stopCount, stops } = extractStops(data.features);
         stopsCache.set(a.slug, stops);
-        results.set(a.slug, { ...identityFor(a), ...summarize(data.features, a.slug, a.lastRefreshedAt ?? null), stops: stopCount });
+        results.set(a.slug, { ...identityFor(a), ...summarize(data.features, a.slug, a.lastRefreshedAt ?? null, boundaries), stops: stopCount });
       } catch (err) {
         // Keep the previous numbers for an agency that failed, rather than dropping its page.
         failed.push(a.slug);

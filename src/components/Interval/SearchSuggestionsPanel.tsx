@@ -19,7 +19,6 @@ export interface RecentRoute {
   shortName: string;
   longName: string | null;
   agencyName: string;
-  headway?: number | null;
 }
 
 export interface SuggestedRoute {
