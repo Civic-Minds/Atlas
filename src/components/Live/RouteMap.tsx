@@ -48,8 +48,8 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
   const ready = useRef(false);
   const pick = useRef(onPick);
   pick.current = onPick;
-  const latest = useRef({ model, measure, selected });
-  latest.current = { model, measure, selected };
+  const latest = useRef({ model, measure, selected, frameKey, padding });
+  latest.current = { model, measure, selected, frameKey, padding };
   const framed = useRef<string | null>(null);
   const [at, setAt] = useState<{ x: number; y: number; w: number } | null>(null);
   const anchorRef = useRef(anchor);
@@ -67,7 +67,8 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
   const draw = () => {
     const map = mapRef.current;
     if (!map || !ready.current) return;
-    const { model: m, measure: me, selected: sel } = latest.current;
+    // The load handler calls an older draw: everything it frames with is read from the latest props.
+    const { model: m, measure: me, selected: sel, frameKey: key, padding: pad } = latest.current;
     const seg = map.getSource('segments') as maplibregl.GeoJSONSource | undefined;
     const stp = map.getSource('stops') as maplibregl.GeoJSONSource | undefined;
     if (!seg || !stp) return;
@@ -87,14 +88,14 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
         geometry: { type: 'Point' as const, coordinates: s.lonLat },
       })),
     });
-    if (framed.current !== frameKey && (m.stops.length || m.segments.length)) {
-      framed.current = frameKey;
+    if (framed.current !== key && (m.stops.length || m.segments.length)) {
+      framed.current = key;
       const b = new maplibregl.LngLatBounds();
       m.stops.forEach(s => b.extend(s.lonLat));
       m.segments.forEach(s => s.coordinates.forEach(c => b.extend(c)));
       // The map sits in a flex layout whose size can change after the first paint: measure it again before framing.
       map.resize();
-      map.fitBounds(b, { padding: padding ?? { top: 72, bottom: 72, left: 72, right: 72 }, maxZoom: 15, duration: 0 });
+      map.fitBounds(b, { padding: pad ?? { top: 72, bottom: 72, left: 72, right: 72 }, maxZoom: 15, duration: 0 });
     }
   };
 

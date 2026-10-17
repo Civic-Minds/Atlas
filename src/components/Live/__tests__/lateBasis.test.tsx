@@ -87,3 +87,22 @@ describe('visible days, peak label and run time wording', () => {
     expect(runTimeDiffText(0, false)).toBe('same as the timetable');
   });
 });
+
+describe('thin figures say why, and one scale serves the row', () => {
+  beforeEach(() => { vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }); });
+  it('writes the hover text as a visible line on dimmed cards', () => {
+    render(<LateByHourSection chart="bars" v3={v3} data={v3.bands.all as unknown as DashboardBandData} band="all" dir={null} />);
+    // Every card of this fixture rests on 1 or 2 good days: a tile line and a chart line each.
+    expect(screen.getAllByText('Few measurements: treat with care.').length).toBeGreaterThanOrEqual(6);
+  });
+  it('writes it in the planner chart too, without adding height (it takes the idle hover line)', () => {
+    render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.2, n: 200 }]} band="all" overall={0.2} days={2} ofDays={7} />);
+    expect(screen.getByText('Few measurements: treat with care.')).toBeTruthy();
+  });
+  it('scales every chart of a row to the highest bar of any, so none is cut off', () => {
+    const hi = { ...v3, daily: { ...v3.daily, '2026-10-10': { ...(v3.daily as Record<string, object>)['2026-10-10'], lateByHour: [{ hour: 8, n: 5, lateShare: 0.33 }] } } } as unknown as LiveV3;
+    const { container } = render(<LateByHourSection chart="spark" v3={hi} data={hi.bands.all as unknown as DashboardBandData} band="all" dir={null} title="Late" />);
+    const ticks = [...container.querySelectorAll('[data-tick]')].map(t => t.textContent);
+    expect(ticks.some(t => t === '40%')).toBe(true); // 33% rounds up to the 40% tick even though that hour has 5 departures
+  });
+});

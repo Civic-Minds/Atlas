@@ -142,7 +142,10 @@ describe('Live route dashboard', () => {
     // (The page is stale by the real clock here, so the last segment is its own element; the line reads the same.)
     expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === 'Week of Oct 8–14, compared with Oct 1–7 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
     expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
-    expect(screen.getByText(/This week is .+ and last week is .+: \d+ of \d+ days counted this week, \d+ of \d+ last week\./)).toBeTruthy();
+    // The weeks, then the days counted on a line of their own; the method is open (no disclosure).
+    expect(screen.getByText(/This week is .+ and last week is .+\./)).toBeTruthy();
+    expect(screen.getByText(/^\d+ of \d+ days counted this week, \d+ of \d+ last week\.$/).className).toMatch(/block/);
+    expect(document.querySelector('details')).toBeNull();
     expect(screen.getAllByText(/days with gaps in our recordings are left out/).length).toBe(1);
     // One paragraph: each group opens with its bold run-in label.
     for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByText(`${g}.`, { selector: 'strong' })).toBeTruthy();

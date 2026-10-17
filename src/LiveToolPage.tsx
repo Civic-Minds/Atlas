@@ -91,6 +91,8 @@ function MapCard({ title, lines }: { title: string; lines: string[] }) {
 
 const PANEL_PAD = { top: 24, bottom: 24, left: 410, right: 410 };
 const NARROW_PAD = { top: 56, bottom: 24, left: 24, right: 24 };
+/** What the route's week figures cover (the Run time tile's own scope wording). */
+const BOTH_DIRECTIONS = 'both directions';
 const weekly = (v3: LiveV3) => (v3.weekly ? kpiTiles(v3.weekly, weekDailyValues(v3)) : []);
 
 /** The network's late share by hour, from each route's own by-hour shares weighted by their departures. */
@@ -107,7 +109,11 @@ const MATH: Partial<Record<Kpi['key'], string>> = { late: LATE_SHORT, extraWait:
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The route panel's tiles are bare (figure and change): the explanations are shown once, on the left. */
-const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => tiles.map(k => ({ key: `tile-${k.key}`, size: 'small', tile: true, node: <KpiTile k={k} bare /> }));
+const tileWidgets = (tiles: ReturnType<typeof weekly>): PanelWidget[] => [
+  ...tiles.map(k => ({ key: `tile-${k.key}`, size: 'small' as const, tile: true, node: <KpiTile k={k} bare /> })),
+  // The week's figures cover the whole route, while Run time and the stops follow the direction pills: said in the grid's empty cell (no extra height).
+  ...(tiles.length % 2 === 1 ? [{ key: 'tiles-scope', size: 'small' as const, node: <p className="m-0 self-end px-1 text-xs text-[var(--text-dim)]">{BOTH_DIRECTIONS}</p> }] : []),
+];
 
 /** The network's summary, always on the left: the week's figures as one-line rows, then late departures by hour. */
 function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
@@ -146,7 +152,7 @@ function routeWidgets({ data, v3, dir, band, setPick }: {
   return [
     ...tileWidgets(weekly(v3)),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
-    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} ofDays={routeLateOfDays(v3)} /> }] : []),
+    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} ofDays={routeLateOfDays(v3)} scope={BOTH_DIRECTIONS} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" rows={worst} /> }] : []),
   ];
 }
@@ -204,12 +210,26 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
     : null;
   const summary = useMemo(() => [headingWidget(agency.toUpperCase()), ...summaryWidgets(s, band)], [s, band, agency]);
   const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick }) : !route ? networkWidgets(s, (r, d, p) => { setRoute(r); setDir(d); setPick(p); }) : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
+  // The map note sits over the map's bottom edge: the route is framed above it (its measured height plus its inset and a gap).
+  const [noteEl, setNoteEl] = useState<HTMLElement | null>(null);
+  const [noteH, setNoteH] = useState(0);
+  useEffect(() => {
+    if (!noteEl) { setNoteH(0); return; }
+    const read = () => setNoteH(Math.ceil(noteEl.getBoundingClientRect().height));
+    read();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(read);
+    ro.observe(noteEl);
+    return () => ro.disconnect();
+  }, [noteEl]);
+  const framePad = (pad: typeof PANEL_PAD) => ({ ...pad, bottom: Math.max(pad.bottom, noteH ? noteH + 12 + 12 : 0) });
+  const note = ready?.note && <p ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-10 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
   const mapEl = (
     <RouteMap
-      model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={wide ? PANEL_PAD : NARROW_PAD}
+      model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={framePad(wide ? PANEL_PAD : NARROW_PAD)}
       controlsRight={wide ? 'calc(24.5rem + 24px)' : 12}
       onPick={p => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); }}
-      frameKey={ready && route ? `route-${ready.route}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
+      frameKey={ready && route ? `route-${ready.route}-${noteH}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
     />
   );
   // The direction switch sits in the top bar with the other pills.
@@ -218,7 +238,6 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
   const routeName = routeSlot && ready && route ? createPortal(<h2 className="m-0 whitespace-nowrap text-sm font-bold">{ready.routeTitle || `${agency.toUpperCase()} ${ready.route}`}</h2>, routeSlot) : null;
   // The newest day in the figures, in the header: the picked route's, or the network summary's week.
   const upTo = dataSlot ? createPortal(<DataUpTo dates={v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? []} route={v3 ? ready?.route : ''} />, dataSlot) : null;
-  const note = ready?.note && <p className="pointer-events-none absolute bottom-0 left-0 right-10 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
   if (!wide) {
     // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
     return (

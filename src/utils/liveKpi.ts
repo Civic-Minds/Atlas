@@ -106,6 +106,16 @@ export function daysCountedText(w: NonNullable<LiveV3['weekly']>): string | null
   return t.healthyDates.length < t.dates.length ? `${t.healthyDates.length} of ${t.dates.length} days counted this week` : null;
 }
 
+/** The same line in two parts, so the days counted can stand on a line of their own: "This week is Oct 8–14 and last week is Oct 1–7." and "6 of 7 days counted this week, 7 of 7 last week." */
+export function weekWindowParts(w: NonNullable<LiveV3['weekly']>): { weeks: string; days: string } {
+  const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
+  const weeks = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}.`;
+  return {
+    weeks: w.comparable ? weeks : `Not enough days of good recordings to compare two weeks: each needs at least ${w.minHealthyDays}. ${weeks}`,
+    days: `${w.thisWeek.healthyDates.length} of ${w.thisWeek.dates.length} days counted this week, ${w.lastWeek.healthyDates.length} of ${w.lastWeek.dates.length} last week.`,
+  };
+}
+
 /** The two weeks and how many days of each were counted, for "How this is measured" (the recording-gaps rule is a Limits line). */
 export function weekWindowLine(w: NonNullable<LiveV3['weekly']>): string {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');

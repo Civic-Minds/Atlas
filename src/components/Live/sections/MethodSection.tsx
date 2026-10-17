@@ -2,11 +2,14 @@ import type { ReactNode } from 'react';
 import { dateRangeText, type LiveV3 } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { builtText, coveredRoutesText, METHOD_GROUPS } from '../../../../shared/liveWording';
-import { weekWindowLine } from '../../../utils/liveKpi';
+import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
-import MethodFootnote, { Term } from '../MethodFootnote';
+import MethodFootnote, { OwnLine, Term } from '../MethodFootnote';
 import { aheadLine, bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
+
+/** The two weeks, then the days counted on a line of their own. */
+const weekWindowItems = (w: NonNullable<LiveV3['weekly']>): ReactNode[] => { const p = weekWindowParts(w); return [p.weeks, <OwnLine key="days">{p.days}</OwnLine>]; };
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 
@@ -24,9 +27,9 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
     const { v3, toFull } = props;
     if (!v3.weekly) return null;
     return (
-      <MethodFootnote id="dash-method" collapsible after={<p className="mt-2 text-xs"><ArrowLink href="?view=analysis#method" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('method'); }}>The full method, in Full analysis</ArrowLink></p>}
+      <MethodFootnote id="dash-method" after={<p className="mt-2 text-xs"><ArrowLink href="?view=analysis#method" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('method'); }}>The full method, in Full analysis</ArrowLink></p>}
         groups={[
-          { label: METHOD_GROUPS.data, items: [weekWindowLine(v3.weekly)] },
+          { label: METHOD_GROUPS.data, items: weekWindowItems(v3.weekly) },
           { label: METHOD_GROUPS.colours, items: [colourLine] },
           { label: METHOD_GROUPS.limits, items: [recordingGapsLine] },
         ]} />
@@ -39,7 +42,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
     const lo = v3.leftOut;
     const unknown = v3.serviceDelivered?.overall.unknown ?? 0;
     return (
-      <MethodFootnote id="method" collapsible groups={[
+      <MethodFootnote id="method" groups={[
       { label: METHOD_GROUPS.numbers, items: [
         lateLine,
         aheadLine(Math.abs(v3.thresholds.earlyAtOrBelowMin)),
@@ -52,7 +55,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
       ] },
       { label: METHOD_GROUPS.data, items: [
         `Last ${v3.window.days} service days, ${dateRangeText(first, last)}: ${v3.totals.runs.toLocaleString()} trips and ${v3.totals.stopPassages.toLocaleString()} stop departures.`,
-        v3.weekly && weekWindowLine(v3.weekly),
+        ...(v3.weekly ? weekWindowItems(v3.weekly) : []),
         positionsLine,
         tripMatchLine(true),
         data.replacementBuses && <Term t="Replacement buses">this route is run by replacement buses in this timetable, so every figure describes the buses.</Term>,
@@ -85,7 +88,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
             delaysStartLine,
           ] },
           { label: METHOD_GROUPS.data, items: [
-            w && weekWindowLine({ ...w, health: [] }),
+            ...(w ? weekWindowItems({ ...w, health: [] }) : []),
             positionsLine,
             tripMatchLine(),
             <Term t="Covered">{coverage}{s.held.length ? ` (${s.held.map(h => h.route).join(', ')} not included)` : ''}.</Term>,

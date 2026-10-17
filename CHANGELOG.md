@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The planner frames the route above the map note (local only)**: the 510's south end ran under the "Delay at the first few stops..." note and off the screen; the map now leaves room for the note's measured height, and a stale frame set when the map loaded is gone.
+- **Agency "Where bunching forms" shows the rise, like "Where delays start" (local only)**: each stretch has its percentage (the figure the planner shows).
+- **"How this is measured" is open on every Live page (local only)**: no click to read it, and the days counted ("6 of 7 days counted this week, 7 of 7 last week.") stand on their own line.
+- **Dimmed cards say why (local only)**: a late figure resting on fewer than 3 good days shows "Few measurements: treat with care." in view, not only on hover.
+- **One scale for the three late-by-hour charts always fits the highest bar (local only)**: the 510 weekend's 33% hour was cut off at the 30% line; the row's scale now reaches the tallest bar of any chart, faded ones included.
+- **The planner says its week figures are for both directions (local only)**: the route tiles and the late-by-hour chart cover the whole route while Run time and the stops follow the direction pills.
 - **Worst stops, run time by hour, delay build-up, bunching, extra wait and one direction's late share now count only good days (local only)**: they still included days with recording gaps, so a bad day could move them while the tiles ignored it (CIV-318). Needs the analysis re-run.
 - **Bunching tile shows last week in the same two parts (local only)**: "last week 12% · 7%" under "14% · 8%", with the arrow from the two weeks' totals; before it showed one total that read as a different measure.
 - **No arrow when the numbers match (local only)**: a tile whose this-week and last-week figures read the same now says "same as last week" instead of an arrow next to an equal number.

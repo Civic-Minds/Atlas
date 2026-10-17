@@ -224,7 +224,7 @@ export default function LiveAgencyPage() {
         </Section>
 
         <Section id="agency-bunching" title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up.">
-          <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" />
+          <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" valueHeader="Added" format={x => pct(x)} />
         </Section>
 
         <MethodSection scope="agency" s={s} />

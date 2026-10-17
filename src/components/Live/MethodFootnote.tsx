@@ -3,6 +3,11 @@ import { Fragment, type ReactNode } from 'react';
 /** One group of "How this is measured": a small label, then one line per item. Falsy items are skipped. */
 export interface MethodGroup { label: string; items: ReactNode[] }
 
+/** An item that stands on a line of its own inside the running paragraph. */
+export function OwnLine({ children }: { children: ReactNode }) {
+  return <span className="block">{children}</span>;
+}
+
 /** A glossary line: the term in bold, a colon, then its short definition. */
 export function Term({ t, children }: { t: string; children: ReactNode }) {
   return <><strong className="font-semibold text-[var(--text-secondary)]">{t}:</strong> {children}</>;
@@ -11,9 +16,9 @@ export function Term({ t, children }: { t: string; children: ReactNode }) {
 /**
  * "How this is measured" at the foot of every Live page: one look everywhere, small muted type (12px, tight lines), compact, full content
  * width, as one paragraph. The notes come in labelled groups (METHOD_GROUPS in shared/liveWording), one line per item, no bullets.
- * `collapsible` folds it behind its title (the route pages); the agency page shows it open. `after` sits below.
+ * Always open: the explanations of the math stay visible on every page. `after` sits below.
  */
-export default function MethodFootnote({ id, collapsible = false, groups, after }: { id?: string; collapsible?: boolean; groups: MethodGroup[]; after?: ReactNode }) {
+export default function MethodFootnote({ id, groups, after }: { id?: string; groups: MethodGroup[]; after?: ReactNode }) {
   const title = 'How this is measured';
   // One compact paragraph (CIV-303): each group opens with its bold run-in label, the notes follow inline.
   const body = (
@@ -33,12 +38,7 @@ export default function MethodFootnote({ id, collapsible = false, groups, after 
       {after}
     </>
   );
-  return collapsible ? (
-    <details className="mt-12 border-t border-[var(--border-primary)] pt-3" id={id}>
-      <summary className="cursor-pointer text-xs font-semibold text-[var(--text-secondary)]">{title}</summary>
-      {body}
-    </details>
-  ) : (
+  return (
     <section className="mt-12 border-t border-[var(--border-primary)] pt-3" id={id} aria-label={title}>
       <h2 className="text-xs font-semibold text-[var(--text-secondary)]">{title}</h2>
       {body}
