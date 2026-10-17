@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The planner's Run time line names its direction (local only)**: "Westbound: Usually 31 min · timetable 34 · 1 in 10 over 37", so it is clearly not the whole-route figure on the tile.
 - **Every route shows in the planner's left list (local only)**: tighter spacing in the summary and the list lets all nine TTC routes fit at laptop sizes with nothing cut, so any route can be picked.
 - **Late is defined once, everywhere on Live (local only)**: "more than 5½ min behind the timetable: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute" replaces two definitions that gave different numbers for one threshold; the agency page, route pages, planner and Docs glossary all use it.
 - **Live route strips colour delay only at timepoints (local only)**: every in-between stop (its timetable time is interpolated) is drawn hatched grey under the existing "Less exact" key, and its popover says "Less exact" with no typical delay or late share, so it no longer reads "Usually on time" beside a late share.

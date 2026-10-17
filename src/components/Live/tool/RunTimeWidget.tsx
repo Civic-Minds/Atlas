@@ -10,7 +10,7 @@ export default function RunTimeWidget({ v3, dir, band }: { v3: LiveV3; dir: numb
   const stretch = runTimeStretchLabel(v3.runningTime?.stretch?.[String(dir)], n => shortStopName(titleCase(n)));
   return (
     <Widget title="Run time" size="small">
-      <div className="text-sm leading-5 text-[var(--text-muted)]">Usually {Math.round(f.typicalMin)} min · timetable {Math.round(f.scheduledMin)} · 1 in 10 over {Math.round(f.p90Min)}</div>
+      <div className="text-sm leading-5 text-[var(--text-muted)]">{v3.directionLabels[String(dir)]}: Usually {Math.round(f.typicalMin)} min · timetable {Math.round(f.scheduledMin)} · 1 in 10 over {Math.round(f.p90Min)}</div>
       {stretch && <div className="mt-1 text-xs leading-4 text-[var(--text-dim)]">{stretch}</div>}
     </Widget>
   );
