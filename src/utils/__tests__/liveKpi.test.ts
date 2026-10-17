@@ -21,6 +21,10 @@ describe('kpiDelta', () => {
 describe('kpiTiles', () => {
   const week = (late: number, delivered: number, dates: string[]) => ({ days: 7, dates, healthyDates: dates, late: { share: late, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 31, overMin: 1 }, extraWait: { minutes: 1.2, gaps: 500 }, bunching: { share: 0.2, gaps: 600 }, delivered: { share: delivered, seen: 990, notSeen: 10, unknown: 0 } });
   const w: NonNullable<LiveV3['weekly']> = { minHealthyDays: 5, health: [], thisWeek: week(0.21, 0.997, ['2026-10-08', '2026-10-14']), lastWeek: week(0.2, 0.998, ['2026-10-01', '2026-10-07']), comparable: true };
+  it('adds a second caption line to the Run time tile only, and only when asked', () => {
+    expect(kpiTiles(w).some(t => t.scope)).toBe(false);
+    expect(kpiTiles(w, undefined, 'both directions').filter(t => t.scope).map(t => `${t.key}: ${t.scope}`)).toEqual(['tripTime: both directions']);
+  });
   it('makes the five tiles with sample sizes and no colour for small moves', () => {
     const tiles = kpiTiles(w);
     expect(tiles.map(t => t.label)).toEqual(['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']);

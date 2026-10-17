@@ -53,7 +53,7 @@ export const yesterdayHours = (y: LiveYesterday) => ({
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <><p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file.</p><DevHint hint={ANALYZE_DEV_HINT} /></>;
-  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3))} caption={weekNotComparableLine(w)} />;
+  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), 'both directions')} caption={weekNotComparableLine(w)} />;
 }
 
 /** One figure tile: title, big number, caption and the change line. The base look of every Live card. */
@@ -65,6 +65,7 @@ export function KpiTile({ k, className = '', math, bare = false }: { k: Kpi; cla
       <div className="mt-1 text-3xl font-black tracking-tight">{k.value}</div>
       {!bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.sub}</div>}
       {math && !bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{math}</div>}
+      {k.scope && !bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.scope}</div>}
       <div className="mt-auto pt-2"><Delta k={k} /></div>
     </li>
   );

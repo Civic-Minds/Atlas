@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
-  freshness,
+  dateRangeText, freshness,
   type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -91,6 +91,20 @@ export function RouteSubtitle({ v3, agency, route }: { v3: LiveV3; agency: strin
   return <>{line.slice(0, at)} · <span role="status" title={f.text} className={stale}>{line.slice(at + 3)}</span></>;
 }
 
+/**
+ * "data up to Oct 14" alone, for a header with no subtitle line (the tool). The same segment as the subtitle's: caution
+ * colour, role=status and the age as its hover text when the analysis is stale.
+ */
+export function DataUpTo({ dates, route = '' }: { dates: readonly string[]; route?: string }) {
+  const last = dates[dates.length - 1];
+  if (!last) return null;
+  const f = freshness({ window: { dates } } as LiveV3, route, Date.now());
+  const text = `data up to ${dateRangeText(last, last)}`;
+  return f.stale
+    ? <span role="status" title={f.text} className="text-sm font-bold text-[var(--status-caution-text)]">{text}</span>
+    : <span className="text-sm text-[var(--text-muted)]">{text}</span>;
+}
+
 /** The rebuild command for a stale analysis: developer hints only (?dev=1), under the header. */
 export function RouteDevHint({ v3, route }: { v3: LiveV3; route: string }) {
   return <DevHint hint={freshness(v3, route, Date.now()).devHint} className="mt-2" />;
@@ -143,18 +157,16 @@ function AnalysisPage() {
   return (
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <PageTitle>{data.routeTitle || title}</PageTitle>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">
-              <RouteSubtitle v3={v3} agency={agency} route={route} />
-            </p>
-          </div>
-          {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
+        <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
+          <div className="min-w-0"><PageTitle>{data.routeTitle || title}</PageTitle></div>
+          <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
+            <RouteSubtitle v3={v3} agency={agency} route={route} />
+          </p>
+          {FEATURES.live && <ArrowLink href="/apps/live" className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
         </div>
         <RouteDevHint v3={v3} route={route} />
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
-        {view !== 'lite' && <div className={`mt-4 ${PILL_ROW}`}>
+        {view !== 'lite' && <div className={`mt-4 ${PILL_ROW}`} role="group" aria-label="Filters">
           <PillGroup label="View" value={view} onChange={v => setView(v as 'lite' | 'dashboard' | 'analysis')} options={[['lite', 'Summary'], ['dashboard', 'Dashboard'], ['analysis', 'Full analysis']]} />
           <PillGroup label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
             options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />

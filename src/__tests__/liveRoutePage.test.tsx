@@ -143,8 +143,9 @@ describe('Live route dashboard', () => {
     expect(screen.queryByText(/trip time/i)).toBeNull();
     expect(screen.getByText(/3 trips that could not be judged are left out of Delivered/)).toBeTruthy();
     // Run time is a dot on a line per pattern: the figures are the row's hover text and screen-reader text.
-    expect(screen.getByText('scheduled 22 min · usually 27 · 1 in 10 over 34 min (120 trips)')).toBeTruthy();
-    expect(screen.getByTitle('scheduled 22 min · usually 27 · 1 in 10 over 34 min (120 trips)')).toBeTruthy();
+    // Each opens with its direction, and the main row is introduced by the stretch line above it.
+    expect(screen.getByText(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
+    expect(screen.getByTitle(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
     expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
     expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
     expect(screen.getByText('97% of scheduled trips ran (194 of 200).')).toBeTruthy();

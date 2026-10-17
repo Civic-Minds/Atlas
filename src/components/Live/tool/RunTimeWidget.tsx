@@ -1,19 +1,19 @@
 import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
-import { runTimeLine, runTimeStretchOf } from '../sections/RunTimeSection';
-import { BANDS } from '../sections/figures';
+import { titleCase } from '../../../utils/format';
+import { shortStopName } from '../../../utils/stopLabel';
+import { PatternRows, RowLegend } from '../sections/RunTimeSection';
+import { runTimeRowScale, runTimeRows } from '../sections/runTimeRows';
 import Widget from './Widget';
 
-/** The picked direction's run time as its summary line: the usual trip, the timetable's, and the slow end. A half-width card. */
+/** The picked direction's run time as dots on a line, the same rows as the Run time section: the main stretch, then the longer patterns. */
 export default function RunTimeWidget({ v3, dir, band }: { v3: LiveV3; dir: number; band: DashboardBand }) {
-  const f = v3.runningTime?.bands[band]?.[String(dir)];
-  if (!f) return null;
-  // The label says "all trips"; with a time of day picked it names that time of day (the pill's own name) instead.
-  const bandName = BANDS.find(([k]) => k === band)?.[1];
-  const stretch = runTimeStretchOf(v3, dir)?.replace(/all trips$/, band === 'all' || !bandName ? 'all trips' : bandName);
+  if (!v3.runningTime?.bands[band]?.[String(dir)]) return null;
+  const rows = runTimeRows(v3, band, [dir], n => shortStopName(titleCase(n)))[dir] ?? [];
+  const scale = runTimeRowScale(rows);
   return (
-    <Widget title="Run time" size="small">
-      <div className="text-sm leading-5 text-[var(--text-muted)]">{v3.directionLabels[String(dir)]}: {runTimeLine(f)}</div>
-      {stretch && <div className="mt-1 text-xs leading-4 text-[var(--text-dim)]">{stretch}</div>}
+    <Widget title="Run time" size="medium" action={<RowLegend dense inline />}>
+      <div className="text-sm leading-5 text-[var(--text-secondary)]">{v3.directionLabels[String(dir)]}</div>
+      <PatternRows rows={rows} scale={scale} dense />
     </Widget>
   );
 }

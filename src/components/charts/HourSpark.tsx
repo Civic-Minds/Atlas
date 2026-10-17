@@ -81,7 +81,7 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
           <div className="h-5 truncate text-xs text-[var(--text-secondary)]">
             {hover != null && byHour.get(hover) ? (hoverLine ? hoverLine(clock(hover), byHour.get(hover)!) : <><span className="font-bold">{clock(hover)}</span> {format(byHour.get(hover)!.value)}, {byHour.get(hover)!.n.toLocaleString()} {unit}{byHour.get(hover)!.n < minN ? ' (too few to rely on)' : ''}</>) : hv == null ? idleText : null}
           </div>
-          <div className="relative" style={{ paddingLeft: ml }}>
+          <div className={`relative ${yAxis ? 'mt-2.5' : ''}`} style={{ paddingLeft: ml }}>
             {ticks.map(t => (
               <div key={t} data-tick className="pointer-events-none absolute" style={{ top: height - pos(t), left: 0, right: 0 }}>
                 <span className="absolute -translate-y-1/2 text-xs leading-none text-[var(--text-dim)]" style={{ left: 0, width: AXIS_W - 6, textAlign: 'right' }}>{format(t)}</span>

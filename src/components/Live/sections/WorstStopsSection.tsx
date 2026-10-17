@@ -43,13 +43,15 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
   const full = columns === 'full';
   const bar = (share: number) => (
     <span className="inline-flex items-center gap-2">
-      <span className="block h-2 w-20 rounded-sm bg-[var(--control-inactive-bg)]" aria-hidden="true"><span className="block h-full rounded-sm bg-[var(--accent)] opacity-90" style={{ width: `${Math.max(2, share * 100)}%` }} /></span>
+      <span className="block h-2 w-20 rounded-sm max-sm:hidden bg-[var(--control-inactive-bg)]" aria-hidden="true"><span className="block h-full rounded-sm bg-[var(--accent)] opacity-90" style={{ width: `${Math.max(2, share * 100)}%` }} /></span>
       {pct(share)}
     </span>
   );
   const table = top.length ? (
-    <div className={`${full ? 'mt-4' : 'mt-3'} overflow-x-auto`}>
+    <div className={`${full ? 'mt-4' : 'mt-3'} sm:overflow-x-auto`}>
       <SortableDataTable
+        narrowFit
+        rowTitle={s => `${s.name}: ${s.n.toLocaleString()} departures`}
         caption={full ? 'Stops ranked by the share of late departures' : 'The five stops with the highest share of late departures'}
         defaultSort="late"
         rows={top}
@@ -57,15 +59,15 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
         columns={[
           onPick && canPick
             ? { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline">{s.name}</button> }
-            : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal truncate', cell: s => <span title={s.name}>{s.name}</span> },
+            : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal max-sm:break-words sm:truncate', cell: s => <span title={s.name}>{s.name}</span> },
           ...(both ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
           full
             ? { key: 'late', header: 'Late', worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
             : { key: 'late', header: 'Late', worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
           ...(full ? [
             { key: 'median', header: 'Typical delay', worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
-            { key: 'p90', header: '1 in 10 later than', ...(p90Width != null ? { width: p90Width } : {}), worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
-            { key: 'n', header: 'Departures', cell: (s: (typeof top)[number]) => s.n.toLocaleString() },
+            { key: 'p90', header: '1 in 10 later than', narrowHide: true, ...(p90Width != null ? { width: p90Width } : {}), worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
+            { key: 'n', header: 'Departures', narrowHide: true, cell: (s: (typeof top)[number]) => s.n.toLocaleString() },
           ] : []),
         ]}
       />

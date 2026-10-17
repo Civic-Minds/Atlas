@@ -65,18 +65,20 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
       })}
     </div>
     {worst.length > 0 && (
-      <div className="mt-5 overflow-x-auto">
+      <div className="mt-5 sm:overflow-x-auto">
         <SortableDataTable
+          narrowFit
+          rowTitle={s => `${s.name}: ${s.gaps.toLocaleString()} gaps`}
           caption="Stops where riders wait longest compared with the timetable"
           defaultSort="extra"
           rows={worst}
           rowKey={s => `${s.stopId}-${s.directionId}`}
           columns={[
-            { key: 'stop', header: 'Stop', rowHeader: true, className: full ? 'font-normal truncate' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
+            { key: 'stop', header: 'Stop', rowHeader: true, className: full ? 'font-normal max-sm:break-words sm:truncate' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
             ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
             { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => `${num(s.extraWaitMin)} min` },
-            { key: 'sched', header: 'Scheduled every', cell: s => `${num(s.scheduledGapMin)} min` },
-            { key: 'n', header: 'Gaps', cell: s => s.gaps.toLocaleString() },
+            { key: 'sched', header: 'Scheduled every', narrowHide: true, cell: s => `${num(s.scheduledGapMin)} min` },
+            { key: 'n', header: 'Gaps', narrowHide: true, cell: s => s.gaps.toLocaleString() },
           ]}
         />
       </div>

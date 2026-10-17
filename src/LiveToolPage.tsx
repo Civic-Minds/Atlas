@@ -33,7 +33,7 @@ import { KpiRows, KpiTile } from './LiveDashboardView';
 import { NOISE_RULE } from '../shared/liveDashboard';
 import { BANDS } from './LiveExplorePage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
-import { withNiceNames } from './LiveRoutePage';
+import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const mins = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`.replace('-', '−');
@@ -140,15 +140,15 @@ function routeWidgets({ data, v3, dir, band, setPick }: {
   const hasRunTime = !!v3.runningTime?.bands[band]?.[String(dir)];
   return [
     ...tileWidgets(weekly(v3)),
-    ...(hasRunTime ? [{ key: 'run-time', size: 'small' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
+    ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops with the most delay" rows={worst} /> }] : []),
   ];
 }
 
 /** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
-function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure, pick, setPick }: {
-  agency: string; dirSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band, measure, pick, setPick }: {
+  agency: string; dirSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const wide = useMediaQuery('(min-width: 1024px)');
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
@@ -198,12 +198,14 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
   );
   // The direction switch sits in the top bar with the other pills.
   const direction = ids.length > 1 && dirSlot ? createPortal(<PillGroup label="Direction" value={String(shown)} onChange={v => { setDir(Number(v)); setPick(null); }} options={ids.map(d => [String(d), v3!.directionLabels[String(d)]] as const)} />, dirSlot) : null;
+  // The newest day in the figures, in the header: the picked route's, or the network summary's week.
+  const upTo = dataSlot ? createPortal(<DataUpTo dates={v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? []} route={v3 ? ready?.route : ''} />, dataSlot) : null;
   const note = ready?.note && <p className="pointer-events-none absolute bottom-0 left-0 right-0 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
   if (!wide) {
     // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
     return (
       <div className="relative min-h-0 flex-1">
-        {direction}
+        {direction}{upTo}
         <div className="absolute inset-0 overflow-y-auto">
           <div className="relative h-[55vh] min-h-[22rem]">
             <div className="absolute inset-0">{mapEl}</div>
@@ -217,7 +219,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, band, measure,
   }
   return (
     <div className="relative min-h-0 flex-1">
-      {direction}
+      {direction}{upTo}
       <div className="absolute inset-0">{mapEl}</div>
       <div className="pointer-events-none absolute inset-3 flex gap-3">
         <div className="pointer-events-auto flex w-[24.5rem] shrink-0 flex-col gap-2">
@@ -243,6 +245,7 @@ export default function LiveToolPage() {
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
   const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) ? (m as MapMeasure) : 'late'; });
   const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
+  const [dataSlot, setDataSlot] = useState<HTMLElement | null>(null);
   const [pick, setPick] = useState<MapPick | null>(() => {
     const stop = readParam('stop'), seg = readParam('seg');
     if (stop) return { kind: 'stop', stopId: stop };
@@ -270,8 +273,9 @@ export default function LiveToolPage() {
         <div ref={setDirSlot} className="contents" />
         <PillGroup label="Measure" value={measure} onChange={v => setMeasure(v as MapMeasure)} options={MEASURES} />
         <PillGroup label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
+        <div ref={setDataSlot} className="contents" />
       </header>
-      <Body agency={agency} dirSlot={dirSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} pick={pick} setPick={setPick} />
+      <Body agency={agency} dirSlot={dirSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} pick={pick} setPick={setPick} />
     </>,
   );
 }

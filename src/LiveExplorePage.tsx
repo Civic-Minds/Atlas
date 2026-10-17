@@ -240,14 +240,12 @@ export default function LiveExplorePage() {
 
   return shell(
     <article className="pb-16 pt-10 sm:pt-14">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <PageTitle>{data.routeTitle || title}</PageTitle>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
-            <RouteSubtitle v3={v3} agency={agency} route={route} />
-          </p>
-        </div>
-        {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
+      <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
+        <div className="min-w-0"><PageTitle>{data.routeTitle || title}</PageTitle></div>
+        <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
+          <RouteSubtitle v3={v3} agency={agency} route={route} />
+        </p>
+        {FEATURES.live && <ArrowLink href="/apps/live" className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
       </div>
       <RouteDevHint v3={v3} route={route} />
       {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}

@@ -67,14 +67,15 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                   })}
                 />
               )}
-              <div className="mt-3 overflow-x-auto">
+              <div className="mt-3 sm:overflow-x-auto">
                 <SortableDataTable
+                  narrowFit
                   caption={`${label}: the stretches that add the most delay`}
                   defaultSort="added"
                   rows={worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={full ? [
-                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal truncate', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{shortStopName(s.fromName)} to {shortStopName(s.toName)}</span> },
+                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal max-sm:break-words sm:truncate', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{shortStopName(s.fromName)} to {shortStopName(s.toName)}</span> },
                     { key: 'added', header: 'Typical added', width: 7, worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
                     { key: 'grows', header: 'Trips where it grows', width: 10, worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ] : [

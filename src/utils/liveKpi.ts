@@ -22,6 +22,8 @@ export interface Kpi {
   nLastWeek: number | null;
   delta: { arrow: 'up' | 'down' | 'none'; text: string; tone: KpiTone; spoken: string } | null;
   lastWeekText: string | null;
+  /** A second caption line saying what the figure covers (the route tiles' Run time: "both directions"). */
+  scope?: string;
 }
 
 const round1 = (x: number) => Math.round(x * 10) / 10;
@@ -63,8 +65,8 @@ function runTimeCaption(typicalMin: number, scheduledMin: number): string {
   return diff === 0 ? 'same as the timetable' : `${Math.abs(diff)} min ${diff < 0 ? 'faster' : 'slower'} than the timetable`;
 }
 
-/** The tiles that have a figure this week (a measure with nothing behind it is left out, not shown as a dash). */
-export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = { late: [], delivered: [] }): Kpi[] {
+/** The tiles that have a figure this week (a measure with nothing behind it is left out, not shown as a dash). `runTimeScope` is the Run time tile's second caption line. */
+export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = { late: [], delivered: [] }, runTimeScope?: string): Kpi[] {
   const t = w.thisWeek, l = w.lastWeek;
   const nThis = t.healthyDates.length, nLast = l.healthyDates.length;
   const mk = (key: CompareKey, label: string, value: string, sub: string, n: number, unit: string, nLast: number | null, delta: Kpi['delta'], last: string | null): Kpi => ({ key, label, value, sub, n, unit, nLastWeek: nLast, delta, lastWeekText: last });
@@ -81,7 +83,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
     mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', t.delivered ? 'of scheduled trips ran' : 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
       compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, dailyNoise(daily.delivered, nThis, nLast), l.delivered?.share != null ? pct1(l.delivered.share) : null) : null, l.delivered?.share != null ? pct1(l.delivered.share) : null),
   ];
-  return tiles.filter(k => k.value !== '–');
+  return tiles.filter(k => k.value !== '–').map(k => (k.key === 'tripTime' && runTimeScope ? { ...k, scope: runTimeScope } : k));
 }
 
 /**
