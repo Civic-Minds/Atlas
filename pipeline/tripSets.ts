@@ -26,6 +26,7 @@ import {
   computeResearchFrequentService,
   forCrossMidnightWindow,
   hasSustainedFrequentService,
+  isSparseOvernightWindow,
   isSustainedHeadway,
   medianHeadwayInWindow,
   hasSustainedServiceInWindow,
@@ -620,11 +621,17 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     };
     const runs = throughMidpoint(d.main) && !dominantHole(d.main);
     const filterOf = (p: StretchPeriod) => (p.sustained === true && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage);
-    const counting = [main[key], ...tails.map(t => t[key])].filter((p, i) => p.counts && (i === 0 ? runs : true));
+    // #961: a sparse overnight window (#897: three departures around a hole of hours) has no
+    // value at the row, so it gives none here either; the card would otherwise print its full-
+    // window wait as "every N" (MBTA 23 Sunday overnight to Ashmont: every 196). A sparse main
+    // stretch leaves the direction without a value, a sparse tail drops out.
+    const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
+    const counting = [main[key], ...tails.map(t => t[key])]
+      .filter((p, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(d.tails[i - 1])));
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     period[key].runs = runs;
     period[key].hasService = timesIn(d.main).length > 0;
-    period[key].filterValue = runs && values.length > 0 ? Math.max(...values) : null;
+    period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
     period[key].edge = runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
     // Only where the settled checks count the period as running: a big-gap period that does not
     // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "no regular service".
