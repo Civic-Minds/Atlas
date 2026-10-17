@@ -3,7 +3,7 @@ import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { isMajorStop } from '../../utils/stopLabel';
 import {
-  MIN_N, delayText, labelWidth, pct, shortStopName, stopDetail, stopN, stopStep, stretchSpan,
+  MIN_N, bunchParts, delayText, labelWidth, pct, shortStopName, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan,
   type RouteStripMode, type RouteStripStop, type Step,
 } from './routeStripModel';
 import { StripLegend, Tooltip, swatchStyle } from './RouteStrip';
@@ -86,6 +86,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const anyUncertain = stops.some(s => modes.some(m => !!s.uncertain));
   const anyFaded = stops.some(s => modes.some(m => faded(s, m)));
   const anyMissing = stops.some(s => modes.some(m => stopStep(s, m) == null));
+  const anyEarly = stops.some(s => modes.includes('delay') && stopStep(s, 'delay') === 'early');
   const activeStop = stops.find(s => s.stopId === active) ?? null;
   const announce = activeStop ? `${activeStop.name}. ${stopDetail(activeStop).lines.join('. ')}.` : '';
   const summary = `${model.label}: ${model.trunk.length} stops on the shared line, then ${model.starts.length + model.ends.length} branches, ending at ${[...new Set(model.endLabels.map(e => e.stop.name))].join(', ')}. Use the left and right arrow keys to hear each stop.`;
@@ -109,9 +110,9 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         rowKey={s => s.stopId}
         columns={[
           { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
-          { key: 'delay', header: 'Typical delay', cell: s => (s.delayMin != null && s.n > 0 ? delayText(s.delayMin) : 'not measured') },
+          { key: 'delay', header: 'Typical delay', cell: s => (shownDelayMin(s) != null && s.n > 0 ? delayText(shownDelayMin(s)!) : 'not measured') },
           { key: 'late', header: 'Late', cell: s => (s.lateShare != null && s.n > 0 ? pct(s.lateShare) : '') },
-          { key: 'bunch', header: 'Gaps off', cell: s => (s.bunchingShare != null && (s.bunchingN ?? s.n) > 0 ? pct(s.bunchingShare) : 'not measured') },
+          { key: 'bunch', header: 'Gaps off', cell: s => { const b = bunchParts(s); return b ? `${b.total}%` : 'not measured'; } },
           { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
         ]}
       />
@@ -127,12 +128,18 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const step = cols.length > 1 ? inner / (cols.length - 1) : inner;
   const xOf = (col: number) => GUTTER + INSET + col * step;
   const dot = Math.max(5, Math.min(12, Math.floor(step - 2)));
-  // Each line is named by its end stop; two lines ending at the same stop are told apart by their first stop too.
-  const rowNames = useMemo(() => model.lines.map(l => {
-    const last = shortStopName(l.at(-1)!.name), first = shortStopName(l[0].name);
-    const dup = model.lines.filter(o => shortStopName(o.at(-1)!.name) === last).length > 1;
-    return dup ? `${first} – ${last}` : last;
-  }), [model]);
+  // Every line is named by where it ends. If two lines end at the same stop, every line is named "First – Last" instead, so the names read in one style.
+  const rowNames = useMemo(() => {
+    const ends = model.lines.map(l => shortStopName(l.at(-1)!.name));
+    const clash = ends.some((e, i) => ends.indexOf(e) !== i);
+    return model.lines.map((l, r) => (clash ? `${shortStopName(l[0].name)} – ${ends[r]}` : ends[r]));
+  }, [model]);
+  // A stop only one line serves is that line's own terminal: its start is named beside the line (in the empty space before it), not down in the shared name row, where it would read as belonging to the bottom line.
+  const serving = useMemo(() => {
+    const m = new Map<string, number>();
+    model.lines.forEach(l => l.forEach(s => m.set(s.stopId, (m.get(s.stopId) ?? 0) + 1)));
+    return m;
+  }, [model]);
   // The marked stretch (Delays start, Bunching forms) sits on the main line, so its bracket goes above that group's first row.
   const mainStops = model.lines[0];
   const marks = useMemo(() => modes.map(mode => {
@@ -147,16 +154,31 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const total = namesTop + LABEL_H;
   const rowY = (t: number, r: number) => groupTop[t] + HEAD_H + (marks[t] ? BRACKET_H : 0) + r * ROW_H + ROW_H / 2;
 
-  // Stop names under the columns: every line's first and last stop if they fit, then a few more along the main line; none overlaps another.
+  // Names beside a line's start: only for a start no other line serves, and only where the name fits in the empty space before it.
+  const startNames = useMemo(() => {
+    if (vertical || width === 0) return [] as Array<{ stop: RouteStripStop; row: number; right: number }>;
+    const out: Array<{ stop: RouteStripStop; row: number; right: number }> = [];
+    model.lines.forEach((l, r) => {
+      const first = l[0];
+      if (serving.get(first.stopId) !== 1) return;
+      const x = xOf(colOf.get(first.stopId)!) - dot / 2 - 6;
+      if (x - GUTTER >= labelWidth(shortStopName(first.name)) + 6) out.push({ stop: first, row: r, right: x });
+    });
+    return out;
+  }, [vertical, width, model, cols, dot]); // eslint-disable-line react-hooks/exhaustive-deps
+  const named = useMemo(() => new Set(startNames.map(n => n.stop.stopId)), [startNames]);
+
+  // Stop names under the columns: a terminal that lines share first, then a few more along the main line; none overlaps another. A terminal only one line serves is named by that line (its end by the line's name at the left, its start beside the line).
   const labels = useMemo(() => {
     if (vertical || width === 0) return [] as Array<{ stop: RouteStripStop; x: number; end: boolean }>;
-    const items = cols.map((id, i) => ({ x: xOf(i), text: shortStopName(byId.get(id)!.name) }));
-    const ends = [...new Set(model.lines.flatMap(l => [l[0], l.at(-1)!]).map(s => colOf.get(s.stopId)!))];
-    const mainEnds = new Set([model.lines[0][0], model.lines[0].at(-1)!].map(s => colOf.get(s.stopId)!));
-    const want = [...ends.filter(i => mainEnds.has(i)), ...ends.filter(i => !mainEnds.has(i))];
+    const exclusiveEnd = (id: string) => serving.get(id) === 1 && model.lines.some(l => l.at(-1)!.stopId === id);
+    const keep = cols.map((id, i) => ({ id, i })).filter(c => !named.has(c.id) && !exclusiveEnd(c.id));
+    const items = keep.map(c => ({ x: xOf(c.i), text: shortStopName(byId.get(c.id)!.name) }));
+    const ends = [...new Set(model.lines.flatMap(l => [l[0], l.at(-1)!]).map(s => s.stopId))];
+    const want = ends.map(id => keep.findIndex(c => c.id === id)).filter(i => i >= 0 && !named.has(keep[i].id));
     const picked = fitLabels(items, want, Math.max(2, Math.min(6, Math.floor(plotW / 150))), GUTTER, width);
-    return picked.map(i => ({ stop: byId.get(cols[i])!, x: items[i].x, end: ends.includes(i) }));
-  }, [vertical, width, plotW, model, cols]); // eslint-disable-line react-hooks/exhaustive-deps
+    return picked.map(i => ({ stop: byId.get(keep[i].id)!, x: items[i].x, end: ends.includes(keep[i].id) }));
+  }, [vertical, width, plotW, model, cols, named]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const rails = modes.flatMap((_, t) => model.lines.map((l, r) => {
     const a = colOf.get(l[0].stopId)!, b = colOf.get(l.at(-1)!.stopId)!;
@@ -218,6 +240,9 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         onPointerDown={e => { const id = pickStop(e); setActive(id); if (id) onSelect?.(id); }}
         onPointerLeave={e => { if (e.pointerType === 'mouse') setActive(null); }}
       />
+      {startNames.map(n => (
+        <span key={`start-${n.row}`} className="pointer-events-none absolute whitespace-nowrap text-right text-xs font-bold leading-4 text-[var(--text-primary)]" style={{ left: n.right - (labelWidth(shortStopName(n.stop.name)) + 6), width: labelWidth(shortStopName(n.stop.name)) + 6, top: rowY(0, n.row) - 8 }} title={n.stop.name}>{shortStopName(n.stop.name)}</span>
+      ))}
       {labels.map(l => {
         const w = labelWidth(shortStopName(l.stop.name)) + 6;
         const left = Math.max(GUTTER, Math.min(width - w, l.x - w / 2));
@@ -255,7 +280,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
           {allStops ? 'Show key stops only' : `Show all ${stops.length} stops`}
         </button>
       )}
-      <StripLegend modes={modes} anyUncertain={anyUncertain} anyFaded={anyFaded} anyMissing={anyMissing} minN={minN} />
+      <StripLegend modes={modes} anyUncertain={anyUncertain} anyFaded={anyFaded} anyMissing={anyMissing} anyEarly={anyEarly} minN={minN} />
       {table}
     </figure>
   );

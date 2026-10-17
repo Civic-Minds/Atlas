@@ -40,3 +40,31 @@ describe('early only at timed stops', () => {
     expect(stopDetail({ ...s, timepoint: true }).lines[0]).toBe('Usually 1.8 min early · 5% late');
   });
 });
+
+describe('one rounding for colour and words', () => {
+  it('colours a stop by the minutes as shown: 1 min late is not grey, 3 min late is not amber', async () => {
+    const { stepFor, stopDetail } = await import('../routeStripModel');
+    expect(stepFor('delay', 0.94)).toBe(0); // reads 0.9 min late
+    expect(stepFor('delay', 0.96)).toBe(1); // reads 1 min late
+    expect(stepFor('delay', 1)).toBe(1);
+    expect(stepFor('delay', 2.94)).toBe(1);
+    expect(stepFor('delay', 2.96)).toBe(2); // reads 3 min late
+    expect(stepFor('bunching', 0.144)).toBe(0); // reads 14%
+    expect(stepFor('bunching', 0.146)).toBe(1); // reads 15%
+    expect(stepFor('bunching', 0.25)).toBe(2);
+    const s = { stopId: 'x', name: 'X', delayMin: 0.96, lateShare: 0.1, bunchingShare: null, n: 500 };
+    expect(stopDetail(s).lines[0]).toBe('Usually 1 min late · 10% late');
+  });
+  it('shows the same early reading in the hidden table as on the strip', async () => {
+    const { shownDelayMin } = await import('../routeStripModel');
+    const s = { stopId: 'x', name: 'X', delayMin: -5, lateShare: 0, bunchingShare: null, n: 500 };
+    expect(shownDelayMin({ ...s, timepoint: false })).toBe(0);
+    expect(shownDelayMin({ ...s, timepoint: true })).toBe(-5);
+  });
+  it('makes the gap parts add up to the total', async () => {
+    const { bunchParts } = await import('../routeStripModel');
+    const p = bunchParts({ stopId: 'x', name: 'X', delayMin: 0, lateShare: 0, bunchingShare: 0.204, bunchedShare: 0.124, gappedShare: 0.084, n: 100 })!;
+    expect(p).toEqual({ total: 20, bunched: 12, tooLong: 8 });
+    expect(p.bunched + p.tooLong).toBe(p.total);
+  });
+});
