@@ -87,6 +87,15 @@ describe('findVariantFamily', () => {
     expect(findVariantFamily(features, '7A', 'midday', 'halifax')).toBeNull();
   });
 
+  // CIV-115: separate routes that share a number stem, confirmed against each agency's GTFS.
+  it('does not group Barrie 8A/8B, GoRaleigh 15/15L or Laredo 8A/8B (CIV-115)', () => {
+    expect(findVariantFamily([feature('8A', '8A', 30), feature('8B', '8B', 30)], '8A', 'midday', 'barrie')).toBeNull();
+    expect(findVariantFamily([feature('15', '15', 30), feature('15L', '15L', 30)], '15', 'midday', 'goraleigh')).toBeNull();
+    expect(findVariantFamily([feature('8A', '8A', 60), feature('8B', '8B', 60)], '8B', 'midday', 'laredo')).toBeNull();
+    // The exclusion is per agency: the same names elsewhere still group.
+    expect(findVariantFamily([feature('8A', '8A', 30), feature('8B', '8B', 30)], '8A', 'midday', 'other')?.members.length).toBe(2);
+  });
+
   // #448: the exclusion list stays the authority even when geometry alone would say "real
   // trunk" -- Windsor's live data has 14+ shared stops in the correct order (a genuine shared
   // downtown corridor), yet 1A and 1C are still confirmed-separate routes. If the geometry

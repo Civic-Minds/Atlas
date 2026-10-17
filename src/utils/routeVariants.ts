@@ -26,6 +26,9 @@ const EXCLUDED_VARIANT_FAMILIES = new Set<string>([
   'thebus::1', // TheBus (Honolulu) 1 and 1L are separate routes ("Kaimuki-Kalihi" vs "Hawaii Kai-Aloha Stadium Limited") -- confirmed via #303 sweep, base "1" exists on its own but that's not evidence either way (#294)
   'goraleigh::11', // GoRaleigh 11 and 11L are separate routes ("Avent Ferry" vs "Buck Jones Connector") -- confirmed via #303 sweep, same pattern as thebus::1
   'halifax::7', // 7A and 7B are clockwise/counterclockwise around the same loop, not corridor branches -- share zero real stops (confirmed against the agency's GTFS: only 2 stop overlaps, both at the terminal turning loop), so there is no valid combined-frequency figure between them (#335, #336)
+  'barrie::8', // Barrie Transit 8A "RVH/Yonge" and 8B "Crosstown/Essa" are separate routes that share only their two end stops (CIV-115)
+  'goraleigh::15', // GoRaleigh 15 "WakeMed" and 15L "Trawick Connector" are separate routes, the same connector pattern as goraleigh::11 (CIV-115)
+  'laredo::8', // El Metro 8A "Medical Center" and 8B "Villa Del Sol / Cheyenne" share only the 9 stops leaving the transit center, then serve different corridors, like windsor::1 (CIV-115)
 ]);
 
 export interface VariantFamily {
