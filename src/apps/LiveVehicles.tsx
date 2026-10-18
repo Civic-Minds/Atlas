@@ -694,7 +694,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                       ? () => setSelectedDirection(null)
                       : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
                   >
-                    {selectedDirection ? `${cleanRouteShortName(selectedGroup.routeShortName)} route` : `${selectedAgencyName} routes`}
+                    {selectedDirection ? `${cleanRouteShortName(selectedGroup.routeShortName)} route` : `${agencyDisplayName(agencies, selectedGroup.agencySlug)} routes`}
                   </CardBackLink>
                   <RouteCardTitle
                     routeShortName={selectedGroup.routeShortName}

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Live route and vehicle cards go back with a plain text link (local only, CIV-325/331)**: small grey "Muni routes" or "J route" above the title replaces the back arrow.
 - **Live has a vehicle card (local only, CIV-332)**: click a vehicle on the map or in the route list to see its direction, destination, speed and on time / late status, styled like the route card with a back arrow.
 - **The Live route card now looks like the regular route card (local only, CIV-331)**: same header (back arrow beside the agency name and title, no separate strip), same spacing and section dividers, and the agency name opens its page.
 - **Clicking a route in the Live list frames that whole route on the map (local only, CIV-329)**: any route, not only the ones with route analysis, like the regular map; its vehicles stay in view.
