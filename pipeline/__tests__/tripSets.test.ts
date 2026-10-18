@@ -705,7 +705,7 @@ describe('per-stop period values read like a reference stop (CIV-321 S1)', () =>
 
   it('equals the main stretch value at its reference stop, period by period', () => {
     const main = d.main!;
-    const values = stopPeriodValues([main.refStop], d.timesAtStop!);
+    const values = stopPeriodValues([main.refStop], d.throughTimesAlong!);
     const own = stretchPeriods(main);
     for (const key of ['amPeak', 'midday', 'pmPeak', 'evening'] as const) {
       expect(values[key]).toBe(String(stretchFilterValue(own[key])));
@@ -713,7 +713,7 @@ describe('per-stop period values read like a reference stop (CIV-321 S1)', () =>
   });
 
   it('reads a branch stop on the branch trips only, and leaves a stop with no trips empty', () => {
-    const values = stopPeriodValues(['t5', 'x3', 'nowhere'], d.timesAtStop!);
+    const values = stopPeriodValues(['t5', 'x3', 'nowhere'], d.throughTimesAlong!);
     const [trunkMidday, branchMidday, none] = decodeStopRuns(values.midday).map(v => (v == null ? '' : String(v)));
     expect(Number(trunkMidday)).toBeLessThan(Number(branchMidday));
     expect(branchMidday).toBe('30');
@@ -738,5 +738,22 @@ describe('a stretch period with under three departures reads no regular service 
     expect(meta.noRegular).toContain('midday');
     expect(meta.period.midday).not.toBeNull();
     expect(meta.noRegular).not.toContain('pmPeak');
+  });
+});
+
+describe('section values count trips running through a skipped stop (CIV-321)', () => {
+  // Every 15 on s0-s4, but every other trip skips s2: s2's own stopping service is every 30, while
+  // the track through it carries a train every 15.
+  const coords = new Map<string, [number, number]>();
+  const stops = ['s0', 's1', 's2', 's3', 's4'];
+  stops.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+  const trips: DirectionTrip[] = [];
+  for (let m = 360, n = 0; m <= 1320; m += 15, n++) trips.push({ tripId: `t${m}`, visits: stops.map((stopId, i) => ({ stopId, minutes: m + 2 * i })).filter(v => n % 2 === 0 || v.stopId !== 's2') });
+  const d = directionStretches('k', trips, id => coords.get(id));
+  it('colours the skipped stop by every train through it, while its own stopping list stays every 30', () => {
+    const [, , atSkipped] = decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).midday);
+    expect(atSkipped).toBe(15);
+    const own = d.timesAtStop!('s2').times.filter(t => t >= 540 && t < 900);
+    expect(own[1] - own[0]).toBe(30);
   });
 });

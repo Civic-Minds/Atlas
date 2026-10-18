@@ -106,6 +106,12 @@ export interface DirectionStretches {
    * a stretch's reference stop gets). Not serialized.
    */
   timesAtStop?: (stop: string) => { times: readonly number[]; nightTimes: readonly number[]; tripCount: number };
+  /**
+   * CIV-321: along a drawn stop order, each stop's times over every trip that runs THROUGH it (Ryan,
+   * 2026-10-18: the line is the track, coloured by the trains running along it, including those that
+   * skip a stop). A trip that skips a stop between two it serves passes it at a time interpolated between them.
+   */
+  throughTimesAlong?: (stops: readonly string[]) => Array<{ times: readonly number[]; nightTimes: readonly number[]; tripCount: number }>;
 }
 
 type Coord = [lat: number, lon: number];
@@ -311,7 +317,39 @@ export function directionStretches(
     if (!hit) { hit = timesAt(stop); timesAtStopCache.set(stop, hit); }
     return hit;
   };
-  return { key, main, tails, regularPatternCount: regular.length, variantTripCount, disconnected: disconnected || undefined, timesAtStop };
+  const throughTimesAlong = (stops: readonly string[]) => {
+    const index = new Map(stops.map((stop, i) => [stop, i] as const));
+    const times = stops.map(() => new Set<number>());
+    const overnight = stops.map(() => [] as number[]);
+    const counts = stops.map(() => 0);
+    for (const trip of measureTrips) {
+      const at = new Map<number, TripVisit>();
+      for (const visit of trip.visits) {
+        const i = index.get(visit.stopId);
+        if (i == null || visit.counted === false || at.has(i)) continue;
+        at.set(i, visit);
+      }
+      if (at.size === 0) continue;
+      const served = [...at.keys()].sort((a, b) => a - b);
+      for (let s = 0; s < served.length; s++) {
+        const from = served[s], to = served[s + 1] ?? served[s];
+        const a = at.get(from)!, b = at.get(to)!;
+        // The served stop itself, then the stops it skips before its next one, at times interpolated
+        // between the two by stop position.
+        for (let i = from; i < (to === from ? from + 1 : to); i++) {
+          const minutes = i === from ? a.minutes : Math.round(a.minutes + ((b.minutes - a.minutes) * (i - from)) / (to - from));
+          counts[i]++;
+          times[i].add(minutes);
+          if (a.overnightOnly) overnight[i].push(minutes + 1440);
+        }
+      }
+    }
+    return stops.map((_, i) => {
+      const sorted = [...times[i]].sort((a, b) => a - b);
+      return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight[i]), tripCount: counts[i] };
+    });
+  };
+  return { key, main, tails, regularPatternCount: regular.length, variantTripCount, disconnected: disconnected || undefined, timesAtStop, throughTimesAlong };
 }
 
 export interface StretchPeriod {
@@ -400,14 +438,17 @@ export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
 }
 
 /**
- * CIV-321 S1: each drawn stop's period value read like a stretch's reference stop (every trip of the
- * direction that serves it; stretchPeriods and stretchFilterValue), as one comma-separated string per
- * period aligned to the feature's stopOrder (run-length encoded, encodeStopRuns), empty where the stop has no value. At a stretch's
- * reference stop it equals that stretch's own value. Nothing reads it yet (section colours, S3).
+ * CIV-321: the section colour value at each drawn stop, per period: every trip of the direction that
+ * runs through the stop, including those that skip it (throughTimesAlong; the stop's own stopping
+ * frequency stays on the stop card), read with the same rules as a whole route (stretchPeriods,
+ * stretchFilterValue). One run-length-encoded string per period aligned to the feature's stopOrder
+ * (encodeStopRuns), empty where no trip passes. Where every trip stops, it equals the stretch value at
+ * that stretch's reference stop. Read by the section colours (S3, beta only).
  */
-export function stopPeriodValues(stops: readonly string[], timesAtStop: NonNullable<DirectionStretches['timesAtStop']>): Record<PeriodKey, string> {
-  const perStop = stops.map(stop => {
-    const read = timesAtStop(stop);
+export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>): Record<PeriodKey, string> {
+  const reads = throughTimesAlong(stops);
+  const perStop = stops.map((stop, i) => {
+    const read = reads[i];
     if (read.times.length === 0) return null;
     return stretchPeriods({ kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read });
   });
@@ -970,7 +1011,7 @@ export function stampStretchShadow(
     p.directionFilterHeadwayByPeriod = byPeriod(k => dir.period[k].filterValue);
     // CIV-321 S1: per drawn stop and period, every trip of the direction that serves the stop.
     const stopOrder = p.stopOrder as readonly string[] | undefined;
-    if (stretches.timesAtStop && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.timesAtStop);
+    if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong);
     else delete p.stretchStopPeriodValues;
     p.routeRunsByPeriod = byPeriod(k => route.period[k].runs);
     // Card rows (5b): which stretch this row stands for. A row whose own stops cover a whole tail
