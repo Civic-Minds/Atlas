@@ -91,7 +91,11 @@ export interface RouteProperties {
   stretchRole?: 'main' | 'tail' | 'variant';
   /** 0 for the main stretch; a tail's index into stretchMeta.tails. Absent for variants. */
   stretchIndex?: number;
-  stretchMeta?: { main: { stops: number; refStop: string; trips: number } | null; tails: Array<{ refStop: string; stops: number; km: number; trips: number }> };
+  /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route). */
+  stretchMeta?: {
+    main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>> } | null;
+    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>> }>;
+  };
   /** Night service runs on only part of the route: draw and name only these stops' segments ("part of the route"). */
   nightServicePartOfRoute?: boolean;
   nightServiceStops?: string[];

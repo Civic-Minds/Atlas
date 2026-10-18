@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { routeListDisplay, routeListDisplayLimited, routeListNoRegularService } from '../effectiveHeadway';
 import { selectedRouteFilterNotice } from '../../content/noticeCopy';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
-import { hasStretchRoles, routeContract, stretchRowFeatures, variantOnlyRow, variantRowHeadway, hasRegularServiceInPeriod } from '../stretchCard';
+import { hasStretchRoles, routeContract, stretchRowFeatures, stretchRowsFromMeta, variantOnlyRow, variantRowHeadway, hasRegularServiceInPeriod } from '../stretchCard';
 
 const f = (over: Record<string, unknown>) => ({ routeId: 'r', directionId: 0, tier: 'frequent', headway: 6, routeShortName: '1', routeLongName: null, ...over }) as unknown as ShapeProperties;
 
@@ -152,5 +152,24 @@ describe('hasRegularServiceInPeriod (#750)', () => {
     expect(hasRegularServiceInPeriod(routeOnly, 'evening')).toBe(false);
     expect(hasRegularServiceInPeriod(routeOnly, 'midday')).toBe(true);
     expect(hasRegularServiceInPeriod({ headwayByPeriod: { evening: 8 } } as unknown as ShapeProperties, 'evening')).toBe(true);
+  });
+});
+
+describe('stretch rows from stretchMeta (CIV-321 S2)', () => {
+  const f = {
+    stretchMeta: {
+      main: { stops: 12, refStop: 'm', trips: 40, period: { amPeak: 15, midday: 30 } },
+      tails: [{ refStop: 't0', stops: 6, km: 3, trips: 6, period: { amPeak: 30, midday: null } }],
+    },
+  } as unknown as ShapeProperties;
+  it('gives one row per stretch with its own value', () => {
+    expect(stretchRowsFromMeta(f, 'midday')).toEqual([
+      { role: 'main', index: 0, refStop: 'm', value: 30 },
+      { role: 'tail', index: 0, refStop: 't0', value: null },
+    ]);
+    expect(stretchRowsFromMeta(f, 'all')).toEqual([]);
+  });
+  it('is empty on older data', () => {
+    expect(stretchRowsFromMeta({} as ShapeProperties, 'midday')).toEqual([]);
   });
 });

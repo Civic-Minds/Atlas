@@ -400,6 +400,17 @@ export function stopPeriodValues(stops: readonly string[], timesAtStop: NonNulla
   }).join(',')])) as Record<PeriodKey, string>;
 }
 
+/**
+ * CIV-321 S2: a stretch's own value per period for its card row once one drawn feature covers several
+ * stretches (S4), read at its reference stop by the same rules as a whole route (Ryan, 2026-10-18: a
+ * section needs the usual three departures for a value, then the same filter and limited-service
+ * handling; no thresholds of its own).
+ */
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null> } {
+  const own = stretchPeriods(s);
+  return { period: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, stretchFilterValue(own[key])])) as Record<PeriodKey, number | null> };
+}
+
 export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
   const times = [...s.times];
   const headways = computePeriodHeadways(times);
@@ -957,8 +968,8 @@ export function stampStretchShadow(
       else { p.stretchRole = 'variant'; delete p.stretchIndex; }
     }
     p.stretchMeta = {
-      main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount } : null,
-      tails: stretches.tails.map(t => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount })),
+      main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main) } : null,
+      tails: stretches.tails.map(t => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t) })),
     };
   }
   // The filter fields sit on every feature of a route-day or on none (no mixing with today's pools).
