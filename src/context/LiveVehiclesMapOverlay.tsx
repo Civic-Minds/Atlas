@@ -26,6 +26,8 @@ export interface LiveVehiclesMapOverlay {
   // One-shot fly to a vehicle clicked in the list; ts re-triggers repeat clicks. Never zooms out below street level.
   vehicleFly?: { lat: number; lon: number; ts: number } | null;
   routeFeatures?: GeoJSON.Feature[];
+  // The selected route's full geometry, used only to frame the camera (the drawn shape is routeFeatures).
+  frameFeatures?: GeoJSON.Feature[];
   // Composite key "slug::routeShortName" — used for route shape fit-bounds tracking
   selectedRouteKey?: string | null;
   // One-shot request to fly the map to a coverage area: [w, s, e, n] bounds,

@@ -276,6 +276,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return result;
   }, [layers, localLayers, selectedRoute, vehiclesBySlug]);
 
+  // Selected route's full geometry, for framing the camera (any route, not only ones with live analysis).
+  const frameFeatures = useMemo(() => {
+    if (!selectedRoute) return undefined;
+    const [slug, rsn] = selectedRoute.split('::');
+    const fc = slug ? layers[slug] ?? localLayers[slug] : undefined;
+    if (!fc || !rsn) return undefined;
+    return fc.features.filter(f => (f.properties as any)?.routeShortName === rsn);
+  }, [layers, localLayers, selectedRoute]);
+
   // Filter map overlay to selected route when one is active
   const overlayVehicles = useMemo(() => {
     if (!selectedRoute) return allVehicles;
@@ -297,6 +306,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       focusedVehicle?.ts ?? '',
       vehicleFly?.ts ?? '',
       routeFeatures.length,
+      frameFeatures?.length ?? '',
       focusArea?.ts ?? '',
       fitArea?.ts ?? '',
       highlight?.length ?? 0,
@@ -305,7 +315,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     if (fp === lastOverlayFpRef.current) return;
     lastOverlayFpRef.current = fp;
     setOverlay({
-      vehicles: overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, selectedRouteKey: selectedRoute, focusArea, fitArea, highlight,
+      vehicles: overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, frameFeatures, selectedRouteKey: selectedRoute, focusArea, fitArea, highlight,
       onMapClick: (lonLat, vehicle, toleranceM) => {
         if (vehicle) {
           const key = `${vehicle.agencySlug}::${vehicle.routeShortName}`;
@@ -315,7 +325,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         mapLineClickRef.current?.(lonLat, toleranceM);
       },
     });
-  }, [active, overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, selectedRoute, focusArea, fitArea, highlight, setOverlay]);
+  }, [active, overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, frameFeatures, selectedRoute, focusArea, fitArea, highlight, setOverlay]);
 
 
   // Clear overlay when deactivating or unmounting
