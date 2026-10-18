@@ -104,3 +104,20 @@ export function bunchTotalParts(share: number, bunched?: number | null, gapped?:
 
 /** "14% · 8%": the two parts, adding up to the total shown anywhere else. */
 export const bunchPartsText = (share: number, bunched: number, gapped: number): string => { const p = bunchTotalParts(share, bunched, gapped); return `${p.bunched}% · ${p.tooLong}%`; };
+
+/**
+ * The days left out of a figure, named: "Excluding Oct 13, 14" (same month: the month once), "Excluding Oct 30, Nov 1"
+ * (across months). Null when nothing is left out, so a page shows nothing at all when every day counts.
+ */
+export function excludingText(dates: readonly string[]): string | null {
+  const days = [...new Set(dates)].sort();
+  if (!days.length) return null;
+  let month = '';
+  const parts = days.map(d => {
+    const [m, day] = dateRangeText(d, d).split(' ');
+    const out = m === month ? day : `${m} ${day}`;
+    month = m;
+    return out;
+  });
+  return `Excluding ${parts.join(', ')}`;
+}

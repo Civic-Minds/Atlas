@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
 
 import { minutesText } from '../shared/liveFormat';
-import { LATE_SHORT, LATE_THRESHOLD, risePointsText } from '../shared/liveWording';
+import { LATE_SHORT, LATE_THRESHOLD, excludingText, risePointsText } from '../shared/liveWording';
 import type { AgencySummary } from '../shared/liveAgency';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -16,7 +16,7 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import { shortStopName, stretchEnds } from './utils/stopLabel';
 import { titleCase } from './utils/format';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
-import { kpiTiles, type Kpi } from './utils/liveKpi';
+import { kpiTiles, leftOutDates, type Kpi } from './utils/liveKpi';
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasBrand from './components/AtlasBrand';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
@@ -26,7 +26,7 @@ import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
 import OverviewList from './components/Live/tool/OverviewList';
-import LateByHourSection, { routeLateDays, routeLateOfDays, routeLateHours, routeLateOverall } from './components/Live/sections/LateByHourSection';
+import LateByHourSection, { routeLateDays, routeLeftOut, routeLateHours, routeLateOverall } from './components/Live/sections/LateByHourSection';
 import ProblemsWidget from './components/Live/tool/ProblemsWidget';
 import { worstStopRows } from './components/Live/sections/WorstStopsSection';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
@@ -126,7 +126,7 @@ function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const tiles = agencyKpiTiles(s);
   return [
     ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <KpiRows tiles={tiles} math={MATH} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} /> }] : []),
-    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} days={s.weekly?.thisWeek.healthyDates.length} ofDays={s.weekly?.thisWeek.dates.length} height={56} /> }] : []),
+    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} days={s.weekly?.thisWeek.healthyDates.length} leftOut={s.weekly ? excludingText(leftOutDates(s.weekly.thisWeek)) : null} height={56} /> }] : []),
   ];
 }
 
@@ -157,7 +157,7 @@ function routeWidgets({ data, v3, dir, band, setPick, legend }: {
   return [
     ...tileWidgets(weekly(v3), legend),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
-    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} ofDays={routeLateOfDays(v3)} scope={BOTH_DIRECTIONS} /> }] : []),
+    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={routeLeftOut(v3)} scope={BOTH_DIRECTIONS} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" rows={worst} /> }] : []),
   ];
 }

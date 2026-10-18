@@ -8,8 +8,8 @@ import MethodFootnote, { OwnLine, Term } from '../MethodFootnote';
 import { aheadLine, bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
 
-/** The two weeks, then the days counted on a line of their own. */
-const weekWindowItems = (w: NonNullable<LiveV3['weekly']>): ReactNode[] => { const p = weekWindowParts(w); return [p.weeks, <OwnLine key="days">{p.days}</OwnLine>]; };
+/** The two weeks, then the days left out on a line of their own (no line when every day counted). */
+const weekWindowItems = (w: NonNullable<LiveV3['weekly']>): ReactNode[] => { const p = weekWindowParts(w); return p.days ? [p.weeks, <OwnLine key="days">{p.days}</OwnLine>] : [p.weeks]; };
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 

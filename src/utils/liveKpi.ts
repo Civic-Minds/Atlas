@@ -4,7 +4,7 @@
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
 import { isWeekendDate, dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
-import { LATE_TILE_CAPTION, bunchPartsText, runTimeDiffText } from '../../shared/liveWording';
+import { LATE_TILE_CAPTION, bunchPartsText, excludingText, runTimeDiffText } from '../../shared/liveWording';
 import { tenth } from '../../shared/liveFormat';
 export { NOISE_RULE } from '../../shared/liveDashboard';
 
@@ -100,27 +100,30 @@ export function weekNotComparableLine(w: NonNullable<LiveV3['weekly']>): string 
   return w.comparable ? null : `${range(w.thisWeek)}: too few days of good recordings to compare with ${range(w.lastWeek)}`;
 }
 
-/** "6 of 7 days counted this week" (the existing method wording), or null when every day of the week counted. */
-export function daysCountedText(w: NonNullable<LiveV3['weekly']>): string | null {
-  const t = w.thisWeek;
-  return t.healthyDates.length < t.dates.length ? `${t.healthyDates.length} of ${t.dates.length} days counted this week` : null;
-}
+/** The days a week left out (recorded too incompletely to count). */
+export const leftOutDates = (wk: WeekMetrics): string[] => wk.dates.filter(d => !wk.healthyDates.includes(d));
 
-/** The same line in two parts, so the days counted can stand on a line of their own: "This week is Oct 8–14 and last week is Oct 1–7." and "6 of 7 days counted this week, 7 of 7 last week." */
-export function weekWindowParts(w: NonNullable<LiveV3['weekly']>): { weeks: string; days: string } {
+/**
+ * The same line in two parts, so the days left out can stand on a line of their own: "This week is Oct 8–14 and last week is
+ * Oct 1–7." and "Excluding Oct 11 this week, Oct 5 last week." (only the week that left days out is named; null when every day
+ * of both weeks counted).
+ */
+export function weekWindowParts(w: NonNullable<LiveV3['weekly']>): { weeks: string; days: string | null } {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
   const weeks = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}.`;
+  const t = excludingText(leftOutDates(w.thisWeek)), l = excludingText(leftOutDates(w.lastWeek));
+  const tail = (x: string) => x.replace(/^Excluding /, '');
+  const days = t && l ? `${t} this week, ${tail(l)} last week.` : t ? `${t} this week.` : l ? `${l} last week.` : null;
   return {
     weeks: w.comparable ? weeks : `Not enough days of good recordings to compare two weeks: each needs at least ${w.minHealthyDays}. ${weeks}`,
-    days: `${w.thisWeek.healthyDates.length} of ${w.thisWeek.dates.length} days counted this week, ${w.lastWeek.healthyDates.length} of ${w.lastWeek.dates.length} last week.`,
+    days,
   };
 }
 
 /** The two weeks and how many days of each were counted, for "How this is measured" (the recording-gaps rule is a Limits line). */
 export function weekWindowLine(w: NonNullable<LiveV3['weekly']>): string {
-  const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
-  const base = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}: ${w.thisWeek.healthyDates.length} of ${w.thisWeek.dates.length} days counted this week, ${w.lastWeek.healthyDates.length} of ${w.lastWeek.dates.length} last week.`;
-  return w.comparable ? base : `Not enough days of good recordings to compare two weeks: each needs at least ${w.minHealthyDays}. ${base}`;
+  const p = weekWindowParts(w);
+  return p.days ? `${p.weeks} ${p.days}` : p.weeks;
 }
 
 export { isWeekendDate, type DayKind };

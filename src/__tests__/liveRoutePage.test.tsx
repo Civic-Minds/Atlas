@@ -151,7 +151,7 @@ describe('Live route dashboard', () => {
     expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
     // The weeks, then the days counted on a line of their own; the method is open (no disclosure).
     expect(screen.getByText(/This week is .+ and last week is .+\./)).toBeTruthy();
-    expect(screen.getByText(/^\d+ of \d+ days counted this week, \d+ of \d+ last week\.$/).className).toMatch(/block/);
+    expect(screen.getByText(/^Excluding .+ this week, .+ last week\.$/).className).toMatch(/block/);
     expect(document.querySelector('details')).toBeNull();
     expect(screen.getAllByText(/days with gaps in our recordings are left out/).length).toBe(1);
     // One paragraph: each group opens with its bold run-in label.
@@ -227,7 +227,7 @@ describe('Live route dashboard', () => {
     renderPage({ ...ready, v3: { ...v3, weekly: { minHealthyDays: 1, health: [], comparable: true, thisWeek: wk, lastWeek: wk } } } as LiveDashboardResponse);
     await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
     expect(screen.getByText('How this is measured')).toBeTruthy();
-    expect(screen.getByText(/^\d+ of \d+ days counted this week, \d+ of \d+ last week\.$/).className).toMatch(/block/);
+    expect(screen.getByText(/^Excluding .+ this week, .+ last week\.$/).className).toMatch(/block/);
     expect(document.querySelector('details')).toBeNull();
     expect(screen.queryByRole('button', { name: 'Summary' })).toBeNull(); // still no view switcher on the shareable page
   });

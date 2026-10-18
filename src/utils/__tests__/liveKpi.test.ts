@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { kpiDelta, kpiTiles, lateForDays, weekWindowLine } from '../liveKpi';
+import { kpiDelta, kpiTiles, lateForDays, weekWindowLine, weekWindowParts } from '../liveKpi';
 import { dailyNoise } from '../../../shared/liveDashboard';
 import type { LiveV3 } from '../../../shared/liveDashboard';
 
@@ -132,5 +132,17 @@ describe('dailyNoise', () => {
     const week = (dates: string[]) => ({ days: 7, dates, healthyDates: dates, late: { share: 0.1, n: 900 }, tripTime: null, extraWait: null, bunching: { share: 0.2, gaps: 600 }, delivered: null });
     const w: NonNullable<LiveV3['weekly']> = { minHealthyDays: 4, health: [], thisWeek: week(['2026-10-08']), lastWeek: week(['2026-10-01']), comparable: true };
     expect(kpiTiles(w).map(t => t.label)).toEqual(['Late', 'Bunching']);
+  });
+});
+
+describe('the method line for the days left out', () => {
+  const wk = (dates: string[], healthy: string[]) => ({ days: dates.length, dates, healthyDates: healthy, late: null, tripTime: null, extraWait: null, bunching: null, delivered: null });
+  const weeks = (a: ReturnType<typeof wk>, b: ReturnType<typeof wk>) => ({ minHealthyDays: 2, health: [], comparable: true, thisWeek: a, lastWeek: b });
+  const t = ['2026-10-10', '2026-10-11', '2026-10-12'], l = ['2026-10-03', '2026-10-04', '2026-10-05'];
+  it('names this week, last week, both, or nothing', () => {
+    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, l))).days).toBe('Excluding Oct 11 this week.');
+    expect(weekWindowParts(weeks(wk(t, t), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 5 last week.');
+    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 11 this week, Oct 5 last week.');
+    expect(weekWindowParts(weeks(wk(t, t), wk(l, l))).days).toBeNull();
   });
 });

@@ -2,8 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DashboardBandData, LiveV3 } from '../../../../shared/liveDashboard';
 import { healthyCounts, healthyLateByHour } from '../../../../shared/liveDashboard';
-import { risePointsText, runTimeDiffText } from '../../../../shared/liveWording';
-import LateByHourSection, { daysCountedOf, isThin, rowMax, lateByHourModel, routeLateDays, routeLateHours, routeLateOverall } from '../sections/LateByHourSection';
+import { excludingText, risePointsText, runTimeDiffText } from '../../../../shared/liveWording';
+import LateByHourSection, { isThin, leftOutOf, rowMax, lateByHourModel, routeLateDays, routeLateHours, routeLateOverall } from '../sections/LateByHourSection';
 
 // 2026-10-10 and 2026-10-11 are a Saturday and a Sunday. 2026-10-11 has gaps in the recordings (not a good day).
 const counts = (n: number, late: number) => ({ n, early: 0, onTime: n - late, late, earlyShare: 0, onTimeShare: (n - late) / n, lateShare: late / n, notLateShare: 1 - late / n });
@@ -70,13 +70,15 @@ describe('a figure on fewer than 3 good days is dimmed', () => {
 
 describe('visible days, peak label and run time wording', () => {
   beforeEach(() => { vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }); });
-  it('says how many days were counted, visibly', () => {
-    expect(daysCountedOf(4, 7)).toBe('4 of 7 days counted');
-    render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.09, n: 200 }, { hour: 9, value: 0.05, n: 200 }]} band="all" overall={0.07} days={4} ofDays={7} />);
-    expect(screen.getByText('4 of 7 days counted')).toBeTruthy();
+  it('names the days left out, and says nothing when every day counts', () => {
+    const hours = [{ hour: 8, value: 0.09, n: 200 }, { hour: 9, value: 0.05, n: 200 }];
+    const { container, rerender } = render(<LateByHourSection chart="mini" hours={hours} band="all" overall={0.07} days={4} leftOut="Excluding Oct 11" />);
+    expect(screen.getByText('Excluding Oct 11').getAttribute('title')).toMatch(/gaps in our recordings/);
+    rerender(<LateByHourSection chart="mini" hours={hours} band="all" overall={0.07} days={7} leftOut={null} />);
+    expect(container.textContent).not.toMatch(/Excluding|of 7|counted/);
   });
   it('labels the tallest hour once, and the bars fill the chart relative to it', () => {
-    const { container } = render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.09, n: 200 }, { hour: 9, value: 0.05, n: 200 }, { hour: 10, value: 0.2, n: 5 }]} band="all" overall={0.07} days={6} ofDays={7} />);
+    const { container } = render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.09, n: 200 }, { hour: 9, value: 0.05, n: 200 }, { hour: 10, value: 0.2, n: 5 }]} band="all" overall={0.07} days={6} />);
     const peaks = container.querySelectorAll('[data-peak]');
     expect(peaks).toHaveLength(1);
     expect(peaks[0].textContent).toBe('9%'); // the 20% hour has only 5 departures: not the peak
@@ -99,7 +101,7 @@ describe('thin figures say why, and one scale serves the row', () => {
     expect(screen.getAllByText('Few measurements: treat with care.').length).toBeGreaterThanOrEqual(6);
   });
   it('writes it in the planner chart too, without adding height (it takes the idle hover line)', () => {
-    render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.2, n: 200 }]} band="all" overall={0.2} days={2} ofDays={7} />);
+    render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.2, n: 200 }]} band="all" overall={0.2} days={2} />);
     expect(screen.getByText('Few measurements: treat with care.')).toBeTruthy();
   });
   it('sets one scale from the bars with enough departures, and marks a thin bar that runs past it', () => {
@@ -111,5 +113,25 @@ describe('thin figures say why, and one scale serves the row', () => {
     const ticks = [...container.querySelectorAll('[data-tick]')].map(t => t.textContent);
     expect(ticks.some(t => t === '40%')).toBe(false); // the thin 33% hour did not set the axis
     expect(container.querySelectorAll('[data-capped]').length).toBeGreaterThan(0); // and is marked at the top of its chart
+  });
+});
+
+describe('the days left out', () => {
+  it('names them in the short date style, the month once', () => {
+    expect(excludingText(['2026-10-11'])).toBe('Excluding Oct 11');
+    expect(excludingText(['2026-10-14', '2026-10-13'])).toBe('Excluding Oct 13, 14');
+    expect(excludingText(['2026-10-30', '2026-11-01'])).toBe('Excluding Oct 30, Nov 1');
+    expect(excludingText(['2026-10-11', '2026-10-11'])).toBe('Excluding Oct 11');
+  });
+  it('is nothing when nothing is left out', () => {
+    expect(excludingText([])).toBeNull();
+  });
+  it('gives each kind of day its own left-out days', () => {
+    const dates = ['2026-10-10', '2026-10-11', '2026-10-12', '2026-10-13'];
+    const v3 = { window: { dates }, weekly: { thisWeek: { dates, healthyDates: ['2026-10-10', '2026-10-12'] } } } as unknown as LiveV3;
+    expect(leftOutOf(v3, 'all')).toBe('Excluding Oct 11, 13');
+    expect(leftOutOf(v3, 'weekend')).toBe('Excluding Oct 11'); // Oct 10 is a Saturday and counts; Oct 11 is a Sunday
+    expect(leftOutOf(v3, 'weekday')).toBe('Excluding Oct 13');
+    expect(leftOutOf({ ...v3, weekly: { thisWeek: { dates, healthyDates: dates } } } as unknown as LiveV3, 'all')).toBeNull();
   });
 });
