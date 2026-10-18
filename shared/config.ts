@@ -226,7 +226,7 @@ export const TIME_PERIODS = [
   { key: 'midday',    label: 'Midday',     startHour: 9,  endHour: 15 },
   { key: 'pmPeak',    label: 'PM Peak',    startHour: 15, endHour: 19 },
   { key: 'evening',   label: 'Evening',    startHour: 19, endHour: 23 },
-  { key: 'late',      label: 'Late',       startHour: 23, endHour: 26 },
+  { key: 'late',      label: 'Night',      startHour: 23, endHour: 26 },
   { key: 'overnight', label: 'Overnight',  startHour: 26, endHour: 30 },
 ] as const satisfies readonly PeriodConfig[];
 
