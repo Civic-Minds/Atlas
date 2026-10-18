@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The Live route card now looks like the regular route card (local only, CIV-331)**: same header (back arrow beside the agency name and title, no separate strip), same spacing and section dividers, and the agency name opens its page.
 - **Clicking a route in the Live list frames that whole route on the map (local only, CIV-329)**: any route, not only the ones with route analysis, like the regular map; its vehicles stay in view.
 - **Clicking a vehicle in the Live route list flies the map to it (local only, CIV-328)**: so you can see where that bus is without hunting for it.
 - **Live shows the lines of routes that have a vehicle running, under the dots (local only, CIV-326)**: thin, light lines so the dots stay the loudest thing on the map; routes with no vehicle aren't drawn.

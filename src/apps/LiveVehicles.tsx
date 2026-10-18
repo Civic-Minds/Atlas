@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Info, Moon, Sun, WifiOff, ArrowLeft, ChevronRight } from 'lucide-react';
+import { Info, Moon, Sun, WifiOff, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute, hasLiveAnalysis, agencyHasLiveAnalysis } from '../../shared/livePollingConfig';
@@ -7,7 +7,7 @@ import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
-import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors } from '../utils/colors';
@@ -18,7 +18,7 @@ import { periodKeyForHour } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../utils/liveGrouping';
-import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
+import { CardBackButton, CardDirectionRow, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, delayAmount, headwayAbout, headwayEvery } from '../utils/headwayText';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
@@ -43,6 +43,8 @@ interface Props {
   selectionActive?: boolean;
   /** A route picked on the map or in a link, handed over from the main map. */
   routeRequest?: { slug: string; routeShortName: string; ts: number } | null;
+  /** Opens the agency's page (the route card's agency name links there, like the regular card). */
+  onAgencyClick?: (slug: string) => void;
 }
 
 interface RouteGroup {
@@ -105,7 +107,7 @@ const MIN_LIVE_ZOOM = 9;
 /** Direction work per polled vehicle, kept across zoom steps (see resolvedVehiclesBySlug). */
 const resolvedDirections = new WeakMap<LiveVehicle, LiveVehicle>();
 
-export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false, routeRequest = null }: Props) {
+export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false, routeRequest = null, onAgencyClick }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { setOverlay } = useLiveVehiclesMapOverlay();
@@ -523,6 +525,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return (feature?.properties as any)?.routeLongName ?? null;
   }, [selectedGroup, layers, localLayers]);
 
+  // The feed's route_type, so the title reads the same as the regular route card's.
+  const selectedRouteType = useMemo(() => {
+    if (!selectedGroup) return null;
+    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
+    const feature = fc?.features.find(f => (f.properties as any)?.routeShortName === selectedGroup.routeShortName);
+    return (feature?.properties as any)?.routeType ?? null;
+  }, [selectedGroup, layers, localLayers]);
+
   // Vehicle word for the selected route's mode ("Streetcar 4508", not "Bus 4508")
   const selectedRouteModeWord = useMemo(() => {
     if (!selectedGroup) return 'Bus';
@@ -622,24 +632,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         <Panel enter>
 
           {/* Header */}
-          {selectedGroup ? (
-            <div className={PANEL_CARD_HEADER}>
-              <button
-                onClick={selectedDirection
-                  ? () => setSelectedDirection(null)
-                  : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
-                className="p-0.5 -ml-0.5 mt-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-                aria-label={selectedDirection ? 'Back to directions' : 'Back to route list'}
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-              </button>
-              <RouteCardTitle
-                routeShortName={selectedGroup.routeShortName}
-                routeLongName={selectedRouteLongName}
-                agencyName={selectedAgencyName}
-              />
-            </div>
-          ) : (
+          {!selectedGroup && (
             <PanelTitleBar>
               {!isZoomedIn ? (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
@@ -668,8 +661,27 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           <PanelBody>
             {requestedRouteNote && <PanelEmpty>{requestedRouteNote}</PanelEmpty>}
             {selectedGroup ? (
-              <>
-              <div className="px-4 pt-4">
+              <SidebarCardShell className="px-4 pt-4">
+                <SidebarCardHeaderBlock>
+                  <div className="flex items-start gap-2">
+                    <CardBackButton
+                      onClick={selectedDirection
+                        ? () => setSelectedDirection(null)
+                        : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
+                      label={selectedDirection ? 'Back to directions' : 'Back to route list'}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <RouteCardTitle
+                        routeShortName={selectedGroup.routeShortName}
+                        routeLongName={selectedRouteLongName}
+                        routeType={selectedRouteType}
+                        agencySlug={selectedGroup.agencySlug}
+                        agencyName={selectedAgencyName}
+                        onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
+                      />
+                    </div>
+                  </div>
+                </SidebarCardHeaderBlock>
                 <LiveRoutePerformance
                   key={selectedRoute ?? ''}
                   slug={selectedGroup.agencySlug}
@@ -680,32 +692,24 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   registerMapClick={registerMapClick}
                   onDetailsChange={setDetailsOpen}
                 />
-              </div>
-              {!detailsOpen && performance && (
-                <button
-                  type="button"
-                  onClick={() => setVehiclesOpen(o => !o)}
-                  aria-expanded={vehiclesOpen}
-                  className="mx-4 mt-3 mb-4 pt-3 w-[calc(100%-2rem)] border-t border-[var(--border-primary)] flex items-center justify-between text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                >
-                  <span>Vehicles · {selectedGroup.vehicles.length}</span>
-                  <ChevronRight className={`w-3 h-3 transition-transform ${vehiclesOpen ? 'rotate-90' : ''}`} />
-                </button>
-              )}
-              {!detailsOpen && (!performance || vehiclesOpen) && (
-              <div className="px-4 py-4">
-                {selectedRouteHeadwayLine && (
-                  <div className="text-xs font-black text-[var(--text-dim)] mb-4">
-                    {selectedRouteHeadwayLine}
-                  </div>
+                {!detailsOpen && performance && (
+                  <button
+                    type="button"
+                    onClick={() => setVehiclesOpen(o => !o)}
+                    aria-expanded={vehiclesOpen}
+                    className="mt-3 pt-3 w-full border-t border-[var(--border-primary)] flex items-center justify-between text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  >
+                    <span>Vehicles · {selectedGroup.vehicles.length}</span>
+                    <ChevronRight className={`w-3 h-3 transition-transform ${vehiclesOpen ? 'rotate-90' : ''}`} />
+                  </button>
                 )}
-                {/* Match static route cards: destinations first, live vehicles second. */}
-                {selectedGroup.vehicles.length === 0 ? (
-                  <PanelEmpty>No vehicles on this route</PanelEmpty>
-                ) : canGroupByDirection && !selectedDirection ? (
-                  <SidebarCardListRows>
-                    {[...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => {
-                      return (
+                {!detailsOpen && (!performance || vehiclesOpen) && (
+                  <SidebarCardSection label={selectedRouteHeadwayLine ?? undefined}>
+                    {/* Match static route cards: destinations first, live vehicles second. */}
+                    {selectedGroup.vehicles.length === 0 ? (
+                      <PanelEmpty>No vehicles on this route</PanelEmpty>
+                    ) : canGroupByDirection && !selectedDirection ? (
+                      [...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => (
                         <div key={dirKey} className="relative pr-4">
                           <CardDirectionRow
                             label={dirKey}
@@ -714,44 +718,40 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                           />
                           <ChevronRight className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--text-dim)]" />
                         </div>
-                      );
-                    })}
-                  </SidebarCardListRows>
-                ) : (
-                  <SidebarCardListRows>
-                    {(selectedDirection
-                      ? (vehiclesByDirection?.get(selectedDirection) ?? [])
-                      : selectedGroup.vehicles
-                    ).map((v, i) => {
-                      const colors = getVehicleColors(v.status, colorMode);
-                      return (
-                        <div
-                          key={v.id}
-                          className="flex items-start justify-between gap-3 cursor-pointer"
-                          onClick={() => setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() })}
-                        >
-                          <div className="min-w-0">
-                            <p className={`${CARD_LIST_ROUTE} truncate`}>
-                              {liveVehicleRowLabel(v, i, selectedRouteModeWord)}
-                            </p>
-                            {v.speedKmh != null && (
-                              <p className="text-xs font-bold text-[var(--text-dim)] mt-0.5">{v.speedKmh} km/h</p>
-                            )}
-                          </div>
-                          <span
-                            style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                            className={`text-xs font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
+                      ))
+                    ) : (
+                      (selectedDirection
+                        ? (vehiclesByDirection?.get(selectedDirection) ?? [])
+                        : selectedGroup.vehicles
+                      ).map((v, i) => {
+                        const colors = getVehicleColors(v.status, colorMode);
+                        return (
+                          <div
+                            key={v.id}
+                            className="flex items-start justify-between gap-3 cursor-pointer"
+                            onClick={() => setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() })}
                           >
-                            {delayLabel(v)}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </SidebarCardListRows>
+                            <div className="min-w-0">
+                              <p className={`${CARD_LIST_ROUTE} truncate`}>
+                                {liveVehicleRowLabel(v, i, selectedRouteModeWord)}
+                              </p>
+                              {v.speedKmh != null && (
+                                <p className="text-xs font-bold text-[var(--text-dim)] mt-0.5">{v.speedKmh} km/h</p>
+                              )}
+                            </div>
+                            <span
+                              style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                              className={`text-xs font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
+                            >
+                              {delayLabel(v)}
+                            </span>
+                          </div>
+                        );
+                      })
+                    )}
+                  </SidebarCardSection>
                 )}
-              </div>
-              )}
-              </>
+              </SidebarCardShell>
             ) : !isZoomedIn || (visibleSlugs.length === 0 && !isLoading) ? (
               <>
                 <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
