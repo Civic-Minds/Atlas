@@ -6292,6 +6292,7 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270116",
       "timezone": "America/Los_Angeles",
+      "timezoneOverride": "America/Los_Angeles",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -9195,6 +9196,7 @@
         "Ventura, California"
       ],
       "timezone": "America/Los_Angeles",
+      "timezoneOverride": "America/Los_Angeles",
       "lastRawArchiveKey": "20260808-26a2b10b0d954217",
       "lastFeedCheckAt": "20261012",
       "expiredFeedCheckCount": 0,
@@ -14766,6 +14768,7 @@
         "Washington County, Tennessee"
       ],
       "timezone": "America/New_York",
+      "timezoneOverride": "America/New_York",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-03",

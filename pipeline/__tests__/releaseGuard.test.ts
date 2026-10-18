@@ -51,6 +51,9 @@ describe('releasePublishError', () => {
     expect(releasePublishError(evidence({ agencyStamps: { ttc: 'release-b', yrt: undefined } }))).toContain('yrt=undefined');
     expect(releasePublishError(evidence({ agencyStamps: { ttc: 'missing' } }))).toContain('ttc=missing');
     expect(releasePublishError(evidence({ agencyStamps: {} }))).toContain('No agency snapshots');
+    // CIV-321: a beta sections file copied into the release must carry the release's stamp too.
+    expect(releasePublishError(evidence({ agencyStamps: { ttc: 'release-b', 'ttc-sections': 'release-a' } }))).toContain('ttc-sections=release-a');
+    expect(releasePublishError(evidence({ agencyStamps: { ttc: 'release-b', 'ttc-sections': 'release-b' } }))).toBeNull();
   });
 
   it('refuses a half-finished upload or a leftover local manifest', () => {
@@ -122,10 +125,14 @@ describe('tile rules fingerprint', () => {
   // Step 5a adds the rv_/rr_ route filter keys and reads them first in the period filter: a tile
   // change, covered by the same version 5 bump (one bump for the whole focus branch).
   // Step 6 adds routeAllDayHeadway and routeMiddayCap, read first by the all-day filter: same bump.
+  // #897 keeps a withheld sparse overnight period (no value, unsteady flag) in the coverage pool, so the
+  // stamp reads what it read before the value was withheld; data built earlier has no such period: hash only.
+  // CIV-321 copies the beta sections file into the release beside the route file; no tile value
+  // changes: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '4168c399ca67e5dae7bff48276cc82bc4a290f77f8df8f605af6437646c6f610',
+      fingerprint: '8c2e9980fe35d2ba1c23ce116f47b7598c99e5ad5e15323a321a429d26989d5a',
     });
   });
 });

@@ -24,7 +24,9 @@
  *                        reading and companions it then takes (#771)
  */
 import { SURFACE_TIER_MAXES } from '../shared/config.js';
-import { headwayToTier, headwayToTierOn, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headwayToTier, headwayToTierOn, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+
+const { midday: MIDDAY, pmPeak: PM_PEAK, allDay: ALL_DAY } = HEADLINE_WINDOWS;
 import { pooledHeadwayInWindow } from './stopPools.js';
 import type { DayName, DayType } from '../types/gtfs.js';
 
@@ -33,10 +35,7 @@ const rank = (tier: string | null | undefined): number => (tier == null ? 99 : (
 /** The Step 1 window order (midday, PM peak, sustained 6-22h) on the drawn pattern's own list. */
 export function ownStepOneHeadway(times: readonly number[]): number | undefined {
   const sorted = [...times].sort((a, b) => a - b);
-  return medianHeadwayInWindow(sorted, 540, 900, 3, true)
-    ?? medianHeadwayInWindow(sorted, 900, 1140, 3, true)
-    ?? sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true)
-    ?? undefined;
+  return headlineWindowValue(sorted, { typical: true }) ?? undefined;
 }
 
 /**
@@ -48,14 +47,14 @@ export function ownStepOneHeadway(times: readonly number[]): number | undefined 
  * day with a hole in it.
  */
 export function pooledStepOneHeadway(times: readonly number[], own?: readonly number[]): number | undefined {
-  const midday = pooledHeadwayInWindow(times, 540, 900, 3, false, own)
-    ?? pooledHeadwayInWindow(times, 900, 1140, 4, false, own);
+  const midday = pooledHeadwayInWindow(times, MIDDAY.start, MIDDAY.end, HEADLINE_MIN_DEPARTURES, false, own)
+    ?? pooledHeadwayInWindow(times, PM_PEAK.start, PM_PEAK.end, 4, false, own);
   if (midday != null) return midday;
   const sorted = [...new Set(times)].sort((a, b) => a - b);
-  const allDay = sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true);
+  const allDay = sustainedMedianHeadwayInWindow(sorted, ALL_DAY.start, ALL_DAY.end, HEADLINE_MIN_DEPARTURES, undefined, true);
   if (allDay == null) return undefined;
   const ownSorted = own ? [...new Set(own)].sort((a, b) => a - b) : [];
-  const ownAllDay = ownSorted.length ? sustainedMedianHeadwayInWindow(ownSorted, 360, 1320, 3, undefined, true) : null;
+  const ownAllDay = ownSorted.length ? sustainedMedianHeadwayInWindow(ownSorted, ALL_DAY.start, ALL_DAY.end, HEADLINE_MIN_DEPARTURES, undefined, true) : null;
   return ownAllDay != null ? Math.min(allDay, ownAllDay) : allDay;
 }
 
@@ -88,13 +87,13 @@ export function terminalReading(args: {
 }): TerminalReading {
   const { terminalId, ownTerminalTimes, pool, ownStopHwsSorted: hwVals } = args;
   const ownSorted = [...ownTerminalTimes].sort((a, b) => a - b);
-  const ownTerminalMiddayHw = terminalId ? (medianHeadwayInWindow(ownSorted, 540, 900, 3, true) ?? undefined) : undefined;
+  const ownTerminalMiddayHw = terminalId ? (medianHeadwayInWindow(ownSorted, MIDDAY.start, MIDDAY.end, HEADLINE_MIN_DEPARTURES, true) ?? undefined) : undefined;
   // Midday first, pool before own; then the Step 1 window order, pool before own. A pool whose
   // merged midday list is uneven (#813) does not push the terminal past the own pattern's
   // midday reading to the pool's PM or all-day value (ttc 129 weekday: own midday 20, pool
   // all-day 28); a pool with no midday reading still speaks for a terminal the own pattern
   // cannot read at midday (freedom M: a 3-trip shape of a 10-trip branch).
-  const pooledMiddayHw = terminalId && pool ? (pooledHeadwayInWindow(pool, 540, 900, 3, false, ownSorted) ?? undefined) : undefined;
+  const pooledMiddayHw = terminalId && pool ? (pooledHeadwayInWindow(pool, MIDDAY.start, MIDDAY.end, HEADLINE_MIN_DEPARTURES, false, ownSorted) ?? undefined) : undefined;
   const pooledStepOne = terminalId && pool ? pooledStepOneHeadway(pool, ownSorted) : undefined;
   const ownStepOne = terminalId ? ownStepOneHeadway(ownTerminalTimes) : undefined;
   const poolUsed = pooledMiddayHw != null || (ownTerminalMiddayHw == null && pooledStepOne != null);
@@ -250,6 +249,9 @@ export interface PeriodInputs {
   branchMaxGap: number | null;
   termSustained: boolean | undefined;
   branchSustained: boolean | undefined;
+  /** #897: termH / branchH is a sparse overnight window's withheld value (see sparseOvernightHeadway). */
+  termSparse?: boolean;
+  branchSparse?: boolean;
 }
 
 export interface PeriodValue {
@@ -257,10 +259,29 @@ export interface PeriodValue {
   coverage: number | null;
   maxGap: number | null;
   sustained: boolean | undefined;
+  /** #897: the headway is a sparse overnight window's withheld value. */
+  sparse?: boolean;
+  /** #897: the value decidePeriod withheld (headway is then null). */
+  withheld?: number;
 }
 
 /** Step 5: one period's displayed value and the companions that follow its source. */
 export function decidePeriod(i: PeriodInputs): PeriodValue {
+  return withholdSparse(decideSourcedPeriod(i));
+}
+
+/**
+ * #897: a period whose value came from a sparse overnight window shows no value. The source is
+ * picked, and the coverage, max gap and sustained flag follow it, as if the value were shown, so
+ * the hole still shows, the route-wide stamps pick the same pools, and no other source's value
+ * takes its place.
+ */
+function withholdSparse(period: PeriodValue): PeriodValue {
+  if (!period.sparse || period.headway == null) return period;
+  return { headway: null, coverage: period.coverage, maxGap: period.maxGap, sustained: period.sustained, withheld: period.headway };
+}
+
+function decideSourcedPeriod(i: PeriodInputs): PeriodValue {
   const resolvedH = resolveTerminalPeriodHeadway(i.termH, i.branchH, i.terminalIsBranchScoped);
   // #771: a period read from the destination pool is never better than the worst drawn stop's
   // value in that period (the same floor as the headline). The floored period is that stop's
@@ -275,5 +296,6 @@ export function decidePeriod(i: PeriodInputs): PeriodValue {
   // rather than re-deriving the choice: comparing the value against termH/branchH keeps this in
   // sync with that function's logic by construction.
   const sustained = headway == null ? undefined : (headway === i.termH ? i.termSustained : (headway === i.branchH ? i.branchSustained : undefined));
-  return { headway, coverage, maxGap, sustained };
+  const sparse = headway == null ? false : (headway === i.termH ? !!i.termSparse : (headway === i.branchH && !!i.branchSparse));
+  return { headway, coverage, maxGap, sustained, ...(sparse ? { sparse } : {}) };
 }

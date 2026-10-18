@@ -206,11 +206,13 @@ export function getAgencyArtifactUrls(slug: string, options?: { betaOnly?: boole
     corridorsUrl: `${base}/atlas/${slug}-corridors.json`,
     tripsUrl: `${base}/atlas/${slug}-trips.json`,
     stopsMetaUrl: `${base}/atlas/${slug}-stops-meta.json`,
+    /** CIV-321: beta section colours only (FEATURES.segmentColours); the public build never fetches it. */
+    sectionsUrl: `${base}/atlas/${slug}-sections.json`,
     livePollingUrl: `${base}/atlas/live-polling/${slug}.json`,
   };
 }
 
-export function getAgencyDataUrl(slug: string, variant: '' | '-stops' | '-corridors' | '-trips' = '') {
+export function getAgencyDataUrl(slug: string, variant: '' | '-stops' | '-corridors' | '-trips' | '-sections' = '') {
   return `${R2_PUBLIC_URL}/atlas/${slug}${variant}.json`;
 }
 
@@ -226,7 +228,7 @@ export const TIME_PERIODS = [
   { key: 'midday',    label: 'Midday',     startHour: 9,  endHour: 15 },
   { key: 'pmPeak',    label: 'PM Peak',    startHour: 15, endHour: 19 },
   { key: 'evening',   label: 'Evening',    startHour: 19, endHour: 23 },
-  { key: 'late',      label: 'Late',       startHour: 23, endHour: 26 },
+  { key: 'late',      label: 'Night',      startHour: 23, endHour: 26 },
   { key: 'overnight', label: 'Overnight',  startHour: 26, endHour: 30 },
 ] as const satisfies readonly PeriodConfig[];
 

@@ -19,7 +19,7 @@ git pull --ff-only origin main
 git switch -c fix/short-description
 ```
 
-New worktree: `scripts/new-worktree.sh <name> <branch>` creates it under `../Atlas-worktrees/` from `origin/main` and links `.env.local` to the main checkout's key-free `.env.dev-public` (never the full `.env.local`, which holds R2 write keys).
+New worktree: `scripts/new-worktree.sh <name> <branch>` creates it under `../Atlas-worktrees/` from `origin/main` and links `.env.local` to the main checkout's key-free `.env.dev-public` (never the full `.env.local`, which holds R2 write keys). Then run `npm ci`, or symlink `node_modules` from another worktree on the same lockfile.
 
 ## Deployments
 
@@ -28,10 +28,10 @@ All Vercel projects build the same `main` commit:
 | Deployment | Mode | Update policy | Purpose |
 |---|---|---|---|
 | Public | `public` | Automatic from `main` | Public site |
-| Preview | `preview` | Automatic from `main` | Stable outreach/demo link for agencies |
+| Preview | `preview` (see below) | Automatic from `main` | Stable outreach/demo link for agencies |
 | Beta | `beta` | Manual promotion from `main` | Experimental feature validation |
 
-The 2026-09-28 topology check in [`../FEATURE_FLAGS.md`](../FEATURE_FLAGS.md#verified-deployment-topology) found Preview attached to the `atlas-beta` Vercel project, so it shares Beta's configuration rather than running as an independently configured `preview` deployment. Re-verify before relying on the Preview row above.
+Preview is not an independent project: the 2026-09-28 topology check in [`../FEATURE_FLAGS.md`](../FEATURE_FLAGS.md#verified-deployment-topology) found it attached to the `atlas-beta` Vercel project, so it shares Beta's configuration and has no verified `preview` mode (FEATURE_FLAGS.md is the one place that records this; `vercel.json` in the repo does not say). Re-verify before relying on the Preview row above.
 
 Keep differences between the deployments in project-scoped Vercel environment variables, not source branches. `VITE_ATLAS_MODE` is the source of truth; legacy `VITE_BETA_BUILD` and `VITE_PREVIEW_BUILD` values are compatibility fallbacks only.
 

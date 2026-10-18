@@ -10,7 +10,7 @@ import {
     DAY_TO_TYPE,
 } from '../types/gtfs';
 import { computeMedian } from './transit-utils';
-import { TIER_RANK, typicalOfGaps } from './headway-utils';
+import { RAIL_TIER_WINDOW, TIER_RANK, typicalOfGaps } from './headway-utils';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
 import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
 import { isRailLikeRoute } from '../shared/modes.js';
@@ -507,8 +507,8 @@ export function applyAnalysisCriteria(
         // on KI when actual sustained service is much less frequent). Midday window reflects the
         // honest off-peak combined frequency for both directions.
         // Falls back to full window when midday has <2 trips (e.g. GO Milton, Kitchener GO).
-        const MIDDAY_START = 570; // 09:30
-        const MIDDAY_END = 870;   // 14:30
+        const MIDDAY_START = RAIL_TIER_WINDOW.start; // 09:30
+        const MIDDAY_END = RAIL_TIER_WINDOW.end;   // 14:30
         const isRail = raw.railLike ?? isRailLikeRoute({ routeType: raw.routeType });
         let analysisWindow = windowedTimes;
         let analysisWindowMins = end - start;
@@ -864,8 +864,8 @@ export function applyAnalysisCriteria(
           if (isRailRollup) {
             // Pick the representative day's midday times. A weekday union creates spurious
             // short gaps when some days (e.g. Fridays) run extra trains.
-            const MIDDAY_START = 570; // 09:30
-            const MIDDAY_END = 870;   // 14:30
+            const MIDDAY_START = RAIL_TIER_WINDOW.start; // 09:30
+            const MIDDAY_END = RAIL_TIER_WINDOW.end;   // 14:30
             const dayMiddays = entries.map(e => e.result.times.filter(t => t >= MIDDAY_START && t <= MIDDAY_END));
             const counts = dayMiddays.map(d => d.length);
             const sortedCounts = [...counts].sort((a, b) => a - b);

@@ -26,6 +26,8 @@ import {
   computeResearchFrequentService,
   forCrossMidnightWindow,
   hasSustainedFrequentService,
+  isSparseOvernightWindow,
+  isSustainedHeadway,
   medianHeadwayInWindow,
   hasSustainedServiceInWindow,
   nightServiceDepartureTimes,
@@ -99,6 +101,17 @@ export interface DirectionStretches {
    * (Ryan, 2026-10-15: night service on part of the route counts, on the part it runs).
    */
   night?: DirectionStretches;
+  /**
+   * CIV-321 S1: departures at any stop of the direction, every trip that serves it (the same read
+   * a stretch's reference stop gets). Not serialized.
+   */
+  timesAtStop?: (stop: string) => { times: readonly number[]; nightTimes: readonly number[]; tripCount: number };
+  /**
+   * CIV-321: along a drawn stop order, each stop's times over every trip that runs THROUGH it (Ryan,
+   * 2026-10-18: the line is the track, coloured by the trains running along it, including those that
+   * skip a stop). A trip that skips a stop between two it serves passes it at a time interpolated between them.
+   */
+  throughTimesAlong?: (stops: readonly string[]) => Array<{ times: readonly number[]; nightTimes: readonly number[]; tripCount: number }>;
 }
 
 type Coord = [lat: number, lon: number];
@@ -298,7 +311,45 @@ export function directionStretches(
   const merged = [...segments.values()];
   const tails = main ? merged.map(t => stretch('tail', t.stops, t.km)) : [];
 
-  return { key, main, tails, regularPatternCount: regular.length, variantTripCount, disconnected: disconnected || undefined };
+  const timesAtStopCache = new Map<string, ReturnType<typeof timesAt>>();
+  const timesAtStop = (stop: string) => {
+    let hit = timesAtStopCache.get(stop);
+    if (!hit) { hit = timesAt(stop); timesAtStopCache.set(stop, hit); }
+    return hit;
+  };
+  const throughTimesAlong = (stops: readonly string[]) => {
+    const index = new Map(stops.map((stop, i) => [stop, i] as const));
+    const times = stops.map(() => new Set<number>());
+    const overnight = stops.map(() => [] as number[]);
+    const counts = stops.map(() => 0);
+    for (const trip of measureTrips) {
+      const at = new Map<number, TripVisit>();
+      for (const visit of trip.visits) {
+        const i = index.get(visit.stopId);
+        if (i == null || visit.counted === false || at.has(i)) continue;
+        at.set(i, visit);
+      }
+      if (at.size === 0) continue;
+      const served = [...at.keys()].sort((a, b) => a - b);
+      for (let s = 0; s < served.length; s++) {
+        const from = served[s], to = served[s + 1] ?? served[s];
+        const a = at.get(from)!, b = at.get(to)!;
+        // The served stop itself, then the stops it skips before its next one, at times interpolated
+        // between the two by stop position.
+        for (let i = from; i < (to === from ? from + 1 : to); i++) {
+          const minutes = i === from ? a.minutes : Math.round(a.minutes + ((b.minutes - a.minutes) * (i - from)) / (to - from));
+          counts[i]++;
+          times[i].add(minutes);
+          if (a.overnightOnly) overnight[i].push(minutes + 1440);
+        }
+      }
+    }
+    return stops.map((_, i) => {
+      const sorted = [...times[i]].sort((a, b) => a - b);
+      return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight[i]), tripCount: counts[i] };
+    });
+  };
+  return { key, main, tails, regularPatternCount: regular.length, variantTripCount, disconnected: disconnected || undefined, timesAtStop, throughTimesAlong };
 }
 
 export interface StretchPeriod {
@@ -311,6 +362,8 @@ export interface StretchPeriod {
   sustained: boolean | null;
   /** D8 shadow: sustained, and service runs on both sides of the period's midpoint. */
   sustainedMid: boolean | null;
+  /** The value is one gap between departures, not a repeated cadence (see isOneGapPeriod). */
+  oneGap: boolean;
 }
 
 const PERIOD_WINDOWS = TIME_PERIODS.map(p => ({ key: p.key as PeriodKey, start: p.startHour * 60, end: p.endHour * 60 }));
@@ -334,6 +387,92 @@ export function periodSustainedMid(times: readonly number[]): Partial<Record<Per
   return out;
 }
 
+/**
+ * An unsteady period's value (its longest wait) is one gap between departures when no other gap
+ * around it repeats it (TTC 10 weekday midday to Victoria Park: 09:07, 14:22, 14:52 shows 315; TTC
+ * 166 to Milvan 302). The gaps are those between the period's departures and the departure on each
+ * side of it; a gap repeats the value when the settled steadiness test calls neither one a real gap
+ * over the other. A slow cadence repeats (MBTA 18 AM to Ashmont: 07:04, 08:28, then 09:52, every
+ * 84; Halifax 401 PM every 99) and keeps its number, and so does regular service with one gap
+ * inside it. A value that is only a late start or early end, matching no gap, is not one gap.
+ */
+export function isOneGapPeriod(times: readonly number[], start: number, end: number, value: number | null, sustained: boolean | undefined): boolean {
+  // Steady periods show their cadence; unsteady ones, and those too thin to judge (two departures), show the wait.
+  if (value == null || sustained === true) return false;
+  const all = [...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b);
+  const inWindow = all.filter(t => t >= start && t <= end);
+  if (inWindow.length === 0) return false;
+  const before = all.filter(t => t < start);
+  const after = all.filter(t => t > end);
+  const seq = [...before.slice(-1), ...inWindow, ...after.slice(0, 1)];
+  const gaps = seq.slice(1).map((t, i) => t - seq[i]);
+  const near = (g: number) => isSustainedHeadway([value], g) && isSustainedHeadway([g], value);
+  if (gaps.filter(near).length !== 1) return false;
+  // Regular service around the gap keeps its cadence (TransLink 147 Saturday AM: 06:26, then every
+  // 30 from 07:26): the gap stands alone only when the rest of the period has fewer than the three
+  // departures a period value needs.
+  const otherInWindow = inWindow.slice(1).map((t, i) => t - inWindow[i]).filter(g => !near(g));
+  return otherInWindow.length < 2;
+}
+
+/** A stretch period's filter value: the headway when steady with every gap within the coverage cap, else the full-window wait. */
+export function stretchFilterValue(p: StretchPeriod): number | null {
+  return p.sustained === true && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage;
+}
+
+/**
+ * CIV-321 S3: run-length encoding of one period's stop values, to keep agency JSON small: runs of
+ * equal values as "v*n" (a single stop is just "v"), comma-separated; an empty v is no value.
+ * "30*4,,60*2" is 30, 30, 30, 30, none, 60, 60. Decoded by shared/stopRuns decodeStopRuns.
+ */
+export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
+  const runs: string[] = [];
+  for (let i = 0; i < values.length;) {
+    let j = i;
+    while (j + 1 < values.length && values[j + 1] === values[i]) j++;
+    const v = values[i] == null ? '' : String(values[i]);
+    runs.push(j > i ? `${v}*${j - i + 1}` : v);
+    i = j + 1;
+  }
+  return runs.join(',');
+}
+
+/**
+ * CIV-321: the section colour value at each drawn stop, per period: every trip of the direction that
+ * runs through the stop, including those that skip it (throughTimesAlong; the stop's own stopping
+ * frequency stays on the stop card), read with the same rules as a whole route (stretchPeriods,
+ * stretchFilterValue). One run-length-encoded string per period aligned to the feature's stopOrder
+ * (encodeStopRuns), empty where no trip passes. Where every trip stops, it equals the stretch value at
+ * that stretch's reference stop. Read by the section colours (S3, beta only).
+ */
+export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>): Record<PeriodKey, string> {
+  const reads = throughTimesAlong(stops);
+  const perStop = stops.map((stop, i) => {
+    const read = reads[i];
+    if (read.times.length === 0) return null;
+    return stretchPeriods({ kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read });
+  });
+  return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, encodeStopRuns(perStop.map(p => (p ? stretchFilterValue(p[key]) : null)))])) as Record<PeriodKey, string>;
+}
+
+/**
+ * CIV-321 S2: a stretch's own value per period for its card row once one drawn feature covers several
+ * stretches (S4), read at its reference stop by the same rules as a whole route (Ryan, 2026-10-18: a
+ * section needs the usual three departures for a value, then the same filter and limited-service
+ * handling; no thresholds of its own).
+ */
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[] } {
+  const own = stretchPeriods(s);
+  // The card's guard (#955): a period whose value is one gap, or that has under three departures (no
+  // cadence to read, only the full-window wait), reads "no regular service" on a row; the map keeps
+  // the filter value.
+  const departures = (start: number, end: number) => new Set(forCrossMidnightWindow([...s.times], end).filter(t => t >= start && t <= end)).size;
+  return {
+    period: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, stretchFilterValue(own[key])])) as Record<PeriodKey, number | null>,
+    noRegular: PERIOD_WINDOWS.filter(({ key, start, end }) => own[key].coverage != null && (own[key].oneGap || departures(start, end) < 3)).map(w => w.key),
+  };
+}
+
 export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
   const times = [...s.times];
   const headways = computePeriodHeadways(times);
@@ -352,6 +491,7 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
       coverage: coverage[key] ?? null,
       sustained: sustained[key] ?? null,
       sustainedMid: sustainedWithMidpoint([...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b), sustained[key], start, end),
+      oneGap: runs && isOneGapPeriod(times, start, end, value, sustained[key]),
     };
   }
   return out;
@@ -422,6 +562,8 @@ export function nightOnlyTrips(trips: readonly DirectionTrip[]): DirectionTrip[]
 export interface DirectionRollup {
   period: Record<PeriodKey, {
     value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null;
+    /** The direction value comes from a counting stretch whose value is one gap (isOneGapPeriod). */
+    oneGap: boolean;
     /**
      * Step 5a filter value: the worst counting stretch, each read as the tile rule reads a row
      * (steady with a full-window wait of PERIOD_COVERAGE_MAX_HEADWAY or less: its headway; else its
@@ -433,6 +575,10 @@ export interface DirectionRollup {
     runs: boolean;
     /** The main stretch has any departure in the period. A direction with none is skipped by the route (a one-way peak route). */
     hasService: boolean;
+    /** #934: the main stretch's late start or early end around steady service (card wording only). */
+    edge: StretchPeriodEdge | null;
+    /** Narrow D6: the main stretch runs through the period, steady but for one gap inside it (card wording only). */
+    gap: StretchPeriodGap | null;
   }>;
   night30: boolean;
   night60: boolean;
@@ -451,6 +597,90 @@ export interface DirectionRollup {
   research: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
 }
 
+/**
+ * #934: a period whose value is a late start or an early end around steady service (SF Muni 8BX
+ * AM: every 8-11 from 7:17, so a 77-minute wait). `from` is the first departure when the start gap
+ * sets the value, `until` the last when the end gap does, `every` the median gap between them.
+ */
+export interface StretchPeriodEdge {
+  from?: number;
+  until?: number;
+  every: number;
+}
+
+/**
+ * The edge reading of one period at a stretch's reference stop, or null. Only when `value` (the
+ * direction's filter value) is that stretch's full-window wait, an edge gap sets it (a steady
+ * period reads its spacing, not its wait, so it never does), and the gaps between departures pass
+ * the steadiness gap test: the card can then say when service starts or ends instead of "every
+ * 77". One edge only: a period that both starts late and ends early keeps the plain reading.
+ * Read like computePeriodCoverageHeadways' window.
+ */
+export function periodEdge(stretchTimes: readonly number[], start: number, end: number, value: number | null): StretchPeriodEdge | null {
+  if (value == null) return null;
+  const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
+  if (t.length < 3) return null;
+  const gaps = t.slice(1).map((x, i) => x - t[i]);
+  const lead = t[0] - start;
+  const trail = end - t[t.length - 1];
+  const inner = Math.max(...gaps);
+  if (Math.ceil(Math.max(lead, trail, inner)) !== value || inner >= value) return null;
+  const every = medianHeadwayInWindow(t, start, end, 3, true);
+  if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
+  // The wait is rounded up to whole minutes; frequencies.txt spacing can leave fractional times.
+  const fromEdge = Math.ceil(lead) === value, untilEdge = Math.ceil(trail) === value;
+  if (fromEdge === untilEdge) return null;
+  return fromEdge ? { from: t[0], every } : { until: t[t.length - 1], every };
+}
+
+/**
+ * #934 (Ryan, 2026-10-16): a period the main stretch covers only part of (D8: no departure on one
+ * side of its midpoint) with steady spacing where it runs reads "from 7:17am, every 9 min" or
+ * "until 5:40pm, every 10 min" instead of "limited".
+ */
+export function periodPartialEdge(stretchTimes: readonly number[], start: number, end: number): StretchPeriodEdge | null {
+  const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
+  if (t.length < 3) return null;
+  const mid = (start + end) / 2;
+  const after = t[0] >= mid;
+  const before = t[t.length - 1] < mid;
+  if (!after && !before) return null;
+  const gaps = t.slice(1).map((x, i) => x - t[i]);
+  const every = medianHeadwayInWindow(t, start, end, 3, true);
+  if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
+  return after ? { from: t[0], every } : { until: t[t.length - 1], every };
+}
+
+/** D6, narrowed (Ryan, 2026-10-16): service through the period, steady but for one gap inside it. */
+export interface StretchPeriodGap {
+  every: number;
+  gap: number;
+}
+
+/**
+ * The one-gap reading of a period at a stretch's reference stop, or null: departures on both sides
+ * of the period's midpoint, the gaps between them unsteady by the shared gap test, and steady once
+ * the longest is left out. The caller applies it only to periods that run (D8 and the dominant
+ * hole check). `every` is the median gap, `gap` the longest.
+ */
+export function periodOneGap(stretchTimes: readonly number[], start: number, end: number): StretchPeriodGap | null {
+  const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
+  if (t.length < 4) return null;
+  const mid = (start + end) / 2;
+  if (!(t[0] < mid && t[t.length - 1] >= mid)) return null;
+  const gaps = t.slice(1).map((x, i) => x - t[i]);
+  // One gap inside steady service only where the plain median and the #772 reading agree: where
+  // the gaps alternate, the reading rises toward the long gaps (GO 33 PM: every 69, with a 158 min
+  // gap), which is not steady service with one gap, so no wording and the card keeps its wait.
+  const every = medianHeadwayInWindow(t, start, end, 3, true);
+  if (every !== medianHeadwayInWindow(t, start, end, 3)) return null;
+  if (every == null || every <= 0 || isSustainedHeadway(gaps, every)) return null;
+  const gap = Math.max(...gaps);
+  const rest = [...gaps];
+  rest.splice(rest.indexOf(gap), 1);
+  return isSustainedHeadway(rest, every) ? { every, gap } : null;
+}
+
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
 export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   if (!d.main) return null;
@@ -464,10 +694,14 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       coverage: counting.length > 0 ? Math.max(...counting.map(p => p.coverage ?? 0)) : null,
       sustained: counting.length > 0 ? counting.every(p => p.sustained === true) : null,
       sustainedMid: counting.length > 0 ? counting.every(p => p.sustainedMid === true) : null,
+      // The worst counting stretch sets the value; it is one gap when that stretch's is.
+      oneGap: counting.length > 0 && counting.some(p => p.oneGap && p.value === Math.max(...counting.map(c => c.value!))),
       mainValue: main[key].counts ? main[key].value : null,
       filterValue: null,
       runs: false,
       hasService: false,
+      edge: null,
+      gap: null,
     };
   }
   // Step 5a: the filter value and whether the direction runs, per period.
@@ -493,12 +727,22 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       return longest / median > BOUNDARY_DOMINANT_RATIO;
     };
     const runs = throughMidpoint(d.main) && !dominantHole(d.main);
-    const filterOf = (p: StretchPeriod) => (p.sustained === true && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage);
-    const counting = [main[key], ...tails.map(t => t[key])].filter((p, i) => p.counts && (i === 0 ? runs : true));
+    const filterOf = stretchFilterValue;
+    // #961: a sparse overnight window (#897: three departures around a hole of hours) has no
+    // value at the row, so it gives none here either; the card would otherwise print its full-
+    // window wait as "every N" (MBTA 23 Sunday overnight to Ashmont: every 196). A sparse main
+    // stretch leaves the direction without a value, a sparse tail drops out.
+    const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
+    const counting = [main[key], ...tails.map(t => t[key])]
+      .filter((p, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(d.tails[i - 1])));
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     period[key].runs = runs;
     period[key].hasService = timesIn(d.main).length > 0;
-    period[key].filterValue = runs && values.length > 0 ? Math.max(...values) : null;
+    period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
+    period[key].edge = runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
+    // Only where the settled checks count the period as running: a big-gap period that does not
+    // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "no regular service".
+    period[key].gap = runs && !period[key].edge ? periodOneGap(d.main.times, start, end) : null;
   }
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
   // of the window's midpoint. One that only starts its day inside the window (CTA 20's downtown
@@ -660,6 +904,9 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchPeriodCoverage',
   'stretchPeriodSustained',
   'stretchPeriodSustainedMid',
+  'stretchPeriodOneGap',
+  'stretchPeriodEdge',
+  'stretchPeriodGap',
   'stretchRoutePeriodHeadway',
   'stretchPeriodRange',
   'stretchNight30',
@@ -733,6 +980,16 @@ export function stampStretchShadow(
     p.stretchPeriodCoverage = byPeriod(k => dir.period[k].coverage);
     p.stretchPeriodSustained = byPeriod(k => dir.period[k].sustained);
     p.stretchPeriodSustainedMid = byPeriod(k => dir.period[k].sustainedMid);
+    p.stretchPeriodOneGap = byPeriod(k => dir.period[k].oneGap);
+    // #934: only periods with an edge reading, so most features carry an empty object at most.
+    {
+      const edges = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (dir.period[key].edge ? [[key, dir.period[key].edge]] : [])));
+      if (Object.keys(edges).length > 0) p.stretchPeriodEdge = edges;
+      else delete p.stretchPeriodEdge;
+      const gaps = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (dir.period[key].gap ? [[key, dir.period[key].gap]] : [])));
+      if (Object.keys(gaps).length > 0) p.stretchPeriodGap = gaps;
+      else delete p.stretchPeriodGap;
+    }
     p.stretchRoutePeriodHeadway = byPeriod(k => route.period[k].value);
     p.stretchPeriodRange = byPeriod(k => route.period[k].range);
     p.stretchNight30 = route.night30;
@@ -752,6 +1009,11 @@ export function stampStretchShadow(
     p.stretchResearchFrequentService = route.research;
     p.routeFilterHeadwayByPeriod = byPeriod(k => route.period[k].filterValue);
     p.directionFilterHeadwayByPeriod = byPeriod(k => dir.period[k].filterValue);
+    // CIV-321: per drawn stop and period, every trip of the direction running through the stop, along
+    // the display-only full line where the row has one (S4), else the row's own stops.
+    const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
+    if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong);
+    else delete p.stretchStopPeriodValues;
     p.routeRunsByPeriod = byPeriod(k => route.period[k].runs);
     // Card rows (5b): which stretch this row stands for. A row whose own stops cover a whole tail
     // stands for it (the longest such tail); else one covering the whole main stretch stands for
@@ -769,8 +1031,8 @@ export function stampStretchShadow(
       else { p.stretchRole = 'variant'; delete p.stretchIndex; }
     }
     p.stretchMeta = {
-      main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount } : null,
-      tails: stretches.tails.map(t => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount })),
+      main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main) } : null,
+      tails: stretches.tails.map(t => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t) })),
     };
   }
   // The filter fields sit on every feature of a route-day or on none (no mixing with today's pools).

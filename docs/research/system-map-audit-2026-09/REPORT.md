@@ -1,6 +1,6 @@
 # System-map verification audit
 
-This is the map-first verification layer for the Frequent Service research story. One hundred forty-two agencies were reviewed individually against current official system maps or approved rider guides on September 18, 2026.
+This is the map-first verification layer for the Frequent Service research story. 317 unique agencies (the `data.json` records) were reviewed individually against current official system maps or approved rider guides on September 18-19, 2026. An earlier version of this page said 142; that figure was out of date, see [INDEX.md](INDEX.md).
 
 ## Evidence standard
 

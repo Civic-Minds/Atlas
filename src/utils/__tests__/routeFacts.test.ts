@@ -47,7 +47,7 @@ describe('routeFacts', () => {
     })).toBeNull();
   });
 
-  it('names display, filter, branch, and shared metrics from one source record', () => {
+  it('names display, branch, and shared metrics from one source record', () => {
     const p = {
       routeId: '900', directionId: 0, tier: '5', headway: 6,
       routeShortName: '900', routeLongName: 'Airport Express', agencyName: 'TTC',
@@ -61,10 +61,6 @@ describe('routeFacts', () => {
     const summary = buildRouteServiceSummary(p);
 
     expect(summary.display).toMatchObject({ value: 6, byPeriod: { midday: 6 } });
-    // filter.byPeriod comes from worstDirectionHeadwayByPeriod, not minStopHeadwayByPeriod --
-    // every direction must meet the threshold, so a route-wide filter can't be satisfied by
-    // one branch's best shared-stop reading (#314).
-    expect(summary.filter).toMatchObject({ value: 8, byPeriod: { midday: 9 }, provenance: 'worst-direction' });
     expect(summary.branch.value).toBe(6);
     expect(summary.shared).toMatchObject({ value: 3, byPeriod: { midday: 3 }, byHeadsignPeriod: { midday: 4 } });
   });
@@ -147,3 +143,22 @@ describe('routeFacts', () => {
     }, 'late')).toBeNull();
   });
 });
+
+describe('route facts cache (CIV-218)', () => {
+  const base = { routeId: '10', routeShortName: '10', directionId: 0, headsign: 'Victoria Park', day: 'Weekday', tier: '30', headway: 30,
+    headwayByPeriod: { midday: 30 } } as any;
+  it('returns the same facts for the same properties object, per agency', () => {
+    expect(buildRouteServiceSummary(base)).toBe(buildRouteServiceSummary(base));
+    expect(buildRouteFacts(base, 'ttc')).toBe(buildRouteFacts(base, 'ttc'));
+    expect(buildRouteFacts(base, 'ttc')).not.toBe(buildRouteFacts(base, 'yrt'));
+    expect(buildRouteFacts(base, 'yrt').agencySlug).toBe('yrt');
+  });
+  it('new data is a new object and is read fresh', () => {
+    const before = buildRouteServiceSummary(base);
+    const next = { ...base, headwayByPeriod: { midday: 15 }, headway: 15 };
+    expect(buildRouteServiceSummary(next)).not.toBe(before);
+    expect(metricValueForPeriod(buildRouteServiceSummary(next).branch, 'midday')).toBe(15);
+    expect(metricValueForPeriod(buildRouteServiceSummary(base).branch, 'midday')).toBe(30);
+  });
+});
+

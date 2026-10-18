@@ -65,7 +65,7 @@ Words
 
 Less text
 
-- Info panels are data first: labelled figures, short rows, a small chart, at most one caption line. No paragraphs. Evidence such as sample sizes and methods goes on a details screen, not the card.
+- Info panels are data first: labelled figures, short rows, a small chart, at most one caption line. No paragraphs. On the main map's route card, evidence such as sample sizes and methods goes on a details screen, not the card. Live pages follow the Live rule instead: the math explanations stay visible.
 - No text that explains what the UI already shows. For example, no "Paler bars are service outside..." line under a chart.
 
 New wording needs a yes

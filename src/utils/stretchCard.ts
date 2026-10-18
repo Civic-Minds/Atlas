@@ -14,6 +14,29 @@ export function hasStretchRoles(features: readonly ShapeProperties[]): boolean {
   return features.length > 0 && features.every(f => f.stretchRole != null);
 }
 
+/** CIV-321 S2: one card row per stretch, from the pipeline's stretchMeta (for a feature that draws several stretches, S4). */
+export interface StretchRow {
+  role: 'main' | 'tail';
+  index: number;
+  refStop: string;
+  /** The stretch's own value in the period (same rules as a whole route): a number, null for no value, undefined on older data. */
+  value: number | null | undefined;
+  /** The row reads "no regular service during this period" (#955: one gap, or under three departures), never its wait as "every N". */
+  noRegular: boolean;
+}
+
+/** The stretch rows a feature's stretchMeta describes, main first then tails in order. Empty on data without it. */
+export function stretchRowsFromMeta(f: ShapeProperties, period: TimePeriod): StretchRow[] {
+  const meta = f.stretchMeta;
+  if (!meta || period === 'all') return [];
+  const key = period as PeriodKey;
+  const row = (role: StretchRow['role'], index: number, m: { refStop: string; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] }): StretchRow => {
+    const noRegular = m.noRegular?.includes(key) ?? false;
+    return { role, index, refStop: m.refStop, value: m.period ? (noRegular ? null : (m.period[key] ?? null)) : undefined, noRegular };
+  };
+  return [...(meta.main ? [row('main', 0, meta.main)] : []), ...meta.tails.map((t, i) => row('tail', i, t))];
+}
+
 /**
  * The features that become destination rows for one direction: the main stretch's feature and one per tail. When several
  * features share a role and index, the one that draws the most stops wins (then the faster one). Variants get no row.
@@ -89,17 +112,43 @@ export function routeContract(features: readonly ShapeProperties[], period: Time
 }
 
 /**
- * Whether a route direction has regular service in the period, by the same filter values the route card reads: false
- * when the route's value is empty (the card then shows no rows) or this direction's value is empty. True for all
- * day and for older data without the filter fields. The stop card uses it so a stop never shows a cadence for a period
- * the route card says has no regular service (#750: SF Muni 8AX/8BX midday and evening, and outbound in the AM).
+ * Whether a route direction has regular service in the period, by the same filter values the route card reads: this
+ * direction's own value when the data has one (the card shows a row with a value even when the route's is empty, #954:
+ * SF Muni 8 PM, Fisherman's Wharf every 8), otherwise the route's. True for all day and for older data without the
+ * filter fields. The stop card uses it so a stop never shows a cadence for a period the route card says has no regular
+ * service (#750: SF Muni 8AX/8BX midday and evening, and outbound in the AM).
  */
 export function hasRegularServiceInPeriod(f: ShapeProperties, period: TimePeriod): boolean {
   if (period === 'all') return true;
-  // The route card hides every row when the route's value is empty, so that comes first; then this direction's own value.
-  const contract = routeContract([f], period);
-  if (contract != null && contract.filterValue == null) return false;
+  // #955: a direction value that is one gap between a few departures is no cadence, as on the route card,
+  // unless the row has a steady value of its own.
+  if (isOneGapRow(f, period)) return false;
+  // #954 shows a direction's own value when the route's is empty, only on data that carries the one-gap flag:
+  // older data keeps the route's value first, so no one-gap number appears before the rebuild.
+  if (f.stretchPeriodOneGap === undefined) {
+    const contract = routeContract([f], period);
+    if (contract != null && contract.filterValue == null) return false;
+  }
   const byDirection = f.directionFilterHeadwayByPeriod;
   if (byDirection && Object.prototype.hasOwnProperty.call(byDirection, period)) return typeof byDirection[period as PeriodKey] === 'number';
-  return true;
+  const contract = routeContract([f], period);
+  return !(contract != null && contract.filterValue == null);
+}
+
+/** #955: the row's direction value is one gap between a few departures and the row has no steady value of its own. */
+export function isOneGapRow(f: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all') return false;
+  const key = period as PeriodKey;
+  return f.stretchPeriodOneGap?.[key] === true && f.headwayByPeriodSustained?.[key] !== true;
+}
+
+/**
+ * #955: the route's period value is one gap between a few departures: the direction that sets it (its value is the
+ * route's) is flagged. Lists, compare and the card's scheduled line then say no regular service, as the card's rows do.
+ */
+export function routeValueIsOneGap(features: readonly ShapeProperties[], period: TimePeriod): boolean {
+  const contract = routeContract(features, period);
+  if (contract?.filterValue == null) return false;
+  const key = period as PeriodKey;
+  return features.some(f => f.stretchPeriodOneGap?.[key] === true && f.directionFilterHeadwayByPeriod?.[key] === contract.filterValue);
 }

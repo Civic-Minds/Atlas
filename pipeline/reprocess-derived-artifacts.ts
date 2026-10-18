@@ -136,7 +136,7 @@ const gateInputs = new Map<string, { candidate: GateCandidate; live: ArtifactSum
 /** The processed feed's raw expiry dates per agency, recorded in index.json once its artifacts are published (#837). */
 const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null }>();
 const expiryUpdates: string[] = [];
-const AGENCY_ARTIFACTS = ['', '-stops', '-corridors', '-trips', '-stops-meta'] as const;
+const AGENCY_ARTIFACTS = ['', '-stops', '-corridors', '-trips', '-stops-meta', '-sections'] as const;
 
 const indexPath = resolve('public/data/index.json');
 const outputDir = resolve('tmp/derived-reprocess');
@@ -233,6 +233,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     writeFileSync(resolve(agencyDir, `${agency.slug}-corridors.json`), result.corridorsGeojson);
     writeFileSync(resolve(agencyDir, `${agency.slug}-trips.json`), result.tripsJson);
     writeFileSync(resolve(agencyDir, `${agency.slug}-stops-meta.json`), result.stopsMetaJson);
+    writeFileSync(resolve(agencyDir, `${agency.slug}-sections.json`), result.sectionsJson);
 
     return {
       ...row,

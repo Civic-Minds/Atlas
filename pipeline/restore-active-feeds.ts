@@ -31,12 +31,14 @@ import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } 
 import { recordedFeedExpiry } from './refreshMeta.js';
 import { isActiveProductionFeed, isStalePrimaryProductionFeed, type FeedAvailabilityEntry, todayUtcYmd } from '../shared/feedAvailability.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
+import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
 
 interface Agency extends FeedAvailabilityEntry {
   slug: string;
   name: string;
   center?: [number, number];
   timezone?: string | null;
+  timezoneOverride?: string;
   feedUrl?: string | null;
   feedApiKeyEnvVar?: string;
   feedApiKeyParam?: string;
@@ -145,6 +147,7 @@ async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ ag
     r2Put(`atlas/${agency.slug}-corridors.json`, result.corridorsGeojson),
     r2Put(`atlas/${agency.slug}-trips.json`, result.tripsJson),
     r2Put(`atlas/${agency.slug}-stops-meta.json`, result.stopsMetaJson),
+    r2Put(`atlas/${agency.slug}-sections.json`, result.sectionsJson),
   ]);
 
   // Same rule as refresh: the later of feed_info's end and the capped calendar end (#687).
@@ -152,7 +155,7 @@ async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ ag
   const updated: Agency = {
     ...agency,
     center: result.center ?? agency.center,
-    timezone: result.timezone ?? agency.timezone,
+    timezone: resolveAgencyTimezone(result.timezone, agency),
     lastFeedExpiry,
     lastPeekedExpiry: result.calendarExpiry,
     lastFeedVersion: result.feedVersion,

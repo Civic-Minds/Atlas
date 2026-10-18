@@ -4,7 +4,7 @@ Reference for Atlas's live GTFS-RT integration status — which agencies are pol
 
 For where this fits in the platform's future direction, see [Live Data Infrastructure](../roadmap/TECHNICAL.md#live-data-infrastructure).
 
-**Status:** Live GTFS-RT archiving is paused while the collection and quality checks are rebuilt. Existing R2 snapshots remain available; no new snapshots are being written.
+**Status:** TTC vehicle positions are still recorded every minute by the ttc-positions Worker's cron, which is set in Cloudflare; the repo's Worker config has no `[triggers]` block (CIV-317). Whether the other shards still write is unverified. Existing R2 snapshots remain available.
 
 ---
 
@@ -18,8 +18,8 @@ and stays off in every deployment.
 
 ## Live polling
 
-The Live Vehicles UI, feed configuration, and the `/api/live-vehicles` handler are in
-the repository, but Live is gated off in every deployment (`LIVE_ENABLED`, see
+The Live Vehicles UI, feed configuration, and the `/api/live-vehicles` handler
+(`local-api/live-vehicles.ts`, never deployed) are in the repository, but Live is gated off in every deployment (`LIVE_ENABLED`, see
 [`FEATURE_FLAGS.md`](../FEATURE_FLAGS.md)). The handler polls configured feeds for
 local use (`npm run dev:api` with `npm run dev:live`). Feed configuration lives in
 [`shared/livePollingConfig.ts`](../../shared/livePollingConfig.ts). An agency is only
@@ -70,14 +70,14 @@ Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues
 
 ---
 
-## History archiving (paused; legacy design)
+## History archiving (legacy design; TTC positions still running)
 
 2026-10-14: cron triggers removed from atlas-gtfs-rt-archiver-hamilton, -stm, -burlington-halifax and -ttc-trips (scripts kept; restore with `* * * * *`). Only TTC positions still run every minute. Retention on atlas-live is already a bucket-wide 30-day delete rule, plus a 90-day rule.
 
 The previous Cloudflare Worker setup wrote to private R2 bucket `atlas-live`. Five
 small Workers covered TTC positions, TTC trips, Hamilton, STM, and Burlington plus
 Halifax. Each shard ran every minute; trip-update archives ran every 5 minutes,
-while vehicle-position samples ran every minute. That setup is paused and should be
+while vehicle-position samples ran every minute. That setup is paused except for TTC positions and should be
 treated as a legacy design, not the committed shape of the next hosted collector.
 R2 lifecycle rules enforce **30-day** retention.
 Deploy the five configs separately: `wrangler.toml`, `wrangler.ttc-trips.toml`,

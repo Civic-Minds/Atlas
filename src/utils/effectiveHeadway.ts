@@ -4,8 +4,9 @@ import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
-import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange } from './headwayText';
-import { routeAllDayContract, routeContract } from './stretchCard';
+import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
+import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
+import { clockText } from '../content/researchRules';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -83,8 +84,7 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
     return pairedTripSafeHeadway(p, period, p.headwayByPeriod?.[period] ?? null);
   }
   const summary = buildRouteServiceSummary(p);
-  // Cards show the destination/branch cadence. Keep the route-wide metric in
-  // summary.filter for eligibility and use the shared headsign cadence only
+  // Cards show the destination/branch cadence. Use the shared headsign cadence only
   // when the branch has no more specific display metric.
   const branchHeadway = metricValueForPeriod(summary.display, period);
   if (branchHeadway != null) return branchHeadway;
@@ -136,6 +136,35 @@ export function routeCardCoverageText(p: ShapeProperties, period: TimePeriod): s
   // Coverage is a filter-eligibility metric, not a rider-facing headway. A route
   // can run every 10 minutes within a shorter service span inside this period.
   return undefined;
+}
+
+/**
+ * #934 and D6: the main stretch's row names a late start or early end ("from 7:17am, every 9 min")
+ * or one gap inside steady service ("every 5 min, with a 169 min gap") instead of a long wait or
+ * "limited". Wording: headwayPeriodShape.
+ */
+export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod): string | undefined {
+  if (period === 'all') return undefined;
+  const edge = p.stretchPeriodEdge?.[period];
+  if (edge && (edge.from != null || edge.until != null)) {
+    return headwayPeriodShape({
+      from: edge.from != null ? clockText(edge.from) : undefined,
+      until: edge.until != null ? clockText(edge.until) : undefined,
+      every: edge.every,
+    });
+  }
+  const gap = p.stretchPeriodGap?.[period];
+  return gap ? headwayPeriodShape({ every: gap.every, gap: gap.gap }) : undefined;
+}
+
+/**
+ * #934: the part-period wording for a direction with no value in the period ("until 9:37am, every
+ * 12 min"): the route card's main-stretch row shows it, and the stop card the same, so both agree.
+ */
+export function partPeriodText(p: ShapeProperties, period: TimePeriod): string | undefined {
+  if (period === 'all' || p.stretchRole !== 'main') return undefined;
+  if (typeof p.directionFilterHeadwayByPeriod?.[period] === 'number') return undefined;
+  return p.stretchPeriodEdge?.[period] ? routeCardPeriodShapeText(p, period) : undefined;
 }
 
 export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): string | undefined {
@@ -242,6 +271,8 @@ function routeListCadence(features: readonly ShapeProperties[], period: TimePeri
   // the D1 range ("every 8–25") as the shared-stretch range: its low end is the best stretch, its high end the filter value.
   const contract = routeContract(features, period);
   if (contract) {
+    // #955: a route value that is one gap between a few departures is no cadence.
+    if (routeValueIsOneGap(features, period)) return { headway: null, shared: null };
     const { filterValue, range } = contract;
     return { headway: filterValue, shared: filterValue != null && range && range[0] < filterValue ? range[0] : null };
   }
@@ -318,6 +349,7 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
   // The filter's null (runs or not) means no number and no "limited" either.
   const contract = routeContract(features, period);
   if (contract != null && contract.filterValue == null) return false;
+  if (routeValueIsOneGap(features, period)) return false;
   // All day: no all-day value is "limited" when a direction does not run at midday (step 6), else no number.
   const allDay = period === 'all' ? routeAllDayContract(features) : undefined;
   if (allDay) return allDay.filterValue == null && allDay.limited;
@@ -325,10 +357,15 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
     && features.some(feature => routeCardDisplayLimited(feature, period));
 }
 
-/** The filter says the route has no regular service in this period: lists say "no regular service", never a number. */
+/** The words every card and list shows where the filter says a route has no regular service in the period. */
+export const NO_REGULAR_SERVICE_LABEL = 'no regular service during this period';
+/** The same, short, for the narrow Nearby and search rows, where the long words do not fit. */
+export const NO_REGULAR_SERVICE_SHORT_LABEL = 'no regular service';
+
+/** The filter says the route has no regular service in this period: lists say NO_REGULAR_SERVICE_LABEL, never a number. */
 export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   const contract = routeContract(features, period);
-  return contract != null && contract.filterValue == null && contract.runs;
+  return (contract != null && contract.filterValue == null && contract.runs) || routeValueIsOneGap(features, period);
 }
 
 export interface RouteListDisplay {

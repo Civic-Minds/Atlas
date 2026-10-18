@@ -33,7 +33,6 @@ import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
-import { buildFrequentServiceIndex, extractFrequentServiceRoutes, type FrequentServiceRouteEntry } from './frequentServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { parseCsv } from './parseGtfs.js';
@@ -67,6 +66,7 @@ import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { peekFeedDates } from './archiveSelection.js';
 import { tryArchiveUnchangedFeed } from './archiveIfMissing.js';
+import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
 import {
   applyOverrides,
   blockReason,
@@ -232,6 +232,7 @@ interface AgencyEntry {
   region?: string | null;
   center: [number, number];
   timezone?: string | null;
+  timezoneOverride?: string;
   url: string;
   stopsUrl: string;
   corridorsUrl?: string;
@@ -305,7 +306,6 @@ async function refreshAgency(
   manualBaseFareOverride?: number,
   logger?: { log: (msg: string) => void },
   nightServiceCollector?: NightServiceRouteEntry[],
-  frequentServiceCollector?: FrequentServiceRouteEntry[],
 ): Promise<RefreshAgencyResult> {
   if (!agency.feedUrl) {
     return { summary: 'skipped (no feedUrl)' };
@@ -511,10 +511,10 @@ async function refreshAgency(
   }
   if (primary.supplementalFeatureCounts.length) writeLog('\n    ');
 
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, sectionsJson, featureCount } = primary;
   const { feedExpiry, feedVersion, timezone } = primary;
   agency.feedQuality = primary.feedQuality;
-  agency.timezone = timezone ?? agency.timezone;
+  agency.timezone = resolveAgencyTimezone(timezone, agency);
 
   // Stop points count as features, so check route lines too: a stops-only result was
   // stamped "current" with 0 routes (#634).
@@ -567,6 +567,7 @@ async function refreshAgency(
     r2Put(`atlas/${agency.slug}-corridors.json`, corridorsGeojson),
     r2Put(`atlas/${agency.slug}-trips.json`, tripsJson),
     r2Put(`atlas/${agency.slug}-stops-meta.json`, stopsMetaJson),
+    r2Put(`atlas/${agency.slug}-sections.json`, sectionsJson),
   ];
   if (primary.livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${agency.slug}.json`, JSON.stringify(primary.livePollingSidecar, null, 2)));
@@ -613,13 +614,6 @@ async function refreshAgency(
       Parameters<typeof extractNightServiceRoutes>[3];
     nightServiceCollector.push(
       ...extractNightServiceRoutes(agency.slug, agency.name, agency.region ?? null, parsedFeatures),
-    );
-  }
-  if (frequentServiceCollector) {
-    const parsedFeatures = (JSON.parse(geojson) as GeoJsonFc).features as
-      Parameters<typeof extractFrequentServiceRoutes>[3];
-    frequentServiceCollector.push(
-      ...extractFrequentServiceRoutes(agency.slug, agency.name, agency.region ?? null, parsedFeatures),
     );
   }
 
@@ -699,7 +693,6 @@ async function main() {
       console.warn(`  [warn] existing night-service.json could not be loaded — ${e instanceof Error ? e.message : e}`);
     }
   }
-  const allFrequentServiceRoutes: FrequentServiceRouteEntry[] = [];
   const refreshedHiddenRoutes = new Map<string, HiddenRouteRecord[]>();
   const tasks = targets.map(agency => async () => {
     let logBuffer = '';
@@ -721,7 +714,7 @@ async function main() {
           return;
         }
       }
-      const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes, allFrequentServiceRoutes);
+      const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes);
       const summary = result.summary;
       if (result.processed) refreshedNightServiceAgencySlugs.add(agency.slug);
       if (result.stale) stale++;
@@ -845,13 +838,6 @@ async function main() {
       console.log(`  night-service.json → R2 (${nightServiceIndex.routeCount} routes across ${nightServiceIndex.agencyCount} agencies)`);
     } catch (e) {
       console.warn(`  [warn] night-service.json R2 write failed — ${e instanceof Error ? e.message : e}`);
-    }
-    try {
-      const frequentServiceIndex = buildFrequentServiceIndex(allFrequentServiceRoutes);
-      await r2Put('atlas/frequent-service.json', JSON.stringify(frequentServiceIndex));
-      console.log(`  frequent-service.json → R2 (${frequentServiceIndex.routeCount} routes across ${frequentServiceIndex.agencyCount} agencies)`);
-    } catch (e) {
-      console.warn(`  [warn] frequent-service.json write failed — ${e instanceof Error ? e.message : e}`);
     }
   }
 }

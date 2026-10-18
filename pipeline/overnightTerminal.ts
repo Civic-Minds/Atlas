@@ -1,5 +1,5 @@
 import type { DayType } from '../shared/dayTypes.js';
-import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained } from './headway-utils.js';
+import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, HEADLINE_WINDOWS, sparseOvernightHeadway } from './headway-utils.js';
 
 /**
  * The day type whose early-morning trips carry on a day type's night (#896): Saturday night runs
@@ -35,13 +35,17 @@ export function overnightWindowTimes(own: readonly number[], nextDay: readonly n
  */
 export function isNightRouteDirection(stopTimes: Iterable<readonly number[]>): boolean {
   const all = [...stopTimes];
-  return !all.some(times => times.some(t => t >= 540 && t < 1140)) && all.some(times => times.some(t => t >= 1380));
+  return !all.some(times => times.some(t => t >= HEADLINE_WINDOWS.midday.start && t < HEADLINE_WINDOWS.pmPeak.end)) && all.some(times => times.some(t => t >= 1380));
 }
 
-/** The overnight period's headway, coverage, longest gap and sustained flag for `times`. */
+/**
+ * The overnight period's headway, coverage, longest gap and sustained flag for `times`. A sparse
+ * window (#897) reads no headway; `withheld` keeps its value for the comparisons that pick a source.
+ */
 export function overnightPeriodValues(times: number[]) {
   return {
     headway: computePeriodHeadways(times).overnight ?? null,
+    withheld: sparseOvernightHeadway(times),
     coverage: computePeriodCoverageHeadways(times).overnight ?? null,
     maxGap: computePeriodMaxGaps(times).overnight ?? null,
     sustained: computePeriodSustained(times).overnight,

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
 import type { Agency } from '../App';
 import { headwayOrBetter } from '../utils/headwayText';
+import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 
 interface Props {
   agencies: Agency[];
@@ -47,9 +48,11 @@ function isNotRushHourOnly(feature: StoryFeature): boolean {
   return properties?.serviceClass !== 'time-limited' && properties?.serviceClass !== 'irregular';
 }
 
+// Midday service as the route card and the map filter read it (#750): the route's filter value,
+// not a row's own terminal reading, which can show midday service the route does not run.
 function runsThroughTheDay(feature: StoryFeature): boolean {
-  const properties = feature.properties as { headwayByPeriod?: { midday?: number | null }; researchFrequentService?: { daytime30?: boolean } } | null;
-  return properties?.researchFrequentService?.daytime30 === true || properties?.headwayByPeriod?.midday != null;
+  const properties = feature.properties as { researchFrequentService?: { daytime30?: boolean } } | null;
+  return properties?.researchFrequentService?.daytime30 === true || (properties != null && routeFilterHeadway(properties, 'midday') != null);
 }
 
 export function featuresForStage(features: StoryFeature[], stage: number, frequencyMinutes: 15 | 30) {
@@ -77,6 +80,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
     fetchAgencyGeo(storyAgency)
       .then(data => {
         if (cancelled) return;
+        // fetchAgencyGeo has already applied the map's filter inputs (normalizeRouteFilterFeatures).
         setFeatures(data.features.filter(feature => feature.geometry?.type === 'LineString' || feature.geometry?.type === 'MultiLineString') as StoryFeature[]);
         setLoadState('ready');
       })

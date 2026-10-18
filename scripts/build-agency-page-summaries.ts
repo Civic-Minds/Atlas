@@ -5,7 +5,13 @@
  * nothing is written to R2. It is a heavy run (every public agency's full route file, around
  * 1.5 GB in total), so it is NOT part of `npm run build`. Run it after a data release, throttled:
  *
- *   taskpolicy -b nice -n 15 npx tsx scripts/build-agency-page-summaries.ts [slug ...]
+ *   nice -n 15 npx tsx scripts/build-agency-page-summaries.ts [slug ...]
+ *
+ * Each release route file is downloaded once into tmp/agency-pages-cache/<releaseId>/ and read from
+ * there on later runs, so a run stopped by a fetch outage (on 2026-10-17 every fetch failed for
+ * minutes after about 280 agencies) keeps what it got: run it again and only the missing files are
+ * fetched. A file is saved only once fully read, so a partial download is never cached. Older
+ * releases' cache folders are deleted at the start. `--no-cache` reads straight from the release.
  *
  * Passing slugs refreshes only those agencies and keeps the rest of the file. `--identity-only` just
  * re-reads names, cities and short names from config (no network).
@@ -19,7 +25,8 @@
  * shows "limited" or no number. Nothing new is measured here; the service span is just
  * the first and last hour that the published per-hour headways cover on weekdays.
  */
-import { readFileSync, writeFileSync, existsSync, renameSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, renameSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
 import { DEFAULT_R2_PUBLIC_URL } from '../shared/config';
 import { effectiveMode } from '../shared/modes';
 import { routeGroupKey } from '../shared/routeGroupKey';
@@ -31,10 +38,13 @@ import { agencyShortLabel, trimRedundantCity } from '../shared/agencyPages';
 import { computeConnections, extractStops, type AgencyStops } from './agency-connections';
 import { countryForRegion } from '../shared/regionCountry';
 import { agencyDisplayParts } from '../src/utils/format';
+import { areasForStops, type AreaBoundaries } from '../shared/areaBoundaries';
 
 const OUT = 'shared/data/agency-pages.json';
 // Slugs with a page, small enough for the map bundle (the agency card links only to real pages).
 const SLUGS_OUT = 'shared/data/agency-page-slugs.json';
+// CIV-274: official boundaries of the paged areas (scripts/build-area-boundaries.ts).
+const BOUNDARIES = 'shared/data/area-boundaries.json';
 const base = (process.env.R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
 const only = new Set(process.argv.slice(2).filter(arg => !arg.startsWith('--')));
 
@@ -42,25 +52,79 @@ type CatalogAgency = AgencyPageIdentity & { lastRefreshedAt?: string | null; las
 type Catalog = { agencies: CatalogAgency[] };
 type Feature = { geometry: { type: string }; properties: Record<string, unknown> };
 
-async function getJson<T>(url: string): Promise<T> {
+// CIV-315: release route files, cached per release so an interrupted full run can resume.
+const CACHE_ROOT = 'tmp/agency-pages-cache';
+const useCache = !process.argv.includes('--no-cache');
+
+/** Delete every cached release but this one (each holds about 1.5 GB). */
+export function pruneReleaseCache(releaseId: string, cacheRoot: string | null = useCache ? CACHE_ROOT : null): void {
+  if (!cacheRoot || !existsSync(cacheRoot)) return;
+  for (const dir of readdirSync(cacheRoot)) if (dir !== releaseId) rmSync(join(cacheRoot, dir), { recursive: true, force: true });
+}
+
+type RouteFile = { features: Feature[] };
+const isRouteFile = (data: unknown): data is RouteFile => Array.isArray((data as RouteFile | null)?.features);
+
+/**
+ * One agency's route file from the release: the cached copy when there is one, else fetched and
+ * cached. Only a complete file (it parses and has a features array) is cached; a leftover .part file
+ * from a stopped run is never read.
+ */
+export async function getReleaseAgency(
+  release: { releaseId: string; agencyPrefix: string },
+  slug: string,
+  cacheRoot: string | null = useCache ? CACHE_ROOT : null,
+): Promise<RouteFile> {
+  const url = `${base}/${release.agencyPrefix}/${slug}.json`;
+  if (!cacheRoot) return (await fetchJson(url, isRouteFile)).data;
+  const dir = join(cacheRoot, release.releaseId);
+  const file = join(dir, `${slug}.json`);
+  if (existsSync(file)) {
+    try {
+      const cached: unknown = JSON.parse(readFileSync(file, 'utf8'));
+      if (isRouteFile(cached)) return cached;
+    } catch {
+      // unreadable: fetched again below
+    }
+    rmSync(file, { force: true });
+  }
+  const { text, data } = await fetchJson(url, isRouteFile);
+  mkdirSync(dir, { recursive: true });
+  // Write then rename, so a run stopped mid-write never leaves a truncated file behind.
+  writeFileSync(`${file}.part`, text);
+  renameSync(`${file}.part`, file);
+  return data;
+}
+
+/** Fetch and parse, retrying a failed request, a bad status, unparseable JSON or a failed shape check alike. */
+async function fetchJson<T>(url: string, check: (data: unknown) => data is T): Promise<{ text: string; data: T }> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= 4; attempt++) {
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-      return (await res.json()) as T;
+      const text = await res.text();
+      const data: unknown = JSON.parse(text);
+      if (!check(data)) throw new Error(`Unexpected JSON shape for ${url}`);
+      return { text, data };
     } catch (err) {
       lastError = err;
-      await new Promise(r => setTimeout(r, 1500 * attempt));
+      if (attempt < 4) await new Promise(r => setTimeout(r, 1500 * attempt));
     }
   }
   throw lastError;
+}
+
+async function getJson<T>(url: string): Promise<T> {
+  return (await fetchJson(url, (data: unknown): data is T => data != null)).data;
 }
 
 export function summarize(
   features: Feature[],
   slug: string,
   lastRefreshedAt: string | null,
+  /** CIV-274: each route is tagged with the paged areas where enough of its stops are. */
+  boundaries?: AreaBoundaries,
 ): Pick<AgencyPageSummary, 'routeCount' | 'routes' | 'span' | 'lastRefreshedAt' | 'sat' | 'sun'> {
   const lines = features.filter(f => f.geometry?.type === 'LineString' && f.properties.day === 'Weekday');
   normalizeRouteFilterFeatures(lines);
@@ -70,9 +134,11 @@ export function summarize(
   // Per route: its direction/branch rows, so the numbers come from the shared list rule (routeListDisplay:
   // the map's number, the slower direction's; "limited" when it runs but has no trustworthy cadence).
   const rows = new Map<string, ShapeProperties[]>();
+  const keyOfRouteId = new Map<string, string>();
   for (const f of lines) {
     const p = f.properties;
     const key = routeGroupKey(p.routeShortName, p.routeId);
+    if (p.routeId != null) keyOfRouteId.set(String(p.routeId), key);
     const shortName = typeof p.routeShortName === 'string' ? p.routeShortName.trim() : '';
     const longName = typeof p.routeLongName === 'string' && p.routeLongName.trim() ? p.routeLongName.trim() : null;
     const prev = routes.get(key);
@@ -103,6 +169,21 @@ export function summarize(
     }
     if (limited.length) r.limited = limited;
     if (Object.keys(shared).length) r.shared = shared;
+  }
+  if (boundaries) {
+    // A route's stops: the stop points that list it, over every direction and branch it runs on weekdays.
+    const stopsOf = new Map<string, Array<[number, number]>>();
+    for (const f of features) {
+      if (f.geometry?.type !== 'Point') continue;
+      const c = (f.geometry as unknown as { coordinates?: [number, number] }).coordinates;
+      if (!Array.isArray(c) || c.length < 2) continue;
+      const keys = new Set(((f.properties.routeIds as string[] | undefined) ?? []).map(id => keyOfRouteId.get(String(id))).filter((k): k is string => !!k));
+      for (const k of keys) (stopsOf.get(k) ?? stopsOf.set(k, []).get(k)!).push([c[0], c[1]]);
+    }
+    for (const [key, r] of routes) {
+      const areas = areasForStops(stopsOf.get(key) ?? [], boundaries);
+      r.areas = areas;
+    }
   }
   const hasDay = (day: string) => features.some(f => f.geometry?.type === 'LineString' && f.properties.day === day
     && Object.values((f.properties.headwayByHour as Record<string, number | null> | undefined) ?? {}).some(v => v != null));
@@ -185,6 +266,7 @@ async function main() {
   const publicSlugs = new Set((JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')) as Catalog).agencies.map(a => a.slug));
   for (const a of catalog.agencies) a.betaOnly = publicSlugs.has(a.slug) ? undefined : true;
   const previous: AgencyPageSummaries | null = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : null;
+  const boundaries: AreaBoundaries | undefined = existsSync(BOUNDARIES) ? JSON.parse(readFileSync(BOUNDARIES, 'utf8')) : undefined;
 
   // --identity-only: refresh names, cities and short names from config with no network.
   if (process.argv.includes('--identity-only')) {
@@ -196,6 +278,7 @@ async function main() {
   }
 
   const release = await getJson<{ releaseId: string; generatedAt: string; agencyPrefix: string }>(`${base}/atlas/release.json?t=${Date.now()}`);
+  pruneReleaseCache(release.releaseId);
   const prevBySlug = new Map((previous?.agencies ?? []).map(a => [a.slug, a]));
   const keep = new Map(only.size && previous ? previous.agencies.map(a => [a.slug, a]) : []);
   const targets = catalog.agencies.filter(a => only.size === 0 || only.has(a.slug));
@@ -207,10 +290,10 @@ async function main() {
   async function worker() {
     for (let a = queue.shift(); a; a = queue.shift()) {
       try {
-        const data = await getJson<{ features: Feature[] }>(`${base}/${release.agencyPrefix}/${a.slug}.json`);
+        const data = await getReleaseAgency(release, a.slug);
         const { stopCount, stops } = extractStops(data.features);
         stopsCache.set(a.slug, stops);
-        results.set(a.slug, { ...identityFor(a), ...summarize(data.features, a.slug, a.lastRefreshedAt ?? null), stops: stopCount });
+        results.set(a.slug, { ...identityFor(a), ...summarize(data.features, a.slug, a.lastRefreshedAt ?? null, boundaries), stops: stopCount });
       } catch (err) {
         // Keep the previous numbers for an agency that failed, rather than dropping its page.
         failed.push(a.slug);
@@ -224,7 +307,7 @@ async function main() {
   await Promise.all([worker(), worker(), worker()]);
   // A mostly failed run means the data was unreachable, not that agencies are gone: write nothing.
   if (failed.length > Math.max(5, targets.length * 0.1)) {
-    throw new Error(`${failed.length} of ${targets.length} agencies failed; summary files left untouched`);
+    throw new Error(`${failed.length} of ${targets.length} agencies failed; summary files left untouched${useCache ? ` (the ${targets.length - failed.length} fetched are cached: run again to fetch only the rest)` : ''}`);
   }
   // Connections: needs every nearby agency's stops. A full run already has them all; a limited run also
   // loads the agencies whose bounding box touches a target's.
@@ -238,7 +321,7 @@ async function main() {
     await Promise.all([0, 1, 2].map(async () => {
       for (let b = nearQueue.shift(); b; b = nearQueue.shift()) {
         try {
-          const data = await getJson<{ features: Feature[] }>(`${base}/${release.agencyPrefix}/${b.slug}.json`);
+          const data = await getReleaseAgency(release, b.slug);
           stopsCache.set(b.slug, extractStops(data.features).stops);
         } catch (err) {
           console.warn(`neighbour ${b.slug} skipped for connections: ${(err as Error).message}`);

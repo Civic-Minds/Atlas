@@ -220,15 +220,40 @@ export function routeListCompanionName(
 export { shouldHideNumericRouteShortName };
 
 /**
- * Case for one part of a route label. A feed that shouts ("PARK ST") is title-cased; a name that already has lower-case letters
- * ("Granville-YVR", "Kendall/MIT Station", "Île-des-Soeurs") is the feed's own spelling and is left alone, and so is a short code
- * (up to 3 characters, or up to 6 with a digit: "WCE", "SL1", "34E", "1X", "SU 43"), which title case would turn into "Wce" or "Sl1".
+ * Real acronyms and initialisms that keep their capitals inside a route name a feed sends in capitals ("BART TO AIRPORT",
+ * "UBC EXCHANGE"). This list is the ONLY exemption: no word is kept in capitals because of its length. Built from the route
+ * names in the repo's agency config and pipeline fixtures; anything not on it ("WEST", "PARK", "MAIN", "VIVA") is a word.
+ */
+export const ROUTE_NAME_ACRONYMS: ReadonlySet<string> = new Set([
+  // Transit agencies and systems
+  'BART', 'TTC', 'GO', 'YRT', 'HSR', 'GRT', 'NFTA', 'LTC', 'KTC', 'WETA', 'SFMTA', 'WCE', 'MBTA', 'WMATA', 'SEPTA', 'MARTA',
+  'STM', 'VTA', 'CTA', 'ETS', 'REM', 'AC', 'NWIA',
+  // Modes
+  'BRT', 'LRT',
+  // Campuses, airports, places, and common abbreviations
+  'UBC', 'UTSC', 'UTM', 'SFU', 'MIT', 'SFO', 'JFK', 'LAX', 'LGA', 'EWR', 'YVR', 'YYZ', 'BWI', 'NJ', 'NYC', 'DC', 'CBD', 'AM', 'PM',
+  // Service brands and rail/transit names riders read in capitals
+  'MAX', 'UP', 'TC', 'PATH', 'PATCO', 'MARC', 'STO', 'SU', 'RT',
+]);
+
+/**
+ * Case for one part of a route label. A name that is entirely capitals ("PARK ST", "WEST", "MAIN") is ALWAYS title-cased, whatever
+ * its length; only the words on ROUTE_NAME_ACRONYMS and tokens with a digit ("SL1", "34E", "1X", "J14") keep their capitals. A name
+ * that already has lower-case letters ("Granville-YVR", "Kendall/MIT Station", "Île-des-Soeurs") is the feed's own spelling and is
+ * left alone. This is the one place route names are cased; every route-name surface goes through it (directly or via routeLabels).
  */
 export function routeLabelCase(part: string): string {
   if (!part || /\p{Ll}/u.test(part)) return part;
-  // Short codes, also with a space before the number ("SU 43", "RT 5"): title case would write "Su 43".
-  if ((!/\s/.test(part) && part.length <= 3) || (/\d/.test(part) && part.length <= 6)) return part;
-  return titleCase(part);
+  // "O'BRIEN": titleCase lowercases the letter after an apostrophe ("O'brien"); an Irish O' name keeps the capital.
+  return titleCase(part)
+    .replace(/(^|[^\p{L}])O'(\p{L})/gu, (_, pre: string, c: string) => `${pre}O'${c.toUpperCase()}`)
+    .replace(/[\p{L}\p{N}]+/gu, (tok: string) => {
+      const up = tok.toUpperCase();
+      if (ROUTE_NAME_ACRONYMS.has(up)) return up;
+      if (/^\d+(st|nd|rd|th)$/i.test(tok)) return tok.toLowerCase();
+      // A route code with a digit ("sl1" after titleCase lowered it) is a code, not a word.
+      return /\d/.test(tok) ? up : tok;
+    });
 }
 
 /**

@@ -26,7 +26,7 @@ Per-agency working artifacts (inputs to each release build):
 - `atlas/live-polling/{slug}.json` — live-polling sidecar, when the feed produces one
 - `atlas/go-stops.json` — GO rail stops (separate extract, `pipeline/extract-go-stops.ts`)
 
-Shared indexes: `atlas/agencies.json`, `atlas/hidden-routes.json`, `atlas/feed-refresh-meta.json`, `atlas/night-service.json`, `atlas/frequent-service.json`, `atlas/history-config.json`.
+Shared indexes: `atlas/agencies.json`, `atlas/hidden-routes.json`, `atlas/feed-refresh-meta.json`, `atlas/night-service.json`, `atlas/history-config.json`.
 
 Written by: `pipeline/refresh.ts`, `pipeline/process-gtfs.ts`, `pipeline/restore-active-feeds.ts`, `pipeline/reprocess-derived-artifacts.ts --write` (per-agency artifacts); `pipeline/build-pmtiles.ts` (immutable release); `pipeline/publish-data-release.ts` (`release.json` pointer, only after checks pass); `pipeline/build-history.ts` (`history-config.json`)
 Read by: browser directly via `VITE_R2_PUBLIC_URL` (default `https://data.transitatlas.fyi`); map tiles always from `https://data.transitatlas.fyi`
@@ -49,9 +49,12 @@ Read by: `pipeline/refresh.ts` (history and stop baselines), `pipeline/build-his
 
 ### atlas-live (private)
 
-Private storage reserved for real-time GTFS-RT snapshots. The archive is currently
-paused and no new snapshots are being written. Existing objects are retained until
-the bucket’s 30-day lifecycle removes them. Snapshot/replay for Live UI needs a
+Private storage for real-time GTFS-RT snapshots. TTC vehicle positions are still
+recorded every minute by the ttc-positions Worker's cron, which is set in Cloudflare:
+the repo's Worker config has had no `[triggers]` block since the 2026-09-02 pause, but
+redeploying did not clear the existing schedule (CIV-317). Whether the other shards
+still write is unverified. Objects are retained until the bucket’s 30-day lifecycle
+removes them. Snapshot/replay for Live UI needs a
 restored provider contract before Live can be re-enabled.
 
 - `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples for the five archive agencies, every minute
@@ -59,7 +62,7 @@ restored provider contract before Live can be re-enabled.
 - The archived formats use the `atlas.live.v1` normalized envelope where snapshots exist.
 
 Previously written by five small Cloudflare Workers sharing `workers/gtfs-rt-archiver/src/index.ts`.
-`/api/history-adherence` can read the archive; the former live snapshot/replay routes
+The local-only `history-adherence` handler (`local-api/`, never deployed) can read the archive; the former live snapshot/replay routes
 are no longer in the repository.
 
 30-day retention enforced by the bucket's R2 lifecycle rules.
@@ -69,20 +72,20 @@ are no longer in the repository.
 
 How the Live route page measures delay, bunching, run time and the rest: [product/LIVE_METHOD.md](product/LIVE_METHOD.md).
 
-### 1. Live UI and feed configuration (currently gated off)
+### 1. Live UI and feed configuration (status: [Feature flags](FEATURE_FLAGS.md))
 
 The Live Vehicles UI and agency feed configuration remain in the repository, but the
-feature is disabled unless `VITE_LIVE_ENABLED=true`. `api/live-vehicles.ts` is still
-deployed as a function (every file in `api/` is), but nothing in the app calls it while
-Live is gated off.
+feature is disabled unless `VITE_LIVE_ENABLED=true`. `local-api/live-vehicles.ts` and the other
+Live handlers live in `local-api/`, which is never deployed; they run only in the local dev API server.
 Route configuration and feed credentials remain in `shared/livePollingConfig.ts`.
 
-### 2. Background Worker archiver (paused)
+### 2. Background Worker archiver (TTC positions only)
 
 Hardcoded feed lists live in `shared/liveArchiveFeeds.ts` (not `LIVE_POLLING_ROUTES`).
-The five legacy archive Workers are deployed without active Cron Triggers, so they no
-longer write new snapshots to `atlas-live`. They covered trip updates and vehicle
-positions for **ttc, burlington, hamilton, halifax, and stm**. Any replacement should
+The five legacy archive Workers covered trip updates and vehicle positions for **ttc,
+burlington, hamilton, halifax, and stm**. TTC positions still run every minute on the
+cron set in Cloudflare (the repo config has no `[triggers]` block); the other shards'
+status is unverified (CIV-317). Any replacement should
 be designed after local validation and a new canary contract.
 
 ### 3. Future provider consumers (snapshot / replay)
@@ -109,13 +112,13 @@ feedUrl (agency's GTFS zip, plus any supplemental feeds)
   -> pipeline/publish-data-release.ts    (move atlas/release.json only if every check passed)
 ```
 
-Triggered by: the `refresh-feeds.yml` GitHub Actions workflow (Mondays 06:00 UTC, temporarily paused; also manual dispatch), or manually with `npm run refresh-release -- <slug>`. Plain `npm run refresh` only rebuilds per-agency artifacts; it does not publish a new release.
+Triggered by: the `refresh-feeds.yml` GitHub Actions workflow (Mondays 06:00 UTC; also manual dispatch), or manually with `npm run refresh-release -- <slug>`. Plain `npm run refresh` only rebuilds per-agency artifacts; it does not publish a new release.
 
 
 ## Vercel API routes
 
 Every file in `api/` is deployed as a Vercel function at `/api/{name}`; they do not run in the Vite dev server.
-Local: `npm run dev:api` (custom tsx server on port 5001; registers `live-vehicles`, `live-segments`, `live-recent`, `live-stop`, `history-adherence`, `carto-tiles`, and `privacy-region`). To run Live, use `npm run live` (starts this server and Vite together).
+Local: `npm run dev:api` (custom tsx server on port 5001; registers `carto-tiles` and `privacy-region` plus the local-only handlers in `local-api/`: `live-vehicles`, `live-segments`, `live-recent`, `live-stop`, `live-dashboard`, `live-agency`, and `history-adherence`). To run Live, use `npm run live` (starts this server and Vite together).
 Production-like: `vercel dev` if preferred.
 
 Used by the deployed app:
@@ -124,7 +127,7 @@ Used by the deployed app:
 - `/api/version` — current build ID for the app-update banner
 - `/api/privacy-region` — country lookup for the analytics consent prompt (rewritten in `vercel.json` to `/api/geo?mode=privacy-region`)
 
-Deployed but not called by the app right now: `live-vehicles` (Live is off) and `history-adherence` (aggregates trip-delay archives from `atlas-live` into hourly buckets; rewritten explicitly in `vercel.json`). `vercel.json` also proxies `/beta-data/*` to the staging bucket for beta-only agencies.
+Local only, never deployed (in `local-api/`): the Live handlers and `history-adherence` (aggregates trip-delay archives from `atlas-live` into hourly buckets). `vercel.json` also proxies `/beta-data/*` to the staging bucket for beta-only agencies.
 
 
 ## Environment variables
@@ -139,11 +142,11 @@ Deployed but not called by the app right now: `live-vehicles` (Live is off) and 
 | VITE_R2_PUBLIC_URL | frontend | Public data URL; defaults to `https://data.transitatlas.fyi` (Vite dev uses a same-origin `/atlas-data` proxy) |
 | VITE_BETA_R2_PUBLIC_URL | frontend (beta) | Override for the `/beta-data` staging proxy target |
 | R2_ARCHIVE_BUCKET_NAME | pipeline | `atlas-archive` bucket name |
-| R2_LIVE_BUCKET_NAME | api/* live archive routes | `atlas-live` bucket name |
-| TRANSLINK_API_KEY | api/live-* (TransLink) | TransLink GTFS-RT |
-| STM_API_KEY | api/live-*; Worker archiver | STM GTFS-RT |
-| MUNI_511_API_KEY | api/live-* (sfmta); pipeline (511-hosted static feeds, e.g. lavta) | 511 SF Bay |
-| SWIFTLY_API_KEY | api/live-* (lacmta, parked) | Swiftly — not active until UI/API unparked |
+| R2_LIVE_BUCKET_NAME | local-api/* live archive routes | `atlas-live` bucket name |
+| TRANSLINK_API_KEY | local-api/live-* (TransLink) | TransLink GTFS-RT |
+| STM_API_KEY | local-api/live-*; Worker archiver | STM GTFS-RT |
+| MUNI_511_API_KEY | local-api/live-* (sfmta); pipeline (511-hosted static feeds, e.g. lavta) | 511 SF Bay |
+| SWIFTLY_API_KEY | local-api/live-* (lacmta, parked) | Swiftly — not active until UI/API unparked |
 | CARTO_BASEMAP_API_KEY | api/carto-tiles | Basemap tile key; keep private |
 | VITE_GA_MEASUREMENT_ID | frontend | Google Analytics 4 measurement ID |
 | ATLAS_ENV / ATLAS_ENV_FILE | pipeline | `ATLAS_ENV=staging` loads `.env.staging`; default is `.env.local` |

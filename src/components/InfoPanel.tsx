@@ -8,7 +8,7 @@ import PanelEmpty from './ui/PanelEmpty';
 import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
-import { agencyDisplayParts, formatStoredDate } from '../utils/format';
+import { agencyDisplayParts, formatStoredDate, routeLabelCase } from '../utils/format';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
@@ -65,7 +65,7 @@ export type OpenInfoOptions = {
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
 export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
-  if (r.displayName) return r.displayName;
+  if (r.displayName) return routeLabelCase(r.displayName);
   const n = parseInt(r.displayRouteShortName, 10);
   return `Route ${isNaN(n) ? r.displayRouteShortName : n}`;
 }

@@ -5,6 +5,7 @@ import JSZip from 'jszip';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type AgencyFeedConfig } from '../agencyFeeds.js';
 import { processGtfsBuffer } from '../process-core.js';
 import { routeArtifactSchemaError } from '../../shared/artifactSchema.js';
+import { applyAgencySections } from '../../shared/agencySections.js';
 
 function hm(mins: number): string {
   const h = Math.floor(mins / 60);
@@ -60,9 +61,11 @@ describe('processAgencyFeeds (main feed + supplementals)', () => {
     expect(JSON.stringify(stopsMeta.stops)).toContain('rails1');
     expect(JSON.stringify(stopsMeta.stops)).toContain('buss1');
 
-    // The main feed's own features are exactly what processing it alone produces.
+    // The main feed's own features are exactly what processing it alone produces, once the CIV-321
+    // sections file (the beta section colours' fields) is put back on them.
     const busOnly = JSON.parse((await processGtfsBuffer(bus, undefined, { slug: 'fixture-metro', force: false })).geojson);
-    expect(artifact.features.slice(0, busOnly.features.length)).toEqual(busOnly.features);
+    const withSections = applyAgencySections(artifact.features, JSON.parse(result.sectionsJson));
+    expect(withSections.slice(0, busOnly.features.length)).toEqual(busOnly.features);
     // Running time (CIV-84) from every feed survives the merge, beside the features.
     expect(Object.keys(artifact.runningTimes)).toEqual(expect.arrayContaining(Object.keys(busOnly.runningTimes)));
     expect(Object.keys(artifact.runningTimes).length).toBeGreaterThan(Object.keys(busOnly.runningTimes).length);
@@ -100,6 +103,12 @@ describe('every artifact-writing path uses the shared agency feed loader', () =>
     expect(source).toContain('loadSupplementalFeeds(');
     expect(source).toContain('processAgencyFeeds(');
     expect(source).not.toMatch(/processGtfsBuffer\(/);
+  });
+
+  // CIV-321: the route file no longer carries the section fields, so each route writer writes the sections file too.
+  it.each(paths.filter(p => !p.includes('stops-meta-only')))('%s writes the sections file with the route file', path => {
+    const source = readFileSync(resolve(root, path), 'utf8');
+    expect(source).toMatch(/-sections/);
   });
 
   it('no other pipeline or script publishes agency artifacts straight from processGtfsBuffer', () => {

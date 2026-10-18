@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { routeListDisplay, routeListDisplayLimited, routeListNoRegularService } from '../effectiveHeadway';
 import { selectedRouteFilterNotice } from '../../content/noticeCopy';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
-import { hasStretchRoles, routeContract, stretchRowFeatures, variantOnlyRow, variantRowHeadway, hasRegularServiceInPeriod } from '../stretchCard';
+import { hasStretchRoles, routeContract, stretchRowFeatures, stretchRowsFromMeta, variantOnlyRow, variantRowHeadway, hasRegularServiceInPeriod } from '../stretchCard';
 
 const f = (over: Record<string, unknown>) => ({ routeId: 'r', directionId: 0, tier: 'frequent', headway: 6, routeShortName: '1', routeLongName: null, ...over }) as unknown as ShapeProperties;
 
@@ -131,15 +131,47 @@ describe('hasRegularServiceInPeriod (#750)', () => {
     expect(hasRegularServiceInPeriod(outbound, 'amPeak')).toBe(false); // the route runs in the AM, this direction does not
     expect(hasRegularServiceInPeriod(outbound, 'all')).toBe(true);
   });
-  it('hides a direction when the route has no regular service, even if this direction has a number (SF Muni 8 weekday AM)', () => {
-    // The oracle shows a 101-min gap inbound at the middle stop, so the route value is empty; outbound still has a number.
-    const route8Outbound = { directionId: 0, directionFilterHeadwayByPeriod: { amPeak: 9 }, routeFilterHeadwayByPeriod: { amPeak: null } } as unknown as ShapeProperties;
-    expect(hasRegularServiceInPeriod(route8Outbound, 'amPeak')).toBe(false);
+  it('keeps a direction with its own number when the route has no regular service (#954, SF Muni 8)', () => {
+    // The route value is empty (the other direction has a long gap); this direction still runs steadily, and the
+    // route card now shows its row, so the stop card agrees.
+    const route8Outbound = { directionId: 0, directionFilterHeadwayByPeriod: { amPeak: 9 }, routeFilterHeadwayByPeriod: { amPeak: null }, stretchPeriodOneGap: { amPeak: false } } as unknown as ShapeProperties;
+    expect(hasRegularServiceInPeriod(route8Outbound, 'amPeak')).toBe(true);
+    // Data without the one-gap flag (before the rebuild) keeps the route's value first, as main does.
+    const { stretchPeriodOneGap: _, ...unflagged } = route8Outbound as any;
+    expect(hasRegularServiceInPeriod(unflagged as ShapeProperties, 'amPeak')).toBe(false);
+    // The direction without a number still has none.
+    const route8Inbound = { directionId: 1, directionFilterHeadwayByPeriod: { amPeak: null }, routeFilterHeadwayByPeriod: { amPeak: null } } as unknown as ShapeProperties;
+    expect(hasRegularServiceInPeriod(route8Inbound, 'amPeak')).toBe(false);
+  });
+  it('a direction value that is one gap is no regular service (TTC 10 midday to Victoria Park)', () => {
+    const oneGap = { directionId: 0, directionFilterHeadwayByPeriod: { midday: 315 }, routeFilterHeadwayByPeriod: { midday: 315 }, stretchPeriodOneGap: { midday: true } } as unknown as ShapeProperties;
+    expect(hasRegularServiceInPeriod(oneGap, 'midday')).toBe(false);
   });
   it('falls back to the route filter, and to true for older data without filter fields', () => {
     const routeOnly = { routeFilterHeadwayByPeriod: { evening: null, midday: 12 } } as unknown as ShapeProperties;
     expect(hasRegularServiceInPeriod(routeOnly, 'evening')).toBe(false);
     expect(hasRegularServiceInPeriod(routeOnly, 'midday')).toBe(true);
     expect(hasRegularServiceInPeriod({ headwayByPeriod: { evening: 8 } } as unknown as ShapeProperties, 'evening')).toBe(true);
+  });
+});
+
+describe('stretch rows from stretchMeta (CIV-321 S2)', () => {
+  const f = {
+    stretchMeta: {
+      main: { stops: 12, refStop: 'm', trips: 40, period: { amPeak: 15, midday: 30 }, noRegular: [] },
+      tails: [{ refStop: 't0', stops: 6, km: 3, trips: 6, period: { amPeak: 30, midday: null } }, { refStop: 't1', stops: 5, km: 2, trips: 2, period: { amPeak: null, midday: 183 }, noRegular: ['midday'] }],
+    },
+  } as unknown as ShapeProperties;
+  it('gives one row per stretch with its own value', () => {
+    expect(stretchRowsFromMeta(f, 'midday')).toEqual([
+      { role: 'main', index: 0, refStop: 'm', value: 30, noRegular: false },
+      { role: 'tail', index: 0, refStop: 't0', value: null, noRegular: false },
+      // Two midday trains: the full-window wait (183) is the map's filter value, never "every 183" on a row.
+      { role: 'tail', index: 1, refStop: 't1', value: null, noRegular: true },
+    ]);
+    expect(stretchRowsFromMeta(f, 'all')).toEqual([]);
+  });
+  it('is empty on older data', () => {
+    expect(stretchRowsFromMeta({} as ShapeProperties, 'midday')).toEqual([]);
   });
 });

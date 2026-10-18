@@ -15,7 +15,7 @@ async function fixtureZip(name: string): Promise<Buffer> {
 }
 
 const hm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}:00`;
-async function synth(): Promise<Buffer> {
+async function synth(overnight: { a: number[]; b: number[] } = { a: [], b: [] }): Promise<Buffer> {
   const zip = new JSZip();
   const csv = (rows: string[][]) => rows.map(r => r.join(',')).join('\n') + '\n';
   zip.file('agency.txt', csv([['agency_id', 'agency_name', 'agency_url', 'agency_timezone'], ['a', 'A', 'https://example.com', 'America/Toronto']]));
@@ -36,7 +36,7 @@ async function synth(): Promise<Buffer> {
   // A every 30 from 06:00 to 22:00 except no departure 12:00-12:59 (hour 12 unserved at s4); B every 30 offset by 15, all day.
   const a = []; for (let t = 360; t <= 1320; t += 30) if (t < 720 || t >= 780) a.push(t);
   const b = []; for (let t = 375; t <= 1320; t += 30) b.push(t);
-  add('A', a, seqA); add('B', b, seqB);
+  add('A', [...a, ...overnight.a], seqA); add('B', [...b, ...overnight.b], seqB);
   zip.file('trips.txt', csv(trips)); zip.file('stop_times.txt', csv(times));
   return zip.generateAsync({ type: 'nodebuffer' });
 }
@@ -100,5 +100,15 @@ describe('hourly chart floored like the period values', () => {
     expect(line.headwayByHour[11]).toBe(30);
     expect(line.maxGapByHour[11]).toBe(90);
     expect(line.headwayByHour[12]).toBe(17);
+  });
+
+  it('a withheld sparse overnight value still stands in for the floor stop (#897)', async () => {
+    // s4's overnight is A's 02:00, 02:10, 05:00: its value (90) is withheld from the rows, but the
+    // 2am hour keeps the stand-in floor it had, as on main, rather than the pool's every 15.
+    const b: number[] = []; for (let t = 26 * 60 + 5; t <= 29 * 60; t += 15) b.push(t);
+    const result = await processGtfsBuffer(await synth({ a: [26 * 60, 26 * 60 + 10, 29 * 60], b }), undefined, { slug: 'synthetic' });
+    const line = JSON.parse(result.geojson).features.map((f: any) => f.properties).find((p: any) => p.stopId == null && p.day === 'Weekday');
+    expect(line.stopPeriodHeadways.s4.overnight).toBeUndefined();
+    expect(line.headwayByHour[26]).toBe(90);
   });
 });

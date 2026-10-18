@@ -1,0 +1,149 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+3073,626,185641,Echo Place | Lynden Park Mall,,1,10332,20356,0,0
+3073,626,185645,Echo Place | Lynden Park Mall,,1,10332,20356,0,0
+3073,626,185649,Echo Place | Lynden Park Mall,,1,10332,20356,0,0
+3073,626,185653,Echo Place | Lynden Park Mall,,1,10332,20356,0,0
+3073,626,185657,Echo Place | Lynden Park Mall,,1,10332,20356,0,0
+3073,625,185828,Echo Place | Lynden Park Mall,,1,10337,20356,0,0
+3073,627,187448,Echo Place | Lynden Park Mall,,1,10946,20356,0,0
+3073,627,187171,Echo Place | Lynden Park Mall,,1,10375,20356,0,0
+3073,627,187377,Echo Place | Lynden Park Mall,,1,10943,20356,0,0
+3073,627,187392,Echo Place | Lynden Park Mall,,1,10943,20356,0,0
+3073,627,187395,Echo Place | Lynden Park Mall,,1,10943,20356,0,0
+3073,627,187397,Echo Place | Lynden Park Mall,,1,10943,20356,0,0
+3073,627,187445,Echo Place | Lynden Park Mall,,1,10946,20356,0,0
+3073,625,187064,Echo Place | Lynden Park Mall,,1,10372,20356,0,0
+3073,625,187067,Echo Place | Lynden Park Mall,,1,10372,20356,0,0
+3073,627,187168,Echo Place | Lynden Park Mall,,1,10375,20356,0,0
+3073,625,186588,Echo Place | Lynden Park Mall,,1,10361,20356,0,0
+3073,625,186591,Echo Place | Lynden Park Mall,,1,10361,20356,0,0
+3073,625,186594,Echo Place | Lynden Park Mall,,1,10361,20356,0,0
+3073,625,187045,Echo Place | Lynden Park Mall,,1,10372,20356,0,0
+3073,625,187047,Echo Place | Lynden Park Mall,,1,10372,20356,0,0
+3073,626,186502,Echo Place | Lynden Park Mall,,1,10359,20356,0,0
+3073,626,186506,Echo Place | Lynden Park Mall,,1,10359,20356,0,0
+3073,626,186510,Echo Place | Lynden Park Mall,,1,10359,20356,0,0
+3073,626,186514,Echo Place | Lynden Park Mall,,1,10359,20356,0,0
+3073,626,186516,Echo Place | Lynden Park Mall,,1,10359,20356,0,0
+3073,626,186518,Echo Place | Lynden Park Mall,,1,10359,20356,0,0
+3073,625,186083,Echo Place | Lynden Park Mall,,1,10346,20356,0,0
+3073,625,186086,Echo Place | Lynden Park Mall,,1,10346,20356,0,0
+3073,625,186089,Echo Place | Lynden Park Mall,,1,10346,20356,0,0
+3073,626,186498,Echo Place | Lynden Park Mall,,1,10359,20356,0,0
+3073,627,185944,Echo Place | Lynden Park Mall,,1,10342,20356,0,0
+3073,627,185946,Echo Place | Lynden Park Mall,,1,10342,20356,0,0
+3073,627,185963,Echo Place | Lynden Park Mall,,1,10342,20356,0,0
+3073,627,185966,Echo Place | Lynden Park Mall,,1,10342,20356,0,0
+3073,625,185830,Echo Place | Lynden Park Mall,,1,10337,20356,0,0
+3073,625,185832,Echo Place | Lynden Park Mall,,1,10337,20356,0,0
+3073,625,185847,Echo Place | Lynden Park Mall,,1,10337,20356,0,0
+3073,625,185850,Echo Place | Lynden Park Mall,,1,10337,20356,0,0
+3073,625,185829,Echo Place | Downtown,,0,10337,20357,0,0
+3073,625,185831,Echo Place | Downtown,,0,10337,20357,0,0
+3073,625,185851,Echo Place | Downtown,,0,10337,20357,0,0
+3073,627,185945,Echo Place | Downtown,,0,10342,20357,0,0
+3073,627,187398,Echo Place | Downtown,,0,10943,20357,0,0
+3073,626,186519,Echo Place | Downtown,,0,10359,20357,0,0
+3073,625,186595,Echo Place | Downtown,,0,10361,20357,0,0
+3073,625,187046,Echo Place | Downtown,,0,10372,20357,0,0
+3073,625,187048,Echo Place | Downtown,,0,10372,20357,0,0
+3073,627,185947,Echo Place | Downtown,,0,10342,20357,0,0
+3073,627,185967,Echo Place | Downtown,,0,10342,20357,0,0
+3073,625,186090,Echo Place | Downtown,,0,10346,20357,0,0
+3073,626,186515,Echo Place | Downtown,,0,10359,20357,0,0
+3073,626,186517,Echo Place | Downtown,,0,10359,20357,0,0
+3073,625,185833,Echo Place | Downtown,,0,10337,20358,0,0
+3073,625,185848,Echo Place | Downtown,,0,10337,20358,0,0
+3073,627,185964,Echo Place | Downtown,,0,10342,20358,0,0
+3073,627,187396,Echo Place | Downtown,,0,10943,20358,0,0
+3073,627,187446,Echo Place | Downtown,,0,10946,20358,0,0
+3073,627,187449,Echo Place | Downtown,,0,10946,20358,0,0
+3073,625,187068,Echo Place | Downtown,,0,10372,20358,0,0
+3073,627,187169,Echo Place | Downtown,,0,10375,20358,0,0
+3073,627,187172,Echo Place | Downtown,,0,10375,20358,0,0
+3073,627,187378,Echo Place | Downtown,,0,10943,20358,0,0
+3073,627,187393,Echo Place | Downtown,,0,10943,20358,0,0
+3073,625,186084,Echo Place | Downtown,,0,10346,20358,0,0
+3073,625,186087,Echo Place | Downtown,,0,10346,20358,0,0
+3073,625,186589,Echo Place | Downtown,,0,10361,20358,0,0
+3073,625,186592,Echo Place | Downtown,,0,10361,20358,0,0
+3073,625,187065,Echo Place | Downtown,,0,10372,20358,0,0
+3073,625,185836,Echo Place | Downtown,,0,10337,20359,0,0
+3073,625,185839,Echo Place | Downtown,,0,10337,20359,0,0
+3073,625,185842,Echo Place | Downtown,,0,10337,20359,0,0
+3073,625,185845,Echo Place | Downtown,,0,10337,20359,0,0
+3073,627,187437,Echo Place | Downtown,,0,10946,20359,0,0
+3073,627,187440,Echo Place | Downtown,,0,10946,20359,0,0
+3073,627,187443,Echo Place | Downtown,,0,10946,20359,0,0
+3073,627,187166,Echo Place | Downtown,,0,10375,20359,0,0
+3073,627,187381,Echo Place | Downtown,,0,10943,20359,0,0
+3073,627,187384,Echo Place | Downtown,,0,10943,20359,0,0
+3073,627,187387,Echo Place | Downtown,,0,10943,20359,0,0
+3073,627,187390,Echo Place | Downtown,,0,10943,20359,0,0
+3073,627,187434,Echo Place | Downtown,,0,10946,20359,0,0
+3073,627,187157,Echo Place | Downtown,,0,10375,20359,0,0
+3073,627,187160,Echo Place | Downtown,,0,10375,20359,0,0
+3073,627,187163,Echo Place | Downtown,,0,10375,20359,0,0
+3073,625,187053,Echo Place | Downtown,,0,10372,20359,0,0
+3073,625,187056,Echo Place | Downtown,,0,10372,20359,0,0
+3073,625,187059,Echo Place | Downtown,,0,10372,20359,0,0
+3073,625,187062,Echo Place | Downtown,,0,10372,20359,0,0
+3073,625,186586,Echo Place | Downtown,,0,10361,20359,0,0
+3073,625,187050,Echo Place | Downtown,,0,10372,20359,0,0
+3073,625,186075,Echo Place | Downtown,,0,10346,20359,0,0
+3073,625,186078,Echo Place | Downtown,,0,10346,20359,0,0
+3073,625,186081,Echo Place | Downtown,,0,10346,20359,0,0
+3073,625,186577,Echo Place | Downtown,,0,10361,20359,0,0
+3073,625,186580,Echo Place | Downtown,,0,10361,20359,0,0
+3073,625,186583,Echo Place | Downtown,,0,10361,20359,0,0
+3073,627,185961,Echo Place | Downtown,,0,10342,20359,0,0
+3073,625,186072,Echo Place | Downtown,,0,10346,20359,0,0
+3073,627,185949,Echo Place | Downtown,,0,10342,20359,0,0
+3073,627,185952,Echo Place | Downtown,,0,10342,20359,0,0
+3073,627,185955,Echo Place | Downtown,,0,10342,20359,0,0
+3073,627,185958,Echo Place | Downtown,,0,10342,20359,0,0
+3073,625,187643,Echo Place | Downtown,,0,10958,20360,0,0
+3073,625,185835,Echo Place | Lynden Park Mall,,1,10337,20364,0,0
+3073,625,185838,Echo Place | Lynden Park Mall,,1,10337,20364,0,0
+3073,625,185841,Echo Place | Lynden Park Mall,,1,10337,20364,0,0
+3073,625,185844,Echo Place | Lynden Park Mall,,1,10337,20364,0,0
+3073,627,187436,Echo Place | Lynden Park Mall,,1,10946,20364,0,0
+3073,627,187439,Echo Place | Lynden Park Mall,,1,10946,20364,0,0
+3073,627,187442,Echo Place | Lynden Park Mall,,1,10946,20364,0,0
+3073,625,187642,Echo Place | Lynden Park Mall,,1,10958,20364,0,0
+3073,627,187165,Echo Place | Lynden Park Mall,,1,10375,20364,0,0
+3073,627,187380,Echo Place | Lynden Park Mall,,1,10943,20364,0,0
+3073,627,187383,Echo Place | Lynden Park Mall,,1,10943,20364,0,0
+3073,627,187386,Echo Place | Lynden Park Mall,,1,10943,20364,0,0
+3073,627,187389,Echo Place | Lynden Park Mall,,1,10943,20364,0,0
+3073,627,187433,Echo Place | Lynden Park Mall,,1,10946,20364,0,0
+3073,627,187156,Echo Place | Lynden Park Mall,,1,10375,20364,0,0
+3073,627,187159,Echo Place | Lynden Park Mall,,1,10375,20364,0,0
+3073,627,187162,Echo Place | Lynden Park Mall,,1,10375,20364,0,0
+3073,625,187052,Echo Place | Lynden Park Mall,,1,10372,20364,0,0
+3073,625,187055,Echo Place | Lynden Park Mall,,1,10372,20364,0,0
+3073,625,187058,Echo Place | Lynden Park Mall,,1,10372,20364,0,0
+3073,625,187061,Echo Place | Lynden Park Mall,,1,10372,20364,0,0
+3073,625,186585,Echo Place | Lynden Park Mall,,1,10361,20364,0,0
+3073,625,187049,Echo Place | Lynden Park Mall,,1,10372,20364,0,0
+3073,625,186074,Echo Place | Lynden Park Mall,,1,10346,20364,0,0
+3073,625,186077,Echo Place | Lynden Park Mall,,1,10346,20364,0,0
+3073,625,186080,Echo Place | Lynden Park Mall,,1,10346,20364,0,0
+3073,625,186576,Echo Place | Lynden Park Mall,,1,10361,20364,0,0
+3073,625,186579,Echo Place | Lynden Park Mall,,1,10361,20364,0,0
+3073,625,186582,Echo Place | Lynden Park Mall,,1,10361,20364,0,0
+3073,627,185960,Echo Place | Lynden Park Mall,,1,10342,20364,0,0
+3073,625,186071,Echo Place | Lynden Park Mall,,1,10346,20364,0,0
+3073,627,185948,Echo Place | Lynden Park Mall,,1,10342,20364,0,0
+3073,627,185951,Echo Place | Lynden Park Mall,,1,10342,20364,0,0
+3073,627,185954,Echo Place | Lynden Park Mall,,1,10342,20364,0,0
+3073,627,185957,Echo Place | Lynden Park Mall,,1,10342,20364,0,0
+3073,626,185642,Echo Place | Downtown,,0,10332,20383,0,0
+3073,626,185646,Echo Place | Downtown,,0,10332,20383,0,0
+3073,626,185650,Echo Place | Downtown,,0,10332,20383,0,0
+3073,626,185654,Echo Place | Downtown,,0,10332,20383,0,0
+3073,626,185658,Echo Place | Downtown,,0,10332,20383,0,0
+3073,626,186499,Echo Place | Downtown,,0,10359,20383,0,0
+3073,626,186503,Echo Place | Downtown,,0,10359,20383,0,0
+3073,626,186507,Echo Place | Downtown,,0,10359,20383,0,0
+3073,626,186511,Echo Place | Downtown,,0,10359,20383,0,0

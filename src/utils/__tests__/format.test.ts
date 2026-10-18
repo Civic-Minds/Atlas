@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fmtHeadway, getRouteLabel, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
+import { fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -143,9 +143,44 @@ describe('routeLabels case', () => {
     expect(routeLabelCase('STAMFORD/CT STATE')).toBe('Stamford/Ct State');
     expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
     expect(routeLabelCase('Île-des-Soeurs')).toBe('Île-des-Soeurs');
-    for (const code of ['SL1', '34E', '1X', 'WCE', 'GO', 'SU 43', 'RT 5']) expect(routeLabelCase(code)).toBe(code);
+    for (const code of ['SL1', '34E', '1X', 'WCE', 'GO', 'J14', 'BART']) expect(routeLabelCase(code)).toBe(code);
     expect(routeLabels({ shortName: 'SSSF', longName: 'Sausalito - San Francisco Ferry', routeType: 4 }).primary).toBe('SSSF');
     expect(routeLabels({ shortName: 'RWXP', longName: 'Ridgway Express', routeType: 3 }).text).toBe('RWXP — Ridgway Express');
+  });
+  it('title-cases whole-string capitals from real feeds (SF Muni and similar)', () => {
+    const cases: Array<[string, string]> = [
+      ['CHURCH', 'Church'], ['INGLESIDE', 'Ingleside'], ['OCEAN VIEW', 'Ocean View'], ['EMBARCADERO STATION', 'Embarcadero Station'],
+      ['PARK ST', 'Park St'], ['ST. CLAIR AVE', 'St. Clair Ave'], ['VAN NESS AVE', 'Van Ness Ave'],
+      ['UNIVERSITY OF TORONTO', 'University of Toronto'], ['CALIFORNIA ST VIA THE HILL', 'California St via the Hill'],
+      ["O'BRIEN", "O'Brien"], ['MCKNIGHT', 'McKnight'], ['OCEAN-VIEW', 'Ocean-View'], ['DOWNTOWN/AIRPORT (EXPRESS)', 'Downtown/Airport (Express)'],
+      ['BART STATION', 'BART Station'], ['TTC EXPRESS', 'TTC Express'],
+      ['WEST', 'West'], ['PARK', 'Park'], ['MAIN', 'Main'], ['CHURCH', 'Church'], ['OCEAN VIEW', 'Ocean View'], ['BART TO AIRPORT', 'BART to Airport'],
+      ['UBC EXCHANGE/DOWNTOWN', 'UBC Exchange/Downtown'], ['SFO VIA JFK', 'SFO via JFK'], ['5TH AVE', '5th Ave'], ['SU 43', 'SU 43'], ['14R MISSION RAPID', '14R Mission Rapid'],
+    ];
+    for (const [raw, shown] of cases) expect(routeLabelCase(raw)).toBe(shown);
+  });
+  it('leaves mixed-case names, digit codes and allowlisted acronyms alone', () => {
+    for (const same of ['N Judah', '14R Mission Rapid', 'Church', 'BART', 'TTC', 'UTSC', 'GO', 'Owl', '14R', 'L Taraval']) expect(routeLabelCase(same)).toBe(same);
+  });
+  it('keeps the added service-brand acronyms in capitals inside all-caps names (CIV-327)', () => {
+    expect(routeLabelCase('MAX YELLOW LINE')).toBe('MAX Yellow Line');
+    expect(routeLabelCase('UP EXPRESS')).toBe('UP Express');
+    expect(routeLabelCase('PATH TO NEWARK')).toBe('PATH to Newark');
+    expect(routeLabelCase('PATCO TO LINDENWOLD')).toBe('PATCO to Lindenwold');
+    expect(routeLabelCase('MARC PENN LINE')).toBe('MARC Penn Line');
+    expect(routeLabelCase('STO TO TERMINAL')).toBe('STO to Terminal');
+    expect(routeLabelCase('TC LOOP')).toBe('TC Loop');
+    expect(routeLabelCase('SU 43')).toBe('SU 43');
+    expect(routeLabelCase('RT 5')).toBe('RT 5');
+  });
+  it('does not add the excluded short tokens to the acronym list (CIV-327)', () => {
+    expect(routeLabelCase('MAIN ST')).toBe('Main St');
+    for (const word of ['ID', 'MB', 'SH', 'VIVA', 'LINK', 'RAILLINK', 'METRO']) {
+      expect(ROUTE_NAME_ACRONYMS.has(word)).toBe(false);
+    }
+  });
+  it('title-cases a shouting long name on a route card', () => {
+    expect(routeLabels({ shortName: 'J', longName: 'CHURCH', routeType: 0 }).text).toBe('J — Church');
   });
   it('gives the card title in title case and lists the cleaned names', () => {
     expect(routeLabels({ shortName: '961', longName: '757X - NORFOLK TO NNTC', routeType: 3 })).toMatchObject({ primary: '757X', secondary: 'Norfolk to NNTC', text: '757X — Norfolk to NNTC' });

@@ -1,7 +1,6 @@
 import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
 import { PERIOD_KEYS, TIME_PERIODS, periodKeyForHour, type PeriodKey } from '../../shared/config';
-import { hasAnyPeriodCoverage, periodCoverageValue, PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
 import { getPooledStop, type SharedStopIndex } from '../../shared/sharedStops';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -11,7 +10,6 @@ export type HeadwayProvenance =
   | 'period-summary'
   | 'hourly-summary'
   | 'all-day-summary'
-  | 'worst-direction'
   | 'minimum-stop'
   | 'stop-specific'
   /** Pooled at a stop the route's patterns share (CIV-82, shared/sharedStops.ts). */
@@ -28,8 +26,6 @@ export interface HeadwayMetric {
 export interface RouteServiceSummary {
   /** Cadence intentionally shown to users on route rows/cards. */
   display: HeadwayMetric;
-  /** Cadence used to decide whether a route qualifies for the frequency filter. */
-  filter: HeadwayMetric;
   /** Destination/branch service, excluding combined shared-section frequency. */
   branch: HeadwayMetric;
   /** Combined service on shared stops/sections, when the feed provides it. */
@@ -89,79 +85,35 @@ export function metricValueForPeriod(metricValue: HeadwayMetric, period: Service
   return metricValue.value;
 }
 
-function firstAvailableByPeriod(
-  ...sources: Array<ShapeProperties['headwayByPeriod'] | undefined>
-): ShapeProperties['headwayByPeriod'] | undefined {
-  const keys = new Set<string>();
-  for (const source of sources) {
-    if (source) Object.keys(source).forEach(key => keys.add(key));
-  }
-  if (keys.size === 0) return undefined;
-  const merged: Record<string, number | null> = {};
-  for (const key of keys) {
-    const values = sources.map(source => source?.[key as keyof typeof source]);
-    const value = values.find(v => v != null);
-    if (value != null) {
-      merged[key] = value;
-    } else if (values.some(v => v === null)) {
-      // Preserve an explicit no-service summary when every available source
-      // agrees that this period has no service.
-      merged[key] = null;
-    }
-  }
-  return merged as ShapeProperties['headwayByPeriod'];
-}
-
 /**
  * Select all route-service metrics once. Consumers should use these named
  * projections instead of independently choosing among raw GeoJSON fields.
  */
+// Route facts are pure functions of a feature's (never-mutated) properties, and the route list
+// rebuilds them for every route in view whenever the sidebar mounts, e.g. on leaving Live, where
+// it took several seconds. Cache them per properties object; new data means new objects.
+const serviceSummaryCache = new WeakMap<object, RouteServiceSummary>();
+const routeFactsCache = new WeakMap<object, Map<string, RouteFacts>>();
+
 export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummary {
-  // Older published artifacts do not have the derived coverage field, but regular
-  // routes retain the maximum period gap. Treat that gap as the full-window bound
-  // so an unsustained median cannot pass an active-period frequency filter (#524).
-  // Span routes are school/special-service clusters, not regular frequency, so their
-  // short maximum gap must never qualify them as frequent service.
-  const hasCoverage = hasAnyPeriodCoverage(p);
-  const regularPeriods = firstAvailableByPeriod(p.worstDirectionHeadwayByPeriod, p.headwayByPeriod);
-  const filterPeriods = !hasCoverage ? regularPeriods : Object.fromEntries(
-    PERIOD_KEYS.map(key => {
-      // A sustained period should be filtered by its actual cadence only when it covers
-      // the window (coverage <= 60). If the period is unsustained or has no service for most
-      // of the window (e.g. Calgary overnight routes starting around 5 AM), use the full-window
-      // coverage value so a late-start route cannot pass as frequent or receive a normal tier (#507).
-      const sustained = p.headwayByPeriodSustained?.[key];
-      const covVal = periodCoverageValue(p, key) ?? null;
-      if (sustained === true && covVal != null && covVal <= PERIOD_COVERAGE_MAX_HEADWAY) {
-        return [key, regularPeriods?.[key] ?? null];
-      }
-      return [key, covVal];
-    }),
-  ) as ShapeProperties['headwayByPeriod'];
+  let cached = serviceSummaryCache.get(p);
+  if (!cached) {
+    cached = computeRouteServiceSummary(p);
+    serviceSummaryCache.set(p, cached);
+  }
+  return cached;
+}
+
+function computeRouteServiceSummary(p: ShapeProperties): RouteServiceSummary {
   const branchValue = p.headway ?? null;
   const branchProvenance: HeadwayProvenance = p.headwayByPeriod
     ? 'period-summary' : branchValue != null ? 'all-day-summary' : 'none';
   const displayValue = branchValue;
   const displayProvenance: HeadwayProvenance = p.headwayByPeriod
     ? 'period-summary' : branchValue != null ? 'all-day-summary' : 'none';
-  const filterValue = p.worstDirectionHeadway ?? p.minStopHeadway ?? branchValue;
-  const filterProvenance: HeadwayProvenance = p.worstDirectionHeadway != null
-    ? 'worst-direction'
-    : p.minStopHeadway != null ? 'minimum-stop' : branchProvenance;
 
   return {
     display: metric(displayValue, p.headwayByPeriod, p.headwayByHour, displayProvenance),
-    filter: metric(
-      filterValue,
-      // wdph (worst-direction) must win: every direction has to meet the threshold, not just
-      // this one branch's own value. minStopHeadwayByPeriod is deliberately excluded — it can
-      // reflect a shared-core combined frequency that only applies to part of the route, and
-      // without geometry clipping to match, letting it drive pass/fail here would smuggle a
-      // partial match through as if the whole route qualified (#314/#315).
-      filterPeriods,
-      p.headwayByHour,
-      filterProvenance,
-    ),
     branch: metric(branchValue, p.headwayByPeriod, p.headwayByHour, branchProvenance),
     shared: {
       ...metric(p.minStopHeadway ?? null, p.minStopHeadwayByPeriod, undefined,
@@ -275,6 +227,15 @@ export interface RouteFacts {
 }
 
 export function buildRouteFacts(p: ShapeProperties, agencySlug?: string): RouteFacts {
+  let bySlug = routeFactsCache.get(p);
+  if (!bySlug) { bySlug = new Map(); routeFactsCache.set(p, bySlug); }
+  const k = agencySlug ?? '';
+  let facts = bySlug.get(k);
+  if (!facts) { facts = computeRouteFacts(p, agencySlug); bySlug.set(k, facts); }
+  return facts;
+}
+
+function computeRouteFacts(p: ShapeProperties, agencySlug?: string): RouteFacts {
   const resolvedAgencySlug = agencySlug ?? (p as ShapeProperties & { agencySlug?: string }).agencySlug ?? p.agencyName ?? '';
   const routeId = p.routeId;
 

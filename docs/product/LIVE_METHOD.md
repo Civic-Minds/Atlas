@@ -1,6 +1,6 @@
 # How Live measures a route
 
-This is how the Live route page (the dashboard and the full analysis at `/apps/live/<agency>/<route>`) gets its numbers. Live is local-only: it is off in every deployment (see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md)). The analysis is built by `npm run live:analyze -- <route>` (`scripts/live-segment-delay.ts`); the page reads the file it writes through `/api/live-dashboard`. Shared rules and wording live in `shared/liveDashboard.ts` and `shared/routeMetrics.ts`.
+This is how the Live route page (the dashboard and the full analysis at `/apps/live/<agency>/<route>`) gets its numbers. Live is local-only: it is off in every deployment (see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md)). The analysis is built by `npm run live:analyze -- <route>` (`scripts/live-segment-delay.ts`); the page reads the file it writes through `/api/live-dashboard`, a local-only endpoint (`local-api/`, served by `npm run dev:api`, never deployed). Shared rules and wording live in `shared/liveDashboard.ts` and `shared/routeMetrics.ts`.
 
 ## Where the numbers come from
 
