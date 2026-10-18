@@ -117,6 +117,35 @@ function addOnDemandLayers(map: maplibregl.Map) {
   });
 }
 
+/**
+ * Live context lines (CIV-326): every route of the agencies Live is showing, thin and light, drawn
+ * under all other route lines. Hidden and filtered to nothing until the Live hook fills it.
+ */
+export const LIVE_CONTEXT_LAYER_IDS = ['live-context-overview-layer', 'live-context-routes-layer', 'live-context-local-layer'] as const;
+function addLiveContextLayers(map: maplibregl.Map) {
+  const paint = {
+    'line-color': '#9ca3af',
+    'line-width': ['interpolate', ['linear'], ['zoom'], 0, 0.6, 8, 0.8, 14, 1.2, 17, 1.8],
+    'line-opacity': 0.5,
+  } as const;
+  const layout = { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' } as const;
+  const noMatch = ['==', ['get', 'agencySlug'], ''] as any;
+  map.addLayer({ id: LIVE_CONTEXT_LAYER_IDS[0], type: 'line', source: 'atlas-overview-pmtiles', 'source-layer': 'routes', maxzoom: 8, filter: noMatch, paint: paint as any, layout: layout as any });
+  map.addLayer({ id: LIVE_CONTEXT_LAYER_IDS[1], type: 'line', source: 'atlas-pmtiles', 'source-layer': 'routes', minzoom: 8, filter: noMatch, paint: paint as any, layout: layout as any });
+}
+
+/** The same context lines for agencies drawn from local GeoJSON. */
+function addLiveContextLocalLayer(map: maplibregl.Map) {
+  map.addLayer({
+    id: LIVE_CONTEXT_LAYER_IDS[2],
+    type: 'line',
+    source: 'local-routes',
+    filter: ['==', ['get', 'agencySlug'], ''] as any,
+    paint: { 'line-color': '#9ca3af', 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.8, 14, 1.2, 17, 1.8], 'line-opacity': 0.5 },
+    layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+  }, 'local-routes-layer');
+}
+
 /** Route lines from PMTiles: overview below zoom 8, detailed above, each with a wide hit layer. */
 function addRouteLayers(map: maplibregl.Map) {
   // Broad maps use simplified route geometry; detailed geometry takes over
@@ -515,8 +544,10 @@ function addLiveRouteShapeLayer(map: maplibregl.Map) {
 export function addMapLayers(map: maplibregl.Map, { lightMode, colorMode, highlightRoutes }: { lightMode: boolean; colorMode: ColorVisionMode; highlightRoutes: string[] }) {
   addPmtilesSources(map);
   addOnDemandLayers(map);
+  addLiveContextLayers(map);
   addRouteLayers(map);
   addLocalRouteLayers(map);
+  addLiveContextLocalLayer(map);
   addSectionColourLayers(map);
   addNightServiceLayers(map, colorMode);
   addFrequentServiceLayers(map);

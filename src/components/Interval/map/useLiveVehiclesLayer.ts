@@ -10,6 +10,7 @@ import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint'
 import { useColorVision } from '../../../context/ColorVisionContext';
 import { delayAmount } from '../../../utils/headwayText';
 import { frameRoute } from './routeFraming';
+import { LIVE_CONTEXT_LAYER_IDS } from './mapLayers';
 import { lineCoordinates } from '../../../../shared/routeGeometry';
 
 /** Exported for unit tests — GTFS-RT text must be escaped before innerHTML. */
@@ -236,6 +237,25 @@ export function useLiveVehiclesLayer(
       tip.remove();
     };
   }, [mapLoaded, mapRef, deckOverlayRef, liveOverlay]);
+
+  // Context lines (CIV-326): all routes of the agencies with vehicles on screen, thin and light,
+  // under every other route line (and under the deck dots). Agencies with no shapes draw nothing.
+  const contextSlugKey = liveOverlay
+    ? [...new Set((liveOverlay.vehicles ?? []).map(v => v.agencySlug).filter(Boolean))].sort().join(',')
+    : null;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const slugs = contextSlugKey ? contextSlugKey.split(',') : [];
+    const filter = (slugs.length > 0
+      ? ['in', ['get', 'agencySlug'], ['literal', slugs]]
+      : ['==', ['get', 'agencySlug'], '']) as maplibregl.FilterSpecification;
+    for (const id of LIVE_CONTEXT_LAYER_IDS) {
+      if (!map.getLayer(id)) continue;
+      map.setFilter(id, filter);
+      map.setLayoutProperty(id, 'visibility', slugs.length > 0 ? 'visible' : 'none');
+    }
+  }, [contextSlugKey, mapLoaded, mapRef]);
 
   // Live route dynamic shape overlay (MapLibre GeoJSON — not deck)
   useEffect(() => {

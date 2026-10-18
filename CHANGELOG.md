@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Live shows the agency's route lines under the vehicle dots (local only, CIV-326)**: thin, light lines so the dots stay the loudest thing on the map; agencies with no shapes show just dots.
 - **The planner's week table names both weeks' left-out days once, says TTC in its header, and its hover reasons name the days (local only)**: "Excluding Oct 11 this week, Oct 4 last week" sits directly under the table (and in the method line); "Oct 11 left out: gaps in our recordings that day" is the hover.
 - **The planner's week figures are a small aligned table (local only)**: Late, Run time, Extra wait, Bunching and Service delivered with This week and Last week columns, the arrow beside this week's value only where the numbers differ, the short explanations as notes under it, and the days left out beside the colour caption.
 - **Live names the days it leaves out instead of counting them (local only)**: "Excluding Oct 11" over the late-by-hour cards (each kind of day names its own), in the planner's chart title row, and "Excluding Oct 11 this week, Oct 4 last week." in the method; nothing is shown when every day counts. The reason ("days with gaps in our recordings are left out…") is the hover text.
