@@ -22,6 +22,7 @@ import {
 import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
 import { BUNCHED_GAP_SEC, MIN_GAPS, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
+import { feedGaps, routeEmptyMinutes, MIN_SCHEDULED_TRIPS } from '../shared/feedOutages.js';
 import { dayHealth, delivered, goodDates, keepGoodDays, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
@@ -250,10 +251,7 @@ for (const f of readdirSync(ARCHIVE).filter(x => x.endsWith('.jsonl') && !x.star
   }
 }
 const feedSorted = [...feedTimes].sort((a, b) => a - b);
-const outages: [number, number][] = [];
-for (let i = 1; i < feedSorted.length; i++) {
-  if (feedSorted[i] - feedSorted[i - 1] > 180) outages.push([feedSorted[i - 1], feedSorted[i]]);
-}
+const outages = feedGaps(feedSorted);
 
 // Local dates fully inside the archive and the GTFS calendar.
 const firstLocal = local(snapshotTimes[0] + 3 * 3600).date; // skip the partial first local day
@@ -572,14 +570,18 @@ for (const svcDate of dates) {
 }
 const degradedMinutes = new Set<number>();
 let degradedEmpty = 0, degradedStale = 0, degradedThin = 0;
-snapshotQuality.sort((a, b) => a.ts - b.ts);
-snapshotQuality.forEach((q, i) => {
+// Route-only outage: the feed has snapshots (any route's) but none of this route's vehicles while it is scheduled.
+// Built from times only, so an empty line (older fetcher) and an absent line (`--routes all`) read the same.
+const routeSnaps = snapshotQuality.filter(q => q.vehicles > 0).sort((a, b) => a.ts - b.ts);
+const routeEmpty = routeEmptyMinutes(feedSorted, routeSnaps.map(q => q.ts), m => scheduledInService.get(m) ?? 0);
+degradedEmpty = routeEmpty.snapshots;
+for (const m of routeEmpty.minutes) degradedMinutes.add(m);
+routeSnaps.forEach((q, i) => {
   const m = Math.floor(q.ts / 60);
   const expected = scheduledInService.get(m) ?? 0;
-  const prev = snapshotQuality[i - 1];
-  if (expected >= 4 && q.vehicles === 0) { degradedEmpty++; degradedMinutes.add(m); }
-  else if (q.vehicles > 0 && (q.newest < q.ts - 300 || (prev && prev.newest === q.newest && q.ts - prev.ts >= 50))) { degradedStale++; degradedMinutes.add(m); }
-  else if (expected >= 4 && q.vehicles < 0.5 * expected) { degradedThin++; degradedMinutes.add(m); }
+  const prev = routeSnaps[i - 1];
+  if (q.vehicles > 0 && (q.newest < q.ts - 300 || (prev && prev.newest === q.newest && q.ts - prev.ts >= 50))) { degradedStale++; degradedMinutes.add(m); }
+  else if (expected >= MIN_SCHEDULED_TRIPS && q.vehicles < 0.5 * expected) { degradedThin++; degradedMinutes.add(m); }
 });
 const firstSnap = snapshotTimes[0], lastSnap = snapshotTimes[snapshotTimes.length - 1];
 const feedDown = (t: number) => {
