@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import MapZoomButtons from '../MapZoomButtons';
 import { getMapStyle } from '../../lib/mapStyle';
 import type { MapMeasure, RouteMapModel } from './routeMapModel';
+import { frameRoute } from '../Interval/map/routeFraming';
 
 export type MapPick = { kind: 'segment'; fromStopId: string; toStopId: string; route?: string } | { kind: 'stop'; stopId: string };
 
@@ -90,12 +91,10 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
     });
     if (framed.current !== key && (m.stops.length || m.segments.length)) {
       framed.current = key;
-      const b = new maplibregl.LngLatBounds();
-      m.stops.forEach(s => b.extend(s.lonLat));
-      m.segments.forEach(s => s.coordinates.forEach(c => b.extend(c)));
+      const points = [...m.stops.map(s => s.lonLat), ...m.segments.flatMap(s => s.coordinates)];
       // The map sits in a flex layout whose size can change after the first paint: measure it again before framing.
       map.resize();
-      map.fitBounds(b, { padding: pad ?? { top: 72, bottom: 72, left: 72, right: 72 }, maxZoom: 15, duration: 0 });
+      frameRoute(map, points, { padding: pad ?? { top: 72, bottom: 72, left: 72, right: 72 }, maxZoom: 15, duration: 0 });
     }
   };
 
