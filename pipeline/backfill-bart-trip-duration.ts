@@ -1,6 +1,6 @@
 /**
  * BART trip-duration history — pilot for the trip-time-over-years experiment
- * (see docs/roadmap/EXPERIMENTS.md).
+ * (see docs/roadmap/EXPERIMENT_IDEAS.md).
  *
  * Re-parses every archived BART GTFS zip in atlas-archive (gtfs/archive/bart/),
  * computes a representative weekday trip's duration + stop sequence per rail

@@ -20,6 +20,6 @@ Atlas is a regional transit atlas for understanding where transit runs frequentl
 
 Strategy, research, decisions and every other doc are listed in the [documentation index](../README.md).
 
-Ideas kicked around just for fun, no commitment: [Experiments](./EXPERIMENTS.md).
+Ideas kicked around just for fun, no commitment: [Experiment ideas](./EXPERIMENT_IDEAS.md).
 
 [Back to Home](../../README.md)

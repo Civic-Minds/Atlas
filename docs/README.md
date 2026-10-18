@@ -21,8 +21,8 @@ This is the one index of Atlas documentation: one row per tracked doc, with the 
 | Doc | Job |
 |---|---|
 | [Branch and deployment workflow](engineering/BRANCH_WORKFLOW.md) | One `main` branch, three deployments, worktrees and PR flow. |
-| [Fixing issues (runbook index)](engineering/FIXING_ISSUES.md) | Pick a fix's blast radius and open the matching validation runbook. |
-| [Fixing issues (root pointer)](../FIXING_ISSUES.md) | Scope guide and workflow; links to the runbook index. |
+| [Fixing issues (runbook index)](engineering/FIXING_ISSUES.md) | Scope guide, common workflow, the six-agency rule, and links to the two validation runbooks. |
+| [Fixing issues (root pointer)](../FIXING_ISSUES.md) | Pointer to the runbook index. |
 | [Pipeline fix validation](engineering/FIXING_PIPELINE_ISSUES.md) | Required validation for shared pipeline and data fixes. |
 | [UI fix validation](engineering/FIXING_UI_ISSUES.md) | Required validation for shared UI fixes. |
 | [Issue filing](engineering/ISSUES.md) | How to file, triage and close GitHub issues. |
@@ -73,14 +73,14 @@ This is the one index of Atlas documentation: one row per tracked doc, with the 
 | [Strategy](product/STRATEGY.md) | Competitive landscape and positioning. |
 | [Product research](product/RESEARCH.md) | Agency pain points informing the direction. |
 | [Agency backlog](data/AGENCY_BACKLOG.md) | Prioritised queue and batch history for adding agencies. |
-| [Experiment ideas](roadmap/EXPERIMENTS.md) | Uncommitted idea list. |
+| [Experiment ideas](roadmap/EXPERIMENT_IDEAS.md) | Uncommitted idea list (the root EXPERIMENTS.md lists implemented ones). |
 
 ## History and research
 
 | Doc | Job |
 |---|---|
 | [Research index](research/INDEX.md) | Every study under `docs/research/`. |
-| [Experiments](../EXPERIMENTS.md) | Index of implementation and QA experiments. |
+| [Experiments](../EXPERIMENTS.md) | Index of implementation and QA experiments, including the validated-not-enabled ones. |
 | [Stop-hub clustering](experiments/stop-hub-clustering.md) | Record of the offline stop-hub clustering experiment. |
 | [Fixed-period edge transition gap](experiments/fixed-period-edge-transition-gap/README.md) | Record of a validated, not-enabled diagnostic field. |
 | [Route accuracy spot check](audits/route-accuracy-spot-check-2026-09.md) | Generated GTFS-versus-Atlas spot check, September 2026. |
@@ -90,7 +90,7 @@ This is the one index of Atlas documentation: one row per tracked doc, with the 
 | [Test audit](engineering/TEST_AUDIT_2026-10.md) | One-time test suite audit (October 2026). |
 | [Changelog](../CHANGELOG.md) | Release notes since 3.0.0. |
 | [Changelog archive](../CHANGELOG_ARCHIVE.md) | Release notes before 3.0.0. Immutable. |
-| [Resume note for #690](../RESUME-690.md) | Obsolete employee-chat handoff (to be removed). |
+| [Research archive](research/INDEX.md#superseded-and-historical) | Superseded research snapshots, kept intact under `docs/research/archive/`. |
 
 ## Agent files (local, untracked)
 

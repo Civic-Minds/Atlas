@@ -3,7 +3,7 @@
  * sequence for each rail route in a parsed GTFS feed.
  *
  * Used to compare "how long does this trip take now vs. in past years" —
- * see docs/roadmap/EXPERIMENTS.md's trip-time-over-years entry. Only
+ * see docs/roadmap/EXPERIMENT_IDEAS.md's trip-time-over-years entry. Only
  * meaningful when paired with a stability check (identical stop sequence
  * across the years being compared) done by the caller.
  */

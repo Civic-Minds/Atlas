@@ -5,7 +5,7 @@ The dated CSVs (`fare-discounts-B01-2026-10-10.csv` through `fare-discounts-B21-
 ## Final audit
 
 - 21 batches present; 640 rows across 549 unique agency slugs, matching `agencies.csv` exactly.
-- 592 rows are `verified-official`.
+- 592 rows are `verified-official` (the researcher's count at the time; the current files hold 570 verified-official, 26 partial-official and 44 none-found, see README).
 - 6 rows are `partial-official`, with the limitation recorded in the row rather than presented as fully verified.
 - 42 rows are `none-found`; each has at least two official pages recorded in `pagesSearched`.
 - 0 rows remain `not-yet-checked` in the dated output set.
@@ -44,6 +44,6 @@ The dated CSVs (`fare-discounts-B01-2026-10-10.csv` through `fare-discounts-B21-
 - Re-researched the previously incomplete B04-B21 shells and populated the required fields for verified rows.
 - Corrected false or unsupported findings for CUE, WVU PRT, Saint-Jean-sur-Richelieu, GET Bakersfield, Clemson CATbus, Tampa SkyConnect, MARTA, UP Express, BC Transit, exo, and SMART Telluride.
 - Removed duplicate CUE/WVU rows and excluded Mason City ADA paratransit from fixed-route fare research.
-- Removed 77 repeated agency-program rows, restored Fredericksburg, GRTC, and Radford, and moved the stale undated B07 CSV into `archive-stale/`.
+- Removed 77 repeated agency-program rows, restored Fredericksburg, GRTC, and Radford, and moved the stale undated B07 CSV into `archive-stale/` (now `../archive/fare-discounts-2026-10/archive-stale/`).
 - Replaced known paraphrased or mis-cited evidence for Redwood Coast, RiverCities, TriMet, Durango, and Metra with source-specific evidence.
 - Recorded incomplete amount/eligibility findings as `partial-official` instead of treating them as fully verified.

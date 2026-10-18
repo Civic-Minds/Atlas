@@ -21,11 +21,12 @@ Each project uses a dated snapshot where possible and identifies one canonical s
 
 ## Superseded and historical
 
-Older snapshots stay intact; the active project above is the canonical one.
+Older snapshots stay intact in [`archive/`](archive/); the active project above is the canonical one.
 
-- [`fare-discount-comparison-2026-02/`](fare-discount-comparison-2026-02/README.md): unverified February 2026 prototype comparing California low-income fare programs; not used in the product.
-- [`fare-inventory-2026-09-29/`](fare-inventory-2026-09-29/README.md): superseded by the 2026-09-30 inventory.
-- [`transfer-inventory-2026-09-30/`](transfer-inventory-2026-09-30/README.md): superseded by the 2026-10-01 inventory.
-- [`north-america-on-demand-audit-2026-09.md`](north-america-on-demand-audit-2026-09.md) and [`north-america-gtfs-flex-publication-audit-2026-09.md`](north-america-gtfs-flex-publication-audit-2026-09.md): older copies of the reports in the Flex and on-demand folder; use the folder copies.
+- [`archive/fare-discount-comparison-2026-02/`](archive/fare-discount-comparison-2026-02/README.md): unverified February 2026 prototype comparing California low-income fare programs; not used in the product.
+- [`archive/fare-inventory-2026-09-29/`](archive/fare-inventory-2026-09-29/README.md): superseded by the 2026-09-30 inventory.
+- [`archive/transfer-inventory-2026-09-30/`](archive/transfer-inventory-2026-09-30/README.md): superseded by the 2026-10-01 inventory.
+- [`archive/north-america-on-demand-audit-2026-09.md`](archive/north-america-on-demand-audit-2026-09.md) and [`archive/north-america-gtfs-flex-publication-audit-2026-09.md`](archive/north-america-gtfs-flex-publication-audit-2026-09.md): older copies of the reports in the Flex and on-demand folder; use the folder copies.
+- [`archive/fare-discounts-2026-10/`](archive/fare-discounts-2026-10/): the 21 per-batch checkpoints, the fix prompt and the stale early files from the fare-discounts study.
 
 Product problem research remains in [Product Research](../product/RESEARCH.md), while implementation experiments remain in [Experiments](../experiments/stop-hub-clustering.md) and the root [EXPERIMENTS.md](../../EXPERIMENTS.md).

@@ -24,7 +24,7 @@ if (sourceDate !== today) {
     manual = JSON.parse(await fs.readFile(path.join(outputDir, 'manual-verified-transfers.json'), 'utf8'));
   } catch {
     try {
-      manual = JSON.parse(await fs.readFile(path.join(ROOT, 'docs/research/transfer-inventory-2026-09-30/manual-verified-transfers.json'), 'utf8'));
+      manual = JSON.parse(await fs.readFile(path.join(ROOT, 'docs/research/archive/transfer-inventory-2026-09-30/manual-verified-transfers.json'), 'utf8'));
       await fs.writeFile(path.join(outputDir, 'manual-verified-transfers.json'), `${JSON.stringify(manual, null, 2)}\n`);
     } catch { /* manual review may not have started */ }
   }
