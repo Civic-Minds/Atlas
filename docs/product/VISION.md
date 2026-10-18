@@ -2,7 +2,7 @@
 
 Atlas started as a frequency map — a way to see which transit routes in the GTHA run often enough to be useful without checking a schedule. That's still the core.
 
-The next layer is live performance. Agencies publish GTFS-RT feeds that tell you where vehicles are and how trips are running. Atlas is already archiving those feeds. The goal is to turn that archive into answers: not just "this route runs every 10 minutes" but "this route is supposed to run every 10 minutes, and on Tuesday mornings it actually runs every 18."
+The next layer is live performance. Agencies publish GTFS-RT feeds that tell you where vehicles are and how trips are running. (Current Live status: [Feature flags](../FEATURE_FLAGS.md).) The goal is to turn that archive into answers: not just "this route runs every 10 minutes" but "this route is supposed to run every 10 minutes, and on Tuesday mornings it actually runs every 18."
 
 That distinction matters because scheduled and actual service are often meaningfully different — and the gap is almost never visible to the people who plan the network. Timetables show what's supposed to happen. Atlas shows what's happening.
 

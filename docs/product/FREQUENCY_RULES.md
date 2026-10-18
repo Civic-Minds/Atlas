@@ -41,7 +41,7 @@ These are settled; don't change them without a new decision (Ryan, 2026-10-15).
 | What | Value | Code |
 |---|---|---|
 | Near-miss share (`violationPercentByTier`) | 10% for the 5, 8, 10 and 15 minute tiers; 5% for the 20, 30 and 60 minute tiers | `pipeline/transit-phase2.ts` |
-| Near-miss floor and cap (`maxGraceViolations`) | 0, with a cap of three gaps | `pipeline/transit-phase2.ts` |
+| Near-miss floor and cap (`maxGraceViolations`) | a floor of 1 once there are 8 or more gaps (`GRACE_FLOOR_MIN_GAPS`), and a cap of three gaps | `pipeline/transit-phase2.ts` |
 | Edge gap allowance (`EDGE_GAP_ALLOWANCE_MINUTES`) | 10 minutes over the tier, for each true service edge (not window boundaries); each edge uses one near-miss slot | `pipeline/transit-phase2.ts` |
 | Hard-gap grace | the larger of 5 minutes and 15% of the tier; no bigger allowance turns a large internal gap into a near miss | `pipeline/transit-phase2.ts` |
 | Minimum evidence | 3 departures; 4 after an edge allowance | `pipeline/transit-phase2.ts` |

@@ -1,38 +1,32 @@
 # Atlas research
 
-This directory contains source-backed research and exploratory analysis. Each
-topic lives in its own folder with an index, source material, and derived data
-where applicable. Research does not change Atlas's production behavior until a
-separate product or engineering decision is made.
+This directory contains source-backed research and exploratory analysis. Each topic lives in its own folder with an index, source material, and derived data where applicable. Research does not change Atlas's production behavior until a separate product or engineering decision is made. This is the one index for the folder: every research folder is listed here.
 
-Each research folder uses the same index structure: research question, sample,
-method, results and interpretation, recommendation, limitations and next
-steps, and supporting artifacts. Use the [research template](TEMPLATE.md) when
-starting a new study. Detailed tables, source notes, and machine-readable
-outputs remain supporting artifacts rather than competing summaries.
+Each project uses a dated snapshot where possible and identifies one canonical structured source, a human-readable summary, derived exports, and a clearly named review queue. Raw source captures and downloaded evidence belong in `raw/` or the project's asset folder. Use the [research template](TEMPLATE.md) for a new study and [`PROJECT-TEMPLATE.md`](PROJECT-TEMPLATE.md) for a new project folder; detailed tables, source notes, and machine-readable outputs remain supporting artifacts rather than competing summaries.
 
-## Research programs
+## Active projects
 
-- [Frequent-service research](frequent-service-research-2026-09/INDEX.md):
-  agency definitions, the structured catalog, the proposed Atlas criteria, and
-  `frequent-definitions-by-agency.json`, one row per Atlas agency with
-  machine-checked definition quotes (2026-10-11).
-- [North America Flex and on-demand audit](north-america-flex-and-on-demand-2026-09/INDEX.md):
-  public on-demand services and GTFS-Flex publication status.
-- [System-map audit](system-map-audit-2026-09/INDEX.md): verified system-map
-  coverage and structured audit data.
-- [Population context](population-context-2026-09/INDEX.md): exploratory
-  population-density and transit-context research.
-- [International expansion](international-expansion-2026-09/INDEX.md):
-  source-backed country and feed research for future coverage.
-- [Fare discounts](fare-discounts-2026-10/README.md): reduced-fare programs,
-  focused on low-income fares, for 549 agencies. Verified with exceptions:
-  every row checked; 12 rows on bot-protected sites not re-verified (CIV-48).
-- [Where routes fall behind](live-route-performance-2026-10/INDEX.md): methods
-  for the Live proof of concept's running-time, spacing and missed-trip
-  measures from archived vehicle positions (TTC 504 and 511, 2026-10-14).
-- [Free child fares](free-child-fares-2026-10-11/README.md): the age up to
-  which each Atlas agency lets children ride free, classified by policy type.
+- [Frequent-service research](frequent-service-research-2026-09/INDEX.md): agency definitions, the structured catalog, the proposed Atlas criteria, and `frequent-definitions-by-agency.json`, one row per Atlas agency with machine-checked definition quotes (2026-10-11).
+- [North America Flex and on-demand audit](north-america-flex-and-on-demand-2026-09/INDEX.md): public on-demand services and GTFS-Flex publication status.
+- [System-map audit](system-map-audit-2026-09/INDEX.md): verified system-map coverage and structured audit data.
+- [Population context](population-context-2026-09/INDEX.md): exploratory population-density and transit-context research.
+- [International expansion](international-expansion-2026-09/INDEX.md): source-backed country and feed research for future coverage.
+- [Fare discounts](fare-discounts-2026-10/README.md): reduced-fare programs, focused on low-income fares, for 549 agencies. Verified with exceptions: every row checked; 12 rows on bot-protected sites not re-verified (CIV-48).
+- [Fare inventory, 2026-09-30](fare-inventory-2026-09-30/README.md): agency fare inventory and official-source review.
+- [Free child fares](free-child-fares-2026-10-11/README.md): the age up to which each Atlas agency lets children ride free, classified by policy type.
+- [Transfer-policy inventory, 2026-10-01](transfer-inventory-2026-10-01/README.md): agency transfer-policy inventory.
+- [Transfer-policy verification, 2026-10-01](transfer-verification-2026-10-01/README.md): confirmation pass over the transfer policies.
+- [Where routes fall behind](live-route-performance-2026-10/INDEX.md): methods for the Live proof of concept's running-time, spacing and missed-trip measures from archived vehicle positions (TTC 504 and 511, 2026-10-14).
+- [Agency lateness policy study](agency-lateness-policy-study-2026-09/agency-lateness-policy-study-2026-09.md): how 80 agencies (20 Canadian, 40 US, 20 French) define lateness, on-time and headway adherence; generated by `scripts/build-lateness-policy-study.ts` (2026-09-26).
 
-Product problem research remains in [Product Research](../product/RESEARCH.md),
-while implementation experiments remain in [Experiments](../experiments/).
+## Superseded and historical
+
+Older snapshots stay intact in [`archive/`](archive/); the active project above is the canonical one.
+
+- [`archive/fare-discount-comparison-2026-02/`](archive/fare-discount-comparison-2026-02/README.md): unverified February 2026 prototype comparing California low-income fare programs; not used in the product.
+- [`archive/fare-inventory-2026-09-29/`](archive/fare-inventory-2026-09-29/README.md): superseded by the 2026-09-30 inventory.
+- [`archive/transfer-inventory-2026-09-30/`](archive/transfer-inventory-2026-09-30/README.md): superseded by the 2026-10-01 inventory.
+- [`archive/north-america-on-demand-audit-2026-09.md`](archive/north-america-on-demand-audit-2026-09.md) and [`archive/north-america-gtfs-flex-publication-audit-2026-09.md`](archive/north-america-gtfs-flex-publication-audit-2026-09.md): older copies of the reports in the Flex and on-demand folder; use the folder copies.
+- [`archive/fare-discounts-2026-10/`](archive/fare-discounts-2026-10/): the 21 per-batch checkpoints, the fix prompt and the stale early files from the fare-discounts study.
+
+Product problem research remains in [Product Research](../product/RESEARCH.md), while implementation experiments remain in [Experiments](../experiments/stop-hub-clustering.md) and the root [EXPERIMENTS.md](../../EXPERIMENTS.md).

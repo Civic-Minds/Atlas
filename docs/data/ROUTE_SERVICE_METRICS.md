@@ -67,7 +67,7 @@ Validated via dry-run reprocess: TTC route 10 midday reports `headwayByPeriod.mi
 ## Canonical projections
 
 - `display`: the destination/branch cadence shown on route cards, agency cards, search, Recent routes, Near You, and live scheduled comparisons. It uses the period summary, then hourly data, then the all-day branch summary.
-- `filter`: the cadence used by the frequency filter. For an active period it uses the best available stop-period value, then the branch period summary, then the hourly fallback. For all-day filtering it uses worst-direction cadence, then the minimum-stop value, then the branch summary.
+- The frequency filter is not a `RouteFacts.service` projection: `tileEffectiveHeadwayExpr` (`shared/tileFilterExprs.ts`) is its single definition, and `shared/routeHeadwayFilter.ts` runs that same expression in the app. It reads the stretch-selector values (`rv_*`, `routeAllDayHeadway`), then the worst-direction fields, and never the minimum-stop value. See [FREQUENCY_RULES.md](../product/FREQUENCY_RULES.md).
 - `branch`: destination-specific branch cadence used by route rows and branch sparklines.
 - `shared`: combined cadence on shared stops/sections, including headsign-scoped trunk values used for branch ranges and shared-section sparklines.
 - stop-specific metric: `buildRouteStopMetric()` projects a route's cadence at one named stop for stop cards and transfer rows.
@@ -86,18 +86,16 @@ These consumers operate on a different representation and should not be silently
 
 If one of these surfaces needs a rider-facing route cadence, it should project the relevant `RouteFacts.service` metric at its boundary and keep its representation-specific value separately named.
 
-## Filter semantics decision ([#166](https://github.com/Civic-Minds/Atlas/issues/166))
+## Filter semantics
 
-The settled product behavior is **best qualifying stop during the active period**. This preserves section clipping: a route appears when a useful high-frequency section meets the selected threshold, even if an outer terminal or destination is slower. The route card continues to show destination/branch cadence, so the two values must remain explicitly labeled as display versus filter metrics.
-
-This was decided and implemented in [#166](https://github.com/Civic-Minds/Atlas/issues/166). Changing it to median-stop, percentage-of-stops, destination, or worst-direction semantics would be a new product request, not remaining work for [#166](https://github.com/Civic-Minds/Atlas/issues/166) or the [#186](https://github.com/Civic-Minds/Atlas/issues/186) consistency fix.
+Every direction must pass and the worst direction decides; a busy stretch never passes a route on its own. This replaced the earlier "best qualifying stop during the active period" behaviour from [#166](https://github.com/Civic-Minds/Atlas/issues/166) (rules 4 and 11 in [FREQUENCY_RULES.md](../product/FREQUENCY_RULES.md), settled in [DECISIONS.md](../product/DECISIONS.md)). The route card still shows destination and branch cadence, so display and filter values stay explicitly separate.
 
 ## Post-deploy verification
 
 Any route with multiple branches/destinations works for this check — for example, TTC 900 Airport Express (used as the fixture route in the automated tests too, so a manual click-through and the test suite are checking the same scenario). Using that route with the same active period, verify:
 
 1. The route card, agency card, search result, Recent routes, and Near You show the same display cadence.
-2. The route card may show a different filter result only when the best-stop filter semantics explain it; the filter behavior remains consistent between sidebar and map.
+2. The route card may show a different value than the filter because display and filter values are separate (worst direction decides for the filter); the filter behavior remains consistent between sidebar and map.
 3. Stop panels show the named stop-specific cadence, not the route-wide display cadence.
 4. Shared-section/branch ranges and sparklines use their shared and branch projections respectively.
 5. Live Vehicles' scheduled comparison matches the route-card scheduled branch metric.

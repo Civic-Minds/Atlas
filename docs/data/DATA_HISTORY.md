@@ -41,7 +41,7 @@ Historical snapshots are compiled via two methods:
 | **STM** (`stm`) | `mdb-2126` | 2013 - 2026 | 14 years | Backfilled via Mobility Database. |
 | **LA Metro** (`lacmta`) | N/A | 2013 - 2026 | 10 years | Live catalog now meets the 10-year threshold. |
 
-The trip-time-over-years experiment is intended to start with rail because alignments change less often than bus. Candidate selection still needs a separate audit; see the experiment note in `docs/roadmap/EXPERIMENTS.md`.
+The trip-time-over-years experiment is intended to start with rail because alignments change less often than bus. Candidate selection still needs a separate audit; see the experiment note in `docs/roadmap/EXPERIMENT_IDEAS.md`.
 
 ---
 
