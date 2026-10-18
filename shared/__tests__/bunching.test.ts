@@ -74,48 +74,6 @@ describe('bunchingProfile', () => {
   });
 });
 
-describe('bunchingProfile with only the first stop as a terminal (CIV-318)', () => {
-  const stop = (id: string, bad: number): StopBunching => ({ stopId: id, n: MIN_GAPS, bunchedShare: bad, gappedShare: 0, badShare: bad, medianGapSec: 300, spread: 2 });
-  /** The 504 westbound shape: loop, then 4%, then a step to 33%, a 33-43% plateau for 20 stops, then about 12% after the short turn. */
-  const plateau = Array.from({ length: 20 }, (_, i) => 0.33 + (i % 5) * 0.025);
-  const shape = [stop('loop', 0), stop('S1', 0.04), ...plateau.map((b, i) => stop(`P${i}`, b)), stop('R1', 0.12), stop('R2', 0.12), stop('R3', 0.11), stop('E1', 0.1), stop('E2', 0.07)];
-  const firstOnly = (id: string) => id === 'loop' || id === 'E1' || id === 'E2';
-  const firstTwo = (id: string) => id === 'loop' || id === 'S1' || id === 'E1' || id === 'E2'; // the rule until now
-
-  it('finds the step that starts right after the loop: forms under the new rule, gradual under the old', () => {
-    const before = bunchingProfile(shape, firstTwo);
-    expect(before.kind).toBe('gradual');
-    expect(before.forms).toBeNull();
-    const after = bunchingProfile(shape, firstOnly);
-    expect(after.kind).toBe('forms');
-    expect(after.forms).toMatchObject({ fromStopId: 'S1', toStopId: 'P0' });
-    expect(after.forms!.rise).toBeCloseTo(0.29);
-    expect(after.baselineBadShare).toBeCloseTo(0.04); // measured at the first stop after the loop, before the step
-  });
-  it('keeps a slow ramp gradual (the baseline is still the first stops after the loop)', () => {
-    const ramp = [stop('loop', 0), ...[0.05, 0.05, 0.06, 0.1, 0.15, 0.2, 0.25, 0.3].map((b, i) => stop(`R${i}`, b)), stop('E1', 0.3), stop('E2', 0.3)];
-    const p = bunchingProfile(ramp, firstOnly);
-    expect(p.kind).toBe('gradual');
-    expect(p.forms).toBeNull();
-    expect(p.baselineBadShare).toBeCloseTo(0.0533, 3);
-  });
-  it('does not force a step at the last stops: the last two stay terminals', () => {
-    const late = [stop('loop', 0), ...[0.05, 0.05, 0.05, 0.05, 0.05].map((b, i) => stop(`A${i}`, b)), stop('E1', 0.4), stop('E2', 0.4)];
-    const p = bunchingProfile(late, firstOnly);
-    expect(p.forms).toBeNull();
-    expect(p.kind).toBe('none');
-  });
-  it('still ignores a one-stop spike that does not stay up, even right after the loop', () => {
-    const spike = [stop('loop', 0), stop('S1', 0.04), stop('S2', 0.3), stop('S3', 0.05), stop('S4', 0.05), stop('S5', 0.05), stop('S6', 0.05), stop('E1', 0.05), stop('E2', 0.05)];
-    expect(bunchingProfile(spike, firstOnly).forms).toBeNull();
-  });
-  it('is the same as before when nothing steps in the first stops', () => {
-    const even = [stop('loop', 0), ...[0.05, 0.06, 0.05, 0.07, 0.2, 0.3, 0.35, 0.4].map((b, i) => stop(`A${i}`, b)), stop('E1', 0.4), stop('E2', 0.4)];
-    expect(bunchingProfile(even, firstOnly).forms).toMatchObject({ fromStopId: 'A3', toStopId: 'A4' });
-    expect(bunchingProfile(even, firstTwo).forms).toMatchObject({ fromStopId: 'A3', toStopId: 'A4' });
-  });
-});
-
 describe('bunchingLinks ("linked to", with the number)', () => {
   it('links only what passes its threshold and always carries the number', () => {
     const links = bunchingLinks({ terminalBadShare: 0.05, standStill: { eventsPerDay: 2, minutesPerDay: 9 }, slowestSegment: { fromStopId: 'a', toStopId: 'b', gainedSec: 75 }, shortTurnsPerDay: 0.1 });

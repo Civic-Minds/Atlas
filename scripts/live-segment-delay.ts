@@ -745,18 +745,6 @@ for (const p of patterns.values()) for (const st of p.stops) {
   const place = stationOrLoop(stopsById.get(st.stopId)?.stop_name ?? '');
   if (place && terminalPlaces.has(place)) terminalStops.add(st.stopId);
 }
-// Terminals for the bunching profile only (CIV-318): a pattern's FIRST stop, its last two, and the stops at the same stations
-// and loops. The stop after the first is NOT one: a car has left the loop on time, but the gaps between cars there are
-// already real, and a step in bunching that starts right after the loop (504 westbound: 4% at the second stop, 33% at the
-// third) must be found. `terminalStops` above is unchanged and still serves delay build-up and the evidence checks.
-const bunchingTerminals = new Set<string>();
-for (const p of busiest) {
-  if ((tripsPerShape.get(p.id) ?? 0) >= 50 && p.stops.length >= 2) for (const st of [p.stops[0], ...p.stops.slice(-2)]) bunchingTerminals.add(st.stopId);
-}
-for (const p of patterns.values()) for (const st of p.stops) {
-  const place = stationOrLoop(stopsById.get(st.stopId)?.stop_name ?? '');
-  if (place && terminalPlaces.has(place)) bunchingTerminals.add(st.stopId);
-}
 // Ends of minor scheduled patterns (e.g. "to Roncesvalles and Queen"): waits there are
 // planned layovers, not holds, so they're flagged separately from the main terminals.
 const turnbackStops = new Set<string>();
@@ -933,7 +921,7 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
       const wins: GapWindow[] = (headwayByStop.get(`${stopId}|${dir}`)?.get(band) ?? []).filter(w => inGoodDays.has(w.date));
       return { ...stopBunching(stopId, wins), alongM: alongOf.get(`${dir}|${stopId}`) };
     });
-    const profile = bunchingProfile(stops, stopId => bunchingTerminals.has(stopId));
+    const profile = bunchingProfile(stops, stopId => terminalStops.has(stopId));
     const evidenceFor = (fromId: string, toId: string) => {
       const a = order.indexOf(fromId), b = order.indexOf(toId); // only inside the stretch itself
       const near = new Set(order.slice(a, b + 1));

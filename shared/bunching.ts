@@ -18,7 +18,7 @@ export const STAYS_UP_SHARE = 0.5;
 /** ...for at least the next 3 stops or about 1 km, whichever is longer. Recovering later (terminal regulation, short turns) does not undo where it formed. */
 export const STAYS_UP_STOPS = 3;
 export const STAYS_UP_M = 1000;
-/** The baseline is the mean bad share over up to this many first stops with enough gaps that are not terminals, stopping before the first step of RISE or more (a step is not baseline). */
+/** The baseline is the mean bad share over this many first stops with enough gaps. */
 export const BASELINE_STOPS = 3;
 /** Smaller climbs than RISE that add up to at least this much over the route are called gradual. */
 export const GRADUAL_CLIMB = 0.05;
@@ -92,19 +92,12 @@ export interface BunchingProfile {
 /**
  * `stops` in travel order. Stops with fewer than MIN_GAPS gaps are skipped. The full per-stop profile is shown beside this.
  * A stretch touching a terminal (`isTerminal`) is never where bunching forms or rises most: running out of or into a loop
- * is layover and regulation. For bunching the caller passes only a pattern's FIRST stop and its last two as terminals (delay
- * build-up, B3, also treats the second stop as one: a car leaves the loop on time, but gaps there are already real).
+ * is layover and regulation, the same rule as delay build-up (B3).
  */
 export function bunchingProfile(stops: readonly StopBunching[], isTerminal: (stopId: string) => boolean = () => false): BunchingProfile {
   const usable = stops.filter(s => s.n >= MIN_GAPS);
   if (usable.length < BASELINE_STOPS + 1) return { baselineBadShare: null, kind: null, forms: null, biggestRise: null, climb: null };
-  // The baseline starts at the first measured stop AFTER the terminal(s), and stops adding stops at the first step of RISE or
-  // more: a step in the first stops is a step, not baseline (504 westbound: 4% at the second stop, 33% at the third).
-  const after = usable.filter(s => !isTerminal(s.stopId));
-  if (!after.length) return { baselineBadShare: null, kind: null, forms: null, biggestRise: null, climb: null };
-  let sum = after[0].badShare, used = 1;
-  while (used < BASELINE_STOPS && used < after.length && after[used].badShare - after[used - 1].badShare < RISE) { sum += after[used].badShare; used++; }
-  const baseline = sum / used;
+  const baseline = usable.slice(0, BASELINE_STOPS).reduce((a, s) => a + s.badShare, 0) / BASELINE_STOPS;
   const stretchAt = (i: number): BunchingStretch => ({
     fromStopId: usable[i - 1].stopId, toStopId: usable[i].stopId, rise: usable[i].badShare - usable[i - 1].badShare,
     fromBadShare: usable[i - 1].badShare, toBadShare: usable[i].badShare,
@@ -122,8 +115,7 @@ export function bunchingProfile(stops: readonly StopBunching[], isTerminal: (sto
     const staysUp = usable.slice(i, end).every(f => f.badShare >= s.fromBadShare + STAYS_UP_SHARE * s.rise);
     if (staysUp && (!forms || s.rise > forms.rise)) forms = s;
   }
-  const rest = after.slice(used);
-  const climb = rest.length ? Math.max(...rest.map(s => s.badShare)) - baseline : 0;
+  const climb = Math.max(...usable.slice(BASELINE_STOPS).map(s => s.badShare)) - baseline;
   const kind = forms ? 'forms' : climb >= GRADUAL_CLIMB ? 'gradual' : 'none';
   return { baselineBadShare: baseline, kind, forms, biggestRise: biggest && biggest.rise > 0 ? biggest : null, climb };
 }
