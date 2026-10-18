@@ -351,7 +351,7 @@ export default function AboutDocsPage() {
             <p><strong className="text-[var(--text-primary)]">GTFS:</strong> A standard set of files describing transit routes, stops, trips, calendars, and shapes.</p>
             <p><strong className="text-[var(--text-primary)]">GTFS-Flex:</strong> GTFS extensions for demand-responsive service, including service areas, location groups, virtual stops, and booking rules.</p>
             <p><strong className="text-[var(--text-primary)]">Headway:</strong> The time between consecutive scheduled departures.</p>
-            <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: AM Peak (6 to 9 a.m.), Midday (9 a.m. to 3 p.m.), PM Peak (3 to 7 p.m.), Evening (7 to 11 p.m.), Late (11 p.m. to 2 a.m.), or Overnight (2 to 6 a.m.).</p>
+            <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: AM Peak (6 to 9 a.m.), Midday (9 a.m. to 3 p.m.), PM Peak (3 to 7 p.m.), Evening (7 to 11 p.m.), Night (11 p.m. to 2 a.m.), or Overnight (2 to 6 a.m.).</p>
             <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as every 10, 15, 20, 30, or 60 minutes or less, used to colour and filter service on the map.</p>
             <p><strong className="text-[var(--text-primary)]">Service class:</strong> The operating pattern assigned to a route or pattern: regular, part-time, or irregular.</p>
             <p><strong className="text-[var(--text-primary)]">Sustained service:</strong> Service whose departure gaps remain within the qualification tolerance across the analysed window, rather than only appearing frequent in a short burst.</p>

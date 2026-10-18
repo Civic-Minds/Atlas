@@ -52,7 +52,7 @@ export function compareOtherPhrase(self: CompareSide, other: CompareSide, otherL
   if (periodDiffers) {
     return other.period === 'all'
       ? 'all day'
-      : `during ${PERIOD_LABELS[other.period].replace(/\b(Peak|Midday|Evening|Late|Overnight)\b/g, w => w.toLowerCase())}`;
+      : `during ${PERIOD_LABELS[other.period].replace(/\b(Peak|Midday|Evening|Night|Overnight)\b/g, w => w.toLowerCase())}`;
   }
   return other.maxHeadway === Infinity ? `on map ${otherLabel}` : `at ${headwayOrBetter(other.maxHeadway)}`;
 }

@@ -30,7 +30,7 @@ Paths are from the repo root. "Main" means `origin/main` as of 2026-10-14 (741ee
 
   `span` and `infrequent` are tier values, not classes. "limited" is not a serviceClass: it is `isLimitedService` (`shared/irregularRoutes.ts`), meaning `time-limited` or `routeHasLimitedDirection`, plus the null-headline cases above. `routeHasIrregularDirection` and `routeHasLimitedDirection` are set per route and day by `pipeline/worst-direction.ts`.
 - **shared stretch** (CIV-82): `pipeline/sharedStretch.ts`. Two patterns of one route direction and day pool at a stop only inside an aligned run of at least 5 stops (`SHARED_STRETCH_MIN_STOPS`) and 1 km (`SHARED_STRETCH_MIN_KM`). Same-headsign variants that cover two-thirds of the pattern's stops pool at every common stop (`SAME_HEADSIGN_COVERAGE`, `pipeline/stopPools.ts`). The result is published as `sharedStretches`, which is stripped from tiles. The rule: a route may show the stretches that themselves pass, but a pooled stretch never makes the whole route pass.
-- **periods**: `TIME_PERIODS` (`shared/config.ts`), in GTFS hours: `amPeak` 6-9, `midday` 9-15, `pmPeak` 15-19, `evening` 19-23, `late` 23-26, `overnight` 26-30. The labels are "AM Peak", "Midday", "PM Peak", "Evening", "Late" and "Overnight". The analysis window used for tiers is separate (`DEFAULT_CRITERIA`): Weekday and Saturday 7:00-22:00, Sunday 9:00-21:00.
+- **periods**: `TIME_PERIODS` (`shared/config.ts`), in GTFS hours: `amPeak` 6-9, `midday` 9-15, `pmPeak` 15-19, `evening` 19-23, `late` 23-26, `overnight` 26-30. The labels are "AM Peak", "Midday", "PM Peak", "Evening", "Night" and "Overnight". The analysis window used for tiers is separate (`DEFAULT_CRITERIA`): Weekday and Saturday 7:00-22:00, Sunday 9:00-21:00.
 
 ### Lines, patterns and dedupe
 
