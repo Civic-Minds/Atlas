@@ -121,3 +121,24 @@ export function excludingText(dates: readonly string[]): string | null {
   });
   return `Excluding ${parts.join(', ')}`;
 }
+
+/** The days of an "Excluding" label without the word: "Oct 13, 14". */
+const leftOutList = (dates: readonly string[]): string => (excludingText(dates) ?? '').replace(/^Excluding /, '');
+
+/** The hover reason, naming the days: "Oct 11 left out: gaps in our recordings that day" ("…those days" for several). Null when none. */
+export function leftOutReason(dates: readonly string[]): string | null {
+  const days = [...new Set(dates)];
+  return days.length ? `${leftOutList(days)} left out: gaps in our recordings ${days.length > 1 ? 'those days' : 'that day'}` : null;
+}
+
+/**
+ * Where this week and last week are compared: "Excluding Oct 11 this week, Oct 4 last week" (only the week that left days
+ * out is named). Null when every day of both weeks counted.
+ */
+export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readonly string[]): string | null {
+  const t = leftOutList(thisWeek), l = leftOutList(lastWeek);
+  if (t && l) return `Excluding ${t} this week, ${l} last week`;
+  if (t) return `Excluding ${t} this week`;
+  if (l) return `Excluding ${l} last week`;
+  return null;
+}

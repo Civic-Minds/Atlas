@@ -101,19 +101,20 @@ export function KpiRows({ tiles, math, caption, captionTitle }: { tiles: Kpi[]; 
  * they match, the row says nothing extra (its hover text says "same as last week"). The short math lines are notes under
  * the table. One component for any surface that wants it; the planner's left panel uses it today.
  */
-export function WeekTable({ tiles, notes, caption, captionTitle, aside, asideTitle }: {
+export function WeekTable({ tiles, notes, caption, captionTitle, scope, excluding, excludingTitle }: {
   tiles: Kpi[];
-  /** Per tile key, the line that explains how the figure is worked out. */
-  notes?: Partial<Record<Kpi['key'], string>>;
+  /** The lines that explain how the figures are worked out, in order, under the table. */
+  notes?: readonly string[];
   caption?: string | null;
   /** Hover text for the caption (the full rule behind it). */
   captionTitle?: string;
-  /** A short label beside the caption (the days left out), with its hover text. */
-  aside?: string | null;
-  asideTitle?: string;
+  /** What the figures cover, in the first column's header ("TTC"). */
+  scope?: string;
+  /** The days left out, as one note directly under the table ("Excluding Oct 11 this week, Oct 4 last week"), with its hover reason. */
+  excluding?: string | null;
+  excludingTitle?: string;
 }) {
   const arrowTone = (t: Kpi['delta']) => (t?.tone === 'better' ? 'text-[var(--status-positive-text)]' : t?.tone === 'worse' ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-muted)]');
-  const noted = tiles.filter(k => notes?.[k.key]);
   return (
     <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-1.5`}>
       <DataTable
@@ -122,7 +123,7 @@ export function WeekTable({ tiles, notes, caption, captionTitle, aside, asideTit
         rowKey={k => k.key}
         rowTitle={k => `${k.sub}. ${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}
         columns={[
-          { key: 'measure', header: <span className="sr-only">Measure</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
+          { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]"><span className="sr-only">Measure </span>{scope}</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
           { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">This week</span>, className: 'text-right text-sm font-black tabular-nums tracking-tight', cell: k => (
             <span className={k.n < MIN_N ? 'opacity-60' : ''}>
               {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${arrowTone(k.delta)}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
@@ -132,17 +133,13 @@ export function WeekTable({ tiles, notes, caption, captionTitle, aside, asideTit
           { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm tabular-nums text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? '–' : '–'}</span> },
         ]}
       />
-      {noted.length > 0 && (
-        <ul className="m-0 mt-1 list-none border-t border-[var(--border-primary)] p-0 pt-1 text-pretty">
-          {noted.map(k => <li key={k.key} className="text-xs leading-4 text-[var(--text-dim)]">{k.label}: {notes![k.key]}</li>)}
+      {excluding && <p className="m-0 mt-1 border-t border-[var(--border-primary)] pt-1 text-xs leading-4 text-[var(--text-dim)]" title={excludingTitle}>{excluding}</p>}
+      {notes && notes.length > 0 && (
+        <ul className={`m-0 list-none p-0 text-pretty ${excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`}>
+          {notes.map(n => <li key={n} className="text-xs leading-4 text-[var(--text-dim)]">{n}</li>)}
         </ul>
       )}
-      {(caption || aside) && (
-        <p className="m-0 mt-1 flex flex-wrap items-baseline justify-between gap-x-3 text-xs leading-4 text-[var(--text-dim)]">
-          {caption && <span title={captionTitle}>{caption}</span>}
-          {aside && <span title={asideTitle}>{aside}</span>}
-        </p>
-      )}
+      {caption && <p className="m-0 mt-1 text-xs leading-4 text-[var(--text-dim)]" title={captionTitle}>{caption}</p>}
     </section>
   );
 }

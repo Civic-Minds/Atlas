@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DashboardBandData, LiveV3 } from '../../../../shared/liveDashboard';
 import { healthyCounts, healthyLateByHour } from '../../../../shared/liveDashboard';
-import { excludingText, risePointsText, runTimeDiffText } from '../../../../shared/liveWording';
+import { excludingText, excludingWeeksText, leftOutReason, risePointsText, runTimeDiffText } from '../../../../shared/liveWording';
 import LateByHourSection, { isThin, leftOutOf, rowMax, lateByHourModel, routeLateDays, routeLateHours, routeLateOverall } from '../sections/LateByHourSection';
 
 // 2026-10-10 and 2026-10-11 are a Saturday and a Sunday. 2026-10-11 has gaps in the recordings (not a good day).
@@ -72,9 +72,9 @@ describe('visible days, peak label and run time wording', () => {
   beforeEach(() => { vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }); });
   it('names the days left out, and says nothing when every day counts', () => {
     const hours = [{ hour: 8, value: 0.09, n: 200 }, { hour: 9, value: 0.05, n: 200 }];
-    const { container, rerender } = render(<LateByHourSection chart="mini" hours={hours} band="all" overall={0.07} days={4} leftOut="Excluding Oct 11" />);
-    expect(screen.getByText('Excluding Oct 11').getAttribute('title')).toMatch(/gaps in our recordings/);
-    rerender(<LateByHourSection chart="mini" hours={hours} band="all" overall={0.07} days={7} leftOut={null} />);
+    const { container, rerender } = render(<LateByHourSection chart="mini" hours={hours} band="all" overall={0.07} days={4} leftOut={['2026-10-11']} />);
+    expect(screen.getByText('Excluding Oct 11').getAttribute('title')).toBe('Oct 11 left out: gaps in our recordings that day');
+    rerender(<LateByHourSection chart="mini" hours={hours} band="all" overall={0.07} days={7} leftOut={[]} />);
     expect(container.textContent).not.toMatch(/Excluding|of 7|counted/);
   });
   it('labels the tallest hour once, and the bars fill the chart relative to it', () => {
@@ -133,5 +133,19 @@ describe('the days left out', () => {
     expect(leftOutOf(v3, 'weekend')).toBe('Excluding Oct 11'); // Oct 10 is a Saturday and counts; Oct 11 is a Sunday
     expect(leftOutOf(v3, 'weekday')).toBe('Excluding Oct 13');
     expect(leftOutOf({ ...v3, weekly: { thisWeek: { dates, healthyDates: dates } } } as unknown as LiveV3, 'all')).toBeNull();
+  });
+});
+
+describe('naming the days, with the reason', () => {
+  it('writes the hover reason with the days, singular or plural', () => {
+    expect(leftOutReason(['2026-10-11'])).toBe('Oct 11 left out: gaps in our recordings that day');
+    expect(leftOutReason(['2026-10-13', '2026-10-14'])).toBe('Oct 13, 14 left out: gaps in our recordings those days');
+    expect(leftOutReason([])).toBeNull();
+  });
+  it('names the week that left days out where this week and last week are compared', () => {
+    expect(excludingWeeksText(['2026-10-11'], ['2026-10-04'])).toBe('Excluding Oct 11 this week, Oct 4 last week');
+    expect(excludingWeeksText(['2026-10-11'], [])).toBe('Excluding Oct 11 this week');
+    expect(excludingWeeksText([], ['2026-10-05'])).toBe('Excluding Oct 5 last week');
+    expect(excludingWeeksText([], [])).toBeNull();
   });
 });

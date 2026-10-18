@@ -4,7 +4,7 @@
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
 import { isWeekendDate, dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
-import { LATE_TILE_CAPTION, bunchPartsText, excludingText, runTimeDiffText } from '../../shared/liveWording';
+import { LATE_TILE_CAPTION, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText } from '../../shared/liveWording';
 import { tenth } from '../../shared/liveFormat';
 export { NOISE_RULE } from '../../shared/liveDashboard';
 
@@ -39,13 +39,13 @@ const pct1 = (x: number) => `${clean(Math.round(x * 1000) / 10)}%`;
  * last week". The direction is the separate `arrow`, drawn as a small mark coloured by `tone`. Without `lastText` the
  * line gives the size of the change ("1 pt"). `isShare` figures are 0-1 and change in points; the rest in minutes.
  */
-export function kpiDelta(key: CompareKey, now: number | null, before: number | null, lowerIsBetter: boolean, isShare: boolean, noise: number | null = null, lastText: string | null = null, nowText: string | null = null): Kpi['delta'] {
+export function kpiDelta(key: CompareKey, now: number | null, before: number | null, lowerIsBetter: boolean, isShare: boolean, noise: number | null = null, lastText: string | null = null, nowText: string | null = null, sameAs: [string | null, string | null] | null = null): Kpi['delta'] {
   if (now == null || before == null) return null;
   const diff = isShare ? (now - before) * 100 : now - before;
   const mag = round1(Math.abs(diff));
   const unit = isShare ? 'pt' : 'min';
   // Equal as displayed (same rounding as the tile) reads as no change, never an arrow next to an equal number.
-  if (mag === 0 || (lastText != null && nowText === lastText)) return { arrow: 'none', text: lastText ? 'same as last week' : 'same', tone: 'same', spoken: 'same as last week' };
+  if (mag === 0 || (lastText != null && nowText === lastText) || (sameAs != null && sameAs[0] != null && sameAs[0] === sameAs[1])) return { arrow: 'none', text: lastText ? 'same as last week' : 'same', tone: 'same', spoken: 'same as last week' };
   const up = diff > 0;
   const { tone, big, measured } = weekChangeTone(key, now, before, lowerIsBetter, noise);
   const word = isShare ? (mag === 1 ? 'point' : 'points') : 'min';
@@ -84,7 +84,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
     mk('extraWait', 'Extra wait', t.extraWait ? `${clean(t.extraWait.minutes)} min` : '–', 'longer wait than scheduled', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
       compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false, noise('extraWait'), l.extraWait ? `${clean(l.extraWait.minutes)} min` : null, waitT) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),
     mk('bunching', 'Bunching', bunchText(t.bunching) ?? '–', t.bunching && bunchSplit(t.bunching) ? BUNCHING_SPLIT_CAPTION : 'of gaps between cars bunched or too long', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
-      compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true, noise('bunching'), lastBunch, bunchText(t.bunching)) : null, lastBunch),
+      compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true, noise('bunching'), lastBunch, bunchText(t.bunching), [t.bunching ? pct0(t.bunching.share) : null, l.bunching ? pct0(l.bunching.share) : null]) : null, lastBunch),
     mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', t.delivered ? 'of scheduled trips ran' : 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
       compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, noise('delivered'), l.delivered?.share != null ? pct1(l.delivered.share) : null, delT) : null, l.delivered?.share != null ? pct1(l.delivered.share) : null),
   ];
@@ -108,15 +108,15 @@ export const leftOutDates = (wk: WeekMetrics): string[] => wk.dates.filter(d => 
  * Oct 1–7." and "Excluding Oct 11 this week, Oct 5 last week." (only the week that left days out is named; null when every day
  * of both weeks counted).
  */
-export function weekWindowParts(w: NonNullable<LiveV3['weekly']>): { weeks: string; days: string | null } {
+export function weekWindowParts(w: NonNullable<LiveV3['weekly']>): { weeks: string; days: string | null; reason: string | null } {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
   const weeks = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}.`;
-  const t = excludingText(leftOutDates(w.thisWeek)), l = excludingText(leftOutDates(w.lastWeek));
-  const tail = (x: string) => x.replace(/^Excluding /, '');
-  const days = t && l ? `${t} this week, ${tail(l)} last week.` : t ? `${t} this week.` : l ? `${l} last week.` : null;
+  const text = excludingWeeksText(leftOutDates(w.thisWeek), leftOutDates(w.lastWeek));
+  const days = text ? `${text}.` : null;
   return {
     weeks: w.comparable ? weeks : `Not enough days of good recordings to compare two weeks: each needs at least ${w.minHealthyDays}. ${weeks}`,
     days,
+    reason: leftOutReason([...leftOutDates(w.thisWeek), ...leftOutDates(w.lastWeek)]),
   };
 }
 

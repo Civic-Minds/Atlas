@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
 
 import { minutesText } from '../shared/liveFormat';
-import { LATE_SHORT, LATE_THRESHOLD, RECORDING_GAPS, excludingText, risePointsText } from '../shared/liveWording';
+import { LATE_SHORT, LATE_THRESHOLD, excludingWeeksText, leftOutReason, risePointsText } from '../shared/liveWording';
 import type { AgencySummary } from '../shared/liveAgency';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -105,7 +105,7 @@ function networkHours(s: AgencySummary) {
 }
 
 /** The left panel's one-line explanations (approved by Ryan, 2026-10-17): Run time and Service delivered have none. */
-const MATH: Partial<Record<Kpi['key'], string>> = { late: LATE_SHORT, extraWait: 'from the gaps between vehicles', bunching: 'too close · too far apart (gaps under 2 min or over 2× scheduled)' };
+const MATH: readonly string[] = [LATE_SHORT, 'longer wait than scheduled, from the gaps between vehicles', 'too close · too far apart (gaps under 2 min or over 2× scheduled)'];
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The route panel's tiles are bare (figure and change): the explanations are shown once, on the left. */
@@ -122,11 +122,13 @@ const tileWidgets = (tiles: ReturnType<typeof weekly>, legend: boolean): PanelWi
 
 /** The network's summary, always on the left: the week's figures as one-line rows, then late departures by hour. */
 function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
+  const thisLeft = s.weekly ? leftOutDates(s.weekly.thisWeek) : [], lastLeft = s.weekly ? leftOutDates(s.weekly.lastWeek) : [];
+  const weekLeft = { text: excludingWeeksText(thisLeft, lastLeft), title: leftOutReason([...lastLeft, ...thisLeft]) };
   const hours = networkHours(s);
   const tiles = agencyKpiTiles(s);
   return [
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} notes={MATH} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} aside={s.weekly ? excludingText(leftOutDates(s.weekly.thisWeek)) : null} asideTitle={RECORDING_GAPS} /> }] : []),
-    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} days={s.weekly?.thisWeek.healthyDates.length} leftOut={s.weekly ? excludingText(leftOutDates(s.weekly.thisWeek)) : null} height={56} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={s.agency.toUpperCase()} notes={MATH} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
+    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} days={s.weekly?.thisWeek.healthyDates.length} leftOut={s.weekly ? leftOutDates(s.weekly.thisWeek) : []} height={56} /> }] : []),
   ];
 }
 

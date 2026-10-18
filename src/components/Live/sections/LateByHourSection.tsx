@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../../../../shared/config';
 import { healthyCounts, healthyDatesOf, healthyLateByHour, isWeekendDate, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
-import { excludingText, lateCount, lateHourLine, LATE_BY_HOUR_TITLE, LATE_THRESHOLD, RECORDING_GAPS } from '../../../../shared/liveWording';
+import { excludingText, lateCount, lateHourLine, leftOutReason, LATE_BY_HOUR_TITLE, LATE_THRESHOLD } from '../../../../shared/liveWording';
 import { TILE } from '../../../pageStyles';
 import { liveChartHours, type HourHover } from '../../../utils/sparklinePeriods';
 import { lateForDays, type DayKind } from '../../../utils/liveKpi';
@@ -25,10 +25,12 @@ export const rowMax = (hours: readonly HourValue[]): number => Math.ceil(Math.ma
 /** The days of the week the figures are for (the days counted are some of these). */
 const windowDatesOf = (v3: LiveV3): string[] => v3.weekly?.thisWeek.dates ?? v3.window.dates;
 
-/** The days of this kind (all, weekdays or weekends) the figures leave out: "Excluding Oct 11" (the reason is the hover), or null when every day counts. */
-export const leftOutOf = (v3: LiveV3, kind: DayKind): string | null => excludingText(windowDatesOf(v3).filter(d => (kind === 'all' || (kind === 'weekend') === isWeekendDate(d)) && !healthyDatesOf(v3).includes(d)));
-/** The same for the route's whole week (the planner's chart). */
-export const routeLeftOut = (v3: LiveV3): string | null => leftOutOf(v3, 'all');
+/** The days of this kind (all, weekdays or weekends) the figures leave out, as dates. */
+export const leftOutDays = (v3: LiveV3, kind: DayKind): string[] => windowDatesOf(v3).filter(d => (kind === 'all' || (kind === 'weekend') === isWeekendDate(d)) && !healthyDatesOf(v3).includes(d));
+/** "Excluding Oct 11" (the reason, naming the days, is the hover), or null when every day of this kind counts. */
+export const leftOutOf = (v3: LiveV3, kind: DayKind): string | null => excludingText(leftOutDays(v3, kind));
+/** The route's whole week (the planner's chart). */
+export const routeLeftOut = (v3: LiveV3): string[] => leftOutDays(v3, 'all');
 export const isThin = (days: number | undefined | null) => days != null && days > 0 && days < MIN_GOOD_DAYS;
 
 /**
@@ -63,7 +65,7 @@ export const routeLateOverall = (v3: LiveV3): number | null => healthyCounts(v3.
 /** The Yesterday view's figures for one day, in place of the week's. */
 export interface OneDay { label: string; late: { share: number; n: number; days: number } | null; hours: HourValue[] }
 
-type MiniProps = { chart: 'mini'; hours: readonly HourValue[]; band: DashboardBand; overall: number | null; /** Good days behind the figure; fewer than 3 dims it. */ days?: number; /** Bar area height in px. */ height?: number; /** What the figures cover, before the days counted ("both directions"). */ scope?: string; /** "Excluding Oct 11": the days left out, if any. */ leftOut?: string | null };
+type MiniProps = { chart: 'mini'; hours: readonly HourValue[]; band: DashboardBand; overall: number | null; /** Good days behind the figure; fewer than 3 dims it. */ days?: number; /** Bar area height in px. */ height?: number; /** What the figures cover, before the days counted ("both directions"). */ scope?: string; /** The days left out, if any. */ leftOut?: string[] };
 type Props = {
   /**
    * `spark` is the dashboard's line chart per kind of day (`allOnly` keeps All days; `oneDay` shows one day);
@@ -77,7 +79,7 @@ type Props = {
   day?: DayKind; allOnly?: boolean; oneDay?: OneDay;
 };
 
-interface DayChart { kind: string; label: string; late: { share: number; n: number; days: number } | null; hours: HourValue[]; /** Rests on fewer than 3 good days. */ thin?: boolean; /** "Excluding Oct 11": the days of this kind left out, if any. */ leftOut?: string | null }
+interface DayChart { kind: string; label: string; late: { share: number; n: number; days: number } | null; hours: HourValue[]; /** Rests on fewer than 3 good days. */ thin?: boolean; /** The days of this kind left out, if any. */ leftOut?: string[] }
 
 /**
  * The one late-by-hour chart: late-share bars coloured by the strip's three steps on a % axis, the departures in a thin
@@ -101,7 +103,7 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
                 <>
                   <div className="flex items-baseline justify-between gap-2">
                     <h3 className="text-base font-black">{c.label}</h3>
-                    <span className="text-sm text-[var(--text-dim)]" title={c.leftOut ? RECORDING_GAPS : undefined}>{c.leftOut ?? ''}</span>
+                    <span className="text-sm text-[var(--text-dim)]" title={leftOutReason(c.leftOut ?? []) ?? undefined}>{excludingText(c.leftOut ?? []) ?? ''}</span>
                   </div>
                   {c.late && c.late.n > 0 && <div className="mt-1 text-2xl font-black tracking-tight" title={`${c.late.n.toLocaleString()} departures`}>{pct(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>}
                 </>
@@ -132,7 +134,7 @@ function Spark({ v3, data, band, dir, allOnly = false, oneDay, title }: Props & 
   const healthy = healthyDatesOf(v3);
   const cols: DayChart[] = oneDay ? [{ kind: 'all', label: oneDay.label, late: oneDay.late, hours: oneDay.hours }] : DAYS.filter(([kind]) => !allOnly || kind === 'all').map(([kind, label]) => {
     const late = lateForDays(m.blockOf(kind).byDate, healthy, kind);
-    return { kind, label, late, hours: m.sparkHours(kind, band), thin: !oneDay && isThin(late?.days), leftOut: oneDay ? null : leftOutOf(v3, kind) };
+    return { kind, label, late, hours: m.sparkHours(kind, band), thin: !oneDay && isThin(late?.days), leftOut: oneDay ? [] : leftOutDays(v3, kind) };
   });
   return (
     <section aria-labelledby="dash-days" className="mt-10">
@@ -210,7 +212,7 @@ function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<
   // The bars fill the chart's height relative to its own tallest hour, which is labelled.
   const max = Math.max(0.01, ...hours.filter(h => h.n >= 30).map(h => h.value));
   return (
-    <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined} action={leftOut ? <span className="shrink-0 text-xs text-[var(--text-dim)]" title={RECORDING_GAPS}>{leftOut}</span> : undefined}>
+    <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined} action={leftOut?.length ? <span className="shrink-0 text-xs text-[var(--text-dim)]" title={leftOutReason(leftOut) ?? undefined}>{excludingText(leftOut)}</span> : undefined}>
       <HourSpark
         idleText={isThin(days) ? THIN_HINT : scope} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
         hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= 30))}

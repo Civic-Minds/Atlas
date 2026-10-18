@@ -4,8 +4,8 @@ import { Fragment, type ReactNode } from 'react';
 export interface MethodGroup { label: string; items: ReactNode[] }
 
 /** An item that stands on a line of its own inside the running paragraph. */
-export function OwnLine({ children }: { children: ReactNode }) {
-  return <span className="block">{children}</span>;
+export function OwnLine({ children, title }: { children: ReactNode; title?: string }) {
+  return <span className="block" title={title}>{children}</span>;
 }
 
 /** A glossary line: the term in bold, a colon, then its short definition. */
