@@ -158,7 +158,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
               <div key={d.directionId} className="min-w-0">
                 {!pickable && <h3 className="text-base font-black">{d.label}</h3>}
                 <DirectionStrip className="mt-2" v3={v3} directionId={d.directionId} band="all" uncertain={uncertain} />
-                {notes.map(n => <p key={n} className="mt-2 max-w-3xl text-sm text-[var(--text-secondary)]">{n}</p>)}
+                {notes.map(n => <p key={n} className="mt-2 max-w-3xl text-sm text-[var(--text-secondary)]">{d.label}: {n}</p>)}
               </div>
             );
           })}

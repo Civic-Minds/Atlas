@@ -239,16 +239,17 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
   const [noteEl, setNoteEl] = useState<HTMLElement | null>(null);
   const [noteH, setNoteH] = useState(0);
   useEffect(() => {
-    if (!noteEl) { setNoteH(0); return; }
+    if (!noteEl) { if (!ready?.note) setNoteH(0); return; }
     const read = () => setNoteH(Math.ceil(noteEl.getBoundingClientRect().height));
     read();
     if (typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver(read);
     ro.observe(noteEl);
     return () => ro.disconnect();
-  }, [noteEl]);
+  }, [noteEl]); // eslint-disable-line react-hooks/exhaustive-deps
   const framePad = (pad: typeof PANEL_PAD) => ({ ...pad, bottom: Math.max(pad.bottom, noteH ? noteH + 12 + 12 : 0) });
-  const note = ready?.note && <p ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
+  // The note is about delay at the first stops: it shows in the delay-based views (Late, Run time), not for the gap-based ones (Extra wait, Bunching).
+  const note = ready?.note && (measure === 'late' || measure === 'runTime') && <p ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
   const mapEl = (
     <RouteMap
       model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={framePad(wide ? PANEL_PAD : NARROW_PAD)}

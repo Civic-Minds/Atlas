@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The bunching bar chart (phones, Explore) draws the same stops as the strip (local only)**: the 504's Broadview branch stops were missing, which made the chart read as a cliff.
+- **"Linked means it was measured in this stretch" is said once, in the method; the "Linked to" chips keep a clean shape when they take two lines (local only)**.
+- **The planner's "Delay at the first few stops is less exact" note shows only in the Late and Run time views, and the period note is prefixed with its direction (local only)**.
 - **Full analysis: bunching reads like delays (local only, CIV-319)**: one caption only where a stretch is marked (under the strip, so both directions' strips start level), "Linked to" as four compact chips, no highlighted "Biggest rise" on the phone chart unless bunching really forms; the strips' brackets keep their label inside the strip, and long stop names in the stretches table no longer collide ("Queen St West (King St West)").
 - **Bunching totals and parts add up everywhere (local only)**: the tile, the route list and the agency table round the total first, then the too-close part ("22%" beside "14% · 8%", not 21%).
 - **The planner's Bunching tile names its two parts at 1280x800 too, and the map note clears the zoom buttons (local only)**.

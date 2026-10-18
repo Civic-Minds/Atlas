@@ -70,10 +70,12 @@ describe('Live route dashboard', () => {
     expect(within(b2).queryByRole('list')).toBeNull();
     // B4: forms sentence, every link with its number, linked wording.
     expect(screen.getAllByText(/bunching forms between Stop 2 and Stop 3/).length).toBeGreaterThanOrEqual(1); // the caption above each strip
-    // Four compact chips per direction (the thing, then Linked or Not linked with its number); the caveat is said once.
+    // Four compact chips per direction (the thing, then Linked or Not linked with its number); the caveat is said once, in the method.
     expect(screen.getAllByText('Vehicles standing still in this stretch: Linked (0.6 a day)').length).toBe(2);
     expect(screen.getAllByText('Uneven departures at the terminal: Not linked (5% of gaps off)').length).toBe(2);
-    expect(screen.getAllByText(/^Linked means it was measured in this stretch, not that it is the cause\.$/).length).toBe(1);
+    // The caveat is said once, in the method (not again under the chips).
+    expect(screen.queryByText(/Linked means it was measured in this stretch/)).toBeNull();
+    expect(document.body.textContent).toMatch(/measured in the same stretch, not the cause/);
     // Method.
     expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
     expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();

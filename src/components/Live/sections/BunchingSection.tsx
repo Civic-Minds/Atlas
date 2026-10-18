@@ -7,7 +7,7 @@ import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/Profil
 import { useMediaQuery } from '../../../hooks/useMediaQuery';
 import DirectionStrip from '../DirectionStrip';
 import { branchNamesWrap } from '../BranchStrip';
-import { branchStripFromV3 } from '../branchStripModel';
+import { allBranchStops, branchStripFromV3, columnsOf } from '../branchStripModel';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
 import { pct } from './figures';
@@ -56,7 +56,19 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
   const full = detail === 'full';
   // On a phone the strip would be a long vertical list of every stop: the bar chart stays there.
   const phone = useMediaQuery('(max-width: 479px)');
-  const { rows, pointsOf, scale } = bunchingModel(v3, dir, band);
+  const { rows, pointsOf } = bunchingModel(v3, dir, band);
+  // The bar chart (phones, Explore) draws the SAME stops as the strip, in its column order: the main pattern plus the stops only a branch serves.
+  const chartOf = (directionId: number, data: DashboardBunchingBand): { points: ProfilePoint[]; ids: string[] } => {
+    const model = branchStripFromV3(v3, directionId, band, uncertain);
+    if (!model) return { points: pointsOf(data), ids: data.stops.filter(x => x.n >= 10).map(x => x.stopId) };
+    const byId = new Map(allBranchStops(model).map(x => [x.stopId, x]));
+    const shown = columnsOf(model.lines).flatMap(id => { const x = byId.get(id); return x && x.bunchingShare != null && (x.bunchingN ?? x.n) >= 10 ? [x] : []; });
+    return {
+      ids: shown.map(x => x.stopId),
+      points: shown.map(x => ({ label: x.name, short: shortStopName(x.name), major: isMajorStop(x.name), y: x.bunchedShare ?? x.bunchingShare!, y2: x.bunchedShare != null ? x.gappedShare ?? 0 : undefined, n: x.bunchingN ?? x.n })),
+    };
+  };
+  const scale = sharedScale(rows.flatMap(b => (b.bands[band] ? [chartOf(b.directionId, b.bands[band]).points] : [])));
   const models = full ? rows.map(b => branchStripFromV3(v3, b.directionId, band, uncertain)) : [];
   const reserveBracket = rows.some(b => b.bands[band]?.kind === 'forms' && b.bands[band]?.forms);
   const twoLineNames = models.some(m => m && branchNamesWrap(m));
@@ -68,10 +80,10 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
           const label = v3.directionLabels[String(b.directionId)];
           const data: DashboardBunchingBand | undefined = b.bands[band];
           if (!data) return null;
-          const points = pointsOf(data);
+          const { points, ids } = chartOf(b.directionId, data);
           // The marked stretch: where bunching forms. Full analysis marks nothing when no single stretch steps up (the strip, the phone chart and the sentence all follow `kind`); Explore also shows the biggest rise.
           const stretch = full ? (data.kind === 'forms' ? data.forms : null) : data.forms ?? data.biggestRise;
-          const markIdx = stretch ? points.findIndex(p => p.label === data.stops.find(s => s.stopId === stretch.toStopId)?.name) : -1;
+          const markIdx = stretch ? ids.indexOf(stretch.toStopId) : -1;
           const linked = stretch?.links.filter(l => l.linked) ?? [];
           return (
             <div key={b.directionId} className="min-w-0">
@@ -96,10 +108,10 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
               {full && stretch && (
                 <>
                   <h4 className="mt-3 text-sm font-black">{linked.length ? 'Linked to' : 'Nothing measured here is linked to it'}</h4>
-                  <ul className="m-0 mt-1.5 flex list-none flex-wrap gap-1.5 p-0">
+                  <ul className="m-0 mt-1.5 flex list-none flex-wrap gap-1.5 p-0 [&>li]:max-w-full">
                     {stretch.links.map(l => (
                       <li key={l.kind}>
-                        <Tag tone={l.linked ? 'accent' : 'quiet'} size="sm" className={l.linked ? 'text-xs' : 'font-normal text-[var(--text-dim)]'}>
+                        <Tag tone={l.linked ? 'accent' : 'quiet'} size="sm" className={`!block !rounded-xl !px-2.5 !py-1 text-xs leading-4 ${l.linked ? '' : 'font-normal text-[var(--text-dim)]'}`}>
                           {LINK_LABELS[l.kind]}: {l.value == null ? 'Not measured' : l.linked ? 'Linked' : 'Not linked'} ({linkValueText(l.kind, l.value)})
                         </Tag>
                       </li>
@@ -122,7 +134,6 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
           );
         })}
       </div>
-      {full && rows.some(b => b.bands[band]?.kind === 'forms' && b.bands[band]?.forms) && <p className="mt-3 text-xs text-[var(--text-dim)]">Linked means it was measured in this stretch, not that it is the cause.</p>}
     </Section>
   );
 }
