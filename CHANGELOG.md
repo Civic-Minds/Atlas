@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Beta: route lines are coloured by section in each time period**: each section is graded on the trains running through it, and a line drawn on a short turn now runs its full length (GO KI from Kitchener) (CIV-321).
 - **The 11pm-2am period is called "Night" instead of "Late"**: so it no longer reads like the Live pages' late-departure measure.
 - **Route cards no longer show a made-up overnight wait like "every 196"**: three buses around a long overnight gap already showed no number on their own row, but the direction's value still came through (MBTA 23 on Sunday) ([#961](https://github.com/Civic-Minds/Atlas/issues/961)).
 - **Routes that only share a number are no longer grouped as one route**: Barrie 8A/8B, GoRaleigh 15/15L, Laredo 7A/7B and 8A/8B, and Thunder Bay 3M (beside 3C/3J) go to different places, so no combined frequency is shown for them.

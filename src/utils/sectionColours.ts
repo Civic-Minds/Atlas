@@ -2,7 +2,9 @@ import type { ShapeProperties } from '../hooks/useIntervalStats';
 import type { AgencyLayers } from '../hooks/useAgencyData';
 import { pairOppositeStop } from '../../shared/sharedStops';
 import { clipLinestring } from './lineClip';
-import { getTierColor, headwayToTierColor, type ColorVisionMode } from './colors';
+import { getHeadwayTiers, getTierColor, headwayToTierColor, type ColorVisionMode } from './colors';
+import { decodeStopRuns } from '../../shared/stopRuns';
+import type { PeriodKey } from '../../shared/config';
 
 /**
  * Route lines coloured section by section (CIV-152, beta only: FEATURES.segmentColours).
@@ -19,8 +21,49 @@ import { getTierColor, headwayToTierColor, type ColorVisionMode } from './colors
  * the opposite direction (shared/sharedStops pairOppositeStop, the pairing the frequency overlay
  * uses) contributes its best grade and the section takes the worse of the two. Sections run from
  * half way before their first stop to half way after their last, so a colour changes between
- * two stops, not on one. All-day only: a period view keeps one colour per line.
+ * two stops, not on one. A period view (CIV-321 S3) reads each stop's value for that period over
+ * every trip of the direction that serves it (stretchStopPeriodValues, the same rules as a whole
+ * route), and the line's own tier is its direction's filter value in the period.
  */
+
+/**
+ * CIV-321 S4: a row with a display-only full line (fullLine, fullStopOrder, fullStopPositions) draws its
+ * sections along it: the same properties with the full stops in place of its own. Null without one.
+ */
+export function fullLineProps<P extends ShapeProperties>(p: P): P | null {
+  const order = p.fullStopOrder, positions = p.fullStopPositions;
+  if (!p.fullLine || p.fullLine.length < 2 || !order || !positions || order.length !== positions.length || order.length < 2) return null;
+  return { ...p, stopOrder: order, stopPositions: positions };
+}
+
+/** The tier a headway falls in (the palette's ceilings: 10, 15, 20, 30, 60, then infrequent). */
+export function tierOfHeadway(h: number | null | undefined): string | null {
+  if (h == null) return null;
+  for (const { max } of getHeadwayTiers()) if (h <= max) return Number.isFinite(max) ? String(max) : 'infrequent';
+  return 'infrequent';
+}
+
+/**
+ * CIV-321 S3: a line's properties as the section colours read them in one period: each stop's grade
+ * and headway from stretchStopPeriodValues, and the line's tier from its direction's filter value. Null
+ * when the line has no per-stop period values or no value in the period (it keeps one colour).
+ */
+export function periodSectionProps<P extends ShapeProperties>(p: P, period: PeriodKey): P | null {
+  const stops = p.stopOrder ?? [];
+  // (A row with a full line has had stopOrder replaced by fullStopOrder already: fullLineProps.)
+  const values = decodeStopRuns(p.stretchStopPeriodValues?.[period]);
+  const lineValue = p.directionFilterHeadwayByPeriod?.[period];
+  if (stops.length === 0 || values.length !== stops.length || typeof lineValue !== 'number') return null;
+  const stopTiers: Record<string, string> = {};
+  const stopHeadways: Record<string, number> = {};
+  stops.forEach((stopId, i) => {
+    const v = values[i];
+    if (v == null) return;
+    stopHeadways[stopId] = v;
+    stopTiers[stopId] = tierOfHeadway(v)!;
+  });
+  return { ...p, stopTiers, stopHeadways, tier: tierOfHeadway(lineValue)! };
+}
 
 export interface SectionColourProperties {
   color: string;
@@ -164,15 +207,24 @@ export function buildSectionColourFeatures(
   colorMode: ColorVisionMode = 'default',
   /** Keep only lines this accepts (the selected route is built from the unfiltered layers). */
   accept?: (p: { agencySlug: string; routeId: string; day: string | null }) => boolean,
+  /** CIV-321 S3: colour by this period's per-stop values (periodSectionProps); undefined = all day. */
+  period?: PeriodKey,
 ): GeoJSON.Feature<GeoJSON.LineString, SectionColourProperties>[] {
   const out: GeoJSON.Feature<GeoJSON.LineString, SectionColourProperties>[] = [];
   if (!layers) return out;
   for (const [slug, collection] of Object.entries(layers)) {
     const coords = new Map<string, { lat: number; lon: number }>();
     const groups = new Map<string, Group>();
-    const lines: Array<{ feature: GeoJSON.Feature; p: Props }> = [];
+    // full: the row draws along its display-only full line (CIV-321 S4), whose parts outside the base
+    // line must be drawn even where they match the route's tier, so every section is emitted.
+    const lines: Array<{ feature: GeoJSON.Feature; p: Props; full: boolean }> = [];
     for (const feature of collection.features) {
-      const p = feature.properties as Props | null;
+      const raw = feature.properties as Props | null;
+      if (!raw) continue;
+      const isLine = feature.geometry.type === 'LineString' && raw.stopId == null;
+      const full = isLine ? fullLineProps(raw) : null;
+      const base = full ?? raw;
+      const p = period && isLine ? periodSectionProps(base, period) : base;
       if (!p) continue;
       if (feature.geometry.type === 'Point' && p.stopId != null) {
         const [lon, lat] = feature.geometry.coordinates;
@@ -190,9 +242,9 @@ export function buildSectionColourFeatures(
       const dir = directionOf(p);
       group.byDir.set(dir, [...(group.byDir.get(dir) ?? []), p]);
       groups.set(key, group);
-      lines.push({ feature, p });
+      lines.push({ feature: full ? { ...feature, geometry: { type: 'LineString', coordinates: full.fullLine! } } : feature, p, full: full != null });
     }
-    for (const { feature, p } of lines) {
+    for (const { feature, p, full } of lines) {
       const group = groups.get(`${p.routeId}|${p.day ?? ''}`)!;
       const dir = directionOf(p);
       const opposite = [...group.byDir.entries()].filter(([d]) => d !== dir).flatMap(([, list]) => list);
@@ -202,7 +254,7 @@ export function buildSectionColourFeatures(
       if (cache.byStop) group.byStop.set(dir, cache.byStop);
       const headways = (p.stopOrder ?? []).map(stopId => p.stopHeadways?.[stopId] ?? null);
       const dropOffOnly = new Set(p.dropOffOnlyStops ?? []);
-      for (const run of sectionRuns(tiers, p.tier!, headways, (p.stopOrder ?? []).map(stopId => dropOffOnly.has(stopId)))) {
+      for (const run of sectionRuns(tiers, full ? '' : p.tier!, headways, (p.stopOrder ?? []).map(stopId => dropOffOnly.has(stopId)))) {
         const [start, end] = runExtent(p.stopPositions!, run.from, run.to);
         const clipped = clipLinestring((feature.geometry as GeoJSON.LineString).coordinates, start, end);
         if (!clipped || clipped.length < 2) continue;

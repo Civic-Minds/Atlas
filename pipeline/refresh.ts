@@ -511,7 +511,7 @@ async function refreshAgency(
   }
   if (primary.supplementalFeatureCounts.length) writeLog('\n    ');
 
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, sectionsJson, featureCount } = primary;
   const { feedExpiry, feedVersion, timezone } = primary;
   agency.feedQuality = primary.feedQuality;
   agency.timezone = resolveAgencyTimezone(timezone, agency);
@@ -567,6 +567,7 @@ async function refreshAgency(
     r2Put(`atlas/${agency.slug}-corridors.json`, corridorsGeojson),
     r2Put(`atlas/${agency.slug}-trips.json`, tripsJson),
     r2Put(`atlas/${agency.slug}-stops-meta.json`, stopsMetaJson),
+    r2Put(`atlas/${agency.slug}-sections.json`, sectionsJson),
   ];
   if (primary.livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${agency.slug}.json`, JSON.stringify(primary.livePollingSidecar, null, 2)));

@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { buildSectionColourFeatures, rank, runExtent, sectionRuns, sectionTiers } from '../sectionColours';
+import { buildSectionColourFeatures, rank, runExtent, sectionRuns, sectionTiers, periodSectionProps, tierOfHeadway } from '../sectionColours';
+import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 const fixture = (name: string) => JSON.parse(readFileSync(resolve(__dirname, 'fixtures', `${name}.json`), 'utf8')) as GeoJSON.FeatureCollection;
 const byLine = (features: ReturnType<typeof buildSectionColourFeatures>) => {
@@ -194,5 +195,60 @@ describe('named lines from processed data', () => {
     expect(buildSectionColourFeatures(layers, 'Weekday', 'default', p => p.routeId === '96')).toHaveLength(15);
     expect(buildSectionColourFeatures(layers, 'Weekday', 'default', p => p.routeId === '52')).toHaveLength(0);
     expect(buildSectionColourFeatures(layers, 'Sunday')).toHaveLength(0);
+  });
+});
+
+describe('period section colours (CIV-321 S3)', () => {
+  // GO KI-like: an inner part every 30 at midday, the outer two stops every 60 (fewer trains).
+  const line = (extra: Record<string, unknown> = {}): GeoJSON.FeatureCollection => ({
+    type: 'FeatureCollection',
+    features: [
+      { type: 'Feature', geometry: { type: 'LineString', coordinates: [[0, 0], [10, 0]] },
+        properties: { routeId: 'KI', day: 'Weekday', directionId: 1, headsign: 'Union', tier: '30', headway: 30,
+          stopOrder: ['k', 'g', 'b', 'u'], stopPositions: [0, 0.3, 0.6, 1], stopTiers: { k: '30', g: '30', b: '30', u: '30' },
+          directionFilterHeadwayByPeriod: { midday: 30, amPeak: 30 },
+          stretchStopPeriodValues: { midday: '60*2,30*2', amPeak: '30*4' }, ...extra } },
+    ],
+  });
+
+  it('maps headways to the palette tiers', () => {
+    expect([8, 10, 12, 30, 45, 61, null].map(tierOfHeadway)).toEqual(['10', '10', '15', '30', '60', 'infrequent', null]);
+  });
+
+  it('colours the outer section by its own midday trains, and nothing extra where every stop matches', () => {
+    const midday = buildSectionColourFeatures({ go: line() }, 'Weekday', 'default', undefined, 'midday');
+    expect(midday.map(f => f.properties.tier)).toEqual(['60']);
+    expect(midday[0].properties.headway).toBe(60);
+    expect(buildSectionColourFeatures({ go: line() }, 'Weekday', 'default', undefined, 'amPeak')).toEqual([]);
+  });
+
+  it('keeps one colour on data without per-stop period values or without a period value', () => {
+    expect(buildSectionColourFeatures({ go: line({ stretchStopPeriodValues: undefined }) }, 'Weekday', 'default', undefined, 'midday')).toEqual([]);
+    expect(buildSectionColourFeatures({ go: line({ directionFilterHeadwayByPeriod: { midday: null } }) }, 'Weekday', 'default', undefined, 'midday')).toEqual([]);
+  });
+
+  it('reads the same run-length values the pipeline writes', () => {
+    const p = periodSectionProps(line().features[0].properties as unknown as ShapeProperties, 'midday')!;
+    expect(p.stopTiers).toEqual({ k: '60', g: '60', b: '30', u: '30' });
+    expect(p.tier).toBe('30');
+  });
+});
+
+describe('sections along a display-only full line (CIV-321 S4)', () => {
+  const layer = (): GeoJSON.FeatureCollection => ({
+    type: 'FeatureCollection',
+    features: [
+      { type: 'Feature', geometry: { type: 'LineString', coordinates: [[4, 0], [10, 0]] },
+        properties: { routeId: 'KI', day: 'Weekday', directionId: 1, headsign: 'Union', tier: '30', headway: 30,
+          stopOrder: ['m', 'b', 'u'], stopPositions: [0, 0.5, 1], stopTiers: { m: '30', b: '30', u: '30' },
+          directionFilterHeadwayByPeriod: { midday: 30 },
+          fullLine: [[0, 0], [10, 0]], fullStopOrder: ['k', 'g', 'm', 'b', 'u'], fullStopPositions: [0, 0.2, 0.4, 0.7, 1],
+          stretchStopPeriodValues: { midday: '180*2,30*3' } } },
+    ],
+  });
+  it('draws the whole full line in its section colours, including the part matching the route tier', () => {
+    const out = buildSectionColourFeatures({ go: layer() }, 'Weekday', 'default', undefined, 'midday');
+    expect(out.map(f => f.properties.tier)).toEqual(['infrequent', '30']);
+    expect(out[0].geometry.coordinates[0]).toEqual([0, 0]);
   });
 });

@@ -13,6 +13,7 @@
  */
 import { processGtfsBuffer, type GtfsPreprocess, type ProcessOptions, type ProcessResult } from './process-core.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
+import { extractAgencySections } from '../shared/agencySections.js';
 
 export interface AgencyFeedConfig {
   slug: string;
@@ -48,6 +49,8 @@ export interface SupplementalFeed {
 export interface AgencyFeedResult extends ProcessResult {
   /** Feature count contributed by each supplemental feed, in input order. */
   supplementalFeatureCounts: Array<{ url: string; featureCount: number }>;
+  /** CIV-321: the beta section colours' fields, moved off the route features (`{slug}-sections.json`). */
+  sectionsJson: string;
 }
 
 /** The single ProcessOptions builder, so the main feed and every supplemental get identical options. */
@@ -180,6 +183,8 @@ export async function processAgencyFeeds(
   }
   stopsMeta.stopCount = stopsMeta.stops.length;
   Object.assign(runningTimes, primaryCollection.runningTimes ?? {});
+  // CIV-321: one pass over the merged list, so supplemental features' keys number on from the main feed's.
+  const sections = extractAgencySections(features as Array<{ geometry?: { type?: string } | null; properties?: Record<string, unknown> | null }>);
 
   return {
     ...primary,
@@ -191,5 +196,6 @@ export async function processAgencyFeeds(
     featureCount,
     shapeAnomalies,
     supplementalFeatureCounts,
+    sectionsJson: JSON.stringify(sections),
   };
 }

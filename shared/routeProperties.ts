@@ -85,11 +85,21 @@ export interface RouteProperties {
   stretchPeriodEdge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>;
   /** Narrow D6: periods the main stretch runs through, steady but for one gap inside: the median gap and the longest. Card wording only. */
   stretchPeriodGap?: Partial<Record<PeriodKey, { every: number; gap: number }>>;
+  /** CIV-321 S4: display-only full-length line of the row's slot (a longer rated pattern serving every stop the row draws), with its stops and positions; read only by the beta section colours. */
+  fullLine?: Array<[number, number]>;
+  fullStopOrder?: string[];
+  fullStopPositions?: number[];
+  /** CIV-321 S1: per period, each stopOrder (or fullStopOrder) stop's value over every trip of the direction serving it (comma-separated, empty = none). Agency JSON only; nothing reads it yet. */
+  stretchStopPeriodValues?: Partial<Record<PeriodKey, string>>;
   /** What this feature is on the card: the direction's main stretch, a tail, or a variant (a short turn: no destination row). */
   stretchRole?: 'main' | 'tail' | 'variant';
   /** 0 for the main stretch; a tail's index into stretchMeta.tails. Absent for variants. */
   stretchIndex?: number;
-  stretchMeta?: { main: { stops: number; refStop: string; trips: number } | null; tails: Array<{ refStop: string; stops: number; km: number; trips: number }> };
+  /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); noRegular = periods its card row reads "no regular service" (one gap, or under three departures). */
+  stretchMeta?: {
+    main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] } | null;
+    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] }>;
+  };
   /** Night service runs on only part of the route: draw and name only these stops' segments ("part of the route"). */
   nightServicePartOfRoute?: boolean;
   nightServiceStops?: string[];

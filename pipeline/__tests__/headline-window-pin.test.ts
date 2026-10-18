@@ -60,7 +60,7 @@ describe('processed fixture output is pinned', () => {
       try {
         const result = await processAgencyFeeds(await zipDir(dir), [], { slug: name });
         const hash = createHash('sha1');
-        for (const part of [result.geojson, result.corridorsGeojson, result.stopsJson, result.tripsJson, result.stopsMetaJson]) hash.update(part).update('\u0000');
+        for (const part of [result.geojson, result.corridorsGeojson, result.stopsJson, result.tripsJson, result.stopsMetaJson, result.sectionsJson]) hash.update(part).update('\u0000');
         out[name] = `${result.featureCount} features ${hash.digest('hex').slice(0, 12)}`;
       } catch (e) {
         out[name] = `error: ${e instanceof Error ? e.message.slice(0, 80) : String(e)}`;

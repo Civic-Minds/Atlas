@@ -202,7 +202,7 @@ async function main() {
   // Supplemental feeds (e.g. a separate rail zip) always come from the agency's
   // configured URLs; any failure aborts rather than publishing a main-only artifact.
   const supplementalFeeds = await loadSupplementalFeeds(agencyConfig, downloadToBuffer);
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry: feedInfoExpiry, calendarExpiry, feedVersion, shapeAnomalies, feedQuality, supplementalFeatureCounts } = await processAgencyFeeds(buf, supplementalFeeds, agencyConfig, { manualBaseFare, force }, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, sectionsJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry: feedInfoExpiry, calendarExpiry, feedVersion, shapeAnomalies, feedQuality, supplementalFeatureCounts } = await processAgencyFeeds(buf, supplementalFeeds, agencyConfig, { manualBaseFare, force }, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   });
   for (const supp of supplementalFeatureCounts) {
@@ -236,6 +236,7 @@ async function main() {
       [`${slug}-corridors.json`]: corridorsGeojson,
       [`${slug}-trips.json`]: tripsJson,
       [`${slug}-stops-meta.json`]: stopsMetaJson,
+      [`${slug}-sections.json`]: sectionsJson,
     };
     if (livePollingSidecar) {
       files[`live-polling-${slug}.json`] = JSON.stringify(livePollingSidecar, null, 2);
@@ -264,6 +265,7 @@ async function main() {
     r2Put(`atlas/${slug}-corridors.json`, corridorsGeojson),
     r2Put(`atlas/${slug}-trips.json`, tripsJson),
     r2Put(`atlas/${slug}-stops-meta.json`, stopsMetaJson),
+    r2Put(`atlas/${slug}-sections.json`, sectionsJson),
   ];
   if (livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${slug}.json`, JSON.stringify(livePollingSidecar, null, 2)));

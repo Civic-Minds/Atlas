@@ -5,7 +5,8 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
-import { directionStretches, rollupDirection, rollupRoute, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
+import { decodeStopRuns } from '../../shared/stopRuns';
+import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -686,5 +687,73 @@ describe('a sparse overnight window gives the direction no value (#961)', () => 
   });
   it('three steady overnight departures keep theirs', () => {
     expect(rollupDirection(build([1600, 1680, 1760]))!.period.overnight.filterValue).toBe(80);
+  });
+});
+
+describe('per-stop period values read like a reference stop (CIV-321 S1)', () => {
+  // A trunk every 10 by day on stops t0-t9, and a branch every 30 that continues onto x0-x5: the
+  // trunk stops read every trip (both patterns), the branch stops only the branch's.
+  const coords = new Map<string, [number, number]>();
+  const trunk = Array.from({ length: 10 }, (_, i) => `t${i}`);
+  const branch = Array.from({ length: 6 }, (_, i) => `x${i}`);
+  trunk.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+  branch.forEach((id, i) => coords.set(id, [43.7 + (i + 1) * 0.01, -79.4]));
+  const trips: DirectionTrip[] = [];
+  for (let m = 360; m <= 1320; m += 15) trips.push({ tripId: `a${m}`, visits: trunk.map((stopId, i) => ({ stopId, minutes: m + i })) });
+  for (let m = 365; m <= 1320; m += 30) trips.push({ tripId: `b${m}`, visits: [...trunk, ...branch].map((stopId, i) => ({ stopId, minutes: m + i })) });
+  const d = directionStretches('k', trips, id => coords.get(id));
+
+  it('equals the main stretch value at its reference stop, period by period', () => {
+    const main = d.main!;
+    const values = stopPeriodValues([main.refStop], d.throughTimesAlong!);
+    const own = stretchPeriods(main);
+    for (const key of ['amPeak', 'midday', 'pmPeak', 'evening'] as const) {
+      expect(values[key]).toBe(String(stretchFilterValue(own[key])));
+    }
+  });
+
+  it('reads a branch stop on the branch trips only, and leaves a stop with no trips empty', () => {
+    const values = stopPeriodValues(['t5', 'x3', 'nowhere'], d.throughTimesAlong!);
+    const [trunkMidday, branchMidday, none] = decodeStopRuns(values.midday).map(v => (v == null ? '' : String(v)));
+    expect(Number(trunkMidday)).toBeLessThan(Number(branchMidday));
+    expect(branchMidday).toBe('30');
+    expect(none).toBe('');
+  });
+});
+
+describe('stop runs encode compactly and round-trip (CIV-321 S3)', () => {
+  it('encodes runs and decodes them back', () => {
+    const values = [30, 30, 30, 30, null, 60, 60, 15];
+    expect(encodeStopRuns(values)).toBe('30*4,,60*2,15');
+    expect(decodeStopRuns(encodeStopRuns(values))).toEqual(values);
+    expect(decodeStopRuns(encodeStopRuns([null, null]))).toEqual([null, null]);
+    expect(decodeStopRuns(undefined)).toEqual([]);
+  });
+});
+
+describe('a stretch period with under three departures reads no regular service on a card row (CIV-321 S4)', () => {
+  it('flags the sparse period and keeps the filter value for the map', () => {
+    const stretch = { kind: 'tail' as const, stops: ['a'], refStop: 'a', lengthKm: 1, times: [600, 783, 1000, 1030, 1060, 1090], nightTimes: [], tripCount: 6 };
+    const meta = stretchMetaPeriods(stretch);
+    expect(meta.noRegular).toContain('midday');
+    expect(meta.period.midday).not.toBeNull();
+    expect(meta.noRegular).not.toContain('pmPeak');
+  });
+});
+
+describe('section values count trips running through a skipped stop (CIV-321)', () => {
+  // Every 15 on s0-s4, but every other trip skips s2: s2's own stopping service is every 30, while
+  // the track through it carries a train every 15.
+  const coords = new Map<string, [number, number]>();
+  const stops = ['s0', 's1', 's2', 's3', 's4'];
+  stops.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+  const trips: DirectionTrip[] = [];
+  for (let m = 360, n = 0; m <= 1320; m += 15, n++) trips.push({ tripId: `t${m}`, visits: stops.map((stopId, i) => ({ stopId, minutes: m + 2 * i })).filter(v => n % 2 === 0 || v.stopId !== 's2') });
+  const d = directionStretches('k', trips, id => coords.get(id));
+  it('colours the skipped stop by every train through it, while its own stopping list stays every 30', () => {
+    const [, , atSkipped] = decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).midday);
+    expect(atSkipped).toBe(15);
+    const own = d.timesAtStop!('s2').times.filter(t => t >= 540 && t < 900);
+    expect(own[1] - own[0]).toBe(30);
   });
 });
