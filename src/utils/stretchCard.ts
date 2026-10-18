@@ -21,6 +21,8 @@ export interface StretchRow {
   refStop: string;
   /** The stretch's own value in the period (same rules as a whole route): a number, null for no value, undefined on older data. */
   value: number | null | undefined;
+  /** The row reads "no regular service during this period" (#955: one gap, or under three departures), never its wait as "every N". */
+  noRegular: boolean;
 }
 
 /** The stretch rows a feature's stretchMeta describes, main first then tails in order. Empty on data without it. */
@@ -28,9 +30,10 @@ export function stretchRowsFromMeta(f: ShapeProperties, period: TimePeriod): Str
   const meta = f.stretchMeta;
   if (!meta || period === 'all') return [];
   const key = period as PeriodKey;
-  const row = (role: StretchRow['role'], index: number, m: { refStop: string; period?: Partial<Record<PeriodKey, number | null>> }): StretchRow => ({
-    role, index, refStop: m.refStop, value: m.period ? (m.period[key] ?? null) : undefined,
-  });
+  const row = (role: StretchRow['role'], index: number, m: { refStop: string; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] }): StretchRow => {
+    const noRegular = m.noRegular?.includes(key) ?? false;
+    return { role, index, refStop: m.refStop, value: m.period ? (noRegular ? null : (m.period[key] ?? null)) : undefined, noRegular };
+  };
   return [...(meta.main ? [row('main', 0, meta.main)] : []), ...meta.tails.map((t, i) => row('tail', i, t))];
 }
 

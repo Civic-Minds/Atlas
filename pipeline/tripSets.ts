@@ -420,9 +420,16 @@ export function stopPeriodValues(stops: readonly string[], timesAtStop: NonNulla
  * section needs the usual three departures for a value, then the same filter and limited-service
  * handling; no thresholds of its own).
  */
-export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null> } {
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[] } {
   const own = stretchPeriods(s);
-  return { period: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, stretchFilterValue(own[key])])) as Record<PeriodKey, number | null> };
+  // The card's guard (#955): a period whose value is one gap, or that has under three departures (no
+  // cadence to read, only the full-window wait), reads "no regular service" on a row; the map keeps
+  // the filter value.
+  const departures = (start: number, end: number) => new Set(forCrossMidnightWindow([...s.times], end).filter(t => t >= start && t <= end)).size;
+  return {
+    period: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, stretchFilterValue(own[key])])) as Record<PeriodKey, number | null>,
+    noRegular: PERIOD_WINDOWS.filter(({ key, start, end }) => own[key].coverage != null && (own[key].oneGap || departures(start, end) < 3)).map(w => w.key),
+  };
 }
 
 export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {

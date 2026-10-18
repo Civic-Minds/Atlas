@@ -6,7 +6,7 @@ import { processGtfsBuffer } from '../process-core';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { decodeStopRuns } from '../../shared/stopRuns';
-import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchFilterValue, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
+import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -728,5 +728,15 @@ describe('stop runs encode compactly and round-trip (CIV-321 S3)', () => {
     expect(decodeStopRuns(encodeStopRuns(values))).toEqual(values);
     expect(decodeStopRuns(encodeStopRuns([null, null]))).toEqual([null, null]);
     expect(decodeStopRuns(undefined)).toEqual([]);
+  });
+});
+
+describe('a stretch period with under three departures reads no regular service on a card row (CIV-321 S4)', () => {
+  it('flags the sparse period and keeps the filter value for the map', () => {
+    const stretch = { kind: 'tail' as const, stops: ['a'], refStop: 'a', lengthKm: 1, times: [600, 783, 1000, 1030, 1060, 1090], nightTimes: [], tripCount: 6 };
+    const meta = stretchMetaPeriods(stretch);
+    expect(meta.noRegular).toContain('midday');
+    expect(meta.period.midday).not.toBeNull();
+    expect(meta.noRegular).not.toContain('pmPeak');
   });
 });
