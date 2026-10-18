@@ -22,7 +22,7 @@ import {
 import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
 import { BUNCHED_GAP_SEC, MIN_GAPS, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
-import { dayHealth, delivered, goodDates, keepGoodDays, runTimeStat, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
+import { dayHealth, delivered, goodDates, keepGoodDays, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
@@ -232,9 +232,27 @@ for (const f of files) {
   }
 }
 snapshotTimes.sort((a, b) => a - b);
+/**
+ * Snapshots the archive holds, with data, across EVERY route file: the feed's own snapshot times. A route file written
+ * by the older fetcher has an empty line for each snapshot the route had no vehicles in; one written by `--routes all`
+ * leaves them out. So a route's own lines say when it had vehicles, not when the feed was recorded, and a quiet
+ * spell (overnight, or a late start) must not read as an outage: gaps are looked for in the feed's times.
+ * With one route in the folder these are that route's own times.
+ */
+const feedTimes = new Set<number>();
+for (const f of readdirSync(ARCHIVE).filter(x => x.endsWith('.jsonl') && !x.startsWith('.'))) {
+  for (const line of readFileSync(join(ARCHIVE, f), 'utf8').split('\n')) {
+    if (!line) continue;
+    const m = /^\{"ts":(\d+),"v":(\[\]|\[)/.exec(line);
+    const snap = m ? null : (JSON.parse(line) as { ts: number; v: unknown[] });
+    const ts = m ? Number(m[1]) : snap!.ts, hasData = m ? m[2] !== '[]' : snap!.v.length > 0;
+    if (hasData) feedTimes.add(ts);
+  }
+}
+const feedSorted = [...feedTimes].sort((a, b) => a - b);
 const outages: [number, number][] = [];
-for (let i = 1; i < snapshotTimes.length; i++) {
-  if (snapshotTimes[i] - snapshotTimes[i - 1] > 180) outages.push([snapshotTimes[i - 1], snapshotTimes[i]]);
+for (let i = 1; i < feedSorted.length; i++) {
+  if (feedSorted[i] - feedSorted[i - 1] > 180) outages.push([feedSorted[i - 1], feedSorted[i]]);
 }
 
 // Local dates fully inside the archive and the GTFS calendar.
@@ -796,9 +814,10 @@ const inWindow = new Set(windowDates);
 const windowRuns = runDelays.filter(r => inWindow.has(r.date));
 // Which days of the archive are healthy (good recordings). The window keeps all its dates, but the stop lists, run time by hour,
 // delay build-up, bunching, extra wait and each direction's late share count only the good ones (CIV-318), the same set the weekly tiles use.
-const snapshotsByDate = new Map<string, number>();
-for (const t of snapshotTimes) { const d = serviceDateOf(t); if (scheduleKeyForDate(d)) snapshotsByDate.set(d, (snapshotsByDate.get(d) ?? 0) + 1); }
-const healthV3 = dayHealth(snapshotsByDate);
+// Snapshots count when they carry at least one of this route's vehicles (an empty line and an absent one are the same), once
+// per timestamp, and each day is held to the median of the other days that ran the same timetable (docs/product/LIVE_METHOD.md).
+const snapshotsByDate = snapshotsPerDate(snapshotQuality, t => { const d = serviceDateOf(t); return scheduleKeyForDate(d) ? d : null; });
+const healthV3 = dayHealth(snapshotsByDate, d => scheduleKeyForDate(d) ?? 'none');
 const goodWindowDates = goodDates(windowDates, healthV3);
 const inGoodDays = new Set(goodWindowDates);
 const goodRuns = keepGoodDays(runDelays, inGoodDays);

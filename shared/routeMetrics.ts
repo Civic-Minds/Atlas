@@ -67,13 +67,44 @@ export function delivered(rows: readonly TripOutcome[]): Delivered {
   return { seen, notSeen, unknown, share: seen + notSeen ? seen / (seen + notSeen) : null };
 }
 
+/**
+ * Snapshots per service date for the health rule: a snapshot counts once (by timestamp) and only when it carries at least
+ * one vehicle. An empty line (the older fetcher wrote one when the route had no vehicles) and an absent line (`--routes all`
+ * leaves it out) are therefore the same. `dateOf` returns null for a snapshot outside the days to judge.
+ */
+export function snapshotsPerDate(snapshots: ReadonlyArray<{ ts: number; vehicles: number }>, dateOf: (ts: number) => string | null): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const ts of new Set(snapshots.filter(x => x.vehicles > 0).map(x => x.ts))) {
+    const d = dateOf(ts);
+    if (d) out.set(d, (out.get(d) ?? 0) + 1);
+  }
+  return out;
+}
+
 export interface DayHealth { date: string; snapshots: number; healthy: boolean }
 
-/** A day is healthy when the archive has at least HEALTHY_DAY_SHARE of the snapshots a typical day has. */
-export function dayHealth(snapshotsByDate: ReadonlyMap<string, number>): DayHealth[] {
-  const counts = [...snapshotsByDate.values()];
-  const typical = counts.length ? median(counts)! : 0;
-  return [...snapshotsByDate].sort((a, b) => a[0].localeCompare(b[0])).map(([date, snapshots]) => ({ date, snapshots, healthy: typical > 0 && snapshots >= HEALTHY_DAY_SHARE * typical }));
+/** A day is compared with the median of at least this many other days of its own type; with fewer, with every other day. */
+export const MIN_SAME_TYPE_DAYS = 2;
+
+/**
+ * A day is healthy when the archive has at least HEALTHY_DAY_SHARE of the snapshots a typical day of its type has.
+ *
+ * - `snapshotsByDate` counts snapshots that carry data, the same way for every day whatever the file format (the
+ *   caller drops empty lines: a day written with empty lines and one written without must give the same count).
+ * - `typeOf` names a day's type: the timetable it ran under (weekday, Saturday, Sunday; a statutory holiday that runs
+ *   Sunday service is a Sunday). The typical day for a date is the median of the OTHER days of its type, so a Sunday
+ *   is held to Sundays, not weekdays. With fewer than MIN_SAME_TYPE_DAYS other days of its type, the median of all
+ *   other days is used. A lone day is its own typical day. Without `typeOf` every day has one type.
+ */
+export function dayHealth(snapshotsByDate: ReadonlyMap<string, number>, typeOf: (date: string) => string = () => 'all'): DayHealth[] {
+  const days = [...snapshotsByDate].sort((a, b) => a[0].localeCompare(b[0]));
+  return days.map(([date, snapshots]) => {
+    const others = days.filter(([d]) => d !== date);
+    const sameType = others.filter(([d]) => typeOf(d) === typeOf(date));
+    const pool = sameType.length >= MIN_SAME_TYPE_DAYS ? sameType : others;
+    const typical = pool.length ? median(pool.map(([, n]) => n))! : snapshots;
+    return { date, snapshots, healthy: typical > 0 && snapshots >= HEALTHY_DAY_SHARE * typical };
+  });
 }
 
 /** The last two weeks of dates (this week = the newest 7, last week = the 7 before), with their healthy days. */
