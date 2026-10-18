@@ -52,7 +52,7 @@ weekday schedules vary and explains that the displayed tier reflects the
 slowest weekday.
 
 ### 6. Assigning frequency tiers
-Atlas uses sustained service thresholds to assign frequency tiers. It tests the analyzed gaps across each service window, allowing a small number of grace-period violations, then stores headway metrics separately for display and filtering. The current surface thresholds are:
+Atlas uses sustained service thresholds to assign frequency tiers. It tests the analyzed gaps across each service window, allowing a small number of grace-period violations, then stores headway metrics separately for display and filtering. The current surface thresholds (`HEADWAY_TIERS` in `shared/config.ts`) are below. Rail routes also use 5 and 8 minute tiers (`modeTierOverrides` in `pipeline/defaults.ts`: 5, 8, 10, 15, 30, 60). The tolerances for near misses and edge gaps are in [FREQUENCY_RULES.md](../product/FREQUENCY_RULES.md) (Thresholds), not here. The surface tiers are:
 
 - **≤10 minutes**
 - **≤15 minutes**
@@ -69,7 +69,7 @@ Frequency tier and service regularity are separate facts in the processed output
 
 - `tier` describes the frequency while the service is operating: a finite tier such as `30` or `60`, or `infrequent` when no finite tier qualifies.
 - `serviceClass: "regular"` describes service that covers the normal analysis window. Its tier may be a finite frequency tier or `infrequent`.
-- `serviceClass: "time-limited"` describes a predictable schedule that operates during only part of the day, such as NRT evening routes. It keeps its numeric frequency tier and remains visible when irregular routes are hidden.
+- `serviceClass: "time-limited"` (internal value; riders see "Part-time", per [STYLE.md](../STYLE.md)) describes a predictable schedule that operates during only part of the day, such as NRT evening routes. It keeps its numeric frequency tier and remains visible when irregular routes are hidden.
 - `serviceClass: "irregular"` describes exceptional service: one or two trips, a short unsustained burst, or a time-limited pattern that does not produce a finite sustained tier. A slow route that covers the normal window is `regular` with tier `infrequent`, not irregular. These routes are hidden by the default irregular-service filter.
 
 The default 07:00–22:00 weekday/Saturday and 09:00–21:00 Sunday windows are measurement frames, not a requirement that every route operate all day. Atlas uses coverage signals such as the active span and the 40% window comparison to identify time-limited candidates, then requires at least three repeated departures and a finite sustained tier before calling them scheduled time-limited service. A single coverage percentage must not by itself turn predictable service into `irregular`.

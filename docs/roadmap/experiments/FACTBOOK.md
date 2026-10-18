@@ -59,7 +59,7 @@ This keeps outputs trustworthy while scaling the storytelling.
 - Manual or semi-manual examples to validate value
 
 ### Phase 1: Foundations
-- [ ] Fact emitter script (`scripts/emit-insights.ts` or similar) that produces structured output (JSON + readable Markdown)
+- [ ] Fact emitter script (a script that does not exist yet) that produces structured output (JSON + readable Markdown)
 - [ ] Core fact types: current snapshot stats, basic history deltas, frequency distributions, simple comparisons
 - [ ] Interestingness scoring prototype
 - [ ] Run after refreshes or on demand against local data / zips

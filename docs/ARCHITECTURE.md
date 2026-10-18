@@ -72,7 +72,7 @@ are no longer in the repository.
 
 How the Live route page measures delay, bunching, run time and the rest: [product/LIVE_METHOD.md](product/LIVE_METHOD.md).
 
-### 1. Live UI and feed configuration (currently gated off)
+### 1. Live UI and feed configuration (status: [Feature flags](FEATURE_FLAGS.md))
 
 The Live Vehicles UI and agency feed configuration remain in the repository, but the
 feature is disabled unless `VITE_LIVE_ENABLED=true`. `local-api/live-vehicles.ts` and the other

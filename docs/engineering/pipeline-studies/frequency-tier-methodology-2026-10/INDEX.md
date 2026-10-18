@@ -1,6 +1,6 @@
 # Frequency-tier methodology study
 
-**Status:** In progress
+**Status:** Decided and shipped (PR [#584](https://github.com/Civic-Minds/Atlas/pull/584)). The current values live only in [FREQUENCY_RULES.md](../../../product/FREQUENCY_RULES.md) (Thresholds); the numbers below are the study's evidence at the time.
 
 ## Question
 
@@ -121,9 +121,9 @@ The complete local census covered 1,160 GTFS archives:
 The former middle-gap rule was unbounded: it allowed at least two near misses,
 then allowed more as the number of gaps grew (`max(2, floor(30% of gaps))`).
 That 30% value was implementation behaviour, not an approved product decision.
-The production policy now uses a tier-specific percentage, a zero minimum floor,
-and a cap of three near misses: 10% for 5–15-minute tiers and 5% for
-20–60-minute tiers.
+The shipped policy is in [FREQUENCY_RULES.md](../../../product/FREQUENCY_RULES.md) (Thresholds). It
+later added a one-gap floor once there are 8 or more gaps (`GRACE_FLOOR_MIN_GAPS`
+in `pipeline/transit-phase2.ts`), which the zero-floor curve tested here did not have.
 
 For this Q2 follow-up, the gap-size rule was held constant: a near miss is a
 gap above the target but no longer than `T + max(5 minutes, 15% of T)`. The
@@ -188,7 +188,7 @@ accumulating a large number of individually small exceptions.
 
 The candidate taken into focused review was therefore the bounded,
 sliding-scale shape `10%, 10%, 5%, 5%, 5%`, with no minimum floor and a cap of
-three internal near misses. This is the most conservative complete curve
+three internal near misses (the shipped rule added a one-gap floor at 8 or more gaps). This is the most conservative complete curve
 tested that still scales the allowance with the number of gaps.
 
 ## Weekday rollup bias audit
@@ -541,6 +541,8 @@ Internal near-miss counts and hard-gap checks should remain in the technical
 methodology rather than appearing beside every route. They affect whether a
 tier qualifies, but exposing the arithmetic on every card would imply a level
 of precision the display is not trying to provide.
+
+> Wording superseded by [STYLE.md](../../../STYLE.md): the rider-facing word is "Part-time", not "Time-limited" (CIV-211, [#933](https://github.com/Civic-Minds/Atlas/issues/933)). `time-limited` stays the internal `serviceClass` value.
 
 ### Q5 recommendation
 

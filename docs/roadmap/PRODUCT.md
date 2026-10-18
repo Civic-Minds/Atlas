@@ -7,9 +7,9 @@ User experience and the workflow of a transit professional using Atlas.
 ## Current app surfaces
 
 - **Frequency Map — Live:** Where is service frequent or infrequent?
-- **Live Vehicles — Paused:** Where are supported vehicles now, and how are routes performing? The UI remains in the codebase, but the hosted data path is currently unavailable.
+- **Live Vehicles:** Where are supported vehicles now, and how are routes performing? Current status: [Feature flags](../FEATURE_FLAGS.md).
 - **History — Limited:** How did service change across schedule periods?
-- **Corridors — Contextual:** Which routes connect two selected stations? Available from stop-level interactions rather than primary navigation.
+- **Corridors:** retired, see [Status](ROADMAP.md#status).
 - **Fares — Paused:** What base fare is associated with a route?
 
 **Bar for a new app:** needs the map + Atlas-processed data, and answers a question the Frequency Map can't answer cleanly. Otherwise it's a panel, toggle, or contextual mode.
