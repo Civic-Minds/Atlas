@@ -6,7 +6,13 @@ import path from 'node:path';
 const ROOT = process.cwd();
 const baseDate = process.env.FARE_BASE_DATE || '2026-09-29';
 const outputDate = process.env.FARE_OUTPUT_DATE || '2026-09-30';
-const baseDir = path.join(ROOT, `docs/research/fare-inventory-${baseDate}`);
+// A base inventory may have moved to docs/research/archive/ (the 2026-09-29 one did in the docs audit).
+const baseDirFor = async (date) => {
+  const current = path.join(ROOT, `docs/research/fare-inventory-${date}`);
+  const archived = path.join(ROOT, `docs/research/archive/fare-inventory-${date}`);
+  return fs.access(current).then(() => current, () => archived);
+};
+const baseDir = await baseDirFor(baseDate);
 const outputDir = path.join(ROOT, `docs/research/fare-inventory-${outputDate}`);
 const base = JSON.parse(await fs.readFile(path.join(baseDir, 'fare-inventory.json'), 'utf8'));
 const official = JSON.parse(await fs.readFile(path.join(outputDir, 'official-site-review.json'), 'utf8'));
