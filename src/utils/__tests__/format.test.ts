@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fmtHeadway, getRouteLabel, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
+import { fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -145,12 +145,29 @@ describe('routeLabels case', () => {
       ["O'BRIEN", "O'Brien"], ['MCKNIGHT', 'McKnight'], ['OCEAN-VIEW', 'Ocean-View'], ['DOWNTOWN/AIRPORT (EXPRESS)', 'Downtown/Airport (Express)'],
       ['BART STATION', 'BART Station'], ['TTC EXPRESS', 'TTC Express'],
       ['WEST', 'West'], ['PARK', 'Park'], ['MAIN', 'Main'], ['CHURCH', 'Church'], ['OCEAN VIEW', 'Ocean View'], ['BART TO AIRPORT', 'BART to Airport'],
-      ['UBC EXCHANGE/DOWNTOWN', 'UBC Exchange/Downtown'], ['SFO VIA JFK', 'SFO via JFK'], ['5TH AVE', '5th Ave'], ['SU 43', 'Su 43'], ['14R MISSION RAPID', '14R Mission Rapid'],
+      ['UBC EXCHANGE/DOWNTOWN', 'UBC Exchange/Downtown'], ['SFO VIA JFK', 'SFO via JFK'], ['5TH AVE', '5th Ave'], ['SU 43', 'SU 43'], ['14R MISSION RAPID', '14R Mission Rapid'],
     ];
     for (const [raw, shown] of cases) expect(routeLabelCase(raw)).toBe(shown);
   });
   it('leaves mixed-case names, digit codes and allowlisted acronyms alone', () => {
     for (const same of ['N Judah', '14R Mission Rapid', 'Church', 'BART', 'TTC', 'UTSC', 'GO', 'Owl', '14R', 'L Taraval']) expect(routeLabelCase(same)).toBe(same);
+  });
+  it('keeps the added service-brand acronyms in capitals inside all-caps names (CIV-327)', () => {
+    expect(routeLabelCase('MAX YELLOW LINE')).toBe('MAX Yellow Line');
+    expect(routeLabelCase('UP EXPRESS')).toBe('UP Express');
+    expect(routeLabelCase('PATH TO NEWARK')).toBe('PATH to Newark');
+    expect(routeLabelCase('PATCO TO LINDENWOLD')).toBe('PATCO to Lindenwold');
+    expect(routeLabelCase('MARC PENN LINE')).toBe('MARC Penn Line');
+    expect(routeLabelCase('STO TO TERMINAL')).toBe('STO to Terminal');
+    expect(routeLabelCase('TC LOOP')).toBe('TC Loop');
+    expect(routeLabelCase('SU 43')).toBe('SU 43');
+    expect(routeLabelCase('RT 5')).toBe('RT 5');
+  });
+  it('does not add the excluded short tokens to the acronym list (CIV-327)', () => {
+    expect(routeLabelCase('MAIN ST')).toBe('Main St');
+    for (const word of ['ID', 'MB', 'SH', 'VIVA', 'LINK', 'RAILLINK', 'METRO']) {
+      expect(ROUTE_NAME_ACRONYMS.has(word)).toBe(false);
+    }
   });
   it('title-cases a shouting long name on a route card', () => {
     expect(routeLabels({ shortName: 'J', longName: 'CHURCH', routeType: 0 }).text).toBe('J — Church');

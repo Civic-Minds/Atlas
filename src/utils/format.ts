@@ -230,6 +230,8 @@ export const ROUTE_NAME_ACRONYMS: ReadonlySet<string> = new Set([
   'BRT', 'LRT',
   // Campuses, airports, places, and common abbreviations
   'UBC', 'UTSC', 'UTM', 'SFU', 'MIT', 'SFO', 'JFK', 'LAX', 'LGA', 'EWR', 'YVR', 'YYZ', 'BWI', 'NJ', 'NYC', 'DC', 'CBD', 'AM', 'PM',
+  // Service brands and rail/transit names riders read in capitals
+  'MAX', 'UP', 'TC', 'PATH', 'PATCO', 'MARC', 'STO', 'SU', 'RT',
 ]);
 
 /**
