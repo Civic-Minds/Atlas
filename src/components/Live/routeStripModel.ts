@@ -5,7 +5,7 @@
  */
 import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/liveDashboard';
 import { titleCase } from '../../utils/format';
-import { USUALLY_ON_TIME, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
+import { USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -237,10 +237,7 @@ export function shownDelayMin(stop: RouteStripStop): number | null {
 /** The gap figures as whole percents that add up: the total is rounded, then the too-long part is what remains of it. */
 export function bunchParts(stop: RouteStripStop): { total: number; bunched: number; tooLong: number } | null {
   if (stop.bunchingShare == null || (stop.bunchingN ?? stop.n) <= 0) return null;
-  const total = Math.round(stop.bunchingShare * 100);
-  if (stop.bunchedShare == null || stop.gappedShare == null) return { total, bunched: total, tooLong: 0 };
-  const bunched = Math.min(total, Math.round(stop.bunchedShare * 100));
-  return { total, bunched, tooLong: total - bunched };
+  return bunchTotalParts(stop.bunchingShare, stop.bunchedShare, stop.gappedShare);
 }
 
 /** The text for one stop on hover, focus or tap. */

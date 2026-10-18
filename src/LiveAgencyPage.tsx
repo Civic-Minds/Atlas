@@ -13,7 +13,7 @@ import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { weekNotComparableLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
-import { shortStopName } from './utils/stopLabel';
+import { shortStopName, stretchEnds } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
@@ -24,7 +24,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
-import { coveredRoutesText, LATE_THRESHOLD, liveSubtitle, risePointsText, runTimeDiffText } from '../shared/liveWording';
+import { coveredRoutesText, LATE_THRESHOLD, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText } from '../shared/liveWording';
 import { tenth } from '../shared/liveFormat';
 import MethodSection from './components/Live/sections/MethodSection';
 
@@ -114,7 +114,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
               { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
               { key: 'lastWeek', header: 'Last week', className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: 'Run time', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : pctSigned(r.runTimeOver)) },
-              { key: 'bunching', sortable: true, header: 'Bunching', cell: r => (r.bunchedShare != null && r.gappedShare != null ? `${pct(r.bunchedShare)} · ${pct(r.gappedShare)}` : pct(r.bunchingShare)) },
+              { key: 'bunching', sortable: true, header: 'Bunching', cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : pct(r.bunchingShare)) },
               { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
             ]}
           />
@@ -162,7 +162,7 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
-          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => <span title={`${stop(r.fromName)} to ${stop(r.toName)}`}>{stop(r.fromName)} to {stop(r.toName)}</span> },
+          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const [a, b] = stretchEnds(titleCase(r.fromName), titleCase(r.toName)); return <span title={`${a} to ${b}`}>{a} to {b}</span>; } },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
           { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => titleCase(r.direction) },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),

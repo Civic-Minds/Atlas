@@ -16,6 +16,10 @@ export interface BranchStripProps {
   /** Called with a stop's id when it is clicked, tapped, or chosen with Enter. */
   onSelect?: (stopId: string) => void;
   modes?: readonly RouteStripMode[];
+  /** Keep the room for the marked-stretch bracket even when this strip has none, so two strips side by side start at the same height. */
+  reserveBracket?: boolean;
+  /** Use the two-line row height even when this strip's names fit on one line, for the same reason. */
+  twoLineNames?: boolean;
   minN?: number;
   /** The strip becomes a vertical list on phones (under 480px), or when its own column is narrower than this (px). Default 360. */
   verticalBelow?: number;
@@ -46,6 +50,16 @@ function nameWraps(name: string): boolean {
   const w = measurer ? measurer.measureText(name).width : name.length * 6;
   return w > GUTTER - 8;
 }
+
+/** Every line is named by where it ends. If two lines end at the same stop, every line is named "First – Last" instead, so the names read in one style. */
+export function branchRowNames(model: BranchModel): string[] {
+  const ends = model.lines.map(l => shortStopName(l.at(-1)!.name));
+  const clash = ends.some((e, i) => ends.indexOf(e) !== i);
+  return model.lines.map((l, r) => (clash ? `${shortStopName(l[0].name)} – ${ends[r]}` : ends[r]));
+}
+
+/** Whether any line's name needs two lines in the gutter. */
+export const branchNamesWrap = (model: BranchModel): boolean => branchRowNames(model).some(nameWraps);
 
 function useWidth() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -86,7 +100,7 @@ function fitLabels(items: ReadonlyArray<{ x: number; text: string }>, want: read
  * ends, a branch names the stop where it ends. A branch stop shows its own delay; bunching is only measured along the
  * main pattern, so branch stops show it as not measured. Phones get a vertical list: the branches one after another.
  */
-export default function BranchStrip({ model, selected = null, onSelect, modes = ['delay', 'bunching'], minN = MIN_N, verticalBelow = 360, className = '' }: BranchStripProps) {
+export default function BranchStrip({ model, selected = null, onSelect, modes = ['delay', 'bunching'], reserveBracket = false, twoLineNames = false, minN = MIN_N, verticalBelow = 360, className = '' }: BranchStripProps) {
   const [ref, width] = useWidth();
   const [active, setActive] = useState<string | null>(null);
   const [allStops, setAllStops] = useState(false);
@@ -142,11 +156,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const xOf = (col: number) => GUTTER + INSET + col * step;
   const dot = Math.max(5, Math.min(12, Math.floor(step - 2)));
   // Every line is named by where it ends. If two lines end at the same stop, every line is named "First – Last" instead, so the names read in one style.
-  const rowNames = useMemo(() => {
-    const ends = model.lines.map(l => shortStopName(l.at(-1)!.name));
-    const clash = ends.some((e, i) => ends.indexOf(e) !== i);
-    return model.lines.map((l, r) => (clash ? `${shortStopName(l[0].name)} – ${ends[r]}` : ends[r]));
-  }, [model]);
+  const rowNames = useMemo(() => branchRowNames(model), [model]);
   // A stop only one line serves is that line's own terminal: its start is named beside the line (in the empty space before it), not down in the shared name row, where it would read as belonging to the bottom line.
   const serving = useMemo(() => {
     const m = new Map<string, number>();
@@ -160,13 +170,13 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
     return span ? { label: span.label, a: colOf.get(mainStops[span.from].stopId)!, b: colOf.get(mainStops[span.to].stopId)! } : null;
   }), [modes, mainStops, model, colOf]);
   const nLines = model.lines.length;
-  const ROW_H = rowNames.some(nameWraps) ? ROW_H_TWO_LINE : ROW_H_ONE;
+  const ROW_H = twoLineNames || rowNames.some(nameWraps) ? ROW_H_TWO_LINE : ROW_H_ONE;
   const groupTop: number[] = [];
   let y = 0;
-  modes.forEach((_, t) => { groupTop.push(y); y += HEAD_H + (marks[t] ? BRACKET_H : 0) + nLines * ROW_H + GROUP_GAP; });
+  modes.forEach((_, t) => { groupTop.push(y); y += HEAD_H + (marks[t] || reserveBracket ? BRACKET_H : 0) + nLines * ROW_H + GROUP_GAP; });
   const namesTop = y;
   const total = namesTop + LABEL_H;
-  const rowY = (t: number, r: number) => groupTop[t] + HEAD_H + (marks[t] ? BRACKET_H : 0) + r * ROW_H + ROW_H / 2;
+  const rowY = (t: number, r: number) => groupTop[t] + HEAD_H + (marks[t] || reserveBracket ? BRACKET_H : 0) + r * ROW_H + ROW_H / 2;
 
   // Names beside a line's start: only for a start no other line serves, and only where the name fits in the empty space before it.
   const startNames = useMemo(() => {
@@ -227,7 +237,12 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         {marks.map((m, t) => m && (
           <g key={`mark${t}`}>
             <path d={`M ${xOf(m.a) - 7} ${rowY(t, 0) - 9} V ${rowY(t, 0) - 14} H ${xOf(m.b) + 7} V ${rowY(t, 0) - 9}`} fill="none" stroke="var(--text-secondary)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-            <text x={xOf(m.a) - 7} y={rowY(t, 0) - 19} fontSize={12} fontWeight={700} fill="var(--text-primary)">{m.label}</text>
+            {(() => {
+              // The label starts at the bracket's left end; where it would run past the strip's right edge it ends at the bracket's right end instead.
+              const w = m.label.length * 7 + 4, left = xOf(m.a) - 7;
+              const flip = left + w > width - 2;
+              return <text x={flip ? Math.min(width - 2, xOf(m.b) + 7) : left} textAnchor={flip ? 'end' : 'start'} y={rowY(t, 0) - 19} fontSize={12} fontWeight={700} fill="var(--text-primary)">{m.label}</text>;
+            })()}
           </g>
         ))}
       </svg>

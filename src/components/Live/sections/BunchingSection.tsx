@@ -6,9 +6,12 @@ import GapsChart from '../../charts/GapsChart';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import { useMediaQuery } from '../../../hooks/useMediaQuery';
 import DirectionStrip from '../DirectionStrip';
+import { branchNamesWrap } from '../BranchStrip';
+import { branchStripFromV3 } from '../branchStripModel';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
 import { pct } from './figures';
+import Tag from '../../ui/Tag';
 
 /** The one derivation of where bunching forms, so every surface draws the same numbers. */
 export function bunchingModel(v3: LiveV3, dir: number | null, band: DashboardBand) {
@@ -54,6 +57,9 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
   // On a phone the strip would be a long vertical list of every stop: the bar chart stays there.
   const phone = useMediaQuery('(max-width: 479px)');
   const { rows, pointsOf, scale } = bunchingModel(v3, dir, band);
+  const models = full ? rows.map(b => branchStripFromV3(v3, b.directionId, band, uncertain)) : [];
+  const reserveBracket = rows.some(b => b.bands[band]?.kind === 'forms' && b.bands[band]?.forms);
+  const twoLineNames = models.some(m => m && branchNamesWrap(m));
   return (
     <Section id={full ? 'b4' : 'x-bunching'} title="Where bunching forms" shrink={!full} boundary={boundary}>
       {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How often vehicles come too close together or too far apart, stop by stop, and where that starts.</p>}
@@ -63,14 +69,14 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
           const data: DashboardBunchingBand | undefined = b.bands[band];
           if (!data) return null;
           const points = pointsOf(data);
-          const stretch = data.forms ?? data.biggestRise;
+          // The marked stretch: where bunching forms. Full analysis marks nothing when no single stretch steps up (the strip, the phone chart and the sentence all follow `kind`); Explore also shows the biggest rise.
+          const stretch = full ? (data.kind === 'forms' ? data.forms : null) : data.forms ?? data.biggestRise;
           const markIdx = stretch ? points.findIndex(p => p.label === data.stops.find(s => s.stopId === stretch.toStopId)?.name) : -1;
           const linked = stretch?.links.filter(l => l.linked) ?? [];
           return (
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
-              {full && <p className="mt-1 text-sm leading-6">{bunchingSentence(label, data)}</p>}
-              {full && !phone && <DirectionStrip className="mt-2" v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['bunching']} />}
+              {full && !phone && <DirectionStrip className="mt-2" v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['bunching']} reserveBracket={reserveBracket} twoLineNames={twoLineNames} />}
               {(!full || phone) && points.length > 1 && (
                 <ProfileBars
                   ariaLabel={`${label}: share of gaps that are too close together or too far apart, stop by stop.`}
@@ -85,18 +91,20 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
                   marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? 'Forms here' : 'Biggest rise' }] : []}
                 />
               )}
+              {full && stretch && <p className="mt-2 text-sm leading-6">{bunchingSentence(label, data)}</p>}
               {full && <GapsBlock data={data} gaps={gaps?.directions[String(b.directionId)]} label={label} />}
               {full && stretch && (
                 <>
                   <h4 className="mt-3 text-sm font-black">{linked.length ? 'Linked to' : 'Nothing measured here is linked to it'}</h4>
-                  <dl className="mt-1 grid grid-cols-[1fr_auto] gap-x-4 gap-y-0.5 text-sm">
+                  <ul className="m-0 mt-1.5 flex list-none flex-wrap gap-1.5 p-0">
                     {stretch.links.map(l => (
-                      <div key={l.kind} className={`contents ${l.linked ? '' : 'text-[var(--text-dim)]'}`}>
-                        <dt>{LINK_LABELS[l.kind]}</dt>
-                        <dd className="m-0 whitespace-nowrap text-right">{l.value == null ? 'Not measured' : l.linked ? 'Linked' : 'Not linked'} ({linkValueText(l.kind, l.value)})</dd>
-                      </div>
+                      <li key={l.kind}>
+                        <Tag tone={l.linked ? 'accent' : 'quiet'} size="sm" className={l.linked ? 'text-xs' : 'font-normal text-[var(--text-dim)]'}>
+                          {LINK_LABELS[l.kind]}: {l.value == null ? 'Not measured' : l.linked ? 'Linked' : 'Not linked'} ({linkValueText(l.kind, l.value)})
+                        </Tag>
+                      </li>
                     ))}
-                  </dl>
+                  </ul>
                 </>
               )}
               {full && (
@@ -114,7 +122,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
           );
         })}
       </div>
-      {full && rows.some(b => (b.bands[band]?.forms ?? b.bands[band]?.biggestRise)) && <p className="mt-3 text-xs text-[var(--text-dim)]">Linked means it was measured in this stretch, not that it is the cause.</p>}
+      {full && rows.some(b => b.bands[band]?.kind === 'forms' && b.bands[band]?.forms) && <p className="mt-3 text-xs text-[var(--text-dim)]">Linked means it was measured in this stretch, not that it is the cause.</p>}
     </Section>
   );
 }

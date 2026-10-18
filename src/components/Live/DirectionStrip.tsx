@@ -16,7 +16,7 @@ export function directionStopsById(v3: LiveV3, directionId: number, band: Dashbo
  * One direction's strip: the branch-aware strip when the route runs more than one regular pattern (a trunk that forks),
  * the straight strip otherwise. Stops are picked by stop id either way.
  */
-export default function DirectionStrip({ v3, directionId, band, uncertain, className, modes, selectedId = null, onSelect, selectedStretch = null, onSelectStretch }: {
+export default function DirectionStrip({ v3, directionId, band, uncertain, className, modes, reserveBracket, twoLineNames, selectedId = null, onSelect, selectedStretch = null, onSelectStretch }: {
   v3: LiveV3;
   directionId: number;
   band: DashboardBand;
@@ -24,6 +24,9 @@ export default function DirectionStrip({ v3, directionId, band, uncertain, class
   className?: string;
   /** The tracks to draw (default: delay, then bunching). */
   modes?: readonly RouteStripMode[];
+  /** Side by side with another direction: keep the bracket room and the two-line row height the other has (BranchStrip only). */
+  reserveBracket?: boolean;
+  twoLineNames?: boolean;
   selectedId?: string | null;
   onSelect?: (stopId: string) => void;
   selectedStretch?: RouteStripMode | null;
@@ -31,7 +34,7 @@ export default function DirectionStrip({ v3, directionId, band, uncertain, class
 }) {
   const branch = useMemo(() => branchStripFromV3(v3, directionId, band, uncertain), [v3, directionId, band, uncertain]);
   const straight = useMemo(() => routeStripFromV3(v3, directionId, band, uncertain), [v3, directionId, band, uncertain]);
-  if (branch) return <BranchStrip className={className} modes={modes} model={branch} selected={selectedId} onSelect={onSelect} />;
+  if (branch) return <BranchStrip className={className} modes={modes} reserveBracket={reserveBracket} twoLineNames={twoLineNames} model={branch} selected={selectedId} onSelect={onSelect} />;
   return (
     <RouteStrip
       className={className} modes={modes}

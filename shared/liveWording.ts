@@ -89,3 +89,18 @@ export const runTimeDiffText = (diffMin: number, tail = true): string => (diffMi
 
 /** A rise in a share, in percentage points: "+31 pt" (the unit the tiles use for a change in a share). */
 export const risePointsText = (rise: number): string => `${rise > 0 ? '+' : ''}${Math.round(rise * 100)} pt`;
+
+/**
+ * Bunching as whole percents that add up wherever a total and its two parts sit side by side (tile, route list, agency
+ * table, strip): the total is rounded first, then the too-close part, and the too-far-apart part is what remains of the
+ * total. Without the parts, the whole is the too-close part.
+ */
+export function bunchTotalParts(share: number, bunched?: number | null, gapped?: number | null): { total: number; bunched: number; tooLong: number } {
+  const total = Math.round(share * 100);
+  if (bunched == null || gapped == null) return { total, bunched: total, tooLong: 0 };
+  const close = Math.min(total, Math.round(bunched * 100));
+  return { total, bunched: close, tooLong: total - close };
+}
+
+/** "14% · 8%": the two parts, adding up to the total shown anywhere else. */
+export const bunchPartsText = (share: number, bunched: number, gapped: number): string => { const p = bunchTotalParts(share, bunched, gapped); return `${p.bunched}% · ${p.tooLong}%`; };

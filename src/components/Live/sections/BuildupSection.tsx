@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react';
 import { buildupTakeaway, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
-import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
+import { isMajorStop, shortStopName, stretchEnds } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
 import { useMediaQuery } from '../../../hooks/useMediaQuery';
 import DirectionStrip from '../DirectionStrip';
+import { branchNamesWrap } from '../BranchStrip';
+import { branchStripFromV3 } from '../branchStripModel';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
 import { mins, pct } from './figures';
@@ -32,6 +34,10 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
   // On a phone the strip would be a long vertical list of every stop: the bar chart stays there.
   const phone = useMediaQuery('(max-width: 479px)');
   const { rows, lessExactStops, pointsOf, scale } = buildupModel(data, dir, uncertain);
+  // Strips side by side share one top and one row height: the bracket room and two-line names are kept on both if either needs them.
+  const models = full ? rows.map(b => branchStripFromV3(v3, b.directionId, band, uncertain)) : [];
+  const reserveBracket = rows.some(b => b.kind === 'forms' && b.forms);
+  const twoLineNames = models.some(m => m && branchNamesWrap(m));
   return (
     <Section id={full ? 'b3' : 'x-buildup'} title="Where delays build up" shrink={!full} boundary={boundary}>
       {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How late vehicles leave each stop along the route, and where that delay jumps and stays up.</p>}
@@ -48,7 +54,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
               {full && !phone ? (
                 // The route strip carries the delay at every stop and the marked stretch; the figures the old takeaway line gave are its hover text.
                 <div className="mt-2" title={buildupTakeaway(b, lessExactStops(b.directionId))}>
-                  <DirectionStrip v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['delay']} />
+                  <DirectionStrip v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['delay']} reserveBracket={reserveBracket} twoLineNames={twoLineNames} />
                 </div>
               ) : (
               <ProfileBars
@@ -86,7 +92,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                   rows={full ? worst.slice(0, 3) : worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={full ? [
-                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal break-words', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{shortStopName(s.fromName)} to {shortStopName(s.toName)}</span> },
+                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal break-words', cell: s => { const [a, b] = stretchEnds(s.fromName, s.toName); return <span title={`${s.fromName} to ${s.toName}`}>{a} to {b}</span>; } },
                     { key: 'added', header: 'Typical added', width: 7, worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
                     { key: 'grows', header: 'Trips where it grows', width: 10, worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ] : [

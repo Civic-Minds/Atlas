@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { builtText, coveredRoutesText, LATE_DEFINITION, LATE_SHORT, LATE_THRESHOLD, LATE_TILE_CAPTION, liveSubtitle } from '../liveWording';
+import { bunchPartsText, bunchTotalParts, builtText, coveredRoutesText, LATE_DEFINITION, LATE_SHORT, LATE_THRESHOLD, LATE_TILE_CAPTION, liveSubtitle } from '../liveWording';
 
 describe('Live wording', () => {
   it('writes the build time in Toronto time, "Built Oct 16, 6:12 pm"', () => {
@@ -25,5 +25,19 @@ describe('Live wording', () => {
     expect(LATE_TILE_CAPTION).toBe('of trips left the end of the line more than 5½ min late');
     expect(LATE_DEFINITION.startsWith('more than 5½ min behind the timetable')).toBe(true);
     for (const text of [LATE_THRESHOLD, LATE_SHORT, LATE_TILE_CAPTION]) expect(text).not.toMatch(/\b5 min late/);
+  });
+});
+
+describe('bunching total and parts', () => {
+  it('rounds the total first, then the too-close part; the too-far part is what remains, so they add up', () => {
+    // 21.5% and 13.5% + 8.0% would read 22% beside 14% + 8%: the parts follow the total.
+    expect(bunchTotalParts(0.215, 0.135, 0.08)).toEqual({ total: 22, bunched: 14, tooLong: 8 });
+    expect(bunchPartsText(0.215, 0.135, 0.08)).toBe('14% · 8%');
+    const p = bunchTotalParts(0.304, 0.204, 0.1);
+    expect(p.bunched + p.tooLong).toBe(p.total);
+  });
+  it('keeps the part inside the total, and without parts the whole is the too-close part', () => {
+    expect(bunchTotalParts(0.1, 0.3, 0)).toEqual({ total: 10, bunched: 10, tooLong: 0 });
+    expect(bunchTotalParts(0.2, null, null)).toEqual({ total: 20, bunched: 20, tooLong: 0 });
   });
 });

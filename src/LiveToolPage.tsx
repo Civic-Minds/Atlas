@@ -13,7 +13,7 @@ import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { shortStopName } from './utils/stopLabel';
+import { shortStopName, stretchEnds } from './utils/stopLabel';
 import { titleCase } from './utils/format';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { kpiTiles, type Kpi } from './utils/liveKpi';
@@ -115,7 +115,7 @@ const tileWidgets = (tiles: ReturnType<typeof weekly>, legend: boolean): PanelWi
     <>
       <KpiTile k={k} bare caption={legend && k.key === 'bunching'} />
       {/* The week's figures cover the whole route, while Run time and the stops follow the direction pills. Said once, in the 12px gap under the last row of tiles (from the row's left tile, for any number of tiles), so it takes no height. */}
-      {i === tiles.length - (tiles.length % 2 || 2) && <span className="pointer-events-none absolute left-2 top-full whitespace-nowrap text-xs leading-3 text-[var(--text-dim)]">{BOTH_DIRECTIONS}</span>}
+      {i === tiles.length - (tiles.length % 2 || 2) && <span className="pointer-events-none absolute left-0 top-full whitespace-nowrap text-xs leading-3 text-[var(--text-dim)]">{BOTH_DIRECTIONS}</span>}
     </>
   ),
 }));
@@ -134,7 +134,7 @@ function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
 function networkWidgets(s: AgencySummary, onOpen: (route: string, dir: number, pick: MapPick) => void): PanelWidget[] {
   const label = (r: string) => s.routes.find(x => x.route === r)?.label ?? r;
   const stopRows = s.worstStops.slice(0, 5).map(x => ({ key: `${x.route}-${x.stopId}-${x.directionId}`, label: shortStopName(titleCase(x.name)), sub: x.routeLabel, value: pct(x.lateShare), onPick: () => onOpen(x.route, x.directionId, { kind: 'stop', stopId: x.stopId }) }));
-  const stretchRows = (list: AgencySummary['delayStarts'], value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: `${shortStopName(titleCase(x.fromName))} to ${shortStopName(titleCase(x.toName))}`, sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
+  const stretchRows = (list: AgencySummary['delayStarts'], value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: stretchEnds(titleCase(x.fromName), titleCase(x.toName)).join(' to '), sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
   const delays = stretchRows(s.delayStarts, mins), bunching = stretchRows(s.bunchingForms, risePointsText);
   return [
     ...(stopRows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" intro={`The ${stopRows.length} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`} rows={stopRows} /> }] : []),
@@ -216,14 +216,16 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
   // The Bunching tile's legend line is shown only where the right panel has room for it (it never scrolls or clips); its text is the tile's hover title either way.
   const panelRef = useRef<HTMLDivElement>(null);
   const [legend, setLegend] = useState(false);
-  const LEGEND_PX = 18;
+  const LEGEND_PX = 7;
   useLayoutEffect(() => {
     const el = panelRef.current;
     if (!el) return;
     // The panel's content height is where its last widget ends (scrollHeight is never less than the panel's own height).
     const measure = () => {
       const last = el.lastElementChild?.getBoundingClientRect().bottom ?? 0;
-      setLegend(el.getBoundingClientRect().bottom - (last - (legend ? LEGEND_PX : 0)) >= LEGEND_PX);
+      // Shown, it stays while it fits; hidden, it comes back only with room for the whole line (no flicker between the two).
+      const room = el.getBoundingClientRect().bottom - last;
+      setLegend(legend ? room >= 0 : room >= LEGEND_PX);
     };
     measure();
     if (typeof ResizeObserver === 'undefined') return;
@@ -246,7 +248,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
     return () => ro.disconnect();
   }, [noteEl]);
   const framePad = (pad: typeof PANEL_PAD) => ({ ...pad, bottom: Math.max(pad.bottom, noteH ? noteH + 12 + 12 : 0) });
-  const note = ready?.note && <p ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-10 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
+  const note = ready?.note && <p ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
   const mapEl = (
     <RouteMap
       model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={framePad(wide ? PANEL_PAD : NARROW_PAD)}

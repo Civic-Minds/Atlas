@@ -64,10 +64,10 @@ export function KpiTile({ k, className = '', math, bare = false, caption = false
     <li className={`${TILE} flex list-none flex-col px-2.5 ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
       <div className="text-sm font-bold text-[var(--text-muted)]">{k.label}</div>
       <div className="mt-1 text-3xl font-black tracking-tight">{k.value}</div>
-      {(!bare || caption) && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.sub}</div>}
+      {(!bare || caption) && <div className={`${bare ? 'mt-0 leading-3' : 'mt-0.5 leading-4'} text-xs text-[var(--text-dim)]`}>{k.sub}</div>}
       {math && !bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{math}</div>}
       {k.scope && !bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.scope}</div>}
-      <div className="mt-auto pt-2"><Delta k={k} /></div>
+      <div className={`mt-auto ${bare && caption ? 'pt-0.5' : 'pt-2'}`}><Delta k={k} /></div>
     </li>
   );
 }

@@ -4,7 +4,7 @@
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
 import { isWeekendDate, dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
-import { LATE_TILE_CAPTION, runTimeDiffText } from '../../shared/liveWording';
+import { LATE_TILE_CAPTION, bunchPartsText, runTimeDiffText } from '../../shared/liveWording';
 import { tenth } from '../../shared/liveFormat';
 export { NOISE_RULE } from '../../shared/liveDashboard';
 
@@ -72,7 +72,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   const compare = w.comparable;
   /** The one noise for every tile: that measure's own day-to-day spread (null leaves the fixed stand-in). */
   const noise = (key: CompareKey) => dailyNoise(daily[key] ?? [], nThis, nLast);
-  const bunchText = (b: WeekMetrics['bunching']) => (b ? (bunchSplit(b) ? `${pct0(b.bunched!)} · ${pct0(b.gapped!)}` : pct0(b.share)) : null);
+  const bunchText = (b: WeekMetrics['bunching']) => (b ? (bunchSplit(b) ? bunchPartsText(b.share, b.bunched!, b.gapped!) : pct0(b.share)) : null);
   // Last week's two parts are shown only when this week's are too (and last week has them): the same form on both lines.
   const lastBunch = l.bunching ? (t.bunching && bunchSplit(t.bunching) && bunchSplit(l.bunching) ? bunchText(l.bunching) : pct0(l.bunching.share)) : null;
   const lateT = t.late ? pct0(t.late.share) : null, tripT = t.tripTime ? `${Math.round(t.tripTime.typicalMin)} min` : null, waitT = t.extraWait ? `${clean(t.extraWait.minutes)} min` : null, delT = t.delivered?.share != null ? pct1(t.delivered.share) : null;
@@ -83,7 +83,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
       compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false, noise('tripTime'), l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null, tripT) : null, l.tripTime ? `${Math.round(l.tripTime.typicalMin)} min` : null),
     mk('extraWait', 'Extra wait', t.extraWait ? `${clean(t.extraWait.minutes)} min` : '–', 'longer wait than scheduled', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
       compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false, noise('extraWait'), l.extraWait ? `${clean(l.extraWait.minutes)} min` : null, waitT) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),
-    mk('bunching', 'Bunching', t.bunching ? (bunchSplit(t.bunching) ? `${pct0(t.bunching.bunched!)} · ${pct0(t.bunching.gapped!)}` : pct0(t.bunching.share)) : '–', t.bunching && bunchSplit(t.bunching) ? BUNCHING_SPLIT_CAPTION : 'of gaps between cars bunched or too long', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
+    mk('bunching', 'Bunching', bunchText(t.bunching) ?? '–', t.bunching && bunchSplit(t.bunching) ? BUNCHING_SPLIT_CAPTION : 'of gaps between cars bunched or too long', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
       compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true, noise('bunching'), lastBunch, bunchText(t.bunching)) : null, lastBunch),
     mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', t.delivered ? 'of scheduled trips ran' : 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
       compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, noise('delivered'), l.delivered?.share != null ? pct1(l.delivered.share) : null, delT) : null, l.delivered?.share != null ? pct1(l.delivered.share) : null),

@@ -41,3 +41,17 @@ export function pickAxisLabels(opts: { count: number; width: number; widths: rea
   }
   return placed.sort((a, b) => a.index - b.index).map(p => ({ index: p.index, left: p.left }));
 }
+
+/**
+ * The two ends of a stretch in short names. When the short names collide ("Queen St West" at both ends, each at a
+ * different cross street), each end keeps its own cross street from the full stop name: "Queen St West (King St West)".
+ */
+export function stretchEnds(fromName: string, toName: string): [string, string] {
+  const a = shortStopName(fromName), b = shortStopName(toName);
+  if (a.toLowerCase() !== b.toLowerCase()) return [a, b];
+  const withCross = (full: string, short: string) => {
+    const cross = full.split(/\s+at\s+/i).map(x => x.trim()).find(x => x && x.toLowerCase() !== short.toLowerCase() && !short.toLowerCase().includes(x.toLowerCase()));
+    return cross ? `${short} (${shortStopName(cross)})` : full;
+  };
+  return [withCross(fromName, a), withCross(toName, b)];
+}
