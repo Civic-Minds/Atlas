@@ -121,13 +121,15 @@ function addOnDemandLayers(map: maplibregl.Map) {
  * Live context lines (CIV-326): only the routes that currently have a vehicle on the Live map, thin and light, drawn
  * under all other route lines. Hidden and filtered to nothing until the Live hook fills it.
  */
+// Width matches the regular map's base route class (buildFriendlyRouteWidthExpression): one even weight.
+const LIVE_CONTEXT_PAINT = {
+  'line-color': '#6b7280',
+  'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, 8, 1.5, 11, 2, 14, 2.5, 17, 3.5],
+  'line-opacity': 0.85,
+} as const;
 export const LIVE_CONTEXT_LAYER_IDS = ['live-context-overview-layer', 'live-context-routes-layer', 'live-context-local-layer'] as const;
 function addLiveContextLayers(map: maplibregl.Map) {
-  const paint = {
-    'line-color': '#9ca3af',
-    'line-width': ['interpolate', ['linear'], ['zoom'], 0, 0.6, 8, 0.8, 14, 1.2, 17, 1.8],
-    'line-opacity': 0.5,
-  } as const;
+  const paint = LIVE_CONTEXT_PAINT;
   const layout = { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' } as const;
   const noMatch = ['==', ['get', 'agencySlug'], ''] as any;
   map.addLayer({ id: LIVE_CONTEXT_LAYER_IDS[0], type: 'line', source: 'atlas-overview-pmtiles', 'source-layer': 'routes', maxzoom: 8, filter: noMatch, paint: paint as any, layout: layout as any });
@@ -141,7 +143,7 @@ function addLiveContextLocalLayer(map: maplibregl.Map) {
     type: 'line',
     source: 'local-routes',
     filter: ['==', ['get', 'agencySlug'], ''] as any,
-    paint: { 'line-color': '#9ca3af', 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.8, 14, 1.2, 17, 1.8], 'line-opacity': 0.5 },
+    paint: LIVE_CONTEXT_PAINT as any,
     layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
   }, 'local-routes-layer');
 }
