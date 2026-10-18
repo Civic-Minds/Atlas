@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The planner's week figures are a small aligned table (local only)**: Late, Run time, Extra wait, Bunching and Service delivered with This week and Last week columns, the arrow beside this week's value only where the numbers differ, the short explanations as notes under it, and the days left out beside the colour caption.
 - **Live names the days it leaves out instead of counting them (local only)**: "Excluding Oct 11" over the late-by-hour cards (each kind of day names its own), in the planner's chart title row, and "Excluding Oct 11 this week, Oct 4 last week." in the method; nothing is shown when every day counts. The reason ("days with gaps in our recordings are left out…") is the hover text.
 - **The bunching bar chart (phones, Explore) draws the same stops as the strip (local only)**: the 504's Broadview branch stops were missing, which made the chart read as a cliff.
 - **"Linked means it was measured in this stretch" is said once, in the method; the "Linked to" chips keep a clean shape when they take two lines (local only)**.

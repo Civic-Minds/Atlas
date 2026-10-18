@@ -1,3 +1,4 @@
+import DataTable from './components/ui/DataTable';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { dateRangeText, runTimeTileStretch, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, weekNotComparableLine, type Kpi } from './utils/liveKpi';
@@ -90,6 +91,58 @@ export function KpiRows({ tiles, math, caption, captionTitle }: { tiles: Kpi[]; 
         ))}
       </ul>
       {caption && <p className="m-0 mt-1.5 text-xs leading-4 text-[var(--text-dim)]" title={captionTitle}>{caption}</p>}
+    </section>
+  );
+}
+
+/**
+ * The week's figures as a small aligned table: the measure, this week, last week (numbers right-aligned). The small arrow
+ * sits beside this week's value, coloured by the same tone as the tiles, and only where the rounded values differ; where
+ * they match, the row says nothing extra (its hover text says "same as last week"). The short math lines are notes under
+ * the table. One component for any surface that wants it; the planner's left panel uses it today.
+ */
+export function WeekTable({ tiles, notes, caption, captionTitle, aside, asideTitle }: {
+  tiles: Kpi[];
+  /** Per tile key, the line that explains how the figure is worked out. */
+  notes?: Partial<Record<Kpi['key'], string>>;
+  caption?: string | null;
+  /** Hover text for the caption (the full rule behind it). */
+  captionTitle?: string;
+  /** A short label beside the caption (the days left out), with its hover text. */
+  aside?: string | null;
+  asideTitle?: string;
+}) {
+  const arrowTone = (t: Kpi['delta']) => (t?.tone === 'better' ? 'text-[var(--status-positive-text)]' : t?.tone === 'worse' ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-muted)]');
+  const noted = tiles.filter(k => notes?.[k.key]);
+  return (
+    <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-1.5`}>
+      <DataTable
+        caption="This week compared with last week"
+        rows={tiles}
+        rowKey={k => k.key}
+        rowTitle={k => `${k.sub}. ${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}
+        columns={[
+          { key: 'measure', header: <span className="sr-only">Measure</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
+          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">This week</span>, className: 'text-right text-sm font-black tabular-nums tracking-tight', cell: k => (
+            <span className={k.n < MIN_N ? 'opacity-60' : ''}>
+              {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${arrowTone(k.delta)}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
+              {k.value}
+            </span>
+          ) },
+          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm tabular-nums text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? '–' : '–'}</span> },
+        ]}
+      />
+      {noted.length > 0 && (
+        <ul className="m-0 mt-1 list-none border-t border-[var(--border-primary)] p-0 pt-1 text-pretty">
+          {noted.map(k => <li key={k.key} className="text-xs leading-4 text-[var(--text-dim)]">{k.label}: {notes![k.key]}</li>)}
+        </ul>
+      )}
+      {(caption || aside) && (
+        <p className="m-0 mt-1 flex flex-wrap items-baseline justify-between gap-x-3 text-xs leading-4 text-[var(--text-dim)]">
+          {caption && <span title={captionTitle}>{caption}</span>}
+          {aside && <span title={asideTitle}>{aside}</span>}
+        </p>
+      )}
     </section>
   );
 }
