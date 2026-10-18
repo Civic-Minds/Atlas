@@ -98,6 +98,9 @@ const agencyStamps: Record<string, unknown> = {};
 for (const slug of sampleAgencySlugs()) {
   const snapshot = await fetchJson(`${manifest.agencyPrefix}/${slug}.json`);
   agencyStamps[slug] = snapshot ? snapshot[RELEASE_STAMP_FIELD] : 'missing';
+  // CIV-321: the beta sections file is optional, but one copied into the release must be this release's.
+  const sections = await fetchJson(`${manifest.agencyPrefix}/${slug}-sections.json`);
+  if (sections) agencyStamps[`${slug}-sections`] = sections[RELEASE_STAMP_FIELD];
 }
 
 const error = releasePublishError({

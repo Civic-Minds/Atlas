@@ -1,6 +1,7 @@
 /** Shared in-memory cache for agency route GeoJSON (Frequency + Corridors). */
 import { idbGet, idbSet, idbPruneStale } from './idbCache';
-import { BETA_R2_PUBLIC_URL, getAgencyArtifactUrls, R2_PUBLIC_URL } from '../../shared/config';
+import { BETA_R2_PUBLIC_URL, FEATURES, getAgencyArtifactUrls, R2_PUBLIC_URL } from '../../shared/config';
+import { applyAgencySections, type AgencySections } from '../../shared/agencySections';
 import { withVersionParam } from './versionedUrl';
 import { CACHE_BUILD } from '../../shared/cacheBuild';
 import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter';
@@ -157,6 +158,24 @@ function normalizeAgencyFeatures(data: GeoJSON.FeatureCollection): void {
   );
 }
 
+/**
+ * CIV-321 (beta): put the agency's sections file back on its route features, so the section colours
+ * have their per-period values and full lines. Only called when FEATURES.segmentColours is on, so the
+ * public build never requests the file. Best effort: a missing or mismatched file leaves the features
+ * as they are (the colours fall back to the route-level values).
+ */
+const sectionsApplied = new WeakSet<GeoJSON.FeatureCollection>();
+export async function attachAgencySections(data: GeoJSON.FeatureCollection, sectionsUrl: string, dataVer: string): Promise<GeoJSON.FeatureCollection> {
+  if (sectionsApplied.has(data)) return data;
+  sectionsApplied.add(data);
+  try {
+    const r = await fetch(withVersionParam(sectionsUrl, dataVer), { cache: 'default', signal: agencyFetchSignal() });
+    if (!r.ok) return data;
+    data.features = applyAgencySections(data.features, await r.json() as AgencySections);
+  } catch { /* the colours fall back to route-level values */ }
+  return data;
+}
+
 export function getCachedAgencyGeo(slug: string): GeoJSON.FeatureCollection | undefined {
   return lruGet(cache, slug);
 }
@@ -236,6 +255,12 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
       });
     }
 
+    if (FEATURES.segmentColours) {
+      const sectionsUrl = release
+        ? dataReleaseAgencyUrl(release, `${agency.slug}-sections`, agency.betaOnly)
+        : arts.sectionsUrl;
+      pending = pending.then(data => attachAgencySections(data, sectionsUrl, dataVer));
+    }
     inflight.set(agency.slug, pending);
   }
 

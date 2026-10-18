@@ -159,7 +159,7 @@ export default defineConfig(({ mode, command, isPreview }) => {
         const match = /^\/atlas-data\/atlas\/(?:releases\/[\w-]+\/agencies\/)?([\w-]+\.json)$/.exec(pathname);
         if (!match) return next();
         const filename = match[1];
-        const slug = filename.replace(/-(stops-meta|stops|corridors|trips)\.json$/, '').replace(/\.json$/, '');
+        const slug = filename.replace(/-(stops-meta|stops|corridors|trips|sections)\.json$/, '').replace(/\.json$/, '');
         const candidate = resolve(PROCESS_PREVIEW_DIR, slug, filename);
         if (!existsSync(candidate)) return next();
         res.setHeader('Content-Type', 'application/json');

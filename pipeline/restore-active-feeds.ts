@@ -147,6 +147,7 @@ async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ ag
     r2Put(`atlas/${agency.slug}-corridors.json`, result.corridorsGeojson),
     r2Put(`atlas/${agency.slug}-trips.json`, result.tripsJson),
     r2Put(`atlas/${agency.slug}-stops-meta.json`, result.stopsMetaJson),
+    r2Put(`atlas/${agency.slug}-sections.json`, result.sectionsJson),
   ]);
 
   // Same rule as refresh: the later of feed_info's end and the capped calendar end (#687).

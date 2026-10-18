@@ -90,10 +90,12 @@ export function buildOverviewRoutes(routes: Feature[]): Feature[] {
   }));
 }
 
-async function fetchJson(url: string, retries = 5): Promise<FeatureCollection | null> {
+async function fetchJson(url: string, retries = 5, missingOk = false): Promise<FeatureCollection | null> {
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(url);
+      // An optional artifact (CIV-321 sections) that is not published yet: no retries.
+      if (missingOk && res.status === 404) return null;
       if (!res.ok) {
         console.warn(`fetch ${url} not ok ${res.status}, retry ${i+1}`);
         const retryAfter = Number(res.headers.get('retry-after'));
@@ -170,6 +172,7 @@ async function main() {
     const url = agency.url || arts.url;
     const stopsUrl = agency.stopsUrl || arts.stopsUrl;
     const corridorsUrl = agency.corridorsUrl || arts.corridorsUrl;
+    const sectionsUrl = arts.sectionsUrl;
     console.log(`Processing agency: ${slug}...`);
 
     // 1. Routes
@@ -232,6 +235,19 @@ async function main() {
         : await fetchJson(corridorsUrl);
       if (data && data.features) {
         fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-corridors.json`), JSON.stringify(data));
+      }
+    }
+
+    // 4. Sections (CIV-321): the beta section colours' fields, kept out of the route file. Optional
+    // per agency (absent until its next refresh); stamped like the route file so publish can check it.
+    {
+      const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}-sections.json`) : null;
+      const data = localPath && fs.existsSync(localPath)
+        ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as Record<string, unknown>
+        : await fetchJson(sectionsUrl, 5, true) as unknown as Record<string, unknown> | null;
+      if (data && data.sections) {
+        data[RELEASE_STAMP_FIELD] = releaseId;
+        fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-sections.json`), JSON.stringify(data));
       }
     }
   });
