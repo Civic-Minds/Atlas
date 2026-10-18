@@ -383,9 +383,26 @@ export function stretchFilterValue(p: StretchPeriod): number | null {
 }
 
 /**
+ * CIV-321 S3: run-length encoding of one period's stop values, to keep agency JSON small: runs of
+ * equal values as "v*n" (a single stop is just "v"), comma-separated; an empty v is no value.
+ * "30*4,,60*2" is 30, 30, 30, 30, none, 60, 60. Decoded by shared/stopRuns decodeStopRuns.
+ */
+export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
+  const runs: string[] = [];
+  for (let i = 0; i < values.length;) {
+    let j = i;
+    while (j + 1 < values.length && values[j + 1] === values[i]) j++;
+    const v = values[i] == null ? '' : String(values[i]);
+    runs.push(j > i ? `${v}*${j - i + 1}` : v);
+    i = j + 1;
+  }
+  return runs.join(',');
+}
+
+/**
  * CIV-321 S1: each drawn stop's period value read like a stretch's reference stop (every trip of the
  * direction that serves it; stretchPeriods and stretchFilterValue), as one comma-separated string per
- * period aligned to the feature's stopOrder, empty where the stop has no value. At a stretch's
+ * period aligned to the feature's stopOrder (run-length encoded, encodeStopRuns), empty where the stop has no value. At a stretch's
  * reference stop it equals that stretch's own value. Nothing reads it yet (section colours, S3).
  */
 export function stopPeriodValues(stops: readonly string[], timesAtStop: NonNullable<DirectionStretches['timesAtStop']>): Record<PeriodKey, string> {
@@ -394,10 +411,7 @@ export function stopPeriodValues(stops: readonly string[], timesAtStop: NonNulla
     if (read.times.length === 0) return null;
     return stretchPeriods({ kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read });
   });
-  return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, perStop.map(p => {
-    const v = p ? stretchFilterValue(p[key]) : null;
-    return v == null ? '' : String(v);
-  }).join(',')])) as Record<PeriodKey, string>;
+  return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, encodeStopRuns(perStop.map(p => (p ? stretchFilterValue(p[key]) : null)))])) as Record<PeriodKey, string>;
 }
 
 /**

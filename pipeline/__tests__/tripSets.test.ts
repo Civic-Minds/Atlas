@@ -5,7 +5,8 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
-import { directionStretches, rollupDirection, rollupRoute, stopPeriodValues, stretchFilterValue, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
+import { decodeStopRuns } from '../../shared/stopRuns';
+import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchFilterValue, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -713,9 +714,19 @@ describe('per-stop period values read like a reference stop (CIV-321 S1)', () =>
 
   it('reads a branch stop on the branch trips only, and leaves a stop with no trips empty', () => {
     const values = stopPeriodValues(['t5', 'x3', 'nowhere'], d.timesAtStop!);
-    const [trunkMidday, branchMidday, none] = values.midday.split(',');
+    const [trunkMidday, branchMidday, none] = decodeStopRuns(values.midday).map(v => (v == null ? '' : String(v)));
     expect(Number(trunkMidday)).toBeLessThan(Number(branchMidday));
     expect(branchMidday).toBe('30');
     expect(none).toBe('');
+  });
+});
+
+describe('stop runs encode compactly and round-trip (CIV-321 S3)', () => {
+  it('encodes runs and decodes them back', () => {
+    const values = [30, 30, 30, 30, null, 60, 60, 15];
+    expect(encodeStopRuns(values)).toBe('30*4,,60*2,15');
+    expect(decodeStopRuns(encodeStopRuns(values))).toEqual(values);
+    expect(decodeStopRuns(encodeStopRuns([null, null]))).toEqual([null, null]);
+    expect(decodeStopRuns(undefined)).toEqual([]);
   });
 });

@@ -2,7 +2,9 @@ import type { ShapeProperties } from '../hooks/useIntervalStats';
 import type { AgencyLayers } from '../hooks/useAgencyData';
 import { pairOppositeStop } from '../../shared/sharedStops';
 import { clipLinestring } from './lineClip';
-import { getTierColor, headwayToTierColor, type ColorVisionMode } from './colors';
+import { getHeadwayTiers, getTierColor, headwayToTierColor, type ColorVisionMode } from './colors';
+import { decodeStopRuns } from '../../shared/stopRuns';
+import type { PeriodKey } from '../../shared/config';
 
 /**
  * Route lines coloured section by section (CIV-152, beta only: FEATURES.segmentColours).
@@ -19,8 +21,38 @@ import { getTierColor, headwayToTierColor, type ColorVisionMode } from './colors
  * the opposite direction (shared/sharedStops pairOppositeStop, the pairing the frequency overlay
  * uses) contributes its best grade and the section takes the worse of the two. Sections run from
  * half way before their first stop to half way after their last, so a colour changes between
- * two stops, not on one. All-day only: a period view keeps one colour per line.
+ * two stops, not on one. A period view (CIV-321 S3) reads each stop's value for that period over
+ * every trip of the direction that serves it (stretchStopPeriodValues, the same rules as a whole
+ * route), and the line's own tier is its direction's filter value in the period.
  */
+
+/** The tier a headway falls in (the palette's ceilings: 10, 15, 20, 30, 60, then infrequent). */
+export function tierOfHeadway(h: number | null | undefined): string | null {
+  if (h == null) return null;
+  for (const { max } of getHeadwayTiers()) if (h <= max) return Number.isFinite(max) ? String(max) : 'infrequent';
+  return 'infrequent';
+}
+
+/**
+ * CIV-321 S3: a line's properties as the section colours read them in one period: each stop's grade
+ * and headway from stretchStopPeriodValues, and the line's tier from its direction's filter value. Null
+ * when the line has no per-stop period values or no value in the period (it keeps one colour).
+ */
+export function periodSectionProps<P extends ShapeProperties>(p: P, period: PeriodKey): P | null {
+  const stops = p.stopOrder ?? [];
+  const values = decodeStopRuns(p.stretchStopPeriodValues?.[period]);
+  const lineValue = p.directionFilterHeadwayByPeriod?.[period];
+  if (stops.length === 0 || values.length !== stops.length || typeof lineValue !== 'number') return null;
+  const stopTiers: Record<string, string> = {};
+  const stopHeadways: Record<string, number> = {};
+  stops.forEach((stopId, i) => {
+    const v = values[i];
+    if (v == null) return;
+    stopHeadways[stopId] = v;
+    stopTiers[stopId] = tierOfHeadway(v)!;
+  });
+  return { ...p, stopTiers, stopHeadways, tier: tierOfHeadway(lineValue)! };
+}
 
 export interface SectionColourProperties {
   color: string;
@@ -164,6 +196,8 @@ export function buildSectionColourFeatures(
   colorMode: ColorVisionMode = 'default',
   /** Keep only lines this accepts (the selected route is built from the unfiltered layers). */
   accept?: (p: { agencySlug: string; routeId: string; day: string | null }) => boolean,
+  /** CIV-321 S3: colour by this period's per-stop values (periodSectionProps); undefined = all day. */
+  period?: PeriodKey,
 ): GeoJSON.Feature<GeoJSON.LineString, SectionColourProperties>[] {
   const out: GeoJSON.Feature<GeoJSON.LineString, SectionColourProperties>[] = [];
   if (!layers) return out;
@@ -172,7 +206,9 @@ export function buildSectionColourFeatures(
     const groups = new Map<string, Group>();
     const lines: Array<{ feature: GeoJSON.Feature; p: Props }> = [];
     for (const feature of collection.features) {
-      const p = feature.properties as Props | null;
+      const raw = feature.properties as Props | null;
+      if (!raw) continue;
+      const p = period && feature.geometry.type === 'LineString' && raw.stopId == null ? periodSectionProps(raw, period) : raw;
       if (!p) continue;
       if (feature.geometry.type === 'Point' && p.stopId != null) {
         const [lon, lat] = feature.geometry.coordinates;
