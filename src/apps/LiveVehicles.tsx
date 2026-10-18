@@ -12,7 +12,7 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
-import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
+import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord, routeLabelCase } from '../utils/format';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
@@ -367,10 +367,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const earlyCount = vs.filter(v => v.status === 'early').length;
         const dominantStatus: LiveVehicle['status'] =
           lateCount > 0 ? 'late' : earlyCount > 0 ? 'early' : vs[0].status;
-        const displayName = cleanRouteDisplayName(
+        const displayName = routeLabelCase(cleanRouteDisplayName(
           routeNamesByKey.get(`${agencySlug}::${routeShortName}`) || vs[0].displayName || `Route ${routeShortName}`,
           routeShortName,
-        );
+        ));
         return { agencySlug, routeShortName, displayName, vehicles: vs, lateCount, earlyCount, dominantStatus };
       });
   }, [allVehicles, query, layers, localLayers]);
@@ -398,7 +398,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         key: `${r.slug}::${r.displayRouteShortName}`,
         agencySlug: r.slug,
         routeShortName: r.displayRouteShortName,
-        label: r.displayName ?? r.displayRouteShortName,
+        label: r.displayName ? routeLabelCase(r.displayName) : r.displayRouteShortName,
         agencyName: shortenAgencyName(agencies.find(a => a.slug === r.slug)?.name ?? r.slug),
       }));
   }, [visibleSlugs, agencies]);

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Route names a feed sends in capitals now show in normal case everywhere, including Live**: SF Muni's "CHURCH" and "OCEAN VIEW" read "Church" and "Ocean View"; names already in mixed case and short codes like BART are left alone (CIV-327).
 - **Beta: route lines are coloured by section in each time period**: each section is graded on the trains running through it, and a line drawn on a short turn now runs its full length (GO KI from Kitchener) (CIV-321).
 - **The 11pm-2am period is called "Night" instead of "Late"**: so it no longer reads like the Live pages' late-departure measure.
 - **Route cards no longer show a made-up overnight wait like "every 196"**: three buses around a long overnight gap already showed no number on their own row, but the direction's value still came through (MBTA 23 on Sunday) ([#961](https://github.com/Civic-Minds/Atlas/issues/961)).

@@ -137,6 +137,22 @@ describe('routeLabels case', () => {
     expect(routeLabels({ shortName: 'SSSF', longName: 'Sausalito - San Francisco Ferry', routeType: 4 }).primary).toBe('SSSF');
     expect(routeLabels({ shortName: 'RWXP', longName: 'Ridgway Express', routeType: 3 }).text).toBe('RWXP — Ridgway Express');
   });
+  it('title-cases whole-string capitals from real feeds (SF Muni and similar)', () => {
+    const cases: Array<[string, string]> = [
+      ['CHURCH', 'Church'], ['INGLESIDE', 'Ingleside'], ['OCEAN VIEW', 'Ocean View'], ['EMBARCADERO STATION', 'Embarcadero Station'],
+      ['PARK ST', 'Park St'], ['ST. CLAIR AVE', 'St. Clair Ave'], ['VAN NESS AVE', 'Van Ness Ave'],
+      ['UNIVERSITY OF TORONTO', 'University of Toronto'], ['CALIFORNIA ST VIA THE HILL', 'California St via the Hill'],
+      ["O'BRIEN", "O'Brien"], ['MCKNIGHT', 'McKnight'], ['OCEAN-VIEW', 'Ocean-View'], ['DOWNTOWN/AIRPORT (EXPRESS)', 'Downtown/Airport (Express)'],
+      ['BART STATION', 'BART Station'], ['TTC EXPRESS', 'TTC Express'],
+    ];
+    for (const [raw, shown] of cases) expect(routeLabelCase(raw)).toBe(shown);
+  });
+  it('leaves mixed-case names, short codes and short acronyms alone', () => {
+    for (const same of ['N Judah', '14R Mission Rapid', 'Church', 'BART', 'TTC', 'UTSC', 'GO', 'OWL', '14R', 'L Taraval']) expect(routeLabelCase(same)).toBe(same);
+  });
+  it('title-cases a shouting long name on a route card', () => {
+    expect(routeLabels({ shortName: 'J', longName: 'CHURCH', routeType: 0 }).text).toBe('J — Church');
+  });
   it('gives the card title in title case and lists the cleaned names', () => {
     expect(routeLabels({ shortName: '961', longName: '757X - NORFOLK TO NNTC', routeType: 3 })).toMatchObject({ primary: '757X', secondary: 'Norfolk to NNTC', text: '757X — Norfolk to NNTC' });
     expect(routeLabels({ shortName: 'SL1', longName: 'Logan Airport Terminals - South Station', routeType: 3 })).toMatchObject({ primary: 'SL1', secondary: 'Logan Airport Terminals - South Station' });
