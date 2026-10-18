@@ -18,7 +18,7 @@ import { periodKeyForHour } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../utils/liveGrouping';
-import { CardBackButton, CardDirectionRow, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
+import { CardBackLink, CardDirectionRow, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
 import { delayLabel, vehicleCardName, vehicleCardRows } from '../components/Live/vehicleCardModel';
@@ -662,19 +662,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             {selectedGroup && cardVehicle ? (
               <SidebarCardShell className="px-4 pt-4">
                 <SidebarCardHeaderBlock>
-                  <div className="flex items-start gap-2">
-                    <CardBackButton onClick={() => setVehicleCard(null)} label="Back to route" />
-                    <div className="flex-1 min-w-0">
-                      <RouteCardTitle
-                        routeShortName={selectedGroup.routeShortName}
-                        routeLongName={selectedRouteLongName}
-                        routeType={selectedRouteType}
-                        agencySlug={selectedGroup.agencySlug}
-                        agencyName={selectedAgencyName}
-                        onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
-                      />
-                    </div>
-                  </div>
+                  <CardBackLink onClick={() => setVehicleCard(null)}>{cleanRouteShortName(selectedGroup.routeShortName)} route</CardBackLink>
+                  <RouteCardTitle
+                    routeShortName={selectedGroup.routeShortName}
+                    routeLongName={selectedRouteLongName}
+                    routeType={selectedRouteType}
+                    agencySlug={selectedGroup.agencySlug}
+                    agencyName={selectedAgencyName}
+                    onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
+                  />
                 </SidebarCardHeaderBlock>
                 <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
                   {vehicleCardRows(cardVehicle, cardVehicle.directionId != null ? directionLabels.get(cardVehicle.directionId) : null).map(row => (
@@ -693,24 +689,21 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             ) : selectedGroup ? (
               <SidebarCardShell className="px-4 pt-4">
                 <SidebarCardHeaderBlock>
-                  <div className="flex items-start gap-2">
-                    <CardBackButton
-                      onClick={selectedDirection
-                        ? () => setSelectedDirection(null)
-                        : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
-                      label={selectedDirection ? 'Back to directions' : 'Back to route list'}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <RouteCardTitle
-                        routeShortName={selectedGroup.routeShortName}
-                        routeLongName={selectedRouteLongName}
-                        routeType={selectedRouteType}
-                        agencySlug={selectedGroup.agencySlug}
-                        agencyName={selectedAgencyName}
-                        onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
-                      />
-                    </div>
-                  </div>
+                  <CardBackLink
+                    onClick={selectedDirection
+                      ? () => setSelectedDirection(null)
+                      : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
+                  >
+                    {selectedDirection ? `${cleanRouteShortName(selectedGroup.routeShortName)} route` : `${selectedAgencyName} routes`}
+                  </CardBackLink>
+                  <RouteCardTitle
+                    routeShortName={selectedGroup.routeShortName}
+                    routeLongName={selectedRouteLongName}
+                    routeType={selectedRouteType}
+                    agencySlug={selectedGroup.agencySlug}
+                    agencyName={selectedAgencyName}
+                    onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
+                  />
                 </SidebarCardHeaderBlock>
                 <LiveRoutePerformance
                   key={selectedRoute ?? ''}
