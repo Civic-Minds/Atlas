@@ -133,7 +133,7 @@ describe('routeLabels case', () => {
     expect(routeLabelCase('STAMFORD/CT STATE')).toBe('Stamford/Ct State');
     expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
     expect(routeLabelCase('Île-des-Soeurs')).toBe('Île-des-Soeurs');
-    for (const code of ['SL1', '34E', '1X', 'WCE', 'GO', 'SU 43', 'RT 5']) expect(routeLabelCase(code)).toBe(code);
+    for (const code of ['SL1', '34E', '1X', 'WCE', 'GO', 'J14', 'BART']) expect(routeLabelCase(code)).toBe(code);
     expect(routeLabels({ shortName: 'SSSF', longName: 'Sausalito - San Francisco Ferry', routeType: 4 }).primary).toBe('SSSF');
     expect(routeLabels({ shortName: 'RWXP', longName: 'Ridgway Express', routeType: 3 }).text).toBe('RWXP — Ridgway Express');
   });
@@ -144,11 +144,13 @@ describe('routeLabels case', () => {
       ['UNIVERSITY OF TORONTO', 'University of Toronto'], ['CALIFORNIA ST VIA THE HILL', 'California St via the Hill'],
       ["O'BRIEN", "O'Brien"], ['MCKNIGHT', 'McKnight'], ['OCEAN-VIEW', 'Ocean-View'], ['DOWNTOWN/AIRPORT (EXPRESS)', 'Downtown/Airport (Express)'],
       ['BART STATION', 'BART Station'], ['TTC EXPRESS', 'TTC Express'],
+      ['WEST', 'West'], ['PARK', 'Park'], ['MAIN', 'Main'], ['CHURCH', 'Church'], ['OCEAN VIEW', 'Ocean View'], ['BART TO AIRPORT', 'BART to Airport'],
+      ['UBC EXCHANGE/DOWNTOWN', 'UBC Exchange/Downtown'], ['SFO VIA JFK', 'SFO via JFK'], ['5TH AVE', '5th Ave'], ['SU 43', 'Su 43'], ['14R MISSION RAPID', '14R Mission Rapid'],
     ];
     for (const [raw, shown] of cases) expect(routeLabelCase(raw)).toBe(shown);
   });
-  it('leaves mixed-case names, short codes and short acronyms alone', () => {
-    for (const same of ['N Judah', '14R Mission Rapid', 'Church', 'BART', 'TTC', 'UTSC', 'GO', 'OWL', '14R', 'L Taraval']) expect(routeLabelCase(same)).toBe(same);
+  it('leaves mixed-case names, digit codes and allowlisted acronyms alone', () => {
+    for (const same of ['N Judah', '14R Mission Rapid', 'Church', 'BART', 'TTC', 'UTSC', 'GO', 'Owl', '14R', 'L Taraval']) expect(routeLabelCase(same)).toBe(same);
   });
   it('title-cases a shouting long name on a route card', () => {
     expect(routeLabels({ shortName: 'J', longName: 'CHURCH', routeType: 0 }).text).toBe('J — Church');
