@@ -62,7 +62,9 @@ The tiles and every late share (by kind of day, by hour, the route and network f
 
 - **Bunched:** a gap between vehicles of under 2 minutes.
 - **Gapped:** a gap more than twice the timetable's.
-- **Forms** where the share of bunched or gapped gaps rises by 10 or more points and stays up for the next 3 stops or about 1 km. Smaller climbs are called gradual.
+- **Forms** where the share of bunched or gapped gaps rises by 10 or more points between two consecutive measured stops (30+ gaps each) and stays up for the next 3 stops or about 1 km (each at least half the rise above where it started). Smaller climbs are called gradual.
+  - **Terminals.** A stretch that touches a terminal is never named: the run out of a loop is layover and regulation. For bunching the terminals are a pattern's first stop, its last two stops, and the stops at the same stations and loops. The stop after the first is not one, so a step that starts right after the loop is found (504 westbound: 4% at the second stop, 33% at the third, staying at 33-43% for 20 stops). Delay build-up (B3) and the evidence checks below still treat the second stop as a terminal.
+  - **Baseline.** The share at the first measured stop after the terminal(s), averaged with up to two more stops that follow it before any step of 10 points or more. "Gradual" means the share climbs by 5 points or more above that baseline with no single step.
 - **Linked to.** For that stretch the page checks four things measured nearby:
   - uneven departures at the terminal;
   - vehicles standing still;

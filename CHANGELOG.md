@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Bunching stretches that begin right after the first stop are now found (local only, CIV-318)**: the 504 westbound's step from 4% to 33% at the third stop was called "builds slowly"; the stop after the first no longer counts as a terminal for bunching, and the baseline is measured after it. Needs the analysis re-run to show.
 - **The bunching bar chart (phones, Explore) draws the same stops as the strip (local only)**: the 504's Broadview branch stops were missing, which made the chart read as a cliff.
 - **"Linked means it was measured in this stretch" is said once, in the method; the "Linked to" chips keep a clean shape when they take two lines (local only)**.
 - **The planner's "Delay at the first few stops is less exact" note shows only in the Late and Run time views, and the period note is prefixed with its direction (local only)**.
