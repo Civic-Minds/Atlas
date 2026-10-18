@@ -1132,6 +1132,22 @@ export async function processGtfsBuffer(
   // #961: rows whose own overnight value #897 withheld as a sparse window.
   const withheldOvernightFeatures = new Set<GeoJsonFeature>();
   const featureBranchTripCount = new Map<GeoJsonFeature, number>();
+  // CIV-321 S4: per slot, the shapes of its rated patterns (not span, irregular or partial-weekday;
+  // rush-hour-only counts, as GO KI's Kitchener trains do) with their stop sequences, to give the kept
+  // row a display-only full line. The colours along it count only the trains that run there, per period.
+  const fullLineCandidates = new Map<string, Set<string>>();
+  const shapeStopSequence = new Map<string, string[]>();
+  const stopSequenceOfShape = (routeId: string, dir: string | number, shapeId: string): string[] => {
+    const cacheKey = `${routeId}::${dir}::${shapeId}`;
+    let hit = shapeStopSequence.get(cacheKey);
+    if (!hit) {
+      const trips = (tripsByRouteDir.get(`${routeId}::${String(dir)}`) ?? []).filter(trip => trip.shape_id === shapeId);
+      hit = representativeStopSequence(trips, stopTimesByTripId, stopId => stopsById.has(stopId));
+      shapeStopSequence.set(cacheKey, hit);
+    }
+    return hit;
+  };
+  const dedupeKeyRoute = new Map<string, { routeId: string; dir: string | number }>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
     // Use the headsign-specific shape so each pattern (e.g. Bramalea GO vs Kitchener GO, or 
@@ -1206,6 +1222,12 @@ export async function processGtfsBuffer(
       line: hasRouteShape ? points!.map(([lat, lon]) => [lon, lat]) : undefined,
       rushHourOnly: result.rushHourOnly === true,
     };
+    if (hasRouteShape && shapeId && !notRated) {
+      const list = fullLineCandidates.get(dedupeKey) ?? new Set<string>();
+      list.add(shapeId);
+      fullLineCandidates.set(dedupeKey, list);
+      dedupeKeyRoute.set(dedupeKey, { routeId: result.route, dir: result.dir });
+    }
     if (decideDedupe(incumbent, candidate, repWeekday) === 'keep') continue;
 
     const newFeature: GeoJsonFeature = {
@@ -1277,6 +1299,32 @@ export async function processGtfsBuffer(
     if (result.partialWeekday || result.previousNightTailOnly) partialWeekdayFeatures.add(newFeature);
     else partialWeekdayFeatures.delete(newFeature);
     if (result.rushHourOnly) rushHourOnlyFeatures.add(newFeature);
+  }
+  // CIV-321 S4: a kept row whose slot has a rated pattern serving every stop it draws and more (GO KI
+  // Union-bound: the Kitchener trains past the Mount Pleasant short turns) carries that longer shape as
+  // display-only fields (fullLine, fullStopOrder, fullStopPositions), read only by the beta section
+  // colours. The row's own geometry, stops and every value stay as they are (Ryan, 2026-10-18).
+  for (const [dedupeKey, feature] of dedupedFeatures) {
+    const keptShape = featureShapeId.get(feature);
+    const route = dedupeKeyRoute.get(dedupeKey);
+    const shapes = fullLineCandidates.get(dedupeKey);
+    if (!keptShape || !route || !shapes || shapes.size < 2) continue;
+    const kept = new Set(stopSequenceOfShape(route.routeId, route.dir, keptShape));
+    if (kept.size < 2) continue;
+    let best: { shapeId: string; stops: string[] } | null = null;
+    for (const shapeId of shapes) {
+      if (shapeId === keptShape) continue;
+      const stops = stopSequenceOfShape(route.routeId, route.dir, shapeId);
+      if (stops.length <= kept.size || ![...kept].every(stop => stops.includes(stop))) continue;
+      if (!best || stops.length > best.stops.length) best = { shapeId, stops };
+    }
+    const points = best ? shapeById.get(best.shapeId) : undefined;
+    if (!best || !points || points.length < 2) continue;
+    const projected = projectStopsOntoShape(best.stops, stopsById, points).sort((a, b) => a.t - b.t);
+    if (projected.length < 2) continue;
+    feature.properties.fullLine = points.map(([lat, lon]) => [Math.round(lon * 100000) / 100000, Math.round(lat * 100000) / 100000]);
+    feature.properties.fullStopOrder = projected.map(p => p.stopId);
+    feature.properties.fullStopPositions = projected.map(p => Math.round(p.t * 10000) / 10000);
   }
   const features = [...dedupedFeatures.values()];
 

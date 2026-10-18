@@ -1009,8 +1009,9 @@ export function stampStretchShadow(
     p.stretchResearchFrequentService = route.research;
     p.routeFilterHeadwayByPeriod = byPeriod(k => route.period[k].filterValue);
     p.directionFilterHeadwayByPeriod = byPeriod(k => dir.period[k].filterValue);
-    // CIV-321 S1: per drawn stop and period, every trip of the direction that serves the stop.
-    const stopOrder = p.stopOrder as readonly string[] | undefined;
+    // CIV-321: per drawn stop and period, every trip of the direction running through the stop, along
+    // the display-only full line where the row has one (S4), else the row's own stops.
+    const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
     if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong);
     else delete p.stretchStopPeriodValues;
     p.routeRunsByPeriod = byPeriod(k => route.period[k].runs);

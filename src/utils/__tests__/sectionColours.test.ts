@@ -233,3 +233,22 @@ describe('period section colours (CIV-321 S3)', () => {
     expect(p.tier).toBe('30');
   });
 });
+
+describe('sections along a display-only full line (CIV-321 S4)', () => {
+  const layer = (): GeoJSON.FeatureCollection => ({
+    type: 'FeatureCollection',
+    features: [
+      { type: 'Feature', geometry: { type: 'LineString', coordinates: [[4, 0], [10, 0]] },
+        properties: { routeId: 'KI', day: 'Weekday', directionId: 1, headsign: 'Union', tier: '30', headway: 30,
+          stopOrder: ['m', 'b', 'u'], stopPositions: [0, 0.5, 1], stopTiers: { m: '30', b: '30', u: '30' },
+          directionFilterHeadwayByPeriod: { midday: 30 },
+          fullLine: [[0, 0], [10, 0]], fullStopOrder: ['k', 'g', 'm', 'b', 'u'], fullStopPositions: [0, 0.2, 0.4, 0.7, 1],
+          stretchStopPeriodValues: { midday: '180*2,30*3' } } },
+    ],
+  });
+  it('draws the whole full line in its section colours, including the part matching the route tier', () => {
+    const out = buildSectionColourFeatures({ go: layer() }, 'Weekday', 'default', undefined, 'midday');
+    expect(out.map(f => f.properties.tier)).toEqual(['infrequent', '30']);
+    expect(out[0].geometry.coordinates[0]).toEqual([0, 0]);
+  });
+});
