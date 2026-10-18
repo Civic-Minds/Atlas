@@ -20,7 +20,8 @@ import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardBackButton, CardDirectionRow, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
-import { capitalizeFirst, delayAmount, headwayAbout, headwayEvery } from '../utils/headwayText';
+import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
+import { delayLabel, vehicleCardName, vehicleCardRows } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
@@ -68,15 +69,6 @@ const ELIGIBLE_SLUGS = new Set(
     .map(r => r.slug)
 );
 
-/** Schedule status for a vehicle, or '' when the feed gives none (never a "No data" placeholder). */
-function delayLabel(v: LiveVehicle): string {
-  if (v.statusLabel) return v.statusLabel;
-  if (v.delayMin === null) return '';
-  if (v.delayMin <= -1.5) return `${delayAmount(Math.round(Math.abs(v.delayMin)))} early`;
-  if (v.delayMin >= 5.5) return `${delayAmount(Math.round(v.delayMin))} late`;
-  return 'On time';
-}
-
 function pluralModeWord(modeWord: string): string {
   const w = modeWord.toLowerCase();
   return w === 'bus' ? 'buses' : w === 'ferry' ? 'ferries' : `${w}s`;
@@ -122,6 +114,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const selectedRouteRef = useRef(selectedRoute);
   selectedRouteRef.current = selectedRoute;
   const [vehicleFly, setVehicleFly] = useState<{ lat: number; lon: number; ts: number } | null>(null);
+  // The vehicle whose card is open, tied to its route so a route change closes it.
+  const [vehicleCard, setVehicleCard] = useState<{ routeKey: string; id: string } | null>(null);
   const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
   const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
   const { fitArea, highlight, setHighlight, zoomToStretch, registerMapClick, mapLineClickRef } = useLiveCardMapLink();
@@ -322,6 +316,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         if (vehicle) {
           const key = `${vehicle.agencySlug}::${vehicle.routeShortName}`;
           if (key !== selectedRouteRef.current) setSelectedRoute(key);
+          setVehicleCard({ routeKey: key, id: vehicle.id });
+          setFocusedVehicle({ id: vehicle.id, lat: vehicle.lat, lon: vehicle.lon, ts: Date.now() });
           return;
         }
         mapLineClickRef.current?.(lonLat, toleranceM);
@@ -511,6 +507,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const selectedGroup = selectedRoute
     ? routeGroups.find(g => `${g.agencySlug}::${g.routeShortName}` === selectedRoute) ?? null
     : null;
+  const cardVehicle = vehicleCard && vehicleCard.routeKey === selectedRoute
+    ? selectedGroup?.vehicles.find(v => v.id === vehicleCard.id) ?? null
+    : null;
   const performance = useSegmentDelay(selectedGroup?.agencySlug, selectedGroup?.routeShortName);
   const selectedAgencyName = selectedGroup
     ? (agencies.find(a => a.slug === selectedGroup.agencySlug)?.name ?? selectedGroup.agencySlug)
@@ -660,7 +659,38 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           {/* Content */}
           <PanelBody>
             {requestedRouteNote && <PanelEmpty>{requestedRouteNote}</PanelEmpty>}
-            {selectedGroup ? (
+            {selectedGroup && cardVehicle ? (
+              <SidebarCardShell className="px-4 pt-4">
+                <SidebarCardHeaderBlock>
+                  <div className="flex items-start gap-2">
+                    <CardBackButton onClick={() => setVehicleCard(null)} label="Back to route" />
+                    <div className="flex-1 min-w-0">
+                      <RouteCardTitle
+                        routeShortName={selectedGroup.routeShortName}
+                        routeLongName={selectedRouteLongName}
+                        routeType={selectedRouteType}
+                        agencySlug={selectedGroup.agencySlug}
+                        agencyName={selectedAgencyName}
+                        onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
+                      />
+                    </div>
+                  </div>
+                </SidebarCardHeaderBlock>
+                <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
+                  {vehicleCardRows(cardVehicle, cardVehicle.directionId != null ? directionLabels.get(cardVehicle.directionId) : null).map(row => (
+                    <div key={row.label} className="flex items-start justify-between gap-3">
+                      <span className="text-xs font-bold text-[var(--text-dim)]">{row.label}</span>
+                      <span
+                        style={row.status && row.status !== 'no_data' ? { color: getVehicleColors(row.status, colorMode).border } : undefined}
+                        className={`${CARD_LIST_ROUTE} text-right min-w-0`}
+                      >
+                        {row.value}
+                      </span>
+                    </div>
+                  ))}
+                </SidebarCardSection>
+              </SidebarCardShell>
+            ) : selectedGroup ? (
               <SidebarCardShell className="px-4 pt-4">
                 <SidebarCardHeaderBlock>
                   <div className="flex items-start gap-2">
@@ -729,7 +759,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                           <div
                             key={v.id}
                             className="flex items-start justify-between gap-3 cursor-pointer"
-                            onClick={() => setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() })}
+                            onClick={() => {
+                              setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
+                              setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
+                              setVehicleCard({ routeKey: `${v.agencySlug}::${v.routeShortName}`, id: v.id });
+                            }}
                           >
                             <div className="min-w-0">
                               <p className={`${CARD_LIST_ROUTE} truncate`}>
