@@ -9,7 +9,8 @@
  * Schema v3 (the `v3` block) adds the dashboard analysis over the last --days service dates (default 7): adherence, stops with
  * the most delay, where delays start, and where and why bunching forms. See docs/operations/LIVE_ANALYSIS.md.
  *
- * Days the GTFS calendar doesn't cover are dropped, not guessed.
+ * Days the GTFS calendar doesn't cover are dropped, not guessed (with several --gtfs folders, a window date none covers is an error).
+ * --gtfs takes one folder or a comma-separated list; each service date uses the feed that covers it (scripts/live-gtfs-feeds.ts).
  */
 import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { dirname, join } from 'path';
@@ -27,10 +28,12 @@ import { dayHealth, delivered, goodDates, keepGoodDays, runTimeStat, snapshotsPe
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
+import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, droppedDaysWarning, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
-const GTFS = args.gtfs;
+/** One or several timetable folders (--gtfs a,b): a window that spans a feed change uses each date's own feed (CIV-297). */
+const FEED_ARG = String(args.gtfs ?? '').split(',').map(x => x.trim()).filter(Boolean);
 const ARCHIVE = args.archive;
 const ROUTE = args.route ?? '504';
 const OUT = args.out;
@@ -98,42 +101,90 @@ function serviceDayStart(date: string): number {
 const prevDate = (d: string) => new Date(Date.parse(`${d}T12:00:00Z`) - 86400_000).toISOString().slice(0, 10);
 
 // --- static GTFS ---
-function stopTimesFile() { return existsSync(join(GTFS, `${ROUTE}-stop_times.txt`)) ? join(GTFS, `${ROUTE}-stop_times.txt`) : join(GTFS, 'stop_times.txt'); }
-const allRouteTrips = readCsv(join(GTFS, 'trips.txt'), r => r.route_id === ROUTE);
-const excludedTripIds = new Set(allRouteTrips.filter(t => EXCLUDE_HEADSIGN != null && (t.trip_headsign ?? '').toLowerCase().includes(EXCLUDE_HEADSIGN)).map(t => t.trip_id));
-if (SEPARATE_SERVICE != null) {
-  const named = allRouteTrips.filter(t => (t.trip_headsign ?? '').toLowerCase().split(/\s+/).includes(SEPARATE_SERVICE));
-  const namedIds = new Set(named.map(t => t.trip_id));
-  const routeTripIds = new Set(allRouteTrips.map(t => t.trip_id));
-  const ends = readCsv(stopTimesFile(), r => routeTripIds.has(r.trip_id));
-  const byTrip = new Map<string, { seq: number; stopId: string }[]>();
-  for (const r of ends) { const l = byTrip.get(r.trip_id) ?? []; l.push({ seq: Number(r.stop_sequence), stopId: r.stop_id }); byTrip.set(r.trip_id, l); }
-  const first = (id: string) => { const l = byTrip.get(id) ?? []; return l.reduce((a, b) => (b.seq < a.seq ? b : a), l[0])?.stopId; };
-  const last = (id: string) => { const l = byTrip.get(id) ?? []; return l.reduce((a, b) => (b.seq > a.seq ? b : a), l[0])?.stopId; };
-  const turnBack = new Set(named.map(t => `${1 - Number(t.direction_id)}|${last(t.trip_id)}`));
-  for (const t of allRouteTrips) if (namedIds.has(t.trip_id) || turnBack.has(`${t.direction_id}|${first(t.trip_id)}`)) excludedTripIds.add(t.trip_id);
+// With one folder this is exactly the single timetable. With several, each feed's trip, service and shape ids are
+// prefixed with its key (the TTC reuses service ids 1-4 in every feed), the stops are merged (the newest feed wins), and
+// each service date is looked up in the one feed that covers it (feedForDate).
+const ALL_FEEDS = FEED_ARG.map(d => readFeedCoverage(d, readCsv)).sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
+assertDistinctFeeds(ALL_FEEDS);
+/** Given several folders, a date no feed covers is an error (one folder keeps the old behaviour: such days are dropped). */
+const STRICT = ALL_FEEDS.length > 1;
+// Only the feeds that overlap the analysis window are used, so a window inside one feed is analysed exactly as with that
+// feed alone. The window is the last --days archive dates (by file name).
+const archiveDates = readdirSync(ARCHIVE).filter(f => f.startsWith(`${ROUTE}-`) && f.endsWith('.jsonl')).map(f => f.slice(ROUTE.length + 1, -6)).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+const FEEDS = STRICT && archiveDates.length ? feedsOverlapping(ALL_FEEDS, archiveDates.slice(-DAYS)[0], archiveDates[archiveDates.length - 1]) : ALL_FEEDS;
+if (!FEEDS.length) { console.error('live-segment-delay: --gtfs needs a timetable folder (or a comma-separated list of them)'); process.exit(2); }
+/** The newest feed's folder: what the agency summary reads its route names from. */
+const GTFS = FEEDS[FEEDS.length - 1].dir;
+const MULTI = FEEDS.length > 1;
+const stopTimesFileOf = (dir: string) => (existsSync(join(dir, `${ROUTE}-stop_times.txt`)) ? join(dir, `${ROUTE}-stop_times.txt`) : join(dir, 'stop_times.txt'));
+const allRouteTrips: Record<string, string>[] = [];
+const excludedTripIds = new Set<string>();
+for (const feed of FEEDS) {
+  const pre = (id: string) => prefixedId(FEEDS, feed, id);
+  const feedTrips = readCsv(join(feed.dir, 'trips.txt'), r => r.route_id === ROUTE);
+  for (const t of feedTrips) if (EXCLUDE_HEADSIGN != null && (t.trip_headsign ?? '').toLowerCase().includes(EXCLUDE_HEADSIGN)) excludedTripIds.add(pre(t.trip_id));
+  if (SEPARATE_SERVICE != null) {
+    const named = feedTrips.filter(t => (t.trip_headsign ?? '').toLowerCase().split(/\s+/).includes(SEPARATE_SERVICE));
+    const namedIds = new Set(named.map(t => t.trip_id));
+    const routeTripIds = new Set(feedTrips.map(t => t.trip_id));
+    const ends = readCsv(stopTimesFileOf(feed.dir), r => routeTripIds.has(r.trip_id));
+    const byTrip = new Map<string, { seq: number; stopId: string }[]>();
+    for (const r of ends) { const l = byTrip.get(r.trip_id) ?? []; l.push({ seq: Number(r.stop_sequence), stopId: r.stop_id }); byTrip.set(r.trip_id, l); }
+    const first = (id: string) => { const l = byTrip.get(id) ?? []; return l.reduce((a, b) => (b.seq < a.seq ? b : a), l[0])?.stopId; };
+    const last = (id: string) => { const l = byTrip.get(id) ?? []; return l.reduce((a, b) => (b.seq > a.seq ? b : a), l[0])?.stopId; };
+    const turnBack = new Set(named.map(t => `${1 - Number(t.direction_id)}|${last(t.trip_id)}`));
+    for (const t of feedTrips) if (namedIds.has(t.trip_id) || turnBack.has(`${t.direction_id}|${first(t.trip_id)}`)) excludedTripIds.add(pre(t.trip_id));
+  }
+  for (const t of feedTrips) allRouteTrips.push(MULTI ? { ...t, trip_id: pre(t.trip_id), service_id: pre(t.service_id), shape_id: pre(t.shape_id), _feed: feed.key, _raw: t.trip_id, _rawShape: t.shape_id } : t);
 }
 const trips = allRouteTrips.filter(t => !excludedTripIds.has(t.trip_id));
 const tripById = new Map(trips.map(t => [t.trip_id, t]));
-const stopTimesPath = stopTimesFile();
+/** A trip's id as the live position feed knows it (feed prefixes are internal). */
+const rawTripIdOf = (t: Record<string, string>) => t._raw ?? t.trip_id;
+const rawTripId_ = (prefixed: string) => { const t = tripById.get(prefixed); return t ? rawTripIdOf(t) : prefixed; };
 const timesByTrip = new Map<string, { stopId: string; seq: number; arr: number; dep: number; tp: boolean }[]>();
-for (const st of readCsv(stopTimesPath, r => tripById.has(r.trip_id))) {
-  const list = timesByTrip.get(st.trip_id) ?? [];
-  list.push({ stopId: st.stop_id, seq: Number(st.stop_sequence), arr: gtfsSec(st.arrival_time), dep: gtfsSec(st.departure_time), tp: st.timepoint === '1' });
-  timesByTrip.set(st.trip_id, list);
+const stopsById = new Map<string, Record<string, string>>();
+for (const feed of FEEDS) {
+  const pre = (id: string) => prefixedId(FEEDS, feed, id);
+  for (const st of readCsv(stopTimesFileOf(feed.dir), r => tripById.has(pre(r.trip_id)))) {
+    const list = timesByTrip.get(pre(st.trip_id)) ?? [];
+    list.push({ stopId: st.stop_id, seq: Number(st.stop_sequence), arr: gtfsSec(st.arrival_time), dep: gtfsSec(st.departure_time), tp: st.timepoint === '1' });
+    timesByTrip.set(pre(st.trip_id), list);
+  }
+  for (const s of readCsv(join(feed.dir, 'stops.txt'))) stopsById.set(s.stop_id, s); // newest feed last, so it wins
 }
 for (const l of timesByTrip.values()) l.sort((a, b) => a.seq - b.seq);
-const stopsById = new Map(readCsv(join(GTFS, 'stops.txt')).map(s => [s.stop_id, s]));
 
 const shapeIds = new Set(trips.map(t => t.shape_id));
 const shapePts = new Map<string, { seq: number; lon: number; lat: number }[]>();
-for (const r of readCsv(join(GTFS, 'shapes.txt'), r => shapeIds.has(r.shape_id))) {
-  const l = shapePts.get(r.shape_id) ?? [];
-  l.push({ seq: Number(r.shape_pt_sequence), lon: Number(r.shape_pt_lon), lat: Number(r.shape_pt_lat) });
-  shapePts.set(r.shape_id, l);
+for (const feed of FEEDS) {
+  const pre = (id: string) => prefixedId(FEEDS, feed, id);
+  for (const r of readCsv(join(feed.dir, 'shapes.txt'), r => shapeIds.has(pre(r.shape_id)))) {
+    const l = shapePts.get(pre(r.shape_id)) ?? [];
+    l.push({ seq: Number(r.shape_pt_sequence), lon: Number(r.shape_pt_lon), lat: Number(r.shape_pt_lat) });
+    shapePts.set(pre(r.shape_id), l);
+  }
+}
+// Several feeds give the same physical pattern a different shape id in each: a pattern in several feeds counts as one (see canonicalShapeIds).
+/** A shape's id as the timetable names it (feed prefixes are internal). */
+const rawShapeIds = new Map(trips.map(t => [t.shape_id, t._rawShape ?? t.shape_id]));
+const rawShapeIdOf = (id: string) => rawShapeIds.get(id) ?? id;
+if (MULTI) {
+  // A pattern whose stops change at a feed change (a stop added or removed) is two patterns here, one per feed: see
+  // PATTERN_MERGE_REQUIRES_SAME_STOPS in live-gtfs-feeds.ts.
+  const remap = canonicalShapeIds(trips.map(t => ({ feed: t._feed, shapeId: t.shape_id, direction: t.direction_id, stops: (timesByTrip.get(t.trip_id) ?? []).map(x => x.stopId) })), FEEDS.map(f => f.key));
+  for (const t of trips) t.shape_id = remap.get(t.shape_id) ?? t.shape_id;
 }
 const tripsPerShape = new Map<string, number>();
-for (const t of trips) tripsPerShape.set(t.shape_id, (tripsPerShape.get(t.shape_id) ?? 0) + 1);
+if (MULTI) {
+  // How many trips run a pattern is judged against one timetable's worth: the most any single feed runs it, so that adding
+  // a feed does not double every count (the thresholds below, such as 50 trips, are for one feed).
+  const perFeed = new Map<string, number>(); // `${feed}|${shape}`
+  for (const t of trips) perFeed.set(`${t._feed}|${t.shape_id}`, (perFeed.get(`${t._feed}|${t.shape_id}`) ?? 0) + 1);
+  for (const [k, n] of perFeed) { const shape = k.slice(k.indexOf('|') + 1); tripsPerShape.set(shape, Math.max(tripsPerShape.get(shape) ?? 0, n)); }
+} else {
+  for (const t of trips) tripsPerShape.set(t.shape_id, (tripsPerShape.get(t.shape_id) ?? 0) + 1);
+}
 
 const patterns = new Map<string, Pattern>();
 function patternFor(shapeId: string): Pattern | null {
@@ -173,16 +224,26 @@ const directionLabels: Record<string, string> = {};
 }
 
 // --- calendar ---
-const calendar = readCsv(join(GTFS, 'calendar.txt'));
-const calDates = readCsv(join(GTFS, 'calendar_dates.txt'));
+// Each row remembers its feed. A date is looked up only in the feed that covers it, with that feed's service ids.
+const calendar: Record<string, string>[] = [];
+const calDates: Record<string, string>[] = [];
+for (const feed of FEEDS) {
+  for (const c of readCsv(join(feed.dir, 'calendar.txt'))) calendar.push({ ...c, service_id: prefixedId(FEEDS, feed, c.service_id), _feed: feed.key });
+  for (const c of readCsv(join(feed.dir, 'calendar_dates.txt'))) calDates.push({ ...c, service_id: prefixedId(FEEDS, feed, c.service_id), _feed: feed.key });
+}
 const routeServices = new Set(trips.map(t => t.service_id));
 const DOW = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 function activeServices(date: string): string[] | null {
   const ymd = date.replace(/-/g, '');
-  if (!calendar.some(c => c.start_date <= ymd && c.end_date >= ymd)) return null;
+  const feed = MULTI ? feedForDate(FEEDS, date) : null;
+  if (MULTI && !feed) return null;
+  const cal = feed ? calendar.filter(c => c._feed === feed.key) : calendar;
+  const exceptions = feed ? calDates.filter(c => c._feed === feed.key) : calDates;
+  // Covered by a calendar row spanning the date, or by service added on it (the same rule as readFeedCoverage).
+  if (!cal.some(c => c.start_date <= ymd && c.end_date >= ymd) && !exceptions.some(c => c.date === ymd && c.exception_type === '1')) return null;
   const dow = DOW[new Date(`${date}T12:00:00Z`).getUTCDay()];
-  const on = new Set(calendar.filter(c => c.start_date <= ymd && c.end_date >= ymd && c[dow] === '1').map(c => c.service_id));
-  for (const cd of calDates) {
+  const on = new Set(cal.filter(c => c.start_date <= ymd && c.end_date >= ymd && c[dow] === '1').map(c => c.service_id));
+  for (const cd of exceptions) {
     if (cd.date !== ymd) continue;
     if (cd.exception_type === '1') on.add(cd.service_id);
     if (cd.exception_type === '2') on.delete(cd.service_id);
@@ -278,6 +339,8 @@ let delaysExcluded = 0;
 /** Runs (a vehicle on a trip number) the analysis does not use, with why, and the ones it does, by service date. */
 const leftOutRuns: { date: string; reason: 'excluded' | 'no_timetable_trip' }[] = [];
 const keptRuns: string[] = [];
+/** Every run's service date, to check that the timetable feeds cover the window. */
+const allRunDates = new Set<string>();
 /** End-to-end trip time per run: first-stop departure to last-stop arrival, against the timetable's. */
 const runTimes: { date: string; directionId: number; startHour: number; schedSec: number; actualSec: number; tripId: string; patternId: string }[] = [];
 /** Per run: when it left each stop (25 m past) and reached each stop, and the timetable's times there, for run time over the main stretch. */
@@ -303,7 +366,7 @@ const nearCarhouse = (lat: number, lon: number) => CARHOUSES.some(([a, b]) => ha
 const NOT_DIVERSIONS: [number, number][] = [...CARHOUSES, [43.6337, -79.4246] /* Dufferin Gate loop */];
 const notDiversion = (lat: number, lon: number) => NOT_DIVERSIONS.some(([a, b]) => haversineM(lat, lon, a, b) <= 400);
 for (const [key, samples] of runs) {
-  const tripId = key.split('|')[1];
+  const rawTripId = key.split('|')[1];
   samples.sort((a, b) => a.t - b.t);
   const dedup = samples.filter((s, i) => i === 0 || s.t !== samples[i - 1].t);
   let start = 0;
@@ -313,6 +376,9 @@ for (const [key, samples] of runs) {
     start = i;
     runsTotal++;
     const runDate = serviceDateOf(run[0].t);
+    allRunDates.add(runDate);
+    // The position feed's trip number belongs to the timetable in force on the run's service date.
+    const tripId = prefixedId(FEEDS, feedForDate(FEEDS, runDate), rawTripId);
     if (excludedTripIds.has(tripId)) leftOutRuns.push({ date: runDate, reason: 'excluded' });
     else if (!tripById.has(tripId)) leftOutRuns.push({ date: runDate, reason: 'no_timetable_trip' });
     else keptRuns.push(runDate);
@@ -435,6 +501,24 @@ for (const [key, samples] of runs) {
 const stats = aggregateSegments(observations, scheduled, scheduleKeyForDate, hourOf);
 
 // --- headway adherence per stop, per (service date, band) window ---
+// Several timetables: every service date of the window needs one. A date none covers stops the run, naming it, rather than
+// being dropped or given to a timetable that does not cover it.
+if (STRICT) {
+  const wanted = [...allRunDates].filter(d => d >= firstLocal && d <= lastLocal).sort().slice(-DAYS);
+  const missing = [...new Set([...uncoveredDates(FEEDS, wanted), ...wanted.filter(d => activeServices(d) === null)])].sort();
+  if (missing.length) {
+    console.error(`live-segment-delay: no timetable covers ${missing.join(', ')}. The feeds given cover: ${describeFeeds(FEEDS)}. Add the feed whose calendar includes those dates to --gtfs.`);
+    process.exit(1);
+  }
+  console.log(`timetables: ${describeFeeds(FEEDS)}`);
+}
+// One timetable: days it does not cover are still left out, as always, but never quietly.
+if (!STRICT) {
+  const dropped = [...allRunDates].filter(d => d >= firstLocal && d <= lastLocal && activeServices(d) === null);
+  const warning = droppedDaysWarning(dropped, describeFeeds(FEEDS));
+  if (warning) console.error(warning);
+}
+
 const scheduledAt = new Map<string, { tripId: string; t: number }[]>(); // `${svcDate}|${stop}|${dir}`
 const dates = [...new Set(observations.map(o => o.date))].filter(d => scheduleKeyForDate(d)).sort();
 for (const svcDate of dates) {
@@ -1190,7 +1274,7 @@ if (STRINGS_DIR) {
     const runs = windowRuns.filter(r => r.date === date);
     const base = Math.min(...runs.flatMap(r => r.stops.map(x => x.t)));
     const trips = runs.map(r => ({
-      id: r.tripId, dir: r.directionId,
+      id: rawTripId_(r.tripId), dir: r.directionId,
       s: r.stops.flatMap(x => { const i = orderIndex(r.directionId, x.stopId); return i >= 0 ? [[i, Math.round(x.t - base), Math.round(x.t - x.delaySec - base)]] : []; }),
     })).filter(t => t.s.length > 1);
     const dirs = [...stopOrder.keys()].sort((a, b) => a - b);
@@ -1201,8 +1285,8 @@ if (STRINGS_DIR) {
     }));
   }
 }
-if (OBS_OUT) writeFileSync(OBS_OUT, JSON.stringify(windowRuns));
-if (RUNTIMES_OUT) writeFileSync(RUNTIMES_OUT, JSON.stringify(windowRunTimes));
+if (OBS_OUT) writeFileSync(OBS_OUT, JSON.stringify(windowRuns.map(r => ({ ...r, tripId: rawTripId_(r.tripId) }))));
+if (RUNTIMES_OUT) writeFileSync(RUNTIMES_OUT, JSON.stringify(windowRunTimes.map(r => { const x = r as typeof r & { tripId: string; patternId: string }; return { ...r, tripId: rawTripId_(x.tripId), patternId: rawShapeIdOf(x.patternId) }; })));
 console.log(`v3: window ${windowDates.length} days (${windowDates[0]}..${windowDates[windowDates.length - 1]}), runs ${windowRuns.length}, stop passages ${v3.totals.stopPassages}, dropped off-timetable ${delaysExcluded}`);
 
 const usedDates = dates;
@@ -1210,13 +1294,15 @@ const result = {
   agency: 'ttc',
   route: ROUTE,
   generatedAt: new Date().toISOString(),
-  gtfs: existsSync(join(GTFS, 'feed_info.txt')) ? readCsv(join(GTFS, 'feed_info.txt'))[0]?.feed_version ?? null : null,
+  gtfs: MULTI ? FEEDS.map(f => f.version ?? f.key).join('+') : existsSync(join(GTFS, 'feed_info.txt')) ? readCsv(join(GTFS, 'feed_info.txt'))[0]?.feed_version ?? null : null,
+  ...(MULTI ? { gtfsFeeds: FEEDS.map(f => ({ version: f.version, from: f.start, to: f.end })) } : {}),
   dates: usedDates,
   directionLabels,
   // The timetable runs this route entirely as replacement buses (e.g. 503, 507 in fall 2026).
   replacementBuses: trips.length > 0 && trips.every(t => /replacement bus/i.test(t.trip_headsign)),
   // Trip number -> direction, so the live card can place current vehicles (the live feed's trip IDs match this timetable).
-  tripDirections: Object.fromEntries([...new Set(trips.map(t => t.direction_id))].map(d => [d, trips.filter(t => t.direction_id === d).map(t => t.trip_id)])),
+  // The position feed's own trip numbers (not the feed-prefixed ids used inside this script), once each.
+  tripDirections: Object.fromEntries([...new Set(trips.map(t => t.direction_id))].map(d => [d, [...new Set(trips.filter(t => t.direction_id === d).map(rawTripIdOf))]])),
   runsTotal,
   runsMatched,
   runsUnmatched,
