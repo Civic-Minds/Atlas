@@ -423,7 +423,7 @@ async function main() {
       // stop sequence was identical across every archived period being
       // compared. Never a caveat when unstable -- just omitted, so a rider
       // never sees a comparison that might be comparing two different
-      // physical alignments (see docs/roadmap/EXPERIMENTS.md).
+      // physical alignments (see docs/roadmap/EXPERIMENT_IDEAS.md).
       // De-dupe by periodKey (routine weekly refreshes can archive the same
       // service period more than once) before looking for a stable run.
       const rawTripDurationEntries = tripDurationRoutes[slug]?.[routeShortName] ?? [];

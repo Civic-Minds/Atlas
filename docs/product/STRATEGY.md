@@ -11,9 +11,9 @@ The main players in transit analytics are Remix (Via), Swiftly, and Optibus. All
 | Feature | Atlas | Remix | Swiftly | Optibus |
 |---------|-------|-------|---------|---------|
 | Frequency mapping | Automatic from GTFS | Manual/auto | Static only | No |
-| Real-time headway tracking | In progress | No | Yes | Yes |
+| Real-time headway tracking | Paused, see [Feature flags](../FEATURE_FLAGS.md) | No | Yes | Yes |
 | Historical schedule snapshots | In progress | No | No | No |
-| Adherence analysis | In progress | No | Yes | No |
+| Adherence analysis | Paused, see [Feature flags](../FEATURE_FLAGS.md) | No | Yes | No |
 | Open public view | Yes | No | No | No |
 
 The main gap vs. Swiftly is live operations depth — Swiftly is purpose-built for operations monitoring and has years of data. Atlas's advantage is that it accumulates data passively across a broad regional network, and the public map is something agencies can actually share with riders and stakeholders.

@@ -363,7 +363,7 @@ The override is **not** a frontend hack. A feed-specific normalization rule (or 
 
 1. Create the GitHub issue (`data override` label) documenting what upstream got wrong
 2. Add the corrective preprocessing/configuration plus a plain-language `overrideNote` to `config/agencies/{slug}.json`, then regenerate `index.json`
-3. Refresh the agency through the release flow (`npm run refresh-release -- <slug>`) so its agency data and map tiles are rebuilt without the bad routes and go live together. Standalone tile uploads refuse without an override.
+3. Refresh the agency through the release flow so its agency data and map tiles are rebuilt without the bad routes and go live together: see [MAP_UPDATES.md](../data/MAP_UPDATES.md#manual-feed-refreshes) (`npm run refresh-release -- <slug>`).
 4. Changelog + **commit with `Closes #N`**
 5. **When upstream publishes a new GTFS file:** the next refresh or processing run that sees the new feed clears `overrideNote` (and `issueUrl`) from the agency config (the card stops linking until you re-verify). Any corrective preprocessing/configuration remains so bad data does not silently reappear while you check. If the bad data is still there, file a **new** issue, restore `overrideNote`, and commit with `Closes #N`. If upstream fixed it, remove the corrective override too.
 

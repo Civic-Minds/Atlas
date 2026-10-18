@@ -22,19 +22,19 @@ passes, one-off promotions and fare-free days.
 ## Method
 
 - An AI researcher ran one batch per session using the rules in `prompt.md`,
-  and wrote a checkpoint for each batch.
+  and wrote a checkpoint for each batch (kept in [`archive/`](../archive/fare-discounts-2026-10/)).
 - Sources must be official: the agency, the government body that runs the
   program, or an official program site. Evidence must be quoted word for word
   from the cited page.
 - An independent audit on 2026-10-10 (`audit-2026-10-10.md`) checked structure,
   timestamps, a 30-row sample and every none-found row.
-- `fix-prompt-2026-10-10.md` gave the researcher the corrections to make.
+- `fix-prompt-2026-10-10.md` (archived) gave the researcher the corrections to make.
   `rebuild-report-2026-10-10.md` (written 2026-10-11) is the researcher's own
   account of the fixes. It has not been independently re-audited.
 
 ## Results and interpretation
 
-Current files after the 2026-10-11 repair (the rebuild reported 592 / 6 / 42):
+Current counts in the CSVs (counted 2026-10-18, matching the 2026-10-11 verification pass): 570 / 26 / 44. The older rebuild report says 592 / 6 / 42; that was the researcher's own count before the verification pass changed the status of 22 rows, and it is superseded.
 
 | researchStatus | Rows |
 |---|---:|
@@ -209,10 +209,10 @@ matters.
 
 **Overlap with other research:**
 
-- [`fare-discount-comparison-2026-02`](../fare-discount-comparison-2026-02/README.md):
+- [`fare-discount-comparison-2026-02`](../archive/fare-discount-comparison-2026-02/README.md):
   an earlier, unverified California-only prototype of low-income programs.
   This folder supersedes it in scope.
-- [`fare-inventory-2026-09-29`](../fare-inventory-2026-09-29/) and
+- [`fare-inventory-2026-09-29`](../archive/fare-inventory-2026-09-29/README.md) and
   [`fare-inventory-2026-09-30`](../fare-inventory-2026-09-30/README.md): the
   September base fare inventory. `knownFarePageUrl` in `agencies.csv` holds
   fare pages verified in September 2026, the same period. Discount amounts
@@ -225,9 +225,9 @@ matters.
 | `fare-discounts-B01-2026-10-10.csv` ... `B21` | Canonical output, one row per agency program |
 | `agencies.csv` | Input agency list with batch, official website and known fare page |
 | `prompt.md` | Research rules and output schema |
-| `checkpoint-B01-2026-10-10.md` ... `B21` | Per-batch checkpoints |
+| `../archive/fare-discounts-2026-10/checkpoint-B01-2026-10-10.md` ... `B21` | Per-batch checkpoints (archived) |
 | `audit-2026-10-10.md` | Independent audit of the October 10 pass |
-| `fix-prompt-2026-10-10.md` | Corrections requested after the audit |
+| `../archive/fare-discounts-2026-10/fix-prompt-2026-10-10.md` | Corrections requested after the audit (archived) |
 | `rebuild-report-2026-10-10.md` | Researcher's report on the rebuild |
 | `verification-2026-10-11-quote-check.json` | Per-row results of the 2026-10-11 quote check |
 | `verification-2026-10-11-audit-fixes.json` | Hand check of the 15 audit-fix rows |
@@ -237,4 +237,4 @@ official text), `near-verbatim` (substance matches, wording differs),
 `content-confirmed-not-verbatim` (read through a browser fetch only),
 `fetch-blocked` (official site refused automated fetches; not re-verified),
 `unchecked` (not in the 2026-10-11 sample) or `not-applicable` (none-found).
-| `archive-stale/` | Superseded files kept for history: an early B07 CSV that still has not-yet-checked rows, a B08 checkpoint with the old file-name pattern, and an early B03 checkpoint (`checkpoint-B03-2026-10-10-early.md`, from a separate `fare-discounts-2026-10-10` folder) |
+| `../archive/fare-discounts-2026-10/archive-stale/` | Superseded files kept for history: an early B07 CSV that still has not-yet-checked rows, a B08 checkpoint with the old file-name pattern, and an early B03 checkpoint (`checkpoint-B03-2026-10-10-early.md`, from a separate `fare-discounts-2026-10-10` folder) |

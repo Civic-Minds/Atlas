@@ -5,17 +5,21 @@ Atlas is a regional transit atlas for understanding where transit runs frequentl
 - **[Vision](../product/VISION.md)**: Product philosophy — frequency mapping to live performance evidence and long-term accumulation of real service data.
 
 ### Product and platform
-- **[Product](./PRODUCT.md)**: Map apps (Frequency Map, History; Corridors was retired on 2026-10-13), live data layer, filters, design principles.
+- **[Product](./PRODUCT.md)**: Map apps (Frequency Map, History; Corridors is retired, see Status below), live data layer, filters, design principles.
 - **[Platform](./PLATFORM.md)**: History & change analysis, public tools (shareable views, multi-agency merges).
 - **[Technical](./TECHNICAL.md)**: Future engineering direction for live data, rendering, and analysis infrastructure.
 
 ---
 
-### Reference and research
-- **[Strategy](../product/STRATEGY.md)**: competitive landscape and long-term product positioning.
-- **[Research](../product/RESEARCH.md)**: agency pain points and problem statements informing Atlas's direction.
-- **[Product Decisions](../product/DECISIONS.md)**: durable product and architecture decisions that apply across Atlas.
+### Status
 
-Ideas kicked around just for fun, no commitment: [Experiments](./EXPERIMENTS.md).
+- **Corridors:** retired 2026-10-13; its old URLs redirect to the map. This is the one place the status is stated.
+- **Live:** see [Feature flags](../FEATURE_FLAGS.md), the one place its status is stated.
+
+---
+
+Strategy, research, decisions and every other doc are listed in the [documentation index](../README.md).
+
+Ideas kicked around just for fun, no commitment: [Experiment ideas](./EXPERIMENT_IDEAS.md).
 
 [Back to Home](../../README.md)

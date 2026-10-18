@@ -2,7 +2,8 @@
 
 This is the standardized record for the frequency-methodology work. The full
 evidence, tables, and examples remain in [`INDEX.md`](./INDEX.md); this file
-records the decision trail in a consistent format.
+records the decision trail in a consistent format. Current values live only in
+[FREQUENCY_RULES.md](../../../product/FREQUENCY_RULES.md) (Thresholds).
 
 ## Retroactive records
 

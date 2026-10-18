@@ -12,8 +12,8 @@ GTFS feeds are scattered — one per agency, with no way to see a whole region's
 - **Filtering**: By agency, mode (bus/rail/etc.), frequency ceiling, and day of week. Optional irregular-service toggle hides exceptional and school-run routes while keeping predictable time-limited service visible.
 - **Search**: Cross-agency route search by number or name, scoped to the current frequency filter.
 - **Station View**: Click any stop to pin it and see every route serving it along with their current-day headways.
-- **Corridors**: Station-to-station lookup — find direct routes between two stops with headway at the destination; off in every deployment for now.
-- **Live Adherence**: Planned real-time headway drift for supported routes via GTFS-RT TripUpdates; paused.
+- **Corridors**: retired; status in the [roadmap](docs/roadmap/ROADMAP.md#status).
+- **Live Adherence**: Planned real-time headway drift for supported routes via GTFS-RT TripUpdates; current status in [Feature flags](docs/FEATURE_FLAGS.md).
 - **History**: How each route's frequency changed across archived schedule periods; limited to agencies with usable archives and beta-only.
 - **Agency Browser**: Browse all agencies with region filters, search, and a detail card showing routes by frequency and, when Live is on, live tracking status.
 

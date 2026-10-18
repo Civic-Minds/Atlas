@@ -1,6 +1,8 @@
 # Frequency methodology proposal
 
-**Status:** Internal draft
+**Superseded:** the rules shipped in PR [#584](https://github.com/Civic-Minds/Atlas/pull/584); see [FREQUENCY_RULES.md](../../../product/FREQUENCY_RULES.md) for the current rules and values. The text below is kept as the history of the proposal.
+
+**Status:** Internal draft (historical)
 
 **Purpose:** Turn the frequency-methodology study into a decision record that
 can guide implementation review. This is not an external white paper and does
