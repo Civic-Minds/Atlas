@@ -5,6 +5,10 @@ import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../../shared/t
 import { splitRouteKey } from '../../../utils/routeKey';
 import { buildPartialMatchFilterExpression, type computeFrequencySegmentOverlay } from '../../../utils/frequencySegments';
 
+/** Base route line width by zoom, shared by the regular map and the Live context lines. */
+export const ROUTE_LINE_WIDTH_STOPS = [8, 1.5, 11, 2, 14, 2.5, 17, 3.5] as const;
+export const ROUTE_LINE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], ...ROUTE_LINE_WIDTH_STOPS] as const;
+
 type PartialMatches = ReturnType<typeof computeFrequencySegmentOverlay>['partialMatches'];
 
 /** Flatten nested ['all', ...] filters into one clause list for MapLibre. */
@@ -116,10 +120,7 @@ export function resetRoutesLayerDefaultPaint(map: maplibregl.Map, period: TimePe
   // get a different zoom-gate opacity/visibility here than the main effect would compute for the
   // same route, until something else triggered the main effect to re-run and overwrite it.
   const headwayExpr: any = tileEffectiveHeadwayExpr(period);
-  setRouteLayerPaint(map, 'line-width', [
-    'interpolate', ['linear'], ['zoom'],
-    8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5,
-  ]);
+  setRouteLayerPaint(map, 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
   const defaultOpacity = buildDefaultRouteLineOpacityExpression(headwayExpr) as any;
   if (partialMatches.length > 0) {
     const partialMatch = buildPartialMatchFilterExpression(partialMatches);

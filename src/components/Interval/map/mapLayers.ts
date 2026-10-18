@@ -3,6 +3,7 @@ import { HEADWAY_TIERS, getNightServiceColor, type ColorVisionMode } from '../..
 import { getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl } from '../../../lib/mapStyle';
 import { tileRouteKeyExpr } from '../../../../shared/tileFilterExprs';
 import { buildFocusCase, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
+import { ROUTE_LINE_WIDTH_BY_ZOOM, ROUTE_LINE_WIDTH_STOPS } from './routeStyle';
 import { ON_DEMAND_FOCUSED_PROP } from './onDemandFocus';
 
 const ON_DEMAND_AREA_COLOR = '#64748b';
@@ -124,7 +125,7 @@ function addOnDemandLayers(map: maplibregl.Map) {
 // Width matches the regular map's base route class (buildFriendlyRouteWidthExpression): one even weight.
 const LIVE_CONTEXT_PAINT = {
   'line-color': '#6b7280',
-  'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, 8, 1.5, 11, 2, 14, 2.5, 17, 3.5],
+  'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, ...ROUTE_LINE_WIDTH_STOPS],
   'line-opacity': 0.85,
 } as const;
 export const LIVE_CONTEXT_LAYER_IDS = ['live-context-overview-layer', 'live-context-routes-layer', 'live-context-local-layer'] as const;
@@ -183,7 +184,7 @@ function addRouteLayers(map: maplibregl.Map) {
     minzoom: 8,
     paint: {
       'line-color': '#555555',
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
+      'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any,
       'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9],
     },
     layout: {
@@ -221,7 +222,7 @@ function addLocalRouteLayers(map: maplibregl.Map) {
     source: 'local-routes',
     paint: {
       'line-color': ['get', 'localHeadwayColor'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2, 14, 2.5, 17, 3.5],
+      'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any,
       'line-opacity': 0.9,
     },
     layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'visible' },
@@ -251,7 +252,7 @@ function addSectionColourLayers(map: maplibregl.Map) {
     minzoom: 8,
     paint: {
       'line-color': ['get', 'color'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
+      'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any,
       'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9],
     },
     layout: { 'line-cap': 'round', 'line-join': 'round' },
