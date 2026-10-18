@@ -238,24 +238,27 @@ export function useLiveVehiclesLayer(
     };
   }, [mapLoaded, mapRef, deckOverlayRef, liveOverlay]);
 
-  // Context lines (CIV-326): all routes of the agencies with vehicles on screen, thin and light,
-  // under every other route line (and under the deck dots). Agencies with no shapes draw nothing.
-  const contextSlugKey = liveOverlay
-    ? [...new Set((liveOverlay.vehicles ?? []).map(v => v.agencySlug).filter(Boolean))].sort().join(',')
+  // Context lines (CIV-326): only the routes that currently have a vehicle in the overlay (so the same
+  // filter as the dots), thin and light, under every other route line and the deck dots.
+  const contextRoutesKey = liveOverlay
+    ? [...new Set((liveOverlay.vehicles ?? []).filter(v => v.agencySlug && v.routeShortName).map(v => `${v.agencySlug}::${v.routeShortName}`))].sort().join('\n')
     : null;
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-    const slugs = contextSlugKey ? contextSlugKey.split(',') : [];
-    const filter = (slugs.length > 0
-      ? ['in', ['get', 'agencySlug'], ['literal', slugs]]
+    const keys = contextRoutesKey ? contextRoutesKey.split('\n') : [];
+    const filter = (keys.length > 0
+      ? ['any', ...keys.map(k => {
+        const i = k.indexOf('::');
+        return ['all', ['==', ['get', 'agencySlug'], k.slice(0, i)], ['==', ['get', 'routeShortName'], k.slice(i + 2)]];
+      })]
       : ['==', ['get', 'agencySlug'], '']) as maplibregl.FilterSpecification;
     for (const id of LIVE_CONTEXT_LAYER_IDS) {
       if (!map.getLayer(id)) continue;
       map.setFilter(id, filter);
-      map.setLayoutProperty(id, 'visibility', slugs.length > 0 ? 'visible' : 'none');
+      map.setLayoutProperty(id, 'visibility', keys.length > 0 ? 'visible' : 'none');
     }
-  }, [contextSlugKey, mapLoaded, mapRef]);
+  }, [contextRoutesKey, mapLoaded, mapRef]);
 
   // Live route dynamic shape overlay (MapLibre GeoJSON — not deck)
   useEffect(() => {

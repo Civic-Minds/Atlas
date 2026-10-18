@@ -118,7 +118,7 @@ function addOnDemandLayers(map: maplibregl.Map) {
 }
 
 /**
- * Live context lines (CIV-326): every route of the agencies Live is showing, thin and light, drawn
+ * Live context lines (CIV-326): only the routes that currently have a vehicle on the Live map, thin and light, drawn
  * under all other route lines. Hidden and filtered to nothing until the Live hook fills it.
  */
 export const LIVE_CONTEXT_LAYER_IDS = ['live-context-overview-layer', 'live-context-routes-layer', 'live-context-local-layer'] as const;
