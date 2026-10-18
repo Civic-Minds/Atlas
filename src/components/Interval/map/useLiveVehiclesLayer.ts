@@ -300,6 +300,15 @@ export function useLiveVehiclesLayer(
     map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), 14) });
   }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, mapLoaded, mapRef]);
 
+  // Vehicle clicked in the sidebar list — one fly-to, never zooming out past street level
+  useEffect(() => {
+    const map = mapRef.current;
+    const fly = liveOverlay?.vehicleFly;
+    if (!map || !mapLoaded || !fly) return;
+    map.flyTo({ center: [fly.lon, fly.lat], zoom: Math.max(map.getZoom(), 15) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveOverlay?.vehicleFly?.ts, mapLoaded, mapRef]);
+
   // Coverage-area fly — live panel requests a jump to an agency's bbox (place list click)
   useEffect(() => {
     const map = mapRef.current;

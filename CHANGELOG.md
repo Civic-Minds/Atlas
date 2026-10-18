@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Clicking a vehicle in the Live route list flies the map to it (local only, CIV-328)**: so you can see where that bus is without hunting for it.
 - **Live shows the agency's route lines under the vehicle dots (local only, CIV-326)**: thin, light lines so the dots stay the loudest thing on the map; agencies with no shapes show just dots.
 - **The planner's week table names both weeks' left-out days once, says TTC in its header, and its hover reasons name the days (local only)**: "Excluding Oct 11 this week, Oct 4 last week" sits directly under the table (and in the method line); "Oct 11 left out: gaps in our recordings that day" is the hover.
 - **The planner's week figures are a small aligned table (local only)**: Late, Run time, Extra wait, Bunching and Service delivered with This week and Last week columns, the arrow beside this week's value only where the numbers differ, the short explanations as notes under it, and the days left out beside the colour caption.

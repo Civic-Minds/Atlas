@@ -23,6 +23,8 @@ export interface LiveVehicle {
 export interface LiveVehiclesMapOverlay {
   vehicles: LiveVehicle[];
   focusedVehicle?: { id: string; lat: number; lon: number; ts: number } | null;
+  // One-shot fly to a vehicle clicked in the list; ts re-triggers repeat clicks. Never zooms out below street level.
+  vehicleFly?: { lat: number; lon: number; ts: number } | null;
   routeFeatures?: GeoJSON.Feature[];
   // Composite key "slug::routeShortName" — used for route shape fit-bounds tracking
   selectedRouteKey?: string | null;

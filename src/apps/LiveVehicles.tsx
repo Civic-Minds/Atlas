@@ -119,6 +119,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const selectedRouteRef = useRef(selectedRoute);
   selectedRouteRef.current = selectedRoute;
+  const [vehicleFly, setVehicleFly] = useState<{ lat: number; lon: number; ts: number } | null>(null);
   const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
   const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
   const { fitArea, highlight, setHighlight, zoomToStretch, registerMapClick, mapLineClickRef } = useLiveCardMapLink();
@@ -294,6 +295,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       selectedRoute ?? '',
       focusedVehicle?.id ?? '',
       focusedVehicle?.ts ?? '',
+      vehicleFly?.ts ?? '',
       routeFeatures.length,
       focusArea?.ts ?? '',
       fitArea?.ts ?? '',
@@ -303,7 +305,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     if (fp === lastOverlayFpRef.current) return;
     lastOverlayFpRef.current = fp;
     setOverlay({
-      vehicles: overlayVehicles, focusedVehicle, routeFeatures, selectedRouteKey: selectedRoute, focusArea, fitArea, highlight,
+      vehicles: overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, selectedRouteKey: selectedRoute, focusArea, fitArea, highlight,
       onMapClick: (lonLat, vehicle, toleranceM) => {
         if (vehicle) {
           const key = `${vehicle.agencySlug}::${vehicle.routeShortName}`;
@@ -313,7 +315,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         mapLineClickRef.current?.(lonLat, toleranceM);
       },
     });
-  }, [active, overlayVehicles, focusedVehicle, routeFeatures, selectedRoute, focusArea, fitArea, highlight, setOverlay]);
+  }, [active, overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, selectedRoute, focusArea, fitArea, highlight, setOverlay]);
 
 
   // Clear overlay when deactivating or unmounting
@@ -713,7 +715,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     ).map((v, i) => {
                       const colors = getVehicleColors(v.status, colorMode);
                       return (
-                        <div key={v.id} className="flex items-start justify-between gap-3">
+                        <div
+                          key={v.id}
+                          className="flex items-start justify-between gap-3 cursor-pointer"
+                          onClick={() => setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() })}
+                        >
                           <div className="min-w-0">
                             <p className={`${CARD_LIST_ROUTE} truncate`}>
                               {liveVehicleRowLabel(v, i, selectedRouteModeWord)}
