@@ -17,3 +17,8 @@ export function useMediaQuery(query: string): boolean {
 
 /** Phone-width screens (below Tailwind's sm breakpoint). */
 export const PHONE_MEDIA_QUERY = '(max-width: 639px)';
+
+/** History and Compare are desktop/tablet only: below sm they are switched off everywhere. */
+export function phoneModeFlags(isPhone: boolean): { history: boolean; compareMode: boolean } {
+  return { history: !isPhone, compareMode: !isPhone };
+}

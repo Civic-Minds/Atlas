@@ -7,7 +7,8 @@ import Tag from './ui/Tag';
 import PanelEmpty from './ui/PanelEmpty';
 import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
-import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
+import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
+import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
 import { agencyDisplayParts, formatStoredDate, routeLabelCase } from '../utils/format';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
@@ -89,6 +90,9 @@ function tabToView(tab: Tab): View {
 }
 
 export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick, layers }: Props) {
+  // History is not offered on phones, so its filter, badges and wording step aside there.
+  const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
+  const FEATURES = { ...BASE_FEATURES, history: BASE_FEATURES.history && phoneModeFlags(isPhone).history };
   const [view, setView] = useState<View>('home');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
@@ -264,7 +268,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const agencyFilterOptions: Array<[AgencyListFilter, string]> = [
     ['all', 'All'],
     ['live', 'Live'],
-    ['history', 'History'],
+    ...(FEATURES.history ? [['history', 'History'] as [AgencyListFilter, string]] : []),
     ...(FEATURES.outdatedFilter ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
   ];
 

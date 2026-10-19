@@ -11,7 +11,7 @@ import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 const Interval = React.lazy(() => import('./apps/Interval'));
 import { useDebouncedValue } from './hooks/useDebouncedValue';
-import { PHONE_MEDIA_QUERY, useMediaQuery } from './hooks/useMediaQuery';
+import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from './hooks/useMediaQuery';
 const NightService = React.lazy(() => import('./apps/NightService'));
 // Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
 // of what main's build actually fetches, not just hidden behind a runtime check.
@@ -167,11 +167,16 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const inFrequentServiceStory = FEATURES.frequentService && isFrequentServiceStoryRoute;
   const inFrequentService = frequentServiceMapView;
   const inResearch = FEATURES.researchApps && pathname === FEATURE_ROUTES.research;
+  const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
+  // History and Compare are not offered on phones (below sm): their tabs, menu entries and deep links all fall back to the map.
+  const phoneModes = phoneModeFlags(isPhone);
+  const historyOn = FEATURES.history && phoneModes.history;
+  const compareOn = FEATURES.compareMode && phoneModes.compareMode;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
   // gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
-  const gated = isAppGated(routedApp, FEATURES)
+  const gated = isAppGated(routedApp, { ...FEATURES, history: historyOn })
     || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
   // The router's view of the address lags the address bar while the next mode renders (a
@@ -351,7 +356,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [searchFocused, setSearchFocused] = useState(false);
   // On phones the search box is too narrow to read what you type (#698), so while it is
   // focused it takes the whole top bar and the other header buttons step aside.
-  const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const phoneSearchExpanded = isPhone && searchFocused;
   const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -435,7 +439,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // shrink to icons. ModeTab applies it, so views and future views never decide this themselves.
   const nonMapViewActive = FEATURES.collapseModeTabs
     && (inLive || inHistory || inNight || inFrequentService || compareActive);
-  const showCompareControl = FEATURES.compareMode && inFrequency;
+  const showCompareControl = compareOn && inFrequency;
   const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
   ));
@@ -445,7 +449,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       .map(route => route.slug)).size,
     [],
   );
-  const showHistoryControl = FEATURES.history && (inHistory || (historyAgencySlugs != null && (
+  const showHistoryControl = historyOn && (inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
     [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
   )));
@@ -681,7 +685,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         {/* Compare (beta) portals in here from Interval. Phones reach it from the filter panel. */}
         <div ref={viewTabsPortalRef} className="hidden sm:contents" />
         {/* Live and History have no compare view: keep the tab (as an icon) and take it back to the map to compare. */}
-        {FEATURES.compareMode && (inLive || inHistory) && (
+        {compareOn && (inLive || inHistory) && (
           <CompareTab
             active={false}
             onStart={() => { setCompareStartRequest(Date.now()); setActiveApp('frequency'); }}
@@ -821,7 +825,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               dataSaver={dataSaver}
               setDataSaver={setDataSaver}
             />
-            {FEATURES.history && (historyOpened || inHistory) && (
+            {historyOn && (historyOpened || inHistory) && (
               <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
                 <History active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>

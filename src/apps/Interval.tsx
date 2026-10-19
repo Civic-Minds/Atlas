@@ -1,3 +1,4 @@
+import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
@@ -381,7 +382,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   // Compare mode (beta): side A is the normal day, time and frequency; side B has its own day, time
   // and frequency. Modes, agencies and the irregular-route settings are shared by both maps.
-  const compareAvailable = FEATURES.compareMode && showRouteLayers && !nightServiceView
+  const isPhoneScreen = useMediaQuery(PHONE_MEDIA_QUERY);
+  const compareAvailable = FEATURES.compareMode && phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
   const [compareSide, setCompareSide] = useState<CompareSide | null>(() => {
     if (!compareAvailable) return null;
