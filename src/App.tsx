@@ -11,6 +11,7 @@ import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 const Interval = React.lazy(() => import('./apps/Interval'));
 import { useDebouncedValue } from './hooks/useDebouncedValue';
+import { phoneSearchExpanded as phoneSearchExpandedFor, phoneSearchOpenAfterBlur } from './utils/format';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from './hooks/useMediaQuery';
 const NightService = React.lazy(() => import('./apps/NightService'));
 // Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
@@ -352,9 +353,21 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // On phones the search box is too narrow to read what you type (#698), so while it is
   // focused it takes the whole top bar and the other header buttons step aside.
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
-  const phoneSearchExpanded = isPhone && searchFocused;
+  // Below sm the search is a 44px icon button until tapped; it then expands across the top bar.
+  const [phoneSearchTapped, setPhoneSearchTapped] = useState(false);
+  const phoneSearchExpanded = phoneSearchExpandedFor(isPhone, searchFocused, phoneSearchTapped);
+  // Panels (picking a result) unfocus search through this, which also folds the phone field back to its icon.
+  const setSearchFocusedFromPanel = useCallback((focused: boolean) => {
+    setSearchFocused(focused);
+    if (!focused) setPhoneSearchTapped(false);
+  }, []);
+  useEffect(() => {
+    if (phoneSearchTapped) searchInputRef.current?.focus();
+  }, [phoneSearchTapped]);
   const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const queryRef = useRef(query);
+  queryRef.current = query;
 
   useEffect(() => {
     function handleMousedown(e: MouseEvent) {
@@ -603,9 +616,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         </button>
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
-        <div className="flex-1 min-w-0 sm:flex">
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
+        <div className={`${isPhone && !phoneSearchExpanded ? 'flex-none' : 'flex-1'} min-w-0 sm:flex`}>
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3 ${isPhone && !phoneSearchExpanded ? 'max-sm:!w-11 max-sm:px-0 hover:text-[var(--accent)] transition-colors' : ''}`}>
+          {isPhone && !phoneSearchExpanded && (
+            <button
+              type="button"
+              aria-label={searchPlaceholder}
+              onClick={() => { setPhoneSearchTapped(true); setSearchFocused(true); }}
+              className="absolute inset-0 flex items-center justify-center rounded-full text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
+            >
+              <Search className="w-4 h-4" />
+            </button>
+          )}
+          <Search className={`${isPhone && !phoneSearchExpanded ? 'hidden' : ''} absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none`} />
           <input
             ref={searchInputRef}
             type="text"
@@ -617,24 +640,29 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               clearTimeout(searchBlurTimer.current);
               setSearchFocused(true);
             }}
-            onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); searchEnterRef.current?.(); } }}
+            onKeyDown={e => {
+              if (e.key === "Enter") { e.preventDefault(); searchEnterRef.current?.(); }
+              // On phones Escape closes the expanded field back to its icon.
+              if (e.key === "Escape" && isPhone) { setQuery(''); setPhoneSearchTapped(false); e.currentTarget.blur(); }
+            }}
             onFocus={() => {
               clearTimeout(searchBlurTimer.current);
               setSearchFocused(true);
             }}
             onBlur={() => {
-              searchBlurTimer.current = setTimeout(() => setSearchFocused(false), 150);
+              searchBlurTimer.current = setTimeout(() => {
+                setSearchFocused(false);
+                setPhoneSearchTapped(open => phoneSearchOpenAfterBlur(open, queryRef.current));
+              }, 150);
             }}
             placeholder=""
-            className="w-full bg-transparent text-[var(--text-primary)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none"
+            className={`${isPhone && !phoneSearchExpanded ? 'hidden' : ''} w-full bg-transparent text-[var(--text-primary)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none`}
           />
-          {!query && (
+          {!query && !(isPhone && !phoneSearchExpanded) && (
             <span
               className="absolute left-8 right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--text-dim)] pointer-events-none select-none whitespace-nowrap overflow-hidden text-ellipsis"
             >
-              {/* The search pill is narrow on phones: a one-word hint stays on one line. */}
-              <span className="sm:hidden">Search</span>
-              <span className="hidden sm:inline">{searchPlaceholder}</span>
+              {searchPlaceholder}
             </span>
           )}
           {query !== '' && (
@@ -795,7 +823,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               pendingNightRoute={pendingNightRoute}
               onPendingNightRouteHandled={handleNightPendingHandled}
               searchFocused={searchFocused}
-              setSearchFocused={setSearchFocused}
+              setSearchFocused={setSearchFocusedFromPanel}
               day={day}
               setDay={setDay}
               onLayersChange={setLayers}

@@ -14,6 +14,16 @@ export function searchOverlayHidesPanel(searchFocused: boolean, query: string): 
   return searchFocused || query.trim() !== '';
 }
 
+/** Phones show search as an icon button that opens into the full-width field; wide screens always show the field. */
+export function phoneSearchExpanded(isPhone: boolean, searchFocused: boolean, tappedOpen: boolean): boolean {
+  return isPhone && (searchFocused || tappedOpen);
+}
+
+/** Leaving the field folds it back to the icon only when nothing is typed, so an accidental blur keeps the query. */
+export function phoneSearchOpenAfterBlur(tappedOpen: boolean, query: string): boolean {
+  return tappedOpen && query.trim() !== '';
+}
+
 const TRANSIT_ACRONYMS: Record<string, string> = {
   Go: 'GO',
   Dc: 'DC',
