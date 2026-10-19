@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-09-19T00:03:32.876Z",
+  "definition": {
+    "headwayMinutes": 30,
+    "day": "Weekday",
+    "window": "07:00-19:00",
+    "bufferMiles": 25
+  },
+  "agencyCount": 457,
+  "qualifyingAgencyCount": 220,
+  "bundles": [
+    ["01", "Alabama"], ["02", "Alaska"], ["04", "Arizona"], ["06", "California"], ["08", "Colorado"], ["09", "Connecticut"],
+    ["11-24-51", "District of Columbia", "Maryland", "Virginia"], ["12", "Florida"], ["13", "Georgia"], ["15", "Hawaii"],
+    ["17-18", "Illinois", "Indiana"], ["19", "Iowa"], ["20-29", "Kansas", "Missouri"], ["21", "Kentucky"], ["22", "Louisiana"],
+    ["23", "Maine"], ["25", "Massachusetts"], ["26", "Michigan"], ["27-38", "Minnesota", "North Dakota"], ["28", "Mississippi"],
+    ["30", "Montana"], ["31", "Nebraska"], ["32", "Nevada"], ["33", "New Hampshire"], ["34", "New Jersey"], ["35", "New Mexico"],
+    ["36", "New York"], ["37", "North Carolina"], ["39", "Ohio"], ["40", "Oklahoma"], ["41", "Oregon"], ["42", "Pennsylvania"],
+    ["44", "Rhode Island"], ["45", "South Carolina"], ["47", "Tennessee"], ["48", "Texas"], ["49", "Utah"], ["53", "Washington"],
+    ["54", "West Virginia"], ["55", "Wisconsin"]
+  ]
+}

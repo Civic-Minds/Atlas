@@ -1,0 +1,14 @@
+{
+  "name": "canada-transit-coverage",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "coverage": "node src/run.mjs",
+    "merge:coverage": "node src/merge-reports.mjs",
+    "plan:us-bundles": "node src/plan-us-bundles.mjs",
+    "run:us-bundle": "node --max-old-space-size=8192 src/run-us-bundle.mjs",
+    "run:us-batch": "node src/run-us-batch.mjs",
+    "prepare:statcan": "node src/prepare-statcan.mjs",
+    "test": "node --test"
+  }
+}
