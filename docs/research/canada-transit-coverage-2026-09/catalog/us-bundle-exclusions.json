@@ -1,0 +1,33 @@
+{
+  "definition": {
+    "headwayMinutes": 30,
+    "populationVintage": 2020,
+    "populationGeography": "US Census block groups"
+  },
+  "exclusions": [
+    {
+      "bundle": "02",
+      "states": ["Alaska"],
+      "status": "skipped",
+      "reason": "No qualifying agencies in the live Atlas artifacts."
+    },
+    {
+      "bundle": "23",
+      "states": ["Maine"],
+      "status": "skipped",
+      "reason": "No qualifying agencies in the live Atlas artifacts."
+    },
+    {
+      "bundle": "28",
+      "states": ["Mississippi"],
+      "status": "skipped",
+      "reason": "No qualifying agencies in the live Atlas artifacts."
+    },
+    {
+      "bundle": "33",
+      "states": ["New Hampshire"],
+      "status": "skipped",
+      "reason": "Qualifying stops did not intersect a 2020 Census metro boundary."
+    }
+  ]
+}
