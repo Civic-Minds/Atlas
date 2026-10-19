@@ -637,12 +637,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         )}
                         {id === 'limited' && limitedServiceRouteCount != null && (
                           <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('limited-routes')} className="mt-1">
-                            {limitedServiceRouteCount.toLocaleString()} {plural(limitedServiceRouteCount, 'route')} affected
+                            See all part-time {plural(limitedServiceRouteCount, 'route')} ({limitedServiceRouteCount.toLocaleString()})
                           </ArrowLink>
                         )}
                         {id === 'quality' && (
                           <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('degraded-feeds')} className="mt-1">
-                            {hideLowQuality ? 'See hidden feeds' : 'Review degraded feeds'}
+                            See all degraded {plural(hiddenFeedAgencies.length, 'feed')}
                             {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''}
                           </ArrowLink>
                         )}
