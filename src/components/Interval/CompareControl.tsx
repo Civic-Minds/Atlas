@@ -78,7 +78,7 @@ interface CompareSideBarProps {
 export function CompareSideBar({ side, settings, onChange, counts, otherPhrase }: CompareSideBarProps) {
   return (
     <div className="flex flex-col items-center sm:items-end gap-1.5" data-compare-side={side}>
-      <div className={`${MAP_BADGE} min-h-8 py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-none`}>
+      <div className={`${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-none`}>
         <SideBadge side={side} />
         <span className="text-xs font-black text-[var(--text-primary)] whitespace-nowrap" data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
         {counts && (

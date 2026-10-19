@@ -596,7 +596,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           aria-label={inFrequentServiceStory ? 'Back to frequency map' : 'Atlas home'}
           className="group flex items-center gap-2 shrink-0"
         >
-          <span className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl group-hover:opacity-80 transition-opacity">
+          <span className="w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl group-hover:opacity-80 transition-opacity">
             <MapIcon className="w-3.5 h-3.5 text-white" />
           </span>
           {!phoneSearchExpanded && <AtlasBrand hideByline />}
@@ -701,7 +701,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                 onClick={() => setAppLinksOpen(open => !open)}
                 aria-label="More Atlas views"
                 aria-expanded={appLinksOpen}
-                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                className={`flex h-8 max-sm:h-[32px] px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
                 <span>{liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
