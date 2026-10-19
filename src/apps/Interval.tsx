@@ -1052,7 +1052,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       {showMapLegend && !nightServiceView && <PersistentMapLegend />}
 
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
-        <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`absolute bottom-[7rem] sm:bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
