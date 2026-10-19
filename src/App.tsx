@@ -589,8 +589,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
-      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6 max-[379px]:left-3 max-[379px]:right-3 h-[28px]'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
-      <div ref={headerLeftRef} className={`flex items-center gap-2 max-[379px]:gap-1 pointer-events-auto flex-1 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
+      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6 max-sm:left-3 max-sm:right-3 h-[28px]'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
+      <div ref={headerLeftRef} className={`flex items-center gap-2 max-sm:gap-1 pointer-events-auto flex-1 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
         <button
           type="button"
@@ -612,10 +612,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           <span className="w-8 h-8 max-sm:w-[44px] max-sm:h-[44px] bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl group-hover:opacity-80 transition-opacity">
             <MapIcon className="w-3.5 h-3.5 text-white" />
           </span>
-          {!phoneSearchExpanded && <AtlasBrand hideByline className="max-[379px]:hidden" />}
+          {!phoneSearchExpanded && <AtlasBrand hideByline className="max-[374px]:hidden" />}
         </button>
 
-        {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 max-[379px]:gap-1 flex-1 min-w-0 lg:flex-none">
+        {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 max-sm:gap-1 flex-1 min-w-0 lg:flex-none">
         <div className={`${isPhone && !phoneSearchExpanded ? 'flex-none' : 'flex-1'} min-w-0 sm:flex`}>
         <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3 ${isPhone && !phoneSearchExpanded ? 'max-sm:!w-[44px] max-sm:px-0 hover:text-[var(--accent)] transition-colors' : ''}`}>
           {isPhone && !phoneSearchExpanded && (
@@ -729,7 +729,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                 onClick={() => setAppLinksOpen(open => !open)}
                 aria-label="More Atlas views"
                 aria-expanded={appLinksOpen}
-                className={`flex h-8 max-sm:h-[44px] px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                className={`flex h-8 max-sm:h-[44px] px-3 max-sm:px-2 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
                 <span>{liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
@@ -762,8 +762,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         </div>}
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
-      <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 max-[379px]:gap-1 pointer-events-auto`}>
-        <div ref={headerPortalRef} className="flex items-center gap-2 max-[379px]:gap-1" />
+      <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 max-sm:gap-1 pointer-events-auto`}>
+        <div ref={headerPortalRef} className="flex items-center gap-2 max-sm:gap-1" />
         <button
           type="button"
           onClick={toggleInfo}

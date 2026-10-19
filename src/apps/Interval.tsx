@@ -1214,7 +1214,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
 
       {headerPortalContainer && createPortal(
-        <div className={`flex items-center gap-2 max-[379px]:gap-1 ${!showUi && hideFilterPanel && !nightServiceView ? 'pointer-events-none' : ''}`}>
+        <div className={`flex items-center gap-2 max-sm:gap-1 ${!showUi && hideFilterPanel && !nightServiceView ? 'pointer-events-none' : ''}`}>
           <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <FilterChips
               maxHeadway={maxHeadway}
