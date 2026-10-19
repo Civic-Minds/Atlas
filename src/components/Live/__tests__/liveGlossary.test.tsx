@@ -3,7 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { LIVE_GLOSSARY } from '../../../../shared/liveGlossary';
 import { bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 
-const text = (node: unknown) => renderToStaticMarkup(<>{node}</>).replace(/<[^>]+>/g, '').replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, '&').trim();
+const text = (node: unknown) => {
+  const el = document.createElement('div');
+  el.innerHTML = renderToStaticMarkup(<>{node}</>);
+  return (el.textContent ?? '').trim();
+};
 
 /** The Docs glossary must say the same as the Live agency page's "How this is measured". */
 describe('Live glossary', () => {
