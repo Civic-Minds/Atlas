@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
-import { coverageText, type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
-import { dateRangeText, NOISE_RULE } from '../shared/liveDashboard';
+import { type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
 import type { LiveAgencyResponse } from '../local-api/live-agency';
-import { devOnly, liveAgencyDataUrl, liveDataMissing, liveReportTitle, withoutDevHint } from './lib/liveReportData';
+import { devOnly, liveAgencyDataUrl, liveDataMissing, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { liveDashboardPath } from './hooks/useLiveDashboard';
 import { routesByMode } from '../shared/agencyPages';
 import { RouteNameCell } from './pageParts';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
-import { weekCaption, weekRangeLine } from './utils/liveKpi';
+import { weekNotComparableLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
-import { shortStopName } from './utils/stopLabel';
+import { shortStopName, stretchEnds } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
@@ -23,12 +22,19 @@ import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { weekOfText } from '../shared/liveWording';
+import DevHint from './components/Live/DevHint';
+import { ANALYZE_DEV_HINT } from './lib/liveReportData';
+import { coveredRoutesText, LATE_THRESHOLD, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText } from '../shared/liveWording';
+import { tenth } from '../shared/liveFormat';
+import MethodSection from './components/Live/sections/MethodSection';
+
+/** One column grid for every table on the page, so the first column, Route and Direction line up from table to table (widths in rem; the number columns share the rest of the width equally). */
+const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
 
 const MINUS = '−';
 const pct = (x: number | null) => (x == null ? '–' : `${Math.round(x * 100)}%`);
 const pctSigned = (x: number | null) => (x == null ? '–' : `${x > 0 ? '+' : x < 0 ? MINUS : ''}${Math.abs(Math.round(x * 100))}%`);
-const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', MINUS);
+const num = tenth;
 const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
 const stop = (name: string) => shortStopName(titleCase(name));
 
@@ -46,7 +52,7 @@ function sortValue(sort: Sort, r: AgencyRouteRow): number {
 }
 
 /** Fetches nothing while `agency` is empty (Live switched off). */
-function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse } {
+export function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse } {
   const [state, setState] = useState<{ kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse }>({ kind: 'loading' });
   useEffect(() => {
     if (!agency) return;
@@ -104,39 +110,38 @@ function RoutesTable({ s }: { s: AgencySummary }) {
             rows={group.routes}
             rowKey={r => r.route}
             columns={[
-              { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
-              { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} departures at timepoints this week`}>{pct(r.lateShare)}</span> },
+              { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
+              { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
               { key: 'lastWeek', header: 'Last week', className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
-              { key: 'runTime', sortable: true, header: 'Run time', cell: r => pctSigned(r.runTimeOver) },
-              { key: 'bunching', sortable: true, header: 'Bunching', cell: r => pct(r.bunchingShare) },
+              { key: 'runTime', sortable: true, header: 'Run time', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : pctSigned(r.runTimeOver)) },
+              { key: 'bunching', sortable: true, header: 'Bunching', cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : pct(r.bunchingShare)) },
               { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
             ]}
           />
         </div>
       ))}
-      <p className="mt-2 max-w-3xl text-xs leading-5 text-[var(--text-dim)]">
-        Late: departures 5.5+ minutes after the timetable, at stops where it gives a time. Run time: the typical trip over the main stretch against its scheduled time. Bunching: gaps under 2 minutes or over twice the scheduled gap. Delivered: scheduled trips that ran. All for this week.
-      </p>
     </>
   );
 }
+
+/** The network's worst stops shown (the summary may hold more; older files had 15). */
+const TOP_STOPS = 10;
 
 function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank yet.</p>;
   return (
     <div className="relative mt-3 overflow-x-auto">
       <SortableDataTable
-        caption="Stops where the most cars leave late, all analysed routes"
+        caption="Stops most often late, all analysed routes"
         rows={rows}
         defaultSort="late"
         rowKey={r => `${r.route}-${r.directionId}-${r.stopId}`}
         columns={[
-          { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal truncate', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
-          { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', cell: r => titleCase(r.direction) },
+          { key: 'stop', header: 'Stop', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
+          { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => titleCase(r.direction) },
           { key: 'late', header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
           { key: 'typical', header: 'Typical', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
-          { key: 'p90', header: '1 in 10 later than', worst: r => r.p90Min, cell: r => mins(r.p90Min) },
           { key: 'n', header: 'Departures', cell: r => r.n.toLocaleString() },
         ]}
       />
@@ -151,13 +156,15 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
     <div className="relative mt-3 overflow-x-auto">
       <SortableDataTable
         caption={caption}
+        // With no number column there is nothing to share the leftover width, so the table keeps the shared widths and ends short of the edge.
+        fill={!!valueHeader}
         rows={rows}
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
-          { key: 'stretch', header: 'Stretch', rowHeader: true, width: 24, className: 'font-normal truncate', cell: r => <span title={`${stop(r.fromName)} to ${stop(r.toName)}`}>{stop(r.fromName)} to {stop(r.toName)}</span> },
-          { key: 'route', header: 'Route', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', cell: r => titleCase(r.direction) },
+          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const [a, b] = stretchEnds(titleCase(r.fromName), titleCase(r.toName)); return <span title={`${a} to ${b}`}>{a} to {b}</span>; } },
+          { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => titleCase(r.direction) },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),
         ]}
       />
@@ -182,7 +189,7 @@ export default function LiveAgencyPage() {
     return <PageShell variant="wide"><PageTitle className="mt-24">{name}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{reason}</p>{back}</PageShell>;
   }
   const s = state.data.summary;
-  const coverage = coverageText(s);
+  const coverage = coveredRoutesText(s.agency, s.routes);
   const w = s.weekly;
   const dates = w?.thisWeek.dates ?? [];
   const tiles = agencyKpiTiles(s);
@@ -191,44 +198,36 @@ export default function LiveAgencyPage() {
       <article className="pb-16 pt-10 sm:pt-14">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <PageTitle>{name}: how the network is running</PageTitle>
+            <PageTitle>{name}</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {dates.length ? `${weekOfText(dates[0], dates[dates.length - 1])} · ` : ''}{coverage} · estimated from where vehicles were, not reported by {name}
+              {liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency })}
             </p>
           </div>
-          {FEATURES.live && <ArrowLink href="/apps/live">View on Live map</ArrowLink>}
+          {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
         </div>
         <ErrorBoundary>
           {w && tiles.length
-            ? <KpiTiles tiles={tiles} caption={weekRangeLine({ ...w, health: [] })} />
-            : <p className="mt-5 text-sm text-[var(--text-muted)]">{withoutDevHint('This week against last week is not in the analysis files yet. Rebuild them with npm run live:analyze.')}</p>}
+            ? <KpiTiles tiles={tiles} caption={weekNotComparableLine({ ...w, health: [] })} />
+            : <><p className="mt-5 text-sm text-[var(--text-muted)]">This week against last week is not in the analysis files yet.</p><DevHint hint={ANALYZE_DEV_HINT} /></>}
         </ErrorBoundary>
 
         <Section id="agency-routes" title="Routes" intro="Every analysed route, worst first.">
           <RoutesTable s={s} />
         </Section>
 
-        <Section id="agency-stops" title="Stops where the most cars leave late" intro={`The ${s.worstStops.length} stops with the highest share of departures 5.5+ minutes late, across all analysed routes (stops with at least 30 departures, at most 3 from one route direction).`}>
-          <StopsTable s={s} rows={s.worstStops} />
+        <Section id="agency-stops" title="Stops most often late" intro={`The ${Math.min(s.worstStops.length, TOP_STOPS)} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`}>
+          <StopsTable s={s} rows={s.worstStops.slice(0, TOP_STOPS)} />
         </Section>
 
-        <Section id="agency-delay" title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there. Directions where delay builds slowly have no single place and are left out.">
+        <Section id="agency-delay" title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there.">
           <StretchTable s={s} rows={s.delayStarts} caption="Stretches that add the most delay" valueHeader="Added" format={mins} />
         </Section>
 
-        <Section id="agency-bunching" title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up, and by how much.">
-          <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" />
+        <Section id="agency-bunching" title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up.">
+          <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" valueHeader="Added" format={risePointsText} />
         </Section>
 
-        <Section id="agency-method" title="How this is measured">
-          <ul className="mt-3 max-w-3xl list-disc space-y-1 pl-5 text-sm leading-6 text-[var(--text-muted)]">
-            <li>Each route is measured the same way as on its own page: delay is when the car left each stop against the timetable, worked out from where it was seen about once a minute.</li>
-            <li>Network figures add up every departure, trip or gap on the analysed routes; they are not an average of route figures, so busy routes weigh more than quiet ones.</li>
-            {w && <li>This week compared with last week: {weekCaption({ ...w, health: [] })} {NOISE_RULE}</li>}
-            <li>Covered: {coverage}. {s.held.length ? `Held back: ${s.held.map(h => `${h.route} (${h.reason})`).join(' ')}` : ''}</li>
-            <li>Built {new Date(s.generatedAt).toLocaleString()}.</li>
-          </ul>
-        </Section>
+        <MethodSection scope="agency" s={s} />
       </article>
     </PageShell>
   );

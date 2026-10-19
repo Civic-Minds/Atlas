@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { kpiDelta, kpiTiles, lateForDays, weekCaption } from '../liveKpi';
+import { kpiDelta, kpiTiles, lateForDays, weekWindowLine, weekWindowParts } from '../liveKpi';
 import { dailyNoise } from '../../../shared/liveDashboard';
 import type { LiveV3 } from '../../../shared/liveDashboard';
 
 describe('kpiDelta', () => {
   it('colours only changes bigger than the fixed amount for each figure', () => {
-    expect(kpiDelta('late', 0.21, 0.2, true, true)).toMatchObject({ text: '▲ 1 pt', tone: 'same' });
-    expect(kpiDelta('delivered', 0.997, 0.998, false, true)).toMatchObject({ text: '▼ 0.1 pt', tone: 'same' });
+    expect(kpiDelta('late', 0.21, 0.2, true, true)).toMatchObject({ text: '1 pt', arrow: 'up', tone: 'same' });
+    expect(kpiDelta('delivered', 0.997, 0.998, false, true)).toMatchObject({ text: '0.1 pt', arrow: 'down', tone: 'same' });
     expect(kpiDelta('late', 0.25, 0.2, true, true)).toMatchObject({ tone: 'worse' });
     expect(kpiDelta('late', 0.15, 0.2, true, true)).toMatchObject({ tone: 'better' });
     expect(kpiDelta('delivered', 0.97, 0.99, false, true)).toMatchObject({ tone: 'worse' });
-    expect(kpiDelta('tripTime', 28, 30, true, false)).toMatchObject({ text: '▼ 2 min', tone: 'better' });
+    expect(kpiDelta('tripTime', 28, 30, true, false)).toMatchObject({ text: '2 min', arrow: 'down', tone: 'better' });
   });
   it('says same when nothing changed and nothing when a week is missing', () => {
     expect(kpiDelta('late', 0.2, 0.2, true, true)).toMatchObject({ text: 'same', tone: 'same' });
@@ -18,14 +18,75 @@ describe('kpiDelta', () => {
   });
 });
 
+describe('kpiDelta wording', () => {
+  it('reads label first, then last week\'s value, with the direction kept apart as the arrow', () => {
+    expect(kpiDelta('tripTime', 31, 32, true, false, null, '32 min')).toMatchObject({ text: 'last week 32 min', arrow: 'down', spoken: expect.stringMatching(/^last week 32 min, down 1 min/) });
+    expect(kpiDelta('late', 0.3, 0.2, true, true, null, '20%')).toMatchObject({ text: 'last week 20%', arrow: 'up', tone: 'worse' });
+    expect(kpiDelta('late', 0.2, 0.2, true, true, null, '20%')).toMatchObject({ text: 'same as last week', arrow: 'none' });
+  });
+});
+
+describe('one colouring rule for every tile', () => {
+  const week = (over: object, dates: string[]) => ({ days: 7, dates, healthyDates: dates, late: { share: 0.2, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 32, overMin: 2 }, extraWait: { minutes: 1.2, gaps: 500 }, bunching: { share: 0.2, gaps: 600 }, delivered: { share: 0.99, seen: 990, notSeen: 10, unknown: 0 }, ...over });
+  const dates = ['2026-10-08', '2026-10-09', '2026-10-10', '2026-10-11', '2026-10-12'];
+  const mk = (now: object): NonNullable<LiveV3['weekly']> => ({ minHealthyDays: 4, health: [], thisWeek: week(now, dates), lastWeek: week({}, dates), comparable: true });
+  // Every measure moves by about the same fraction of its own day-to-day spread.
+  const spread = { late: [0.19, 0.2, 0.21, 0.2, 0.2], tripTime: [31.9, 32, 32.1, 32, 32], extraWait: [1.19, 1.2, 1.21, 1.2, 1.2], bunching: [0.19, 0.2, 0.21, 0.2, 0.2], delivered: [0.989, 0.99, 0.991, 0.99, 0.99] };
+  it('colours a change bigger than the measure\'s own spread, and only those', () => {
+    const big = kpiTiles(mk({ late: { share: 0.27, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 34, overMin: 4 }, extraWait: { minutes: 2, gaps: 500 }, bunching: { share: 0.26, gaps: 600 }, delivered: { share: 0.95, seen: 950, notSeen: 50, unknown: 0 } }), spread);
+    expect(big.map(t => t.delta?.tone)).toEqual(['worse', 'worse', 'worse', 'worse', 'worse']);
+    // A change inside the spread stays grey for every tile, whatever the unit (the old fixed 1 min coloured a 1.1 min run time move).
+    const noisy = { late: [0.1, 0.3, 0.2, 0.15, 0.25], tripTime: [28, 36, 32, 30, 34], extraWait: [0.4, 2, 1.2, 0.9, 1.5], bunching: [0.1, 0.3, 0.2, 0.15, 0.25], delivered: [0.95, 1, 0.99, 0.97, 0.98] };
+    const small = kpiTiles(mk({ late: { share: 0.22, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 33.1, overMin: 3 }, extraWait: { minutes: 1.8, gaps: 500 }, bunching: { share: 0.23, gaps: 600 }, delivered: { share: 0.98, seen: 980, notSeen: 20, unknown: 0 } }), noisy);
+    expect(small.map(t => t.delta?.tone)).toEqual(['same', 'same', 'same', 'same', 'same']);
+  });
+  it('falls back to the fixed stand-ins only for a measure with fewer than 3 good days', () => {
+    const t = kpiTiles(mk({ tripTime: { n: 40, scheduledMin: 30, typicalMin: 33.5, overMin: 3 } }), { ...spread, tripTime: [32, 33] });
+    expect(t[1].delta).toMatchObject({ tone: 'worse', spoken: expect.not.stringMatching(/usual day-to-day/) });
+  });
+});
+
+describe('equal as displayed reads as no change', () => {
+  const dates = ['2026-10-08', '2026-10-09', '2026-10-10', '2026-10-11'];
+  const wk = (o: object) => ({ days: 4, dates, healthyDates: dates, late: { share: 0.07, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 31.2, overMin: 1 }, extraWait: { minutes: 1.2, gaps: 500 }, bunching: { share: 0.3, gaps: 600, bunched: 0.2, gapped: 0.1 }, delivered: { share: 0.998, seen: 998, notSeen: 2, unknown: 0 }, ...o });
+  const spread = { late: [0.01, 0.2, 0.1], tripTime: [20, 40, 30], extraWait: [0.1, 2, 1], bunching: [0.1, 0.5, 0.3], delivered: [0.9, 1, 0.95] };
+  it('shows "same as last week" and no arrow on all five tiles when the displayed values match', () => {
+    // 7.4% and 7.0% both display 7%; 31.4 and 31.2 both 31 min; 1.24 and 1.2 both 1.2 min; 99.84 and 99.8 both 99.8%; the split parts match.
+    const w = { minHealthyDays: 3, health: [], comparable: true,
+      thisWeek: wk({ late: { share: 0.074, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 31.4, overMin: 1 }, extraWait: { minutes: 1.24, gaps: 500 }, bunching: { share: 0.304, gaps: 600, bunched: 0.204, gapped: 0.1 }, delivered: { share: 0.9984, seen: 998, notSeen: 2, unknown: 0 } }),
+      lastWeek: wk({}) };
+    const tiles = kpiTiles(w, spread);
+    expect(tiles).toHaveLength(5);
+    for (const t of tiles) expect(t.delta).toMatchObject({ text: 'same as last week', arrow: 'none', tone: 'same' });
+  });
+  it('shows an arrow only when the displayed values differ', () => {
+    const w = { minHealthyDays: 3, health: [], comparable: true, thisWeek: wk({ late: { share: 0.08, n: 900 } }), lastWeek: wk({}) };
+    expect(kpiTiles(w, spread)[0].delta).toMatchObject({ text: 'last week 7%', arrow: 'up' });
+  });
+  it('writes last week\'s bunching in the same two parts as this week\'s, with the arrow from the total', () => {
+    const w = { minHealthyDays: 3, health: [], comparable: true, thisWeek: wk({ bunching: { share: 0.22, gaps: 600, bunched: 0.14, gapped: 0.08 } }), lastWeek: wk({ bunching: { share: 0.19, gaps: 600, bunched: 0.12, gapped: 0.07 } }) };
+    const b = kpiTiles(w, spread).find(t => t.key === 'bunching')!;
+    expect(b.value).toBe('14% · 8%');
+    expect(b.delta).toMatchObject({ text: 'last week 12% · 7%', arrow: 'up' });
+  });
+  it('falls back to last week\'s total when it has no parts', () => {
+    const w = { minHealthyDays: 3, health: [], comparable: true, thisWeek: wk({ bunching: { share: 0.22, gaps: 600, bunched: 0.14, gapped: 0.08 } }), lastWeek: wk({ bunching: { share: 0.19, gaps: 600 } }) };
+    expect(kpiTiles(w, spread).find(t => t.key === 'bunching')!.delta).toMatchObject({ text: 'last week 19%' });
+  });
+});
+
 describe('kpiTiles', () => {
   const week = (late: number, delivered: number, dates: string[]) => ({ days: 7, dates, healthyDates: dates, late: { share: late, n: 900 }, tripTime: { n: 40, scheduledMin: 30, typicalMin: 31, overMin: 1 }, extraWait: { minutes: 1.2, gaps: 500 }, bunching: { share: 0.2, gaps: 600 }, delivered: { share: delivered, seen: 990, notSeen: 10, unknown: 0 } });
   const w: NonNullable<LiveV3['weekly']> = { minHealthyDays: 5, health: [], thisWeek: week(0.21, 0.997, ['2026-10-08', '2026-10-14']), lastWeek: week(0.2, 0.998, ['2026-10-01', '2026-10-07']), comparable: true };
+  it('adds a second caption line to the Run time tile only, and only when asked', () => {
+    expect(kpiTiles(w).some(t => t.scope)).toBe(false);
+    expect(kpiTiles(w, undefined, 'both directions').filter(t => t.scope).map(t => `${t.key}: ${t.scope}`)).toEqual(['tripTime: both directions']);
+  });
   it('makes the five tiles with sample sizes and no colour for small moves', () => {
     const tiles = kpiTiles(w);
     expect(tiles.map(t => t.label)).toEqual(['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']);
-    expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: 'up from 20% last week', tone: 'same' } });
-    expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: 'down from 99.8% last week', tone: 'same' } });
+    expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: 'last week 20%', arrow: 'up', tone: 'same' } });
+    expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: 'last week 99.8%', arrow: 'down', tone: 'same' } });
   });
   it('says how far the typical run time is from the timetable, in whole minutes', () => {
     const run = (typicalMin: number, scheduledMin: number) => kpiTiles({ ...w, thisWeek: { ...w.thisWeek, tripTime: { n: 40, scheduledMin, typicalMin, overMin: 0 } } })[1].sub;
@@ -35,7 +96,7 @@ describe('kpiTiles', () => {
   });
   it('drops the change chips when the weeks are not comparable', () => {
     expect(kpiTiles({ ...w, comparable: false }).every(t => t.delta == null)).toBe(true);
-    expect(weekCaption({ ...w, comparable: false })).toMatch(/Not enough days/);
+    expect(weekWindowLine({ ...w, comparable: false })).toMatch(/Not enough days/);
   });
 });
 
@@ -71,5 +132,17 @@ describe('dailyNoise', () => {
     const week = (dates: string[]) => ({ days: 7, dates, healthyDates: dates, late: { share: 0.1, n: 900 }, tripTime: null, extraWait: null, bunching: { share: 0.2, gaps: 600 }, delivered: null });
     const w: NonNullable<LiveV3['weekly']> = { minHealthyDays: 4, health: [], thisWeek: week(['2026-10-08']), lastWeek: week(['2026-10-01']), comparable: true };
     expect(kpiTiles(w).map(t => t.label)).toEqual(['Late', 'Bunching']);
+  });
+});
+
+describe('the method line for the days left out', () => {
+  const wk = (dates: string[], healthy: string[]) => ({ days: dates.length, dates, healthyDates: healthy, late: null, tripTime: null, extraWait: null, bunching: null, delivered: null });
+  const weeks = (a: ReturnType<typeof wk>, b: ReturnType<typeof wk>) => ({ minHealthyDays: 2, health: [], comparable: true, thisWeek: a, lastWeek: b });
+  const t = ['2026-10-10', '2026-10-11', '2026-10-12'], l = ['2026-10-03', '2026-10-04', '2026-10-05'];
+  it('names this week, last week, both, or nothing', () => {
+    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, l))).days).toBe('Excluding Oct 11 this week.');
+    expect(weekWindowParts(weeks(wk(t, t), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 5 last week.');
+    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 11 this week, Oct 5 last week.');
+    expect(weekWindowParts(weeks(wk(t, t), wk(l, l))).days).toBeNull();
   });
 });

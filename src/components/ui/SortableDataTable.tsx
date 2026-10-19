@@ -11,13 +11,18 @@ export interface SortableColumn<T> extends DataTableColumn<T> {
  * Live pages use. Ties keep the incoming order. For a table whose sort lives in the address, use DataTable's
  * `sort` / `onSort` directly (the Live agency Routes table).
  */
-export default function SortableDataTable<T>({ columns, rows, defaultSort, ...rest }: {
+export default function SortableDataTable<T>({ columns, rows, defaultSort, fill = true, narrowFit, ...rest }: {
   columns: SortableColumn<T>[];
   rows: readonly T[];
   rowKey: (row: T) => Key;
   caption?: string;
   /** The column the rows start sorted by; omit to keep the incoming order until a header is clicked. */
   defaultSort?: string;
+  /** The table spans its container (default); false keeps every column at its set width, so tables line up. */
+  fill?: boolean;
+  /** See DataTable: on a phone the table fits its container, leaving out the columns marked `narrowHide`. */
+  narrowFit?: boolean;
+  rowTitle?: (row: T) => string | undefined;
 }) {
   const [sort, setSort] = useState<{ key: string; reversed: boolean } | null>(defaultSort ? { key: defaultSort, reversed: false } : null);
   const col = sort ? columns.find(c => c.key === sort.key && c.worst) : undefined;
@@ -29,10 +34,11 @@ export default function SortableDataTable<T>({ columns, rows, defaultSort, ...re
     <DataTable
       {...rest}
       fixed
-      fill
+      fill={fill}
+      narrowFit={narrowFit}
       rows={sorted}
       // Headers stay on one line, as in the Routes table.
-      columns={columns.map(({ worst, ...c }) => ({ ...c, header: <span className="whitespace-nowrap">{c.header}</span>, sortable: !!worst }))}
+      columns={columns.map(({ worst, ...c }) => ({ ...c, header: <span className={narrowFit ? 'sm:whitespace-nowrap' : 'whitespace-nowrap'}>{c.header}</span>, sortable: !!worst }))}
       sort={sort ?? undefined}
       onSort={key => setSort(s => (s?.key === key ? { key, reversed: !s.reversed } : { key, reversed: false }))}
     />

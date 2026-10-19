@@ -3,6 +3,7 @@ import { HEADWAY_TIERS, getNightServiceColor, type ColorVisionMode } from '../..
 import { getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl } from '../../../lib/mapStyle';
 import { tileRouteKeyExpr } from '../../../../shared/tileFilterExprs';
 import { buildFocusCase, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
+import { ROUTE_LINE_WIDTH_BY_ZOOM, ROUTE_LINE_WIDTH_STOPS } from './routeStyle';
 import { ON_DEMAND_FOCUSED_PROP } from './onDemandFocus';
 
 const ON_DEMAND_AREA_COLOR = '#64748b';
@@ -117,6 +118,37 @@ function addOnDemandLayers(map: maplibregl.Map) {
   });
 }
 
+/**
+ * Live context lines (CIV-326): only the routes that currently have a vehicle on the Live map, thin and light, drawn
+ * under all other route lines. Hidden and filtered to nothing until the Live hook fills it.
+ */
+// Width matches the regular map's base route class (buildFriendlyRouteWidthExpression): one even weight.
+const LIVE_CONTEXT_PAINT = {
+  'line-color': '#6b7280',
+  'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, ...ROUTE_LINE_WIDTH_STOPS],
+  'line-opacity': 0.85,
+} as const;
+export const LIVE_CONTEXT_LAYER_IDS = ['live-context-overview-layer', 'live-context-routes-layer', 'live-context-local-layer'] as const;
+function addLiveContextLayers(map: maplibregl.Map) {
+  const paint = LIVE_CONTEXT_PAINT;
+  const layout = { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' } as const;
+  const noMatch = ['==', ['get', 'agencySlug'], ''] as any;
+  map.addLayer({ id: LIVE_CONTEXT_LAYER_IDS[0], type: 'line', source: 'atlas-overview-pmtiles', 'source-layer': 'routes', maxzoom: 8, filter: noMatch, paint: paint as any, layout: layout as any });
+  map.addLayer({ id: LIVE_CONTEXT_LAYER_IDS[1], type: 'line', source: 'atlas-pmtiles', 'source-layer': 'routes', minzoom: 8, filter: noMatch, paint: paint as any, layout: layout as any });
+}
+
+/** The same context lines for agencies drawn from local GeoJSON. */
+function addLiveContextLocalLayer(map: maplibregl.Map) {
+  map.addLayer({
+    id: LIVE_CONTEXT_LAYER_IDS[2],
+    type: 'line',
+    source: 'local-routes',
+    filter: ['==', ['get', 'agencySlug'], ''] as any,
+    paint: LIVE_CONTEXT_PAINT as any,
+    layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+  }, 'local-routes-layer');
+}
+
 /** Route lines from PMTiles: overview below zoom 8, detailed above, each with a wide hit layer. */
 function addRouteLayers(map: maplibregl.Map) {
   // Broad maps use simplified route geometry; detailed geometry takes over
@@ -152,7 +184,7 @@ function addRouteLayers(map: maplibregl.Map) {
     minzoom: 8,
     paint: {
       'line-color': '#555555',
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
+      'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any,
       'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9],
     },
     layout: {
@@ -190,7 +222,7 @@ function addLocalRouteLayers(map: maplibregl.Map) {
     source: 'local-routes',
     paint: {
       'line-color': ['get', 'localHeadwayColor'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2, 14, 2.5, 17, 3.5],
+      'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any,
       'line-opacity': 0.9,
     },
     layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'visible' },
@@ -220,7 +252,7 @@ function addSectionColourLayers(map: maplibregl.Map) {
     minzoom: 8,
     paint: {
       'line-color': ['get', 'color'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
+      'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any,
       'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9],
     },
     layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -515,8 +547,10 @@ function addLiveRouteShapeLayer(map: maplibregl.Map) {
 export function addMapLayers(map: maplibregl.Map, { lightMode, colorMode, highlightRoutes }: { lightMode: boolean; colorMode: ColorVisionMode; highlightRoutes: string[] }) {
   addPmtilesSources(map);
   addOnDemandLayers(map);
+  addLiveContextLayers(map);
   addRouteLayers(map);
   addLocalRouteLayers(map);
+  addLiveContextLocalLayer(map);
   addSectionColourLayers(map);
   addNightServiceLayers(map, colorMode);
   addFrequentServiceLayers(map);

@@ -1,4 +1,4 @@
-import type { Key, ReactNode } from 'react';
+import type { CSSProperties, Key, ReactNode } from 'react';
 
 export interface DataTableColumn<T> {
   key: string;
@@ -13,6 +13,8 @@ export interface DataTableColumn<T> {
   width?: number;
   /** The header sorts the table (with the table's `sort` and `onSort`). */
   sortable?: boolean;
+  /** With `narrowFit`: leave this column out below the sm breakpoint (its figure can go in `rowTitle`). */
+  narrowHide?: boolean;
 }
 
 /** Which column the rows are sorted by. `reversed` is the second click: the table's own default order turned round. */
@@ -75,6 +77,13 @@ interface DataTableProps<T> {
    * others share the rest equally, never narrower than the default width. For a page whose other blocks span the full content width.
    */
   fill?: boolean;
+  /**
+   * Phone widths (below sm): no minimum width, columns size to their content and the ones marked `narrowHide` are left
+   * out, so the table fits its container without scrolling. From sm up it is the fixed layout as before. Needs `fill`.
+   */
+  narrowFit?: boolean;
+  /** Hover text for a whole row (where a column was left out on a phone, its figure). */
+  rowTitle?: (row: T) => string | undefined;
   /** Current sort, for the sortable columns' arrow and aria-sort. */
   sort?: DataTableSort;
   /** Called with a sortable column's key when its header is clicked (or Enter / Space on it). */
@@ -87,40 +96,47 @@ export const FIXED_FIRST_COLUMN_REM = 16;
 export const FIXED_COLUMN_REM = 8;
 
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false, fill = false, sort, onSort }: DataTableProps<T>) {
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false, fill = false, narrowFit = false, rowTitle, sort, onSort }: DataTableProps<T>) {
   const v = VARIANTS[variant];
   const widths = columns.map((col, i) => col.width ?? (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
-  const pad = (i: number) => (v.gap && i < columns.length - 1 ? ' pr-4' : '');
+  const fit = fixed && fill && narrowFit;
+  const shown = columns.map(c => !(fit && c.narrowHide));
+  // The last column drawn on a phone carries no gap on its right.
+  const lastNarrow = shown.lastIndexOf(true);
+  const pad = (i: number) => (v.gap && i < columns.length - 1 ? (fit && i !== lastNarrow ? ' pr-3 sm:pr-4' : fit ? ' pr-0 sm:pr-4' : ' pr-4') : '');
+  const hide = (i: number) => (fit && columns[i].narrowHide ? ' max-sm:hidden' : '');
   return (
     <table
-      className={fixed ? `${v.table} table-fixed` : v.table}
-      style={fixed ? (fill ? { width: '100%', minWidth: `${widths.reduce((a, b) => a + b, 0)}rem` } : { width: `${widths.reduce((a, b) => a + b, 0)}rem` }) : undefined}
+      className={fixed ? `${v.table} ${fit ? 'sm:table-fixed sm:min-w-[var(--table-min)]' : 'table-fixed'}` : v.table}
+      style={fixed ? (fill ? (fit ? ({ width: '100%', '--table-min': `${widths.reduce((a, b) => a + b, 0)}rem` } as CSSProperties) : { width: '100%', minWidth: `${widths.reduce((a, b) => a + b, 0)}rem` }) : { width: `${widths.reduce((a, b) => a + b, 0)}rem` }) : undefined}
     >
       {caption && <caption className="sr-only">{caption}</caption>}
       {fixed && (
         <colgroup>
-          {columns.map((col, i) => <col key={col.key} style={fill && i > 0 && col.width == null ? undefined : { width: `${widths[i]}rem` }} />)}
+          {columns.map((col, i) => fit
+            ? <col key={col.key} className={`${fill && i > 0 && col.width == null ? '' : 'sm:w-[var(--col-w)]'}${hide(i)}`} style={{ '--col-w': `${widths[i]}rem` } as CSSProperties} />
+            : <col key={col.key} style={fill && i > 0 && col.width == null ? undefined : { width: `${widths[i]}rem` }} />)}
         </colgroup>
       )}
       <thead className={v.thead}>
         <tr className={v.headRow}>
           {columns.map((col, i) => (
             col.sortable && onSort ? (
-              <th key={col.key} scope="col" className={`${v.th}${pad(i)}`} aria-sort={sort?.key === col.key ? (sort.reversed ? 'ascending' : 'descending') : 'none'}>
+              <th key={col.key} scope="col" className={`${v.th}${pad(i)}${hide(i)}`} aria-sort={sort?.key === col.key ? (sort.reversed ? 'ascending' : 'descending') : 'none'}>
                 <button type="button" onClick={() => onSort(col.key)} className="inline-flex items-center gap-1 font-[inherit] hover:underline">
                   {col.header}
                   <span aria-hidden="true" className={`text-[0.7em] ${sort?.key === col.key ? '' : 'invisible'}`}>{sort?.key === col.key && sort.reversed ? '▲' : '▼'}</span>
                 </button>
               </th>
-            ) : <th key={col.key} scope="col" className={`${v.th}${pad(i)}`}>{col.header}</th>
+            ) : <th key={col.key} scope="col" className={`${v.th}${pad(i)}${hide(i)}`}>{col.header}</th>
           ))}
         </tr>
       </thead>
       <tbody>
         {rows.map(row => (
-          <tr key={rowKey(row)} className={v.row}>
+          <tr key={rowKey(row)} className={v.row} title={rowTitle?.(row)}>
             {columns.map((col, i) => {
-              const className = `${v.td}${pad(i)}${fixed && i === 0 ? ' break-words' : ''}${col.className ? ` ${col.className}` : ''}`;
+              const className = `${v.td}${pad(i)}${hide(i)}${fixed && i === 0 ? ' break-words' : ''}${col.className ? ` ${col.className}` : ''}`;
               return col.rowHeader
                 ? <th key={col.key} scope="row" className={className}>{col.cell(row)}</th>
                 : <td key={col.key} className={className}>{col.cell(row)}</td>;

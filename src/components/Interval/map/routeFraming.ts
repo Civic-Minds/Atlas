@@ -22,12 +22,18 @@ export function routeFramePadding(map: maplibregl.Map, side: CardSide = 'left', 
 export function frameRoute(
   map: maplibregl.Map,
   points: ReadonlyArray<LonLat>,
-  { side = 'left', maxZoom = 14, phoneSheet = false }: { side?: CardSide; maxZoom?: number; phoneSheet?: boolean } = {},
+  { side = 'left', maxZoom = 14, phoneSheet = false, padding: customPadding, duration }: {
+    side?: CardSide; maxZoom?: number; phoneSheet?: boolean;
+    /** Replaces the card-based padding (for maps whose card is not beside them). */
+    padding?: maplibregl.PaddingOptions;
+    /** Animation length in ms; 0 jumps. Left out, bounds use the map's default and a single point flies for 900. */
+    duration?: number;
+  } = {},
 ): boolean {
   const target = fitTargetForPoints(points);
   if (!target) return false;
-  const padding = routeFramePadding(map, side, { phoneSheet });
-  if (target.kind === 'bounds') map.fitBounds(target.bounds, { padding, maxZoom });
-  else map.flyTo({ center: target.center, zoom: Math.max(map.getZoom(), maxZoom), padding, duration: 900 });
+  const padding = customPadding ?? routeFramePadding(map, side, { phoneSheet });
+  if (target.kind === 'bounds') map.fitBounds(target.bounds, { padding, maxZoom, ...(duration !== undefined && { duration }) });
+  else map.flyTo({ center: target.center, zoom: Math.max(map.getZoom(), maxZoom), padding, duration: duration ?? 900 });
   return true;
 }

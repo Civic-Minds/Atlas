@@ -10,6 +10,7 @@ import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint'
 import { useColorVision } from '../../../context/ColorVisionContext';
 import { delayAmount } from '../../../utils/headwayText';
 import { frameRoute } from './routeFraming';
+import { LIVE_CONTEXT_LAYER_IDS } from './mapLayers';
 import { lineCoordinates } from '../../../../shared/routeGeometry';
 
 /** Exported for unit tests — GTFS-RT text must be escaped before innerHTML. */
@@ -237,6 +238,28 @@ export function useLiveVehiclesLayer(
     };
   }, [mapLoaded, mapRef, deckOverlayRef, liveOverlay]);
 
+  // Context lines (CIV-326): only the routes that currently have a vehicle in the overlay (so the same
+  // filter as the dots), thin and light, under every other route line and the deck dots.
+  const contextRoutesKey = liveOverlay
+    ? [...new Set((liveOverlay.vehicles ?? []).filter(v => v.agencySlug && v.routeShortName).map(v => `${v.agencySlug}::${v.routeShortName}`))].sort().join('\n')
+    : null;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const keys = contextRoutesKey ? contextRoutesKey.split('\n') : [];
+    const filter = (keys.length > 0
+      ? ['any', ...keys.map(k => {
+        const i = k.indexOf('::');
+        return ['all', ['==', ['get', 'agencySlug'], k.slice(0, i)], ['==', ['get', 'routeShortName'], k.slice(i + 2)]];
+      })]
+      : ['==', ['get', 'agencySlug'], '']) as maplibregl.FilterSpecification;
+    for (const id of LIVE_CONTEXT_LAYER_IDS) {
+      if (!map.getLayer(id)) continue;
+      map.setFilter(id, filter);
+      map.setLayoutProperty(id, 'visibility', keys.length > 0 ? 'visible' : 'none');
+    }
+  }, [contextRoutesKey, mapLoaded, mapRef]);
+
   // Live route dynamic shape overlay (MapLibre GeoJSON — not deck)
   useEffect(() => {
     const map = mapRef.current;
@@ -260,25 +283,45 @@ export function useLiveVehiclesLayer(
         })),
       });
 
-      if (routeKey && liveFittedRouteRef.current !== routeKey) {
-        liveFittedRouteRef.current = routeKey;
-        frameRoute(map, features.flatMap(f => lineCoordinates(f.geometry)), { phoneSheet: true });
-      }
     } else {
       source.setData({ type: 'FeatureCollection', features: [] });
-      if (!routeKey) liveFittedRouteRef.current = null;
     }
   }, [liveOverlay?.routeFeatures, liveOverlay?.selectedRouteKey, mapLoaded, mapRef, colorMode]);
+
+  // Route picked in the list: frame its full extent once (like the main map), with its vehicles included so
+  // none sit outside the view. Waits for the geometry if it is still loading.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const routeKey = liveOverlay?.selectedRouteKey ?? null;
+    if (!routeKey) { liveFittedRouteRef.current = null; return; }
+    if (liveFittedRouteRef.current === routeKey) return;
+    const frame = liveOverlay?.frameFeatures ?? liveOverlay?.routeFeatures ?? [];
+    const points = frame.flatMap(f => lineCoordinates(f.geometry));
+    if (points.length === 0) return;
+    liveFittedRouteRef.current = routeKey;
+    for (const v of liveOverlay?.vehicles ?? []) if (v.lat && v.lon) points.push([v.lon, v.lat]);
+    frameRoute(map, points, { phoneSheet: true });
+  }, [liveOverlay?.frameFeatures, liveOverlay?.routeFeatures, liveOverlay?.selectedRouteKey, liveOverlay?.vehicles, mapLoaded, mapRef]);
 
   // Focus vehicle centering — skip if route shape fit will handle positioning
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded || !liveOverlay?.focusedVehicle) return;
-    if (liveOverlay.routeFeatures && liveOverlay.routeFeatures.length > 0) return;
+    if ((liveOverlay.frameFeatures ?? liveOverlay.routeFeatures ?? []).some(f => lineCoordinates(f.geometry).length > 0)) return;
 
     const { lat, lon } = liveOverlay.focusedVehicle;
     map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), 14) });
-  }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, mapLoaded, mapRef]);
+  }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, liveOverlay?.frameFeatures, mapLoaded, mapRef]);
+
+  // Vehicle clicked in the sidebar list — one fly-to, never zooming out past street level
+  useEffect(() => {
+    const map = mapRef.current;
+    const fly = liveOverlay?.vehicleFly;
+    if (!map || !mapLoaded || !fly) return;
+    map.flyTo({ center: [fly.lon, fly.lat], zoom: Math.max(map.getZoom(), 15) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveOverlay?.vehicleFly?.ts, mapLoaded, mapRef]);
 
   // Coverage-area fly — live panel requests a jump to an agency's bbox (place list click)
   useEffect(() => {

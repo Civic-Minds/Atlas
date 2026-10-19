@@ -1,0 +1,85 @@
+{
+  "status": "SNAPSHOT of the current analysis, not hand-checked: replace with hand-checked values",
+  "cases": [
+    {
+      "route": "501",
+      "checked": "snapshot 2026-10-17, not hand-checked",
+      "directions": {
+        "0": {
+          "stretch": {
+            "fromStopId": "7762",
+            "toStopId": "7083"
+          },
+          "runTime": {
+            "scheduledMin": 90.6,
+            "typicalMin": 84.1,
+            "toleranceMin": 0.5
+          },
+          "delaysStart": null,
+          "terminalStopIds": [
+            "7762",
+            "18248"
+          ]
+        },
+        "1": {
+          "stretch": {
+            "fromStopId": "18248",
+            "toStopId": "8162"
+          },
+          "runTime": {
+            "scheduledMin": 93.8,
+            "typicalMin": 86.9,
+            "toleranceMin": 0.5
+          },
+          "delaysStart": {
+            "fromStopId": "7107",
+            "toStopId": "8085"
+          },
+          "terminalStopIds": [
+            "18248",
+            "7952"
+          ]
+        }
+      }
+    },
+    {
+      "route": "507",
+      "checked": "snapshot 2026-10-17, not hand-checked",
+      "directions": {
+        "0": {
+          "stretch": {
+            "fromStopId": "6383",
+            "toStopId": "960"
+          },
+          "runTime": {
+            "scheduledMin": 27.5,
+            "typicalMin": 23.4,
+            "toleranceMin": 0.5
+          },
+          "delaysStart": null,
+          "terminalStopIds": [
+            "11284",
+            "4511"
+          ]
+        },
+        "1": {
+          "stretch": {
+            "fromStopId": "5010",
+            "toStopId": "1830"
+          },
+          "runTime": {
+            "scheduledMin": 24,
+            "typicalMin": 21.9,
+            "toleranceMin": 0.5
+          },
+          "delaysStart": null,
+          "terminalStopIds": [
+            "4511",
+            "11284"
+          ]
+        }
+      },
+      "minExcludedRuns": 576
+    }
+  ]
+}

@@ -17,6 +17,8 @@ export interface RunStopDelay {
   delaySec: number;
   /** True when the timetable marks this stop as a timepoint (a time the operator actually schedules to). */
   timepoint?: boolean;
+  /** The trip's first stop: its departure from the end of the line, which is what the headline counts (as the TTC does). */
+  tripStart?: boolean;
 }
 
 export interface RunDelays {
@@ -80,9 +82,13 @@ export interface AdherenceReport {
  * B1: how well the route keeps to its timetable. `timepointsOnly` counts only the stops the timetable marks as timepoints:
  * between them the timetable's times are interpolated, so a car running a little fast is not really "early".
  */
-export function adherenceReport(runs: readonly RunDelays[], options: { timepointsOnly?: boolean } = {}): AdherenceReport {
+export function adherenceReport(runs: readonly RunDelays[], options: { timepointsOnly?: boolean; tripStartsOnly?: boolean } = {}): AdherenceReport {
   if (options.timepointsOnly) {
     runs = runs.map(r => ({ ...r, stops: r.stops.filter(s => s.timepoint === true) })).filter(r => r.stops.length > 0);
+  }
+  // The headline: each trip's departure from the end of the line (its first stop), as the TTC measures on-time.
+  if (options.tripStartsOnly) {
+    runs = runs.map(r => ({ ...r, stops: r.stops.filter(s => s.tripStart === true) })).filter(r => r.stops.length > 0);
   }
   const byHour = new Map<number, number[]>();
   const byDate = new Map<string, number[]>();

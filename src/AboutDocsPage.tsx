@@ -1,9 +1,11 @@
-import type { ReactNode } from 'react';
+import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { FEATURES } from '../shared/config';
 import SiteContact from './components/SiteContact';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+
+const LiveGlossaryTerms = lazy(() => import('./components/LiveGlossaryTerms'));
 
 const DOCS_CONTENTS = [
   ['overview', 'Overview'],
@@ -53,6 +55,8 @@ const NEAR_MISS_COLUMNS: DataTableColumn<[string, string, string]>[] = [
 ];
 
 export default function AboutDocsPage() {
+  // A link into a section (such as the Live pages' "What these terms mean") lands on it: the sections render after the browser's own jump.
+  useEffect(() => { const id = window.location.hash.slice(1); if (id) document.getElementById(id)?.scrollIntoView(); }, []);
   const showBetaFeatures = FEATURES.beta;
   const showLive = FEATURES.live;
   const showHistory = FEATURES.history;
@@ -357,6 +361,7 @@ export default function AboutDocsPage() {
             <p><strong className="text-[var(--text-primary)]">Sustained service:</strong> Service whose departure gaps remain within the qualification tolerance across the analysed window, rather than only appearing frequent in a short burst.</p>
             <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status, and correction history attached to an Atlas result.</p>
             <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>
+            {showLive && <Suspense fallback={null}><LiveGlossaryTerms /></Suspense>}
           </Section>
 
           <SiteContact title="Technical questions and feedback" subject="Atlas Feedback" linkLabel="Contact us with a question or correction">

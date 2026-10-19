@@ -9,10 +9,10 @@
  * ../_live-data/out/<agency>-agency.json, which /api/live-agency serves. Light: it reads a few small files, no analysis.
  * Set LIVE_DATA to use another data folder.
  */
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { LIVE_ANALYSIS_ROUTES } from '../shared/livePollingConfig';
-import { LIVE_DASHBOARD_HOLD, LIVE_DASHBOARD_UNCERTAIN_START, type LiveV3 } from '../shared/liveDashboard';
+import { LIVE_DASHBOARD_HOLD, LIVE_DASHBOARD_UNCERTAIN_START, qualityHold, type LiveV3 } from '../shared/liveDashboard';
 import { agencySummary, type AgencyRouteInput } from '../shared/liveAgency';
 import { getRouteLabel, routeLabelParts } from '../shared/cleanHeadsign';
 import { titleCase } from '../src/utils/format';
@@ -40,16 +40,18 @@ export function readCsv(text: string): Record<string, string>[] {
   return body.map(r => Object.fromEntries(keys.map((k, i) => [k, (r[i] ?? '').trim()])));
 }
 
-function main() {
-  const agency = process.argv[2] ?? 'ttc';
-  const data = resolve(process.env.LIVE_DATA ?? '../_live-data');
-  const gtfs = resolve(data, 'gtfs/candidates/surface');
-  const out = resolve(data, 'out');
+/** Builds and writes `<out>/<agency>-agency.json` from the route files in `out` (the timetable in `gtfs`). Returns the line the CLI prints. */
+export function writeAgencySummary(agency: string, gtfs: string, out: string): string {
   const routesTxt = readCsv(readFileSync(resolve(gtfs, 'routes.txt'), 'utf8'));
   const byShort = new Map(routesTxt.map(r => [r.route_short_name || r.route_id, r]));
   const totalRoutes = byShort.size;
 
-  const keys = LIVE_ANALYSIS_ROUTES.filter(k => k.startsWith(`${agency}::`)).map(k => k.slice(agency.length + 2));
+  // Every route with an analysis file (plus the configured ones, so a missing file is reported), held ones listed apart.
+  // Plain string matching, no pattern built from the command line.
+  const prefix = `${agency}-`, suffix = '-segments.json';
+  const analysed = readdirSync(out).filter(f => f.startsWith(prefix) && f.endsWith(suffix)).map(f => f.slice(prefix.length, -suffix.length)).filter(r => /^[A-Za-z0-9]+$/.test(r));
+  const keys = [...new Set([...LIVE_ANALYSIS_ROUTES.filter(k => k.startsWith(`${agency}::`)).map(k => k.slice(agency.length + 2)), ...analysed])]
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const held = Object.entries(LIVE_DASHBOARD_HOLD).filter(([k]) => k.startsWith(`${agency}::`)).map(([k, reason]) => ({ route: k.slice(agency.length + 2), reason }));
   const routes: AgencyRouteInput[] = [];
   const missing: string[] = [];
@@ -59,6 +61,8 @@ function main() {
     if (!existsSync(file)) { missing.push(route); continue; }
     const v3 = (JSON.parse(readFileSync(file, 'utf8')) as { v3?: LiveV3 }).v3;
     if (!v3 || v3.schema !== 3) { missing.push(route); continue; }
+    const quality = qualityHold(v3);
+    if (quality) { held.push({ route, reason: quality }); continue; }
     const r = byShort.get(route);
     // The route card's title rule (until the one route-label helper, UI step 9, reaches this branch).
     const label = titleCase(getRouteLabel(route, r?.route_long_name || null));
@@ -79,7 +83,13 @@ function main() {
 
   const file = resolve(out, `${agency}-agency.json`);
   writeFileSync(file, JSON.stringify(summary));
-  console.log(`live-agency-summary: ${summary.covered.length} of ${totalRoutes} ${agency} routes (${held.length} held${missing.length ? `, no analysis file: ${missing.join(', ')}` : ''}) -> ${file}`);
+  return `live-agency-summary: ${summary.covered.length} of ${totalRoutes} ${agency} routes (${held.length} held${missing.length ? `, no analysis file: ${missing.join(', ')}` : ''}) -> ${file}`;
+}
+
+function main() {
+  const agency = process.argv[2] ?? 'ttc';
+  const data = resolve(process.env.LIVE_DATA ?? '../_live-data');
+  console.log(writeAgencySummary(agency, resolve(data, 'gtfs/candidates/surface'), resolve(data, 'out')));
 }
 
 if (process.argv[1] && resolve(process.argv[1]).endsWith('live-agency-summary.ts')) main();

@@ -5,6 +5,7 @@
  */
 import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/liveDashboard';
 import { titleCase } from '../../utils/format';
+import { USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -27,6 +28,8 @@ export interface RouteStripStop {
   bunchingN?: number;
   /** Measured poorly here (for example the 510's Union Station tunnel): drawn hatched and called less exact. */
   uncertain?: boolean;
+  /** False where the timetable's time is only approximate (not a timepoint; on the TTC, every stop but the trip ends). */
+  timepoint?: boolean;
 }
 
 /** A marked stretch, by the stop ids at its two ends. */
@@ -35,16 +38,21 @@ export interface RouteStripStretch {
   toStopId: string;
 }
 
-export type Step = 0 | 1 | 2;
+/** 'early': the delay track's step for cars that typically leave 1+ min early (CIV-283). */
+export type Step = 'early' | 0 | 1 | 2;
 
-/** Delay steps use the same cutoffs as the map's delay colours: up to 1 min is on time, up to 3 min is a little late. */
+/** Delay steps: under 1 min is on time, 1 up to 3 min is a little late, 3 and more is late (the legend's own words), judged on the minutes as shown. */
 export const DELAY_STEP_LIMITS = [1, 3] as const;
+/** A typical departure this many minutes early or more is its own (blue) step, not "on time". */
+export const EARLY_STEP_MIN = 1;
+/** The early step's legend label (approved by Ryan, CIV-283). */
+export const EARLY_STEP_LABEL = '1+ min early';
 /** Bunching steps: share of gaps too short or too long. */
 export const BUNCHING_STEP_LIMITS = [0.15, 0.25] as const;
 export const MIN_N = 30;
 
 export const STEP_LABELS: Record<RouteStripMode, readonly [string, string, string]> = {
-  delay: ['On time or early', '1–3 min late', '3+ min late'],
+  delay: ['On time', '1–3 min late', '3+ min late'],
   bunching: ['Under 15%', '15–25%', '25% or more'],
 };
 export const LEGEND_TITLE: Record<RouteStripMode, string> = {
@@ -54,6 +62,10 @@ export const LEGEND_TITLE: Record<RouteStripMode, string> = {
 
 /** The colour token for a step. The values live in styles/index.css, with their dark and colour-vision versions. */
 export const stepColor = (mode: RouteStripMode, step: Step) => `var(--strip-${mode}-${step})`;
+
+/** The steps a track's legend lists, in order: the delay track adds the early step first. */
+export const legendSteps = (mode: RouteStripMode): readonly Step[] => (mode === 'delay' ? ['early', 0, 1, 2] : [0, 1, 2]);
+export const stepLabel = (mode: RouteStripMode, step: Step): string => (step === 'early' ? EARLY_STEP_LABEL : STEP_LABELS[mode][step]);
 
 /** The stop's value in this mode, or null when it was not measured. */
 export function stopValue(stop: RouteStripStop, mode: RouteStripMode): number | null {
@@ -67,8 +79,21 @@ export function stopN(stop: RouteStripStop, mode: RouteStripMode): number {
 
 export function stepFor(mode: RouteStripMode, value: number | null): Step | null {
   if (value == null || !Number.isFinite(value)) return null;
+  // One rounding for the colour and the words: the figure as shown (tenth of a minute, whole percent), so a stop that reads
+  // "1 min late" is never grey and one that reads "3 min late" is never amber.
+  const r = mode === 'delay' ? Math.round(value * 10) / 10 : Math.round(value * 100) / 100;
+  if (mode === 'delay' && r <= -EARLY_STEP_MIN) return 'early';
   const [a, b] = mode === 'delay' ? DELAY_STEP_LIMITS : BUNCHING_STEP_LIMITS;
-  return value <= a ? 0 : value <= b ? 1 : 2;
+  return r < a ? 0 : r < b ? 1 : 2;
+}
+
+/**
+ * A stop's step on this track. Early is shown only where the timetable really schedules a time (timepoints): elsewhere
+ * its times are approximate, so leaving before them is not early running and reads as on time (live-timepoint-method).
+ */
+export function stopStep(stop: RouteStripStop, mode: RouteStripMode): Step | null {
+  const step = stepFor(mode, stopValue(stop, mode));
+  return step === 'early' && stop.timepoint === false ? 0 : step;
 }
 
 const MINUS = '−';
@@ -189,29 +214,42 @@ export function stretchSpan(stops: readonly RouteStripStop[], s: RouteStripStret
 /** One sentence for screen readers: the direction, its ends, how many stops fall in each step, and the marked stretch. */
 export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripMode, directionLabel: string, stretch: StretchSpan | null): string {
   if (stops.length === 0) return `${directionLabel}: no stops measured.`;
-  const counts = [0, 0, 0];
+  const counts = new Map<Step, number>();
   let missing = 0;
   for (const s of stops) {
-    const step = stepFor(mode, stopValue(s, mode));
-    if (step == null) missing++; else counts[step]++;
+    const step = stopStep(s, mode);
+    if (step == null) missing++; else counts.set(step, (counts.get(step) ?? 0) + 1);
   }
-  const [l0, l1, l2] = STEP_LABELS[mode];
   const what = mode === 'delay' ? 'Typical delay' : 'Share of gaps too short or too long';
-  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${stops.length} stops: ${counts[0]} ${l0.toLowerCase()}, ${counts[1]} ${l1.toLowerCase()}, ${counts[2]} ${l2.toLowerCase()}${missing ? `, ${missing} not measured` : ''}.`];
+  const steps = legendSteps(mode).filter(st => st !== 'early' || counts.has('early')).map(st => `${counts.get(st) ?? 0} ${stepLabel(mode, st).toLowerCase()}`).join(', ');
+  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${stops.length} stops: ${steps}${missing ? `, ${missing} not measured` : ''}.`];
   if (stretch) parts.push(`${stretch.label} between ${stops[stretch.from].name} and ${stops[stretch.to].name}.`);
   parts.push('Use the left and right arrow keys to hear each stop.');
   return parts.join(' ');
 }
 
+/** The typical delay as the strip treats it: where the timetable time is only approximate, running early reads as on time. */
+export function shownDelayMin(stop: RouteStripStop): number | null {
+  if (stop.delayMin == null) return null;
+  return stop.delayMin < 0 && stop.timepoint === false ? 0 : stop.delayMin;
+}
+
+/** The gap figures as whole percents that add up: the total is rounded, then the too-long part is what remains of it. */
+export function bunchParts(stop: RouteStripStop): { total: number; bunched: number; tooLong: number } | null {
+  if (stop.bunchingShare == null || (stop.bunchingN ?? stop.n) <= 0) return null;
+  return bunchTotalParts(stop.bunchingShare, stop.bunchedShare, stop.gappedShare);
+}
+
 /** The text for one stop on hover, focus or tap. */
 export function stopDetail(stop: RouteStripStop): { name: string; lines: string[] } {
   const lines: string[] = [];
-  if (stop.n > 0 && stop.delayMin != null) lines.push(`Typical delay ${delayText(stop.delayMin)}${stop.lateShare != null ? `, ${pct(stop.lateShare)} of departures late` : ''}`);
-  else lines.push('Delay not measured');
-  const bn = stop.bunchingN ?? stop.n;
-  if (stop.bunchedShare != null && stop.gappedShare != null && bn > 0) lines.push(`${pct(stop.bunchedShare)} of gaps bunched, ${pct(stop.gappedShare)} too long (${bn.toLocaleString()} gaps)`);
-  else if (stop.bunchingShare != null && bn > 0) lines.push(`${pct(stop.bunchingShare)} of gaps too short or too long (${bn.toLocaleString()} gaps)`);
-  lines.push(`${stop.n.toLocaleString()} departures measured${stop.n < MIN_N ? ': too few to rely on' : ''}`);
+  if (stop.n > 0 && stop.delayMin != null) {
+    const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(num(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
+    lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(pct(stop.lateShare))}` : usual);
+  } else lines.push('Delay not measured');
+  const parts = bunchParts(stop);
+  if (parts && stop.bunchedShare != null && stop.gappedShare != null) lines.push(bunchedAndLong(`${parts.bunched}%`, `${parts.tooLong}%`));
+  else if (parts) lines.push(`${parts.total}% of gaps too short or too long`);
   if (stop.uncertain) lines.push('Less exact here: vehicles report their location less often');
   return { name: stop.name, lines };
 }
@@ -250,6 +288,7 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
         n: s.n,
         bunchingN: b?.n ?? 0,
         uncertain: s.order < lessExact,
+        timepoint: s.timepoint,
       };
     });
   const buildup = bandData.buildup.find(b => b.directionId === directionId);

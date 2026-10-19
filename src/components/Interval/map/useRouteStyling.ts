@@ -16,6 +16,7 @@ import {
   buildServingStopMatchExpression,
   buildEffectiveHeadwayColorExpression,
   buildFriendlyRouteWidthExpression,
+  ROUTE_LINE_WIDTH_BY_ZOOM,
   setRouteLayerPaint,
   resetRoutesLayerDefaultPaint,
 } from './routeStyle';
@@ -334,7 +335,7 @@ export function useRouteStyling(
       } else {
         setRouteLayerPaint(map, 'line-width', colorVisionFriendly
           ? buildFriendlyRouteWidthExpression(headwayExpr)
-          : ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5]);
+          : ROUTE_LINE_WIDTH_BY_ZOOM as any);
         // Dim routes that only pass the active frequency filter because part of their stops
         // qualify (#317) -- the bright frequency-qualifying-segments-layer overlay above draws
         // the real qualifying stretch on top, so the full-length base line reads as background

@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { clearLiveDashboardCache } from '../../../lib/liveDashboardFetch';
 import type { LiveDashboardResponse, LiveV3 } from '../../../../shared/liveDashboard';
 
 const LAT = 43.65;
@@ -36,7 +37,7 @@ function mockApi(dashboard: LiveDashboardResponse) {
 const card = () => render(<LiveRoutePerformance slug="ttc" routeShortName="505" feedDegraded={false} onZoom={() => {}} onHighlight={() => {}} registerMapClick={() => {}} />);
 
 describe('route card: "Full analysis" appears only when the page has data (U6)', () => {
-  beforeEach(() => { vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener() {}, removeEventListener() {} })); });
+  beforeEach(() => { clearLiveDashboardCache(); vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener() {}, removeEventListener() {} })); });
   afterEach(() => vi.unstubAllGlobals());
 
   it('links to the page and shows the three short facts when the analysis exists', async () => {

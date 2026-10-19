@@ -9,7 +9,8 @@ describe('dashboardUnavailable', () => {
     expect(dashboardUnavailable('ttc', '512')!.reason).toBe(LIVE_DASHBOARD_HOLD['ttc::512']);
   });
   it('says how to build a route that has no analysis, and nothing for one that has it', () => {
-    expect(dashboardUnavailable('burlington', '1')!.reason).toMatch(/npm run live:analyze -- 1/);
+    expect(dashboardUnavailable('burlington', '1')!.reason).not.toMatch(/npm run/);
+    expect(dashboardUnavailable('burlington', '1')!.devHint).toMatch(/npm run live:analyze -- 1/);
     expect(dashboardUnavailable('ttc', '505')).toBeNull();
   });
 });
@@ -54,10 +55,12 @@ describe('freshness', () => {
   it('is quiet when the newest day is recent', () => {
     expect(freshness(v3(['2026-10-13', '2026-10-14']), '505', noon('2026-10-15'))).toMatchObject({ stale: false, text: 'Data up to 2026-10-14.' });
   });
-  it('warns, and says how to rebuild, after more than two days', () => {
+  it('warns, with the rebuild command kept apart as a developer hint, after more than two days', () => {
     const f = freshness(v3(['2026-10-10']), '505', noon('2026-10-15'));
     expect(f.stale).toBe(true);
-    expect(f.text).toMatch(/Data up to 2026-10-10, 5 days ago.*npm run live:analyze -- 505/);
+    expect(f.text).toBe('Data up to 2026-10-10, 5 days ago.');
+    expect(f.text).not.toMatch(/npm run/);
+    expect(f.devHint).toMatch(/npm run live:analyze -- 505/);
   });
   it('says so when there are no days at all', () => {
     expect(freshness(v3([]), '505', 0).stale).toBe(true);
@@ -88,7 +91,7 @@ describe('running time, extra wait, service delivered', () => {
   it('names the stop where riders wait longest, in half minutes, or says waits match the timetable', () => {
     const stops = [{ name: 'Spadina & Queens Quay', extraWaitMin: 2.1, gaps: 500 }, { name: 'Other', extraWaitMin: 0.4, gaps: 500 }, { name: 'Thin', extraWaitMin: 9, gaps: 5 }];
     expect(extraWaitSentence(stops, 'Northbound')).toBe('Northbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.');
-    expect(extraWaitSentence([{ name: 'A', extraWaitMin: 0.2, gaps: 100 }], 'Northbound')).toMatch(/about as long as the timetable promises/);
+    expect(extraWaitSentence([{ name: 'A', extraWaitMin: 0.2, gaps: 100 }], 'Northbound')).toMatch(/about as long as scheduled/);
     expect(extraWaitSentence([], 'Northbound')).toBeNull();
   });
   it('says how many scheduled trips ran, among those we can judge', () => {
@@ -169,5 +172,18 @@ describe('branch lines follow the time of day', () => {
     expect(branchFigures({ ...base, bands: { all, amPeak: am, evening: null } }, 'evening')).toBeNull();
     expect(branchFigures(base, 'all')).toBe(all);
     expect(branchFigures(base, 'pmPeak')).toBeNull();
+  });
+});
+
+describe('qualityHold', () => {
+  const v3 = (swap: number, n: number, unlisted = 0) => ({ swaps: { rate: swap, reassigned: 0, dropped: 0 }, adherence: { timepoints: { all: { overall: { n } } } }, leftOut: { kept: 100 - unlisted, noTimetableTrip: unlisted, excluded: 0, excludedLabel: null } }) as unknown as LiveV3;
+  it('holds a route the way the 512 is held, and passes the shown streetcars', async () => {
+    const { qualityHold } = await import('../liveDashboard');
+    expect(qualityHold(v3(0.152, 1554))).toMatch(/15% of its trips ran under a trip number/);
+    expect(qualityHold(v3(0.06, 2434))).toBeNull();
+    expect(qualityHold(v3(0.033, 3126, 35))).toBeNull(); // 501: 35% unlisted runs, still shown
+    expect(qualityHold(v3(0, 120))).toMatch(/Only 120 departures/);
+    expect(qualityHold(v3(0, 0))).toMatch(/gives no stop times/);
+    expect(qualityHold(v3(0, 900, 60))).toMatch(/60% of its vehicles/);
   });
 });

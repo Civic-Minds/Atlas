@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMe
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
-import { LocateFixed, Plus, Minus, Link2, Flag, Download } from 'lucide-react';
+import { LocateFixed, Link2, Flag, Download } from 'lucide-react';
+import MapZoomButtons from '../MapZoomButtons';
 import { routeKey } from '../../hooks/useIntervalStats';
 import { type ColorVisionMode } from '../../utils/colors';
 import { getRegionalView, getSavedView } from '../../utils/regionView';
@@ -1299,22 +1300,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             <Download className="w-3.5 h-3.5" />
           </button>
         )}
-        <div className="flex flex-col rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md overflow-hidden">
-          <button
-            onClick={() => mapRef.current?.zoomIn({ duration: 200 })}
-            aria-label="Zoom in"
-            className="w-8 h-8 flex items-center justify-center text-[var(--text-dim)] border-b border-[var(--border-primary)] hover:text-[var(--accent)] transition-colors cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => mapRef.current?.zoomOut({ duration: 200 })}
-            aria-label="Zoom out"
-            className="w-8 h-8 flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors cursor-pointer"
-          >
-            <Minus className="w-3.5 h-3.5" />
-          </button>
-        </div>
+        <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
         <button
           onClick={locateUser}
           aria-label="Go to my location"

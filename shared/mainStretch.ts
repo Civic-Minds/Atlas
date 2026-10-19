@@ -29,6 +29,18 @@ export function regularPatterns<P extends PatternTrips>(patterns: readonly P[]):
   return regular.length ? regular : [all.reduce((a, b) => (b.trips > a.trips ? b : a))];
 }
 
+/**
+ * Stops that only a regular branch serves: on a regular pattern but not on the main pattern's order, each once, in the
+ * order the patterns list them. Their gaps are measured like any stop's (CIV-311); they take no part in the profile.
+ */
+export function branchOnlyStops(regular: ReadonlyArray<{ stops: readonly string[] }>, mainStops: readonly string[]): string[] {
+  const main = new Set(mainStops);
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const p of regular) for (const id of p.stops) if (!main.has(id) && !seen.has(id)) { seen.add(id); out.push(id); }
+  return out;
+}
+
 export function mainStretchStops(patterns: readonly PatternTrips[]): string[] {
   const all = patterns.filter(p => p.trips > 0 && p.stops.length > 0);
   if (!all.length) return [];

@@ -426,6 +426,19 @@ export function CardBackButton({ onClick, label = 'Back' }: { onClick: () => voi
   );
 }
 
+/** Plain text link above a card title that goes back one level (no arrow). */
+export function CardBackLink({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="block max-w-full truncate text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors leading-snug mb-0.5"
+    >
+      {children}
+    </button>
+  );
+}
+
 export function HeadwayBadge({
   headway,
   colorHeadway,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { combineWeeks, coverageText, runTimeOver } from '../liveAgency';
-import type { WeekMetrics } from '../liveDashboard';
+import { agencySummary, combineWeeks, runTimeOver } from '../liveAgency';
+import type { LiveV3, WeekMetrics } from '../liveDashboard';
 
 const week = (over: Partial<WeekMetrics>): WeekMetrics => ({
   days: 7, dates: ['2026-10-08', '2026-10-09'], healthyDates: ['2026-10-08', '2026-10-09'],
@@ -37,8 +37,19 @@ describe('combineWeeks', () => {
   });
 });
 
-describe('coverageText', () => {
-  it('says how many of the agency routes a figure covers', () => {
-    expect(coverageText({ agency: 'ttc', covered: ['501', '504'], totalRoutes: 230 })).toBe('2 of 230 TTC routes');
+
+describe('agencySummary on the good-days basis', () => {
+  const c = (n: number, late: number) => ({ n, early: 0, onTime: n - late, late, earlyShare: 0, onTimeShare: 1 - late / n, lateShare: late / n, notLateShare: 1 - late / n });
+  const day = (healthy: boolean, n: number, late: number, hour: number, tripMin: number) => ({ healthy, late: { share: late / n, n }, tripTime: { n: 10, scheduledMin: 30, typicalMin: tripMin, overMin: 0 }, extraWait: null, bunching: null, delivered: null, lateByHour: [{ hour, n, lateShare: late / n }] });
+  const v3 = {
+    directionLabels: {}, stops: [], buildup: [], bunching: [],
+    weekly: { minHealthyDays: 1, health: [], comparable: true, thisWeek: week({ dates: ['a', 'b', 'c'], healthyDates: ['a', 'b'] }), lastWeek: week({}) },
+    daily: { a: day(true, 100, 10, 8, 30), b: day(true, 100, 30, 8, 32), c: day(false, 100, 90, 8, 40) },
+    bands: { all: { adherence: { timepoints: { all: { overall: c(300, 130), byHour: [{ hour: 8, ...c(300, 130) }], byDate: [], byDirection: {} } } } } },
+  } as unknown as LiveV3;
+  it('draws a route\'s late-by-hour from its good days only, and gives the network a spread for every measure', () => {
+    const s = agencySummary({ agency: 'ttc', totalRoutes: 1, routes: [{ route: '1', label: '1', v3 }] });
+    expect(s.routes[0].lateByHour).toEqual([{ hour: 8, value: 0.2, n: 200 }]);
+    expect(s.daily.tripTime).toEqual([30, 32]);
   });
 });

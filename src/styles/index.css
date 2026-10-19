@@ -96,8 +96,10 @@ html.map-page .overflow-y-scroll {
   --status-danger-bg: #fef2f2;
   --status-danger-text: #b91c1c;
   --status-danger-border: #fecaca;
-  /* Live route strip: three steps each for delay (amber to red) and bunching (violet). On time stays a quiet grey.
+  /* Live route strip: three steps each for delay (amber to red) and bunching (violet), plus a light blue step for cars
+     that typically leave 1+ min early. On time stays a quiet grey.
      Checked with the dataviz palette validator against light and dark surfaces and for colour-vision separation. */
+  --strip-delay-early: #60a5fa;
   --strip-delay-0: #b4b9c1;
   --strip-delay-1: #f59e0b;
   --strip-delay-2: #dc2626;
@@ -142,6 +144,7 @@ html.map-page .overflow-y-scroll {
   --status-danger-bg: rgba(239, 68, 68, 0.12);
   --status-danger-text: #f87171;
   --status-danger-border: rgba(239, 68, 68, 0.35);
+  --strip-delay-early: #93c5fd;
   --strip-delay-0: #8b929c;
   --strip-delay-1: #f59e0b;
   --strip-delay-2: #ef4444;
@@ -177,6 +180,7 @@ html.map-page .overflow-y-scroll {
   --status-caution: #e69f00;
   --status-positive-bg: rgba(0, 158, 115, 0.14);
   --status-negative-bg: rgba(213, 94, 0, 0.14);
+  --strip-delay-early: #56b4e9;
   --strip-delay-1: #e69f00;
   --strip-delay-2: #b8420a;
   --strip-bunching-1: #cc79a7;
@@ -204,6 +208,7 @@ html.map-page .overflow-y-scroll {
   --action-primary-bg: #f0f0f0;
   --action-primary-border: #f0f0f0;
   --action-primary-fg: #111827;
+  --strip-delay-early: #56b4e9;
   --strip-delay-1: #e69f00;
   --strip-delay-2: #e0581c;
   --strip-bunching-1: #e9a5ff;

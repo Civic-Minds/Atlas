@@ -1,6 +1,7 @@
 import { render, screen, within, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { clearLiveDashboardCache } from '../lib/liveDashboardFetch';
 import type { AdherenceBlock, LiveDashboardResponse, LiveV3, UncertainStart } from '../../shared/liveDashboard';
 
 vi.mock('../../shared/config', async importOriginal => {
@@ -40,6 +41,7 @@ function renderPage(response: LiveDashboardResponse | Error, path = '/apps/live/
 
 describe('Live route dashboard', () => {
   beforeEach(() => {
+    clearLiveDashboardCache();
     window.history.replaceState(null, '', '/apps/live/ttc/505?view=analysis');
     vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
@@ -48,38 +50,48 @@ describe('Live route dashboard', () => {
 
   it('shows B1 to B4 and the method, each figure with its sample size', async () => {
     renderPage(ready);
-    expect(await screen.findByRole('heading', { name: /TTC 505: how it is running/ })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 1, name: 'TTC 505' })).toBeTruthy();
     // U9: a link is shown as a link, never as a verdict.
     expect(document.body.textContent).not.toMatch(/caused by|because of/i);
     // B1: all days, weekdays and weekends side by side, each the share late with its count; no pill swaps a number.
-    const b1 = screen.getByRole('region', { name: /How well it keeps to its timetable/ });
-    expect(within(b1).getByText('All days', { selector: 'div' }).nextElementSibling!.textContent).toBe('9%');
+    const b1 = screen.getByRole('region', { name: /Late departures by hour/ });
+    expect(within(b1).getAllByText('All days', { selector: 'div' })[0].nextElementSibling!.textContent).toBe('9%');
     expect(within(b1).getAllByText(/late, of 1,000/).length).toBeGreaterThan(0);
-    expect(within(b1).getByText('Weekdays', { selector: 'div' })).toBeTruthy();
-    expect(within(b1).getByText('Weekends', { selector: 'div' })).toBeTruthy();
-    // B3: one takeaway line per chart that says what the chart shows, and the table of stretches.
-    expect(screen.getByText(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3, and stays up/)).toBeTruthy();
-    expect(screen.getByText(/^Delay stays about the same from end to end/)).toBeTruthy();
+    expect(within(b1).getAllByText('Weekdays', { selector: 'div' }).length).toBeGreaterThan(0);
+    expect(within(b1).getAllByText('Weekends', { selector: 'div' }).length).toBeGreaterThan(0);
+    // B3: the route strip carries the delay; the takeaway's figures are its hover text, and the table of stretches follows.
+    expect(screen.getByTitle(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3, and stays up/)).toBeTruthy();
+    expect(screen.getByTitle(/^Delay stays about the same from end to end/)).toBeTruthy();
+    // The stretches that add the most delay: at most three per direction on this page (the rest are in Explore's table).
+    for (const t of screen.getAllByRole('table', { name: /the stretches that add the most delay/ })) expect(t.querySelectorAll('tbody tr').length).toBeLessThanOrEqual(3);
     // B2: ranked by late share, one table, with the sample size.
-    const b2 = screen.getByRole('region', { name: /Stops with the most delay/ });
+    const b2 = screen.getByRole('region', { name: /Stops most often late/ });
     expect(within(b2).getAllByRole('row').length).toBeGreaterThan(2);
     expect(within(b2).queryByRole('list')).toBeNull();
     // B4: forms sentence, every link with its number, linked wording.
-    expect(screen.getAllByText(/bunching forms between Stop 2 and Stop 3/).length).toBeGreaterThanOrEqual(2); // the paragraph, plus each chart's table caption
-    expect(screen.getAllByText(/Linked: Vehicles standing still in this stretch \(0\.6 a day\)/).length).toBe(2);
-    expect(screen.getAllByText(/Not linked: Uneven departures at the terminal \(5% of gaps off\)/).length).toBe(2);
+    expect(screen.getAllByText(/bunching forms between Stop 2 and Stop 3/).length).toBeGreaterThanOrEqual(1); // the caption above each strip
+    // Four compact chips per direction (the thing, then Linked or Not linked with its number); the caveat is said once, in the method.
+    expect(screen.getAllByText('Vehicles standing still in this stretch: Linked (0.6 a day)').length).toBe(2);
+    expect(screen.getAllByText('Uneven departures at the terminal: Not linked (5% of gaps off)').length).toBe(2);
+    // The caveat is said once, in the method (not again under the chips).
+    expect(screen.queryByText(/Linked means it was measured in this stretch/)).toBeNull();
+    expect(document.body.textContent).toMatch(/measured in the same stretch, not the cause/);
     // Method.
-    expect(screen.getByText(/Window: the last 7 service days/)).toBeTruthy();
+    expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
     expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
+    // One Late definition (no second "Late at a stop" line), then what ahead means, from the file's own limit.
+    expect(screen.getAllByText(/more than 5½ min behind the timetable/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/Late at a stop/)).toBeNull();
+    expect(screen.getAllByText(/more than 5½ min behind the timetable.*? Ahead means 1\.5\+ minutes before it\./).length).toBeGreaterThan(0);
   });
 
   it('has no time-of-day toggle: the whole day, a per-period list where the answer differs, and the direction in the address', async () => {
     renderPage(ready);
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     expect(screen.queryByRole('button', { name: 'AM peak' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Weekends' })).toBeNull();
     // All days, weekdays and weekends: three hourly charts side by side.
-    const b1 = screen.getByRole('region', { name: /How well it keeps/ });
+    const b1 = screen.getByRole('region', { name: /Late departures by hour/ });
     expect(within(b1).getAllByRole('img').length).toBe(3);
     expect(screen.getAllByText('By time of day').length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'Westbound' }));
@@ -90,7 +102,7 @@ describe('Live route dashboard', () => {
   it('opens on the view and direction in the address', async () => {
     window.history.replaceState(null, '', '/apps/live/ttc/505?view=analysis&dir=0');
     renderPage(ready);
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     expect(screen.getByRole('button', { name: 'Eastbound' }).getAttribute('aria-pressed')).toBe('true');
   });
 
@@ -98,13 +110,14 @@ describe('Live route dashboard', () => {
     const loud = { ...v3, stops: v3.stops.map(x => ({ ...x, name: 'RONCESVALLES AVE AT QUEEN ST W' })) };
     loud.bands = { ...v3.bands, all: { ...v3.bands.all, stops: loud.stops } };
     renderPage({ ...ready, v3: loud });
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     expect(screen.queryByText(/RONCESVALLES/)).toBeNull();
     expect(screen.getAllByText(/Roncesvalles Ave at Queen St W/).length).toBeGreaterThan(0);
     // One plain caption per chart (no ranges), merged with what the bars are.
-    expect(screen.getByText('Paler bars rest on fewer than 30 departures.')).toBeTruthy();
-    expect(screen.getAllByText(/Paler bars rest on fewer than 30 trips\./).length).toBe(2);
-    expect(screen.getAllByText(/Paler bars rest on fewer than 30 gaps\./).length).toBe(2);
+    expect(screen.getByText(/^Faded bars are based on fewer than 30 departures\./)).toBeTruthy();
+    // The faded-bar rule is said once per section row, not under every chart.
+    expect(screen.queryAllByText(/Paler bars rest on fewer than 30 trips\./).length).toBeLessThanOrEqual(1);
+    expect(screen.queryAllByText(/Paler bars rest on fewer than 30 gaps\./).length).toBeLessThanOrEqual(1);
     expect(document.body.textContent).not.toMatch(/Each (bar|point) is \d/);
     expect(document.body.textContent).not.toMatch(/near here/);
     // Each figure is one focusable unit with a summary; each chart can be read as a table.
@@ -116,7 +129,7 @@ describe('Live route dashboard', () => {
     expect(screen.queryByRole('button', { name: /CSV/ })).toBeNull();
   });
 
-  it('shows trip time, extra wait, service delivered and this week against last week, in plain words', async () => {
+  it('shows run time, extra wait, service delivered and this week against last week, in plain words', async () => {
     const fig = { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 };
     const week = (late: number, delivered: number) => ({ days: 7, dates: ['2026-10-01', '2026-10-07'], healthyDates: ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04', '2026-10-05'], late: { share: late, n: 900 }, tripTime: { n: 100, scheduledMin: 22, typicalMin: 27, overMin: 5 }, extraWait: { minutes: 1.5, gaps: 900 }, bunching: { share: 0.2, gaps: 900 }, delivered: { share: delivered, seen: 95, notSeen: 5, unknown: 0 } });
     const rich: LiveV3 = {
@@ -127,34 +140,49 @@ describe('Live route dashboard', () => {
       weekly: { minHealthyDays: 4, health: [], comparable: true, thisWeek: week(0.09, 0.96), lastWeek: week(0.12, 0.99) },
     };
     renderPage({ ...ready, v3: rich });
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     // This week against last week: the dashboard's own tiles (same labels and change rule as the dashboard view).
     const weekRegion = screen.getAllByRole('region', { name: /This week compared with last week/ })[0];
     for (const label of ['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
-    expect(screen.getByText(/Days with gaps in our recordings are left out of both/)).toBeTruthy();
-    // By the tiles, only the two weeks' dates; the explanation is under How this is measured.
-    expect(screen.getAllByText(/^Changes compared with the week before \([A-Z][a-z]{2} \d+–\d+\)$/).length).toBeGreaterThan(0);
-    expect(screen.getByText('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.')).toBeTruthy();
+    // The subtitle names both weeks; no separate line under the tiles. The method says it once, in groups.
+    // (The page is stale by the real clock here, so the last segment is its own element; the line reads the same.)
+    expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === 'Week of Oct 8–14, compared with Oct 1–7 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
+    expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
+    // The weeks, then the days counted on a line of their own; the method is open (no disclosure).
+    expect(screen.getByText(/This week is .+ and last week is .+\./)).toBeTruthy();
+    expect(screen.getByText(/^Excluding .+ this week, .+ last week\.$/).className).toMatch(/block/);
+    expect(document.querySelector('details')).toBeNull();
+    expect(screen.getAllByText(/days with gaps in our recordings are left out/).length).toBe(1);
+    // One paragraph: each group opens with its bold run-in label.
+    for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByText(`${g}.`, { selector: 'strong' })).toBeTruthy();
+    expect(screen.queryByText(/trip time/i)).toBeNull();
+    expect(screen.getByText(/3 trips that could not be judged are left out of Delivered/)).toBeTruthy();
+    // Run time is a dot on a line per pattern: the figures are the row's hover text and screen-reader text.
+    // Each opens with its direction, and the main row is introduced by the stretch line above it.
+    expect(screen.getByText(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
+    expect(screen.getByTitle(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
     expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
-    expect(screen.getAllByText('Eastbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.').length).toBeGreaterThan(0);
-    expect(screen.getByText('97% of scheduled trips ran (194 of 200).')).toBeTruthy();
+    // The extra wait sentence is gone from Full analysis (the table gives the figures); Method keeps the definition.
+    expect(screen.queryByText(/riders at Spadina & Queens Quay wait about/)).toBeNull();
+    expect(screen.queryByText(/of scheduled trips ran \(194 of 200\)/)).toBeNull(); // the week tile says it; the section keeps the chart and the skipped-days note
     expect(screen.getByText(/Not counted: Oct 14/)).toBeTruthy();
   });
 
   it('says how many runs were left out and why, so the figures are honest about what they cover', async () => {
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
-    await screen.findByRole('heading', { name: /how it is running/ });
-    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) were under a trip number that is not on the timetable.*500 runs by replacement buses that share this route number are also left out.*the 900 timetabled trips that were kept/)).toBeTruthy();
+    await screen.findByRole('heading', { level: 1 });
+    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the 900 timetabled trips kept/)).toBeTruthy();
+    expect(screen.getByText(/500 runs by replacement buses that share this route number are left out/)).toBeTruthy();
   });
 
   it('says the 510 first stops are less exact and leaves them out of the ranking', async () => {
     renderPage({ ...ready, uncertainStart: [{ directionId: 1, stops: 4 }], note: 'Delay at the first few stops is less exact.' });
-    await screen.findByRole('heading', { name: /how it is running/ });
+    await screen.findByRole('heading', { level: 1 });
     expect(screen.getByText('Delay at the first few stops is less exact.')).toBeTruthy();
     expect(screen.getByText(/Not ranked: the first 4 stops/)).toBeTruthy();
     // Westbound (direction 1) has 3 fixture stops, all within the first 4, so only eastbound rows are ranked.
-    const b2 = screen.getByRole('region', { name: /Stops with the most delay/ });
+    const b2 = screen.getByRole('region', { name: /Stops most often late/ });
     expect(within(b2).queryAllByText('Westbound').length).toBe(0);
   });
 
@@ -164,12 +192,20 @@ describe('Live route dashboard', () => {
     vi.setSystemTime(new Date('2026-10-15T20:00:00Z'));
     try {
       const { unmount } = renderPage(ready);
-      expect(await screen.findByText('Week of Oct 8–14 · 1,234 trips · estimated from where vehicles were, not reported by TTC')).toBeTruthy();
+      expect(await screen.findByText('Week of Oct 8–14 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
       expect(screen.queryByRole('status')).toBeNull();
       unmount();
       vi.setSystemTime(new Date('2026-10-25T20:00:00Z'));
       renderPage(ready);
-      expect(await screen.findByRole('status')).toHaveProperty('textContent', expect.stringMatching(/Data up to 2026-10-14, 11 days ago.*npm run live:analyze -- 505/));
+      // Staleness is the header line's own "data up to" segment (caution colour, role=status); the age is its hover text. No second line.
+      const status = await screen.findByRole('status');
+      expect(status.textContent).toBe('data up to Oct 14');
+      expect(status.getAttribute('title')).toBe('Data up to 2026-10-14, 11 days ago.');
+      expect(status.className).toContain('status-caution');
+      expect(status.parentElement?.textContent).toBe('Week of Oct 8–14 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14');
+      expect(document.body.textContent).not.toMatch(/11 days ago/);
+      // Developer hints stay off by default, even in a dev build; ?dev=1 turns them on.
+      expect(document.body.textContent).not.toMatch(/Dev:|live:analyze/);
     } finally {
       vi.useRealTimers();
     }
@@ -180,14 +216,25 @@ describe('Live route dashboard', () => {
     const broken = { ...ready, v3: { ...v3, bands: { ...v3.bands, all: { ...v3.bands.all, buildup: undefined as unknown as LiveV3['buildup'] } } }, uncertainStart: undefined as unknown as UncertainStart[] };
     renderPage(broken);
     expect(await screen.findByText(/Where delays build up could not be drawn/)).toBeTruthy();
-    expect(screen.getByRole('region', { name: /How well it keeps to its timetable/ })).toBeTruthy();
+    expect(screen.getByRole('region', { name: /Late departures by hour/ })).toBeTruthy();
     expect(screen.getByText('How this is measured')).toBeTruthy();
     vi.restoreAllMocks();
   });
 
+  it('ends the Summary view with the open method and its own days-counted line', async () => {
+    window.history.replaceState(null, '', '/apps/live/ttc/505');
+    const wk = { days: 7, dates: ['2026-10-08', '2026-10-09', '2026-10-10'], healthyDates: ['2026-10-08', '2026-10-09'], late: null, tripTime: null, extraWait: null, bunching: null, delivered: null };
+    renderPage({ ...ready, v3: { ...v3, weekly: { minHealthyDays: 1, health: [], comparable: true, thisWeek: wk, lastWeek: wk } } } as LiveDashboardResponse);
+    await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
+    expect(screen.getByText('How this is measured')).toBeTruthy();
+    expect(screen.getByText(/^Excluding .+ this week, .+ last week\.$/).className).toMatch(/block/);
+    expect(document.querySelector('details')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Summary' })).toBeNull(); // still no view switcher on the shareable page
+  });
+
   it('says why when there is nothing to show', async () => {
-    const { unmount } = renderPage({ status: 'held', reason: 'The 512 is held back: reason here.' }, '/apps/live/ttc/512');
-    expect(await screen.findByText('The 512 is held back: reason here.')).toBeTruthy();
+    const { unmount } = renderPage({ status: 'held', reason: "The 512 isn't included yet." }, '/apps/live/ttc/512');
+    expect(await screen.findByText("The 512 isn't included yet.")).toBeTruthy();
     unmount();
     renderPage(new Error('down'));
     expect(await screen.findByText(/did not answer. Start Live with "npm run live"/)).toBeTruthy();

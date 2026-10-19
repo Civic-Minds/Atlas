@@ -293,6 +293,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     setSelectedAgencySlug(slug);
     closeInfo();
   }, [activeApp, closeInfo]);
+  // The Live route card's agency name opens that agency's page, which lives in the main map.
+  const handleLiveAgencyClick = useCallback((slug: string) => { setActiveApp('frequency'); handleAgencySelect(slug); }, [handleAgencySelect]);
   // In Live mode a route picked on the map (or deep-linked) opens Live's own card.
   const [liveRouteRequest, setLiveRouteRequest] = useState<{ slug: string; routeShortName: string; ts: number } | null>(null);
   const handleLiveRouteSelected = useCallback((slug: string, routeShortName: string) => setLiveRouteRequest({ slug, routeShortName, ts: Date.now() }), []);
@@ -848,6 +850,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                     sidebarLeft={sidebarLeft}
                     selectionActive={intervalSelectionActive}
                     routeRequest={liveRouteRequest}
+                    onAgencyClick={handleLiveAgencyClick}
                   />
                 </React.Suspense>
               </div>

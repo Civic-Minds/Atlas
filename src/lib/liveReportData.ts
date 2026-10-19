@@ -13,6 +13,13 @@ export function liveDashboardDataUrl(agency: string, route: string): string {
     : `/api/live-dashboard?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
 }
 
+/** One service day's per-trip stop times for the string-line chart. Published beside the route's analysis (R2), or the local API in dev. */
+export function liveStringsDataUrl(agency: string, route: string, date: string): string {
+  return fromR2
+    ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/strings/${encodeURIComponent(route)}-${date}.json`
+    : `/api/live-strings?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}&date=${date}`;
+}
+
 export function liveAgencyDataUrl(agency: string): string {
   return fromR2 ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/agency.json` : `/api/live-agency?agency=${encodeURIComponent(agency)}`;
 }
@@ -23,11 +30,26 @@ export const LIVE_REPORT_UNAVAILABLE = "This report isn't available right now.";
 /** Setup instructions ("npm run live", "npm run live:analyze") are for dev only; outside dev the approved line stands in. */
 export const devOnly = (devText: string): string => (fromR2 ? LIVE_REPORT_UNAVAILABLE : devText);
 
-/** Drops the trailing "Rebuild it with npm run live:analyze..." sentence outside dev, keeping what the text says about the data. */
-export const withoutDevHint = (text: string): string => (fromR2 ? text.replace(/\s+Rebuild(?:ing)? (?:it|them|the analysis) with .*$/s, '') : text);
+/** The developer command that rebuilds the analysis files. Shown only to developers (DevHint, the console), never in reader text. */
+export const ANALYZE_DEV_HINT = 'npm run live:analyze';
 
 /** Page titles (approved): "504 King · Live · Atlas" and "TTC · Live · Atlas". */
 export const liveReportTitle = (name: string) => `${name} · Live · Atlas`;
+
+/** Dev only: ?date=YYYY-MM-DD picks the day the local Yesterday view shows, for review against older archive days. */
+const devDate = () => { const d = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('date'); return d && /^\d{4}-\d{2}-\d{2}$/.test(d) ? `&date=${d}` : ''; };
+
+export function liveYesterdayDataUrl(agency: string, route: string | null): string {
+  return fromR2
+    ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/yesterday/${route ? encodeURIComponent(route) : 'agency'}.json`
+    : `/api/live-yesterday?agency=${encodeURIComponent(agency)}${route ? `&route=${encodeURIComponent(route)}` : ''}${devDate()}`;
+}
+
+export function liveGapsDataUrl(agency: string, route: string): string {
+  return fromR2
+    ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/${encodeURIComponent(route)}-gaps.json`
+    : `/api/live-gaps?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
+}
 
 /** R2 answers a missing file with an error page, not JSON: read that as "no such route", the API's own answer. */
 export const liveDataMissing = (r: Response) => fromR2 && !r.ok;

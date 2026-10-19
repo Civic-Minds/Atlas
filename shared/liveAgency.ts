@@ -4,7 +4,7 @@
  * route, so a quiet route does not count as much as the 504. Every figure says how many of the agency's routes it covers.
  * Pure: the builder script (scripts/live-agency-summary.ts) reads the files, this turns them into the page's numbers.
  */
-import { rankStops, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
+import { dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
 
 /** Stops and stretches need this many measurements to be ranked (the route page's rule). */
 export const AGENCY_MIN_N = 30;
@@ -35,7 +35,12 @@ export interface AgencyRouteRow {
   lateLastWeek: number | null;
   /** Running time over the timetable, as a share of the scheduled time (0.06 = 6% longer). */
   runTimeOver: number | null;
+  /** Typical minus scheduled trip time in whole minutes (the Run time tile's figure); older files: absent. */
+  runTimeDiffMin?: number | null;
   bunchingShare: number | null;
+  /** Its two parts, too close and too far apart (CIV-302), when the analysis has them. */
+  bunchedShare?: number | null;
+  gappedShare?: number | null;
   deliveredShare: number | null;
   /** Late share by hour of day, all days, at timepoints. */
   lateByHour: Array<{ hour: number; value: number; n: number }>;
@@ -51,10 +56,10 @@ export interface AgencySummary {
   /** Routes in the agency's timetable, and the routes this page covers (held routes are listed, not counted). */
   totalRoutes: number;
   covered: string[];
-  held: Array<{ route: string; reason: string }>;
+  held: Array<{ route: string }>;
   weekly: { thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean; minHealthyDays: number } | null;
   /** Network late share per day of this week (days with good recordings), for the change's noise. */
-  daily: { late: number[]; delivered: number[] };
+  daily: Required<DailyValues>;
   routes: AgencyRouteRow[];
   worstStops: AgencyHotspotStop[];
   delayStarts: AgencyHotspotStretch[];
@@ -91,7 +96,10 @@ export function combineWeeks(weeks: readonly WeekMetrics[]): WeekMetrics {
       overMin: sum(trip.map(x => x.overMin * x.n)) / tripN,
     } : null,
     extraWait: gapsW > 0 ? { minutes: sum(wait.map(x => x.minutes * x.gaps)) / gapsW, gaps: gapsW } : null,
-    bunching: gapsB > 0 ? { share: sum(bunch.map(x => x.share * x.gaps)) / gapsB, gaps: gapsB } : null,
+    bunching: gapsB > 0 ? {
+      share: sum(bunch.map(x => x.share * x.gaps)) / gapsB, gaps: gapsB,
+      ...(bunch.every(x => x.bunched != null && x.gapped != null) ? { bunched: sum(bunch.map(x => x.bunched! * x.gaps)) / gapsB, gapped: sum(bunch.map(x => x.gapped! * x.gaps)) / gapsB } : {}),
+    } : null,
     delivered: seen + notSeen > 0 ? { share: seen / (seen + notSeen), seen, notSeen, unknown } : null,
   };
 }
@@ -102,8 +110,14 @@ export function runTimeOver(t: WeekMetrics['tripTime']): number | null {
 }
 
 /** The network's late share for each of this week's good days: all routes' late departures over all their departures. */
-function networkDaily(inputs: readonly AgencyRouteInput[], healthy: readonly string[]): { late: number[]; delivered: number[] } {
+function networkDaily(inputs: readonly AgencyRouteInput[], healthy: readonly string[]): Required<DailyValues> {
   const late: number[] = [], delivered: number[] = [];
+  // The other three measures: each good day's routes added up, as the week's are (combineWeeks).
+  const days = healthy.flatMap(d => {
+    const rows = inputs.flatMap(({ v3 }) => (v3.daily?.[d] ? [{ days: 1, dates: [d], healthyDates: [d], ...v3.daily[d] }] : []));
+    return rows.length ? [combineWeeks(rows)] : [];
+  });
+  const rest = dailyValuesOf(days);
   for (const d of healthy) {
     let n = 0, l = 0, seen = 0, total = 0;
     for (const { v3 } of inputs) {
@@ -115,7 +129,7 @@ function networkDaily(inputs: readonly AgencyRouteInput[], healthy: readonly str
     if (n > 0) late.push(l / n);
     if (total > 0) delivered.push(seen / total);
   }
-  return { late, delivered };
+  return { late, delivered, tripTime: rest.tripTime, extraWait: rest.extraWait, bunching: rest.bunching };
 }
 
 const dirLabel = (v3: LiveV3, d: number) => v3.directionLabels[String(d)] ?? `Direction ${d}`;
@@ -124,12 +138,12 @@ export function agencySummary(input: {
   agency: string;
   totalRoutes: number;
   routes: readonly AgencyRouteInput[];
-  held?: ReadonlyArray<{ route: string; reason: string }>;
+  held?: ReadonlyArray<{ route: string }>;
   generatedAt?: string;
   top?: { stops?: number; stretches?: number };
 }): AgencySummary {
   const { agency, routes } = input;
-  const topStops = input.top?.stops ?? 15, topStretches = input.top?.stretches ?? 10;
+  const topStops = input.top?.stops ?? 10, topStretches = input.top?.stretches ?? 10;
   const withWeekly = routes.filter(r => r.v3.weekly);
   const weekly = withWeekly.length ? (() => {
     const thisWeek = combineWeeks(withWeekly.map(r => r.v3.weekly!.thisWeek));
@@ -147,9 +161,12 @@ export function agencySummary(input: {
       lateN: t?.late?.n ?? 0,
       lateLastWeek: v3.weekly?.comparable ? l?.late?.share ?? null : null,
       runTimeOver: runTimeOver(t?.tripTime ?? null),
+      runTimeDiffMin: t?.tripTime && t.tripTime.n > 0 ? Math.round(t.tripTime.typicalMin) - Math.round(t.tripTime.scheduledMin) : null,
       bunchingShare: t?.bunching?.share ?? null,
+      ...(t?.bunching?.bunched != null && t.bunching.gapped != null ? { bunchedShare: t.bunching.bunched, gappedShare: t.bunching.gapped } : {}),
       deliveredShare: t?.delivered?.share ?? null,
-      lateByHour: block.byHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n })),
+      // The route's good days only, like its tiles (the all-days hours when the file has no per-day figures).
+      lateByHour: (healthyLateByHour(v3, 'all') ?? block.byHour).filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n })),
     };
   }).sort((a, b) => (b.lateShare ?? -1) - (a.lateShare ?? -1) || a.route.localeCompare(b.route, undefined, { numeric: true }));
 
@@ -186,18 +203,13 @@ export function agencySummary(input: {
     generatedAt: input.generatedAt ?? new Date().toISOString(),
     totalRoutes: input.totalRoutes,
     covered: routes.map(r => r.route),
-    held: [...(input.held ?? [])],
+    held: (input.held ?? []).map(h => ({ route: h.route })),
     weekly,
-    daily: weekly ? networkDaily(routes, weekly.thisWeek.healthyDates) : { late: [], delivered: [] },
+    daily: weekly ? networkDaily(routes, weekly.thisWeek.healthyDates) : { late: [], delivered: [], tripTime: [], extraWait: [], bunching: [] },
     routes: rows,
     worstStops,
     delayStarts,
     bunchingForms,
   };
-}
-
-/** "9 of 230 TTC routes" (the coverage line every figure carries). */
-export function coverageText(s: Pick<AgencySummary, 'covered' | 'totalRoutes' | 'agency'>): string {
-  return `${s.covered.length} of ${s.totalRoutes} ${s.agency.toUpperCase()} routes`;
 }
 
