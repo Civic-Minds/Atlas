@@ -349,7 +349,7 @@ jobs:
 
       - name: Download the earlier run's saved stamps
         if: inputs.start_at != 'reprocess' && inputs.resume_run_id != ''
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: rebuild-stamps-${{ inputs.resume_run_id }}
           path: tmp/rebuild-state
@@ -358,7 +358,7 @@ jobs:
 
       - name: Download the earlier run's release manifest
         if: inputs.start_at == 'history' || inputs.start_at == 'publish'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: rebuild-manifest-${{ inputs.resume_run_id }}
           path: tmp/rebuild-manifest
