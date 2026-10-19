@@ -234,6 +234,8 @@ export const ROUTE_NAME_ACRONYMS: ReadonlySet<string> = new Set([
   'UBC', 'UTSC', 'UTM', 'SFU', 'MIT', 'SFO', 'JFK', 'LAX', 'LGA', 'EWR', 'YVR', 'YYZ', 'BWI', 'NJ', 'NYC', 'DC', 'CBD', 'AM', 'PM',
   // Service brands and rail/transit names riders read in capitals
   'MAX', 'UP', 'TC', 'PATH', 'PATCO', 'MARC', 'STO', 'SU', 'RT',
+  // Compass directions and US highways ("NW 5TH AVE", "US 41"); not state codes: none appear as route-name words in the repo's data
+  'N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW', 'US',
 ]);
 
 /**

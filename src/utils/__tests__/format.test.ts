@@ -147,6 +147,13 @@ describe('routeLabels case', () => {
     expect(routeLabels({ shortName: 'SSSF', longName: 'Sausalito - San Francisco Ferry', routeType: 4 }).primary).toBe('SSSF');
     expect(routeLabels({ shortName: 'RWXP', longName: 'Ridgway Express', routeType: 3 }).text).toBe('RWXP — Ridgway Express');
   });
+  it('keeps compass directions and US highway numbers in capitals', () => {
+    expect(routeLabelCase('NW 5TH AVE')).toBe('NW 5th Ave');
+    expect(routeLabelCase('US 41')).toBe('US 41');
+    expect(routeLabelCase('SW BROADWAY')).toBe('SW Broadway');
+    expect(routeLabelCase('NE')).toBe('NE');
+    expect(routeLabelCase('WEST PARK')).toBe('West Park');
+  });
   it('title-cases whole-string capitals from real feeds (SF Muni and similar)', () => {
     const cases: Array<[string, string]> = [
       ['CHURCH', 'Church'], ['INGLESIDE', 'Ingleside'], ['OCEAN VIEW', 'Ocean View'], ['EMBARCADERO STATION', 'Embarcadero Station'],
