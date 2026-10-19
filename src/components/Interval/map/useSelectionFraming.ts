@@ -6,7 +6,7 @@ import { getAgencyBounds, type getRegionalView } from '../../../utils/regionView
 import { splitRouteKey } from '../../../utils/routeKey';
 import { fitTargetForPoints, routeFitTarget } from '../../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../../shared/routeGeometry';
-import { routeFramePadding } from './routeFraming';
+import { selectionFramePadding } from './routeFraming';
 import { shouldApplyResetView } from './resetView';
 
 export interface SelectionFramingInput {
@@ -121,15 +121,16 @@ export function useSelectionFraming(
       target = fitTargetForPoints(rendered.flatMap(f => lineCoordinates(f.geometry)));
     }
 
+    // Keeps the line clear of the route card: beside it, or above the phone bottom sheet (routeFraming).
+    const padding = selectionFramePadding(map);
     if (target?.kind === 'bounds') {
-      // Asymmetric padding keeps the line clear of the route card (routeFraming).
-      map.fitBounds(target.bounds, { padding: routeFramePadding(map), maxZoom: 14 });
+      map.fitBounds(target.bounds, { padding, maxZoom: 14 });
       fittedRouteRef.current = selectedRoute;
     } else if (target?.kind === 'point') {
       map.flyTo({
         center: target.center,
         zoom: Math.max(map.getZoom(), 14),
-        padding: routeFramePadding(map),
+        padding,
         duration: 900,
         essential: true,
       });

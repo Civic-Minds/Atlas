@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type * as maplibregl from 'maplibre-gl';
-import { frameRoute, routeFramePadding } from '../routeFraming';
+import { frameRoute, routeFramePadding, selectionFramePadding } from '../routeFraming';
 
 function fakeMap(width = 1200, height = 800, zoom = 10) {
   return {
@@ -59,5 +59,29 @@ describe('frameRoute', () => {
     expect(map.fitBounds).toHaveBeenCalledWith([[0, 0], [1, 1]], { padding, maxZoom: 15, duration: 0 });
     frameRoute(map, [[2, 2]], { padding, maxZoom: 15, duration: 0 });
     expect(map.flyTo).toHaveBeenCalledWith({ center: [2, 2], zoom: 15, padding, duration: 0 });
+  });
+});
+
+describe('selectionFramePadding (main map route selection)', () => {
+  // Room MapLibre's fitBounds has left to fit the route into (it subtracts the padding from the canvas).
+  const fitArea = (map: maplibregl.Map, p: maplibregl.PaddingOptions) => {
+    const { clientWidth, clientHeight } = map.getContainer();
+    return { width: clientWidth - (p.left ?? 0) - (p.right ?? 0), height: clientHeight - (p.top ?? 0) - (p.bottom ?? 0) };
+  };
+
+  it('frames above the phone bottom sheet instead of squeezing the route into a sliver (iPhone 402x874)', () => {
+    const phone = fakeMap(402, 874);
+    // The side-card padding left a 2px-wide column, so selecting TTC 80 zoomed out to the Great Lakes.
+    expect(fitArea(phone, selectionFramePadding(phone, false)).width).toBe(2);
+    const padding = selectionFramePadding(phone, true);
+    expect(padding).toEqual({ top: 60, bottom: 393, left: 30, right: 30 });
+    const area = fitArea(phone, padding);
+    expect(area.width).toBeGreaterThan(300);
+    expect(area.height).toBeGreaterThan(400);
+  });
+
+  it('keeps the side-card padding on wide screens even with the sheet feature on', () => {
+    expect(selectionFramePadding(fakeMap(1200, 800), true)).toEqual({ top: 80, bottom: 80, left: 320, right: 80 });
+    expect(selectionFramePadding(fakeMap(1200, 800), false)).toEqual({ top: 80, bottom: 80, left: 320, right: 80 });
   });
 });
