@@ -1052,7 +1052,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
         <div className={`absolute bottom-6 right-14 max-sm:right-16 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
-            <div className={`${MAP_BADGE} h-8 max-sm:h-10`}>
+            <div className={`${MAP_BADGE} h-8 max-sm:h-[40px]`}>
               <Spinner />
               <span className={MAP_BADGE_LABEL}>
                 {isLoading ? `${loadedCount}/${requestedCount} networks` : loadingText('map')}
@@ -1061,7 +1061,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
           {failedSlugs.size > 0 && (
             <div
-              className={`${MAP_BADGE} h-8 max-sm:h-10`}
+              className={`${MAP_BADGE} h-8 max-sm:h-[40px]`}
               title={`Couldn't load: ${[...failedSlugs].join(', ')}`}
             >
               <span className={MAP_BADGE_LABEL}>
@@ -1072,11 +1072,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           {/* Research views (Night, Frequent Service): their own whole-route and agency counts, then the colour key, in the same pills. */}
           {researchCounts && (
             <div className="hidden sm:flex gap-2">
-              <div className={`${MAP_BADGE} h-8 max-sm:h-10`}>
+              <div className={`${MAP_BADGE} h-8 max-sm:h-[40px]`}>
                 <span className={MAP_BADGE_COUNT}>{researchCounts.routes}</span>
                 <span className={MAP_BADGE_LABEL}>{plural(researchCounts.routes, 'route')}</span>
               </div>
-              <div className={`${MAP_BADGE} h-8 max-sm:h-10`}>
+              <div className={`${MAP_BADGE} h-8 max-sm:h-[40px]`}>
                 <span className={MAP_BADGE_COUNT}>{researchCounts.agencies}</span>
                 <span className={MAP_BADGE_LABEL}>{plural(researchCounts.agencies, 'agency', 'agencies')}</span>
               </div>
@@ -1086,7 +1086,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           {/* Counts come from the loaded agency data, so they wait for it (the in-view counts come from the tiles). */}
           {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading) && (
               <div className="hidden sm:flex gap-2">
-                <div className={`${MAP_BADGE} h-8 max-sm:h-10`}>
+                <div className={`${MAP_BADGE} h-8 max-sm:h-[40px]`}>
                   {showMapContext ? (
                     <button
                       type="button"
@@ -1113,14 +1113,14 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                     aria-label={`${mapContextAgencyCount} agencies in view`}
                     aria-expanded={mapContextOpen && mapContextView === 'agencies'}
                     title="Agencies in view"
-                    className={`${MAP_BADGE} h-8 max-sm:h-10 cursor-pointer hover:text-[var(--accent)] transition-colors`}
+                    className={`${MAP_BADGE} h-8 max-sm:h-[40px] cursor-pointer hover:text-[var(--accent)] transition-colors`}
                   >
                     <span className={MAP_BADGE_COUNT}>{mapContextAgencyCount}</span>
                     <span className={MAP_BADGE_LABEL}>agencies</span>
                   </button>
                 )}
                 {showMatchPercentage && !isLoading && (
-                  <div className={`${MAP_BADGE} h-8 max-sm:h-10`}>
+                  <div className={`${MAP_BADGE} h-8 max-sm:h-[40px]`}>
                     <span className={MAP_BADGE_COUNT}>
                       {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
                     </span>
@@ -1214,7 +1214,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
 
       {headerPortalContainer && createPortal(
-        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView ? 'pointer-events-none' : ''}`}>
+        <div className={`flex items-center gap-2 max-[379px]:gap-1 ${!showUi && hideFilterPanel && !nightServiceView ? 'pointer-events-none' : ''}`}>
           <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <FilterChips
               maxHeadway={maxHeadway}

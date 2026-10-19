@@ -22,12 +22,12 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
   return (
     <>
     <div
-      className={`absolute bottom-6 left-6 ${Z_PANEL} pointer-events-auto flex flex-wrap-reverse items-center gap-1.5 max-w-[calc(100vw-3rem)]`}
+      className={`absolute bottom-6 left-6 ${Z_PANEL} pointer-events-auto flex flex-wrap-reverse items-center gap-1.5 max-w-[calc(100vw-3rem)] max-sm:max-w-[calc(100vw-96px)]`}
       title={FULL_ATTRIBUTION}
     >
       <a
         href="/about"
-        className={`${MAP_BADGE} h-8 max-sm:h-10 ${MAP_BADGE_LABEL} whitespace-nowrap no-underline hover:text-[var(--text-primary)]`}
+        className={`${MAP_BADGE} h-8 max-sm:h-[40px] ${MAP_BADGE_LABEL} whitespace-nowrap no-underline hover:text-[var(--text-primary)]`}
       >
         About Atlas
       </a>
@@ -37,7 +37,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
           onClick={() => setWhatsNewOpen(open => !open)}
           aria-expanded={whatsNewOpen}
           aria-haspopup="dialog"
-          className={`${MAP_BADGE} h-8 max-sm:h-10 ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)]`}
+          className={`${MAP_BADGE} h-8 max-sm:h-[40px] ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)]`}
         >
           v{shortVersion(appVersion)} · What's new
         </button>
@@ -45,11 +45,11 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
       <a
         href={feedbackHref}
         onClick={() => trackEvent('feedback_opened', { source: 'map_attribution' })}
-        className={`${MAP_BADGE} h-8 max-sm:h-10 ${MAP_BADGE_LABEL} no-underline hover:text-[var(--text-primary)]`}
+        className={`${MAP_BADGE} h-8 max-sm:h-[40px] ${MAP_BADGE_LABEL} no-underline hover:text-[var(--text-primary)]`}
       >
         Feedback
       </a>
-      <div className={`${MAP_BADGE} h-8 max-sm:h-10`}>
+      <div className={`${MAP_BADGE} h-8 max-sm:h-[40px]`}>
         <p className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>
           <OutboundLink
             href="https://www.openstreetmap.org/copyright"
