@@ -1,6 +1,7 @@
 import type * as maplibregl from 'maplibre-gl';
 import { fitTargetForPoints } from '../../../utils/routeFitTarget';
 import type { LonLat } from '../../../../shared/routeGeometry';
+import { FEATURES } from '../../../../shared/config';
 
 /** Which side of the map the card sits on, on wide screens. */
 export type CardSide = 'left' | 'right';
@@ -16,6 +17,15 @@ export function routeFramePadding(map: maplibregl.Map, side: CardSide = 'left', 
   return side === 'left'
     ? { top: 80, bottom: 80, left: 320, right: 80 }
     : { top: 80, bottom: 80, left: 80, right: 280 };
+}
+
+/**
+ * Padding for the main map's route selection. Where the route card is a phone bottom sheet
+ * (FEATURES.mobileRouteSheet), frame above the sheet: the side-card padding (400px of left+right)
+ * leaves a phone map almost no width, so the fit zooms out to a continent.
+ */
+export function selectionFramePadding(map: maplibregl.Map, phoneSheet: boolean = FEATURES.mobileRouteSheet): maplibregl.PaddingOptions {
+  return routeFramePadding(map, 'left', { phoneSheet });
 }
 
 /** Fit the camera to a route's (or stretch's) coordinates, or fly to it when it's a single point. */
