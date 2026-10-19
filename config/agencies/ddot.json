@@ -23,7 +23,7 @@
     "Windsor, Ontario"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-464/latest.zip",
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270207",
@@ -46,6 +46,6 @@
   "feedRefreshErrorAt": "20261007",
   "feedRefreshRetryCount": 1,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.detroitmi.gov/Portals/0/docs/deptoftransportation/pdfs/ddot_gtfs.zip",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-464/latest.zip",
   "lastPeekedExpiry": "20270207"
 }

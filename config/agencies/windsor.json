@@ -14,18 +14,18 @@
     -82.607
   ],
   "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
-  "lastFeedExpiry": "20270108",
-  "lastFeedVersion": "d6178f15-aa35-465d-8132-df9f9720adf8",
+  "lastFeedExpiry": "20270113",
+  "lastFeedVersion": "d0704ff0-25ec-41c7-a326-9a0ea5be33f3",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-720/latest.zip",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Windsor, Ontario",
     "Detroit, Michigan"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270108",
+  "expiredFeedCheckExpiry": "20270113",
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "review",
@@ -39,9 +39,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 1,
-      "featureCount": 93
+      "featureCount": 96
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-19"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -49,5 +49,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
-  "lastPeekedExpiry": "20270108"
+  "lastPeekedExpiry": "20270113"
 }

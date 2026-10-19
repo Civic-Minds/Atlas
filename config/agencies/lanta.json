@@ -10,33 +10,37 @@
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30010/latest.zip",
   "lastFeedExpiry": "20270124",
-  "lastFeedVersion": "20260813",
-  "lastRefreshedAt": "2026-08-24",
+  "lastFeedVersion": "20261014",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Allentown, Pennsylvania",
     "Bethlehem, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270124",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 90,
     "reasons": [
-      "4 route frequency metrics need review."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 4,
-      "featureCount": 150
+      "routeHeadwayMismatches": 1,
+      "featureCount": 160
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-10-19"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://realtimelanta.availtec.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20270124"
+  "lastPeekedExpiry": "20270124",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }
