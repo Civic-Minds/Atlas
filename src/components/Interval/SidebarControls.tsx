@@ -42,6 +42,7 @@ import type { CompareRouteRow } from './compareTypes';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { hasRegularServiceInPeriod, hasStretchRoles, stretchRowFeatures, variantOnlyRow } from '../../utils/stretchCard';
+import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from '../../utils/sortCompare';
 
 interface SidebarControlsProps {
   query: string;
@@ -322,7 +323,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     }
     return [...routes.values()]
       .map(route => ({ ...route, longName: combineSuggestedRouteNames(route.longNames) ?? '' }))
-      .sort((a, b) => a.headway - b.headway)
+      .sort(compareHeadwayThenNumber)
       .slice(0, 5);
   }, [nonCorridorLayers, period, currentDay, searchFocused]);
 
@@ -662,7 +663,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
     return Array.from(routeMap.entries())
-      .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+      .sort(([a], [b]) => compareRouteNumber(a, b))
       .map(([, v]) => ({
         shortName: v.shortName,
         longName: v.longName,
@@ -774,12 +775,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
     return Array.from(seen.values())
       .filter(conn => !departingKeys.has(conn.rKey))
-      .sort((a, b) => {
-        if (a.headway !== null && b.headway !== null) return a.headway - b.headway;
-        if (a.headway !== null) return -1;
-        if (b.headway !== null) return 1;
-        return a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true });
-      });
+      .sort((a, b) => compareHeadwayThenNumber(
+        { headway: a.headway, shortName: a.routeShortName, longName: a.routeLongName },
+        { headway: b.headway, shortName: b.routeShortName, longName: b.routeLongName },
+      ));
   }, [currentStop, nonCorridorLayers, currentDay, period, stopRoutes]);
 
   const disambigDetails = useMemo(() => {
@@ -806,13 +805,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           return candidateKey === displayKey;
         }) === index;
       })
-      .sort((a, b) => {
-        const agencyCmp = a.agencyName.localeCompare(b.agencyName);
-        if (agencyCmp !== 0) return agencyCmp;
-        const nA = parseInt(a.shortName, 10), nB = parseInt(b.shortName, 10);
-        if (!isNaN(nA) && !isNaN(nB)) return nA - nB;
-        return a.shortName.localeCompare(b.shortName, undefined, { numeric: true });
-      });
+      .sort((a, b) => compareAgencyName(a.agencyName, b.agencyName)
+        || compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName));
     return details;
   }, [disambiguationRoutes, nonCorridorLayers, colorMode]);
 

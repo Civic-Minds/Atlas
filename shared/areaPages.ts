@@ -18,6 +18,7 @@ import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL } from './seo';
+import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 
 export { AREA_PATH_PREFIX, areaPagePath };
@@ -98,7 +99,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
       modes: Object.fromEntries(s.byMode.map(m => [m.label, m.routes.length])),
     });
   }
-  rows.sort((x, y) => y.totalRoutes - x.totalRoutes || x.name.localeCompare(y.name));
+  rows.sort((x, y) => y.totalRoutes - x.totalRoutes || compareAgencyName(x.name, y.name) || x.slug.localeCompare(y.slug));
   const known = members.filter(a => a.sat !== undefined || a.sun !== undefined);
   const all2 = (k: 'sat' | 'sun') => known.length > 0 && known.every(a => a[k]);
   const any2 = (k: 'sat' | 'sun') => known.some(a => a[k]);

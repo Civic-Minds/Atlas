@@ -34,6 +34,7 @@ import {
 import { headwayTierLabel } from '../../utils/headwayText';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
+import { compareHeadwayThenNumber } from '../../utils/sortCompare';
 
 interface RouteRow {
   routeId: string;
@@ -138,11 +139,7 @@ export function getRoutes(
       busSubType: row.busSubType,
       matchesFilter: row.matchesFilter,
     }))
-    .sort((a, b) => {
-      if (a.headway === null) return 1;
-      if (b.headway === null) return -1;
-      return a.headway - b.headway;
-    });
+    .sort(compareHeadwayThenNumber);
 }
 
 function frequencyFilterLabel(maxHeadway: number): string | null {
