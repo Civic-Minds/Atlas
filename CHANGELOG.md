@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The top bar fits on one line from tablet to desktop widths**: below 1088px History and Compare show just their icons, so Compare no longer sits under the Frequency filter at 1024px and the buttons on the right no longer run off narrow screens ([#1007](https://github.com/Civic-Minds/Atlas/issues/1007))
 - **Map counts say "1 agency" and "1 route"**: the bottom bar and the In view panel read "1 agencies" ([#1009](https://github.com/Civic-Minds/Atlas/issues/1009))
 - **The route card's frequency filter notice keeps "15-minute" together**: it wrapped as "15-" / "minute" across two lines ([#1008](https://github.com/Civic-Minds/Atlas/issues/1008))
 - **Agencies whose on-demand zone isn't on the map get an "On-Demand" pill on their card (beta)**: selecting it says the service runs by request in a zone that isn't drawn yet, instead of a notice block above the routes.
