@@ -16,9 +16,9 @@
   "websiteUrl": "https://townofmountainvillage.com/getting-around/",
   "region": "Colorado",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
-  "lastFeedExpiry": "20261122",
-  "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedExpiry": "20280503",
+  "lastFeedVersion": "UTC: 16-Oct-2026 21:24",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Mountain Village, Colorado",
     "Telluride, Colorado"
@@ -37,12 +37,12 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 12
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-19"
   },
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261122",
+  "expiredFeedCheckExpiry": "20280503",
   "timezone": "America/Denver",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -50,5 +50,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
-  "lastPeekedExpiry": "20261122"
+  "lastPeekedExpiry": "20280503"
 }

@@ -16,13 +16,13 @@
   "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3031/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Oct 5, 2026, 3:44 AM",
-  "lastRefreshedAt": "2026-10-07",
+  "lastFeedVersion": "Updated: Oct 16, 2026, 11:23 PM",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Redding, California",
     "Chico, California"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -37,9 +37,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 4,
       "routeHeadwayMismatches": 0,
-      "featureCount": 35
+      "featureCount": 34
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-19"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",

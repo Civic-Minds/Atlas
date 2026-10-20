@@ -9,14 +9,14 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=41",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "202610120/20261011 21:00:00/20261012 04:00:00",
+  "lastFeedVersion": "202610190/20261018 21:00:00/20261019 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2473/latest.zip",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Nanaimo, British Columbia",
     "Saanich, British Columbia"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -29,9 +29,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 97
+      "featureCount": 109
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-19"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",

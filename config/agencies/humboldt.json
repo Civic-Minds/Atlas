@@ -16,9 +16,9 @@
   "feedUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3032/latest.zip",
   "lastFeedExpiry": "20270630",
-  "lastFeedVersion": "UTC: 08-Oct-2026 19:46",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261012",
+  "lastFeedVersion": "UTC: 14-Oct-2026 14:35",
+  "lastRefreshedAt": "2026-10-19",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270630",
@@ -31,9 +31,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 18
+      "featureCount": 60
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-19"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",

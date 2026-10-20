@@ -14,10 +14,10 @@
   "cities": [
     "Flagstaff, Arizona"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20991231",
+  "expiredFeedCheckExpiry": "20261114",
   "timezone": "America/Phoenix",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",

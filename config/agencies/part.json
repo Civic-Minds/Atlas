@@ -22,9 +22,11 @@
     "Danbury, Connecticut",
     "Greenburgh, New York"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/PART_Putnam_Area_Rapid_Transit.zip"
 }
