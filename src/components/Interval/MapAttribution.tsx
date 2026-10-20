@@ -39,6 +39,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
     <>
     <div
       className={`absolute bottom-6 left-6 ${Z_PANEL} pointer-events-auto flex flex-wrap-reverse items-center gap-1.5 max-w-[calc(100vw-3rem)]`}
+      data-map-attribution=""
       title={FULL_ATTRIBUTION}
     >
       <div ref={aboutRef} className="relative sm:hidden">

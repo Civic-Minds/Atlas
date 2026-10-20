@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { consentPlacement, type ConsentPlacement } from '../utils/consentPlacement';
 import { ArrowLeft, X } from 'lucide-react';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
 import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
@@ -61,7 +62,37 @@ export default function AnalyticsConsent() {
     return () => { delete document.documentElement.dataset.consentPrompt; };
   }, [showPrompt]);
   const choose = (consent: AnalyticsConsent) => { setAnalyticsConsent(consent); setShowPrompt(false); };
+  // On sm and up the prompt joins the map's bottom-left pill row, after its last pill, at the
+  // same bottom; without room it uses the phone position under the header (consentPlacement).
+  const pillRef = useRef<HTMLDivElement>(null);
+  const [placement, setPlacement] = useState<ConsentPlacement>({ mode: 'default' });
+  useLayoutEffect(() => {
+    if (!showPrompt) return;
+    const place = () => {
+      const row = document.querySelector('[data-map-attribution]')?.getBoundingClientRect() ?? null;
+      setPlacement(consentPlacement({
+        isSm: window.matchMedia('(min-width: 640px)').matches,
+        row,
+        pillWidth: pillRef.current?.getBoundingClientRect().width ?? 0,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+      }));
+    };
+    place();
+    window.addEventListener('resize', place);
+    const rowEl = document.querySelector('[data-map-attribution]');
+    const observer = rowEl && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(place) : null;
+    if (rowEl) observer?.observe(rowEl);
+    // The map's pill row can mount after the prompt; look again once the page settles.
+    const retry = window.setTimeout(place, 1000);
+    return () => { window.removeEventListener('resize', place); observer?.disconnect(); window.clearTimeout(retry); };
+  }, [showPrompt]);
   // inset-x-0 + mx-auto + w-fit centers without the left-1/2 shrink-to-fit squeeze that wrapped the text on phones.
   // Phones show it under the header, clear of the map controls and footer links along the bottom edge.
-  return <>{showPrompt && <div role="dialog" aria-label="Analytics consent" className={`fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-[4.25rem] h-8 max-sm:h-[32px] w-fit max-w-[calc(100vw-2rem)] whitespace-nowrap ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}><span>Optional analytics help improve Atlas.</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>}{showSettings && <Controls onClose={() => setShowSettings(false)} />}</>;
+  const position = placement.mode === 'row'
+    ? 'fixed'
+    : placement.mode === 'top'
+      ? 'fixed inset-x-0 top-[4.25rem] mx-auto'
+      : 'fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-6';
+  return <>{showPrompt && <div ref={pillRef} role="dialog" aria-label="Analytics consent" style={placement.mode === 'row' ? { left: placement.left, bottom: placement.bottom } : undefined} className={`${position} h-8 max-sm:h-[32px] w-fit max-w-[calc(100vw-2rem)] whitespace-nowrap ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}><span>Optional analytics help improve Atlas.</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>}{showSettings && <Controls onClose={() => setShowSettings(false)} />}</>;
 }
