@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Download, Share2, X } from 'lucide-react';
 import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
-import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, getMapExportOutputSize, MAP_EXPORT_SIZES, MapExportBlockedError, type MapExportText, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
+import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, MAP_EXPORT_SIZES, MapExportBlockedError, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
 import type { MapExportBox, MapExportDetails } from '../utils/mapExportDetails';
 import { trackEvent } from '../lib/analytics';
 
 interface Props {
   open: boolean;
-  /** Size of the map canvas in device pixels, used to show the real output size. */
+  /** Map canvas size in device pixels (no longer shown in the dialog). */
   sourceSize: { width: number; height: number } | null;
   /** Resolves with the map canvas once the current view has fully loaded and drawn. */
   prepareSource: () => Promise<HTMLCanvasElement>;
@@ -19,7 +19,14 @@ interface Props {
   onClose: () => void;
 }
 
-export default function MapExportDialog({ open, sourceSize, prepareSource, releaseSource, describe, lightMode, onClose }: Props) {
+/** Plain-words hint under each size name (the pixel sizes stay internal). */
+const SIZE_HINTS: Record<MapExportSizeId, string> = {
+  social: 'For sharing',
+  standard: 'Everyday',
+  high: 'Sharper',
+};
+
+export default function MapExportDialog({ open, prepareSource, releaseSource, describe, lightMode, onClose }: Props) {
   const [exportingMode, setExportingMode] = useState<'download' | 'share' | null>(null);
   const [waitingForMap, setWaitingForMap] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,18 +36,9 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
   const openRef = useRef(open);
   openRef.current = open;
 
-  const [previewText, setPreviewText] = useState<MapExportText>({ title: '' });
-
   useEffect(() => {
-    if (!open) return;
-    setShareSupported(canShareMapExport());
-    // The heading and key change the image height on phones, so size the preview with them.
-    try {
-      setPreviewText(describe());
-    } catch {
-      setPreviewText({ title: '' });
-    }
-  }, [open, describe]);
+    if (open) setShareSupported(canShareMapExport());
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -52,13 +50,6 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
   }, [open, onClose]);
 
   if (!open) return null;
-
-  const selectedSize: MapExportSize = MAP_EXPORT_SIZES.find(candidate => candidate.id === selectedSizeId) ?? DEFAULT_MAP_EXPORT_SIZE;
-  const outputSize = (size: MapExportSize) => {
-    if (!sourceSize || sourceSize.width === 0 || sourceSize.height === 0) return size;
-    return getMapExportOutputSize(sourceSize.width, sourceSize.height, size, previewText);
-  };
-  const selectedOutput = outputSize(selectedSize);
 
   const handleExport = async (mode: 'download' | 'share') => {
     if (exportingMode) return;
@@ -126,7 +117,7 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id="map-export-title" className="text-sm font-black text-[var(--text-primary)]">Export map image</h2>
-            <p className="mt-1 text-xs font-bold text-[var(--text-dim)]">{selectedOutput.width} × {selectedOutput.height} PNG with whose schedules it shows, when the data was updated, and the Atlas link.</p>
+            <p className="mt-1 text-xs font-bold text-[var(--text-dim)]">A picture of this map, with whose schedules it shows, when the data was updated, and the Atlas link.</p>
           </div>
           <button type="button" onClick={onClose} aria-label="Close export dialog" className="text-[var(--text-dim)] hover:text-[var(--text-primary)]">
             <X className="h-4 w-4" />
@@ -146,7 +137,7 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
               className={`rounded-lg px-2 py-2 text-xs font-black transition-colors ${selectedSizeId === size.id ? 'bg-[var(--control-active-bg)] text-[var(--control-active-fg)]' : 'text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]'}`}
             >
               <span className="block">{size.label}</span>
-              <span className="mt-0.5 block text-xs font-bold opacity-75">{outputSize(size).width} × {outputSize(size).height}</span>
+              <span className="mt-0.5 block text-xs font-bold opacity-75">{SIZE_HINTS[size.id]}</span>
             </button>
           ))}
         </div>

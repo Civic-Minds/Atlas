@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Map buttons are slightly bigger on phones**: all round buttons and pills go from 28px to 32px below the small breakpoint so they are a little easier to tap; desktop is unchanged.
+- **Selecting a route on a phone frames it above the bottom sheet (beta)**: it zoomed out to the whole Great Lakes because the map left room for a side card that phones don't have ([#973](https://github.com/Civic-Minds/Atlas/issues/973))
+- **The three "Routes shown" settings use one link wording**: "See all hidden routes", "See all part-time routes" and "See all degraded feeds", each with a count, so they read the same way.
 - **Route names keep compass directions and "US" in capitals**: "NW 5th Ave", "SW Broadway" and "US 41" no longer show as "Nw", "Sw" or "Us" when a feed shouts its names.
 - **Live route and vehicle cards go back with a plain text link (local only, CIV-325/331)**: small grey "Muni routes" or "J route" above the title replaces the back arrow.
 - **Live has a vehicle card (local only, CIV-332)**: click a vehicle on the map or in the route list to see its direction, destination, speed and on time / late status, styled like the route card with a back arrow.

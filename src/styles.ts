@@ -6,8 +6,8 @@
 /** Glass panel surface: background + blur + primary border */
 export const SURFACE = 'bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)]';
 
-/** Circular icon button (w-8 h-8, top-bar style) */
-export const ICON_BTN = `w-8 h-8 flex items-center justify-center ${SURFACE} rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors`;
+/** Circular icon button (w-8 h-8, top-bar style; 32px on phones) */
+export const ICON_BTN = `w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center ${SURFACE} rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors`;
 
 /** Shared transition timing tokens */
 export const TRANSITION_FAST = 'duration-150 ease-out';
@@ -33,7 +33,7 @@ export const FLOATING_CARD = `${SURFACE} rounded-2xl shadow-2xl`;
 export const PANEL_SHELL = `${FLOATING_CARD} flex flex-col overflow-hidden`;
 
 /** Top-bar pill surface (search bar, headway filter row) */
-export const PILL_SURFACE = `h-8 flex items-center ${SURFACE} rounded-full shadow-lg`;
+export const PILL_SURFACE = `h-8 max-sm:h-[32px] flex items-center ${SURFACE} rounded-full shadow-lg`;
 /** Shared responsive width used by the top search bar */
 export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 
