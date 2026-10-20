@@ -361,7 +361,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         {/* Content View Container */}
         <div className="flex-1 overflow-hidden relative">
           {view === 'home' && (
-            <div className="h-full overflow-y-auto px-5 py-4 space-y-5">
+            <div className="h-full flex flex-col min-h-0">
+            <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-5">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 A transit atlas covering agencies across {countriesLabel}.
               </p>
@@ -393,7 +394,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <LinkCard as="button" onClick={() => window.dispatchEvent(new Event('atlas:privacy-settings'))}>Privacy &amp; analytics</LinkCard>
               </div>
 
-              <div className="text-xs text-[var(--text-dim)] space-y-1">
+            </div>
+              {/* Pinned to the panel's bottom edge, below the scrolling content. */}
+              <div className="shrink-0 border-t border-[var(--border-primary)] px-5 py-3 text-xs text-[var(--text-dim)] space-y-1" data-testid="info-panel-footer">
                 <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
                   <a href="/about/docs" className="hover:text-[var(--accent)] hover:underline">Documentation</a>
                   <span aria-hidden="true">·</span>
