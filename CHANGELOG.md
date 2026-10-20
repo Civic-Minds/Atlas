@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The search bar's suggestions list scrolls inside itself**: with recent searches, recent routes and suggestions all showing it ran past the bottom of the screen.
 - **Hovering the route card's hour chart no longer resizes the card**: the rows keep their size while the numbers change to the hovered hour, so the card stops jumping under the pointer.
 - **Route card rows name where a trip starts only when a direction's rows start in different places**: "from Leslie Station to Donlands via Laird" replaces "from Leslie Station · to Donlands via Laird", and rows that all start at the same stop just say "to ...".
 - **A selected route that runs the whole period but misses the frequency filter says so**: TTC 51 PM Peak read "not throughout the selected 3–7 PM period" although it runs all afternoon ([#995](https://github.com/Civic-Minds/Atlas/issues/995))
