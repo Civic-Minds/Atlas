@@ -36,16 +36,20 @@ export function activeRangesCoverPeriod(ranges: Array<[number, number]>, startHo
  * Whether a selected route outside the filter gets the part-period notice for this
  * period (#995). It needs some service near the period (the scan starts an hour
  * early, as the notice's range does) and, under a frequency filter, a service
- * window that stops short of the period. Without a frequency filter the earlier
- * behaviour stands.
+ * window that stops short of the period. Without a frequency filter, or when the
+ * route's filter value meets it, the earlier behaviour stands.
  */
 export function partPeriodNoticeApplies(
   directions: Pick<ShapeProperties, 'headwayByHour'>[],
   startHour: number,
   endHour: number,
   maxHeadway: number,
+  /** The route's filter value for the period; the swap applies only when it misses the frequency filter. */
+  filterValue: number | null | undefined,
 ): boolean {
   if (activeHourRanges(directions, Math.max(0, startHour - 1), endHour).length === 0) return false;
-  if (maxHeadway === Infinity) return true;
+  // No frequency filter, or the route meets it (hidden by span, limited, mode or agency filters
+  // instead): the frequency notice would be false, so the earlier behaviour stands.
+  if (maxHeadway === Infinity || (filterValue != null && filterValue <= maxHeadway)) return true;
   return !activeRangesCoverPeriod(activeHourRanges(directions, startHour, endHour), startHour, endHour);
 }

@@ -270,7 +270,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   // #995: "but not throughout the selected period" only when service really stops short of it;
   // a route running the whole period that misses the frequency filter gets the filter notice.
   const showPartPeriodNotice = selectedPeriod != null
-    && partPeriodNoticeApplies(activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour, maxHeadway);
+    && partPeriodNoticeApplies(
+      activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour, maxHeadway, contract?.filterValue,
+    );
   const periodNotice = !hideFilterNotices && selectedPeriod && !hasPeriodService
       ? periodServiceNotice(
       formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),

@@ -38,8 +38,8 @@ describe('part-period notice (#995)', () => {
     // The card scans the primary multi-branch direction (Southbound here).
     const source = sparklineSourceDirections(asDirections(TTC_51.Weekday), dir0);
     expect(activeHourRanges(source, pm.startHour, pm.endHour)).toEqual([[15, 19]]);
-    expect(partPeriodNoticeApplies(source, pm.startHour, pm.endHour, 15)).toBe(false);
-    expect(partPeriodNoticeApplies(asDirections(TTC_51.Weekday), pm.startHour, pm.endHour, 20)).toBe(false);
+    expect(partPeriodNoticeApplies(source, pm.startHour, pm.endHour, 15, 22)).toBe(false);
+    expect(partPeriodNoticeApplies(asDirections(TTC_51.Weekday), pm.startHour, pm.endHour, 20, 22)).toBe(false);
   });
 
   it('TTC 51 runs through every daytime and Night period on every day type', () => {
@@ -49,7 +49,7 @@ describe('part-period notice (#995)', () => {
       for (const key of ['amPeak', 'midday', 'pmPeak', 'evening', 'late']) {
         const p = period(key);
         for (const source of [dir0, all]) {
-          expect(partPeriodNoticeApplies(source, p.startHour, p.endHour, 15), `${day} ${key}`).toBe(false);
+          expect(partPeriodNoticeApplies(source, p.startHour, p.endHour, 15, 22), `${day} ${key}`).toBe(false);
         }
       }
     }
@@ -59,24 +59,30 @@ describe('part-period notice (#995)', () => {
     const pm = period('pmPeak');
     // Peak-only trips 3-5 PM, nothing after.
     const peakOnly = asDirections([{ directionId: 0, headsign: 'x', headwayByHour: { 15: 20, 16: 20 } }]);
-    expect(partPeriodNoticeApplies(peakOnly, pm.startHour, pm.endHour, 15)).toBe(true);
+    expect(partPeriodNoticeApplies(peakOnly, pm.startHour, pm.endHour, 15, 22)).toBe(true);
     // Starts late in the period.
     const lateStart = asDirections([{ directionId: 0, headsign: 'x', headwayByHour: { 17: 20, 18: 20 } }]);
-    expect(partPeriodNoticeApplies(lateStart, pm.startHour, pm.endHour, 15)).toBe(true);
+    expect(partPeriodNoticeApplies(lateStart, pm.startHour, pm.endHour, 15, 22)).toBe(true);
     // A missing hour inside the period is not "throughout".
     const hole = asDirections([{ directionId: 0, headsign: 'x', headwayByHour: { 15: 20, 16: 20, 18: 20 } }]);
     expect(activeRangesCoverPeriod(activeHourRanges(hole, pm.startHour, pm.endHour), pm.startHour, pm.endHour)).toBe(false);
-    expect(partPeriodNoticeApplies(hole, pm.startHour, pm.endHour, 15)).toBe(true);
+    expect(partPeriodNoticeApplies(hole, pm.startHour, pm.endHour, 15, 22)).toBe(true);
   });
 
   it('gives no part-period sentence when nothing runs near the period', () => {
     const pm = period('pmPeak');
     const morningOnly = asDirections([{ directionId: 0, headsign: 'x', headwayByHour: { 7: 10, 8: 10 } }]);
-    expect(partPeriodNoticeApplies(morningOnly, pm.startHour, pm.endHour, 15)).toBe(false);
+    expect(partPeriodNoticeApplies(morningOnly, pm.startHour, pm.endHour, 15, 22)).toBe(false);
+  });
+
+  it('a route that meets the frequency filter (hidden by another filter) keeps the earlier behaviour', () => {
+    const pm = period('pmPeak');
+    expect(partPeriodNoticeApplies(asDirections(TTC_51.Weekday), pm.startHour, pm.endHour, 30, 22)).toBe(true);
+    expect(partPeriodNoticeApplies(asDirections(TTC_51.Weekday), pm.startHour, pm.endHour, 30, null)).toBe(false);
   });
 
   it('without a frequency filter, keeps the earlier behaviour', () => {
     const pm = period('pmPeak');
-    expect(partPeriodNoticeApplies(asDirections(TTC_51.Weekday), pm.startHour, pm.endHour, Infinity)).toBe(true);
+    expect(partPeriodNoticeApplies(asDirections(TTC_51.Weekday), pm.startHour, pm.endHour, Infinity, 22)).toBe(true);
   });
 });
