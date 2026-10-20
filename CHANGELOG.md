@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Route card rows name where a trip starts only when a direction's rows start in different places**: "from Leslie Station to Donlands via Laird" replaces "from Leslie Station · to Donlands via Laird", and rows that all start at the same stop just say "to ...".
 - **A selected route that runs the whole period but misses the frequency filter says so**: TTC 51 PM Peak read "not throughout the selected 3–7 PM period" although it runs all afternoon ([#995](https://github.com/Civic-Minds/Atlas/issues/995))
 - **Map buttons are slightly bigger on phones**: all round buttons and pills go from 28px to 32px below the small breakpoint so they are a little easier to tap; desktop is unchanged.
 - **Selecting a route on a phone frames it above the bottom sheet (beta)**: it zoomed out to the whole Great Lakes because the map left room for a side card that phones don't have ([#973](https://github.com/Civic-Minds/Atlas/issues/973))

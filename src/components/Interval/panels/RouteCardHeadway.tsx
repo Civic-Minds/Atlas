@@ -40,6 +40,7 @@ import {
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import { activeHourRanges, partPeriodNoticeApplies } from '../../../utils/periodActiveRanges';
+import { rowLabelWithOrigin } from '../../../utils/rowOriginLabel';
 import { hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, routeAllDayContract, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
@@ -596,11 +597,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               multipleDirections: showDirectionSections,
               sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
             });
-            const sameDestinationCount = group.realTier.filter(d =>
-              (d.headsign ?? '').trim().toLowerCase() === (direction.headsign ?? '').trim().toLowerCase()
-            ).length;
-            const variant = direction.routeVariant?.trim();
-            return sameDestinationCount > 1 && variant ? `${variant} · ${label}` : label;
+            return rowLabelWithOrigin(label, direction, group.realTier);
           };
           const branchHoverProps = (dirId: number, headsign: string | null | undefined) => {
             if (!headsign) return {};
