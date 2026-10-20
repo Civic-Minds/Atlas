@@ -20,9 +20,9 @@
     "Whitman County, Washington"
   ],
   "timezone": "America/Los_Angeles",
-  "lastFeedExpiry": "20281016",
-  "lastFeedVersion": "removed football routes",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedExpiry": "20281019",
+  "lastFeedVersion": "back to regular service, removed football and Wheat-Lentil detours,football + Greyhound open,Greyhound closed,removed football routes",
+  "lastRefreshedAt": "2026-10-19",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -34,9 +34,9 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 8
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-19"
   },
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",

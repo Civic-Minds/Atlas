@@ -14,32 +14,32 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "20281016",
-  "lastFeedVersion": "09/27/26",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedExpiry": "20281019",
+  "lastFeedVersion": "10/17/2026",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Roanoke, Virginia"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
   "feedQuality": {
     "status": "degraded",
-    "score": 50,
+    "score": 40,
     "reasons": [
       "1 minor schedule issue found while reading the feed.",
       "3 route shapes needed adjustment before display.",
-      "1 route has stops whose frequency differs from the overall route schedule."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
       "shapeAnomalies": 3,
-      "routeHeadwayMismatches": 1,
+      "routeHeadwayMismatches": 2,
       "featureCount": 63
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-19"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

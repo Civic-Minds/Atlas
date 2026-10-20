@@ -24,17 +24,17 @@
     "Daly City, California",
     "Chinatown, California"
   ],
-  "lastFeedCheckAt": "20261012",
-  "expiredFeedCheckCount": 4,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260828",
+  "lastFeedCheckAt": "20261019",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270115",
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20260828)",
   "feedRefreshErrorAt": "20261012",
   "feedRefreshRetryCount": 3,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip",
+  "lastFeedSourceUrl": "https://api.511.org/transit/datafeeds?operator_id=SF",
   "feedApiKeyEnvVar": "MUNI_511_API_KEY",
   "modeOverrides": [
     {

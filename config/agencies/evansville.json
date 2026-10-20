@@ -23,14 +23,14 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20250115-762408ee68963c10",
-  "lastFeedCheckAt": "20261012",
-  "expiredFeedCheckCount": 5,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20250115",
+  "lastFeedCheckAt": "20261019",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20250115)",
   "feedRefreshErrorAt": "20261012",
   "feedRefreshRetryCount": 3,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip"
+  "lastFeedSourceUrl": "https://metsmyride.evansville.in.gov/GTFS/Static/google_transit.zip"
 }

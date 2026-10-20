@@ -16,12 +16,12 @@
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip",
   "lastFeedExpiry": "20270319",
-  "lastFeedVersion": "UTC: 18-Sep-2026 20:56",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "UTC: 16-Oct-2026 20:14",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Sammamish, Washington"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270319",
@@ -37,9 +37,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 3
+      "featureCount": 7
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-19"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
