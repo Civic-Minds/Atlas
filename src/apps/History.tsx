@@ -24,6 +24,7 @@ import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import { loadingText, loadErrorText, RETRY_HINT } from '../content/stateCopy';
+import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 
 export interface RouteSnapshot {
   label: string;
@@ -703,11 +704,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
 
   const historyRegions = useMemo(() => {
     const regions = new Set(historyAgencies.map(a => a.region || 'Other'));
-    return [...regions].sort((a, b) => {
-      if (a === 'Other') return 1;
-      if (b === 'Other') return -1;
-      return a.localeCompare(b, undefined, { sensitivity: 'base' });
-    });
+    return [...regions].sort(compareRegion);
   }, [historyAgencies]);
 
   useEffect(() => {
@@ -726,13 +723,9 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
       map.get(region)!.push(agency);
     }
     for (const agencies of map.values()) {
-      agencies.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+      agencies.sort((a, b) => compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
     }
-    return [...map.entries()].sort(([a], [b]) => {
-      if (a === 'Other') return 1;
-      if (b === 'Other') return -1;
-      return a.localeCompare(b, undefined, { sensitivity: 'base' });
-    });
+    return [...map.entries()].sort(([a], [b]) => compareRegion(a, b));
   }, [filtered]);
 
   const availableYears = useMemo(() => {

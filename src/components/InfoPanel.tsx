@@ -22,6 +22,7 @@ import { OutboundLink } from './OutboundLink';
 import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
+import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -219,7 +220,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       )) continue;
       seen.add(a.region ?? 'Other');
     }
-    return [...seen].sort();
+    return [...seen].sort(compareRegion);
   }, [agencies, agencyFeatureFilters, liveBySlug, historyBySlug]);
 
   useEffect(() => {
@@ -253,15 +254,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     }
     // index.json is hand-ordered (Ontario first, etc.) — browse list should be alpha
     for (const list of map.values()) {
-      list.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+      list.sort((a, b) => compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
     }
-    return new Map(
-      [...map.entries()].sort(([a], [b]) => {
-        if (a === 'Other') return 1;
-        if (b === 'Other') return -1;
-        return a.localeCompare(b, undefined, { sensitivity: 'base' });
-      }),
-    );
+    return new Map([...map.entries()].sort(([a], [b]) => compareRegion(a, b)));
   }, [filtered]);
 
   const totalLiveAgencies = liveBySlug.size;

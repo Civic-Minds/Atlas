@@ -38,6 +38,7 @@ import { agencyShortLabel, trimRedundantCity } from '../shared/agencyPages';
 import { computeConnections, extractStops, type AgencyStops } from './agency-connections';
 import { countryForRegion } from '../shared/regionCountry';
 import { agencyDisplayParts } from '../src/utils/format';
+import { compareRouteNumber } from '../shared/sortCompare';
 import { areasForStops, type AreaBoundaries } from '../shared/areaBoundaries';
 
 const OUT = 'shared/data/agency-pages.json';
@@ -187,8 +188,7 @@ export function summarize(
   }
   const hasDay = (day: string) => features.some(f => f.geometry?.type === 'LineString' && f.properties.day === day
     && Object.values((f.properties.headwayByHour as Record<string, number | null> | undefined) ?? {}).some(v => v != null));
-  const list = [...routes.values()].sort((a, b) =>
-    a.name.localeCompare(b.name, 'en', { numeric: true }) || (a.longName ?? '').localeCompare(b.longName ?? ''));
+  const list = [...routes.values()].sort((a, b) => compareRouteNumber(a.name, b.name, a.longName, b.longName));
   return {
     routeCount: list.length,
     routes: list,
