@@ -11,7 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Route cards name both directions even when each has one row**: TTC 36 now reads Westbound / to Finch West Station and Eastbound / to Finch, instead of two unlabelled rows.
 - **The period name sits above the hour chart's hover highlight**: the grey highlight reached up behind "Night" or "PM Peak"; it now covers only the bars.
 - **The route card's expand-chart icon matches the period label's size**: it was taller than the text beside it and sat slightly high (beta).
-- **The analytics prompt sits beside the map's bottom pills on desktop**: centred at the bottom it covered the OpenStreetMap credit; where the row has no room it moves under the top bar, as on phones ([#999](https://github.com/Civic-Minds/Atlas/issues/999))
+- **The analytics prompt sits in the map's bottom pill row on desktop**: it floated above the OpenStreetMap credit; it now sits right after it on the same line, or just above the row when there isn't room ([#999](https://github.com/Civic-Minds/Atlas/issues/999))
 - **The search bar's suggestions list scrolls inside itself**: with recent searches, recent routes and suggestions all showing it ran past the bottom of the screen.
 - **Hovering the route card's hour chart no longer resizes the card**: the rows keep their size while the numbers change to the hovered hour, so the card stops jumping under the pointer.
 - **Route card rows name where a trip starts only when a direction's rows start in different places**: "from Leslie Station to Donlands via Laird" replaces "from Leslie Station · to Donlands via Laird", and rows that all start at the same stop just say "to ...".
