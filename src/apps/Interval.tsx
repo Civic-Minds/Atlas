@@ -1047,12 +1047,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         )}
       </div>
 
-      <MapAttribution />
-
       {showMapLegend && !nightServiceView && <PersistentMapLegend />}
 
+      {/* On sm and up the bottom-left pills and the bottom-right counts share one row, so the pills
+          (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).
+          Phones drop the wrapper (contents) and keep each group's own position. No z-index here, so
+          the pills keep their own layer and the What's new panel still opens above the header. */}
+      <div className="max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none">
+      <MapAttribution />
+
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
-        <div className={`absolute bottom-[7rem] sm:bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`max-sm:absolute max-sm:bottom-[7rem] max-sm:right-14 ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
@@ -1133,6 +1138,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
         </div>
       )}
+      </div>
 
       {(showUi || showSelectionUi) && selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedOnDemandSlug);
