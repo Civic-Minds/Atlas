@@ -87,8 +87,10 @@ html.map-page .overflow-y-scroll {
   --accent: #3f3f46;
   --accent-bg: rgba(63, 63, 70, 0.08);
   --accent-border: rgba(63, 63, 70, 0.2);
-  --accent-selected-bg: rgba(63, 63, 70, 0.2);
-  --accent-selected-border: rgba(63, 63, 70, 0.5);
+  /* Selected fill and edge are opaque so every selected option is the same shade whatever sits behind it
+     (today's 20% / 50% tint composited over the panel). */
+  --accent-selected-bg: #d8d8da;
+  --accent-selected-border: #9f9fa3;
   /* Status badges (feed quality, etc.) */
   --status-warn-bg: #fffbeb;
   --status-warn-text: #92400e;
@@ -135,8 +137,8 @@ html.map-page .overflow-y-scroll {
   --accent: #e4e4e7;
   --accent-bg: rgba(228, 228, 231, 0.08);
   --accent-border: rgba(228, 228, 231, 0.18);
-  --accent-selected-bg: rgba(228, 228, 231, 0.16);
-  --accent-selected-border: rgba(228, 228, 231, 0.5);
+  --accent-selected-bg: #303031;
+  --accent-selected-border: #7a7a7b;
   /* Status badges (feed quality, etc.) */
   --status-warn-bg: rgba(245, 158, 11, 0.12);
   --status-warn-text: #fbbf24;
@@ -202,7 +204,7 @@ html.map-page .overflow-y-scroll {
   --toggle-off-bg: #1f2937;
   --toggle-knob-on: #f0f0f0;
   --toggle-knob-off: #9ca3af;
-  --selection-active-bg: #1f2937;
+  --selection-active-bg: #374151;
   --selection-active-border: #f0f0f0;
   --selection-active-fg: #ffffff;
   --action-primary-bg: #f0f0f0;
