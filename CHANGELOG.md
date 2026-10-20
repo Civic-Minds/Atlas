@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The route card's expand-chart icon matches the period label's size**: it was taller than the text beside it and sat slightly high (beta).
 - **The analytics prompt sits above the map's bottom pills on desktop**: centred at the bottom it covered the OpenStreetMap credit on screens narrower than about 1,100px.
 - **The search bar's suggestions list scrolls inside itself**: with recent searches, recent routes and suggestions all showing it ran past the bottom of the screen.
 - **Hovering the route card's hour chart no longer resizes the card**: the rows keep their size while the numbers change to the hovered hour, so the card stops jumping under the pointer.

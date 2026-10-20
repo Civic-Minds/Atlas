@@ -195,9 +195,10 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           onClick={() => setIsExpanded(true)}
           aria-label="Expand schedule"
           title="Expand schedule"
-          className="absolute right-0 -top-1 z-20 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
+          className="absolute right-0 -top-0.5 z-20 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
         >
-          <Maximize2 className="w-3.5 h-3.5" />
+          {/* 12px, centred on the 12px period label's line beside it, with a stroke near the label's bold weight. */}
+          <Maximize2 className="block w-3 h-3" strokeWidth={2.5} />
         </button>
       )}
       <div
