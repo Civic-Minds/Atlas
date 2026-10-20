@@ -5,11 +5,12 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Route and stop cards open as a bottom sheet on phones, on the public map too (CIV-27)**: the map stays visible above the card instead of a narrow floating panel ([#647](https://github.com/Civic-Minds/Atlas/issues/647)).
 - **Route lists sort the same way everywhere**: routes with the same frequency in the stop view and agency card no longer swap places, and 7A now always comes before 7B. Agencies in the "In view" panel go most routes first, then A-Z, in both views; region pills and sections always put "Other" last.
 - **The Compare side picker uses the same short frequency labels** ("≤10 min" … "All routes") as every other frequency picker; one shared label function now feeds them all.
 - **Frequency picker wording is back to the short labels**: "≤10 min" … "All" in the desktop dropdown and "≤10 min" … "All routes" on the phone panel and Settings chips; they had been changed to "Every 10 min or better" without approval.
 - **Map buttons are slightly bigger on phones**: all round buttons and pills go from 28px to 32px below the small breakpoint so they are a little easier to tap; desktop is unchanged.
-- **Selecting a route on a phone frames it above the bottom sheet (beta)**: it zoomed out to the whole Great Lakes because the map left room for a side card that phones don't have ([#973](https://github.com/Civic-Minds/Atlas/issues/973))
+- **Selecting a route on a phone frames it above the bottom sheet**: it zoomed out to the whole Great Lakes because the map left room for a side card that phones don't have ([#973](https://github.com/Civic-Minds/Atlas/issues/973))
 - **The three "Routes shown" settings use one link wording**: "See all hidden routes", "See all part-time routes" and "See all degraded feeds", each with a count, so they read the same way.
 - **Route names keep compass directions and "US" in capitals**: "NW 5th Ave", "SW Broadway" and "US 41" no longer show as "Nw", "Sw" or "Us" when a feed shouts its names.
 - **Live route and vehicle cards go back with a plain text link (local only, CIV-325/331)**: small grey "Muni routes" or "J route" above the title replaces the back arrow.

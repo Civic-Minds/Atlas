@@ -17,13 +17,13 @@ On the public site:
 - **Stop view**: Click a stop to see every route serving it and its headways.
 - **Agency pages**: A page per agency, an agencies index and area pages listing routes by weekday frequency. Agencies with expired feeds stay listed with a notice.
 - **Map image export**: Download or share the current map as an image.
+- **Phone bottom sheet**: Route and stop cards open as a bottom sheet on phones.
 
 Beta only (not on the public site):
 
 - **History**: How a route's frequency changed across archived schedule periods, for a handful of agencies with usable archives.
 - **Compare mode**: Two synced maps side by side, each with its own day and time.
 - **On-demand zones**: On-demand service areas and an On-demand filter.
-- **Phone bottom sheet**: Route and stop cards open as a bottom sheet on phones.
 
 ## Stack
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, React Router, IndexedDB caching

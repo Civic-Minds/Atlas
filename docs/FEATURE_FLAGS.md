@@ -10,7 +10,6 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `HISTORY_ENABLED` | History control, Agency-list History filter and coverage pills, `/apps/history`, `History.tsx` | off | on | Covers a handful of cities out of the current public catalog. |
 | `CARD_CLICK_TO_FLAG_ENABLED` | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
 | `UNEVEN_BANNER_ENABLED` | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
-| `MOBILE_ROUTE_SHEET_ENABLED` | Route and stop cards open as a bottom sheet on phones (`SidebarControls.tsx`) | off | on (follows `beta`/`dev` mode) | New phone layout to try on real phones before replacing the floating card for everyone ([#647](https://github.com/Civic-Minds/Atlas/issues/647)). |
 | `COMPARE_MODE_ENABLED` | Compare mode: two synced maps side by side with one shared filter, each side with its own day and time (`Interval.tsx`, `CompareControl.tsx`) | off | on (follows `beta`/`dev` mode) | New feature; the second map doubles map rendering work, so it is tried on beta first. The `cday`/`cp` URL params are ignored when off. |
 | `WHATS_NEW_ENABLED` | "What's new" link in the map's bottom bar and its panel (`MapAttribution.tsx`, `WhatsNewPanel.tsx`, list in `src/data/whatsNew.ts`) | off | on (follows `beta`/`dev` mode) | New; wording and placement are tried on beta first (CIV-83). |
 | `SEGMENT_COLOURS_ENABLED` | Route lines drawn in segments coloured by the pooled per-stop tier (`route-segments` layers in `MapCanvas.tsx`, `src/utils/frequencySegments.ts`) | off | on (follows `beta`/`dev` mode) | New map reading ([#690](https://github.com/Civic-Minds/Atlas/issues/690)): the public map keeps one colour per route line from the route-level tier until the segment colours have been reviewed on real routes. |
@@ -38,12 +37,13 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 
 **Why env vars, not a `const true`/`false`:** Public and Beta use the same repository, while their Vercel project environments decide which features are exposed. Configure deployment-specific values in Vercel, not in source control.
 
-`MOBILE_ROUTE_SHEET_ENABLED`, `SHARE_UTM_ENABLED`, `COLLAPSE_MODE_TABS_ENABLED` and the research apps (Night Service at `/research/night`, Frequent Service, the `/research` page) are not env flags: they follow the Atlas mode and are on in `beta` and `dev` only. All of them read through the `FEATURES` registry in `shared/config.ts`. The `FEATURES.*` rows in the table above are named stand-ins for what used to be bare `FEATURES.beta` checks: each equals the beta build today (pinned by `src/__tests__/betaStandInFlags.test.tsx`) and can now graduate on its own with a one-line change. `FEATURES.beta` is still read directly for beta data hosts and agency visibility, the Night Service mount in `App.tsx`, and the About docs text.
+`SHARE_UTM_ENABLED`, `COLLAPSE_MODE_TABS_ENABLED` and the research apps (Night Service at `/research/night`, Frequent Service, the `/research` page) are not env flags: they follow the Atlas mode and are on in `beta` and `dev` only. All of them read through the `FEATURES` registry in `shared/config.ts`. The `FEATURES.*` rows in the table above are named stand-ins for what used to be bare `FEATURES.beta` checks: each equals the beta build today (pinned by `src/__tests__/betaStandInFlags.test.tsx`) and can now graduate on its own with a one-line change. `FEATURES.beta` is still read directly for beta data hosts and agency visibility, the Night Service mount in `App.tsx`, and the About docs text.
 
 Live is unset/false in every deployment. Do not add a beta override until the Live feature is intentionally re-enabled.
 
 ## Graduated features
 
+- The phone bottom sheet for route and stop cards (`MOBILE_ROUTE_SHEET_ENABLED`) is on in every deployment (Ryan, 2026-10-20, [#647](https://github.com/Civic-Minds/Atlas/issues/647)).
 - Map image export is on in every deployment; its `VITE_MAP_EXPORT_ENABLED` flag was removed ([#642](https://github.com/Civic-Minds/Atlas/pull/642)).
 - Research is no longer in the map's top bar in any mode; in `beta` and `dev` it is reached from the About page ([#652](https://github.com/Civic-Minds/Atlas/pull/652)).
 
