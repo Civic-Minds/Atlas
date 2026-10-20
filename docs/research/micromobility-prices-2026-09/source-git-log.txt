@@ -1,0 +1,17 @@
+303a54c 2026-09-17 Add international Lime pricing observations
+c898b0b 2026-09-17 Expand Lime observations across US cities
+613da6a 2026-09-17 Add Lime Portland scooter pricing observation
+57d6b4d 2026-09-17 Add Lime Sacramento scooter pricing observation
+0ed10ed 2026-09-17 Add Lime Oakland scooter pricing observation
+1bd3ba4 2026-09-17 Add Lime San Francisco scooter and Glider pricing
+fd45b27 2026-09-17 Add Lime San Jose scooter pricing observation
+4986f70 2026-09-17 Add Lime Los Angeles Glider pricing observation
+b501b85 2026-09-17 Add Lime Los Angeles e-bike pricing observation
+1148089 2026-09-17 Add Lime Jacksonville scooter pricing observation
+65feadf 2026-09-17 Add Lime Richmond scooter pricing observation
+37d6c45 2026-09-17 Add Lime Washington DC scooter pricing observation
+0d628b6 2026-09-17 Add Lime Baltimore scooter pricing observation
+a810f62 2026-09-17 Add Lime pricing observations for Detroit and Chicago
+95277f4 2026-09-17 Record app-observed Lime Mississauga pricing
+1c03e95 2026-09-17 Seed micromobility prices across five cities
+e0a88d6 2026-09-17 Add micromobility pricing database foundation
