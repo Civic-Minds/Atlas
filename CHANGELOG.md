@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The agency card explains an unmapped on-demand service**: "This service runs by request in a zone that isn't on the map yet" replaces "Its service area isn't on the map yet" (beta).
 - **The agency card's area link says what it opens**: "All Metro Atlanta agencies" instead of just "Metro Atlanta".
 - **The About panel's Documentation, Terms and Privacy links sit at the bottom of the panel**: they floated under the last button with empty space below.
 - **Route cards name both directions even when each has one row**: TTC 36 now reads Westbound / to Finch West Station and Eastbound / to Finch, instead of two unlabelled rows.

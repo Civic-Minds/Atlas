@@ -565,7 +565,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               </div>
               <p className="text-xs font-bold text-[var(--text-primary)] mt-0.5">{coverageNote.serviceName}</p>
               <p className="text-xs leading-snug text-[var(--text-muted)] mt-0.5">
-                Its service area isn't on the map yet.
+                This service runs by request in a zone that isn't on the map yet.
               </p>
             </div>
           )}
