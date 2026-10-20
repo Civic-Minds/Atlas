@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import Pill from '../ui/Pill';
 import LegendItem from '../ui/LegendItem';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { headwayFilterLabel, headwayTierLabel } from '../../utils/headwayText';
+import { headwayTierLabel } from '../../utils/headwayText';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { DAY_TYPES, type DayType } from '../../../shared/dayTypes';
 import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
@@ -12,15 +12,8 @@ import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useInte
  * Settings and the Compare side picker), so the same choice has the same labels, colours and order everywhere.
  */
 
-/**
- * How a frequency choice reads. 'tier' is the short map-key wording ("≤10 min", used by the dropdown, phone panel and Settings);
- * 'plain' is the sentence wording ("Every 10 min or better", used by the Compare side picker and screen readers).
- */
-export type FrequencyLabelStyle = 'tier' | 'plain';
-
-/** The text of a frequency choice. `allLabel` is the wording for no limit ("All routes"; the dropdown says "All"). */
-export const frequencyOptionLabel = (max: number, style: FrequencyLabelStyle = 'tier', allLabel = 'All routes') =>
-  max === Infinity ? allLabel : style === 'plain' ? headwayFilterLabel(max) : headwayTierLabel(max);
+/** The text of a frequency choice: the short map-key wording ("≤10 min"), the same on every surface. `allLabel` is the wording for no limit ("All routes"; the desktop dropdown says "All"). */
+export const frequencyOptionLabel = (max: number, allLabel = 'All routes') => (max === Infinity ? allLabel : headwayTierLabel(max));
 
 /** The dot colour of a frequency choice (grey for "All routes"). */
 export function tierDotColor(max: number, colorMode: 'default' | 'friendly'): string {
@@ -28,10 +21,10 @@ export function tierDotColor(max: number, colorMode: 'default' | 'friendly'): st
 }
 
 /** Every frequency choice with its label and dot colour, for pickers that draw their own rows (the dropdown list). */
-export function useFrequencyOptions(style: FrequencyLabelStyle = 'tier', allLabel = 'All routes') {
+export function useFrequencyOptions(allLabel = 'All routes') {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
-  return HEADWAY_TIERS.map(({ max, label }) => ({ max, key: label, label: frequencyOptionLabel(max, style, allLabel), color: tierDotColor(max, colorMode) }));
+  return HEADWAY_TIERS.map(({ max, label }) => ({ max, key: label, label: frequencyOptionLabel(max, allLabel), color: tierDotColor(max, colorMode) }));
 }
 
 /** A heading above a picker: one style on every surface. `className` is for the surface's own padding. */
@@ -44,8 +37,8 @@ export function PickerSection({ title, className = '', children }: { title: stri
   );
 }
 
-export function FrequencyPicker({ value, onChange, style = 'tier' }: { value: number; onChange: (max: number) => void; style?: FrequencyLabelStyle }) {
-  const options = useFrequencyOptions(style);
+export function FrequencyPicker({ value, onChange }: { value: number; onChange: (max: number) => void }) {
+  const options = useFrequencyOptions();
   return (
     <div className="flex flex-wrap gap-1">
       {options.map(o => (
