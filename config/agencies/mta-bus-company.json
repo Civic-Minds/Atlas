@@ -26,7 +26,7 @@
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_busco.zip",
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -41,13 +41,13 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 7,
-      "featureCount": 489
+      "featureCount": 492
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-19"
   },
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "20260813",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedVersion": "20261012",
+  "lastRefreshedAt": "2026-10-19",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,

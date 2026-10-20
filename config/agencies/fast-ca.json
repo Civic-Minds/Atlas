@@ -15,24 +15,39 @@
   "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=FS",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-76/latest.zip",
   "lastFeedExpiry": "20270630",
-  "lastFeedVersion": "UTC: 14-Nov-2025 10:07",
-  "lastRefreshedAt": "20260811",
+  "lastFeedVersion": "20260928",
+  "lastRefreshedAt": "2026-10-19",
   "websiteUrl": "http://www.fasttransit.org/",
   "cities": [
     "Fairfield, California"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260630-c9633fc2dffd25c5",
-  "lastFeedCheckAt": "20261012",
-  "expiredFeedCheckCount": 5,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260630",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260630)",
-  "feedRefreshErrorAt": "20261012",
-  "feedRefreshRetryCount": 3,
+  "lastFeedCheckAt": "20261019",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270630",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
+  "lastFeedSourceUrl": "https://api.511.org/transit/datafeeds?operator_id=FS",
   "feedApiKeyEnvVar": "MUNI_511_API_KEY",
-  "lastPeekedExpiry": "20270630"
+  "lastPeekedExpiry": "20270630",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 18
+    },
+    "checkedAt": "2026-10-19"
+  }
 }
