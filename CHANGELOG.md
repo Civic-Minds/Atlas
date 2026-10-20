@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Map counts say "1 agency" and "1 route"**: the bottom bar and the In view panel read "1 agencies" ([#1009](https://github.com/Civic-Minds/Atlas/issues/1009))
 - **The route card's frequency filter notice keeps "15-minute" together**: it wrapped as "15-" / "minute" across two lines ([#1008](https://github.com/Civic-Minds/Atlas/issues/1008))
 - **Agencies whose on-demand zone isn't on the map get an "On-Demand" pill on their card (beta)**: selecting it says the service runs by request in a zone that isn't drawn yet, instead of a notice block above the routes.
 - **The agency card's area link says what it opens**: "All Metro Atlanta agencies" instead of just "Metro Atlanta".

@@ -13,7 +13,7 @@ import { agencyDisplayParts, formatStoredDate, routeLabelCase } from '../utils/f
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
-import { joinList } from '../../shared/overflowText';
+import { countOf, joinList } from '../../shared/overflowText';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
 import { effectiveFeedExpiry } from '../../shared/feedAvailability';
@@ -726,7 +726,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         <Tag className="inline-block">History</Tag>
                       </div>
                       <p className="text-xs text-[var(--text-dim)]">
-                        Historical frequency data available for {selectedHistory.routes.length} routes {historyYearsText}.
+                        Historical frequency data available for {countOf(selectedHistory.routes.length, 'route')} {historyYearsText}.
                       </p>
                     </div>
                   )}

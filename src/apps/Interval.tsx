@@ -22,7 +22,7 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
 import { ON_DEMAND_MODE } from '../../shared/modes';
 import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
-import { plural } from '../../shared/overflowText';
+import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareOtherPhrase } from '../utils/compareSides';
@@ -1093,18 +1093,18 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                     <button
                       type="button"
                       onClick={() => { setMapContextView('routes'); setMapContextOpen(true); }}
-                      aria-label={`${mapContextRouteCount ?? 0} routes in view`}
+                      aria-label={`${countOf(mapContextRouteCount ?? 0, 'route')} in view`}
                       aria-expanded={mapContextOpen && mapContextView === 'routes'}
                       title="Routes in view"
                       className="flex items-center gap-1.5 cursor-pointer hover:text-[var(--accent)] transition-colors"
                     >
                       <span className={MAP_BADGE_COUNT}>{mapContextRouteCount ?? 0}</span>
-                      <span className={MAP_BADGE_LABEL}>routes</span>
+                      <span className={MAP_BADGE_LABEL}>{plural(mapContextRouteCount ?? 0, 'route')}</span>
                     </button>
                   ) : (
                     <>
                       <span className={MAP_BADGE_COUNT}>{stats.matching}</span>
-                      <span className={MAP_BADGE_LABEL}>routes</span>
+                      <span className={MAP_BADGE_LABEL}>{plural(stats.matching, 'route')}</span>
                     </>
                   )}
                 </div>
@@ -1112,13 +1112,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                   <button
                     type="button"
                     onClick={() => { setMapContextView('agencies'); setMapContextOpen(true); }}
-                    aria-label={`${mapContextAgencyCount} agencies in view`}
+                    aria-label={`${countOf(mapContextAgencyCount, 'agency', 'agencies')} in view`}
                     aria-expanded={mapContextOpen && mapContextView === 'agencies'}
                     title="Agencies in view"
                     className={`${MAP_BADGE} h-8 max-sm:h-[32px] cursor-pointer hover:text-[var(--accent)] transition-colors`}
                   >
                     <span className={MAP_BADGE_COUNT}>{mapContextAgencyCount}</span>
-                    <span className={MAP_BADGE_LABEL}>agencies</span>
+                    <span className={MAP_BADGE_LABEL}>{plural(mapContextAgencyCount, 'agency', 'agencies')}</span>
                   </button>
                 )}
                 {showMatchPercentage && !isLoading && (
