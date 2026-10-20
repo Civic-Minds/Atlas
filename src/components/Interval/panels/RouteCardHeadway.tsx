@@ -743,6 +743,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             dimmed={dimmed}
                             limited={isLimited}
                             {...branchHoverProps(group.dirId, d.headsign)}
+                            holdLayout={hoveredHour != null}
                           />
                         </FlaggableValue>
                       );
