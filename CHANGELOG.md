@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Route cards name both directions even when each has one row**: TTC 36 now reads Westbound / to Finch West Station and Eastbound / to Finch, instead of two unlabelled rows.
 - **The period name sits above the hour chart's hover highlight**: the grey highlight reached up behind "Night" or "PM Peak"; it now covers only the bars.
 - **The route card's expand-chart icon matches the period label's size**: it was taller than the text beside it and sat slightly high (beta).
 - **The analytics prompt sits above the map's bottom pills on desktop**: centred at the bottom it covered the OpenStreetMap credit on screens narrower than about 1,100px.
