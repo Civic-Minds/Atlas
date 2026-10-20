@@ -341,7 +341,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     );
   }
 
-  const frequencyOptions = useFrequencyOptions('tier', 'All');
+  const frequencyOptions = useFrequencyOptions('All');
   const frequencyChip = (className: string) => (
     <div className={`relative ${className}`}>
       <button onClick={() => toggle('frequency')} className={chipClass(maxHeadway !== Infinity)}>
