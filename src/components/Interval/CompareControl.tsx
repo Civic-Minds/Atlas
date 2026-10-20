@@ -22,7 +22,7 @@ export function SideBadge({ side }: { side: 'A' | 'B' }) {
 export function CompareSidePicker({ side, onChange }: { side: CompareSide; onChange: (side: CompareSide) => void }) {
   return (
     <div className="flex flex-col gap-3">
-      <PickerSection title="Frequency"><FrequencyPicker value={side.maxHeadway} onChange={maxHeadway => onChange({ ...side, maxHeadway })} /></PickerSection>
+      <PickerSection title="Frequency"><FrequencyPicker style="plain" value={side.maxHeadway} onChange={maxHeadway => onChange({ ...side, maxHeadway })} /></PickerSection>
       <PickerSection title="Day"><DayPicker value={side.day} onChange={day => onChange({ ...side, day })} /></PickerSection>
       <PickerSection title="Time"><PeriodPicker includeAll value={side.period} onChange={period => onChange({ ...side, period })} /></PickerSection>
     </div>
