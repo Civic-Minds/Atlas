@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The agency card's area link says what it opens**: "All Metro Atlanta agencies" instead of just "Metro Atlanta".
 - **The About panel's Documentation, Terms and Privacy links sit at the bottom of the panel**: they floated under the last button with empty space below.
 - **Route cards name both directions even when each has one row**: TTC 36 now reads Westbound / to Finch West Station and Eastbound / to Finch, instead of two unlabelled rows.
 - **The period name sits above the hour chart's hover highlight**: the grey highlight reached up behind "Night" or "PM Peak"; it now covers only the bars.
