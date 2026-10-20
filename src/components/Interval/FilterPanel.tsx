@@ -18,6 +18,7 @@ import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { loadingText } from '../../content/stateCopy';
+import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 
 
 interface FilterPanelProps {
@@ -79,7 +80,7 @@ export interface HiddenRoute {
 export function getHiddenFeedAgencies(agencies: Agency[]): Agency[] {
   return agencies
     .filter(agency => agency.feedQuality?.status === 'degraded' || agency.feedQuality?.status === 'unusable')
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
 }
 
 export function updateHiddenRouteRegions(current: Set<string>, region: string): Set<string> {
@@ -236,7 +237,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [listRoutes, hiddenRoutesQuery, hiddenRegionFilter]);
 
   const hiddenRouteRegions = useMemo(
-    () => [...new Set(listRoutes.map(route => route.region ?? 'Other'))].sort(),
+    () => [...new Set(listRoutes.map(route => route.region ?? 'Other'))].sort(compareRegion),
     [listRoutes],
   );
 
@@ -254,14 +255,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       grouped.set(route.agencySlug, group);
     }
     return [...grouped.entries()]
-      .sort(([, a], [, b]) => a.agencyName.localeCompare(b.agencyName))
+      .sort(([aSlug, a], [bSlug, b]) => compareAgencyName(a.agencyName, b.agencyName) || aSlug.localeCompare(bSlug))
       .map(([agencySlug, group]) => [
         agencySlug,
         {
           ...group,
           routes: group.routes.sort((a, b) =>
-            a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true })
-            || (a.routeLongName ?? '').localeCompare(b.routeLongName ?? ''),
+            compareRouteNumber(a.routeShortName, b.routeShortName, a.routeLongName, b.routeLongName),
           ),
         },
       ] as const);
@@ -285,7 +285,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           const byStatus = (a.feedQuality?.status ?? '').localeCompare(b.feedQuality?.status ?? '');
           if (byStatus !== 0) return byStatus;
         }
-        return a.name.localeCompare(b.name);
+        return compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug);
       });
   }, [degradedFeedsQuery, degradedFeedsSort, degradedFeedsStatus, hiddenFeedAgencies]);
 

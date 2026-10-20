@@ -3,6 +3,7 @@ import { routeKey } from './useIntervalStats';
 import type { ShapeProperties, DayType, TimePeriod } from './useIntervalStats';
 import { routeListDisplay } from '../utils/effectiveHeadway';
 import { routeLabels } from '../utils/format';
+import { compareHeadwayThenNumber } from '../utils/sortCompare';
 
 const NEARBY_RADIUS_M = 500;
 const EARTH_R = 6371000;
@@ -141,11 +142,9 @@ export function useNearbyRoutes(
       }
     }
 
-    return Array.from(routeMap.values()).sort((a, b) => {
-      if (a.headway !== null && b.headway !== null) return a.headway - b.headway;
-      if (a.headway !== null) return -1;
-      if (b.headway !== null) return 1;
-      return a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true });
-    });
+    return Array.from(routeMap.values()).sort((a, b) => compareHeadwayThenNumber(
+      { headway: a.headway, shortName: a.routeShortName, longName: a.routeLongName },
+      { headway: b.headway, shortName: b.routeShortName, longName: b.routeLongName },
+    ));
   }, [userLocation, layers, currentDay, period]);
 }
