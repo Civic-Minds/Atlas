@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
-- **Route lists sort the same way everywhere**: routes with the same frequency in the stop view and agency card no longer swap places, and 7A now always comes before 7B.
+- **Route lists sort the same way everywhere**: routes with the same frequency in the stop view and agency card no longer swap places, and 7A now always comes before 7B. Agencies in the "In view" panel go most routes first, then A-Z, in both views; region pills and sections always put "Other" last.
 - **The Compare side picker uses the same short frequency labels** ("≤10 min" … "All routes") as every other frequency picker; one shared label function now feeds them all.
 - **Frequency picker wording is back to the short labels**: "≤10 min" … "All" in the desktop dropdown and "≤10 min" … "All routes" on the phone panel and Settings chips; they had been changed to "Every 10 min or better" without approval.
 - **Map buttons are slightly bigger on phones**: all round buttons and pills go from 28px to 32px below the small breakpoint so they are a little easier to tap; desktop is unchanged.
