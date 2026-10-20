@@ -25,8 +25,6 @@ Beta only (not on the public site):
 - **On-demand zones**: On-demand service areas and an On-demand filter.
 - **Phone bottom sheet**: Route and stop cards open as a bottom sheet on phones.
 
-Live (real-time headway drift from GTFS-RT) is off on every deployment and only runs locally; status is in [Feature flags](docs/FEATURE_FLAGS.md). Corridors is retired; see the [roadmap](docs/roadmap/ROADMAP.md#status).
-
 ## Stack
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, React Router, IndexedDB caching
 - **Mapping**: MapLibre GL JS, deck.gl, PMTiles
