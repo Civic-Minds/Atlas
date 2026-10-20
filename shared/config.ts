@@ -83,8 +83,8 @@ export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'de
 // On for every build (public too, Ryan 2026-10-20); it was beta-only while the layout was tried on real phones (#647).
 export const MOBILE_ROUTE_SHEET_ENABLED = true;
 // Compare mode: two maps side by side, same filter, each with its own day and time (CIV-19).
-// Beta-only while it is tried out.
-export const COMPARE_MODE_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// On for every build (public too, Ryan 2026-10-20); it was beta-only while it was tried out. Still hidden on phones (phoneModeFlags).
+export const COMPARE_MODE_ENABLED = true;
 // Shared links and shared map images carry utm tags so analytics can count shared visits.
 // Beta-only until it's been seen working end to end.
 export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';

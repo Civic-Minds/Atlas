@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Compare mode is on the public map (CIV-75)**: put two maps side by side, each with its own day, time and frequency, from the Compare button beside the other view tabs on desktop and tablet.
 - **Route and stop cards open as a bottom sheet on phones, on the public map too (CIV-27)**: the map stays visible above the card instead of a narrow floating panel ([#647](https://github.com/Civic-Minds/Atlas/issues/647)).
 - **Route lists sort the same way everywhere**: routes with the same frequency in the stop view and agency card no longer swap places, and 7A now always comes before 7B. Agencies in the "In view" panel go most routes first, then A-Z, in both views; region pills and sections always put "Other" last.
 - **The Compare side picker uses the same short frequency labels** ("≤10 min" … "All routes") as every other frequency picker; one shared label function now feeds them all.
