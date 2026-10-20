@@ -228,11 +228,13 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             {PERIOD_LABELS[activeLabelKey]}
           </span>
         )}
-        {/* Hover region highlight — visible on light bg */}
+        {/* Hover region highlight — visible on light bg. It starts below the label row
+            (the top padding), so the period label sits above it, not inside it. */}
         {bands?.map((band, i) => (
           <div
             key={i}
-            className="absolute inset-y-0 rounded-sm pointer-events-none"
+            data-testid="sparkline-hover-band"
+            className={`absolute ${expanded ? 'top-12' : 'top-5'} bottom-0 rounded-sm pointer-events-none`}
             style={{
               left: `${band.left * 100}%`,
               width: `${band.width * 100}%`,
