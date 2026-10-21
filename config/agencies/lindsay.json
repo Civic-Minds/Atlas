@@ -1,0 +1,23 @@
+{
+  "slug": "lindsay",
+  "name": "Lindsay Transit",
+  "websiteUrl": "https://www.city.kawarthalakes.on.ca/residents/transportation",
+  "center": [
+    44.3552,
+    -78.7456
+  ],
+  "bbox": [
+    44.328617,
+    -78.775815,
+    44.387573,
+    -78.70717
+  ],
+  "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-kawartha.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4732/latest.zip",
+  "region": "Ontario",
+  "cities": [
+    "Lindsay, Ontario"
+  ],
+  "timezone": "America/Toronto",
+  "hiddenInProduction": true
+}

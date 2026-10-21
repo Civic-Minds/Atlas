@@ -1,0 +1,24 @@
+{
+  "slug": "quinte",
+  "name": "Quinte Transit",
+  "websiteUrl": "https://quintetransit.ca/",
+  "center": [
+    44.0918,
+    -77.5121
+  ],
+  "bbox": [
+    43.938377,
+    -77.615996,
+    44.172747,
+    -77.122365
+  ],
+  "feedUrl": "https://myride.quintetransit.ca/gtfs/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4685/latest.zip",
+  "region": "Ontario",
+  "cities": [
+    "Quinte West, Ontario",
+    "Belleville, Ontario"
+  ],
+  "timezone": "America/Toronto",
+  "hiddenInProduction": true
+}

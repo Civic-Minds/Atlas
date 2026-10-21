@@ -1,0 +1,23 @@
+{
+  "slug": "sttr",
+  "name": "STTR (Trois-Rivières)",
+  "websiteUrl": "https://www.sttr.qc.ca/",
+  "center": [
+    46.3512,
+    -72.5812
+  ],
+  "bbox": [
+    46.269014,
+    -72.700548,
+    46.433123,
+    -72.471872
+  ],
+  "feedUrl": "https://www.donneesquebec.ca/recherche/dataset/a2d3c9de-4045-41e3-b2ea-5bb64bd8c50f/resource/71d94f75-5a36-4789-b581-a21d49dcd5f5/download/gtfs-sttr-hiv24.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-6712/latest.zip",
+  "region": "Quebec",
+  "cities": [
+    "Trois-Rivières, Quebec"
+  ],
+  "timezone": "America/Montreal",
+  "hiddenInProduction": true
+}

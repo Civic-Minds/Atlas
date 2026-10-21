@@ -77,7 +77,7 @@ These agencies passed the first sweep: active downloadable feeds, scheduled trip
 | done | `washington-county` | Johnson City | Tennessee | ntd-40054 |
 | done | `whitman-county` | City of Pullman | Washington | ntd-294 |
 
-Held for follow-up: Link Transit (`chelan`) had nine repaired/truncated shapes, and Sault Ste. Marie Transit (`sault-ste-marie`) had one truncated shape. They need a visual review before publishing.
+Held for follow-up: Link Transit (`chelan`) had nine repaired/truncated shapes, and Sault Ste. Marie Transit (`sault-ste-marie`) had one truncated shape. They need a visual review before publishing. Sault Ste. Marie is now registered hidden (2026-10-21 feed: the truncated shape belongs to a summer-only route that is not drawn today).
 
 ## Research sweep (2026-09-10 — active GTFS gap candidates)
 
@@ -230,7 +230,7 @@ These agencies passed a fresh feed download, scheduled-service, and route-report
 | blocked | `brockville` | Brockville Transit | Ontario | Official site publishes schedules and maps, but no public static GTFS URL found; not in MDB |
 | blocked | `cape-breton` | Transit Cape Breton | Nova Scotia | No public GTFS found |
 | blocked | `sts-saguenay` | STS Saguenay | Quebec | Données Québec points at STS Sherbrooke host; no Saguenay zip |
-| blocked | `sttr` | STTR Trois-Rivières | Quebec | Feed dead — see KNOWN_ISSUES |
+| logged | `sttr` | STTR Trois-Rivières | Quebec | tld-6712 current (2026-10-21, runs to 2026-12-26; 38 routes); registered hidden, not yet processed |
 
 ---
 
