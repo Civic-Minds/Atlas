@@ -282,15 +282,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   {isTooltipHover && hasValue && (
                     <div data-testid="sparkline-hover-column" className="absolute inset-0 rounded-sm bg-[var(--bg-btn-hover)] pointer-events-none" />
                   )}
-                  {expanded && hasValue && (
-                    <span
-                      data-testid="sparkline-headway-label"
-                      className="absolute left-1/2 -translate-x-1/2 text-xs font-bold tabular-nums leading-none text-[var(--text-primary)] pointer-events-none"
-                      style={{ bottom: barH + 3 }}
-                    >
-                      {hw}
-                    </span>
-                  )}
                   {hasValue && (
                     segments.length > 0 && segmentTotalFreq > 0 ? (
                       <div className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} flex flex-col-reverse overflow-hidden rounded-sm transition-opacity duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}>
