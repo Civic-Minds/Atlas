@@ -24,3 +24,5 @@ If the evidence does not separate the real problem from legitimate cases that me
 ## Run-date agencies
 
 Agencies with `referenceDateFromRunDate` (NCSU Wolfline, #774) are read as of the day they are processed, so a reprocess or restore on another date can legitimately produce a different timetable (semester, summer, break). Their diffs are not regressions on their own.
+
+Supplemental feeds listed in an agency's `nextServiceDatesFeedUrls` (LA Metro Rail, #1019) give each day or few days its own short service_id in a rolling two-week window. Each day type is read from one typical real date in the two weeks after the run date (one weekday for Monday-Friday, one Saturday, one Sunday), counting only the services that run that date (`pipeline/serviceDates.ts`). Their output follows the run date the same way.

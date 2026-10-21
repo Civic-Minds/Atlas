@@ -105,6 +105,7 @@ interface Agency {
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
+  nextServiceDatesFeedUrls?: string[];
   fare?: number;
   lastFeedExpiry?: string | null;
   lastPeekedExpiry?: string | null;
