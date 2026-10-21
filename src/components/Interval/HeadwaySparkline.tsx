@@ -12,7 +12,7 @@ import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
 import LegendItem from '../ui/LegendItem';
 import { delayAmount, headwayEvery } from '../../utils/headwayText';
-import { TripTimeStrip, FULL_DAY_BAR_WIDTH, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
+import { TripTimeStrip, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
 import { tripTimeHourTitle, type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
@@ -157,7 +157,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const interactive = !!onPeriodChange;
   // One bar look at both sizes (CIV-496): round-ended bars filling the same share of each
   // hour's column. The card's 7px bar fills about half its column; the full-day view keeps that share.
-  const barShape = expanded ? 'w-[55%] max-w-[24px] rounded-full' : 'w-[7px] rounded-full';
+  const barShape = expanded ? FULL_DAY_BAR_SHAPE : 'w-[7px] rounded-full';
 
   const posFromEvent = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
