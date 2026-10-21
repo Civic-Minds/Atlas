@@ -41,4 +41,15 @@ describe('MapAttribution', () => {
     fireEvent.pointerDown(document.body);
     expect(screen.getAllByRole('link', { name: 'Feedback' })).toHaveLength(1);
   });
+
+  it('adds the Census credit while the shading is on, shrinkable on phones; unchanged when off', () => {
+    const { container, rerender } = render(<MapAttribution contextLayerOn />);
+    const credit = screen.getByRole('link', { name: 'U.S. Census Bureau' });
+    expect(credit.closest('p')!.className).toContain('truncate');
+    expect(credit.closest('p')!.parentElement!.className).toContain('max-sm:max-w-');
+    rerender(<MapAttribution />);
+    expect(screen.queryByRole('link', { name: 'U.S. Census Bureau' })).toBeNull();
+    expect(container.querySelector('p.truncate')).toBeNull();
+    expect(container.innerHTML).not.toContain('max-sm:max-w-[calc(100vw-6rem)]');
+  });
 });

@@ -22,7 +22,7 @@ import { compareAgencyName, compareRegion, compareRouteNumber } from '../../util
 import RoundIconButton from '../ui/RoundIconButton';
 import MenuButton from '../ui/MenuButton';
 import { contextLayerAvailable } from './map/useContextLayer';
-import { CONTEXT_CONTROL_HINT, CONTEXT_CONTROL_TITLE, CONTEXT_OPTION_DENSITY, CONTEXT_OPTION_INCOME, CONTEXT_OPTION_OFF } from '../../content/contextLayerCopy';
+import { CONTEXT_CONTROL_TITLE, CONTEXT_OPTION_DENSITY, CONTEXT_OPTION_INCOME, CONTEXT_OPTION_OFF } from '../../content/contextLayerCopy';
 import type { ContextMetric } from '../../utils/contextLayer';
 import { ContextKey } from './ContextLegend';
 
@@ -615,7 +615,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">{CONTEXT_CONTROL_TITLE}</p>
-                      <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{CONTEXT_CONTROL_HINT}</p>
                     </div>
                     <MenuButton
                       className="text-xs shrink-0"

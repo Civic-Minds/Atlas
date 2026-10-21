@@ -1,6 +1,6 @@
 /**
  * Every user-facing string of the population / income map layer (CIV-482), in one place.
- * Wording approved by Ryan (option 1; legend titles option 2) except the control hint, which is still a placeholder.
+ * Wording approved by Ryan (option 1; legend titles option 2).
  * Only the attribution line is fixed.
  */
 
@@ -9,7 +9,6 @@ export const CONTEXT_ATTRIBUTION = 'Source: U.S. Census Bureau, ACS 5-year estim
 
 /** Settings row. */
 export const CONTEXT_CONTROL_TITLE = 'Neighbourhood shading';
-export const CONTEXT_CONTROL_HINT = 'Shades the map under the routes by who lives there.';
 export const CONTEXT_OPTION_OFF = 'None';
 export const CONTEXT_OPTION_DENSITY = 'Population density';
 export const CONTEXT_OPTION_INCOME = 'Median household income';

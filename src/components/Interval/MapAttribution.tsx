@@ -108,8 +108,9 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
       >
         Feedback
       </a>
-      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
-        <p className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>
+      {/* With the shading on, the credit is longer: on narrow phones it shrinks (ellipsis) to stay left of the zoom buttons. */}
+      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${contextLayerOn ? 'max-sm:max-w-[calc(100vw-6rem)] min-w-0' : ''}`}>
+        <p className={`${MAP_BADGE_LABEL} whitespace-nowrap ${contextLayerOn ? 'min-w-0 truncate' : ''}`}>
           <OutboundLink
             href="https://www.openstreetmap.org/copyright"
             kind="attribution"
