@@ -1,0 +1,26 @@
+{
+  "slug": "exo-sainte-julie",
+  "name": "exo (Sainte-Julie)",
+  "displayArea": "Sainte-Julie",
+  "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/OMITSJU",
+  "center": [
+    45.5756,
+    -73.3535
+  ],
+  "bbox": [
+    45.426658,
+    -73.532217,
+    45.64294,
+    -72.950053
+  ],
+  "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/omitsju/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-753/latest.zip",
+  "region": "Quebec",
+  "cities": [
+    "Sainte-Julie, Quebec",
+    "Varennes, Quebec",
+    "Saint-Bruno-de-Montarville, Quebec"
+  ],
+  "timezone": "America/Montreal",
+  "hiddenInProduction": true
+}
