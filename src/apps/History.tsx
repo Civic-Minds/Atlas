@@ -13,6 +13,9 @@ import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
 import { useRecentSearches } from '../hooks/useRecentSearches';
+import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
+import { FEATURES } from '../../shared/config';
+import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
 import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey } from '../utils/routeModeFilters';
@@ -157,6 +160,9 @@ function RouteHistoryCard({
   frameStyle: React.CSSProperties;
 }) {
   const { colorVisionFriendly } = useColorVision();
+  const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
+  const sheetMode = FEATURES.mobileRouteSheet && isPhone;
+  const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(route.routeShortName);
   const { newestFirst: snaps, oldestFirst: chartSnaps } = routeHistorySnapshots(route);
 
   function snapHeadway(snap: RouteSnapshot): number {
@@ -217,8 +223,10 @@ function RouteHistoryCard({
   return (
     // The regular route card's frame, title and rows (RouteCardTitle, direction rows): the agency name
     // above the title goes back to the agency, as on the map's route card.
-    <div className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-132px)] flex flex-col ${frameClassName}`} style={frameStyle}>
-    <div className={SIDEBAR_CARD_BODY}>
+    // On phones it opens in the map route card's bottom sheet (#1028 item 23).
+    <div className={sheetMode ? `${BOTTOM_SHEET_FRAME} ${frameClassName}` : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-132px)] flex flex-col ${frameClassName}`} style={sheetMode ? undefined : frameStyle}>
+    <div className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
+    {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
         <div className="flex items-start gap-2">

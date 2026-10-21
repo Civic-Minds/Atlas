@@ -45,6 +45,7 @@ import { hasRegularServiceInPeriod, hasStretchRoles, stretchRowFeatures, variant
 import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from '../../utils/sortCompare';
 import { SIDEBAR_CARD_BODY } from './cardUi';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
+import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
 
 interface SidebarControlsProps {
   query: string;
@@ -924,25 +925,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // take the full screen width, and route and stop cards keep a fixed width.
   const matchSearchBarWidth = !!searchBarWidth && !isPhone;
   const phonePanelWidth = isPhone && !searchFocused ? 'max-sm:w-44' : '';
-  const [sheetExpanded, setSheetExpanded] = useState(false);
-  const sheetDragStart = useRef<number | null>(null);
   const sheetSubject = selectedRoute ?? (currentStop as { stopId?: string } | null)?.stopId ?? null;
-  useEffect(() => {
-    setSheetExpanded(false);
-  }, [sheetSubject]);
-  const onSheetPointerDown = (event: React.PointerEvent) => {
-    sheetDragStart.current = event.clientY;
-    // Keep receiving the pointer after the finger leaves the handle mid-drag.
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-  };
-  const onSheetPointerUp = (event: React.PointerEvent) => {
-    const start = sheetDragStart.current;
-    sheetDragStart.current = null;
-    if (start == null) return;
-    const moved = event.clientY - start;
-    if (Math.abs(moved) < 8) setSheetExpanded(expanded => !expanded);
-    else setSheetExpanded(moved < 0);
-  };
+  const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(sheetSubject);
 
   const [panelShouldRender, setPanelShouldRender] = useState(false);
   const [panelVisible, setPanelVisible] = useState(false);
@@ -982,7 +966,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   return (
     <div
       className={sheetMode
-        ? `fixed inset-x-0 bottom-0 ${Z_PANEL} flex flex-col transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`
+        ? `${BOTTOM_SHEET_FRAME} ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`
         : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
@@ -1013,22 +997,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         onScroll={checkScroll}
         data-report-anchor="true"
         className={sheetMode
-          ? `relative ${FLOATING_CARD} rounded-b-none px-4 pt-0 pb-[max(0.5rem,env(safe-area-inset-bottom))] overflow-y-auto overflow-x-hidden overscroll-contain transition-[height] duration-200 ease-out ${sheetExpanded ? 'h-[calc(100dvh-76px)]' : compareActive ? COMPARE_SHEET_HEIGHT : 'h-[42dvh]'}`
+          ? bottomSheetBodyClass(sheetExpanded, compareActive ? COMPARE_SHEET_HEIGHT : undefined)
           : `${SIDEBAR_CARD_BODY} transition-colors ${TRANSITION_BASE}`}
       >
-        {sheetMode && (
-          <button
-            type="button"
-            aria-label={sheetExpanded ? 'Show less' : 'Show more'}
-            aria-expanded={sheetExpanded}
-            onPointerDown={onSheetPointerDown}
-            onPointerUp={onSheetPointerUp}
-            onPointerCancel={() => { sheetDragStart.current = null; }}
-            className="sticky top-0 z-10 -mx-4 mb-1 flex w-[calc(100%+2rem)] touch-none justify-center bg-[var(--bg-panel)] pt-2.5 pb-2"
-          >
-            <span className="h-1 w-10 rounded-full bg-[var(--border-primary)]" />
-          </button>
-        )}
+        {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
         {panelStop && (
           <StopCard
             currentStop={currentStop}
