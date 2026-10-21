@@ -141,6 +141,13 @@ describe('truncateAtImplausibleJump long steps need a reversal', () => {
     expect(truncateAtImplausibleJump(kinked)).toEqual(kinked);
   });
 
+  it('keeps a straight long step but still cuts at a later reversing step on the same shape', () => {
+    const a = shapeWithStep({ inBearing: 0, stepBearing: 0, outBearing: 0, stepM: 2500, before: 20, after: 20 }).points;
+    const stepEnd = walk(a[a.length - 1], 0, 1, 16700)[0];
+    const points = [...a, stepEnd, ...walk(stepEnd, 165, 20, 140)];
+    expect(truncateAtImplausibleJump(points)).toEqual(points.slice(0, a.length));
+  });
+
   it('ignores tiny jitter segments next to the step when taking the direction', () => {
     const { points, lastBeforeStep } = shapeWithStep({ inBearing: 0, stepBearing: 0, outBearing: 165, stepM: 16700 });
     // 1 m reverse wiggle just before the step must not hide the real direction of travel

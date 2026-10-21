@@ -92,20 +92,23 @@ function teleportsOntoEarlierPath(points: [number, number][], i: number): boolea
 }
 
 /**
- * Some feeds have a single corrupted shapes.txt jump — one pair of consecutive
- * points, after sorting by shape_pt_sequence, implausibly far apart relative to
- * the rest of the shape (e.g. Mi Transporte Guadalajara's T14B_r2, #219: a
- * ~16.7km jump on an otherwise ~50m-spaced shape). Truncate at the first such
- * jump — a partial, geographically coherent line beats rendering a straight
- * segment across the whole city. Only fires on a dramatic, unambiguous outlier
- * against sane surrounding data, so well-formed shapes (including sparse rail
- * corridors with naturally longer gaps throughout) are unaffected.
+ * Some feeds have a corrupted shapes.txt jump: a pair of consecutive points (after sorting
+ * by shape_pt_sequence) implausibly far apart relative to the rest of the shape (Mi Transporte
+ * Guadalajara T14B_r2, #219: a ~16.7 km jump on an otherwise ~50 m-spaced shape). A partial,
+ * geographically coherent line beats a straight segment drawn across the whole city, so the
+ * shape is cut there.
  *
- * A step that is long (> 2 km and > 15x the median step) is cut only when it is
- * the first segment or the line reverses at it (bend into or out of the step
- * over MIN_REVERSAL_BEND_DEG) or it teleports back onto the route already drawn.
- * A long step that continues in a straight line is a real rural stretch with
- * sparse points, not corruption.
+ * A step is a candidate only when it is longer than 2 km and 15x the median step. A candidate
+ * cuts the shape (keeping the points before it) only when one of these holds:
+ *  - it is the first segment (nothing before it to judge by);
+ *  - the line bends more than MIN_REVERSAL_BEND_DEG into or out of it, direction taken over at
+ *    least MIN_DIRECTION_SPAN_M so one kink cannot fake a reversal;
+ *  - it teleports: it ends back on the route already drawn but its midpoint is far from it.
+ * A candidate that passes none of these is a real rural stretch with sparse points and is
+ * kept; scanning goes on, so a later step can still cut. This never draws less than the old
+ * rule (which cut at the first candidate), but a shape the old rule cut early may now be
+ * cut at a later step. Rail shapes are exempt upstream (the keepLongShapeJumps option and
+ * the rail exemption).
  */
 export function truncateAtImplausibleJump(points: [number, number][]): [number, number][] {
     if (points.length < 4) return points;
