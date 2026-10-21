@@ -11,6 +11,7 @@ import { routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardBackLink } from '../components/Interval/cardUi';
 import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
+import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots';
 import { buildHistoryRouteFilters, historyRouteMatchesFilter, type HistoryRouteFilterKey } from '../utils/historyRouteFilters';
 import { useColorVision } from '../context/ColorVisionContext';
 import RegionFilterPills from '../components/RegionFilterPills';
@@ -100,8 +101,13 @@ function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: strin
   };
 }
 
+/** The agency with only the snapshots History shows (#1030). */
+function withUsableSnapshots(agency: AgencyHistory): AgencyHistory {
+  return { ...agency, routes: agency.routes.map(r => ({ ...r, snapshots: usableSnapshots(r.snapshots) })) };
+}
+
 function sortSnapshotsNewestFirst(snapshots: RouteSnapshot[]): RouteSnapshot[] {
-  return [...snapshots].sort((a, b) => b.year - a.year || b.label.localeCompare(a.label));
+  return snapshotsNewestFirst(snapshots);
 }
 
 function routeHistorySnapshots(entry: RouteHistoryEntry): {
@@ -533,9 +539,10 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
   }, [active]);
 
   const historyAgencies = useMemo(() => {
-    return (historyData ?? []).filter(
-      a => a.routes.some(r => r.snapshots.length > 0) && agencyQualifiesForHistory(a),
-    );
+    // Snapshots with no label or a future year (bad upstream data) are left out everywhere (#1030).
+    return (historyData ?? [])
+      .map(withUsableSnapshots)
+      .filter(a => a.routes.some(r => r.snapshots.length > 0) && agencyQualifiesForHistory(a));
   }, [historyData]);
 
   useEffect(() => {
@@ -782,11 +789,12 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
       >
         {selectedSlug ? (
         (() => {
-          const agencyHistory = historyData?.find(a => a.slug === selectedSlug) ?? null;
+          const agencyHistory = historyAgencies.find(a => a.slug === selectedSlug)
+            ?? (() => { const raw = historyData?.find(a => a.slug === selectedSlug); return raw ? withUsableSnapshots(raw) : null; })();
           if (!agencyHistory) return null;
           if (selectedRouteShortName) {
             const selectedRoute = agencyHistory.routes.find(r => r.routeShortName === selectedRouteShortName) ?? null;
-            if (selectedRoute) {
+            if (selectedRoute && selectedRoute.snapshots.length > 0) {
               return (
                 <RouteHistoryCard
                   route={selectedRoute}
