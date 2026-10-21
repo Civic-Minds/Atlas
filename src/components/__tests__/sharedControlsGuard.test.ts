@@ -24,6 +24,7 @@ const OWNED: { what: string; pattern: RegExp; owner: string }[] = [
   { what: 'card summary line', pattern: /text-xs font-bold text-\[var\(--text-dim\)\] mt-1 leading-snug/, owner: 'src/components/Interval/cardUi.tsx' },
   { what: 'agency list region heading', pattern: /px-5 pt-3 pb-1 text-xs font-bold/, owner: 'src/styles.ts' },
   { what: 'agency list filter block', pattern: /shrink-0 px-4 pt-3 pb-2 bg-\[var\(--bg-panel\)\] border-b/, owner: 'src/styles.ts' },
+  { what: 'inline text action (Retry, Close)', pattern: /shrink-0 text-xs font-black text-\[var\(--accent\)\] hover:underline/, owner: 'src/components/ui/ArrowLink.tsx' },
   { what: 'one-off search field', pattern: /rounded-lg bg-\[var\(--bg-btn\)\] border border-\[var\(--border-primary\)\]/, owner: 'src/styles.ts' },
 ];
 

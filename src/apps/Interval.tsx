@@ -32,6 +32,7 @@ import { splitRouteKey } from '../utils/routeKey';
 import { getPolledRoute } from '../../shared/livePollingConfig';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
+import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
 import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
@@ -68,6 +69,12 @@ interface Props {
   selectedAgencySlug?: string | null;
   setSelectedAgencySlug?: (slug: string | null) => void;
   onAgencyCardClose?: () => void;
+  /** History mode: the top bar shows History's own Frequency and Time chips, held by App, not the map's (CIV-389, CIV-392). */
+  historyView?: { view: HistoryView; setView: (view: HistoryView) => void };
+  /** The map's selection was cleared by the user (empty-map click or Escape); another view's panel (History) closes with it (#1031). */
+  onMapDismiss?: () => void;
+  /** Another view's panel is open over the map (History), so Escape has something to close. */
+  externalPanelOpen?: boolean;
   pendingLiveRoute?: { slug: string; routeShortName: string } | null;
   onPendingLiveRouteHandled?: () => void;
   pendingNightRoute?: { slug: string; routeId: string; frequency: NightServiceFrequency } | null;
@@ -156,7 +163,7 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -808,6 +815,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setOnDemandStopAgencySlug(null);
     onAgencyCardClose?.();
   }, [onAgencyCardClose]);
+  // The user dismissing the map's selection (empty-map click, Escape): clears it and tells any other
+  // view's panel over the map to close the same way (History, #1031). Data-driven clears don't.
+  const dismissMapSelection = useCallback(() => {
+    clearMapSelection();
+    onMapDismiss?.();
+  }, [clearMapSelection, onMapDismiss]);
 
   // Drop stale selection when the route card has no data (day change, agency unload, etc.)
   useEffect(() => {
@@ -831,12 +844,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (!selectedRoute && !selectedStop && !disambiguationRoutes?.length && !selectedAgencySlug && !onDemandStopAgencySlug) return;
-      clearMapSelection();
+      if (!selectedRoute && !selectedStop && !disambiguationRoutes?.length && !selectedAgencySlug && !onDemandStopAgencySlug && !externalPanelOpen) return;
+      dismissMapSelection();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [selectedRoute, selectedStop, disambiguationRoutes, selectedAgencySlug, onDemandStopAgencySlug, clearMapSelection]);
+  }, [selectedRoute, selectedStop, disambiguationRoutes, selectedAgencySlug, onDemandStopAgencySlug, externalPanelOpen, dismissMapSelection]);
 
   // Live mode: hand a live route to Live's card. Live then owns the route param.
   const handedToLiveRef = useRef(false);
@@ -953,6 +966,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onBasemapLoadingChange={setIsBasemapLoading}
             setQuery={setQuery}
             onClearSelection={clearMapSelection}
+            onMapDismiss={onMapDismiss}
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
             onMapReady={setMapA}
@@ -1030,6 +1044,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 initialOnDemandSlug={null}
                 setQuery={setQuery}
                 onClearSelection={clearMapSelection}
+                onMapDismiss={onMapDismiss}
                 sidebarLeft={sidebarLeft}
                 searchBarWidth={searchBarWidth}
                 secondary
@@ -1225,8 +1240,25 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
 
       {headerPortalContainer && createPortal(
-        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView ? 'pointer-events-none' : ''}`}>
-          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView ? 'pointer-events-none' : ''}`}>
+          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            {historyView ? (
+              <FilterChips
+                maxHeadway={historyView.view.maxHeadway}
+                setMaxHeadway={maxHeadway => historyView.setView({ ...historyView.view, maxHeadway })}
+                selectedModes={selectedModes}
+                setSelectedModes={setSelectedModes}
+                day={day}
+                setDay={setDay}
+                period={historyView.view.period}
+                setPeriod={period => historyView.setView({ ...historyView.view, period })}
+                agencies={allAgencies ?? agencies}
+                selectedAgencies={selectedAgencies}
+                setSelectedAgencies={setSelectedAgenciesByUser}
+                bounds={bounds}
+                variant="history"
+              />
+            ) : (
             <FilterChips
               maxHeadway={maxHeadway}
               setMaxHeadway={setMaxHeadway}
@@ -1252,6 +1284,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               setNightServiceFrequency={setNightServiceFrequency}
               variant={compareActive ? 'shared' : 'full'}
             />
+            )}
           </div>
           {!hideFilterPanel && (
               <FilterPanel

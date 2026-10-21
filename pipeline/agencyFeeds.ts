@@ -59,6 +59,11 @@ export interface SupplementalFeed {
 export interface AgencyFeedResult extends ProcessResult {
   /** Feature count contributed by each supplemental feed, in input order. */
   supplementalFeatureCounts: Array<{ url: string; featureCount: number }>;
+  /**
+   * Which feed each entry of the merged `geojson.features` came from, in order: the main feed
+   * first (url null), then each supplemental. Counts are the merged array's own slice sizes.
+   */
+  featureSources: Array<{ url: string | null; count: number }>;
   /** CIV-321: the beta section colours' fields, moved off the route features (`{slug}-sections.json`). */
   sectionsJson: string;
 }
@@ -172,6 +177,7 @@ export async function processAgencyFeeds(
   const primary = await processGtfsBuffer(primaryBuf, onProgress, withNextServiceDates(agency.feedUrl));
   const primaryCollection = JSON.parse(primary.geojson) as FeatureCollection;
   const features = primaryCollection.features;
+  const featureSources: AgencyFeedResult['featureSources'] = [{ url: null, count: features.length }];
   // Running time (CIV-84) per feed; the main feed wins any key a supplemental feed repeats.
   const runningTimes: Record<string, unknown> = {};
   const corridorFeatures = (JSON.parse(primary.corridorsGeojson) as FeatureCollection).features;
@@ -186,6 +192,7 @@ export async function processAgencyFeeds(
     const supp = await processGtfsBuffer(buf, onProgress, withNextServiceDates(url));
     const suppCollection = JSON.parse(supp.geojson) as FeatureCollection;
     features.push(...suppCollection.features);
+    featureSources.push({ url, count: suppCollection.features.length });
     Object.assign(runningTimes, suppCollection.runningTimes ?? {});
     corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as FeatureCollection).features);
     Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
@@ -210,6 +217,7 @@ export async function processAgencyFeeds(
     featureCount,
     shapeAnomalies,
     supplementalFeatureCounts,
+    featureSources,
     sectionsJson: JSON.stringify(sections),
   };
 }

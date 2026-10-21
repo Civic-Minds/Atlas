@@ -28,7 +28,10 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
-import { historyAgencyToOpen } from './utils/historyOpen';
+import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
+import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
+import { HISTORY_VIEW_ALL, type HistoryView } from './utils/historyYearMap';
+import { encodeHistoryView, parseHistoryView } from './utils/historyViewUrl';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -47,7 +50,9 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-import { loadErrorText } from './content/stateCopy';
+import { loadErrorText, loadingText } from './content/stateCopy';
+import Panel from './components/ui/Panel';
+import PanelEmpty from './components/ui/PanelEmpty';
 
 export interface Agency {
   slug: string;
@@ -193,6 +198,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   function setActiveApp(app: AppId) {
     trackEvent('app_opened', { app });
+    // The map's open route carries into History (useHistoryRouteLink); the switch drops the URL's params.
+    if (app === 'history') noteHistorySwitch();
     navigate(APP_TO_PATH[app]);
   }
 
@@ -391,7 +398,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [viewportAgencySlugs, setViewportAgencySlugs] = useState<string[]>([]);
   const [userMovedMap, setUserMovedMap] = useState(false);
   // History with an agency open: the top search bar searches that agency's routes (#1015).
-  const [historyAgencyOpen, setHistoryAgencyOpen] = useState(false);
+  // The History agency open, by its short name: the top search bar then searches its routes (#1015, CIV-402).
+  const [historyOpenAgencyName, setHistoryOpenAgencyName] = useState<string | null>(null);
+  // Bumped when the user dismisses the map's selection (empty-map click, Escape): History closes its panel too (#1031).
+  const [historyDismissKey, setHistoryDismissKey] = useState(0);
+  const handleMapDismiss = useCallback(() => setHistoryDismissKey(k => k + 1), []);
+  const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
+  // History's own Frequency and Time (CIV-389, CIV-392): start at All and All day, separate from the map's.
+  // Read from the link's h/p (the map's params) when the app opens on History.
+  const [historyView, setHistoryView] = useState<HistoryView>(() => (
+    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : HISTORY_VIEW_ALL
+  ));
+
+  const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
     const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
@@ -410,6 +429,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
+  // History's Frequency and Time live in the link as the map's h/p while History is open (historyViewUrl).
+  useEffect(() => {
+    if (inHistory) syncUrlParams(encodeHistoryView(historyView));
+  }, [inHistory, historyView]);
 
   // Interval reloads all its agency data whenever this list's identity changes, so it must stay the same
   // array until its contents change (a fresh filter() every render looped History at phone width).
@@ -483,7 +506,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   });
   const searchPlaceholder = inFrequency
     ? 'Search routes'
-    : inHistory ? (historyAgencyOpen ? 'Find a route…' : 'Find an agency…')
+    : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : 'Find an agency…')
     : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
 
@@ -513,6 +536,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     if (activeApp === 'live') setLiveMounted(true);
   }, [activeApp]);
+
+  const { noteHistorySwitch } = useHistoryRouteLink({ inHistory, layers, openRoute: setPendingHistoryRoute });
 
   // Clear history-specific pending state when leaving history mode
   // (prevents lingering state after idle + exit, e.g. back arrow or panels)
@@ -815,6 +840,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onLayersChange={setLayers}
               onViewportAgencySlugsChange={setViewportAgencySlugs}
               onUserMoveMap={handleUserMoveMap}
+              onMapDismiss={inHistory ? handleMapDismiss : undefined}
+              historyView={inHistory ? historyViewControl : undefined}
+              externalPanelOpen={inHistory && historyPanelOpen}
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
@@ -837,8 +865,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setDataSaver={setDataSaver}
             />
             {historyOn && (historyOpened || inHistory) && (
-              <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
-                <History active={inHistory} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onAgencyOpenChange={setHistoryAgencyOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+              <React.Suspense fallback={inHistory ? (
+                // The shared loading panel, where History's panels open (#1028 item 20).
+                <Panel sidebar style={{ top: 80, '--sidebar-left': `${sidebarLeft}px`, ...(searchBarWidth && !isPhone ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}) } as React.CSSProperties}>
+                  <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+                </Panel>
+              ) : null}>
+                <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (

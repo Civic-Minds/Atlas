@@ -52,9 +52,10 @@ interface FilterChipsProps {
   /**
    * Compare mode. 'shared': only the filters both maps share (Mode and Agencies), labelled as
    * such. 'side': only Frequency, Day and Time, for one map's own controls. Same chips and menus
-   * as the full bar either way.
+   * as the full bar either way. 'history': only Frequency and Time (History is weekday only), with
+   * "All day" in the Time menu since History's default is the weekday all-day value (CIV-389, CIV-392).
    */
-  variant?: 'full' | 'shared' | 'side';
+  variant?: 'full' | 'shared' | 'side' | 'history';
   /** Accessible name for the 'side' variant's group, e.g. "Map B settings". */
   groupLabel?: string;
 }
@@ -403,7 +404,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       </button>
       {openChip === 'period' && (
         <div className={`${PANEL} w-56`}>
-          {PERIOD_KEYS.map((p) => (
+          {(variant === 'history' ? (['all', ...PERIOD_KEYS] as TimePeriod[]) : PERIOD_KEYS).map((p) => (
             <button
               key={p}
               onClick={() => { setPeriod(p); setOpenChip(null); }}
@@ -411,7 +412,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               aria-pressed={period === p}
             >
               <span className="whitespace-nowrap">{PERIOD_LABELS[p]}</span>
-              <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>
+              {p !== 'all' && <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>}
             </button>
           ))}
         </div>
@@ -466,6 +467,15 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       )}
     </div>
   );
+
+  if (variant === 'history') {
+    return (
+      <div ref={rowRef} className="flex items-center gap-2">
+        {frequencyChip('')}
+        {periodChip('')}
+      </div>
+    );
+  }
 
   if (variant === 'side') {
     return (

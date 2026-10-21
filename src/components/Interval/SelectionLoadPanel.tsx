@@ -3,6 +3,7 @@ import { SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import Panel from '../ui/Panel';
 import { useDelayedFlag } from '../../hooks/useDelayedFlag';
 import PanelEmpty from '../ui/PanelEmpty';
+import ArrowLink from '../ui/ArrowLink';
 import { loadingText, loadErrorText } from '../../content/stateCopy';
 
 interface SelectionLoadPanelProps {
@@ -30,7 +31,7 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
       } as React.CSSProperties}
     >
       {failed ? (
-        <PanelEmpty kind="error" action={<button type="button" onClick={onClose} className="shrink-0 text-xs font-black text-[var(--accent)] hover:underline">Close</button>}>
+        <PanelEmpty kind="error" action={<ArrowLink as="button" tone="inline" size="xs" onClick={onClose} className="shrink-0 whitespace-nowrap">Close</ArrowLink>}>
           {loadErrorText(`this ${kind}`)}
         </PanelEmpty>
       ) : (

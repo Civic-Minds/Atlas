@@ -16,6 +16,8 @@ interface Props {
   headwayLabel?: string;
   trunkHeadway?: number | null;  // for range display (every 6–12 min)
   headwaySuffix?: string;
+  /** The suffix's colour (HeadwayBadge suffixTone). */
+  headwaySuffixTone?: 'dim' | 'negative' | 'positive';
   subLabel?: string;
   live?: boolean;
   // Limited service
@@ -41,7 +43,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const interactive = !!(onHoverStart && onHoverEnd);
@@ -104,7 +106,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
             </span>
           )}
           {!limited && headway != null && !showRange && (
-            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} live={live} suffix={headwaySuffix} label={headwayLabel} />
+            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} />
           )}
           {!limited && rangeText && (
             <span className="inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0">

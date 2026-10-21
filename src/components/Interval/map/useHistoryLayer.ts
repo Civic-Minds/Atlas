@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as maplibregl from 'maplibre-gl';
-import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useHistoryMapOverlay } from '../../../context/HistoryMapOverlay';
-import { useColorVision } from '../../../context/ColorVisionContext';
 import { isDrawableLineCoordinates, lineCoordinates } from '../../../../shared/routeGeometry';
 import { routeFramePadding } from './routeFraming';
 
@@ -11,32 +9,8 @@ export function useHistoryLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
   mapLoaded: boolean,
 ) {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const tryZoomHandlerRef = useRef<(() => void) | null>(null);
-
-  // History route shape (historical geometry for selected period, AI-162/AI-161)
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-
-    const source = map.getSource('history-route-shape') as maplibregl.GeoJSONSource;
-    if (!source) return;
-
-    if (historyOverlay && isDrawableLineCoordinates(historyOverlay.routeGeometry)) {
-      source.setData({
-        type: 'FeatureCollection',
-        features: [{
-          type: 'Feature',
-          geometry: { type: 'LineString', coordinates: historyOverlay.routeGeometry },
-          properties: { color: '#3b82f6' }
-        }]
-      });
-    } else {
-      source.setData({ type: 'FeatureCollection', features: [] });
-    }
-  }, [historyOverlay, mapLoaded]);
 
   // History time-scrubber routes (AI-198)
   useEffect(() => {
@@ -46,28 +20,27 @@ export function useHistoryLayer(
     const source = map.getSource('history-routes') as maplibregl.GeoJSONSource;
     if (!source) return;
 
-    if (historyOverlay?.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0) {
-      const features = historyOverlay.historicalRouteGeometries
-        .filter(r => isDrawableLineCoordinates(r.coordinates))
-        .map(r => ({
+    // Only the year routes with their own shape draw here; the rest are today's map lines,
+    // filtered and coloured by useRouteStyling. The colour is already the shared tier colour.
+    const features = (historyOverlay?.yearRoutes ?? [])
+      .filter(r => isDrawableLineCoordinates(r.coordinates))
+      .map(r => ({
         type: 'Feature' as const,
-        geometry: { type: 'LineString' as const, coordinates: r.coordinates },
-        properties: {
-          color: getTierColor(String(Math.min(60, Math.ceil(r.headway / 5) * 5)), colorMode) || '#3b82f6',
-          routeShortName: r.routeShortName,
-          selected: Boolean(historyOverlay.routeShortName && r.routeShortName === historyOverlay.routeShortName),
-        }
+        geometry: { type: 'LineString' as const, coordinates: r.coordinates! },
+        properties: { color: r.color, routeShortName: r.routeShortName },
       }));
-      source.setData({ type: 'FeatureCollection', features });
-    } else {
-      source.setData({ type: 'FeatureCollection', features: [] });
-    }
-  }, [historyOverlay, mapLoaded, colorMode]);
+    source.setData({ type: 'FeatureCollection', features });
+  }, [historyOverlay, mapLoaded]);
 
-  // History camera: fit to the historical route(s), or fly to the agency
+  // History camera: fit to the historical route(s), or fly to the agency. Runs when the agency or
+  // route changes, not on every year step (the overlay changes with the year).
+  const latestOverlayRef = useRef(historyOverlay);
+  latestOverlayRef.current = historyOverlay;
+  const cameraKey = historyOverlay ? `${historyOverlay.slug}|${historyOverlay.routeShortName}` : '';
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
+    const historyOverlay = latestOverlayRef.current;
 
     // Cancel any stale one-shot zoom handler left over from a previous route/overlay
     if (tryZoomHandlerRef.current) {
@@ -82,9 +55,8 @@ export function useHistoryLayer(
     // than flying to the catalog centre, which can land on a single suburb.
     const routeGeometry = isDrawableLineCoordinates(historyOverlay.routeGeometry) ? historyOverlay.routeGeometry : undefined;
     const hasRouteGeometry = Boolean(routeGeometry);
-    const hasHistoricalRouteGeometry = Boolean(
-      historyOverlay.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0,
-    );
+    const ownShapes = (historyOverlay.yearRoutes ?? []).filter(r => isDrawableLineCoordinates(r.coordinates));
+    const hasHistoricalRouteGeometry = ownShapes.length > 0;
     if (routeGeometry && routeGeometry.length > 1) {
       const coords = routeGeometry;
       let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
@@ -96,11 +68,10 @@ export function useHistoryLayer(
       if (minLng < maxLng) {
         map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: routeFramePadding(map, 'right'), maxZoom: 14 });
       }
-    } else if (historyOverlay.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0) {
+    } else if (hasHistoricalRouteGeometry) {
       let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-      for (const route of historyOverlay.historicalRouteGeometries) {
-        if (!isDrawableLineCoordinates(route.coordinates)) continue;
-        for (const [lng, lat] of route.coordinates) {
+      for (const route of ownShapes) {
+        for (const [lng, lat] of route.coordinates!) {
           minLng = Math.min(minLng, lng);
           maxLng = Math.max(maxLng, lng);
           minLat = Math.min(minLat, lat);
@@ -166,5 +137,6 @@ export function useHistoryLayer(
         map.on('moveend', tryZoom);
       }
     }
-  }, [historyOverlay, mapLoaded]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cameraKey, mapLoaded]);
 }
