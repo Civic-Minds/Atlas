@@ -16,5 +16,6 @@ export function areaLinkFor(
 ): { href: string; label: string } | null {
   if (!flagOn) return null;
   const hit = map[agencySlug];
-  return hit ? { href: areaPagePath(hit[0]), label: `${areaRegionTitle({ slug: hit[0], name: hit[1] })} →` } : null;
+  // Says what the link opens (Ryan, 2026-10-20): "All Metro Atlanta agencies"; the arrow comes from ArrowLink.
+  return hit ? { href: areaPagePath(hit[0]), label: `All ${areaRegionTitle({ slug: hit[0], name: hit[1] })} agencies` } : null;
 }

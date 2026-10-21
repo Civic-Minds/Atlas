@@ -6,6 +6,12 @@ import { FEATURES } from '../../../../shared/config';
 /** Which side of the map the card sits on, on wide screens. */
 export type CardSide = 'left' | 'right';
 
+/** The phone top bar's buttons sit 21px in from each side and end 51px from the top (measured at 360-402px wide). */
+const PHONE_TOP_BAR_SIDE_INSET = 21;
+const PHONE_TOP_BAR_BOTTOM = 51;
+/** Clear space kept between a framed route and the top bar or screen edge. */
+const PHONE_FRAME_MARGIN = 24;
+
 /**
  * Camera padding that keeps a route clear of the card: beside it on wide screens, above the
  * bottom sheet on phones. One place for every "zoom to this route or stretch" camera move.
@@ -13,7 +19,10 @@ export type CardSide = 'left' | 'right';
 export function routeFramePadding(map: maplibregl.Map, side: CardSide = 'left', { phoneSheet = false }: { phoneSheet?: boolean } = {}): maplibregl.PaddingOptions {
   const { clientWidth, clientHeight } = map.getContainer();
   // Live's card is a bottom sheet on phones; the main map and History keep their framing.
-  if (phoneSheet && clientWidth < 640) return { top: 60, bottom: Math.round(clientHeight * 0.45), left: 30, right: 30 };
+  if (phoneSheet && clientWidth < 640) {
+    const inset = PHONE_TOP_BAR_SIDE_INSET + PHONE_FRAME_MARGIN;
+    return { top: PHONE_TOP_BAR_BOTTOM + PHONE_FRAME_MARGIN, bottom: Math.round(clientHeight * 0.45), left: inset, right: inset };
+  }
   return side === 'left'
     ? { top: 80, bottom: 80, left: 320, right: 80 }
     : { top: 80, bottom: 80, left: 80, right: 280 };

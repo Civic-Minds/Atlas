@@ -4,7 +4,7 @@ import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, R
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
-import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
+import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN, SEARCH_ICON } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasBrand from './components/AtlasBrand';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -28,6 +28,7 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
+import { historyAgencyToOpen } from './utils/historyOpen';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -388,6 +389,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
   const [viewportAgencySlugs, setViewportAgencySlugs] = useState<string[]>([]);
+  const [userMovedMap, setUserMovedMap] = useState(false);
+  // History with an agency open: the top search bar searches that agency's routes (#1015).
+  const [historyAgencyOpen, setHistoryAgencyOpen] = useState(false);
+  const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
     const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
     return days.length ? days : ['Weekday' as const];
@@ -466,14 +471,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     const id = window.setTimeout(preloadHistory, 3000);
     return () => window.clearTimeout(id);
   }, [warmHistory]);
-  // Always open History on the agency chooser rather than guessing one from
-  // whatever the map happens to be showing -- auto-jumping straight to an
-  // agency (e.g. TTC, just because the map defaults to Toronto) surprised
-  // users who never actually picked that agency themselves.
-  const historyAgencyForView = null;
+  // History opens on a city only when the user has shown which one they mean: an agency they
+  // selected, or the single History agency left in view after they moved or zoomed the map (#1012).
+  // A fresh load, the default Toronto view and restored or shared views never count, so History
+  // doesn't jump to an agency nobody picked (the reason 9b0c3440 made it always open on the chooser).
+  const historyAgencyForView = historyAgencyToOpen({
+    selectedAgencySlug,
+    viewportSlugs: viewportAgencySlugs,
+    historySlugs: historyAgencySlugs,
+    userMovedMap,
+  });
   const searchPlaceholder = inFrequency
     ? 'Search routes'
-    : inHistory ? 'Find an agency…'
+    : inHistory ? (historyAgencyOpen ? 'Find a route…' : 'Find an agency…')
     : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
 
@@ -581,7 +591,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
       <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6 h-[28px]'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
-      <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
+      <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 min-w-0 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
         <button
           type="button"
@@ -606,10 +616,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           {!phoneSearchExpanded && <AtlasBrand hideByline />}
         </button>
 
-        {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
+        {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
         <div className="flex-1 min-w-0 sm:flex">
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${PILL_SURFACE} pl-1 pr-3`}>
+          <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
             ref={searchInputRef}
             type="text"
@@ -630,7 +640,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               searchBlurTimer.current = setTimeout(() => setSearchFocused(false), 150);
             }}
             placeholder=""
-            className="w-full bg-transparent text-[var(--text-primary)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none"
+            className="w-full min-w-0 bg-transparent text-[var(--text-primary)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none"
           />
           {!query && (
             <span
@@ -804,6 +814,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setDay={setDay}
               onLayersChange={setLayers}
               onViewportAgencySlugsChange={setViewportAgencySlugs}
+              onUserMoveMap={handleUserMoveMap}
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
@@ -827,7 +838,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             />
             {historyOn && (historyOpened || inHistory) && (
               <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
-                <History active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+                <History active={inHistory} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onAgencyOpenChange={setHistoryAgencyOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (

@@ -21,6 +21,7 @@ GTFS feeds often package historical, current, and future service periods togethe
 
 - **Resolution:** It looks for active dates closest to the execution day to ensure the map shows what is actually running now, rather than an expired or future schedule.
 - **Service Types:** Departures are split into Weekday, Saturday, and Sunday schedules.
+- **Rolling per-day feeds:** A feed that gives each day its own short service_id (LA Metro Rail's supplemental rail zip, #1019; Sound Transit's main feed, #1035) can opt in by listing its URL (the main `feedUrl` or a supplemental one) in `nextServiceDatesFeedUrls`: each day type is then read from one typical real date in the two weeks after the run date instead of one reference date for the whole feed.
 
 ### 3. Route shape selection
 Transit routes often have multiple routing variants, such as branches, short-turns, or trips to the garage. To keep the map clean, the pipeline isolates two specific shapes for each route:

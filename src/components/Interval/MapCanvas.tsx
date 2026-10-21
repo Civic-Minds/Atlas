@@ -151,6 +151,8 @@ interface MapCanvasProps {
   onBoundsChange: (b: ViewportBounds, zoom?: number) => void;
   resetViewKey?: number;
   onLocate?: (lat: number, lon: number) => void;
+  /** The user panned or zoomed the map themselves (drag, wheel, keys, pinch or the zoom buttons); fits and restored views don't count. */
+  onUserMove?: () => void;
   showMapContext?: boolean;
   mapContextOpen?: boolean;
   mapContextView?: 'agencies' | 'routes';
@@ -244,6 +246,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   resetViewKey,
   setQuery,
   onLocate,
+  onUserMove,
   showMapContext = false,
   mapContextOpen = false,
   mapContextView = 'routes',
@@ -711,6 +714,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const onOnDemandStopClickRef = useRef(onOnDemandStopClick);
   const onOnDemandZoneClickRef = useRef(onOnDemandZoneClick);
   const onBoundsChangeRef = useRef(onBoundsChange);
+  const onUserMoveRef = useRef(onUserMove);
+  onUserMoveRef.current = onUserMove;
   const onMapReadyRef = useRef(onMapReady);
   onMapReadyRef.current = onMapReady;
   const secondaryRef = useRef(secondary);
@@ -1058,13 +1063,23 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       setMapContextMenu({ x: e.point.x, y: e.point.y, lat: e.lngLat.lat, lon: e.lngLat.lng });
     };
     const closeMenu = () => setMapContextMenu(null);
+    // MapLibre sets originalEvent only on moves the user made, not on fitBounds/flyTo/jumpTo.
+    const onMoveStart = (e: { originalEvent?: unknown }) => {
+      closeMenu();
+      if (e.originalEvent) onUserMoveRef.current?.();
+    };
+    // Wheel zooms start without originalEvent on movestart, so the wheel itself counts as the user's move.
+    const container = map.getCanvasContainer();
+    const onWheel = () => onUserMoveRef.current?.();
     map.on('contextmenu', onContextMenu);
     map.on('click', closeMenu);
-    map.on('movestart', closeMenu);
+    map.on('movestart', onMoveStart);
+    container.addEventListener('wheel', onWheel, { passive: true });
     return () => {
       map.off('contextmenu', onContextMenu);
       map.off('click', closeMenu);
-      map.off('movestart', closeMenu);
+      map.off('movestart', onMoveStart);
+      container.removeEventListener('wheel', onWheel);
     };
   }, [mapLoaded]);
 
@@ -1290,7 +1305,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Map controls — one stack keeps the gaps identical at every map size. */}
-      {showMapControls && <div className={`absolute bottom-6 right-3 ${Z_PANEL} flex flex-col gap-2 pointer-events-auto`}>
+      {showMapControls && <div className={`absolute bottom-6 right-3 max-sm:right-6 ${Z_PANEL} flex flex-col items-center gap-2 pointer-events-auto`}>
         {exportEnabled && (
           <button
             onClick={() => setExportDialogOpen(true)}
@@ -1300,7 +1315,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             <Download className="w-3.5 h-3.5" />
           </button>
         )}
-        <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
+        <MapZoomButtons onZoomIn={() => { onUserMove?.(); mapRef.current?.zoomIn({ duration: 200 }); }} onZoomOut={() => { onUserMove?.(); mapRef.current?.zoomOut({ duration: 200 }); }} />
         <button
           onClick={locateUser}
           aria-label="Go to my location"

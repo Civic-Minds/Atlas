@@ -57,7 +57,7 @@ export function buildAgencyCatalog(
 ): AgencyCatalogFile {
   const agencies = source
     .filter(agency => isAgencyVisibleInBrowser(agency, { mode }))
-    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, shortName: _shortName, labelPlace: _labelPlace, ...agency }) => agency as unknown as AgencyCatalogEntry);
+    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, nextServiceDatesFeedUrls: _nextServiceDatesFeedUrls, shortName: _shortName, labelPlace: _labelPlace, ...agency }) => agency as unknown as AgencyCatalogEntry);
 
   return { mode, agencyCount: agencies.length, agencies };
 }

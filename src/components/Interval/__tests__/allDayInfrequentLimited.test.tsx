@@ -133,21 +133,21 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
       />,
     );
 
-    it('shows "limited" instead of "about every 56 min" for TL-42 on Saturday All day', () => {
+    it('shows "limited" instead of "every 56 min" for TL-42 on Saturday All day', () => {
       renderCard([tl42Saturday], 'all');
       expect(screen.getAllByText('limited').length).toBeGreaterThan(0);
-      expect(screen.queryByText(/about every 56 min/)).toBeNull();
+      expect(screen.queryByText(/every 56 min/)).toBeNull();
     });
 
     it('shows "limited" for TL-42 in Saturday midday', () => {
       renderCard([tl42Saturday], 'midday');
       expect(screen.getAllByText('limited').length).toBeGreaterThan(0);
-      expect(screen.queryByText(/about every 56 min/)).toBeNull();
+      expect(screen.queryByText(/every 56 min/)).toBeNull();
     });
 
     it('still shows a frequent route\'s midday number', () => {
       renderCard([frequentSaturday], 'midday');
-      expect(screen.getByText('about every 12 min')).toBeTruthy();
+      expect(screen.getByText('every 12 min')).toBeTruthy();
       expect(screen.queryByText('limited')).toBeNull();
     });
 
@@ -162,13 +162,13 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
     it('a normal all-day route keeps its number when the all-day value agrees', () => {
       const normal = { ...frequentSaturday, routeAllDayHeadway: 12 } as unknown as ShapeProperties;
       renderCard([normal], 'all');
-      expect(screen.getByText('about every 12 min')).toBeTruthy();
+      expect(screen.getByText('every 12 min')).toBeTruthy();
       expect(screen.queryByText('limited')).toBeNull();
     });
 
     it('still shows a frequent route\'s all-day number', () => {
       renderCard([frequentSaturday], 'all');
-      expect(screen.getByText('about every 12 min')).toBeTruthy();
+      expect(screen.getByText('every 12 min')).toBeTruthy();
       expect(screen.queryByText('limited')).toBeNull();
     });
   });
@@ -208,7 +208,7 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
         />,
       );
       expect(screen.getByText('limited')).toBeTruthy();
-      expect(screen.getByText('about every 12 min')).toBeTruthy();
+      expect(screen.getByText('every 12 min')).toBeTruthy();
     });
   });
 
@@ -220,7 +220,7 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
         expect(result.current.find(r => r.rKey.includes('F-1'))).toMatchObject({ headway: 12, limited: false });
         const { unmount } = render(<NearbyRoutesPanel routes={result.current} setSelectedRoute={() => {}} />);
         expect(screen.getByText('limited')).toBeTruthy();
-        expect(screen.getByText('about every 12 min')).toBeTruthy();
+        expect(screen.getByText('every 12 min')).toBeTruthy();
         unmount();
       }
     });
@@ -231,7 +231,7 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
       expect(result.current.find(r => r.rKey.includes('F-1'))).toMatchObject({ headway: 12, limited: false });
       render(<NearbyRoutesPanel routes={result.current} setSelectedRoute={() => {}} />);
       expect(screen.getByText('limited')).toBeTruthy();
-      expect(screen.getByText('about every 12 min')).toBeTruthy();
+      expect(screen.getByText('every 12 min')).toBeTruthy();
     });
   });
 

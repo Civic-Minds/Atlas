@@ -6,9 +6,10 @@
  * The final set of formats (N is always minutes, never hours):
  *
  *   headwayEvery(10)          "every 10 min"             a stated or scheduled spacing
- *   headwayOrBetter(10)       "every 10 min or better"   what a filter or threshold means
- *   headwayAbout(16)          "about every 16 min"       a measured or typical (median) spacing
- *   headwayAboutRange(6, 12)  "about every 6–12 min"     a spread of typical spacings
+ *   headwayOrBetter(10)       "every 10 min or better"   a threshold in a sentence or screen-reader label
+ *   headwayFilterLabel(10)    "≤10 min"                  the applied frequency limit, as the pickers show it
+ *   headwayAbout(16)          "every 16 min"       a measured or typical (median) spacing
+ *   headwayAboutRange(6, 12)  "every 6–12 min"     a spread of typical spacings
  *   headwayEveryRange(30, 60) "every 30–60 min"          a list cadence: shared stretch to each branch
  *                             ("30–60 min" compact, for narrow table cells)
  *   headwayTierLabel(10)      "≤10 min"                  a frequency band in a legend or key
@@ -18,11 +19,12 @@
  *
  * Units: headways always read in minutes, never hours ("every 90 min", "every 120 min"), so a
  * column of values never mixes units. headwayAbout rounds to the nearest 30 minutes above 60
- * ("about every 90 min") because it is already approximate.
+ * ("every 90 min") because a measured gap is already approximate. The wording does not say so on
+ * each number; the docs say once that gaps above 60 minutes are rounded to the half hour.
  *
  * Whole numbers print as they are; other numbers print to one decimal ("7.5 min"). Missing or
- * non-finite values print "—" (headwayFilterLabel is the one exception: no limit is "All routes").
- * Nothing here changes a number except that rounding for "about" above 60 minutes and the
+ * non-finite values print "—" (headwayFilterLabel is the one exception: no limit is "All").
+ * Nothing here changes a number except that rounding of measured gaps above 60 minutes and the
  * one-decimal rounding, so the wording can change without the data changing.
  */
 
@@ -56,17 +58,21 @@ export function headwayOrBetter(minutes: number | null | undefined): string {
   return isUsable(minutes) ? `every ${amount(minutes)} or better` : MISSING;
 }
 
-/** The filter's own label: "Every 10 min or better", or "All routes" when there is no limit. */
+/**
+ * The applied frequency limit's label, the same on every surface (pickers, Compare captions, the
+ * export image): "≤10 min", or "All" when there is no limit (#1011). Screen-reader labels
+ * that need a full phrase use headwayOrBetter instead.
+ */
 export function headwayFilterLabel(maxHeadway: number): string {
-  if (maxHeadway === Infinity) return 'All routes';
-  return isUsable(maxHeadway) ? capitalizeFirst(headwayOrBetter(maxHeadway)) : MISSING;
+  if (maxHeadway === Infinity) return 'All';
+  return headwayTierLabel(maxHeadway);
 }
 
-/** "about every 16 min": a measured or typical spacing. Above 60 minutes it rounds to the nearest 30 min. */
+/** "every 16 min": a measured or typical spacing. Above 60 minutes it rounds to the nearest 30 min. */
 export function headwayAbout(minutes: number | null | undefined): string {
   if (!isUsable(minutes)) return MISSING;
-  if (minutes <= 60) return `about every ${num(minutes)} min`;
-  return `about every ${Math.round(minutes / 30) * 30} min`;
+  if (minutes <= 60) return `every ${num(minutes)} min`;
+  return `every ${Math.round(minutes / 30) * 30} min`;
 }
 
 /** "every 30–60 min": a list cadence, combined on a shared stretch up to each branch's own. */
@@ -77,13 +83,14 @@ export function headwayEveryRange(low: number | null | undefined, high: number |
   return `${prefix}${num(low)}–${num(high)} min`;
 }
 
-/** "about every 6–12 min" when both ends fit in minutes; otherwise two "about" phrases. */
+/** "every 6–12 min": a spread of typical spacings. Above 60 minutes each end rounds to the half hour. */
 export function headwayAboutRange(low: number, high: number): string {
   if (low === high) return headwayAbout(low);
   if (isUsable(low) && isUsable(high) && low <= 60 && high <= 60) {
-    return `about every ${num(low)}–${num(high)} min`;
+    return `every ${num(low)}–${num(high)} min`;
   }
-  return `${headwayAbout(low)} – ${headwayAbout(high)}`;
+  const round = (m: number) => (m <= 60 ? num(m) : String(Math.round(m / 30) * 30));
+  return `every ${round(low)}–${round(high)} min`;
 }
 
 /** "≤10 min": a frequency band in a legend or key. */

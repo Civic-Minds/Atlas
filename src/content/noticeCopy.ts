@@ -29,7 +29,7 @@ export function periodServiceNotice(periodRange: string, partial: boolean, activ
 }
 
 export function unevenServiceNotice(longestGap: number): string {
-  return `Service runs throughout the selected period, but not consistently. Longest gap: ${delayAmount(longestGap)}.`;
+  return `Service runs all period, but unevenly, with a longest gap of ${delayAmount(longestGap)}.`;
 }
 
 export const NO_ROUTE_SHAPE_NOTICE = 'Route map unavailable.';
@@ -43,7 +43,8 @@ export const NO_ROUTE_SHAPE_DETAIL =
 export function selectedRouteOutsideFilterNotice(maxHeadway: number): string {
   return maxHeadway === Infinity
     ? 'This route does not run during the selected period.'
-    : `This route does not meet the selected ${maxHeadway}-minute filter for the full selected period.`;
+    // Non-breaking hyphen (U+2011) keeps "15-minute" on one line instead of wrapping after "15-".
+    : `This route does not meet the selected ${maxHeadway}\u2011minute filter for the full selected period.`;
 }
 
 export const EXPIRED_FEED_EXPLANATION =

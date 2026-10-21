@@ -18,6 +18,11 @@ import { syncUrlParams } from '../../utils/syncUrlParams';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
 import { HOUR_TO_PERIOD, PERIOD_BANDS, PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
 
+/** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
+export const SPARKLINE_CARD_HEIGHT = 32;
+/** Bar area height of the expanded full-day sparkline, in px. */
+export const SPARKLINE_EXPANDED_HEIGHT = 150;
+
 const HOURS = SPARKLINE_HOURS;
 
 // Label positions: 6a, 12p, 6p, 12a
@@ -130,7 +135,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     return () => syncUrlParams({ fullday: null, fdir: null });
   }, [ownsUrl]);
 
-  const H = expanded ? 150 : 28;
+  const H = expanded ? SPARKLINE_EXPANDED_HEIGHT : SPARKLINE_CARD_HEIGHT;
   const displayedByHour = byHour;
   // The full-day view shows the direction picked with the pills above it;
   // the inline chart always shows the route's merged schedule.
@@ -195,9 +200,11 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           onClick={() => setIsExpanded(true)}
           aria-label="Expand schedule"
           title="Expand schedule"
-          className="absolute right-0 -top-1 z-20 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
+          className="absolute right-0 top-[-2px] z-20 p-[4px] text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
         >
-          <Maximize2 className="w-3.5 h-3.5" />
+          {/* Exact px, not w-3/h-3: the root font is 14px, so rem sizes shrink to 10.5px. 12px tall
+              like the label's text, centred on its 16px line (2px offset + 4px padding + 6px). */}
+          <Maximize2 className="block w-[12px] h-[12px]" strokeWidth={2.5} />
         </button>
       )}
       <div
@@ -227,11 +234,13 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             {PERIOD_LABELS[activeLabelKey]}
           </span>
         )}
-        {/* Hover region highlight — visible on light bg */}
+        {/* Hover region highlight — visible on light bg. It starts below the label row
+            (the top padding), so the period label sits above it, not inside it. */}
         {bands?.map((band, i) => (
           <div
             key={i}
-            className="absolute inset-y-0 rounded-sm pointer-events-none"
+            data-testid="sparkline-hover-band"
+            className={`absolute ${expanded ? 'top-12' : 'top-5'} bottom-0 rounded-sm pointer-events-none`}
             style={{
               left: `${band.left * 100}%`,
               width: `${band.width * 100}%`,

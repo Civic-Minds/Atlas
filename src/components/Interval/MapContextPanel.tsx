@@ -8,6 +8,7 @@ import Panel, { PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import AgencyGroupHeader from '../ui/AgencyGroupHeader';
 import { compareAgencyName, compareRegion } from '../../utils/sortCompare';
+import { countOf } from '../../../shared/overflowText';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -67,7 +68,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
         <div className="min-w-0 flex-1">
           <div className={PANEL_TITLE}>In view</div>
           <div className="text-xs font-bold text-[var(--text-primary)]">
-            {count} {count === 1 ? (mode === 'agencies' ? 'agency' : 'route') : (mode === 'agencies' ? 'agencies' : 'routes')}
+            {mode === 'agencies' ? countOf(count, 'agency', 'agencies') : countOf(count, 'route')}
           </div>
         </div>
       </PanelTitleBar>

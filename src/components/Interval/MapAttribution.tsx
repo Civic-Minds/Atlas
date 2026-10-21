@@ -6,6 +6,8 @@ import { shortVersion } from '../../data/whatsNew';
 import { WhatsNewPanel } from '../WhatsNewPanel';
 import { trackEvent } from '../../lib/analytics';
 import { OutboundLink } from '../OutboundLink';
+import { ConsentPill } from '../AnalyticsConsent';
+import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
 
 const ATTRIB_LINK =
   `${MAP_BADGE_LABEL} text-[var(--text-dim)] no-underline hover:text-[var(--text-primary)]`;
@@ -16,6 +18,10 @@ const FULL_ATTRIBUTION =
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
 export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsNewEnabled?: boolean } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+  // The analytics prompt is this row's last pill on sm and up, so it shares the row's baseline
+  // and wraps above it (flex-wrap-reverse) only when the row is out of width (#999).
+  const consent = useConsentPrompt();
+  useEffect(() => registerConsentRow(), []);
   const closeWhatsNew = useCallback(() => setWhatsNewOpen(false), []);
   // Phones fold About, What's new and Feedback into one "About" pill with a small card.
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -38,7 +44,8 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
   return (
     <>
     <div
-      className={`absolute bottom-6 left-6 ${Z_PANEL} pointer-events-auto flex flex-wrap-reverse items-center gap-1.5 max-w-[calc(100vw-3rem)]`}
+      className={`max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)] ${Z_PANEL} sm:min-w-0 pointer-events-none [&>*]:pointer-events-auto flex flex-wrap-reverse items-center gap-1.5`}
+      data-map-attribution=""
       title={FULL_ATTRIBUTION}
     >
       <div ref={aboutRef} className="relative sm:hidden">
@@ -118,9 +125,13 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
           </OutboundLink>
         </p>
       </div>
+      {consent.open && <ConsentPill className="max-sm:hidden" choose={consent.choose} />}
     </div>
     {whatsNewEnabled && whatsNewOpen && (
-      <WhatsNewPanel onClose={closeWhatsNew} includeBeta={FEATURES.whatsNewBetaItems} />
+      // The map's bottom row turns pointer events off; the panel's backdrop needs them back.
+      <div className="contents pointer-events-auto">
+        <WhatsNewPanel onClose={closeWhatsNew} includeBeta={FEATURES.whatsNewBetaItems} />
+      </div>
     )}
     </>
   );

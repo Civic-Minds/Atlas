@@ -5114,6 +5114,9 @@
         -121.7
       ],
       "feedUrl": "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip",
+      "nextServiceDatesFeedUrls": [
+        "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip"
+      ],
       "lastFeedExpiry": "20270328",
       "lastFeedVersion": "SC-Fall-2026.5",
       "lastRefreshedAt": "2026-10-19",
@@ -8285,6 +8288,7 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3032/latest.zip",
       "lastFeedExpiry": "20270630",
       "lastFeedVersion": "UTC: 14-Oct-2026 14:35",
+      "referenceDateFromRunDate": true,
       "lastRefreshedAt": "2026-10-19",
       "lastFeedCheckAt": "20261019",
       "expiredFeedCheckCount": 0,
@@ -8969,6 +8973,9 @@
       "region": "California",
       "lastRefreshedAt": "2026-10-19",
       "supplementalFeedUrls": [
+        "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
+      ],
+      "nextServiceDatesFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
       "cities": [
@@ -17163,6 +17170,7 @@
       "feedUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip",
       "lastFeedExpiry": "20300129",
       "lastFeedVersion": "",
+      "referenceDateFromRunDate": true,
       "lastRefreshedAt": "2026-08-18",
       "cities": [
         "Gary, Indiana",
