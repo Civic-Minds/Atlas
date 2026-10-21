@@ -103,7 +103,7 @@ describe('HeadwaySparkline', () => {
     });
   });
 
-  it('labels each hour with its headway and explains colour in the full-day view', () => {
+  it('labels each hour with its headway in the full-day view', () => {
     render(
       <HeadwaySparkline
         byHour={{ 6: 35, 9: 23, 14: 40 }}
@@ -115,8 +115,7 @@ describe('HeadwaySparkline', () => {
     const dialog = screen.getByRole('dialog');
     const labels = within(dialog).getAllByTestId('sparkline-headway-label').map(el => el.textContent);
     expect(labels).toEqual(['35', '23', '40']);
-    expect(within(dialog).getByTestId('sparkline-legend')).toHaveTextContent('minutes between trips');
-    expect(within(dialog).getByTestId('sparkline-legend')).toHaveTextContent('≤60 min');
+    expect(within(dialog).queryByTestId('sparkline-legend')).toBeNull();
   });
 
   it('switches the full-day chart to the picked direction', () => {
