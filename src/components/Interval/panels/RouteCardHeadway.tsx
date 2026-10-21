@@ -506,11 +506,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // Falling back to the route chart keeps the chart mounted, so its layout
         // does not shift under the pointer and cause hover flicker (#550).
         const merged = HOURS.some(h => hoveredMerged[h] != null) ? hoveredMerged : defaultMerged;
-        // Branch stacks describe the primary multi-branch direction, so only stack
-        // hours where that direction is the one drawn (it is the worst that hour).
+        // Branch stacks describe the primary multi-branch direction: every hour that direction
+        // runs is stacked, so whether an hour shows branch colours never depends on two series
+        // landing on the same number (CIV-497).
         const primaryTrunkByHour = showTrunkSparkline ? trunkSparklineByHour(primaryMultiBranch!.realTier, HOURS) : null;
         const stackedByHour = showTrunkSparkline
-          ? Object.fromEntries(HOURS.map(h => [h, primaryTrunkByHour![h] != null && primaryTrunkByHour![h] === merged[h]
+          ? Object.fromEntries(HOURS.map(h => [h, primaryTrunkByHour![h] != null && merged[h] != null
             ? primaryMultiBranch!.realTier
               .map((branch, i) => ({
                 label: branch.headsign ?? `Branch ${i + 1}`,

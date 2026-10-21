@@ -633,10 +633,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             }
           }}
           aria-label={inFrequentServiceStory ? 'Back to frequency map' : 'Atlas home'}
-          className="group flex items-center gap-2 shrink-0"
+          className="group flex items-center gap-2 shrink-0 rounded-full focus:outline-none focus-visible:!outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
         >
-          <span className="w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] bg-[var(--accent)] max-sm:bg-[var(--bg-panel)] max-sm:backdrop-blur-md max-sm:border max-sm:border-[var(--border-primary)] max-sm:shadow-lg rounded-full flex items-center justify-center shrink-0 shadow-2xl group-hover:opacity-80 transition-opacity">
-            <MapIcon className="w-3.5 h-3.5 text-white max-sm:text-[var(--accent)]" />
+          <span className="w-8 h-8 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] shadow-lg rounded-full flex items-center justify-center shrink-0 group-hover:opacity-80 transition-opacity">
+            <MapIcon className="w-3.5 h-3.5 text-[var(--accent)]" />
           </span>
           {!phoneSearchExpanded && <AtlasBrand hideByline />}
         </button>

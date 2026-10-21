@@ -182,9 +182,9 @@ export default function DiagnosticsUnevenPage() {
   return (
     <div className="min-h-screen w-full bg-[var(--bg-app)] text-[var(--text-primary)] font-sans">
       <div className="sticky top-0 z-10 bg-[var(--bg-app)]/95 backdrop-blur-md border-b border-[var(--border-primary)] px-6 py-4 flex items-center gap-2">
-        <a href="/" aria-label="Back to the frequency map" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity">
-            <MapIcon className="w-3.5 h-3.5 text-white" />
+        <a href="/" aria-label="Back to the frequency map" className="flex items-center gap-2 rounded-full focus:outline-none focus-visible:!outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">
+          <div className="w-8 h-8 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] shadow-lg rounded-full flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity">
+            <MapIcon className="w-3.5 h-3.5 text-[var(--accent)]" />
           </div>
           <div className="flex flex-col gap-px">
             <span className="text-xs sm:text-sm leading-none font-black text-[var(--text-primary)]">Atlas</span>
