@@ -160,7 +160,7 @@ These measures are different things. Never combine them, convert one into anothe
 
 | Internal term | Code | UI wording today | Notes |
 |---|---|---|---|
-| headline | `properties.headway` | "every N min" or "about every N min" | `shared/headwayText.ts` only |
+| headline | `properties.headway` | "every N min" | `shared/headwayText.ts` only |
 | tier `'10'`…`'60'` | `tier` | "≤10 min" (legend) | `headwayTierLabel` |
 | tier `infrequent` | `tier` | "Infrequent" | |
 | tier `span` | `tier` | hidden by "Hide irregular routes" | not a frequency |
