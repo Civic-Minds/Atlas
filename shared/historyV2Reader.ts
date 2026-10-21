@@ -13,8 +13,9 @@
  *  - {none:true} means the feed positively has no service that day. It is not blank and not 0.
  *  - Flags (fast / slow / limited) are stored, never hidden. The UI decides how to word them.
  *  - Old v1 snapshots (no `v2`) are fine: weekday is weekdayHeadwayMin, weekend is blank.
- *  - A route's line for a year comes only from shapeForYear. {kind:'none'} means no shape for that year: never
- *    draw today's geometry, another year's line, or a snapshot's old `geometry` field in its place.
+ *  - A route's line for a year comes from shapeForYear. {kind:'none'} means no shape stored for that year; the reader
+ *    never substitutes anything. The UI chooses the fallback: today's line for that route, and the latest year always
+ *    uses today's map.
  *
  * Forward compatible: unknown extra fields are ignored and kept as they are. Validation never throws;
  * it returns a typed error. A newer sidecar `version` is reported as 'unsupported-version', not guessed at.
@@ -269,14 +270,14 @@ export function parseHistoryShapes(input: unknown): HistoryV2Result<HistoryShape
   return { ok: true, value: input as unknown as HistoryShapesFile };
 }
 
-/** What the shapes file says about one route in one year. `none` = no shape stored for that year (never a fallback). */
+/** What the shapes file says about one route in one year. `none` = no shape stored for that year (the reader never falls back; the UI chooses the fallback). */
 export type ShapeForYear =
   | { kind: 'shape'; coordinates: HistoryShapeLine; /** Drawn from the stop order, not a published shape. */ approximate: boolean }
   | { kind: 'none' };
 
 /**
  * The line to draw for `routeKey` in `year`. Only that year's entry is read: a missing file, year or route is
- * `{kind:'none'}`, and nothing falls back to another year, today's geometry or a snapshot's old `geometry`.
+ * `{kind:'none'}`, and the reader itself falls back to nothing (the UI draws today's line for that route instead).
  * `routeKey` is the route's key (`routeShortName` in the agency file, i.e. historyRouteKey). Never throws.
  */
 export function shapeForYear(shapes: HistoryShapesFile | null | undefined, routeKey: string, year: number): ShapeForYear {
