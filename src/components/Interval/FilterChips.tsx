@@ -7,6 +7,8 @@ import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
+import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { agencyDisplayParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions } from '../../../shared/modes';
@@ -246,6 +248,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   variant = 'full',
   groupLabel,
 }) => {
+  const compactTopBar = useMediaQuery(COMPACT_TOP_BAR_QUERY);
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
@@ -477,9 +480,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   if (variant === 'shared') {
     return (
       <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label="Filters for both maps">
-        <span className="h-8 px-3 flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">
+        <span title={compactTopBar ? 'Both maps' : undefined} className="h-8 px-3 flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">
           <span className="inline-flex h-4 px-1 items-center justify-center rounded-full bg-[var(--text-primary)] text-2xs font-black text-[var(--bg-panel)]" aria-hidden="true">A+B</span>
-          Both maps
+          {!compactTopBar && 'Both maps'}
         </span>
         {modeChip('')}
         {agenciesChip}
