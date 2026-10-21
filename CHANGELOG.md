@@ -6,12 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 - **The Atlas logo is a light circle with a dark map icon on desktop too, in both themes**: it was still a solid dark circle (and a washed-out one in the dark theme) above phone width ([#1058](https://github.com/Civic-Minds/Atlas/issues/1058))
-- **The full-day hour chart's grey period bands are all the same height, and the hovered period is named once**: alternating bands had been drawn taller than the hover highlight, so Evening looked shorter, and a second period label repeated what the top row already says ([#1056](https://github.com/Civic-Minds/Atlas/issues/1056))
-- **Hovering an hour in the full-day frequency chart lights its trip-time bar too (beta)**: either chart picks out the same hour in both
-- **The full-day hour chart's bars match the route card's**: the same round-ended bars at a bigger size, so both read as one chart
 - **The route card's hour chart colours every hour with trips**: hours outside the chosen period are faded instead of some going grey ([#1055](https://github.com/Civic-Minds/Atlas/issues/1055))
-- **The full-day view's trip-time bars sit under their hour and are much taller (beta)**: each bar lines up with the hour above it, the slowest hour is drawn darker, and hovering a bar shows that hour's trip time
-- **The full-day view's trip-time bars sit under their hour and are much taller (beta)**: each bar lines up with the hour above it, bar height is in proportion to the trip time, the slowest hour is drawn darker, an hour with trips but no trip time shows a faint mark, and hovering a bar shows that hour's trip time
+- **The full-day hour chart's grey period bands are all the same height, and the hovered period is named once (beta)**: alternating bands had been drawn taller than the hover highlight, so Evening looked shorter, and a second period label repeated what the top row already says ([#1056](https://github.com/Civic-Minds/Atlas/issues/1056))
+- **The full-day hour chart's bars match the route card's (beta)**: the same round-ended bars at a bigger size, so both read as one chart
+- **Hovering an hour in the full-day frequency chart lights its trip-time bar too (beta)**: either chart picks out the same hour in both
 - **The full-day view's trip-time bars sit under their hour and are much taller (beta)**: each bar lines up with the hour above it, bar height is in proportion to the trip time, the hours with the longest trip time are drawn darker, an hour with trips but no trip time shows an empty outlined slot, and hovering a bar shows that hour's trip time
 - **Agency cards link to the agency's own website as "Data source" (beta)**: see where an agency's schedules come from; hidden for agencies with no website ([#1059](https://github.com/Civic-Minds/Atlas/issues/1059))
 - **History draws each year's routes on that year's own lines (beta)**: sliding back shows the network as it ran, including routes that no longer exist; the latest year uses today's map
