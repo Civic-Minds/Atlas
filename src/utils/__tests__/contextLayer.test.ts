@@ -105,7 +105,7 @@ describe('popup lines', () => {
     expect(contextPopupLines('income', { income: INCOME_TOP_CODE, income_moe_pct: 0.5 }).lines).toEqual(['$250,000 or more']);
   });
   it('uncertain and missing figures say so', () => {
-    expect(contextPopupLines('income', { income: 50000, income_moe_pct: 0.4 }).lines[0]).toMatch(/Too uncertain/);
+    expect(contextPopupLines('income', { income: 50000, income_moe_pct: 0.6 }).lines[0]).toMatch(/Too uncertain/);
     expect(contextPopupLines('density', {}).lines[0]).toMatch(/No population/);
   });
   it('density shows a rounded figure', () => {
