@@ -1,0 +1,6 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding,platform_code
+6,,Metro Center,,41.604420,-87.338918,,,0,,,,
+168,,Century Plaza (81st Ave),,41.466814,-87.335026,,,0,,,,
+114,,Village Center Rear Entrance,,41.552268,-87.358679,,,0,,,,
+64,,35th & Broadway,,41.555021,-87.336381,,,0,,,,
+102,,Oak & County Line,,41.621133,-87.222509,,,0,,,,
