@@ -48,6 +48,9 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import { loadErrorText } from './content/stateCopy';
+import Panel from './components/ui/Panel';
+import PanelEmpty from './components/ui/PanelEmpty';
+import { loadingText } from './content/stateCopy';
 
 export interface Agency {
   slug: string;
@@ -844,8 +847,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setDataSaver={setDataSaver}
             />
             {historyOn && (historyOpened || inHistory) && (
-              <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
-                <History active={inHistory} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+              <React.Suspense fallback={inHistory ? (
+                // The shared loading panel, where History's panels open (#1028 item 20).
+                <Panel sidebar style={{ top: 80, '--sidebar-left': `${sidebarLeft}px`, ...(searchBarWidth && !isPhone ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}) } as React.CSSProperties}>
+                  <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+                </Panel>
+              ) : null}>
+                <History active={inHistory} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (

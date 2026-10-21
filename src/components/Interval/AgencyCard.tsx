@@ -37,6 +37,7 @@ import {
 import { headwayTierLabel } from '../../utils/headwayText';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
+import { NO_ROUTES_LOADED, noRoutesMatchText } from '../../content/stateCopy';
 import { compareHeadwayThenNumber } from '../../utils/sortCompare';
 
 interface RouteRow {
@@ -624,7 +625,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         {onDemandOn ? (
           <PanelEmpty>{ON_DEMAND_NOT_MAPPED_NOTE}</PanelEmpty>
         ) : visibleRoutes.length === 0 ? (
-          <PanelEmpty>{activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}</PanelEmpty>
+          <PanelEmpty>{activeFilterLabel ? noRoutesMatchText(activeFilterLabel) : NO_ROUTES_LOADED}</PanelEmpty>
         ) : hasFilterSplit ? (
           <>
             {matchingRoutes.length > 0 && (

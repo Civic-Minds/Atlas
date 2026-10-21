@@ -7,7 +7,7 @@ import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_SIDEBAR, PANEL_TITLE, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
 import RouteListRow from '../components/RouteListRow';
-import { routeLabels, shortenAgencyName, titleCase } from '../utils/format';
+import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardBackLink, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
@@ -31,7 +31,7 @@ import ModeFilterPill from '../components/ui/ModeFilterPill';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { loadingText, loadErrorText, RETRY_HINT } from '../content/stateCopy';
+import { loadingText, loadErrorText, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/stateCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 
@@ -83,6 +83,8 @@ interface Props {
   pendingRouteClick?: { slug: string; routeShortName: string } | null;
   onPendingRouteHandled?: () => void;
   sidebarLeft?: number;
+  /** The app's agency catalog: History names agencies from it, as the agency card and About list do. */
+  agencyCatalog?: readonly { slug: string; name: string; cities?: string[]; displayArea?: string }[];
   /** The search bar's width on desktop: History's panels match it, as the regular cards do. */
   searchBarWidth?: number;
   /** The open agency's short name, or null (the top search bar then searches its routes). */
@@ -350,7 +352,10 @@ function HistoryAgencyPanel({
   setActiveFilter,
   frameClassName,
   frameStyle,
+  nameParts,
 }: {
+  /** The agency's name and place, as the agency card and About list show them. */
+  nameParts: { primary: string; secondary?: string };
   agencyHistory: AgencyHistory;
   onRouteSelect: (routeShortName: string) => void;
   /** Back to the agency chooser. */
@@ -428,9 +433,10 @@ function HistoryAgencyPanel({
         <div className="flex items-start gap-2 min-w-0">
         <div className="min-w-0 flex-1">
         <CardBackLink onClick={onBack}>Historical service</CardBackLink>
-        <h2 className={`${CARD_TITLE} truncate`}>{shortenAgencyName(agencyHistory.name)}</h2>
+        <h2 className={`${CARD_TITLE} truncate`}>{nameParts.primary}</h2>
+        {/* The agency card's summary: the agency's place (not the state), then the counts. */}
         <p className={CARD_SUMMARY}>
-          {agencyHistory.region} · {countOf(agencyHistory.routes.length, 'route')} · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
+          {[nameParts.secondary, countOf(agencyHistory.routes.length, 'route'), minYear === maxYear ? String(minYear) : `${minYear}–${maxYear}`].filter(Boolean).join(' · ')}
         </p>
         {!routeQuery && !activeFilter && (
           <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
@@ -462,7 +468,7 @@ function HistoryAgencyPanel({
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {visibleRouteRows.length === 0 && (
-          <PanelEmpty>{routeQuery || activeFilter ? 'No routes match.' : 'No data for this period.'}</PanelEmpty>
+          <PanelEmpty>{routeQuery || activeFilter ? noRoutesMatchText(routeFilters.find(f => f.key === activeFilter)?.label) : NO_ROUTES_LOADED}</PanelEmpty>
         )}
         <CardRouteList
           rows={visibleRouteRows.map(({ route, last }) => ({
@@ -477,7 +483,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, searchBarWidth, onOpenAgencyChange, dismissKey = 0, onPanelOpenChange }: Props) {
+export default function History({ active, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, searchBarWidth, agencyCatalog, onOpenAgencyChange, dismissKey = 0, onPanelOpenChange }: Props) {
   // Applies initialAgencySlug (the currently map-selected agency) once per
   // History session, not every time selectedSlug clears -- otherwise a user
   // typing a new search gets raced back to whatever agency the map still
@@ -521,6 +527,12 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
   }, [active]);
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
+  // Agency name and place from the catalog, by the same rule as the agency card and About list (#1028 items 16-17).
+  const catalogBySlug = useMemo(() => new Map((agencyCatalog ?? []).map(a => [a.slug, a])), [agencyCatalog]);
+  const agencyNameParts = useCallback((slug: string, fallbackName: string) => {
+    const a = catalogBySlug.get(slug);
+    return a ? agencyDisplayParts(a.name, a.cities, a.displayArea) : agencyDisplayParts(fallbackName);
+  }, [catalogBySlug]);
   const { setOverlay } = useHistoryMapOverlay();
   const [historyData, setHistoryData] = useState<AgencyHistory[] | null>(null);
   const [historyLoadFailed, setHistoryLoadFailed] = useState(false);
@@ -864,6 +876,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
               setActiveFilter={setActiveFilter}
               frameClassName={frameClassName}
               frameStyle={frameStyle}
+              nameParts={agencyNameParts(agencyHistory.slug, agencyHistory.name)}
             />
           );
         })()
@@ -933,7 +946,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
                       {agencies.map(agency => (
                         <AgencyListRow
                           key={agency.slug}
-                          primary={shortenAgencyName(agency.name)}
+                          {...agencyNameParts(agency.slug, agency.name)}
                           title={agency.name}
                           onClick={() => {
                             saveRecentSearch(query);
@@ -970,7 +983,8 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
               className="time-scrubber-range flex-1 min-w-0"
             />
             <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">
-              {selectedYear === availableYears[availableYears.length - 1] ? 'now' : availableYears[availableYears.length - 1]}
+              {/* The latest year reads as its year, one label for one stop (CIV-400). */}
+              {availableYears[availableYears.length - 1]}
             </span>
             <span className="rounded-md bg-[var(--accent-bg)] border border-[var(--accent-border)] px-1.5 py-0.5 text-xs font-black text-[var(--text-primary)] tabular-nums">{selectedYear}</span>
         </div>

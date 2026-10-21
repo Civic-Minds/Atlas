@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **History names agencies and empty lists the way the regular cards do (beta)**: "MARTA · Atlanta" in the list and "Atlanta · 102 routes" on the card instead of the state, the agency card's empty-list text, the shared loading panel, and the slider's last stop reads as its year ([#1028](https://github.com/Civic-Minds/Atlas/issues/1028))
 - **History's cards use the regular cards' controls (beta)**: the frequency chart shows without a toggle, both cards have the report flag, and the mode pills are built the same way as on the agency card ([#1028](https://github.com/Civic-Minds/Atlas/issues/1028))
 - **History's panels sit and size like the regular cards (beta)**: the agency list and agency view open where the agency card does, a route opens in the route card's frame with its title and rows, and all match the search bar's width ([#1028](https://github.com/Civic-Minds/Atlas/issues/1028))
 - **Clicking the map or pressing Escape closes History's panel (beta)**: as on the regular map; searching or picking an agency brings it back ([#1031](https://github.com/Civic-Minds/Atlas/issues/1031))
