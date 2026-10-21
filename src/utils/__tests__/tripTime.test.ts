@@ -21,7 +21,7 @@ describe('tripTime', () => {
     expect(tripTimeSeriesFor(published, ['77', '14'], 0, 'Weekday')).not.toBeNull();
   });
 
-  it('says the range in plain words; the slowest hour is left to the chart (CIV-493)', () => {
+  it('says the range in plain words; the longest hours are left to the chart (CIV-493)', () => {
     const series = tripTimeSeriesFor(published, ['14'], 0, 'Weekday');
     expect(tripTimeSummary(series)).toBe('Trip time: 38–52 min');
   });

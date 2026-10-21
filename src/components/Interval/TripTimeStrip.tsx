@@ -11,8 +11,9 @@ export const FULL_DAY_BAR_WIDTH = 'w-[8px] sm:w-[14px]';
 /**
  * A line and an hourly strip under the full-day frequency chart. The strip uses the chart's own
  * hour columns (same row, gap and bar width), so each bar sits under its hour, and is scaled
- * from zero with the slowest hour at full height (tripTimeBarHeight). Hovering or tapping a bar
- * reports that hour through the chart's hover line; the slowest hour is drawn darker. Renders nothing without data.
+ * from zero with the longest trip time at full height (tripTimeBarHeight). Hovering or tapping a bar
+ * reports that hour through the chart's hover line; the hours with the longest trip time are drawn
+ * darker. Renders nothing without data.
  */
 export function TripTimeStrip({ series, label, height = TRIP_TIME_STRIP_HEIGHT, serviceHours, hoveredHour, onHourHover }: {
   series: TripTimeSeries | null | undefined;
@@ -30,7 +31,7 @@ export function TripTimeStrip({ series, label, height = TRIP_TIME_STRIP_HEIGHT, 
   const max = Math.max(...values);
   return (
     <div className="mt-3" data-testid="trip-time-strip">
-      <div className="text-center text-xs font-bold text-[var(--text-muted)]">
+      <div className="text-left text-xs font-bold text-[var(--text-muted)]">
         {summary}
         {series.loop ? ' (one full loop)' : ''}
       </div>
@@ -38,7 +39,7 @@ export function TripTimeStrip({ series, label, height = TRIP_TIME_STRIP_HEIGHT, 
         {SPARKLINE_HOURS.map(h => {
           const minutes = series.byHour[h];
           const hovered = hoveredHour === h && minutes != null;
-          // The slowest hour (and any tie) is drawn darker, so the chart shows it without a caption.
+          // Every hour at the longest trip time is drawn darker, so the chart shows them without a caption.
           const slowest = minutes != null && max > min && minutes === max;
           return (
             <div
@@ -53,11 +54,16 @@ export function TripTimeStrip({ series, label, height = TRIP_TIME_STRIP_HEIGHT, 
               {minutes != null ? (
                 <div
                   data-testid="trip-time-bar"
-                  className={`relative ${FULL_DAY_BAR_WIDTH} rounded-sm bg-[var(--text-dim)] ${hovered || slowest ? 'opacity-100' : 'opacity-50'}`}
+                  className={`relative ${FULL_DAY_BAR_WIDTH} rounded-sm bg-[var(--text-dim)] ${slowest ? 'opacity-100' : hovered ? 'opacity-75' : 'opacity-50'}`}
                   style={{ height: tripTimeBarHeight(minutes, max, height) }}
                 />
               ) : serviceHours?.has(h) ? (
-                <div data-testid="trip-time-missing" className={`${FULL_DAY_BAR_WIDTH} h-[3px] rounded-sm bg-[var(--text-dim)] opacity-20`} />
+                // An empty slot, not a value: a dashed outline at a neutral height.
+                <div
+                  data-testid="trip-time-missing"
+                  className={`${FULL_DAY_BAR_WIDTH} rounded-sm border border-dashed border-[var(--text-dim)] opacity-40`}
+                  style={{ height: Math.round(height * 0.4) }}
+                />
               ) : null}
             </div>
           );

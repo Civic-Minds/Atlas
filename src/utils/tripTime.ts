@@ -74,7 +74,7 @@ export function tripTimeSummary(series: TripTimeSeries | null | undefined, label
   const min = Math.min(...values);
   const max = Math.max(...values);
   if (min === max) return `${label}: about ${min} min all day`;
-  // The slowest hour is shown in the strip (its darkest, tallest bar), not named here (CIV-493).
+  // The hours with the longest trip time are shown in the strip (darkest, tallest bars), not named here (CIV-493).
   return `${label}: ${min}–${max} min`;
 }
 
@@ -85,7 +85,7 @@ export function tripTimeHourTitle(hour: number, minutes: number): string {
 
 /**
  * A trip-time bar's height in the strip: proportional to the trip time itself, from zero, with the
- * slowest hour at full height (CIV-493). A range-stretched scale made 45 vs 60 min look like 4x.
+ * longest trip time at full height (CIV-493). A range-stretched scale made 45 vs 60 min look like 4x.
  */
 export function tripTimeBarHeight(minutes: number, max: number, stripHeight: number): number {
   if (!(max > 0)) return 0;

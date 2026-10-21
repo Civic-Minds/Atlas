@@ -219,7 +219,7 @@ describe('HeadwaySparkline', () => {
     expect(bars).toHaveLength(3);
     // 9 p.m. has trips but no trip time: a faint tick, not a gap that reads as no service.
     expect(within(dialog).getAllByTestId('trip-time-missing')).toHaveLength(1);
-    // The slowest hour (5 p.m.) is the darker bar; the others are lighter.
+    // The hour with the longest trip time (5 p.m.) is the darker bar; the others are lighter.
     expect(bars.map(bar => bar.className.includes('opacity-100'))).toEqual([false, false, true]);
     const slowestColumn = dialog.querySelector('[title="5 p.m.: about 52 min"]')!;
     expect(slowestColumn).not.toBeNull();
