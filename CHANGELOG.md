@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Long rural and highway routes are drawn in full, and their frequency is read at the real end of the line**: sparse shape points on a long straight road were mistaken for bad data and the rest of the line was dropped, as on Prince George routes ([#1057](https://github.com/Civic-Minds/Atlas/issues/1057))
 - **The Atlas logo is a light circle with a dark map icon on desktop too, in both themes**: it was still a solid dark circle (and a washed-out one in the dark theme) above phone width ([#1058](https://github.com/Civic-Minds/Atlas/issues/1058))
 - **The route card's hour chart colours every hour with trips**: hours outside the chosen period are faded instead of some going grey ([#1055](https://github.com/Civic-Minds/Atlas/issues/1055))
 - **The full-day hour chart's grey period bands are all the same height, and the hovered period is named once (beta)**: alternating bands had been drawn taller than the hover highlight, so Evening looked shorter, and a second period label repeated what the top row already says ([#1056](https://github.com/Civic-Minds/Atlas/issues/1056))
