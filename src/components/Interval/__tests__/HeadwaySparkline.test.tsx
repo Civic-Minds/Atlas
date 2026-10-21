@@ -18,6 +18,20 @@ describe('HeadwaySparkline', () => {
     }
   });
 
+  it('draws every full-day period band and the hover band over the same plot height, with no second period label', () => {
+    const { container } = render(
+      <HeadwaySparkline byHour={{ 6: 30, 12: 20, 18: 25, 21: 20, 24: 45 }} period="all" onPeriodChange={() => {}} expanded />,
+    );
+    const area = container.querySelector('.cursor-pointer') as HTMLElement;
+    const staticBands = Array.from(area.querySelectorAll(':scope > div.opacity-40'));
+    expect(staticBands).toHaveLength(6);
+    for (const band of staticBands) expect(band).toHaveClass('top-12', 'bottom-0');
+    area.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 48, right: 240, bottom: 48, x: 0, y: 0, toJSON: () => ({}) });
+    fireEvent.mouseMove(area, { clientX: 120 });
+    for (const band of screen.getAllByTestId('sparkline-hover-band')) expect(band).toHaveClass('top-12', 'bottom-0');
+    expect(area.querySelectorAll(':scope > span')).toHaveLength(0);
+  });
+
   it('keeps the active period label clear of the expand control', () => {
     render(
       <HeadwaySparkline

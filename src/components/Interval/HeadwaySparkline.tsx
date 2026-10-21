@@ -184,7 +184,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   } : undefined;
 
   const bands = hoveredPeriod ? PERIOD_BANDS[hoveredPeriod] : null;
-  const activeLabelKey = (hoveredPeriod ?? (!expanded && period && period !== 'all' ? period : null)) as TimePeriod | null;
+  // The full-day chart already labels every period along its top, so only the route card's chart names the hovered one.
+  const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
   const stackedLegend = stackedByHour
     ? Array.from(new Map(
       Object.values(stackedByHour).flat().map(segment => [segment.label, segment]),
@@ -215,10 +216,10 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         {expanded && PERIOD_OVERVIEW_BANDS.map(band => (
           <div
             key={band.key}
-            className="absolute inset-y-5 rounded-sm pointer-events-none odd:bg-[var(--bg-btn-hover)] even:bg-transparent opacity-40"
+            className="absolute top-12 bottom-0 rounded-sm pointer-events-none odd:bg-[var(--bg-btn-hover)] even:bg-transparent opacity-40"
             style={{ left: `${band.left * 100}%`, width: `${band.width * 100}%` }}
           >
-            <span className="absolute -top-5 left-0.5 sm:left-1 text-xs font-black text-[var(--text-muted)] whitespace-nowrap">
+            <span className="absolute -top-12 left-0.5 sm:left-1 text-xs font-black text-[var(--text-muted)] whitespace-nowrap">
               {band.label.endsWith(' Peak') ? (
                 <>
                   <span className="sm:hidden" aria-hidden="true">{band.label.replace(' Peak', '')}</span>
