@@ -442,8 +442,7 @@ function HistoryAgencyPanel({
           )}
         </div>
         {routeFilters.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 mt-2">
-            <span className="text-xs font-bold text-[var(--text-dim)]">Current mode</span>
+          <div className="flex flex-wrap gap-1.5 mt-2">
             {routeFilters.map(filter => {
               const active = activeFilter === filter.key;
               return (
