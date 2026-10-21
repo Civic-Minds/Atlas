@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { historyYearColorExpression, historyYearRoutes, onTodaysLines } from '../historyYearMap';
+import { historyPeriodValue, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
 import { localRouteHeadwayColor } from '../../components/Interval/map/routeStyle';
 
 const snap = (year: number, v2: Record<string, unknown> | undefined, extra: Record<string, unknown> = {}) =>
@@ -37,5 +37,29 @@ describe('historyYearRoutes (#1028 batch A)', () => {
     const expr = historyYearColorExpression(historyYearRoutes(agency, 2014, 'default'), 'FALLBACK') as unknown[];
     expect(expr).toEqual(['match', ['to-string', ['get', 'routeShortName']], '6', localRouteHeadwayColor(15, 'default'), '9', localRouteHeadwayColor(null, 'default'), 'FALLBACK']);
     expect(historyYearColorExpression([], 'FALLBACK')).toBe('FALLBACK');
+  });
+});
+
+describe('History period and frequency limit (CIV-389, CIV-392)', () => {
+  const s14 = snap(2014, { refDate: '20140301', rep: { h: 15, p: { amPeak: 8, midday: 15, evening: null } } });
+  it("a period reads the snapshot's own period value; a missing period is blank, never borrowed", () => {
+    expect(historyPeriodValue(s14, 'amPeak')).toEqual({ kind: 'value', min: 8 });
+    expect(historyPeriodValue(s14, 'evening')).toEqual({ kind: 'blank' });
+    expect(historyPeriodValue(s14, 'late')).toEqual({ kind: 'blank' });
+    expect(historyPeriodValue(s14, 'all')).toEqual({ kind: 'value', min: 15 });
+    expect(historyPeriodValue(snap(2014, undefined, { headwayByPeriod: { pmPeak: 12 } }), 'pmPeak')).toEqual({ kind: 'value', min: 12 });
+  });
+
+  it('the limit compares like the map filter; All passes everything, limited or unknown fail a limit', () => {
+    expect(passesHistoryLimit({ kind: 'value', min: 15 }, 15)).toBe(true);
+    expect(passesHistoryLimit({ kind: 'value', min: 16 }, 15)).toBe(false);
+    expect(passesHistoryLimit({ kind: 'limited' }, 60)).toBe(false);
+    expect(passesHistoryLimit({ kind: 'blank' }, Infinity)).toBe(true);
+  });
+
+  it("the year's map routes follow the period and the limit", () => {
+    const view = { period: 'all' as const, maxHeadway: 15 };
+    expect(historyYearRoutes(agency, 2014, 'default', view).map(r => r.routeShortName)).toEqual(['6']);
+    expect(historyYearRoutes(agency, 2020, 'default', view)).toEqual([]);
   });
 });

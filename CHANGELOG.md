@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **History has the map's Frequency and Time filters (beta)**: pick "≤15 min" and a time of day, then slide through the years to see how that network changed; the map, the year's route list and an opened route all follow
 - **History's route list follows the year slider (beta)**: it lists only the routes that ran that year, with that year's frequency and the change from the route's previous snapshot, like the map
 - **History's route chart no longer stacks labels on top of each other (beta)**: when two snapshots fall close together only one value label shows ([#1037](https://github.com/Civic-Minds/Atlas/issues/1037))
 - **The History map stays put while you move the year slider (beta)**: it only re-frames when you open an agency or a route ([#1016](https://github.com/Civic-Minds/Atlas/issues/1016))

@@ -23,7 +23,8 @@ import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey 
 import { useColorVision } from '../context/ColorVisionContext';
 import { loadHistoryAgencyV2 } from '../utils/historyV2Loader';
 import { routesForYear, snapshotValue, yearsAvailable } from '../../shared/historyV2Reader';
-import { historyYearRoutes } from '../utils/historyYearMap';
+import { HISTORY_VIEW_ALL, historyPeriodValue, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
+import type { TimePeriod } from '../hooks/useIntervalStats';
 import { labelsThatFit } from '../utils/chartLabels';
 import RegionFilterPills from '../components/RegionFilterPills';
 import {
@@ -95,6 +96,8 @@ interface Props {
   pendingRouteClick?: { slug: string; routeShortName: string } | null;
   onPendingRouteHandled?: () => void;
   sidebarLeft?: number;
+  /** History's Frequency and Time (top-bar chips, held by App): the map, the year list and an opened route follow them. */
+  view?: HistoryView;
   /** The app's agency catalog: History names agencies from it, as the agency card and About list do. */
   agencyCatalog?: readonly { slug: string; name: string; cities?: string[]; displayArea?: string }[];
   /** The search bar's width on desktop: History's panels match it, as the regular cards do. */
@@ -107,13 +110,20 @@ interface Props {
   onPanelOpenChange?: (open: boolean) => void;
 }
 
-function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: string; worse: boolean } | null {
-  const snaps = sortSnapshotsNewestFirst(entry.snapshots);
+/** A snapshot's minutes in the chosen period, or null when it has no value there (never guessed). */
+function periodMinutes(snapshot: RouteSnapshot, period: TimePeriod): number | null {
+  const value = historyPeriodValue(snapshot, period);
+  return value.kind === 'value' ? value.min : null;
+}
+
+function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
+  // Only snapshots with a value in the period take part (CIV-389).
+  const snaps = sortSnapshotsNewestFirst(entry.snapshots).filter(s => periodMinutes(s, period) != null);
   if (snaps.length < 2) return null;
   const first = snaps[snaps.length - 1];
   const last = snaps[0];
-  const fHw = first.weekdayHeadwayMin;
-  const lHw = last.weekdayHeadwayMin;
+  const fHw = periodMinutes(first, period)!;
+  const lHw = periodMinutes(last, period)!;
   if (Math.abs(fHw - lHw) < 2) return null;
   const worse = lHw > fHw;
   return {
@@ -157,7 +167,10 @@ function RouteHistoryCard({
   onBack,
   frameClassName,
   frameStyle,
+  period,
 }: {
+  /** The Time chip's period: the rows, chart and summary read that period's values (CIV-389). */
+  period: TimePeriod;
   route: RouteHistoryEntry;
   agencyName: string;
   agencySlug: string;
@@ -170,19 +183,19 @@ function RouteHistoryCard({
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const sheetMode = FEATURES.mobileRouteSheet && isPhone;
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(route.routeShortName);
-  const { newestFirst: snaps, oldestFirst: chartSnaps } = routeHistorySnapshots(route);
+  const { newestFirst: snaps } = routeHistorySnapshots(route);
+  // The chart and summary use the snapshots with a value in the period; rows list every snapshot.
+  const valued = snaps.filter(s => periodMinutes(s, period) != null);
+  const chartSnaps = [...valued].reverse();
+  const snapHeadway = (snap: RouteSnapshot): number => periodMinutes(snap, period) ?? NaN;
 
-  function snapHeadway(snap: RouteSnapshot): number {
-    return snap.weekdayHeadwayMin;
-  }
-
-  const first = snaps[snaps.length - 1];
-  const last = snaps[0];
+  const first = valued[valued.length - 1] ?? snaps[snaps.length - 1];
+  const last = valued[0] ?? snaps[0];
   const firstHw = snapHeadway(first);
   const lastHw = snapHeadway(last);
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
-  const summary = changeSummary(route);;
+  const summary = changeSummary(route, period);
 
   // Sparkline calculations
   const width = 220;
@@ -211,7 +224,7 @@ function RouteHistoryCard({
   });
 
   const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
-  const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
+  const fillPath = points.length ? `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z` : '';
 
   const lineColor = worse ? (colorVisionFriendly ? '#c44516' : '#ef4444') : better ? (colorVisionFriendly ? '#009e73' : '#10b981') : '#9ca3af';
   // Labels that fit (#1037): x-axis labels need 34 units across; value labels ("30 min", about 26
@@ -248,7 +261,7 @@ function RouteHistoryCard({
       </SidebarCardHeaderBlock>
 
       {/* The frequency chart shows inline, as the route card's hour chart does (#1028 item 10). */}
-      {snaps.length >= 2 && (
+      {chartSnaps.length >= 2 && (
         <div className="mt-3">
           <div className="w-full bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3">
             <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
@@ -307,13 +320,14 @@ function RouteHistoryCard({
 
       <SidebarCardListRows className="mt-3">
         {snaps.map((snap, i) => {
-          const hw = snapHeadway(snap);
-          const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
+          const hw = periodMinutes(snap, period);
+          const older = i < snaps.length - 1 ? periodMinutes(snaps[i + 1], period) : null;
+          const delta = hw != null && older != null ? hw - older : null;
           return (
             <CardDirectionRow
               key={`${snap.label}-${i}`}
               label={snap.label}
-              headway={hw}
+              headway={hw ?? undefined}
               headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
             />
@@ -371,7 +385,10 @@ function HistoryAgencyPanel({
   frameStyle,
   nameParts,
   selectedYear,
+  view,
 }: {
+  /** The Time and Frequency chips: the list shows the period's values and only routes within the limit. */
+  view: HistoryView;
   /** The agency's name and place, as the agency card and About list show them. */
   nameParts: { primary: string; secondary?: string };
   agencyHistory: AgencyHistory;
@@ -408,12 +425,14 @@ function HistoryAgencyPanel({
     const q = routeQuery.trim().toLowerCase();
     // "Biggest change" order as before, among the routes that ran in the selected year.
     return yearRoutes
+      // Only routes within the Frequency limit in the chosen period, as on the map (CIV-392).
+      .filter(({ snapshot }) => passesHistoryLimit(historyPeriodValue(snapshot, view.period), view.maxHeadway))
       .map(({ route, snapshot: yearSnapshot }) => {
         if (route.snapshots.length === 0) return null;
-        const { newestFirst } = routeHistorySnapshots(route);
-        const first = newestFirst[newestFirst.length - 1];
-        const last = newestFirst[0];
-        const ratio = route.snapshots.length > 1 ? last.weekdayHeadwayMin / first.weekdayHeadwayMin : 1;
+        const valued = routeHistorySnapshots(route).newestFirst.filter(s => periodMinutes(s, view.period) != null);
+        const first = valued[valued.length - 1];
+        const last = valued[0];
+        const ratio = valued.length > 1 ? periodMinutes(last, view.period)! / periodMinutes(first, view.period)! : 1;
         const worse = ratio > 1.05;
         const better = ratio < 0.95;
         return { route, first, last, ratio, worse, better, yearSnapshot };
@@ -428,7 +447,7 @@ function HistoryAgencyPanel({
         if (a.better !== b.better) return a.better ? -1 : 1;
         return 0;
       });
-  }, [yearRoutes, routeQuery]);
+  }, [yearRoutes, routeQuery, view]);
 
   const filterRoutes = useMemo(() => yearRoutes.map(({ route }) => ({
     routeShortName: route.routeShortName,
@@ -499,11 +518,11 @@ function HistoryAgencyPanel({
         <CardRouteList
           rows={visibleRouteRows.map(({ route, yearSnapshot }) => {
             // That year's weekday value: a number, limited, or unknown (no badge), never guessed.
-            const value = snapshotValue(yearSnapshot, 'weekday');
+            const value = historyPeriodValue(yearSnapshot, view.period);
             // The change from the route's previous snapshot, as on the route view's rows (numbers only).
             const oldestFirst = routeHistorySnapshots(route).oldestFirst;
             const previous = oldestFirst[oldestFirst.indexOf(yearSnapshot) - 1];
-            const before = previous ? snapshotValue(previous, 'weekday') : null;
+            const before = previous ? historyPeriodValue(previous, view.period) : null;
             const delta = value.kind === 'value' && before?.kind === 'value' ? value.min - before.min : 0;
             return {
               key: route.routeShortName,
@@ -521,7 +540,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, searchBarWidth, agencyCatalog, onOpenAgencyChange, dismissKey = 0, onPanelOpenChange }: Props) {
+export default function History({ active, view = HISTORY_VIEW_ALL, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, searchBarWidth, agencyCatalog, onOpenAgencyChange, dismissKey = 0, onPanelOpenChange }: Props) {
   // Applies initialAgencySlug (the currently map-selected agency) once per
   // History session, not every time selectedSlug clears -- otherwise a user
   // typing a new search gets raced back to whatever agency the map still
@@ -660,7 +679,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
     if (!active) { setOverlay(null); return; }
     const agency = openAgencyHistory;
     if (!agency) { setOverlay(null); return; }
-    const yearRoutes = selectedYear > 0 ? historyYearRoutes(agency, selectedYear, historyColorFriendly ? 'friendly' : 'default') : [];
+    const yearRoutes = selectedYear > 0 ? historyYearRoutes(agency, selectedYear, historyColorFriendly ? 'friendly' : 'default', view) : [];
     setOverlay({
       slug: agency.slug,
       routeShortName: selectedRouteShortName ?? '',
@@ -669,7 +688,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
       selectedYear: selectedYear > 0 ? selectedYear : undefined,
       yearRoutes,
     });
-  }, [active, openAgencyHistory, selectedRouteShortName, setOverlay, selectedYear, historyColorFriendly]);
+  }, [active, openAgencyHistory, selectedRouteShortName, setOverlay, selectedYear, historyColorFriendly, view]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
 
@@ -869,6 +888,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
                   onBack={() => setSelectedRouteShortName(null)}
                   frameClassName={frameClassName}
                   frameStyle={frameStyle}
+                  period={view.period}
                 />
               );
             }
@@ -885,6 +905,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
               frameStyle={frameStyle}
               nameParts={agencyNameParts(agencyHistory.slug, agencyHistory.name)}
               selectedYear={selectedYear}
+              view={view}
             />
           );
         })()

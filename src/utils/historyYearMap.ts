@@ -1,4 +1,6 @@
-import { routesForYear, snapshotValue, type HistorySnapshotLike, type HistoryRouteLike } from '../../shared/historyV2Reader';
+import { routesForYear, snapshotValue, type HistorySnapshotLike, type HistoryRouteLike, type SnapshotValue } from '../../shared/historyV2Reader';
+import type { HeadwayByPeriod } from '../../shared/config';
+import type { TimePeriod } from '../hooks/useIntervalStats';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { localRouteHeadwayColor } from '../components/Interval/map/routeStyle';
 import type { ColorVisionMode } from './colors';
@@ -18,16 +20,45 @@ export interface HistoryYearRoute {
   coordinates?: number[][];
 }
 
-type Snapshot = HistorySnapshotLike & { geometry?: number[][] };
+type Snapshot = HistorySnapshotLike & { geometry?: number[][]; headwayByPeriod?: HeadwayByPeriod };
+
+/** What History shows: a time period ('all' = the weekday all-day value) and a frequency limit (Infinity = All). */
+export interface HistoryView {
+  period: TimePeriod;
+  maxHeadway: number;
+}
+export const HISTORY_VIEW_ALL: HistoryView = { period: 'all', maxHeadway: Infinity };
+
+/**
+ * A snapshot's value in a period (CIV-389): 'all' is the weekday all-day value (snapshotValue);
+ * a period reads the snapshot's own per-period headway (v2 rep.p, else the v1 headwayByPeriod).
+ * A period the snapshot doesn't have is blank, never borrowed from another period or day.
+ */
+export function historyPeriodValue(snapshot: Snapshot, period: TimePeriod): SnapshotValue {
+  if (period === 'all') return snapshotValue(snapshot, 'weekday');
+  const min = snapshot.v2?.rep?.p?.[period] ?? snapshot.headwayByPeriod?.[period];
+  return typeof min === 'number' && Number.isFinite(min) && min > 0 ? { kind: 'value', min } : { kind: 'blank' };
+}
+
+/**
+ * Whether a value passes the frequency limit (CIV-392), by the map filter's comparison (frequency at
+ * or under the limit). "All" passes everything; a limited or unknown value fails any limit.
+ */
+export function passesHistoryLimit(value: SnapshotValue, maxHeadway: number): boolean {
+  if (!Number.isFinite(maxHeadway)) return true;
+  return value.kind === 'value' && value.min <= maxHeadway;
+}
 
 export function historyYearRoutes(
   agency: { routes: Array<HistoryRouteLike<Snapshot>> },
   year: number,
   colorMode: ColorVisionMode,
+  view: HistoryView = HISTORY_VIEW_ALL,
 ): HistoryYearRoute[] {
   const out: HistoryYearRoute[] = [];
   for (const { route, snapshot } of routesForYear<Snapshot, HistoryRouteLike<Snapshot>>(agency, year)) {
-    const value = snapshotValue(snapshot, 'weekday');
+    const value = historyPeriodValue(snapshot, view.period);
+    if (!passesHistoryLimit(value, view.maxHeadway)) continue;
     const headway = value.kind === 'value' ? value.min : null;
     out.push({
       routeShortName: route.routeShortName,

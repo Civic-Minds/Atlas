@@ -30,6 +30,7 @@ import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
 import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
 import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
+import { HISTORY_VIEW_ALL, type HistoryView } from './utils/historyYearMap';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -402,6 +403,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [historyDismissKey, setHistoryDismissKey] = useState(0);
   const handleMapDismiss = useCallback(() => setHistoryDismissKey(k => k + 1), []);
   const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
+  // History's own Frequency and Time (CIV-389, CIV-392): start at All and All day, separate from the map's.
+  const [historyView, setHistoryView] = useState<HistoryView>(HISTORY_VIEW_ALL);
+  const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
     const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
@@ -828,6 +832,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onViewportAgencySlugsChange={setViewportAgencySlugs}
               onUserMoveMap={handleUserMoveMap}
               onMapDismiss={inHistory ? handleMapDismiss : undefined}
+              historyView={inHistory ? historyViewControl : undefined}
               externalPanelOpen={inHistory && historyPanelOpen}
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
@@ -857,7 +862,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
                 </Panel>
               ) : null}>
-                <History active={inHistory} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+                <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
