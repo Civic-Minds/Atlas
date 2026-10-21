@@ -1,0 +1,25 @@
+{
+  "slug": "johnson-county-ks",
+  "name": "RideKC Johnson County",
+  "websiteUrl": "https://www.jocogov.org/department/transit",
+  "center": [
+    38.9985,
+    -94.9197
+  ],
+  "bbox": [
+    38.88345,
+    -95.266219,
+    39.113478,
+    -94.573102
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/johnsoncounty-ks-us/johnsoncounty-ks-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2303/latest.zip",
+  "region": "Kansas",
+  "cities": [
+    "Overland Park, Kansas",
+    "Olathe, Kansas",
+    "Johnson County, Kansas"
+  ],
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}

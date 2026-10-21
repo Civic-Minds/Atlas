@@ -1,0 +1,26 @@
+{
+  "slug": "southshore",
+  "name": "South Shore Line (NICTD)",
+  "websiteUrl": "https://www.mysouthshoreline.com/",
+  "center": [
+    41.7041,
+    -86.9675
+  ],
+  "bbox": [
+    41.524071,
+    -87.623976,
+    41.884167,
+    -86.310951
+  ],
+  "feedUrl": "https://www.mysouthshoreline.com/google/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-585/latest.zip",
+  "region": "Indiana",
+  "cities": [
+    "South Bend, Indiana",
+    "Michigan City, Indiana",
+    "Gary, Indiana",
+    "Hammond, Indiana"
+  ],
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}

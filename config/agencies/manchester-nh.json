@@ -1,0 +1,23 @@
+{
+  "slug": "manchester-nh",
+  "name": "Manchester Transit Authority (MTA)",
+  "websiteUrl": "https://www.mtabus.org/",
+  "center": [
+    42.9854,
+    -71.3711
+  ],
+  "bbox": [
+    42.758356,
+    -71.534449,
+    43.212473,
+    -71.207827
+  ],
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7841/NHMTAGTFS.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3432/latest.zip",
+  "region": "New Hampshire",
+  "cities": [
+    "Manchester, New Hampshire"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}
