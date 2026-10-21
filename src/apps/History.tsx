@@ -22,7 +22,7 @@ import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey } from '../utils/routeModeFilters';
 import { useColorVision } from '../context/ColorVisionContext';
 import { loadHistoryAgencyV2 } from '../utils/historyV2Loader';
-import { yearsAvailable } from '../../shared/historyV2Reader';
+import { routesForYear, snapshotValue, yearsAvailable } from '../../shared/historyV2Reader';
 import { historyYearRoutes } from '../utils/historyYearMap';
 import { labelsThatFit } from '../utils/chartLabels';
 import RegionFilterPills from '../components/RegionFilterPills';
@@ -370,6 +370,7 @@ function HistoryAgencyPanel({
   frameClassName,
   frameStyle,
   nameParts,
+  selectedYear,
 }: {
   /** The agency's name and place, as the agency card and About list show them. */
   nameParts: { primary: string; secondary?: string };
@@ -383,8 +384,15 @@ function HistoryAgencyPanel({
   setActiveFilter: (key: RouteModeFilterKey | null) => void;
   frameClassName: string;
   frameStyle: React.CSSProperties;
+  /** The slider's year: the list shows that year's routes and values, as the map does (CIV-457). */
+  selectedYear: number;
 }) {
   const tier = agencyHistoryTier(agencyHistory) ?? 'recent';
+  // The year's routes, each with its one snapshot that year (routesForYear, the map's source).
+  const yearRoutes = useMemo(
+    () => (selectedYear > 0 ? routesForYear<RouteSnapshot, RouteHistoryEntry>(agencyHistory, selectedYear) : []),
+    [agencyHistory, selectedYear],
+  );
 
   const minYear = useMemo(() => {
     const all = agencyHistory.routes.flatMap(r => r.snapshots.map(s => s.year));
@@ -398,8 +406,9 @@ function HistoryAgencyPanel({
 
   const routeRows = useMemo(() => {
     const q = routeQuery.trim().toLowerCase();
-    return agencyHistory.routes
-      .map(route => {
+    // "Biggest change" order as before, among the routes that ran in the selected year.
+    return yearRoutes
+      .map(({ route, snapshot: yearSnapshot }) => {
         if (route.snapshots.length === 0) return null;
         const { newestFirst } = routeHistorySnapshots(route);
         const first = newestFirst[newestFirst.length - 1];
@@ -407,7 +416,7 @@ function HistoryAgencyPanel({
         const ratio = route.snapshots.length > 1 ? last.weekdayHeadwayMin / first.weekdayHeadwayMin : 1;
         const worse = ratio > 1.05;
         const better = ratio < 0.95;
-        return { route, first, last, ratio, worse, better };
+        return { route, first, last, ratio, worse, better, yearSnapshot };
       })
       .filter((r): r is NonNullable<typeof r> => r !== null)
       .filter(({ route }) => historyRouteMatchesQuery(route, q))
@@ -419,15 +428,15 @@ function HistoryAgencyPanel({
         if (a.better !== b.better) return a.better ? -1 : 1;
         return 0;
       });
-  }, [agencyHistory, routeQuery]);
+  }, [yearRoutes, routeQuery]);
 
-  const filterRoutes = useMemo(() => agencyHistory.routes.map(route => ({
+  const filterRoutes = useMemo(() => yearRoutes.map(({ route }) => ({
     routeShortName: route.routeShortName,
     routeLongName: route.routeName,
     routeType: route.currentRouteType,
     busSubType: route.currentBusSubType,
     agencySlug: agencyHistory.slug,
-  })), [agencyHistory]);
+  })), [yearRoutes, agencyHistory.slug]);
 
   const routeFilters = useMemo(() => buildRouteModeFilters(filterRoutes), [filterRoutes]);
 
@@ -488,11 +497,23 @@ function HistoryAgencyPanel({
           <PanelEmpty>{routeQuery || activeFilter ? noRoutesMatchText(routeFilters.find(f => f.key === activeFilter)?.label) : NO_ROUTES_LOADED}</PanelEmpty>
         )}
         <CardRouteList
-          rows={visibleRouteRows.map(({ route, last }) => ({
-            key: route.routeShortName,
-            label: routeLabels({ shortName: route.routeShortName, longName: titleCase(route.routeName), routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }).text,
-            headway: last.weekdayHeadwayMin,
-          }))}
+          rows={visibleRouteRows.map(({ route, yearSnapshot }) => {
+            // That year's weekday value: a number, limited, or unknown (no badge), never guessed.
+            const value = snapshotValue(yearSnapshot, 'weekday');
+            // The change from the route's previous snapshot, as on the route view's rows (numbers only).
+            const oldestFirst = routeHistorySnapshots(route).oldestFirst;
+            const previous = oldestFirst[oldestFirst.indexOf(yearSnapshot) - 1];
+            const before = previous ? snapshotValue(previous, 'weekday') : null;
+            const delta = value.kind === 'value' && before?.kind === 'value' ? value.min - before.min : 0;
+            return {
+              key: route.routeShortName,
+              label: routeLabels({ shortName: route.routeShortName, longName: titleCase(route.routeName), routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }).text,
+              headway: value.kind === 'value' ? value.min : undefined,
+              limited: value.kind === 'limited',
+              headwaySuffix: delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined,
+              headwaySuffixTone: delta ? (delta > 0 ? 'negative' as const : 'positive' as const) : undefined,
+            };
+          })}
           onSelect={onRouteSelect}
         />
       </div>
@@ -863,6 +884,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
               frameClassName={frameClassName}
               frameStyle={frameStyle}
               nameParts={agencyNameParts(agencyHistory.slug, agencyHistory.name)}
+              selectedYear={selectedYear}
             />
           );
         })()

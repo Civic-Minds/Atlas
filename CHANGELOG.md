@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **History's route list follows the year slider (beta)**: it lists only the routes that ran that year, with that year's frequency and the change from the route's previous snapshot, like the map
 - **History's route chart no longer stacks labels on top of each other (beta)**: when two snapshots fall close together only one value label shows ([#1037](https://github.com/Civic-Minds/Atlas/issues/1037))
 - **The History map stays put while you move the year slider (beta)**: it only re-frames when you open an agency or a route ([#1016](https://github.com/Civic-Minds/Atlas/issues/1016))
 - **History's map shows only the routes that ran in the chosen year (beta)**: sliding to 2014 draws 2014's routes in 2014's frequency colours instead of mixing in today's lines, a selected route is highlighted like on the map, and an agency whose history fails to load shows an error instead of partial data ([#1028](https://github.com/Civic-Minds/Atlas/issues/1028))

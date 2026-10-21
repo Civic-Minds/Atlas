@@ -9,6 +9,9 @@ export interface CardRouteListRow {
   limitedLabel?: string;
   subLabel?: string;
   live?: boolean;
+  /** A short note after the frequency (History: the change from the previous snapshot, "+10"), with its colour. */
+  headwaySuffix?: string;
+  headwaySuffixTone?: 'dim' | 'negative' | 'positive';
 }
 
 /**
@@ -32,6 +35,8 @@ export default function CardRouteList({ rows, onSelect, dimmed = false }: {
             limitedLabel={row.limitedLabel}
             subLabel={row.subLabel}
             live={row.live}
+            headwaySuffix={row.headwaySuffix}
+            headwaySuffixTone={row.headwaySuffixTone}
             dimmed={dimmed}
             onClick={() => onSelect(row.key)}
           />

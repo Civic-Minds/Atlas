@@ -15,7 +15,18 @@ const agency = (slug: string, name: string, region: string): AgencyHistory => ({
     { routeShortName: '29', routeName: 'Dufferin', snapshots: YEARS.map(year => ({ label: String(year), year, weekdayHeadwayMin: 12 })) },
   ],
 });
-const DATA = [agency('ttc', 'Toronto Transit Commission', 'Ontario'), agency('sta', 'Spokane Transit', 'Washington')];
+/** A route list that changes over the years: 6 runs every year (slower from 2020), 7 only from 2024 (CIV-457). */
+const yearly: AgencyHistory = {
+  slug: 'yrt',
+  name: 'York Region Transit',
+  region: 'Ontario',
+  center: [-79.4, 43.9],
+  routes: [
+    { routeShortName: '6', routeName: 'Yonge', snapshots: YEARS.map(year => ({ label: String(year), year, weekdayHeadwayMin: year < 2020 ? 10 : 20 })) },
+    { routeShortName: '7', routeName: 'Highway 7', snapshots: [2024, 2025].map(year => ({ label: String(year), year, weekdayHeadwayMin: 15 })) },
+  ],
+};
+const DATA = [agency('ttc', 'Toronto Transit Commission', 'Ontario'), agency('sta', 'Spokane Transit', 'Washington'), yearly];
 
 /** History with a stand-in for the app's top search bar, which History shares (#1015). */
 function WithTopBar() {
@@ -73,5 +84,19 @@ describe('History shared links', () => {
     renderHistory('?agency=nope&year=2019');
     expect(await screen.findByText('Spokane Transit')).toBeInTheDocument();
     await waitFor(() => expect(window.location.search).toBe(''));
+  });
+
+  it('the route list follows the year: only routes with a snapshot that year, with that year\'s value and change (CIV-457)', async () => {
+    renderHistory('?agency=yrt&year=2020');
+    await waitFor(() => expect(screen.getByText('6 — Yonge')).toBeInTheDocument());
+    expect(screen.queryByText('7 — Highway 7')).not.toBeInTheDocument();
+    expect(screen.getByText('+10')).toBeInTheDocument();
+  });
+
+  it('a later year lists the routes that ran then', async () => {
+    renderHistory('?agency=yrt&year=2025');
+    await waitFor(() => expect(screen.getByText('7 — Highway 7')).toBeInTheDocument());
+    expect(screen.getByText('6 — Yonge')).toBeInTheDocument();
+    expect(screen.queryByText('+10')).not.toBeInTheDocument();
   });
 });
