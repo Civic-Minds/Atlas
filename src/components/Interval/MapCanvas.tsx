@@ -215,6 +215,8 @@ interface MapCanvasProps {
   onBasemapLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
   onClearSelection?: () => void;
+  /** An empty-map click dismissed the selection (also closes another view's panel, e.g. History's, #1031). */
+  onMapDismiss?: () => void;
   sidebarLeft?: number;
   searchBarWidth?: number;
   exportEnabled?: boolean;
@@ -287,6 +289,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onTileLoadingChange,
   onBasemapLoadingChange,
   onClearSelection,
+  onMapDismiss,
   sidebarLeft,
   searchBarWidth,
   exportEnabled = false,
@@ -723,6 +726,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const onTileLoadingChangeRef = useRef(onTileLoadingChange);
   const onBasemapLoadingChangeRef = useRef(onBasemapLoadingChange);
   const onClearSelectionRef = useRef(onClearSelection);
+  const onMapDismissRef = useRef(onMapDismiss);
+  onMapDismissRef.current = onMapDismiss;
   const selectedRouteRef = useRef(selectedRoute);
   const highlightRoutesRef = useRef(highlightRoutes);
   const handleMapClickRef = useRef<(e: maplibregl.MapMouseEvent) => void>(() => {});
@@ -856,6 +861,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
 
       clearMapSelection();
+      onMapDismissRef.current?.();
     };
   });
 

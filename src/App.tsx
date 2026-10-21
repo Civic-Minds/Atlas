@@ -28,7 +28,7 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
-import { historyAgencyToOpen } from './utils/historyOpen';
+import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -391,7 +391,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [viewportAgencySlugs, setViewportAgencySlugs] = useState<string[]>([]);
   const [userMovedMap, setUserMovedMap] = useState(false);
   // History with an agency open: the top search bar searches that agency's routes (#1015).
-  const [historyAgencyOpen, setHistoryAgencyOpen] = useState(false);
+  // The History agency open, by its short name: the top search bar then searches its routes (#1015, CIV-402).
+  const [historyOpenAgencyName, setHistoryOpenAgencyName] = useState<string | null>(null);
+  // Bumped when the user dismisses the map's selection (empty-map click, Escape): History closes its panel too (#1031).
+  const [historyDismissKey, setHistoryDismissKey] = useState(0);
+  const handleMapDismiss = useCallback(() => setHistoryDismissKey(k => k + 1), []);
+  const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
     const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
@@ -483,7 +488,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   });
   const searchPlaceholder = inFrequency
     ? 'Search routes'
-    : inHistory ? (historyAgencyOpen ? 'Find a route…' : 'Find an agency…')
+    : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : 'Find an agency…')
     : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
 
@@ -815,6 +820,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onLayersChange={setLayers}
               onViewportAgencySlugsChange={setViewportAgencySlugs}
               onUserMoveMap={handleUserMoveMap}
+              onMapDismiss={inHistory ? handleMapDismiss : undefined}
+              externalPanelOpen={inHistory && historyPanelOpen}
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
@@ -838,7 +845,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             />
             {historyOn && (historyOpened || inHistory) && (
               <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
-                <History active={inHistory} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onAgencyOpenChange={setHistoryAgencyOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+                <History active={inHistory} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (

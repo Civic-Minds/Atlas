@@ -81,8 +81,12 @@ interface Props {
   pendingRouteClick?: { slug: string; routeShortName: string } | null;
   onPendingRouteHandled?: () => void;
   sidebarLeft?: number;
-  /** Whether an agency is open in History (the top search bar then searches its routes). */
-  onAgencyOpenChange?: (open: boolean) => void;
+  /** The open agency's short name, or null (the top search bar then searches its routes). */
+  onOpenAgencyChange?: (name: string | null) => void;
+  /** Changes when the user dismisses the map's selection (empty-map click, Escape): the panel closes, as on the regular map (#1031). */
+  dismissKey?: number;
+  /** Whether History's panel is showing (so Escape has something to close). */
+  onPanelOpenChange?: (open: boolean) => void;
 }
 
 function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: string; worse: boolean } | null {
@@ -456,7 +460,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, onAgencyOpenChange }: Props) {
+export default function History({ active, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, onOpenAgencyChange, dismissKey = 0, onPanelOpenChange }: Props) {
   // Applies initialAgencySlug (the currently map-selected agency) once per
   // History session, not every time selectedSlug clears -- otherwise a user
   // typing a new search gets raced back to whatever agency the map still
@@ -641,7 +645,30 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
     if (query !== routeQuery) setQuery(routeQuery);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, selectedSlug]);
-  useEffect(() => { onAgencyOpenChange?.(active && !!selectedSlug); }, [active, selectedSlug, onAgencyOpenChange]);
+  const openAgencyName = useMemo(() => {
+    if (!active || !selectedSlug) return null;
+    const agency = historyData?.find(a => a.slug === selectedSlug);
+    return agency ? shortenAgencyName(agency.name) : null;
+  }, [active, selectedSlug, historyData]);
+  useEffect(() => { onOpenAgencyChange?.(openAgencyName); }, [openAgencyName, onOpenAgencyChange]);
+  // Dismissed from the map (empty-map click, Escape), the panel closes and stays closed until the
+  // user searches, picks something or reopens History, as the regular map's card does (#1031).
+  const [dismissed, setDismissed] = useState(false);
+  const lastDismissKeyRef = useRef(dismissKey);
+  useEffect(() => {
+    if (lastDismissKeyRef.current === dismissKey) return;
+    lastDismissKeyRef.current = dismissKey;
+    if (!active) return;
+    setSelectedRouteShortName(null);
+    setSelectedSlug(null);
+    setDismissed(true);
+  }, [dismissKey, active]);
+  useEffect(() => { if (selectedSlug) setDismissed(false); }, [selectedSlug]);
+  useEffect(() => { if (searchFocused) setDismissed(false); }, [searchFocused]);
+  // New typing reopens it; the route search being cleared as the panel closes does not.
+  useEffect(() => { if (query) setDismissed(false); }, [query]);
+  useEffect(() => { if (!active) setDismissed(false); }, [active]);
+  useEffect(() => { onPanelOpenChange?.(active && (!!selectedSlug || !dismissed)); }, [active, selectedSlug, dismissed, onPanelOpenChange]);
 
   // The route search and mode filter belong to one agency's list: they reset when the agency
   // changes or a route opens, as they did when the list kept them itself.
@@ -778,7 +805,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
   if (!shouldRender) return null;
 
   const showScrubber = selectedSlug && availableYears.length > 1;
-  const showAgencyChooser = active && !selectedSlug;
+  const showAgencyChooser = active && !selectedSlug && !dismissed;
   const panelInteractive = Boolean(selectedSlug || showAgencyChooser || searchFocused);
 
   return (

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { historyAgencyToOpen, inViewFirst } from '../historyOpen';
+import { historyAgencyToOpen, historyRouteSearchPlaceholder, inViewFirst } from '../historyOpen';
 
 const HISTORY = new Set(['ttc', 'marta', 'yrt', 'miway']);
 
@@ -48,5 +48,11 @@ describe('inViewFirst', () => {
   it('keeps the order when nothing is in view', () => {
     const sections: [string, { slug: string }[]][] = [['Georgia', [a('marta')]], ['Ontario', [a('ttc')]]];
     expect(inViewFirst(sections, new Set())).toEqual(sections);
+  });
+});
+
+describe('historyRouteSearchPlaceholder (CIV-402)', () => {
+  it('names the open agency, since the bar searches its routes', () => {
+    expect(historyRouteSearchPlaceholder('MARTA')).toBe('Find a MARTA route…');
   });
 });

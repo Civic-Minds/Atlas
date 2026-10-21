@@ -27,6 +27,15 @@ export function historyAgencyToOpen({
 }
 
 /**
+ * The top search bar's hint while a History agency is open: it searches that agency's routes, so it
+ * names the agency (CIV-402). Proposed wording, pending Ryan's OK; the alternatives are
+ * "Search MARTA routes…" and "Find a route in MARTA…".
+ */
+export function historyRouteSearchPlaceholder(agencyName: string): string {
+  return `Find a ${agencyName} route…`;
+}
+
+/**
  * The chooser's region sections with the agencies in view first: sections holding an in-view
  * agency move to the top (keeping their order), and in-view agencies lead their section.
  */
