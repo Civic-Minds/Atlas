@@ -12,8 +12,8 @@ import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
 import LegendItem from '../ui/LegendItem';
 import { delayAmount, headwayEvery } from '../../utils/headwayText';
-import { TripTimeStrip } from './TripTimeStrip';
-import type { TripTimeSeries } from '../../utils/tripTime';
+import { TripTimeStrip, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
+import { tripTimeHourTitle, type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
 import { HOUR_TO_PERIOD, PERIOD_BANDS, PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
@@ -95,13 +95,17 @@ interface HourlySparklineProps {
   seriesLabel?: string;
   /** Used by the modal's larger, all-period rendering. */
   expanded?: boolean;
+  /** Full-day view only: trip time by hour, drawn as a strip on the chart's own hour columns. */
+  tripTime?: TripTimeSeries | null;
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime }: HourlySparklineProps) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
+  // Hovering the trip-time strip reports that hour's trip time in the hover line instead.
+  const [hoveredTripHour, setHoveredTripHour] = useState<number | null>(null);
   // Only the route card's chart (not the copy inside the full-day view) is linkable.
   const ownsUrl = allowExpand && !expanded;
   const [linkedFullDay] = useState(() => (
@@ -151,6 +155,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const activePeriodKey = expanded ? null : period && period !== 'all' ? period : null;
 
   const interactive = !!onPeriodChange;
+  // One bar look at both sizes (CIV-496): round-ended bars filling the same share of each
+  // hour's column. The card's 7px bar fills about half its column; the full-day view keeps that share.
+  const barShape = expanded ? FULL_DAY_BAR_SHAPE : 'w-[7px] rounded-full';
 
   const posFromEvent = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -248,7 +255,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             }}
           />
         ))}
-        <div className="relative z-10 flex items-end gap-px">
+        <div className={`relative z-10 ${FULL_DAY_COLUMN_ROW} items-end`}>
           {HOURS.map(h => {
             const hw = displayedByHour[h];
             const maxGap = maxGapByHour?.[h];
@@ -258,14 +265,13 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               ? isHourInPeriod(h, activePeriodKey)
               : true;
             const inHovered = hoveredPeriod ? HOUR_TO_PERIOD[h] === hoveredPeriod : false;
-            const isTooltipHover = hoveredHour === h;
+            const isTooltipHover = hoveredHour === h || hoveredTripHour === h;
             const segments = stackedByHour?.[h] ?? [];
             const segmentTotalFreq = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
-            // Hovered-but-inactive bars show their tier color at reduced opacity as a preview
+            // One rule for every hour with trips (CIV-497): its colour (tier, or branch colours when
+            // stacked), faded outside the selected period. Hours with no trips draw no bar.
             const barColor = hasValue
-              ? (inActivePeriod || inHovered
-                  ? headwayToTierColor(maxGap != null && hw != null && maxGap - hw >= 15 && maxGap / hw >= 1.7 ? maxGap : hw, colorMode)
-                  : 'var(--border-primary)')
+              ? headwayToTierColor(maxGap != null && hw != null && maxGap - hw >= 15 && maxGap / hw >= 1.7 ? maxGap : hw, colorMode)
               : undefined;
             const opacity = !hasValue ? undefined
               : inActivePeriod ? 'opacity-90'
@@ -285,7 +291,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   )}
                   {hasValue && (
                     segments.length > 0 && segmentTotalFreq > 0 ? (
-                      <div className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} flex flex-col-reverse overflow-hidden rounded-sm transition-opacity duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}>
+                      <div className={`${barShape} flex flex-col-reverse overflow-hidden transition-opacity duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}>
                         {segments.map(segment => (
                           <div
                             key={segment.label}
@@ -296,7 +302,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     ) : (
                       <div
                         style={{ height: barH, background: barColor }}
-                        className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} rounded-sm transition-[background,opacity] duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}
+                        className={`${barShape} transition-[background,opacity] duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}
                       />
                     )
                   )}
@@ -331,10 +337,22 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         ))}
       </div>
       {expanded && (
+        <TripTimeStrip
+          series={tripTime}
+          label="Trip time"
+          serviceHours={new Set(HOURS.filter(h => displayedByHour[h] != null))}
+          // Two-way hover (CIV-505): an hour hovered in either chart lights the same column in both.
+          hoveredHour={hoveredTripHour ?? hoveredHour}
+          onHourHover={setHoveredTripHour}
+        />
+      )}
+      {expanded && (
         <div className="mt-3 min-h-5 text-center text-xs font-bold text-[var(--text-muted)]" aria-live="polite">
-          {hoveredHour != null && displayedByHour[hoveredHour] != null
-            ? formatHourTitle(hoveredHour, displayedByHour[hoveredHour]!)
-            : null}
+          {hoveredTripHour != null && tripTime?.byHour[hoveredTripHour] != null
+            ? tripTimeHourTitle(hoveredTripHour, tripTime.byHour[hoveredTripHour]!)
+            : hoveredHour != null && displayedByHour[hoveredHour] != null
+              ? formatHourTitle(hoveredHour, displayedByHour[hoveredHour]!)
+              : null}
         </div>
       )}
       {allowExpand && !expanded && isExpanded && createPortal(
@@ -385,10 +403,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               onHourHover={onHourHover}
               title={title}
               expanded
-            />
-            <TripTimeStrip
-              series={directionOptions?.find(option => option.key === expandedDirection)?.tripTime}
-              label="Trip time"
+              tripTime={directionOptions?.find(option => option.key === expandedDirection)?.tripTime}
             />
           </div>
         </div>,
