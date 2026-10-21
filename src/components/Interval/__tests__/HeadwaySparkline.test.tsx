@@ -3,6 +3,17 @@ import { describe, expect, it } from 'vitest';
 import { HeadwaySparkline, sparklineBarHeight, slowerDirectionKey } from '../HeadwaySparkline';
 
 describe('HeadwaySparkline', () => {
+  it('every hour with trips keeps its colour outside the selected period, faded; none goes grey (CIV-497)', () => {
+    const { container } = render(
+      <HeadwaySparkline byHour={{ 7: 10, 12: 20, 20: 30 }} period="midday" onPeriodChange={() => {}} />,
+    );
+    const bars = [...container.querySelectorAll('.rounded-sm')].filter(el => (el as HTMLElement).style.background && (el as HTMLElement).style.height);
+    expect(bars).toHaveLength(3);
+    for (const bar of bars) expect((bar as HTMLElement).style.background).not.toContain('--border-primary');
+    const faded = bars.filter(bar => bar.className.includes('opacity-40'));
+    expect(faded).toHaveLength(2);
+  });
+
   it('starts the hover highlight below the period label row, so the label sits above it', () => {
     const { container } = render(
       <HeadwaySparkline byHour={{ 12: 20, 18: 25 }} period="midday" onPeriodChange={() => {}} allowExpand />,

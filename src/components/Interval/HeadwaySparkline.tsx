@@ -260,11 +260,10 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             const isTooltipHover = hoveredHour === h;
             const segments = stackedByHour?.[h] ?? [];
             const segmentTotalFreq = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
-            // Hovered-but-inactive bars show their tier color at reduced opacity as a preview
+            // One rule for every hour with trips (CIV-497): its colour (tier, or branch colours when
+            // stacked), faded outside the selected period. Hours with no trips draw no bar.
             const barColor = hasValue
-              ? (inActivePeriod || inHovered
-                  ? headwayToTierColor(maxGap != null && hw != null && maxGap - hw >= 15 && maxGap / hw >= 1.7 ? maxGap : hw, colorMode)
-                  : 'var(--border-primary)')
+              ? headwayToTierColor(maxGap != null && hw != null && maxGap - hw >= 15 && maxGap / hw >= 1.7 ? maxGap : hw, colorMode)
               : undefined;
             const opacity = !hasValue ? undefined
               : inActivePeriod ? 'opacity-90'
