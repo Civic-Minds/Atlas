@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
-import { ChevronLeft, ChevronRight, X, Search, TrendingUp, History as HistoryIcon } from 'lucide-react';
+import { ChevronLeft, X, Search, TrendingUp, History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { FLOATING_CARD, TRANSITION_SLOW, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, LIST_REGION_HEAD, AGENCY_LIST_PRIMARY, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
+import { FLOATING_CARD, TRANSITION_SLOW, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
-import { shortenAgencyName, titleCase } from '../utils/format';
+import { routeLabels, shortenAgencyName, titleCase } from '../utils/format';
+import CardRouteList from '../components/Interval/CardRouteList';
+import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE } from '../components/Interval/cardUi';
 import { buildHistoryRouteFilters, historyRouteMatchesFilter, type HistoryRouteFilterKey } from '../utils/historyRouteFilters';
 import { useColorVision } from '../context/ColorVisionContext';
 import RegionFilterPills from '../components/RegionFilterPills';
@@ -19,6 +21,7 @@ import {
 import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayText';
 import Panel, { PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
+import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ModeFilterPill from '../components/ui/ModeFilterPill';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
@@ -408,25 +411,16 @@ function HistoryAgencyPanel({
 
   return (
     <Panel enter className="max-h-[calc(100vh-104px)]">
-      {/* Header */}
-      <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{shortenAgencyName(agencyHistory.name)}</h2>
-            </div>
-            <p className="text-xs font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
-              {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
-            </p>
-            {!routeQuery && !activeFilter && (
-              <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="shrink-0 px-3 py-2 border-b border-[var(--border-primary)]">
-        <div className={SEARCH_PILL}>
+      {/* Header: the agency card's header block, with the route filter and mode pills inside it. */}
+      <div className={CARD_HEADER_BLOCK}>
+        <h2 className={`${CARD_TITLE} truncate`}>{shortenAgencyName(agencyHistory.name)}</h2>
+        <p className={CARD_SUMMARY}>
+          {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
+        </p>
+        {!routeQuery && !activeFilter && (
+          <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
+        )}
+        <div className={`${SEARCH_PILL} mt-2`}>
           <Search className={SEARCH_ICON} />
           <input
             type="text"
@@ -464,16 +458,14 @@ function HistoryAgencyPanel({
         {visibleRouteRows.length === 0 && (
           <PanelEmpty>{routeQuery || activeFilter ? 'No routes match.' : 'No data for this period.'}</PanelEmpty>
         )}
-        {visibleRouteRows.map(({ route }) => (
-          <RouteListRow
-            key={route.routeShortName}
-            shortName={route.routeShortName}
-            name={titleCase(route.routeName)}
-            onClick={() => onRouteSelect(route.routeShortName)}
-            variant="spaced"
-            right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />}
-          />
-        ))}
+        <CardRouteList
+          rows={visibleRouteRows.map(({ route, last }) => ({
+            key: route.routeShortName,
+            label: routeLabels({ shortName: route.routeShortName, longName: titleCase(route.routeName), routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }).text,
+            headway: last.weekdayHeadwayMin,
+          }))}
+          onSelect={onRouteSelect}
+        />
       </div>
     </Panel>
   );
@@ -851,12 +843,14 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
           ) : (
             <>
               {historyData !== null && !historyLoadFailed && (
-                <div className="flex gap-1.5 px-5 pt-3 pb-2 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden border-b border-[var(--border-primary)]" style={{ scrollbarWidth: 'none' }}>
+                <div className={AGENCY_LIST_FILTERS}>
+                  <div className={PILL_SCROLL_ROW} style={{ scrollbarWidth: 'none' }}>
                   <RegionFilterPills
                     regions={historyRegions}
                     selectedRegions={regionFilter}
                     setSelectedRegions={setRegionFilter}
                   />
+                  </div>
                 </div>
               )}
               {historyData === null && (
@@ -873,30 +867,25 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
               {historyData !== null && !historyLoadFailed && agenciesByRegion.length === 0 && (
                 <PanelEmpty>No agencies match.</PanelEmpty>
               )}
-              {agenciesByRegion.map(([region, agencies]) => (
-                <div key={region}>
-                  <p className={LIST_REGION_HEAD}>{region}</p>
-                  {agencies.map(agency => (
-                    <ListRow
-                      key={agency.slug}
-                      variant="agency"
-                      onClick={() => {
-                        saveRecentSearch(query);
-                        setSelectedSlug(agency.slug);
-                      }}
-                      className="border-b border-[var(--border-primary)] last:border-0"
-                    >
-                      <span className="min-w-0">
-                        <span className={AGENCY_LIST_PRIMARY} title={agency.name}>{shortenAgencyName(agency.name)}</span>
-                        <span className="block text-xs text-[var(--text-muted)]">
-                          {agency.routes.length} {plural(agency.routes.length, 'route')}
-                        </span>
-                      </span>
-                      <ChevronRight className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-                    </ListRow>
+              {agenciesByRegion.length > 0 && (
+                <AgencyList>
+                  {agenciesByRegion.map(([region, agencies]) => (
+                    <AgencyRegionSection key={region} region={region}>
+                      {agencies.map(agency => (
+                        <AgencyListRow
+                          key={agency.slug}
+                          primary={shortenAgencyName(agency.name)}
+                          title={agency.name}
+                          onClick={() => {
+                            saveRecentSearch(query);
+                            setSelectedSlug(agency.slug);
+                          }}
+                        />
+                      ))}
+                    </AgencyRegionSection>
                   ))}
-                </div>
-              ))}
+                </AgencyList>
+              )}
             </>
           )}
         </div>

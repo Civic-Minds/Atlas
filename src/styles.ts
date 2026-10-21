@@ -97,6 +97,12 @@ export const PANEL_CARD_HEADER = 'flex items-start gap-2 px-4 pt-3 pb-2.5 border
 /** Region heading in an agency list (About panel's agency list, History's agency chooser). */
 export const LIST_REGION_HEAD = 'px-5 pt-3 pb-1 text-xs font-bold text-[var(--text-dim)]';
 
+/** The filter block above an agency list (search and pills), with one divider under it. */
+export const AGENCY_LIST_FILTERS = 'shrink-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] space-y-2';
+
+/** A row of filter pills that scrolls sideways instead of wrapping. */
+export const PILL_SCROLL_ROW = 'flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden';
+
 export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black tracking-wide text-[var(--text-dim)]';
 
 /** Accent group label in search results */
