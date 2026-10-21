@@ -49,8 +49,8 @@ Frequencies
   - "every 10 min" for a stated or scheduled spacing (`headwayEvery`)
   - "≤10 min" / "All routes" for the applied frequency limit, everywhere it is named: pickers, Compare captions, the export image (`headwayFilterLabel`)
   - "every 10 min or better" for a threshold inside a sentence or a screen-reader label (`headwayOrBetter`)
-  - "about every 16 min" for a measured or typical spacing (`headwayAbout`)
-  - ranges with an en dash: "about every 6–12 min", "every 30–60 min" (`headwayAboutRange`, `headwayEveryRange`)
+  - "every 16 min" for a measured or typical spacing (`headwayAbout`)
+  - ranges with an en dash: "every 6–12 min", "every 30–60 min" (`headwayAboutRange`, `headwayEveryRange`)
   - "≤10 min" and "16–30 min" in legends and keys (`headwayTierLabel`, `headwayBandLabel`)
   - "10 min" with no "every" in tables and chart cells (`headwayAmount`); "3 min" for a delay or gap that is not a headway (`delayAmount`)
 - Frequencies are always in minutes, never hours ("every 90 min", "every 120 min"), so a column never mixes units. #938.

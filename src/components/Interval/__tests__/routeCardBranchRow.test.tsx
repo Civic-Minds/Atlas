@@ -50,7 +50,7 @@ const cityCollege = {
 describe('route card rows when the route has no regular service (#954)', () => {
   it("shows a row's own direction value; a row without one still reads no regular service", () => {
     renderRows([cityCollege, wharf], 'pmPeak', 'sfmta');
-    expect(screen.getByText('about every 8 min')).toBeTruthy();
+    expect(screen.getByText('every 8 min')).toBeTruthy();
     expect(screen.getAllByText(LONG).length).toBe(1);
     // City College's own pattern number (40) is not its direction value and stays hidden.
     expect(screen.queryByText(/every 40 min/)).toBeNull();
@@ -60,14 +60,14 @@ describe('route card rows when the route has no regular service (#954)', () => {
     const bare = { routeId: '8', routeShortName: '8', routeType: 3, day: 'Weekday', tier: '10', serviceClass: 'regular', directionId: 1,
       headsign: "Fisherman's Wharf", headway: 12, headwayByPeriod: { pmPeak: 12 }, headwayByPeriodSustained: { pmPeak: true } } as unknown as ShapeProperties;
     renderRows([cityCollege, bare], 'pmPeak', 'sfmta');
-    expect(screen.queryByText(/every 12 min/)).toBeNull();
+    expect(screen.queryByText('every 12 min')).toBeNull();
     expect(screen.getAllByText(LONG).length).toBe(2);
   });
 
   it('keeps every row hidden on data without the one-gap flag (before the rebuild), as main does', () => {
     const strip = (f: ShapeProperties) => { const { stretchPeriodOneGap: _, ...rest } = f as any; return rest as ShapeProperties; };
     renderRows([strip(cityCollege), strip(wharf)], 'pmPeak', 'sfmta');
-    expect(screen.queryByText('about every 8 min')).toBeNull();
+    expect(screen.queryByText('every 8 min')).toBeNull();
     expect(screen.getAllByText(LONG).length).toBe(2);
     expect(hasRegularServiceInPeriod(strip(wharf), 'pmPeak')).toBe(false);
     expect(hasRegularServiceInPeriod(wharf, 'pmPeak')).toBe(true);
@@ -120,7 +120,7 @@ describe('a number that is one gap between a few departures (#955)', () => {
     // The row's own steady value (30) differs from the route and direction value (315).
     const steady = { ...vicPark, headwayByPeriod: { midday: 30 }, headwayByPeriodSustained: { midday: true } } as unknown as ShapeProperties;
     renderRows([steady], 'midday');
-    expect(screen.getByText(/about every 30 min/)).toBeTruthy();
+    expect(screen.getByText(/every 30 min/)).toBeTruthy();
     expect(screen.queryByText(/315/)).toBeNull();
     expect(screen.queryByText(LONG)).toBeNull();
     expect(hasRegularServiceInPeriod(steady, 'midday')).toBe(true);
@@ -139,7 +139,7 @@ describe('a number that is one gap between a few departures (#955)', () => {
       periodCoverageHeadway: { midday: 84 }, stretchPeriodOneGap: { midday: false } } as unknown as ShapeProperties;
     renderRows([mbta18], 'midday');
     expect(screen.queryByText(LONG)).toBeNull();
-    expect(screen.getByText(/about every \d+ min/)).toBeTruthy();
+    expect(screen.getByText(/every \d+ min/)).toBeTruthy();
     expect(routeListDisplay([mbta18], 'midday').headway).toBe(84);
   });
 });
@@ -184,6 +184,6 @@ describe('route card rows word part-period and one-gap service (#934)', () => {
       { rKey: 'cta::134', headsign: 'Downtown', directionId: 1, service: { value: 12 } as any, periodText: 'until 9:37am, every 12 min' },
     ]} period="midday" showAgency={false} onOpenRoute={() => {}} />);
     expect(screen.getByText('until 9:37am, every 12 min')).toBeTruthy();
-    expect(screen.queryByText(/about every 12 min/)).toBeNull();
+    expect(screen.queryByText('every 12 min')).toBeNull();
   });
 });

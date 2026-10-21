@@ -77,10 +77,10 @@ const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1
 
 /**
  * The route card's compare section in plain words.
- * - Same day and time on both sides: the route's frequency once ("About every 16 min"), then which
+ * - Same day and time on both sides: the route's frequency once ("Every 16 min"), then which
  *   maps draw it ("On map B (≤20 min) · not on map A (≤10 min)").
  * - Day or time differ: one line per side with that side's own frequency
- *   ("A · Weekday midday: about every 16 min, on map").
+ *   ("A · Weekday midday: every 16 min, on map").
  */
 export function compareCardSummary(rows: readonly CompareRowFacts[]): { headline: string | null; lines: string[] } {
   if (rows.length !== 2) return { headline: null, lines: [] };

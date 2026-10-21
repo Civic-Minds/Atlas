@@ -11,6 +11,7 @@ import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
+import { calendarFromNextServiceDates } from './serviceDates.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
 import { clearLoneOriginRows, labelConvergingOrigins } from './convergingOrigins.js';
@@ -730,7 +731,23 @@ export async function processGtfsBuffer(
   // service a 2025-2027 calendar.txt period and switches semester and summer timetables only
   // with calendar_dates removals, so the period midpoint (Jul 2, 2026) always read the summer
   // timetable and dropped the semester-only routes 40 and 51 (#774).
-  const refDate = options?.referenceDateFromRunDate
+  // The feed's own calendar, kept for the expiry below when a feed opts into next service dates.
+  const feedCalendar = gtfs.calendar;
+  const feedCalendarDates = gtfs.calendarDates;
+  // Feed opt-in (an agency's nextServiceDatesFeedUrls): rolling per-day service_ids, read from one
+  // typical real weekday, Saturday and Sunday after the run date instead of one reference date. LA Metro Rail lost
+  // Weekday and Sunday on A, B and D in release-mvf8jscd. See serviceDates.ts.
+  const nextServiceDates = options?.dayTypesFromNextServiceDates
+    ? calendarFromNextServiceDates(gtfs.calendar ?? [], gtfs.calendarDates ?? [], gtfs.trips ?? [], runDateYmd())
+    : null;
+  if (nextServiceDates) {
+    gtfs = { ...gtfs, calendar: nextServiceDates.calendar, calendarDates: [] };
+    const { Weekday, Saturday, Sunday } = nextServiceDates.dates;
+    onStatus?.(`Next service dates: Weekday ${Weekday}, Saturday ${Saturday}, Sunday ${Sunday}`);
+  }
+  const refDate = nextServiceDates
+    ? nextServiceDates.referenceDate
+    : options?.referenceDateFromRunDate
     ? runDateYmd()
     : detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
   // Union all 7 days, not just Monday/Saturday/Sunday — an agency whose weekday
@@ -3400,8 +3417,8 @@ export async function processGtfsBuffer(
   const feedInfo = gtfs.feedInfo?.[0];
   const calendarExpiry = effectiveFeedExpiry({
     feedInfoEnd: feedInfo?.feed_end_date,
-    calendarEnds: gtfs.calendar?.map(calendar => calendar.end_date) ?? [],
-    calendarDates: gtfs.calendarDates,
+    calendarEnds: feedCalendar?.map(calendar => calendar.end_date) ?? [],
+    calendarDates: feedCalendarDates,
   });
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   // Scheduled running time (CIV-84): card data in its own top-level block of the agency JSON,

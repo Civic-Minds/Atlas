@@ -88,7 +88,7 @@ hypothesis, comparison, result, and decision visible in one place.
 | Q2 internal allowance | A tier-specific sliding percentage may preserve ordinary schedule variation without retaining the unapproved 30% rule. | Tested tier curves, floors, and caps against a strict zero-exception reference; a zero floor and three-gap cap avoided short-period over-qualification. | Implemented `10% / 5%` tier-specific allowances with no floor and a three-gap cap. |
 | Q3 hard gap | A larger internal gap multiplier might be acceptable if the rest of the schedule is regular. | Tested 1.25×, 1.5×, 1.75×, and 2× boundaries; wider boundaries created faster tiers despite 70–120 minute holes. | Keep the existing hard boundary. |
 | Q4 minimum evidence | Two departures might be enough to identify a sustained frequency pattern. | Two departures produced 34,954 faster classifications; four or more rejected many consistent three-trip patterns. The downstream edge regression found that trimming an edge from four departures could still over-qualify a sparse period. | Retain three departures for ordinary classifications; require four departures after an edge allowance is used. |
-| Q5 display | Cautious wording can communicate scheduled cadence without implying a guarantee. | Reviewed route-card labels, longest-gap notices, limited/irregular states, and exception notices against the underlying metrics. | Use `about every`, separate service-state labels, and side-panel explanations. |
+| Q5 display | Cautious wording can communicate scheduled cadence without implying a guarantee. | Reviewed route-card labels, longest-gap notices, limited/irregular states, and exception notices against the underlying metrics. | Use `every N min`, separate service-state labels, and side-panel explanations. |
 | Q6 edge accounting | A qualifying edge booster should not silently stack on top of the internal near-miss allowance. | Full local census comparison: counting each qualifying edge as one exception removed 108 of 2,336 both-edge upgrades and caused no downgrades. | Approved: count the edge against the bounded allowance. |
 
 ## Candidate questions
@@ -502,8 +502,8 @@ every processing detail into a route-card warning.
 
 | Data state | Recommended display | Explanation when opened |
 | --- | --- | --- |
-| Finite sustained tier | `about every N min` | The representative scheduled gap in the selected period, without implying exact regularity. |
-| Sustained branch range | `about every X–Y min` | The branch has a range of scheduled gaps rather than one exact value. |
+| Finite sustained tier | `every N min` | The representative scheduled gap in the selected period, without implying exact regularity. |
+| Sustained branch range | `every X–Y min` | The branch has a range of scheduled gaps rather than one exact value. |
 | Uneven period with a useful range | Add `longest gap N min` | The longest wait is materially longer than the typical range, so the typical value should not be read as a guarantee. |
 | Predictable part-day service (`time-limited`) | Keep the numeric frequency and add a `limited service` label where the period or card needs context | Service operates during only part of the normal window but has a repeated schedule while operating. |
 | No finite sustained tier (`infrequent`) | `infrequent` | Atlas could not confirm a sustained finite frequency tier; it should not present a faster numeric cadence as the route's normal service. |
@@ -512,7 +512,7 @@ every processing detail into a route-card warning.
 | Metric unavailable or not safely computable | `no data for this period` | Atlas does not have enough reliable data to make a claim. This is intentionally different from confirmed no service. |
 
 The route card and related scheduled-service labels now render numeric cadence
-as `about every N min` (for example, `about every 7 min`). The code also
+as `every N min` (for example, `every 7 min`). The code also
 contains branch ranges,
 longest-gap text, `limited service`, `no scheduled service`, and `no data for
 this period` in different surfaces. The study recommendation is to use the
@@ -546,7 +546,7 @@ of precision the display is not trying to provide.
 
 ### Q5 recommendation
 
-Use plain-language state labels on the route card, use cautious `about every`
+Use plain-language state labels on the route card, use cautious `every N min`
 wording for numeric cadences, distinguish `time-limited` from `irregular`, and
 reserve the side panel for explanations about stale, reviewed, corrected, or
 edge-allowance data.
@@ -569,7 +569,7 @@ edge-allowance data.
 - Minimum evidence: retain three departures for ordinary classifications, but
   require four after an edge allowance so a sparse four-trip period cannot be
   upgraded solely by trimming its first or last gap.
-- Display: use `about every N min`, distinguish predictable time-limited
+- Display: use `every N min`, distinguish predictable time-limited
   service from irregular service, and keep processing exceptions in notices or
   the side panel rather than route-card arithmetic.
 
