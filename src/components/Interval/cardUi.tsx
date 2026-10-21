@@ -19,9 +19,9 @@ export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] lea
 export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
-/** The line under a card title ("Georgia · 102 routes · 2013–2026"). */
 /** The route card's scrolling body on desktop (the map's route card and History's route view). */
 export const SIDEBAR_CARD_BODY = `relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 overflow-y-auto overflow-x-hidden custom-scrollbar`;
+/** The line under a card title ("Atlanta · 102 routes · 2013–2026"). */
 export const CARD_SUMMARY = 'text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug';
 
 const REPORT_REASONS = [
