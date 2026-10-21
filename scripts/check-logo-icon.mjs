@@ -65,6 +65,24 @@ try {
           await btn.focus(); await page.keyboard.press('Shift+Tab'); await page.keyboard.press('Tab'); await page.waitForTimeout(300);
           await page.screenshot({ path: `${outDir}/${name}-focus.png`, clip: { x: 0, y: 0, width: Math.min(width, 520), height: 80 } });
         }
+        // Focus ring: no near-black outline/ring after a click, a visible light ring after Tab.
+        const ringInfo = () => btn.evaluate((b) => { const c = getComputedStyle(b); return { outline: c.outlineStyle === 'none' ? '' : c.outlineColor + ' ' + c.outlineWidth, shadow: c.boxShadow, radius: c.borderTopLeftRadius }; });
+        const ringColors = (r) => [...(r.outline ? [r.outline] : []), r.shadow !== 'none' ? r.shadow : ''].join(' ').match(/rgba?\([^)]*\)/g) || [];
+        const dark = (c) => { const v = parse(c); return (v[3] ?? 1) > 0.5 && lum(v.slice(0, 3)) < 0.2; };
+        await btn.click(); await page.waitForTimeout(300);
+        const afterClick = await ringInfo();
+        if (ringColors(afterClick).some(dark)) { failures.push(`${name}: near-black ring after click ${JSON.stringify(afterClick)}`); console.log('FAIL', name, 'click ring', JSON.stringify(afterClick)); }
+        if (outDir) await page.screenshot({ path: `${outDir}/${name}-afterclick.png`, clip: { x: 0, y: 0, width: Math.min(width, 520), height: 80 } });
+        await page.mouse.move(width - 5, height - 5); await page.evaluate(() => document.activeElement && document.activeElement.blur());
+        await page.keyboard.press('Tab'); await page.waitForTimeout(300);
+        const onLogo = await btn.evaluate((b) => b === document.activeElement);
+        const afterTab = await ringInfo();
+        const tabColors = ringColors(afterTab);
+        if (!onLogo) { failures.push(`${name}: first Tab did not reach the logo`); console.log('FAIL', name, 'tab target'); }
+        else if (!tabColors.length) { failures.push(`${name}: no visible ring after Tab`); console.log('FAIL', name, 'no ring'); }
+        else if (tabColors.some(dark)) { failures.push(`${name}: near-black ring after Tab ${JSON.stringify(afterTab)}`); console.log('FAIL', name, 'dark tab ring'); }
+        console.log(`     ${name} click=${JSON.stringify(afterClick)} tab=${JSON.stringify(afterTab)}`);
+        if (outDir) await page.screenshot({ path: `${outDir}/${name}-aftertab.png`, clip: { x: 0, y: 0, width: Math.min(width, 520), height: 80 } });
         await ctx.close();
       }
     }

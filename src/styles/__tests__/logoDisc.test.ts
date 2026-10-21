@@ -16,6 +16,21 @@ function logoDisc(file: string): { disc: string; icon: string } {
   return { disc, icon };
 }
 
+describe('Atlas home logo focus ring', () => {
+  for (const file of FILES) {
+    it(`${file.split('/').pop()} uses a rounded, light keyboard-only ring`, () => {
+      const src = readFileSync(resolve(__dirname, file), 'utf8');
+      const at = src.indexOf('<MapIcon');
+      const tagStart = Math.max(src.lastIndexOf('<button', at), src.lastIndexOf('<a ', at));
+      const tag = src.slice(tagStart, src.indexOf('>', src.indexOf('className', tagStart)));
+      expect(tag).toContain('rounded-full');
+      expect(tag).toContain('focus-visible:ring-2');
+      expect(tag).toContain('focus-visible:ring-[var(--accent-border)]');
+      expect(tag).not.toMatch(/(^|\s)focus:(outline|ring)(?!-none)/);
+    });
+  }
+});
+
 describe('Atlas home logo disc', () => {
   for (const file of FILES) {
     it(`${file.split('/').pop()} keeps a pale disc with an accent icon at every width`, () => {
