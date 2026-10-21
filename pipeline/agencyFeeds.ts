@@ -43,6 +43,11 @@ export interface AgencyFeedConfig {
    * calendar logic.
    */
   nextServiceDatesFeedUrls?: string[];
+  /**
+   * For the feeds in nextServiceDatesFeedUrls: leave a weekday line's occasional weekend services
+   * out of the Saturday and Sunday read (Sound Transit's Sounder game-day trains, CIV-445).
+   */
+  nextServiceDatesSkipWeekendEvents?: boolean;
 }
 
 export interface AgencyProcessOverrides {
@@ -175,7 +180,11 @@ export async function processAgencyFeeds(
   const options = agencyProcessOptions(agency, overrides);
   const nextServiceDatesUrls = new Set(agency.nextServiceDatesFeedUrls ?? []);
   const withNextServiceDates = (url: string | null | undefined): ProcessOptions =>
-    url && nextServiceDatesUrls.has(url) ? { ...options, dayTypesFromNextServiceDates: true } : options;
+    url && nextServiceDatesUrls.has(url) ? {
+      ...options,
+      dayTypesFromNextServiceDates: true,
+      ...(agency.nextServiceDatesSkipWeekendEvents ? { nextServiceDatesSkipWeekendEvents: true } : {}),
+    } : options;
   // The main feed opts in by its configured URL, whichever source the zip came from (archive, mirror).
   const primary = await processGtfsBuffer(primaryBuf, onProgress, withNextServiceDates(agency.feedUrl));
   const primaryCollection = JSON.parse(primary.geojson) as FeatureCollection;

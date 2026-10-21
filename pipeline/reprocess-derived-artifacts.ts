@@ -106,6 +106,7 @@ interface Agency {
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
   nextServiceDatesFeedUrls?: string[];
+  nextServiceDatesSkipWeekendEvents?: boolean;
   fare?: number;
   lastFeedExpiry?: string | null;
   lastPeekedExpiry?: string | null;

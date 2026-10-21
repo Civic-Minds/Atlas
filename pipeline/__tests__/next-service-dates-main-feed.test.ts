@@ -18,8 +18,12 @@ function minutes(m: number): string {
   return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}:00`;
 }
 
-/** L (light rail), T (a line with its own long-range weekend service) and X (weekend shuttle bus). */
-async function soundTransitZip(): Promise<Buffer> {
+/**
+ * L (light rail), T (a line with its own long-range weekend service) and X (weekend shuttle bus).
+ * With `sounder`, also S: a weekday-only commuter rail line with game-day Sunday trains (a
+ * two-Sunday row Oct 4-11 and a one-day row Nov 8), as Sounder's Seahawks services (CIV-445).
+ */
+async function soundTransitZip({ sounder = false } = {}): Promise<Buffer> {
   const calendar = [
     'L-wk,1,1,1,1,1,0,0,20261019,20270326',
     'L-sat,0,0,0,0,0,1,0,20261003,20270327',
@@ -29,6 +33,11 @@ async function soundTransitZip(): Promise<Buffer> {
     'T-sun,0,0,0,0,0,0,1,20261001,20270321',
     'X-sat,0,0,0,0,0,1,0,20261017,20261115',
     'X-sun,0,0,0,0,0,0,1,20261017,20261115',
+    ...(sounder ? [
+      'S-wk,1,1,1,1,1,0,0,20261001,20270326',
+      'S-hawks-1004,0,0,0,0,0,0,1,20261004,20261011',
+      'S-hawks-1108,0,0,0,0,0,0,1,20261108,20261108',
+    ] : []),
   ];
   // Like the real feed: every weekend from Oct 17 to Nov 15 runs a one-day replacement.
   const weekends = [['20261017', '20261018'], ['20261024', '20261025'], ['20261031', '20261101'], ['20261107', '20261108'], ['20261114', '20261115']];
@@ -44,28 +53,31 @@ async function soundTransitZip(): Promise<Buffer> {
     ...weekends.flatMap(([sat, sun]): Array<[string, string, number]> => [[`L-sat-${sat}`, 'L', 10], [`L-sun-${sun}`, 'L', 10]]),
     ['T-wk', 'T', 12], ['T-sat', 'T', 12], ['T-sun', 'T', 20],
     ['X-sat', 'X', 15], ['X-sun', 'X', 15],
+    ...(sounder ? [['S-wk', 'S', 30], ['S-hawks-1004', 'S', 120], ['S-hawks-1108', 'S', 120]] as Array<[string, string, number]> : []),
   ];
   const zip = new JSZip();
   zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\nst,Sound Transit,https://example.test,America/Los_Angeles\n');
-  zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nL,1 Line,Light rail,0\nT,T Line,Tacoma,0\nX,Shuttle,Shuttle bus,3\n');
+  zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nL,1 Line,Light rail,0\nT,T Line,Tacoma,0\nX,Shuttle,Shuttle bus,3\n' + (sounder ? 'S,S Line,Commuter rail,2\n' : ''));
   zip.file('stops.txt', [
     'stop_id,stop_name,stop_lat,stop_lon',
     'l1,L North,47.70,-122.30', 'l2,L South,47.50,-122.30',
     't1,T West,47.25,-122.45', 't2,T East,47.25,-122.40',
     'x1,X North,47.70,-122.32', 'x2,X South,47.60,-122.32',
+    ...(sounder ? ['s1,S North,47.60,-122.33', 's2,S South,47.25,-122.44'] : []),
   ].join('\n') + '\n');
   zip.file('shapes.txt', [
     'shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence',
     'shL,47.70,-122.30,1', 'shL,47.60,-122.30,2', 'shL,47.50,-122.30,3',
     'shT,47.25,-122.45,1', 'shT,47.25,-122.425,2', 'shT,47.25,-122.40,3',
     'shX,47.70,-122.32,1', 'shX,47.65,-122.32,2', 'shX,47.60,-122.32,3',
+    ...(sounder ? ['shS,47.60,-122.33,1', 'shS,47.42,-122.38,2', 'shS,47.25,-122.44,3'] : []),
   ].join('\n') + '\n');
   zip.file('calendar.txt', [HEADER, ...calendar].join('\n') + '\n');
   zip.file('calendar_dates.txt', calendarDates.join('\n') + '\n');
   const trips = ['route_id,service_id,trip_id,trip_headsign,direction_id,shape_id'];
   const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
   for (const [serviceId, route, every] of services) {
-    const [s1, s2] = route === 'L' ? ['l1', 'l2'] : route === 'T' ? ['t1', 't2'] : ['x1', 'x2'];
+    const [s1, s2] = route === 'L' ? ['l1', 'l2'] : route === 'T' ? ['t1', 't2'] : route === 'S' ? ['s1', 's2'] : ['x1', 'x2'];
     for (let m = 6 * 60, i = 0; m <= 22 * 60; m += every, i++) {
       const id = `${serviceId}-${i}`;
       trips.push(`${route},${serviceId},${id},${route} terminal,0,sh${route}`);
@@ -129,5 +141,56 @@ describe('nextServiceDatesFeedUrls naming the main feed (Sound Transit, #1035)',
     const plain = await processAgencyFeeds(buf, [], { slug: 'st' });
     const noUrl = await processAgencyFeeds(buf, [], { slug: 'st', feedUrl: null, nextServiceDatesFeedUrls: [MAIN_URL] });
     expect(noUrl.geojson).toBe(plain.geojson);
+  });
+});
+
+// CIV-445: for runs dated Nov 1-7 and Dec 6-12 the typical Sunday in the two-week window was a
+// Seahawks game day (Nov 8, Dec 13), so N and S Line gained a Sunday riders don't have. With
+// nextServiceDatesSkipWeekendEvents, a Saturday or Sunday service is left out when every route it
+// serves runs on at least half of the feed's weekdays and fewer than half of that weekend day.
+describe('nextServiceDatesSkipWeekendEvents (Sound Transit Sounder game days, CIV-445)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+  const st = { slug: 'st', feedUrl: MAIN_URL, nextServiceDatesFeedUrls: [MAIN_URL] };
+  const skip = { ...st, nextServiceDatesSkipWeekendEvents: true };
+
+  it('without the option, a run on Mon Nov 2 reads the game-day Sunday for S (the reported limit)', async () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-02T08:00:00') });
+    const result = await processAgencyFeeds(await soundTransitZip({ sounder: true }), [], st);
+    expect(daysByRoute(lineFeatures(result.geojson)).S).toEqual(['Sunday', 'Weekday']);
+  });
+
+  it('with the option, S keeps Weekday only and every other line is unchanged', async () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-02T08:00:00') });
+    const buf = await soundTransitZip({ sounder: true });
+    const plain = lineFeatures((await processAgencyFeeds(buf, [], st)).geojson);
+    const skipped = lineFeatures((await processAgencyFeeds(buf, [], skip)).geojson);
+    expect(daysByRoute(skipped).S).toEqual(['Weekday']);
+    expect(daysByRoute(skipped).T).toEqual(['Saturday', 'Sunday', 'Weekday']);
+    expect(skipped).toEqual(plain.filter(p => !(p.routeId === 'S' && p.day === 'Sunday')));
+  });
+
+  it('skips the two-Sunday game-day row too (run Wed Sep 30)', async () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-09-30T08:00:00') });
+    const buf = await soundTransitZip({ sounder: true });
+    expect(daysByRoute(lineFeatures((await processAgencyFeeds(buf, [], st)).geojson)).S).toEqual(['Sunday', 'Weekday']);
+    expect(daysByRoute(lineFeatures((await processAgencyFeeds(buf, [], skip)).geojson)).S).toEqual(['Weekday']);
+  });
+
+  it('keeps a weekend-only shuttle and leaves a week with no game day byte-identical (run Mon Nov 9)', async () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-09T08:00:00') });
+    const buf = await soundTransitZip({ sounder: true });
+    const plain = await processAgencyFeeds(buf, [], st);
+    const skipped = await processAgencyFeeds(buf, [], skip);
+    expect(daysByRoute(lineFeatures(skipped.geojson)).X).toEqual(['Saturday', 'Sunday']);
+    expect(skipped.geojson).toBe(plain.geojson);
+    expect(skipped.stopsJson).toBe(plain.stopsJson);
+  });
+
+  it('does nothing for a feed with no occasional weekend service', async () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: RUN });
+    const buf = await soundTransitZip();
+    const plain = await processAgencyFeeds(buf, [], st);
+    const skipped = await processAgencyFeeds(buf, [], skip);
+    expect(skipped.geojson).toBe(plain.geojson);
   });
 });

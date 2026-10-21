@@ -56,6 +56,7 @@ interface Agency extends FeedAvailabilityEntry {
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
   nextServiceDatesFeedUrls?: string[];
+  nextServiceDatesSkipWeekendEvents?: boolean;
   fare?: number;
   lastFeedVersion?: string | null;
   lastRawArchiveKey?: string | null;
