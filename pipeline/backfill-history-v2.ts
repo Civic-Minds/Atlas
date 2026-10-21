@@ -23,6 +23,7 @@ import { processAgencyFeeds } from './agencyFeeds.js';
 import { peekFeedDates } from './archiveSelection.js';
 import { backfillSupplementalPolicy, buildSidecar, buildV2Routes, localDirSink, periodKeyForZip, writeSidecar, type BuildV2Report } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
+import { readRefDateQuality } from './historyRefQuality.js';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -55,9 +56,11 @@ async function main(): Promise<void> {
       const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, {}, m => process.stdout.write(`  ${m}`));
       const evidence = await readFeedEvidence(buf, agency.referenceDateFromRunDate ? { referenceDate: new Date().toISOString().slice(0, 10).replace(/-/g, '') } : {});
       const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence);
-      const result = await writeSidecar(sink, buildSidecar(slug, periodKey, evidence.refDate, built.routes));
+      const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);
+      sidecar.refDateQuality = await readRefDateQuality(buf, evidence.refDate);
+      const result = await writeSidecar(sink, sidecar);
       rows.push({ zip, periodKey, refDate: evidence.refDate, result, report: built.report });
-      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)`);
+      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${sidecar.refDateQuality.holiday ? ` HOLIDAY REF DATE (the build drops it): ${sidecar.refDateQuality.reason}` : ''}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       rows.push({ zip, error: message });

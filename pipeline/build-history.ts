@@ -25,6 +25,7 @@ import { representativeRep } from './historyV2.js';
 import { buildRouteSnapshots, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
+import { holidayDropFor, type HolidayPeriodDrop } from './historyRefQuality.js';
 import { historyV2FromEnv } from './historyV2Flag.js';
 import { parsePeriodKey, getPeriodKeySortValue } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
@@ -332,6 +333,10 @@ async function main() {
   // Joined to the per-route change files by period key, never by label.
   const sidecarRoutes: Record<string, Record<string, Array<{ periodKey: string; v2: HistoryV2Sidecar['routes'][string] & { refDate: string } }>>> = {};
   const sidecarSupplementalPeriods: Record<string, Record<string, string[]>> = {};
+  // v2: sidecar periods whose reference date is a holiday-week date are left out whole (and their
+  // same-period change files with them: they were read from the same date).
+  const holidayDrops: HolidayPeriodDrop[] = [];
+  const holidayPeriods: Record<string, Set<string>> = {};
   const sidecarKeys = !v2 ? [] : (await r2ListArchive('history-v2/')).filter(k => k.split('/').length === 3 && k.endsWith('.json'));
   if (v2) console.log(`Found ${sidecarKeys.length} v2 sidecar files in atlas-archive/history-v2/`);
   await runWithConcurrency(sidecarKeys.map(key => async () => {
@@ -342,6 +347,12 @@ async function main() {
       if (sc.version !== 2 || !sc.routes) return;
       const slug = key.split('/')[1];
       const periodKey = key.split('/')[2].replace('.json', '');
+      const holidayDrop = holidayDropFor(slug, periodKey, sc);
+      if (holidayDrop) {
+        holidayDrops.push(holidayDrop);
+        (holidayPeriods[slug] ??= new Set()).add(periodKey);
+        return;
+      }
       for (const url of Object.keys(sc.supplementalRoutes ?? {})) ((sidecarSupplementalPeriods[slug] ??= {})[url] ??= []).push(periodKey);
       for (const [routeKey, rec] of Object.entries(sc.routes)) {
         ((sidecarRoutes[slug] ??= {})[routeKey] ??= []).push({ periodKey, v2: { ...rec, refDate: sc.refDate } });
@@ -353,6 +364,7 @@ async function main() {
   }), concurrency);
   const routeAliases: HistoryRouteAliases = v2 ? JSON.parse(readFileSync(resolve('config/history-route-aliases.json'), 'utf8')) : {};
   const buildReport = newBuildReport();
+  buildReport.droppedHolidayPeriods = holidayDrops.sort((a, b) => a.slug.localeCompare(b.slug) || a.periodKey.localeCompare(b.periodKey));
   const buildYear = new Date().getFullYear();
 
   // 2. Merge BASE_HISTORY manual seeds into archiveRoutes
@@ -423,7 +435,7 @@ async function main() {
       if (v2) {
         // v2: join change files with sidecar entries by period key, drop invalid snapshots,
         // order by real date and keep one snapshot per year (see historyV2Build.ts).
-        const candidates: Candidate[] = joinCandidates(changes, sidecarRoutes[slug]?.[routeShortName] ?? []);
+        const candidates: Candidate[] = joinCandidates(holidayPeriods[slug] ? changes.filter(c => !holidayPeriods[slug].has(c.periodKey)) : changes, sidecarRoutes[slug]?.[routeShortName] ?? []);
         snapshots = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport)
           .map(({ periodKey: _pk, processedAt: _pa, ...snap }) => ({
             ...snap,
@@ -588,6 +600,7 @@ async function main() {
       }
     }
     for (const v of buildReport.visibility) for (const note of v.supplementalNotes) console.log(`  ${note}`);
+    for (const d of buildReport.droppedHolidayPeriods) console.log(`  dropped holiday period ${d.slug}/${d.periodKey} (refDate ${d.refDate}, ${d.routesAffected} routes): ${d.reason}`);
     for (const d of buildReport.drops.slice(0, 50)) console.log(`  dropped ${d.slug}/${d.route} "${d.label}": ${d.reason}`);
   }
 
