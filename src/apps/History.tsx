@@ -982,10 +982,10 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
               aria-label="History year"
               className="time-scrubber-range flex-1 min-w-0"
             />
-            <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">
-              {/* The latest year reads as its year, one label for one stop (CIV-400). */}
-              {availableYears[availableYears.length - 1]}
-            </span>
+            {/* The latest year shows once: while the chip is on it, the end label is left out (CIV-400, CIV-444). */}
+            {selectedYear !== availableYears[availableYears.length - 1] && (
+              <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">{availableYears[availableYears.length - 1]}</span>
+            )}
             <span className="rounded-md bg-[var(--accent-bg)] border border-[var(--accent-border)] px-1.5 py-0.5 text-xs font-black text-[var(--text-primary)] tabular-nums">{selectedYear}</span>
         </div>
       )}
