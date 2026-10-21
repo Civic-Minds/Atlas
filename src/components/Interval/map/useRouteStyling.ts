@@ -247,6 +247,14 @@ export function useRouteStyling(
       // you can click another line to switch — not a near-invisible ghost layer.
       const DIM_OPACITY = 0.18;
       const DIM_WIDTH = 1.25;
+      // The selected route is drawn again above every line (selected-route-layer), so a hovered branch
+      // row also dims that layer's other branches (below); every other state draws it at full strength (#1064).
+      // The per-section colour layer (off by default) is left as is: the branch match is not checked against its pieces.
+      const SELECTED_ROUTE_LAYERS = ['selected-route-layer', 'selected-local-route-layer'];
+      const setSelectedRouteOpacity = (value: unknown) => {
+        for (const id of SELECTED_ROUTE_LAYERS) if (map.getLayer(id)) map.setPaintProperty(id, 'line-opacity', value as any);
+      };
+      setSelectedRouteOpacity(1);
       if (historyOverlay?.routeShortName) {
         // History uses its own route selection state, so mirror the Frequency
         // map's focus treatment when a historical route is selected.
@@ -309,6 +317,7 @@ export function useRouteStyling(
           setRouteLayerPaint(map, 'line-width', [
             'case', branchMatch, 3.5, routeMatch, 1.5, DIM_WIDTH,
           ]);
+          setSelectedRouteOpacity(['case', branchMatch, 1, 0.25]);
         } else {
           // Same fade as History, stops and search hover: the selected route stands out
           // and the rest of the network stays faintly visible and clickable.
