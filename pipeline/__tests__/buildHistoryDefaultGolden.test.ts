@@ -79,6 +79,9 @@ describe('build-history default (ATLAS_HISTORY_V2 unset) is byte-identical to or
     // The default build writes no v2 report and passes no v2 eligibility option.
     expect(Object.keys(cap.files)).toEqual([]);
     expect(cap.agencyListOptions).toEqual({ realYearsOnly: false });
+    // Shapes are v2-only: the fixture holds shape files, the default build never lists, reads or publishes them.
+    expect(cap.listed!.some(p => p.includes('shapes'))).toBe(false);
+    expect(Object.keys(cap.puts!)).toEqual(['atlas/history-config.json']);
   }, 30_000);
 
   (generate ? it.skip : it)('the fixture exercises the cases the gate protects', () => {

@@ -76,6 +76,13 @@ export function historyBuildFixture(): R2Contents {
     routes: { '10': { name: 'Main Street', rep: { h: 22 } } },
   });
 
+  // Route shapes (v2 only; a default build must neither list nor read them): the same line in 2019 and 2024,
+  // an older line under the aliased key 10X in 2015, and a second route in 2019.
+  const shapesObj = (periodKey: string, routes: Record<string, { c: number[][] }>) => j({ version: 1, slug: 'alpha', periodKey, refDate: periodKey, decimals: 5, toleranceM: 15, routes });
+  archive['history-v2-shapes/alpha/20150901.json'] = shapesObj('20150901', { '10X': { c: [[-79.1, 43], [-79.1, 43.1]] } });
+  archive['history-v2-shapes/alpha/20190901.json'] = shapesObj('20190901', { '10': { c: [[-79, 43], [-79, 43.1]] }, R7: { c: [[-79.5, 43], [-79.5, 43.1]] } });
+  archive['history-v2-shapes/alpha/20240601.json'] = shapesObj('20240601', { '10': { c: [[-79, 43], [-79, 43.1]] } });
+
   const pub: Record<string, string> = {
     'atlas/alpha.json': j({
       type: 'FeatureCollection',

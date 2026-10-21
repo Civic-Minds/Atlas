@@ -47,6 +47,7 @@
     "route-report": "npx tsx pipeline/route-report.ts",
     "build-history": "npx tsx pipeline/build-history.ts",
     "history-v2:fixtures": "npx tsx scripts/history-v2-fixtures.ts",
+    "history-v2:pilot-shapes": "npx tsx scripts/history-v2-pilot-shapes.ts",
     "publish-data-release": "npx tsx pipeline/publish-data-release.ts",
     "build-hidden-routes": "npx tsx pipeline/build-hidden-routes.ts",
     "migrate-archive": "npx tsx pipeline/migrate-gtfs-archive.ts",

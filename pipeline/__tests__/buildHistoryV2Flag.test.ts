@@ -4,6 +4,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { resetCapture } from './historyBuild/harness.js';
+import { parseHistoryShapes, shapeForYear } from '../../shared/historyV2Reader.js';
 
 vi.mock('../r2.js', async () => (await import('./historyBuild/harness.js')).r2Mocks());
 vi.mock('fs', async importOriginal => {
@@ -80,5 +81,22 @@ describe('build-history with ATLAS_HISTORY_V2=1', () => {
     expect((cap.agencyList as { slugs: string[] }).slugs).toEqual([]);
     // The build report is written only in v2.
     expect(Object.keys(cap.files)).toEqual([expect.stringContaining('history-build-report.json')]);
+  }, 30_000);
+
+  it('publishes the deduped per-agency shapes file, joined by the kept snapshot period, and leaves history-config alone', async () => {
+    const cap = await runBuild();
+    expect(Object.keys(cap.puts!).sort()).toEqual(['atlas/history-config.json', 'atlas/history-v2-shapes/alpha.json']);
+    const file = JSON.parse(cap.puts!['atlas/history-v2-shapes/alpha.json']) as import('../../shared/historyV2.js').HistoryShapesFile;
+    const parsed = parseHistoryShapes(file);
+    expect(parsed.ok).toBe(true);
+    // 2015 comes from the aliased old key 10X; 2019 and 2024 share one stored line; 2018 has no shape file: none.
+    expect(file.shapes).toHaveLength(3);
+    expect(file.years['2019']['10']).toBe(file.years['2024']['10']);
+    expect(file.years['2015']['10']).not.toBe(file.years['2019']['10']);
+    expect(shapeForYear(file, '10', 2018)).toEqual({ kind: 'none' });
+    expect(shapeForYear(file, 'R7', 2019).kind).toBe('shape');
+    expect(shapeForYear(file, 'R7', 2024)).toEqual({ kind: 'none' });
+    // Snapshots in history-config.json carry no shape fields.
+    expect(cap.historyConfig).not.toContain('toleranceM');
   }, 30_000);
 });

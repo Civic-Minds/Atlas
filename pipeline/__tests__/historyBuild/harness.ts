@@ -12,6 +12,9 @@ export interface BuildCapture {
   agencyListRows?: unknown;
   agencyListOptions?: unknown;
   agencyList?: unknown;
+  /** Every R2 key written with r2Put, and every archive prefix listed. */
+  puts?: Record<string, string>;
+  listed?: string[];
   /** Files the build tried to write with fs.writeFileSync. */
   files: Record<string, string>;
   done?: Promise<void>;
@@ -21,7 +24,7 @@ export interface BuildCapture {
 const G = globalThis as unknown as { __historyBuildCapture?: BuildCapture };
 
 export function resetCapture(): BuildCapture {
-  const cap: BuildCapture = { files: {} };
+  const cap: BuildCapture = { files: {}, puts: {}, listed: [] };
   cap.done = new Promise<void>(resolve => { cap.resolveDone = resolve; });
   G.__historyBuildCapture = cap;
   return cap;
@@ -33,12 +36,13 @@ export function capture(): BuildCapture {
 
 export function r2Mocks() {
   const fx = historyBuildFixture();
-  const list = (store: Record<string, string>) => async (prefix: string) => Object.keys(store).filter(k => k.startsWith(prefix)).sort();
+  const list = (store: Record<string, string>) => async (prefix: string) => (capture().listed?.push(prefix), Object.keys(store)).filter(k => k.startsWith(prefix)).sort();
   return {
     r2ListArchive: list(fx.archive),
     r2GetArchive: async (key: string) => fx.archive[key] ?? null,
     r2Get: async (key: string) => fx.pub[key] ?? null,
     r2Put: async (key: string, body: string) => {
+      capture().puts![key] = body;
       if (key === 'atlas/history-config.json') {
         capture().historyConfig = body;
       }

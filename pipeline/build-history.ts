@@ -26,6 +26,8 @@ import { buildRouteSnapshots, joinCandidates, newBuildReport, visibilityCheck, t
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { historyV2FromEnv } from './historyV2Flag.js';
+import { compileAgencyShapes, type ShapeRouteYear } from './historyShapes.js';
+import type { HistoryPeriodShapes } from '../shared/historyV2.js';
 import { parsePeriodKey, getPeriodKeySortValue } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
@@ -351,6 +353,23 @@ async function main() {
       console.error(`Failed to parse sidecar: ${key}`, err);
     }
   }), concurrency);
+  // 1d. v2 route shapes: history-v2-shapes/{slug}/{periodKey}.json (written only by the v2 backfill with --shapes).
+  // Flag-gated like the sidecars: unset, nothing is listed or read.
+  const shapePeriods: Record<string, Map<string, HistoryPeriodShapes>> = {};
+  const shapeKeys = !v2 ? [] : (await r2ListArchive('history-v2-shapes/')).filter(k => k.split('/').length === 3 && k.endsWith('.json'));
+  if (v2) console.log(`Found ${shapeKeys.length} v2 shape files in atlas-archive/history-v2-shapes/`);
+  await runWithConcurrency(shapeKeys.map(key => async () => {
+    try {
+      const raw = await r2GetArchive(key);
+      if (!raw) { recordFailure(key); return; }
+      const ps = JSON.parse(raw) as HistoryPeriodShapes;
+      if (ps.version !== 1 || !ps.routes) return;
+      (shapePeriods[key.split('/')[1]] ??= new Map()).set(key.split('/')[2].replace('.json', ''), ps);
+    } catch (err) {
+      recordFailure(key);
+      console.error(`Failed to parse shapes: ${key}`, err);
+    }
+  }), 8);
   const routeAliases: HistoryRouteAliases = v2 ? JSON.parse(readFileSync(resolve('config/history-route-aliases.json'), 'utf8')) : {};
   const buildReport = newBuildReport();
   const buildYear = new Date().getFullYear();
@@ -410,6 +429,7 @@ async function main() {
 
   const currentYear = new Date().getFullYear();
   const historyData: any[] = [];
+  const shapeRouteYears: Record<string, ShapeRouteYear[]> = {};
 
   // 4. Build per-agency history from per-route change events
   for (const [slug, routeMap] of Object.entries(archiveRoutes)) {
@@ -424,7 +444,11 @@ async function main() {
         // v2: join change files with sidecar entries by period key, drop invalid snapshots,
         // order by real date and keep one snapshot per year (see historyV2Build.ts).
         const candidates: Candidate[] = joinCandidates(changes, sidecarRoutes[slug]?.[routeShortName] ?? []);
-        snapshots = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport)
+        const built = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport);
+        for (const b of built) {
+          (shapeRouteYears[slug] ??= []).push({ routeKey: routeShortName, year: b.year, periodKey: b.periodKey, lookupKeys: [routeShortName, ...(routeAliases[slug]?.[routeShortName] ?? [])] });
+        }
+        snapshots = built
           .map(({ periodKey: _pk, processedAt: _pa, ...snap }) => ({
             ...snap,
             geometry: isDrawableLineCoordinates(snap.geometry) ? snap.geometry : undefined,
@@ -594,6 +618,24 @@ async function main() {
   if (verifyOnly) {
     if (failedFiles > 0) process.exitCode = 1;
     return;
+  }
+
+  // 4b. v2 shapes: the deduped per-agency files (a separate, lazily loaded file; history-config.json is untouched).
+  if (v2) {
+    for (const entry of historyData) {
+      const periods = shapePeriods[entry.slug];
+      if (!periods || periods.size === 0) continue;
+      const { file, stats } = compileAgencyShapes(entry.slug, periods, shapeRouteYears[entry.slug] ?? []);
+      const body = JSON.stringify(file);
+      console.log(`  shapes ${entry.slug}: ${stats.withShape}/${stats.routeYears} route-years with a shape, ${stats.distinctShapes} stored lines, ${(body.length / 1024).toFixed(0)} KB`);
+      if (dryRun) {
+        const outPath = resolve(`tmp/history-v2-shapes/${entry.slug}.json`);
+        mkdirSync(dirname(outPath), { recursive: true });
+        writeFileSync(outPath, body);
+      } else {
+        await r2Put(`atlas/history-v2-shapes/${entry.slug}.json`, body);
+      }
+    }
   }
 
   // 5. Write history-config.json to public R2 bucket
