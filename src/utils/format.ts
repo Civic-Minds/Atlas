@@ -111,7 +111,7 @@ const KEEP_LOWER = /^(of|to|the|a|an|and|or|in|at|by|for|via)$/i;
 
 /**
  * Headway wording lives in headwayText.ts. These two keep the older names working:
- * fmtHeadway is "about every N min" (or the bare "N min" with style 'compact').
+ * fmtHeadway is "every N min" (or the bare "N min" with style 'compact').
  */
 export function fmtHeadway(minutes: number | null | undefined, style: 'narrative' | 'compact' = 'narrative'): string {
   return style === 'compact' ? headwayAmount(minutes) : headwayAbout(minutes);
