@@ -27,7 +27,8 @@ describe('Data source link', () => {
 
   it('agency card: shows in beta, pointing at the agency website in a new tab', () => {
     card(withSite);
-    const link = screen.getByRole('link', { name: /Data source/ });
+    const link = screen.getByRole('link', { name: 'Data source (opens in a new tab)' });
+    expect(link).toHaveTextContent(/^Data source$/);
     expect(link).toHaveAttribute('href', 'https://example.org/transit');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
@@ -81,6 +82,8 @@ describe('Data source link', () => {
       const chip = screen.getByRole('link', { name: /^All Greater Toronto and Hamilton Area agencies/ });
       expect(chip).toHaveAttribute('href', '/area/toronto');
       expect(chip.className).toContain('rounded-full');
+      expect(chip).toHaveAttribute('title', 'All Greater Toronto and Hamilton Area agencies');
+      expect(chip.querySelector('span')?.className).toContain('truncate');
     });
 
     it('public mode keeps About and the area chip, drops only Data source', () => {

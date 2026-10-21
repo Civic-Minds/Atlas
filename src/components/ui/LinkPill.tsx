@@ -1,13 +1,12 @@
 import { ArrowRight } from 'lucide-react';
 import Pill from './Pill';
 
-/** A pill that is a link to another page in Atlas: the pill look with the same trailing arrow as ArrowLink. Long text wraps inside it, the arrow staying with the last word. */
+/** A pill that is a link to another page in Atlas: the pill look with the same trailing arrow as ArrowLink. Always one line: a long name is cut with an ellipsis (full text in the tooltip and label), the arrow stays. */
 export default function LinkPill({ href, children, className = '' }: { href: string; children: string; className?: string }) {
-  const cut = children.lastIndexOf(' ') + 1;
   return (
-    <Pill as="a" tone="outline" href={href} className={`inline-block max-w-full text-left !whitespace-normal !rounded-[14px] ${className}`.trim()}>
-      {children.slice(0, cut)}
-      <span className="whitespace-nowrap">{children.slice(cut)}<ArrowRight className="ml-1 inline-block h-3 w-3 align-[-2px]" aria-hidden="true" /></span>
+    <Pill as="a" tone="outline" href={href} title={children} aria-label={children} className={`inline-flex max-w-full items-center gap-1 ${className}`.trim()}>
+      <span className="min-w-0 truncate">{children}</span>
+      <ArrowRight className="h-3 w-3 shrink-0" aria-hidden="true" />
     </Pill>
   );
 }

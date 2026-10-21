@@ -703,7 +703,7 @@ export function CardSublineButton({
 export function AgencyDataSourceLink({ agency }: { agency: { slug: string; websiteUrl?: string } }) {
   if (!FEATURES.dataSourceLink || !agency.websiteUrl) return null;
   return (
-    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug}>
+    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug} aria-label="Data source (opens in a new tab)" title="Opens in a new tab">
       Data source
     </ArrowLink>
   );
