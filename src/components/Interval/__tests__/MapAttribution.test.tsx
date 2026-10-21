@@ -46,10 +46,10 @@ describe('MapAttribution', () => {
     const { container, rerender } = render(<MapAttribution contextLayerOn />);
     const credit = screen.getByRole('link', { name: 'U.S. Census Bureau' });
     expect(credit.closest('p')!.className).toContain('truncate');
-    expect(credit.closest('p')!.parentElement!.className).toContain('max-sm:max-w-');
+    expect(container.querySelector('[data-map-attribution]')!.className).toContain('max-sm:max-w-[calc(100vw-5.75rem)]');
     rerender(<MapAttribution />);
     expect(screen.queryByRole('link', { name: 'U.S. Census Bureau' })).toBeNull();
     expect(container.querySelector('p.truncate')).toBeNull();
-    expect(container.innerHTML).not.toContain('max-sm:max-w-[calc(100vw-6rem)]');
+    expect(container.innerHTML).not.toContain('5.75rem');
   });
 });

@@ -46,7 +46,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
   return (
     <>
     <div
-      className={`max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)] ${Z_PANEL} sm:min-w-0 pointer-events-none [&>*]:pointer-events-auto flex flex-wrap-reverse items-center gap-1.5`}
+      className={`max-sm:absolute max-sm:bottom-6 max-sm:left-6 ${contextLayerOn ? 'max-sm:max-w-[calc(100vw-5.75rem)]' : 'max-sm:max-w-[calc(100vw-3rem)]'} ${Z_PANEL} sm:min-w-0 pointer-events-none [&>*]:pointer-events-auto flex flex-wrap-reverse items-center gap-1.5`}
       data-map-attribution=""
       title={FULL_ATTRIBUTION}
     >
@@ -108,8 +108,8 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
       >
         Feedback
       </a>
-      {/* With the shading on, the credit is longer: on narrow phones it shrinks (ellipsis) to stay left of the zoom buttons. */}
-      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${contextLayerOn ? 'max-sm:max-w-[calc(100vw-6rem)] min-w-0' : ''}`}>
+      {/* With the shading on, the credit is longer: on phones the row is narrowed and the credit shrinks (ellipsis) so it stays left of the zoom buttons. */}
+      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${contextLayerOn ? 'max-w-full min-w-0' : ''}`}>
         <p className={`${MAP_BADGE_LABEL} whitespace-nowrap ${contextLayerOn ? 'min-w-0 truncate' : ''}`}>
           <OutboundLink
             href="https://www.openstreetmap.org/copyright"
