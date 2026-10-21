@@ -333,7 +333,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         <div className="mt-3 min-h-5 text-center text-xs font-bold text-[var(--text-muted)]" aria-live="polite">
           {hoveredHour != null && displayedByHour[hoveredHour] != null
             ? formatHourTitle(hoveredHour, displayedByHour[hoveredHour]!)
-            : 'Hover over an hour to inspect its scheduled headway window.'}
+            : null}
         </div>
       )}
       {allowExpand && !expanded && isExpanded && createPortal(
