@@ -24,6 +24,7 @@ import { useColorVision } from '../context/ColorVisionContext';
 import { loadHistoryAgencyV2 } from '../utils/historyV2Loader';
 import { yearsAvailable } from '../../shared/historyV2Reader';
 import { historyYearRoutes } from '../utils/historyYearMap';
+import { labelsThatFit } from '../utils/chartLabels';
 import RegionFilterPills from '../components/RegionFilterPills';
 import {
   agencyHistoryTier,
@@ -213,18 +214,10 @@ function RouteHistoryCard({
   const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
 
   const lineColor = worse ? (colorVisionFriendly ? '#c44516' : '#ef4444') : better ? (colorVisionFriendly ? '#009e73' : '#10b981') : '#9ca3af';
-  // x-axis label visibility: always show first and last; intermediate only if they have clearance
-  const labelClearance = 34;
-  const labelIndices = new Set<number>([0, points.length - 1]);
-  let lastLabelX = points[0]?.x ?? 0;
-  for (let i = 1; i < points.length - 1; i++) {
-    const hasRoomBefore = points[i].x - lastLabelX >= labelClearance;
-    const hasRoomAfter = points[points.length - 1].x - points[i].x >= labelClearance;
-    if (hasRoomBefore && hasRoomAfter) {
-      labelIndices.add(i);
-      lastLabelX = points[i].x;
-    }
-  }
+  // Labels that fit (#1037): x-axis labels need 34 units across; value labels ("30 min", about 26
+  // units wide and 8 tall) skip one that would sit on another, e.g. two snapshots in the same month.
+  const labelIndices = labelsThatFit(points, 34);
+  const valueLabelIndices = labelsThatFit(points.map(p => ({ x: p.x, y: p.y - 7 })), 28, 9);
 
   return (
     // The regular route card's frame, title and rows (RouteCardTitle, direction rows): the agency name
@@ -294,9 +287,11 @@ function RouteHistoryCard({
                 return (
                   <g key={i}>
                     <circle cx={p.x} cy={p.y} r="3" fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
-                    <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
-                      {headwayAmount(p.hw)}
-                    </text>
+                    {valueLabelIndices.has(i) && (
+                      <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
+                        {headwayAmount(p.hw)}
+                      </text>
+                    )}
                     {showXLabel && (
                       <text x={xPos} y={height - 3} textAnchor={xAnchor} fontSize="7.5" fontWeight="600" fill="var(--text-muted)" fontFamily="inherit">
                         {formatXLabel(p.label)}
