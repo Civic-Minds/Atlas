@@ -28,6 +28,7 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
+import { historyAgencyToOpen } from './utils/historyOpen';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -388,6 +389,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
   const [viewportAgencySlugs, setViewportAgencySlugs] = useState<string[]>([]);
+  const [userMovedMap, setUserMovedMap] = useState(false);
+  const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
     const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
     return days.length ? days : ['Weekday' as const];
@@ -466,11 +469,16 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     const id = window.setTimeout(preloadHistory, 3000);
     return () => window.clearTimeout(id);
   }, [warmHistory]);
-  // Always open History on the agency chooser rather than guessing one from
-  // whatever the map happens to be showing -- auto-jumping straight to an
-  // agency (e.g. TTC, just because the map defaults to Toronto) surprised
-  // users who never actually picked that agency themselves.
-  const historyAgencyForView = null;
+  // History opens on a city only when the user has shown which one they mean: an agency they
+  // selected, or the single History agency left in view after they moved or zoomed the map (#1012).
+  // A fresh load, the default Toronto view and restored or shared views never count, so History
+  // doesn't jump to an agency nobody picked (the reason 9b0c3440 made it always open on the chooser).
+  const historyAgencyForView = historyAgencyToOpen({
+    selectedAgencySlug,
+    viewportSlugs: viewportAgencySlugs,
+    historySlugs: historyAgencySlugs,
+    userMovedMap,
+  });
   const searchPlaceholder = inFrequency
     ? 'Search routes'
     : inHistory ? 'Find an agency…'
@@ -804,6 +812,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setDay={setDay}
               onLayersChange={setLayers}
               onViewportAgencySlugsChange={setViewportAgencySlugs}
+              onUserMoveMap={handleUserMoveMap}
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
@@ -827,7 +836,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             />
             {historyOn && (historyOpened || inHistory) && (
               <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
-                <History active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+                <History active={inHistory} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (

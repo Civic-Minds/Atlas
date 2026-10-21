@@ -25,6 +25,7 @@ import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } fro
 import PanelEmpty from '../components/ui/PanelEmpty';
 import { loadingText, loadErrorText, RETRY_HINT } from '../content/stateCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
+import { inViewFirst } from '../utils/historyOpen';
 
 export interface RouteSnapshot {
   label: string;
@@ -63,7 +64,10 @@ export interface AgencyHistory {
 
 interface Props {
   active: boolean;
+  /** The agency to open on, when the user has shown which city they mean (historyAgencyToOpen). */
   initialAgencySlug?: string | null;
+  /** Agencies in the map's view, listed first in the chooser. */
+  inViewAgencySlugs?: readonly string[];
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   query: string;
   searchFocused: boolean;
@@ -476,7 +480,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, initialAgencySlug, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft }: Props) {
+export default function History({ active, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft }: Props) {
   // Applies initialAgencySlug (the currently map-selected agency) once per
   // History session, not every time selectedSlug clears -- otherwise a user
   // typing a new search gets raced back to whatever agency the map still
@@ -494,6 +498,10 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set(urlState?.regions ?? []));
   const [routeQuery, setRouteQuery] = useState(() => urlState?.routeQuery ?? '');
   const [activeFilter, setActiveFilter] = useState<HistoryRouteFilterKey | null>(() => (urlState?.routeMode as HistoryRouteFilterKey | null) ?? null);
+  // The city to open on and the agencies in view are read once, as History opens: panning the map
+  // while browsing History must not jump to another agency or reorder the list (#1012).
+  const openOnSlugRef = useRef<string | null>(active ? initialAgencySlug ?? null : null);
+  const [openInView, setOpenInView] = useState<ReadonlySet<string>>(() => new Set(active ? inViewAgencySlugs ?? [] : []));
   // History stays mounted across modes (#888), so each time it opens it re-reads the URL and
   // starts fresh, as the old remount did.
   const wasActiveRef = useRef(active);
@@ -507,8 +515,12 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
       setRegionFilter(new Set(fresh?.regions ?? []));
       setRouteQuery(fresh?.routeQuery ?? '');
       setActiveFilter((fresh?.routeMode as HistoryRouteFilterKey | null) ?? null);
+      openOnSlugRef.current = initialAgencySlug ?? null;
+      setOpenInView(new Set(inViewAgencySlugs ?? []));
     }
     wasActiveRef.current = active;
+    // Only the opening moment matters; later changes to these props are ignored on purpose.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
@@ -565,12 +577,13 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
   }, [active]);
 
   useEffect(() => {
-    if (!active || selectedSlug || !initialAgencySlug || appliedInitialSlugRef.current) return;
-    if (historyAgencies.some(a => a.slug === initialAgencySlug)) {
-      setSelectedSlug(initialAgencySlug);
+    const openOn = openOnSlugRef.current;
+    if (!active || selectedSlug || !openOn || appliedInitialSlugRef.current) return;
+    if (historyAgencies.some(a => a.slug === openOn)) {
+      setSelectedSlug(openOn);
       appliedInitialSlugRef.current = true;
     }
-  }, [active, historyAgencies, initialAgencySlug, selectedSlug]);
+  }, [active, historyAgencies, selectedSlug]);
 
   useEffect(() => {
     if (!active) { setOverlay(null); return; }
@@ -725,8 +738,8 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
     for (const agencies of map.values()) {
       agencies.sort((a, b) => compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
     }
-    return [...map.entries()].sort(([a], [b]) => compareRegion(a, b));
-  }, [filtered]);
+    return inViewFirst([...map.entries()].sort(([a], [b]) => compareRegion(a, b)), openInView);
+  }, [filtered, openInView]);
 
   const availableYears = useMemo(() => {
     if (!selectedSlug) return [];
