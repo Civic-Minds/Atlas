@@ -24,7 +24,7 @@ export interface MapExportDetails {
   title: string;
   /** Small label above the heading: the view name, only when the heading is a place. */
   eyebrow: string | null;
-  /** Plain-language description lines, e.g. ["Every 20 min or better · Saturday midday"]. */
+  /** Plain-language description lines, e.g. ["≤20 min · Saturday midday"]. */
   lines: string[];
   /** The selected route with its drawn colour, only when it is in the view. */
   route: { label: string; color: string } | null;

@@ -13,7 +13,7 @@ import { agencyDisplayParts, formatStoredDate, routeLabelCase } from '../utils/f
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
-import { joinList } from '../../shared/overflowText';
+import { countOf, joinList } from '../../shared/overflowText';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
 import { effectiveFeedExpiry } from '../../shared/feedAvailability';
@@ -358,7 +358,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         {/* Content View Container */}
         <div className="flex-1 overflow-hidden relative">
           {view === 'home' && (
-            <div className="h-full overflow-y-auto px-5 py-4 space-y-5">
+            <div className="h-full flex flex-col min-h-0">
+            <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-5">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 A transit atlas covering agencies across {countriesLabel}.
               </p>
@@ -390,7 +391,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <LinkCard as="button" onClick={() => window.dispatchEvent(new Event('atlas:privacy-settings'))}>Privacy &amp; analytics</LinkCard>
               </div>
 
-              <div className="text-xs text-[var(--text-dim)] space-y-1">
+            </div>
+              {/* Pinned to the panel's bottom edge, below the scrolling content. */}
+              <div className="shrink-0 border-t border-[var(--border-primary)] px-5 py-3 text-xs text-[var(--text-dim)] space-y-1" data-testid="info-panel-footer">
                 <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
                   <a href="/about/docs" className="hover:text-[var(--accent)] hover:underline">Documentation</a>
                   <span aria-hidden="true">·</span>
@@ -720,7 +723,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         <Tag className="inline-block">History</Tag>
                       </div>
                       <p className="text-xs text-[var(--text-dim)]">
-                        Historical frequency data available for {selectedHistory.routes.length} routes {historyYearsText}.
+                        Historical frequency data available for {countOf(selectedHistory.routes.length, 'route')} {historyYearsText}.
                       </p>
                     </div>
                   )}

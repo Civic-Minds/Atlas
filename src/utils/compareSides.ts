@@ -1,7 +1,7 @@
 import type { DayType } from '../../shared/dayTypes';
 import { PERIOD_LABELS, type TimePeriod } from '../hooks/useIntervalStats';
 import { describeDayAndPeriod } from './mapExportDetails';
-import { headwayAbout, headwayOrBetter } from './headwayText';
+import { headwayAbout, headwayFilterLabel, headwayOrBetter } from './headwayText';
 import { NO_REGULAR_SERVICE_LABEL } from './effectiveHeadway';
 
 /** One side of compare mode: its own day, time and frequency threshold (CIV-19). */
@@ -26,12 +26,12 @@ export function compareSideLabel(side: Pick<CompareSide, 'day' | 'period'>): str
   return describeDayAndPeriod(side.day, side.period);
 }
 
-/** "every 10 min or better", or "all routes" when there is no limit. */
+/** The side's frequency limit, worded like the pickers: "≤10 min", or "All routes" (#1011). */
 export function frequencyWords(maxHeadway: number): string {
-  return maxHeadway === Infinity ? 'all routes' : headwayOrBetter(maxHeadway);
+  return headwayFilterLabel(maxHeadway);
 }
 
-/** Everything a side shows, for its map label: "Weekday late · every 10 min or better". */
+/** Everything a side shows, for its map label: "Weekday late · ≤10 min". */
 export function compareSideHeading(side: CompareSide): string {
   const title = compareSideLabel(side);
   return `${title.charAt(0).toUpperCase()}${title.slice(1)} · ${frequencyWords(side.maxHeadway)}`;
@@ -78,7 +78,7 @@ const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1
 /**
  * The route card's compare section in plain words.
  * - Same day and time on both sides: the route's frequency once ("About every 16 min"), then which
- *   maps draw it ("On map B (every 20 min or better) · not on map A (every 10 min or better)").
+ *   maps draw it ("On map B (≤20 min) · not on map A (≤10 min)").
  * - Day or time differ: one line per side with that side's own frequency
  *   ("A · Weekday midday: about every 16 min, on map").
  */

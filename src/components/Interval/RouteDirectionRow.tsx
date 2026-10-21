@@ -1,4 +1,5 @@
 import React from 'react';
+import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
 import { Info } from 'lucide-react';
 import { getTierColor } from '../../utils/colors';
 import { fmtHeadwayRange } from '../../utils/format';
@@ -31,6 +32,8 @@ interface Props {
   branchHovered?: boolean;
   branchDimmed?: boolean;
   onClick?: () => void;
+  /** While the sparkline is hovered: keep the row's pre-hover size so the card does not jump. */
+  holdLayout?: boolean;
 }
 
 /**
@@ -38,7 +41,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
+export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const interactive = !!(onHoverStart && onHoverEnd);
@@ -49,9 +52,24 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
   const rangeText = showRange && headway != null && trunkHeadway != null
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;
+  const hasValueCell = !!edgeGapAllowance || limited || (headway != null && !showRange) || !!rangeText;
+  // Measured only while not held, so the held size is always the pre-hover layout.
+  const rowRef = React.useRef<HTMLDivElement>(null);
+  const valueRef = React.useRef<HTMLSpanElement>(null);
+  const heldSize = React.useRef<HeldSize | null>(null);
+  React.useLayoutEffect(() => {
+    if (holdLayout || !rowRef.current) return;
+    heldSize.current = {
+      rowHeight: rowRef.current.getBoundingClientRect().height,
+      valueWidth: valueRef.current?.getBoundingClientRect().width ?? 0,
+    };
+  });
+  const held = heldRowStyles(holdLayout, heldSize.current);
 
   return (
     <div
+      ref={rowRef}
+      style={held.row}
       role={clickable ? 'button' : undefined}
       tabIndex={clickable ? 0 : undefined}
       onClick={onClick}
@@ -64,35 +82,37 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
         <span className={`font-bold flex-1 min-w-[6rem] leading-snug break-words ${clickable ? '' : 'text-[var(--text-primary)]'}`}>
           {label}
         </span>
-        {edgeGapAllowance && (
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              onEdgeGapAllowanceClick?.();
-            }}
-            className="inline-flex items-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors shrink-0"
-            title="Atlas added a small allowance for the first or last trip of the day."
-            aria-label="About the first-or-last-trip allowance"
-          >
-            <Info aria-hidden="true" className="w-3 h-3" />
-          </button>
-        )}
-        {limited && (
-          <span className="inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap">
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
-            {limitedLabel}
-          </span>
-        )}
-        {!limited && headway != null && !showRange && (
-          <HeadwayBadge headway={headway} colorHeadway={colorHeadway} live={live} suffix={headwaySuffix} label={headwayLabel} />
-        )}
-        {!limited && rangeText && (
-          <span className="inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0">
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
-            <span className="whitespace-nowrap">{rangeText}</span>
-          </span>
-        )}
+        {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 shrink-0">
+          {edgeGapAllowance && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onEdgeGapAllowanceClick?.();
+              }}
+              className="inline-flex items-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors shrink-0"
+              title="Atlas added a small allowance for the first or last trip of the day."
+              aria-label="About the first-or-last-trip allowance"
+            >
+              <Info aria-hidden="true" className="w-3 h-3" />
+            </button>
+          )}
+          {limited && (
+            <span className="inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap">
+              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
+              {limitedLabel}
+            </span>
+          )}
+          {!limited && headway != null && !showRange && (
+            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} live={live} suffix={headwaySuffix} label={headwayLabel} />
+          )}
+          {!limited && rangeText && (
+            <span className="inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0">
+              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
+              <span className="whitespace-nowrap">{rangeText}</span>
+            </span>
+          )}
+        </span>}
       </div>
       {subLabel && (
         <span className="text-xs font-bold text-[var(--text-dim)] block mt-0.5 truncate">{subLabel}</span>

@@ -56,28 +56,28 @@ describe('list and count wording stays exactly as it was', () => {
     const d = (days: string[]) => describeMapExport({ ...base, frequentServiceDays: days as never, frequentServiceFrequency: 15, frequentServiceWindow: 'daytime' }, [], []).lines;
     expect(d(['Weekday'])).toMatchInlineSnapshot(`
       [
-        "Every 15 min or better · Weekday · 7am–7pm",
+        "≤15 min · Weekday · 7am–7pm",
       ]
     `);
     expect(d(['Weekday', 'Saturday'])).toMatchInlineSnapshot(`
       [
-        "Every 15 min or better · Weekday and Saturday · 7am–7pm",
+        "≤15 min · Weekday and Saturday · 7am–7pm",
       ]
     `);
     expect(d(['Weekday', 'Saturday', 'Sunday'])).toMatchInlineSnapshot(`
       [
-        "Every 15 min or better · Weekday, Saturday and Sunday · 7am–7pm",
+        "≤15 min · Weekday, Saturday and Sunday · 7am–7pm",
       ]
     `);
     const f = (modes: number[]) => describeMapExport({ ...base, view: 'frequency', selectedModes: modes }, [], []).lines;
     expect(f([3, 1])).toMatchInlineSnapshot(`
       [
-        "Every 20 min or better · Saturday midday · Subway/Metro and Bus",
+        "≤20 min · Saturday midday · Subway/Metro and Bus",
       ]
     `);
     expect(f([3, 1, 0])).toMatchInlineSnapshot(`
       [
-        "Every 20 min or better · Saturday midday · Subway/Metro, Streetcar and Bus",
+        "≤20 min · Saturday midday · Subway/Metro, Streetcar and Bus",
       ]
     `);
   });

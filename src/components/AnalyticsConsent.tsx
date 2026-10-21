@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { setConsentPrompt, useConsentPrompt } from '../lib/consentPrompt';
 import { ArrowLeft, X } from 'lucide-react';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
 import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
@@ -61,8 +62,18 @@ export default function AnalyticsConsent() {
     document.documentElement.dataset.consentPrompt = '';
     return () => { delete document.documentElement.dataset.consentPrompt; };
   }, [showPrompt]);
-  const choose = (consent: AnalyticsConsent) => { setAnalyticsConsent(consent); setShowPrompt(false); };
+  const choose = useCallback((consent: AnalyticsConsent) => { setAnalyticsConsent(consent); setShowPrompt(false); }, []);
+  // On sm and up the map's bottom-left pill row draws the prompt as its last pill (#999);
+  // this fixed copy then shows only on phones, and on pages without that row.
+  const { rows } = useConsentPrompt();
+  useEffect(() => { setConsentPrompt(showPrompt, choose); }, [showPrompt, choose]);
   // inset-x-0 + mx-auto + w-fit centers without the left-1/2 shrink-to-fit squeeze that wrapped the text on phones.
   // Phones show it under the header, clear of the map controls and footer links along the bottom edge.
-  return <>{showPrompt && <div role="dialog" aria-label="Analytics consent" className={`fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-6 h-8 max-sm:h-[32px] w-fit max-w-[calc(100vw-2rem)] whitespace-nowrap ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}><span>Optional analytics help improve Atlas.</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>}{showSettings && <Controls onClose={() => setShowSettings(false)} />}</>;
+  const position = `fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-6 ${rows > 0 ? 'sm:hidden' : ''}`;
+  return <>{showPrompt && <ConsentPill className={`${position} max-w-[calc(100vw-2rem)] ${Z_HEADER}`} choose={choose} />}{showSettings && <Controls onClose={() => setShowSettings(false)} />}</>;
+}
+
+/** The prompt's pill: the fixed copy above, and the last pill of the map's bottom-left row. */
+export function ConsentPill({ className = '', choose }: { className?: string; choose: (consent: AnalyticsConsent) => void }) {
+  return <div role="dialog" aria-label="Analytics consent" className={`${className} h-8 max-sm:h-[32px] w-fit whitespace-nowrap ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}><span>Optional analytics help improve Atlas.</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>;
 }

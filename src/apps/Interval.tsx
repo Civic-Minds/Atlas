@@ -22,7 +22,7 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
 import { ON_DEMAND_MODE } from '../../shared/modes';
 import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
-import { plural } from '../../shared/overflowText';
+import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareOtherPhrase } from '../utils/compareSides';
@@ -141,14 +141,14 @@ const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
 const IGNORE_BOUNDS = () => {};
 
 /**
- * Where a compare side's label and controls sit on its map: top right of each half on desktop,
+ * Where a compare side's label and controls sit on its map: top right of each half on desktop (never wider than its half),
  * centred on phones (where the halves stack). The wrapper ignores pointer events so the map stays
  * draggable around it; the controls inside turn them back on. One step above the panels so a chip's
  * menu opens over the phone route sheet instead of behind it.
  */
 function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.ReactNode }) {
   return (
-    <div className={`absolute ${side === 'A' ? 'top-[68px]' : 'top-3 sm:top-[68px]'} left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 z-[1001] pointer-events-none`}>
+    <div className={`absolute ${side === 'A' ? 'top-[68px]' : 'top-3 sm:top-[68px]'} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end z-[1001] pointer-events-none`}>
       {children}
     </div>
   );
@@ -1050,12 +1050,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         )}
       </div>
 
-      <MapAttribution />
-
       {showMapLegend && !nightServiceView && <PersistentMapLegend />}
 
+      {/* On sm and up the bottom-left pills and the bottom-right counts share one row, so the pills
+          (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).
+          Phones drop the wrapper (contents) and keep each group's own position. No z-index here, so
+          the pills keep their own layer and the What's new panel still opens above the header. */}
+      <div className="max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none">
+      <MapAttribution />
+
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
-        <div className={`absolute bottom-[7rem] sm:bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`max-sm:absolute max-sm:bottom-[7rem] max-sm:right-14 ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
@@ -1096,18 +1101,18 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                     <button
                       type="button"
                       onClick={() => { setMapContextView('routes'); setMapContextOpen(true); }}
-                      aria-label={`${mapContextRouteCount ?? 0} routes in view`}
+                      aria-label={`${countOf(mapContextRouteCount ?? 0, 'route')} in view`}
                       aria-expanded={mapContextOpen && mapContextView === 'routes'}
                       title="Routes in view"
                       className="flex items-center gap-1.5 cursor-pointer hover:text-[var(--accent)] transition-colors"
                     >
                       <span className={MAP_BADGE_COUNT}>{mapContextRouteCount ?? 0}</span>
-                      <span className={MAP_BADGE_LABEL}>routes</span>
+                      <span className={MAP_BADGE_LABEL}>{plural(mapContextRouteCount ?? 0, 'route')}</span>
                     </button>
                   ) : (
                     <>
                       <span className={MAP_BADGE_COUNT}>{stats.matching}</span>
-                      <span className={MAP_BADGE_LABEL}>routes</span>
+                      <span className={MAP_BADGE_LABEL}>{plural(stats.matching, 'route')}</span>
                     </>
                   )}
                 </div>
@@ -1115,13 +1120,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                   <button
                     type="button"
                     onClick={() => { setMapContextView('agencies'); setMapContextOpen(true); }}
-                    aria-label={`${mapContextAgencyCount} agencies in view`}
+                    aria-label={`${countOf(mapContextAgencyCount, 'agency', 'agencies')} in view`}
                     aria-expanded={mapContextOpen && mapContextView === 'agencies'}
                     title="Agencies in view"
                     className={`${MAP_BADGE} h-8 max-sm:h-[32px] cursor-pointer hover:text-[var(--accent)] transition-colors`}
                   >
                     <span className={MAP_BADGE_COUNT}>{mapContextAgencyCount}</span>
-                    <span className={MAP_BADGE_LABEL}>agencies</span>
+                    <span className={MAP_BADGE_LABEL}>{plural(mapContextAgencyCount, 'agency', 'agencies')}</span>
                   </button>
                 )}
                 {showMatchPercentage && !isLoading && (
@@ -1136,6 +1141,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
         </div>
       )}
+      </div>
 
       {(showUi || showSelectionUi) && selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedOnDemandSlug);

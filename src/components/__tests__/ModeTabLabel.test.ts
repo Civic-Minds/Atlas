@@ -12,6 +12,12 @@ describe('mode tabs shrink to icons while any non-map view is on', () => {
     expect(modeTabCollapsed(false, true, false)).toBe(false);
   });
 
+  it('collapses the unselected tabs on a narrow top bar, even on the plain map (#1007)', () => {
+    expect(modeTabCollapsed(true, false, false, true)).toBe(true);
+    expect(modeTabCollapsed(false, false, false, true)).toBe(true);
+    expect(modeTabCollapsed(true, false, true, true)).toBe(false);
+  });
+
   it('drops the gap and tightens padding when collapsed', () => {
     expect(modeTabSpacing(true)).toBe('px-2.5 gap-0');
     expect(modeTabSpacing(false)).toBe('px-3 gap-1.5');
