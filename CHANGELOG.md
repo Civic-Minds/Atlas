@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 - **The full-day hour chart's bars match the route card's**: the same round-ended bars at a bigger size, so both read as one chart
 - **The route card's hour chart colours every hour with trips**: hours outside the chosen period are faded instead of some going grey ([#1055](https://github.com/Civic-Minds/Atlas/issues/1055))
+- **The full-day view's trip-time bars sit under their hour and are much taller (beta)**: each bar lines up with the hour above it, the slowest hour is drawn darker, and hovering a bar shows that hour's trip time
 - **History draws each year's routes on that year's own lines (beta)**: sliding back shows the network as it ran, including routes that no longer exist; the latest year uses today's map
 - **History has the map's Frequency and Time filters (beta)**: pick "≤15 min" and a time of day, then slide through the years to see how that network changed; the map, the year's route list and an opened route all follow
 - **History's route list follows the year slider (beta)**: it lists only the routes that ran that year, with that year's frequency and the change from the route's previous snapshot, like the map

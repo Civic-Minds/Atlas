@@ -62,7 +62,7 @@ export function formatHourPlain(hour: number): string {
 
 /**
  * Plain-words summary line, or null when there is nothing to say.
- * "Trip time: 38–52 min, slowest 5 p.m." / "Trip time: about 41 min all day".
+ * "Trip time: 38–52 min" / "Trip time: about 41 min all day".
  */
 export function tripTimeSummary(series: TripTimeSeries | null | undefined, label = 'Trip time'): string | null {
   if (!series) return null;
@@ -74,8 +74,8 @@ export function tripTimeSummary(series: TripTimeSeries | null | undefined, label
   const min = Math.min(...values);
   const max = Math.max(...values);
   if (min === max) return `${label}: about ${min} min all day`;
-  const slowest = entries.find(([, m]) => m === max)![0];
-  return `${label}: ${min}–${max} min, slowest ${formatHourPlain(slowest)}`;
+  // The slowest hour is shown in the strip (its darkest, tallest bar), not named here (CIV-493).
+  return `${label}: ${min}–${max} min`;
 }
 
 /** Hover text for one hour. */

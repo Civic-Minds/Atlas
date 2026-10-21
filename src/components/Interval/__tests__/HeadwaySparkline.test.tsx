@@ -214,9 +214,21 @@ describe('HeadwaySparkline', () => {
     // Opens on the slower direction, which has no trip time data.
     expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
     fireEvent.click(within(dialog).getByRole('button', { name: 'Eastbound' }));
-    expect(within(dialog).getByText('Trip time: 38\u201352 min, slowest 5 p.m.')).toBeInTheDocument();
-    expect(within(dialog).getAllByTestId('trip-time-bar')).toHaveLength(3);
-    expect(dialog.querySelector('[title="5 p.m.: about 52 min"]')).not.toBeNull();
+    expect(within(dialog).getByText('Trip time: 38\u201352 min')).toBeInTheDocument();
+    const bars = within(dialog).getAllByTestId('trip-time-bar');
+    expect(bars).toHaveLength(3);
+    // The slowest hour (5 p.m.) is the darker bar; the others are lighter.
+    expect(bars.map(bar => bar.className.includes('opacity-100'))).toEqual([false, false, true]);
+    const slowestColumn = dialog.querySelector('[title="5 p.m.: about 52 min"]')!;
+    expect(slowestColumn).not.toBeNull();
+    // The strip sits on the chart's own hour columns: one column per chart hour, same row layout.
+    const strip = within(dialog).getByTestId('trip-time-strip');
+    expect(strip.children[1].children).toHaveLength(dialog.querySelector('.relative.z-10.flex')!.children.length);
+    // Hovering a strip bar reports that hour's trip time in the chart's hover line.
+    fireEvent.mouseEnter(slowestColumn);
+    expect(dialog.querySelector('[aria-live="polite"]')!.textContent).toBe('5 p.m.: about 52 min');
+    fireEvent.mouseLeave(strip.children[1]);
+    expect(dialog.querySelector('[aria-live="polite"]')!.textContent).toBe('');
     fireEvent.click(within(dialog).getByRole('button', { name: 'Westbound' }));
     expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
   });
