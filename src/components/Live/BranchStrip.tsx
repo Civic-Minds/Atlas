@@ -39,7 +39,7 @@ const BRACKET_H = 28;
 const LABEL_H = 22;
 const GROUP_GAP = 10;
 /** A branch's bar beside its names: a thin dashed line, so it never reads as the solid bracket of a marked stretch. */
-const BRANCH_BAR = { width: 0, borderLeft: '1px dashed var(--text-dim)' } as const;
+const BRANCH_BAR = { width: 1, backgroundImage: 'repeating-linear-gradient(to bottom, var(--text-dim) 0 2px, transparent 2px 6px)', opacity: 0.7 } as const;
 const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunching: 'Bunching' };
 
 let measurer: CanvasRenderingContext2D | null | undefined;
@@ -365,7 +365,9 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
                   return <span key={m} className="absolute rounded-full" style={{ ...swatchStyle(m, stopStep(s, m), !!s.uncertain), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(50% - ${size / 2}px)`, opacity: stopN(s, m) > 0 && stopN(s, m) < minN ? 0.35 : 1, outline: on ? '2px solid var(--accent)' : undefined, outlineOffset: 1 }} />;
                 })}
                 {/* The branch bar runs from the branch's first stop to its last, so two branches one after another read as two. */}
-                {sec.branch && <span className="pointer-events-none absolute" style={{ ...BRANCH_BAR, left: NAME_LEFT - 10, top: i === 0 ? '50%' : 0, bottom: i === sec.stops.length - 1 ? '50%' : 0 }} />}
+                {sec.branch && <span className="pointer-events-none absolute" style={{ ...BRANCH_BAR, left: NAME_LEFT - 10, top: i === 0 ? '50%' : 0, bottom: i === sec.stops.length - 1 ? 'calc(50% + 5px)' : 0 }} />}
+                {/* A tick from the bar to the branch's end stop marks where the branch starts (or ends); the bar stops short of the joining stop so it never meets the stretch's bracket row. */}
+                {sec.branch && i === sec.terminal && <span className="pointer-events-none absolute h-px w-2 bg-[var(--text-dim)]" style={{ left: NAME_LEFT - 10, top: '50%' }} />}
                 {named && (
                   <span className="flex min-w-0 flex-1 items-baseline gap-2">
                     <span className={`min-w-0 ${note ? '' : 'flex-1'} break-words py-0.5 text-sm leading-5 ${isEnd || marked ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>
