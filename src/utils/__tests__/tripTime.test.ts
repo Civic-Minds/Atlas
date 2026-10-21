@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatHourPlain, slowerOfSeries, tripTimeSeriesFor, tripTimeSummary } from '../tripTime';
+import { tripTimeBarHeight } from '../tripTime';
 
 const published = {
   '14::0::Weekday': { h: { '7': 38, '12': 41, '17': 52 } },
@@ -42,5 +43,16 @@ describe('tripTime', () => {
     expect(formatHourPlain(24)).toBe('12 a.m.');
     expect(formatHourPlain(12)).toBe('12 p.m.');
     expect(formatHourPlain(17)).toBe('5 p.m.');
+  });
+});
+
+describe('tripTimeBarHeight', () => {
+  it('scales across the route range, not from zero: slowest is full height, fastest a quarter', () => {
+    expect(tripTimeBarHeight(67, 43, 67, 32)).toBe(32);
+    expect(tripTimeBarHeight(43, 43, 67, 32)).toBe(8);
+    expect(tripTimeBarHeight(55, 43, 67, 32)).toBe(20);
+  });
+  it('one trip time all day draws every bar at half height', () => {
+    expect(tripTimeBarHeight(50, 50, 50, 32)).toBe(16);
   });
 });
