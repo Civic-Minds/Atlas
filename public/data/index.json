@@ -28480,6 +28480,179 @@
       ],
       "timezone": "America/New_York",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "southshore",
+      "name": "South Shore Line (NICTD)",
+      "websiteUrl": "https://www.mysouthshoreline.com/",
+      "center": [
+        41.7041,
+        -86.9675
+      ],
+      "bbox": [
+        41.524071,
+        -87.623976,
+        41.884167,
+        -86.310951
+      ],
+      "feedUrl": "https://www.mysouthshoreline.com/google/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-585/latest.zip",
+      "region": "Indiana",
+      "cities": [
+        "South Bend, Indiana",
+        "Michigan City, Indiana",
+        "Gary, Indiana",
+        "Hammond, Indiana"
+      ],
+      "timezone": "America/Chicago",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "chelan",
+      "name": "Link Transit (Wenatchee)",
+      "websiteUrl": "https://www.linktransit.com/",
+      "center": [
+        47.6238,
+        -120.3273
+      ],
+      "bbox": [
+        47.362503,
+        -120.67411,
+        47.885025,
+        -119.980453
+      ],
+      "feedUrl": "https://link.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-275/latest.zip",
+      "region": "Washington",
+      "cities": [
+        "Wenatchee, Washington",
+        "East Wenatchee, Washington",
+        "Chelan, Washington",
+        "Leavenworth, Washington"
+      ],
+      "timezone": "America/Los_Angeles",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "parta",
+      "name": "Portage Area Regional Transportation Authority (PARTA)",
+      "websiteUrl": "https://www.partaonline.org/",
+      "center": [
+        41.2906,
+        -81.3668
+      ],
+      "bbox": [
+        41.067153,
+        -81.695556,
+        41.514017,
+        -81.038023
+      ],
+      "feedUrl": "https://passio3.com/parta/passioTransit/gtfs/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2256/latest.zip",
+      "region": "Ohio",
+      "cities": [
+        "Kent, Ohio",
+        "Ravenna, Ohio",
+        "Portage County, Ohio"
+      ],
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "casco-bay-lines",
+      "name": "Casco Bay Lines",
+      "websiteUrl": "https://www.cascobaylines.com/",
+      "center": [
+        43.6859,
+        -70.1792
+      ],
+      "bbox": [
+        43.655463,
+        -70.248486,
+        43.71632,
+        -70.109925
+      ],
+      "feedUrl": "https://gtfs.remix.com/Casco_Bay_Lines_Portland_ME_USA.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3537/latest.zip",
+      "region": "Maine",
+      "cities": [
+        "Portland, Maine",
+        "Peaks Island, Maine"
+      ],
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "frederick-county",
+      "name": "TransIT Services of Frederick County",
+      "websiteUrl": "https://www.frederickcountymd.gov/transit",
+      "center": [
+        39.4897,
+        -77.4917
+      ],
+      "bbox": [
+        39.273942,
+        -77.665127,
+        39.70536,
+        -77.318306
+      ],
+      "feedUrl": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2432/latest.zip",
+      "region": "Maryland",
+      "cities": [
+        "Frederick, Maryland",
+        "Frederick County, Maryland"
+      ],
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "johnson-county-ks",
+      "name": "RideKC Johnson County",
+      "websiteUrl": "https://www.jocogov.org/department/transit",
+      "center": [
+        38.9985,
+        -94.9197
+      ],
+      "bbox": [
+        38.88345,
+        -95.266219,
+        39.113478,
+        -94.573102
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/johnsoncounty-ks-us/johnsoncounty-ks-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2303/latest.zip",
+      "region": "Kansas",
+      "cities": [
+        "Overland Park, Kansas",
+        "Olathe, Kansas",
+        "Johnson County, Kansas"
+      ],
+      "timezone": "America/Chicago",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "manchester-nh",
+      "name": "Manchester Transit Authority (MTA)",
+      "websiteUrl": "https://www.mtabus.org/",
+      "center": [
+        42.9854,
+        -71.3711
+      ],
+      "bbox": [
+        42.758356,
+        -71.534449,
+        43.212473,
+        -71.207827
+      ],
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7841/NHMTAGTFS.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3432/latest.zip",
+      "region": "New Hampshire",
+      "cities": [
+        "Manchester, New Hampshire"
+      ],
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
     }
   ]
 }

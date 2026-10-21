@@ -1,0 +1,26 @@
+{
+  "slug": "chelan",
+  "name": "Link Transit (Wenatchee)",
+  "websiteUrl": "https://www.linktransit.com/",
+  "center": [
+    47.6238,
+    -120.3273
+  ],
+  "bbox": [
+    47.362503,
+    -120.67411,
+    47.885025,
+    -119.980453
+  ],
+  "feedUrl": "https://link.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-275/latest.zip",
+  "region": "Washington",
+  "cities": [
+    "Wenatchee, Washington",
+    "East Wenatchee, Washington",
+    "Chelan, Washington",
+    "Leavenworth, Washington"
+  ],
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

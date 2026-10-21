@@ -77,7 +77,7 @@ These agencies passed the first sweep: active downloadable feeds, scheduled trip
 | done | `washington-county` | Johnson City | Tennessee | ntd-40054 |
 | done | `whitman-county` | City of Pullman | Washington | ntd-294 |
 
-Held for follow-up: Link Transit (`chelan`) had nine repaired/truncated shapes, and Sault Ste. Marie Transit (`sault-ste-marie`) had one truncated shape. They need a visual review before publishing.
+Held for follow-up: Link Transit (`chelan`) had nine repaired/truncated shapes, and Sault Ste. Marie Transit (`sault-ste-marie`) had one truncated shape. They need a visual review before publishing. Link Transit is now registered hidden as `chelan` (2026-10-21 feed: 13 truncated highway shapes, longest route loses about 10%); the visual review still applies.
 
 ## Research sweep (2026-09-10 — active GTFS gap candidates)
 
@@ -292,7 +292,7 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 | done | `marble-valley` | Marble Valley Transit | Vermont | mdb-430 |
 | done | `coast-nh` | COAST (Seacoast NH) | New Hampshire | tld-4668 |
 | done | `advance-transit` | Advance Transit | New Hampshire | mdb-631 |
-| blocked | `manchester-nh` | Manchester Transit Authority | New Hampshire | MDB inactive only — see KNOWN_ISSUES |
+| logged | `manchester-nh` | Manchester Transit Authority | New Hampshire | mdb-3432 active again (2026-10-21); registered hidden, not yet processed |
 
 ---
 

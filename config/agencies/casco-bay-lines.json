@@ -1,0 +1,24 @@
+{
+  "slug": "casco-bay-lines",
+  "name": "Casco Bay Lines",
+  "websiteUrl": "https://www.cascobaylines.com/",
+  "center": [
+    43.6859,
+    -70.1792
+  ],
+  "bbox": [
+    43.655463,
+    -70.248486,
+    43.71632,
+    -70.109925
+  ],
+  "feedUrl": "https://gtfs.remix.com/Casco_Bay_Lines_Portland_ME_USA.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3537/latest.zip",
+  "region": "Maine",
+  "cities": [
+    "Portland, Maine",
+    "Peaks Island, Maine"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "parta",
+  "name": "Portage Area Regional Transportation Authority (PARTA)",
+  "websiteUrl": "https://www.partaonline.org/",
+  "center": [
+    41.2906,
+    -81.3668
+  ],
+  "bbox": [
+    41.067153,
+    -81.695556,
+    41.514017,
+    -81.038023
+  ],
+  "feedUrl": "https://passio3.com/parta/passioTransit/gtfs/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2256/latest.zip",
+  "region": "Ohio",
+  "cities": [
+    "Kent, Ohio",
+    "Ravenna, Ohio",
+    "Portage County, Ohio"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

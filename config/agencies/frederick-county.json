@@ -1,0 +1,24 @@
+{
+  "slug": "frederick-county",
+  "name": "TransIT Services of Frederick County",
+  "websiteUrl": "https://www.frederickcountymd.gov/transit",
+  "center": [
+    39.4897,
+    -77.4917
+  ],
+  "bbox": [
+    39.273942,
+    -77.665127,
+    39.70536,
+    -77.318306
+  ],
+  "feedUrl": "https://passio3.com/frederick/passioTransit/gtfs/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2432/latest.zip",
+  "region": "Maryland",
+  "cities": [
+    "Frederick, Maryland",
+    "Frederick County, Maryland"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}
