@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The full-day hour chart's grey period bands are all the same height, and the hovered period is named once**: alternating bands had been drawn taller than the hover highlight, so Evening looked shorter, and a second period label repeated what the top row already says ([#1056](https://github.com/Civic-Minds/Atlas/issues/1056))
 - **History draws each year's routes on that year's own lines (beta)**: sliding back shows the network as it ran, including routes that no longer exist; the latest year uses today's map
 - **History has the map's Frequency and Time filters (beta)**: pick "≤15 min" and a time of day, then slide through the years to see how that network changed; the map, the year's route list and an opened route all follow
 - **History's route list follows the year slider (beta)**: it lists only the routes that ran that year, with that year's frequency and the change from the route's previous snapshot, like the map
