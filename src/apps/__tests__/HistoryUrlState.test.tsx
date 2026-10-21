@@ -24,6 +24,7 @@ const yearly: AgencyHistory = {
   routes: [
     { routeShortName: '6', routeName: 'Yonge', snapshots: YEARS.map(year => ({ label: String(year), year, weekdayHeadwayMin: year < 2020 ? 10 : 20 })) },
     { routeShortName: '7', routeName: 'Highway 7', snapshots: [2024, 2025].map(year => ({ label: String(year), year, weekdayHeadwayMin: 15 })) },
+    { routeShortName: '8', routeName: 'Kennedy', snapshots: [{ label: '2025', year: 2025, weekdayHeadwayMin: 12 }] },
   ],
 };
 const DATA = [agency('ttc', 'Toronto Transit Commission', 'Ontario'), agency('sta', 'Spokane Transit', 'Washington'), yearly];
@@ -98,5 +99,12 @@ describe('History shared links', () => {
     await waitFor(() => expect(screen.getByText('7 — Highway 7')).toBeInTheDocument());
     expect(screen.getByText('6 — Yonge')).toBeInTheDocument();
     expect(screen.queryByText('+10')).not.toBeInTheDocument();
+  });
+
+  it('a route with one snapshot is listed with its value and no change, and opens with one row', async () => {
+    renderHistory('?agency=yrt&year=2025');
+    await waitFor(() => expect(screen.getByText('8 — Kennedy')).toBeInTheDocument());
+    renderHistory('?agency=yrt&year=2025&hroute=8');
+    await waitFor(() => expect(screen.getAllByText('2025').length).toBeGreaterThan(0));
   });
 });

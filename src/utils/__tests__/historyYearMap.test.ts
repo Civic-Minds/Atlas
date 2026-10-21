@@ -9,7 +9,7 @@ const agency: Parameters<typeof historyYearRoutes>[0] = {
     { routeShortName: '6', snapshots: [snap(2014, { refDate: '20140301', rep: { h: 15 } }), snap(2020, { refDate: '20200301', rep: { h: 60 } })] },
     { routeShortName: '117', snapshots: [snap(2020, { refDate: '20200301', rep: { lim: true } })] },
     { routeShortName: '9', snapshots: [snap(2014, { refDate: '20140301', rep: {} })] },
-    { routeShortName: 'OLD', snapshots: [snap(2014, undefined, { geometry: [[0, 0], [1, 1]] })] },
+    { routeShortName: 'OLD', snapshots: [snap(2014, undefined, { geometry: [[9, 9], [8, 8]] })] },
   ],
 };
 
@@ -27,15 +27,29 @@ describe('historyYearRoutes (#1028 batch A)', () => {
     expect(historyYearRoutes(agency, 2014, 'default').find(r => r.routeShortName === '9')).toMatchObject({ headway: null });
   });
 
-  it("a snapshot's own shape is used; the rest go on today's lines", () => {
-    const y2014 = historyYearRoutes(agency, 2014, 'default');
-    expect(y2014.find(r => r.routeShortName === 'OLD')?.coordinates).toEqual([[0, 0], [1, 1]]);
-    expect(onTodaysLines(y2014).map(r => r.routeShortName)).toEqual(['6', '9']);
+  const SHAPES = {
+    version: 1, slug: 'x', decimals: 5, toleranceM: 15,
+    shapes: [[[0, 0], [1, 1]], [[2, 2], [3, 3]]],
+    approx: [1],
+    years: { '2014': { OLD: 0, '6': 1 }, '2020': { '6': 0 } },
+  } as never;
+
+  it("a year's own line (CIV-456) wins; the rest go on today's lines; old v1 geometry is never drawn", () => {
+    const y2014 = historyYearRoutes(agency, 2014, 'default', undefined, SHAPES, 2020);
+    expect(y2014.find(r => r.routeShortName === 'OLD')).toMatchObject({ coordinates: [[0, 0], [1, 1]] });
+    expect(y2014.find(r => r.routeShortName === '6')).toMatchObject({ coordinates: [[2, 2], [3, 3]], approximate: true });
+    expect(onTodaysLines(y2014).map(r => r.routeShortName)).toEqual(['9']);
+    expect(historyYearRoutes(agency, 2014, 'default').find(r => r.routeShortName === 'OLD')?.coordinates).toBeUndefined();
+  });
+
+  it("the latest year uses today's map lines even when it has a shape", () => {
+    expect(historyYearRoutes(agency, 2020, 'default', undefined, SHAPES, 2020).every(r => !r.coordinates)).toBe(true);
+    expect(historyYearRoutes(agency, 2020, 'default', undefined, SHAPES, 2026).find(r => r.routeShortName === '6')?.coordinates).toEqual([[0, 0], [1, 1]]);
   });
 
   it("colours today's lines by route number, with the given fallback", () => {
     const expr = historyYearColorExpression(historyYearRoutes(agency, 2014, 'default'), 'FALLBACK') as unknown[];
-    expect(expr).toEqual(['match', ['to-string', ['get', 'routeShortName']], '6', localRouteHeadwayColor(15, 'default'), '9', localRouteHeadwayColor(null, 'default'), 'FALLBACK']);
+    expect(expr).toEqual(['match', ['to-string', ['get', 'routeShortName']], '6', localRouteHeadwayColor(15, 'default'), '9', localRouteHeadwayColor(null, 'default'), 'OLD', localRouteHeadwayColor(30, 'default'), 'FALLBACK']);
     expect(historyYearColorExpression([], 'FALLBACK')).toBe('FALLBACK');
   });
 });

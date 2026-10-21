@@ -1,4 +1,4 @@
-import { routesForYear, snapshotValue, type HistorySnapshotLike, type HistoryRouteLike, type SnapshotValue } from '../../shared/historyV2Reader';
+import { routesForYear, shapeForYear, snapshotValue, type HistoryShapesFile, type HistorySnapshotLike, type HistoryRouteLike, type SnapshotValue } from '../../shared/historyV2Reader';
 import type { HeadwayByPeriod } from '../../shared/config';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
@@ -9,18 +9,21 @@ import type { ColorVisionMode } from './colors';
  * One route drawn in History's year view (#1028 batch A). Only routes with a snapshot in the year
  * are drawn (routesForYear: no fallback to another year). The colour is that year's weekday value in
  * the shared tier colours; a limited or unknown value takes the map's no-value colour (never hidden,
- * per the reader contract). `coordinates` is the
- * snapshot's own shape when it has one; otherwise the route is drawn on today's map line.
+ * per the reader contract). `coordinates` is that year's own line from the shapes file (CIV-456) when it
+ * has one; otherwise, and always for the latest year, the route is drawn on today's map line.
  */
 export interface HistoryYearRoute {
   routeShortName: string;
   color: string;
   /** The year's weekday minutes, or null for a limited or unknown value. */
   headway: number | null;
+  /** That year's own line (shapeForYear); absent = drawn on today's map line. */
   coordinates?: number[][];
+  /** The line is drawn from the stop order (straight links between stops), not a published shape. */
+  approximate?: boolean;
 }
 
-type Snapshot = HistorySnapshotLike & { geometry?: number[][]; headwayByPeriod?: HeadwayByPeriod };
+type Snapshot = HistorySnapshotLike & { headwayByPeriod?: HeadwayByPeriod };
 
 /** What History shows: a time period ('all' = the weekday all-day value) and a frequency limit (Infinity = All). */
 export interface HistoryView {
@@ -54,6 +57,10 @@ export function historyYearRoutes(
   year: number,
   colorMode: ColorVisionMode,
   view: HistoryView = HISTORY_VIEW_ALL,
+  /** The agency's per-year shapes file (CIV-456), or null when there is none. */
+  shapes: HistoryShapesFile | null = null,
+  /** The latest year: it uses today's map lines, as the map does, so no year shape is read for it. */
+  latestYear?: number,
 ): HistoryYearRoute[] {
   const out: HistoryYearRoute[] = [];
   for (const { route, snapshot } of routesForYear<Snapshot, HistoryRouteLike<Snapshot>>(agency, year)) {
@@ -64,10 +71,20 @@ export function historyYearRoutes(
       routeShortName: route.routeShortName,
       headway,
       color: localRouteHeadwayColor(headway, colorMode),
-      ...(isDrawableLineCoordinates(snapshot.geometry) ? { coordinates: snapshot.geometry } : {}),
+      // The year's own line when it has one (not for the latest year); otherwise today's map line.
+      // Snapshots' old v1 `geometry` is not used (reader contract).
+      ...yearShape(shapes, route.routeShortName, year, latestYear),
     });
   }
   return out;
+}
+
+function yearShape(shapes: HistoryShapesFile | null, routeKey: string, year: number, latestYear?: number): { coordinates?: number[][]; approximate?: boolean } {
+  if (year === latestYear) return {};
+  const shape = shapeForYear(shapes, routeKey, year);
+  return shape.kind === 'shape' && isDrawableLineCoordinates(shape.coordinates)
+    ? { coordinates: shape.coordinates, ...(shape.approximate ? { approximate: true } : {}) }
+    : {};
 }
 
 /** The year's routes drawn on today's map lines (those without their own shape). */

@@ -21,8 +21,8 @@ import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
 import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey } from '../utils/routeModeFilters';
 import { useColorVision } from '../context/ColorVisionContext';
-import { loadHistoryAgencyV2 } from '../utils/historyV2Loader';
-import { routesForYear, snapshotValue, yearsAvailable } from '../../shared/historyV2Reader';
+import { loadHistoryAgencyV2, loadHistoryShapesV2 } from '../utils/historyV2Loader';
+import { routesForYear, snapshotValue, yearsAvailable, type HistoryShapesFile } from '../../shared/historyV2Reader';
 import { HISTORY_VIEW_ALL, historyPeriodValue, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { labelsThatFit } from '../utils/chartLabels';
@@ -653,21 +653,24 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   // The open agency, validated by the v2 reader (one result for the panel, slider and map, #1028
   // batch A). In fixture mode the agency file carries only routes, so the name, region and centre
   // come from the History list. A file that fails to parse shows an error, never partial data.
-  const [openAgency, setOpenAgency] = useState<{ slug: string; agency: AgencyHistory | null } | null>(null);
+  const [openAgency, setOpenAgency] = useState<{ slug: string; agency: AgencyHistory | null; shapes: HistoryShapesFile | null } | null>(null);
   useEffect(() => {
     if (!selectedSlug || historyData === null) { setOpenAgency(null); return; }
     let cancelled = false;
     const slug = selectedSlug;
     const base = historyData.find(a => a.slug === slug);
-    loadHistoryAgencyV2<RouteSnapshot>(slug).then(result => {
+    // The per-year shapes file loads with it (CIV-456). Without one (not published, or unreadable)
+    // the year's routes draw on today's map lines; that isn't an error.
+    Promise.all([loadHistoryAgencyV2<RouteSnapshot>(slug), loadHistoryShapesV2(slug)]).then(([result, shapes]) => {
       if (cancelled) return;
-      if (!result.ok) { setOpenAgency({ slug, agency: null }); return; }
+      if (!result.ok) { setOpenAgency({ slug, agency: null, shapes: null }); return; }
       const merged = { ...base, ...result.value, name: base?.name ?? slug, region: base?.region ?? '', center: base?.center } as AgencyHistory;
-      setOpenAgency({ slug, agency: withUsableSnapshots(merged) });
+      setOpenAgency({ slug, agency: withUsableSnapshots(merged), shapes: shapes.ok ? shapes.value : null });
     });
     return () => { cancelled = true; };
   }, [selectedSlug, historyData]);
   const openAgencyHistory = openAgency?.slug === selectedSlug ? openAgency.agency : null;
+  const openAgencyShapes = openAgency?.slug === selectedSlug ? openAgency.shapes : null;
   const openAgencyFailed = openAgency?.slug === selectedSlug && openAgency.agency === null;
 
   // The map draws the selected year's routes only (routesForYear: no fallback to another year),
@@ -677,7 +680,8 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
     if (!active) { setOverlay(null); return; }
     const agency = openAgencyHistory;
     if (!agency) { setOverlay(null); return; }
-    const yearRoutes = selectedYear > 0 ? historyYearRoutes(agency, selectedYear, historyColorFriendly ? 'friendly' : 'default', view) : [];
+    const latestYear = yearsAvailable(agency).at(-1);
+    const yearRoutes = selectedYear > 0 ? historyYearRoutes(agency, selectedYear, historyColorFriendly ? 'friendly' : 'default', view, openAgencyShapes, latestYear) : [];
     setOverlay({
       slug: agency.slug,
       routeShortName: selectedRouteShortName ?? '',
@@ -686,7 +690,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
       selectedYear: selectedYear > 0 ? selectedYear : undefined,
       yearRoutes,
     });
-  }, [active, openAgencyHistory, selectedRouteShortName, setOverlay, selectedYear, historyColorFriendly, view]);
+  }, [active, openAgencyHistory, openAgencyShapes, selectedRouteShortName, setOverlay, selectedYear, historyColorFriendly, view]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
 
