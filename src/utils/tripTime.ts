@@ -82,3 +82,14 @@ export function tripTimeSummary(series: TripTimeSeries | null | undefined, label
 export function tripTimeHourTitle(hour: number, minutes: number): string {
   return `${formatHourPlain(hour)}: about ${minutes} min`;
 }
+
+/**
+ * A trip-time bar's height in the strip: scaled across the route's own range (fastest to slowest
+ * hour), not from zero, so a 43-67 min route shows its variation; the slowest hour is the full
+ * height and the fastest a quarter of it, so every bar stays visible. One time all day: half height.
+ */
+export function tripTimeBarHeight(minutes: number, min: number, max: number, stripHeight: number): number {
+  const floor = Math.max(3, Math.round(stripHeight / 4));
+  if (!(max > min)) return Math.round(stripHeight / 2);
+  return Math.round(floor + ((minutes - min) / (max - min)) * (stripHeight - floor));
+}
