@@ -11,6 +11,7 @@ import { mkdir, writeFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import JSZip from 'jszip';
 import { processGtfsBuffer } from './process-core.js';
+import { historyRouteKey } from './historyRouteKey.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
 const ARCHIVE_INDEX = 'https://cdn.mbta.com/archive/archived_feeds.txt';
@@ -86,8 +87,9 @@ function snapshotRoutes(geojson: string, previous: Record<string, { headway: num
   const current: Record<string, { headway: number; tier: string | null; routeLongName?: string; headwayByPeriod?: HeadwayByPeriod }> = {};
   for (const feature of fc.features) {
     const properties = feature.properties;
-    if (!properties.routeShortName || properties.day !== 'Weekday' || properties.directionId !== 0) continue;
-    const route = String(properties.routeShortName);
+    // Same route key build-history uses: rail and ferry routes have a blank short name but a route_id.
+    const route = historyRouteKey(properties);
+    if (!route || properties.day !== 'Weekday' || properties.directionId !== 0) continue;
     const headway = properties.headway == null ? null : Number(properties.headway);
     if (headway == null) continue;
     if (!current[route] || headway < current[route].headway) {
@@ -141,7 +143,8 @@ async function main() {
       const buffer = Buffer.from(await response.arrayBuffer());
       const info = await peekFeedInfo(buffer);
       const result = await processGtfsBuffer(buffer, message => process.stdout.write(`  ${message}\n`), { slug: SLUG });
-      const periodKey = info.feedExpiry ?? info.feedVersion ?? feed.endDate;
+      // Always a YYYYMMDD key: a feed_version string has no year, and History would date it to the current year.
+      const periodKey = info.feedExpiry ?? feed.startDate;
       // Use the archive's selected year. Feed end dates can cross into the
       // following calendar year and would undercount the source coverage.
       coverageYears.add(year);

@@ -8,6 +8,7 @@ import { mkdir, writeFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import JSZip from 'jszip';
 import { processGtfsBuffer } from './process-core.js';
+import { historyRouteKey } from './historyRouteKey.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
 const MEDIA_API = 'https://rideneworleans.org/wp-json/wp/v2/media?search=GTFS&per_page=100';
@@ -64,8 +65,9 @@ function snapshotRoutes(geojson: string, previous: Record<string, { headway: num
   const current: Record<string, { headway: number; tier: string | null; routeLongName?: string; headwayByPeriod?: HeadwayByPeriod }> = {};
   for (const feature of fc.features) {
     const properties = feature.properties;
-    if (!properties.routeShortName || properties.day !== 'Weekday' || properties.directionId !== 0) continue;
-    const route = String(properties.routeShortName);
+    // Same route key build-history uses: rail and ferry routes have a blank short name but a route_id.
+    const route = historyRouteKey(properties);
+    if (!route || properties.day !== 'Weekday' || properties.directionId !== 0) continue;
     const headway = properties.headway == null ? null : Number(properties.headway);
     if (headway == null) continue;
     if (!current[route] || headway < current[route].headway) {
@@ -119,7 +121,8 @@ async function main() {
       const buffer = Buffer.from(await response.arrayBuffer());
       const info = await peekFeedInfo(buffer);
       const result = await processGtfsBuffer(buffer, message => process.stdout.write(`  ${message}\n`), { slug: SLUG });
-      const periodKey = info.feedExpiry ?? info.feedVersion ?? feed.dateKey;
+      // Always a YYYYMMDD key: a feed_version string has no year, and History would date it to the current year.
+      const periodKey = info.feedExpiry ?? feed.dateKey;
       coverageYears.add(feed.year);
       const { current, snapshots } = snapshotRoutes(result.geojson, previous, periodKey);
       const routeFeatures = (JSON.parse(result.geojson) as { features: Array<{ geometry?: { type?: string }; properties?: Record<string, unknown> }> }).features
