@@ -339,7 +339,7 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
   return (
     <div aria-hidden="true">
       <div className="relative h-5 text-xs font-bold text-[var(--text-secondary)]">
-        {modes.map((m, k) => <span key={m} className="absolute top-0 -translate-x-1/2 whitespace-nowrap" style={{ left: COL_X[k] }}>{TRACK_NAME[m]}</span>)}
+        {modes.map((m, k) => <span key={m} className={`absolute top-0 whitespace-nowrap ${k === 0 ? '' : '-translate-x-1/2'}`} style={{ left: k === 0 ? 0 : COL_X[k] }}>{TRACK_NAME[m]}</span>)}
       </div>
       {sections.map(sec => (
         <div key={sec.key}>

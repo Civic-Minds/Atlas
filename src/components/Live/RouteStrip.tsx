@@ -335,7 +335,7 @@ function TrackDots({ tracks, s, i, last, size, active, centred }: { tracks: read
 function TrackHeads({ tracks }: { tracks: readonly Track[] }) {
   return (
     <div className="relative h-5 text-xs font-bold text-[var(--text-secondary)]" aria-hidden="true">
-      {tracks.map((t, k) => <span key={t.mode} className="absolute top-0 -translate-x-1/2 whitespace-nowrap" style={{ left: COL_X[k] }}>{TRACK_NAME[t.mode]}</span>)}
+      {tracks.map((t, k) => <span key={t.mode} className={`absolute top-0 whitespace-nowrap ${k === 0 ? '' : '-translate-x-1/2'}`} style={{ left: k === 0 ? 0 : COL_X[k] }}>{TRACK_NAME[t.mode]}</span>)}
     </div>
   );
 }

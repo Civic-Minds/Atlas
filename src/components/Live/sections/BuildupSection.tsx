@@ -3,7 +3,6 @@ import { buildupTakeaway, type DashboardBand, type DashboardBandData, type LiveV
 import { isMajorStop, shortStopName, stretchEnds } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
-import { useMediaQuery } from '../../../hooks/useMediaQuery';
 import DirectionStrip from '../DirectionStrip';
 import { branchNamesWrap } from '../BranchStrip';
 import { branchStripFromV3 } from '../branchStripModel';
@@ -31,8 +30,7 @@ export function buildupModel(data: DashboardBandData, dir: number | null, uncert
  */
 export default function BuildupSection({ v3, data, dir, uncertain, detail, boundary, band = 'all' }: { v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: UncertainStart[]; detail: 'full' | 'compact'; boundary?: string; band?: DashboardBand }): ReactNode {
   const full = detail === 'full';
-  // On a phone the strip would be a long vertical list of every stop: the bar chart stays there.
-  const phone = useMediaQuery('(max-width: 479px)');
+  // Full analysis draws the route strip at every width; on phones it is the strip's own compact vertical line (CIV-502).
   const { rows, lessExactStops, pointsOf, scale } = buildupModel(data, dir, uncertain);
   // Strips side by side share one top and one row height: the bracket room and two-line names are kept on both if either needs them.
   const models = full ? rows.map(b => branchStripFromV3(v3, b.directionId, band, uncertain)) : [];
@@ -51,7 +49,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
           return (
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
-              {full && !phone ? (
+              {full ? (
                 // The route strip carries the delay at every stop and the marked stretch; the figures the old takeaway line gave are its hover text.
                 <div className="mt-2" title={buildupTakeaway(b, lessExactStops(b.directionId))}>
                   <DirectionStrip v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['delay']} reserveBracket={reserveBracket} twoLineNames={twoLineNames} />
