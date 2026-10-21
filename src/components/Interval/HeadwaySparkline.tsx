@@ -219,7 +219,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             className="absolute top-12 bottom-0 rounded-sm pointer-events-none odd:bg-[var(--bg-btn-hover)] even:bg-transparent opacity-40"
             style={{ left: `${band.left * 100}%`, width: `${band.width * 100}%` }}
           >
-            <span className="absolute -top-12 left-0.5 sm:left-1 text-xs font-black text-[var(--text-muted)] whitespace-nowrap">
+            <span className="absolute -top-6 left-0.5 sm:left-1 text-xs font-black text-[var(--text-muted)] whitespace-nowrap">
               {band.label.endsWith(' Peak') ? (
                 <>
                   <span className="sm:hidden" aria-hidden="true">{band.label.replace(' Peak', '')}</span>
