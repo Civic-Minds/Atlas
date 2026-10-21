@@ -582,15 +582,18 @@ export function CardHelpNotice({
   actionLabel = 'Learn more',
 }: {
   message: string;
-  onLearnMore: () => void;
+  /** Without it the notice is the sentence alone, no link. */
+  onLearnMore?: () => void;
   actionLabel?: string;
 }) {
   return (
     <div className={`${CARD_NOTICE} flex min-w-0 flex-wrap items-start gap-x-1 gap-y-0.5`}>
       <span className="min-w-0 flex-1 whitespace-normal break-words leading-relaxed">{message}</span>
-      <ArrowLink as="button" tone="inline" size="xs" onClick={onLearnMore} className="shrink-0 whitespace-nowrap">
-        {actionLabel}
-      </ArrowLink>
+      {onLearnMore && (
+        <ArrowLink as="button" tone="inline" size="xs" onClick={onLearnMore} className="shrink-0 whitespace-nowrap">
+          {actionLabel}
+        </ArrowLink>
+      )}
     </div>
   );
 }
