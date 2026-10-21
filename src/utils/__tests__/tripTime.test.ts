@@ -47,12 +47,12 @@ describe('tripTime', () => {
 });
 
 describe('tripTimeBarHeight', () => {
-  it('scales across the route range, not from zero: slowest is full height, fastest a quarter', () => {
-    expect(tripTimeBarHeight(67, 43, 67, 32)).toBe(32);
-    expect(tripTimeBarHeight(43, 43, 67, 32)).toBe(8);
-    expect(tripTimeBarHeight(55, 43, 67, 32)).toBe(20);
+  it('scales from zero, so bar heights keep the true ratio: slowest is full height (CIV-493)', () => {
+    expect(tripTimeBarHeight(60, 60, 80)).toBe(80);
+    expect(tripTimeBarHeight(45, 60, 80)).toBe(60);
+    expect(tripTimeBarHeight(30, 60, 80)).toBe(40);
   });
-  it('one trip time all day draws every bar at half height', () => {
-    expect(tripTimeBarHeight(50, 50, 50, 32)).toBe(16);
+  it('one trip time all day draws every bar at full height', () => {
+    expect(tripTimeBarHeight(50, 50, 80)).toBe(80);
   });
 });

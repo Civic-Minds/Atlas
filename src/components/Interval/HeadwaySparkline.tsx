@@ -339,6 +339,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         <TripTimeStrip
           series={tripTime}
           label="Trip time"
+          serviceHours={new Set(HOURS.filter(h => displayedByHour[h] != null))}
           hoveredHour={hoveredTripHour}
           onHourHover={setHoveredTripHour}
         />

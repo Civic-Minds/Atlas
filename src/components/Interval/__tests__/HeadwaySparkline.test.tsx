@@ -204,7 +204,7 @@ describe('HeadwaySparkline', () => {
         allowExpand
         title="Route 14"
         directionOptions={[
-          { key: 'east', label: 'Eastbound', byHour: { 7: 30, 12: 20, 17: 25 }, tripTime: { byHour: { 7: 38, 12: 41, 17: 52 } } },
+          { key: 'east', label: 'Eastbound', byHour: { 7: 30, 12: 20, 17: 25, 21: 30 }, tripTime: { byHour: { 7: 38, 12: 41, 17: 52 } } },
           { key: 'west', label: 'Westbound', byHour: { 7: 40, 12: 30, 17: 35 }, tripTime: null },
         ]}
       />,
@@ -217,6 +217,8 @@ describe('HeadwaySparkline', () => {
     expect(within(dialog).getByText('Trip time: 38\u201352 min')).toBeInTheDocument();
     const bars = within(dialog).getAllByTestId('trip-time-bar');
     expect(bars).toHaveLength(3);
+    // 9 p.m. has trips but no trip time: a faint tick, not a gap that reads as no service.
+    expect(within(dialog).getAllByTestId('trip-time-missing')).toHaveLength(1);
     // The slowest hour (5 p.m.) is the darker bar; the others are lighter.
     expect(bars.map(bar => bar.className.includes('opacity-100'))).toEqual([false, false, true]);
     const slowestColumn = dialog.querySelector('[title="5 p.m.: about 52 min"]')!;

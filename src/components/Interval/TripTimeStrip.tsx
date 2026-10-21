@@ -11,13 +11,15 @@ export const FULL_DAY_BAR_WIDTH = 'w-[8px] sm:w-[14px]';
 /**
  * A line and an hourly strip under the full-day frequency chart. The strip uses the chart's own
  * hour columns (same row, gap and bar width), so each bar sits under its hour, and is scaled
- * across the route's own fastest-to-slowest range (tripTimeBarHeight). Hovering or tapping a bar
+ * from zero with the slowest hour at full height (tripTimeBarHeight). Hovering or tapping a bar
  * reports that hour through the chart's hover line; the slowest hour is drawn darker. Renders nothing without data.
  */
-export function TripTimeStrip({ series, label, height = TRIP_TIME_STRIP_HEIGHT, hoveredHour, onHourHover }: {
+export function TripTimeStrip({ series, label, height = TRIP_TIME_STRIP_HEIGHT, serviceHours, hoveredHour, onHourHover }: {
   series: TripTimeSeries | null | undefined;
   label?: string;
   height?: number;
+  /** Hours the chart above has trips in; one with no trip time gets a faint tick, so the gap doesn't read as no service. */
+  serviceHours?: ReadonlySet<number>;
   hoveredHour?: number | null;
   onHourHover?: (hour: number | null) => void;
 }) {
@@ -48,13 +50,15 @@ export function TripTimeStrip({ series, label, height = TRIP_TIME_STRIP_HEIGHT, 
               onClick={() => onHourHover?.(minutes != null ? h : null)}
             >
               {hovered && <div className="absolute inset-0 rounded-sm bg-[var(--bg-btn-hover)] pointer-events-none" />}
-              {minutes != null && (
+              {minutes != null ? (
                 <div
                   data-testid="trip-time-bar"
                   className={`relative ${FULL_DAY_BAR_WIDTH} rounded-sm bg-[var(--text-dim)] ${hovered || slowest ? 'opacity-100' : 'opacity-50'}`}
-                  style={{ height: tripTimeBarHeight(minutes, min, max, height) }}
+                  style={{ height: tripTimeBarHeight(minutes, max, height) }}
                 />
-              )}
+              ) : serviceHours?.has(h) ? (
+                <div data-testid="trip-time-missing" className={`${FULL_DAY_BAR_WIDTH} h-[3px] rounded-sm bg-[var(--text-dim)] opacity-20`} />
+              ) : null}
             </div>
           );
         })}
