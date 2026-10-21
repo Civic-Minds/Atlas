@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **History's route chart no longer stacks labels on top of each other (beta)**: when two snapshots fall close together only one value label shows ([#1037](https://github.com/Civic-Minds/Atlas/issues/1037))
+- **The History map stays put while you move the year slider (beta)**: it only re-frames when you open an agency or a route ([#1016](https://github.com/Civic-Minds/Atlas/issues/1016))
 - **History's map shows only the routes that ran in the chosen year (beta)**: sliding to 2014 draws 2014's routes in 2014's frequency colours instead of mixing in today's lines, a selected route is highlighted like on the map, and an agency whose history fails to load shows an error instead of partial data ([#1028](https://github.com/Civic-Minds/Atlas/issues/1028))
 - **The map's "couldn't load" panel uses the app's usual text link for Close**: it was a one-off accent button; it now matches the other in-card actions ([#1028](https://github.com/Civic-Minds/Atlas/issues/1028))
 - **A map route link opens the same route in History (beta)**: History reads the map's route links and the route open on the map when you switch to History, alongside its own links; recent searches show in the map's suggestions panel ([#1028](https://github.com/Civic-Minds/Atlas/issues/1028))
