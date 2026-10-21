@@ -51,6 +51,11 @@ export interface HistoryV2Sidecar {
   periodKey: string;
   refDate: string;
   routes: Record<string, HistoryV2SidecarRoute>;
+  /**
+   * Routes in `routes` that came from a supplemental feed (e.g. rail), by feed url. Present only
+   * when a supplemental feed was part of this snapshot; its absence means bus feed only.
+   */
+  supplementalRoutes?: Record<string, string[]>;
 }
 
 export function historyFlagFor(rep: HistoryRep): HistoryFlag | undefined {

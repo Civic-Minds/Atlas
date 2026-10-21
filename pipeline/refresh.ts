@@ -57,7 +57,7 @@ import {
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
 import type { FeedQuality } from '../shared/feedQuality.js';
 import { historyRouteKey } from './historyRouteKey.js';
-import { baselineFingerprint, buildSidecar, buildV2Routes, fingerprintChanged, fingerprintOf, r2ArchiveSink, writeSidecar, type LatestRouteEntry } from './historyV2.js';
+import { baselineFingerprint, buildSidecar, buildV2Routes, buildV2RoutesMerged, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, splitFeaturesBySource, writeSidecar, type LatestRouteEntry, type V2FeedPart } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
@@ -140,7 +140,13 @@ interface RefreshAgencyResult {
  * history-v2/{slug}/{periodKey}.json to the archive bucket and adds weekday/sat/sun
  * fingerprints to latest.json. Off by default, so a normal refresh writes exactly what it did.
  */
-interface HistoryV2Input { buf: Buffer; referenceDateFromRunDate?: boolean }
+interface HistoryV2Input {
+  buf: Buffer;
+  referenceDateFromRunDate?: boolean;
+  /** Supplemental feeds (e.g. rail) and which merged features came from which feed. */
+  supplemental?: Array<{ url: string; buf: Buffer }>;
+  featureSources?: Array<{ url: string | null; count: number }>;
+}
 
 async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null, v2Input?: HistoryV2Input): Promise<string> {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
@@ -178,12 +184,25 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   const changed: string[] = [];
 
   let v2Routes: ReturnType<typeof buildV2Routes>['routes'] | undefined;
+  let collisionNote = '';
   if (v2Input) {
     const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    const evidence = await readFeedEvidence(v2Input.buf, v2Input.referenceDateFromRunDate ? { referenceDate: today } : {});
-    const built = buildV2Routes(fc.features, evidence);
+    const refOpts = v2Input.referenceDateFromRunDate ? { referenceDate: today } : {};
+    const evidence = await readFeedEvidence(v2Input.buf, refOpts);
+    // The merged features already hold the supplemental feeds' routes; split them back by feed so
+    // each is built with its own calendar evidence, and a clash with the main feed is reported.
+    const supplementalBufs = new Map((v2Input.supplemental ?? []).map(f => [f.url, f.buf]));
+    const parts: V2FeedPart[] = [];
+    for (const part of splitFeaturesBySource(fc.features, v2Input.featureSources)) {
+      const partBuf = part.url ? supplementalBufs.get(part.url) : v2Input.buf;
+      parts.push({ url: part.url, features: part.features, evidence: part.url === null ? evidence : partBuf ? await readFeedEvidence(partBuf, refOpts) : undefined });
+    }
+    const built = buildV2RoutesMerged(parts);
     v2Routes = built.routes;
-    await writeSidecar(await r2ArchiveSink(), buildSidecar(slug, periodKey, evidence.refDate, built.routes));
+    if (built.collisions.length > 0) {
+      collisionNote = `; ${built.collisions.length} route-key collision(s) between feeds, earlier feed's route kept: ${built.collisions.map(c => `${c.key} (${c.droppedFrom} dropped)`).join(', ')}`;
+    }
+    await writeSidecar(await r2ArchiveSink(), buildSidecar(slug, periodKey, evidence.refDate, built.routes, built.supplementalRoutes));
   }
 
   // Collect per-route writes — only for routes whose headway changed.
@@ -222,8 +241,8 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     })),
   }));
 
-  if (changed.length === 0) return 'unchanged';
-  return `${changed.length} route${changed.length !== 1 ? 's' : ''} changed (${changed.slice(0, 4).join(', ')}${changed.length > 4 ? '…' : ''})`;
+  if (changed.length === 0) return `unchanged${collisionNote}`;
+  return `${changed.length} route${changed.length !== 1 ? 's' : ''} changed (${changed.slice(0, 4).join(', ')}${changed.length > 4 ? '…' : ''})${collisionNote}`;
 }
 
 async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; feedVersion: string | null }> {
@@ -634,7 +653,7 @@ async function refreshAgency(
   }
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
-  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, process.env.ATLAS_HISTORY_V2 === '1' ? { buf, referenceDateFromRunDate: agency.referenceDateFromRunDate } : undefined);
+  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? { buf, referenceDateFromRunDate: agency.referenceDateFromRunDate, supplemental: supplementalFeeds.map(f => ({ url: f.url, buf: f.buf })), featureSources: primary.featureSources } : undefined);
   writeLog(`  history: ${histResult}\n`);
 
   if (nightServiceCollector) {

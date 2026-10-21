@@ -141,7 +141,7 @@ async function main() {
 
   // Load index.json for name/region/center lookup
   const indexPath = resolve('public/data/index.json');
-  const index: { agencies: Array<{ slug: string; name: string; region?: string; center: [number, number] }> } =
+  const index: { agencies: Array<{ slug: string; name: string; region?: string; center: [number, number]; supplementalFeedUrls?: string[] }> } =
     JSON.parse(readFileSync(indexPath, 'utf8'));
   const registryBySlug = new Map(index.agencies.map(a => [a.slug, a]));
 
@@ -274,6 +274,7 @@ async function main() {
   // 1c. v2 sidecars: history-v2/{slug}/{periodKey}.json (one per agency period, all routes).
   // Joined to the per-route change files by period key, never by label.
   const sidecarRoutes: Record<string, Record<string, Array<{ periodKey: string; v2: HistoryV2Sidecar['routes'][string] & { refDate: string } }>>> = {};
+  const sidecarSupplementalPeriods: Record<string, Record<string, string[]>> = {};
   const sidecarKeys = (await r2ListArchive('history-v2/')).filter(k => k.split('/').length === 3 && k.endsWith('.json'));
   console.log(`Found ${sidecarKeys.length} v2 sidecar files in atlas-archive/history-v2/`);
   await runWithConcurrency(sidecarKeys.map(key => async () => {
@@ -284,6 +285,7 @@ async function main() {
       if (sc.version !== 2 || !sc.routes) return;
       const slug = key.split('/')[1];
       const periodKey = key.split('/')[2].replace('.json', '');
+      for (const url of Object.keys(sc.supplementalRoutes ?? {})) ((sidecarSupplementalPeriods[slug] ??= {})[url] ??= []).push(periodKey);
       for (const [routeKey, rec] of Object.entries(sc.routes)) {
         ((sidecarRoutes[slug] ??= {})[routeKey] ??= []).push({ periodKey, v2: { ...rec, refDate: sc.refDate } });
       }
@@ -480,7 +482,8 @@ async function main() {
     // Report-only visibility checks (nothing is dropped or changed).
     const currentKeys = Object.keys(current);
     buildReport.visibility.push(visibilityCheck(slug, keptByRoute, currentKeys, buildYear, key =>
-      resolveCurrentHistoryRoute({ routeShortName: key, currentRouteShortNames: currentRouteShortNamesFor(key, undefined, routeAliases[slug]) }, current) != null));
+      resolveCurrentHistoryRoute({ routeShortName: key, currentRouteShortNames: currentRouteShortNamesFor(key, undefined, routeAliases[slug]) }, current) != null,
+      { urls: registryEntry?.supplementalFeedUrls ?? [], sidecarPeriodsByUrl: sidecarSupplementalPeriods[slug] }));
 
     if (agencyRoutes.length === 0) continue;
 
@@ -515,6 +518,7 @@ async function main() {
       console.log(`  visibility ${v.slug}: ${v.currentWithoutRecentSnapshot.length} current routes without a recent snapshot, ${v.oldKeysWithoutCurrentMatch.length} old keys without a current match, ${v.spikes.length} spikes`);
     }
   }
+  for (const v of buildReport.visibility) for (const note of v.supplementalNotes) console.log(`  ${note}`);
   for (const d of buildReport.drops.slice(0, 50)) console.log(`  dropped ${d.slug}/${d.route} "${d.label}": ${d.reason}`);
 
   if (verifyOnly) {

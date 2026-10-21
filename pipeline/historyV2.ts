@@ -72,6 +72,8 @@ export interface BuildV2Report {
 export interface BuildV2Result {
   routes: Record<string, HistoryV2SidecarRoute>;
   report: BuildV2Report;
+  /** Route keys whose stamped features disagreed on the all-day value. */
+  conflictKeys?: string[];
 }
 
 /** All routes of one processed feed -> sidecar route records, keyed by historyRouteKey. */
@@ -92,6 +94,7 @@ export function buildV2Routes(features: Array<{ properties?: Props | null }>, ev
   }
   const routes: Record<string, HistoryV2SidecarRoute> = {};
   const report: BuildV2Report = { routes: 0, blankWeekday: 0, limited: 0, stampConflicts: 0, weekendNone: 0 };
+  const conflictKeys: string[] = [];
   for (const [key, e] of [...byKey.entries()].sort(([a], [b]) => a.localeCompare(b))) {
     // A route with no Weekday features has no weekday headline to anchor a snapshot on.
     if (e.Weekday.length === 0) continue;
@@ -107,13 +110,102 @@ export function buildV2Routes(features: Array<{ properties?: Props | null }>, ev
     report.routes++;
     if (rep.h == null && !rep.lim) report.blankWeekday++;
     if (rep.lim) report.limited++;
-    if (conflict) report.stampConflicts++;
+    if (conflict) { report.stampConflicts++; conflictKeys.push(key); }
   }
-  return { routes, report };
+  return { routes, report, conflictKeys };
 }
 
-export function buildSidecar(slug: string, periodKey: string, refDate: string, routes: Record<string, HistoryV2SidecarRoute>): HistoryV2Sidecar {
-  return { version: 2, slug, periodKey, refDate, routes };
+/** One processed feed's share of an agency's merged features, with that feed's own calendar evidence. */
+export interface V2FeedPart {
+  /** null = the agency's main feed; otherwise the supplemental feed url. */
+  url: string | null;
+  features: Array<{ properties?: Props | null }>;
+  evidence?: FeedEvidence;
+}
+
+export interface V2Collision {
+  key: string;
+  /** The supplemental feed whose route was not used (the earlier feed's route is kept). */
+  droppedFrom: string;
+}
+
+export interface MergedV2Result extends BuildV2Result {
+  collisions: V2Collision[];
+  /** Kept routes that came from a supplemental feed, by feed url. */
+  supplementalRoutes: Record<string, string[]>;
+}
+
+/** Split the merged feature list back into per-feed parts using processAgencyFeeds' featureSources. */
+export function splitFeaturesBySource<T>(features: T[], sources: Array<{ url: string | null; count: number }> | undefined): Array<{ url: string | null; features: T[] }> {
+  if (!sources || sources.length === 0) return [{ url: null, features }];
+  const out: Array<{ url: string | null; features: T[] }> = [];
+  let at = 0;
+  for (const { url, count } of sources) { out.push({ url, features: features.slice(at, at + count) }); at += count; }
+  if (at !== features.length) throw new Error(`featureSources cover ${at} of ${features.length} features`);
+  return out;
+}
+
+/**
+ * Routes of the main feed plus its supplemental feeds. Each feed is built with its own
+ * evidence (weekend "none" is only proven by the feed that runs the route). A key already
+ * taken by an earlier feed is never overwritten: the earlier route is kept and the clash is
+ * returned as a collision. One part gives exactly buildV2Routes' result.
+ */
+export function buildV2RoutesMerged(parts: V2FeedPart[]): MergedV2Result {
+  const built = parts.map(p => ({ url: p.url, ...buildV2Routes(p.features, p.evidence) }));
+  if (built.length === 1) return { routes: built[0].routes, report: built[0].report, conflictKeys: built[0].conflictKeys, collisions: [], supplementalRoutes: {} };
+  const routes: Record<string, HistoryV2SidecarRoute> = {};
+  const collisions: V2Collision[] = [];
+  const supplementalRoutes: Record<string, string[]> = {};
+  const report: BuildV2Report = { routes: 0, blankWeekday: 0, limited: 0, stampConflicts: 0, weekendNone: 0 };
+  for (const b of built) {
+    const conflicts = new Set(b.conflictKeys ?? []);
+    for (const [key, rec] of Object.entries(b.routes)) {
+      if (routes[key]) { collisions.push({ key, droppedFrom: b.url ?? 'main' }); continue; }
+      routes[key] = rec;
+      if (b.url) (supplementalRoutes[b.url] ??= []).push(key);
+      report.routes++;
+      if (rec.rep.h == null && !rec.rep.lim) report.blankWeekday++;
+      if (rec.rep.lim) report.limited++;
+      if (conflicts.has(key)) report.stampConflicts++;
+      for (const d of [rec.sat, rec.sun]) if (d && 'none' in d) report.weekendNone++;
+    }
+  }
+  return { routes, report, collisions, supplementalRoutes };
+}
+
+export function buildSidecar(
+  slug: string, periodKey: string, refDate: string, routes: Record<string, HistoryV2SidecarRoute>,
+  supplementalRoutes?: Record<string, string[]>,
+): HistoryV2Sidecar {
+  const sc: HistoryV2Sidecar = { version: 2, slug, periodKey, refDate, routes };
+  if (supplementalRoutes && Object.keys(supplementalRoutes).length > 0) sc.supplementalRoutes = supplementalRoutes;
+  return sc;
+}
+
+/** History v2 is an explicit opt-in: only ATLAS_HISTORY_V2=1 turns it on. */
+export function historyV2Enabled(envValue: string | undefined): boolean {
+  return envValue === '1';
+}
+
+export const BUS_ONLY_NOTE = 'bus feed only; supplemental routes excluded';
+
+export interface BackfillSupplementalPolicy {
+  busOnly: boolean;
+  supplementalExcluded: string[];
+  note?: string;
+}
+
+/**
+ * A backfill rebuilds from the main feed's archive only (supplemental feeds have no archive).
+ * An agency with supplemental feeds is refused unless --bus-only is passed, and then the
+ * run is stamped so nothing reads it as complete.
+ */
+export function backfillSupplementalPolicy(slug: string, supplementalFeedUrls: string[] | undefined, busOnlyFlag: boolean): BackfillSupplementalPolicy {
+  const urls = supplementalFeedUrls ?? [];
+  if (urls.length === 0) return { busOnly: false, supplementalExcluded: [] };
+  if (!busOnlyFlag) throw new Error(`${slug} has supplemental feeds (${urls.join(', ')}); pass --bus-only to backfill the main feed only (supplemental routes excluded)`);
+  return { busOnly: true, supplementalExcluded: urls, note: BUS_ONLY_NOTE };
 }
 
 // ---- change detection ----------------------------------------------------

@@ -64,6 +64,25 @@ export interface AgencyVisibility {
   oldKeysWithoutCurrentMatch: string[];
   /** (c) weekday value >= 5x both the previous and the next kept snapshot. */
   spikes: VisibilitySpike[];
+  /** One entry per configured supplemental feed (e.g. rail). Empty when the agency has none. */
+  supplementalFeeds: SupplementalVisibility[];
+  /** Plain-language lines for the build log, one per excluded supplemental feed. */
+  supplementalNotes: string[];
+}
+
+export interface SupplementalVisibility {
+  url: string;
+  includedInHistory: boolean;
+  /** Earliest sidecar period that holds routes from this feed; null when none does. */
+  firstSnapshot: string | null;
+}
+
+/** What the build knows about an agency's supplemental feeds. */
+export interface SupplementalInput {
+  /** supplementalFeedUrls from the agency config (public/data/index.json). */
+  urls: string[];
+  /** Sidecar facts: feed url -> period keys of sidecars that list routes from it. */
+  sidecarPeriodsByUrl?: Record<string, string[]>;
 }
 
 export const SPIKE_FACTOR = 5;
@@ -81,6 +100,7 @@ export function visibilityCheck(
   currentKeys: string[],
   buildYear: number,
   resolves: (key: string) => boolean = k => currentKeys.includes(k),
+  supplemental?: SupplementalInput,
 ): AgencyVisibility {
   const current = new Set(currentKeys);
   const recent = new Set<string>();
@@ -95,8 +115,19 @@ export function visibilityCheck(
     }
   }
   const cmp = (x: string, y: string) => x.localeCompare(y, undefined, { numeric: true });
+  const supplementalFeeds: SupplementalVisibility[] = (supplemental?.urls ?? []).map(url => {
+    const periods = [...(supplemental?.sidecarPeriodsByUrl?.[url] ?? [])].sort((a, b) => getPeriodKeySortValue(a) - getPeriodKeySortValue(b));
+    return { url, includedInHistory: periods.length > 0, firstSnapshot: periods[0] ?? null };
+  });
+  // The data does not say which current routes belong to a feed, so an excluded feed lists the
+  // current routes that have no history at all (it can include bus routes new to the feed).
+  const noHistory = [...current].filter(k => !(history[k]?.length)).sort(cmp);
+  const supplementalNotes = supplementalFeeds.filter(f => !f.includedInHistory).map(f =>
+    `${slug}: supplemental feed (${f.url}) not in History: ${noHistory.length} current routes have no history${noHistory.length ? ` (${noHistory.join(', ')})` : ''}`);
   return {
     slug,
+    supplementalFeeds,
+    supplementalNotes,
     currentWithoutRecentSnapshot: [...current].filter(k => !recent.has(k)).sort(cmp),
     oldKeysWithoutCurrentMatch: Object.keys(history).filter(k => !resolves(k)).sort(cmp),
     spikes,
