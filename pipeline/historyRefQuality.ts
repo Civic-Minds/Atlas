@@ -204,3 +204,24 @@ export function holidayDropFor(slug: string, periodKey: string, sc: Pick<History
   if (!q || q.holiday !== true) return null;
   return { slug, periodKey, refDate: sc.refDate, reason: q.reason, routesAffected: Object.keys(sc.routes ?? {}).length };
 }
+
+/** A kept sidecar period whose reference date the v2 backfill replaced by a normal week of the same feed. */
+export interface RepickedPeriod {
+  slug: string;
+  periodKey: string;
+  from: string;
+  to: string;
+  fromYear: number;
+  toYear: number;
+  reason: string;
+  tripsOnFrom: number;
+  tripsOnTo: number;
+  routes: number;
+}
+
+/** The re-pick record for a sidecar (null = not re-picked). */
+export function repickedFor(slug: string, periodKey: string, sc: Pick<HistoryV2Sidecar, 'routes' | 'refDateQuality'>): RepickedPeriod | null {
+  const r = sc.refDateQuality?.repicked;
+  if (!r) return null;
+  return { slug, periodKey, ...r, routes: Object.keys(sc.routes ?? {}).length };
+}

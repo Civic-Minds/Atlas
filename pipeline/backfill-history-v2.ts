@@ -28,6 +28,9 @@ import { readFeedEvidence } from './historyWeekend.js';
 import { buildPeriodShapes, extractRouteShapes, periodShapesKey } from './historyShapes.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { readRefDateQuality } from './historyRefQuality.js';
+import { chooseReferenceDate, readRepickRows, repickEligible } from './historyRefRepick.js';
+import { historyV2FromEnv } from './historyV2Flag.js';
+import type { RefDateQuality } from '../shared/historyV2.js';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -58,11 +61,19 @@ async function main(): Promise<void> {
       const buf = readFileSync(resolve(zipDir, zip));
       const dates = await peekFeedDates(buf);
       const periodKey = periodKeyForZip(stem, dates);
-      const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, {}, m => process.stdout.write(`  ${m}`));
-      const evidence = await readFeedEvidence(buf, agency.referenceDateFromRunDate ? { referenceDate: new Date().toISOString().slice(0, 10).replace(/-/g, '') } : {});
+      // Under ATLAS_HISTORY_V2=1 a holiday-week or split-week reference date is replaced by a normal
+      // week of the SAME feed before processing (pipeline/historyRefRepick.ts); with no normal week the
+      // period keeps its date and the build drops it. The shared picker is not touched.
+      let chosen: { refDate: string; quality: RefDateQuality } | undefined;
+      if (historyV2FromEnv() && repickEligible(agency)) {
+        const picked = await readFeedEvidence(buf);
+        chosen = chooseReferenceDate(await readRepickRows(buf), picked.refDate);
+      }
+      const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, chosen?.quality.repicked ? { referenceDate: chosen.refDate } : {}, m => process.stdout.write(`  ${m}`));
+      const evidence = await readFeedEvidence(buf, chosen?.quality.repicked ? { referenceDate: chosen.refDate } : agency.referenceDateFromRunDate ? { referenceDate: new Date().toISOString().slice(0, 10).replace(/-/g, '') } : {});
       const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence);
       const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);
-      sidecar.refDateQuality = await readRefDateQuality(buf, evidence.refDate);
+      sidecar.refDateQuality = chosen ? chosen.quality : await readRefDateQuality(buf, evidence.refDate);
       const result = await writeSidecar(sink, sidecar);
       let shapesNote = '';
       if (withShapes) {
@@ -73,7 +84,7 @@ async function main(): Promise<void> {
         shapesNote = `, shapes ${shapesResult} (${Object.keys(period.routes).length} routes)`;
       }
       rows.push({ zip, periodKey, refDate: evidence.refDate, result, report: built.report });
-      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}${sidecar.refDateQuality.holiday ? ` HOLIDAY REF DATE (the build drops it): ${sidecar.refDateQuality.reason}` : ''}`);
+      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}${sidecar.refDateQuality.repicked ? ` RE-PICKED from ${sidecar.refDateQuality.repicked.from}: ${sidecar.refDateQuality.repicked.reason}` : ''}${sidecar.refDateQuality.holiday ? ` HOLIDAY REF DATE (the build drops it): ${sidecar.refDateQuality.reason}` : ''}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       rows.push({ zip, error: message });

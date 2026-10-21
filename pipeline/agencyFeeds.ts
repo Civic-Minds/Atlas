@@ -49,6 +49,8 @@ export interface AgencyProcessOverrides {
   /** Resolved fare (e.g. from fare-overrides.json); falls back to the agency's legacy `fare`. */
   manualBaseFare?: number;
   force?: boolean;
+  /** History v2 backfill only: read the feed at this reference date (YYYYMMDD) instead of the detected one. */
+  referenceDate?: string;
 }
 
 export interface SupplementalFeed {
@@ -87,6 +89,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,
     force: overrides.force ?? false,
+    ...(overrides.referenceDate ? { referenceDate: overrides.referenceDate } : {}),
   };
 }
 
