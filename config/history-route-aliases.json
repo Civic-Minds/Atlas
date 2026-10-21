@@ -17,5 +17,9 @@
   },
   "stm": {
     "20": ["19"]
+  },
+  "communitytransit": {
+    "Swift Blue": ["Swift"],
+    "117": ["113"]
   }
 }
