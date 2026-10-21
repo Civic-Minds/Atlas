@@ -53,6 +53,23 @@ export interface RefDateQuality {
   tripsOnRef: number;
   /** Median trips over the other days of the same day type in the feed's calendar window. */
   medianTrips: number;
+  /**
+   * Present only when the v2 backfill read this feed at another real date of the same feed because
+   * the picked one was a holiday or split week (pipeline/historyRefRepick.ts). Additive.
+   */
+  repicked?: RefDateRepick;
+}
+
+/** A reference date replaced by a normal week of the same feed. */
+export interface RefDateRepick {
+  from: string;
+  to: string;
+  /** Why `from` was not used. */
+  reason: string;
+  fromYear: number;
+  toYear: number;
+  tripsOnFrom: number;
+  tripsOnTo: number;
 }
 
 export interface HistoryV2Sidecar {
