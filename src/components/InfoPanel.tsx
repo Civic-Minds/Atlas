@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, Search, Radio, ArrowLeft } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
 import Tag from './ui/Tag';
@@ -22,7 +22,9 @@ import { OutboundLink } from './OutboundLink';
 import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
+import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
+import RoundIconButton from './ui/RoundIconButton';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -344,13 +346,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           </div>
 
           <div className="flex-1" />
-          <button
+          <RoundIconButton
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors shrink-0 z-10"
+            className="z-10"
             aria-label="Close"
           >
-            <X className="w-4 h-4" />
-          </button>
+            <X className="w-3.5 h-3.5" />
+          </RoundIconButton>
         </div>
 
         {/* Content View Container */}
@@ -406,9 +408,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
           {view === 'agencies' && (
             <div className="flex flex-col h-full min-h-0 overflow-hidden">
-              <div className="shrink-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] space-y-2">
+              <div className={AGENCY_LIST_FILTERS}>
                 <div className={SEARCH_PILL}>
-                  <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+                  <Search className={SEARCH_ICON} />
                   <input
                     ref={searchInputRef}
                     type="text"
@@ -423,7 +425,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     </button>
                   )}
                 </div>
-                <div className="flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+                <div className={PILL_SCROLL_ROW} style={{ scrollbarWidth: 'none' }}>
                   {agencyFilterOptions.map(([id, label]) => {
                     const on = id === 'all' ? agencyFeatureFilters.size === 0 : agencyFeatureFilters.has(id);
                     return (
@@ -460,10 +462,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 {byRegion.size === 0 ? (
                   <PanelEmpty>No agencies match.</PanelEmpty>
                 ) : (
-                  <div className="py-2">
+                  <AgencyList>
                     {[...byRegion.entries()].map(([region, list]) => (
-                      <div key={region}>
-                        <p className="px-5 pt-3 pb-1 text-xs font-bold text-[var(--text-dim)]">{region}</p>
+                      <AgencyRegionSection key={region} region={region}>
                         {list.map(a => {
                           const hasLive = liveBySlug.has(a.slug);
                           const hasHistory = historyBySlug.has(a.slug);
@@ -474,32 +475,28 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
-                            <ListRow
+                            <AgencyListRow
                               key={a.slug}
-                              variant="agency"
+                              primary={primary}
+                              secondary={secondary}
+                              title={listLabel}
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
-                            >
-                              <span className={AGENCY_LIST_PRIMARY} title={listLabel}>
-                                <AgencyName primary={primary} secondary={secondary} />
-                              </span>
-                              {(showLiveBadge || showHistoryBadge) && (
-                                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                              tags={(showLiveBadge || showHistoryBadge) ? (
+                                <>
                                   {showLiveBadge && (
                                     <Tag title={liveCoverageBySlug.has(a.slug) ? undefined : 'Live route coverage is still loading.'}>
                                       {liveCoverageBySlug.get(a.slug) === 'full' ? 'Full live' : liveCoverageBySlug.get(a.slug) === 'partial' ? 'Partial live' : 'Live routes'}
                                     </Tag>
                                   )}
-                                  {showHistoryBadge && (
-                                    <Tag>History</Tag>
-                                  )}
-                                </div>
-                              )}
-                            </ListRow>
+                                  {showHistoryBadge && <Tag>History</Tag>}
+                                </>
+                              ) : undefined}
+                            />
                           );
                         })}
-                      </div>
+                      </AgencyRegionSection>
                     ))}
-                  </div>
+                  </AgencyList>
                 )}
               </div>
             </div>

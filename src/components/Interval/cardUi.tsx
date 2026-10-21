@@ -9,6 +9,7 @@ import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
+import RoundIconButton from '../ui/RoundIconButton';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -16,6 +17,10 @@ export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
 export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] leading-snug';
 export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
+/** A list card's header block (agency card, History's agency view): one divider under it. */
+export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
+/** The line under a card title ("Georgia · 102 routes · 2013–2026"). */
+export const CARD_SUMMARY = 'text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug';
 
 const REPORT_REASONS = [
   'Route or agency is missing',
@@ -274,9 +279,9 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                 <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
                 <p className={`${CARD_NOTICE} mt-0.5`}>Choose a category, or click a card value to preselect its reason.</p>
               </div>
-              <button type="button" onClick={reset} aria-label="Close report form" className="w-7 h-7 flex items-center justify-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)]">
+              <RoundIconButton onClick={reset} aria-label="Close report form">
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </RoundIconButton>
             </div>
 
             <div className="px-4 py-3 space-y-2">

@@ -12,6 +12,7 @@ import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import Panel from '../ui/Panel';
 import Pill from '../ui/Pill';
+import ModeFilterPill from '../ui/ModeFilterPill';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
 import { headwayEveryRange } from '../../utils/headwayText';
@@ -19,7 +20,8 @@ import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { CARD_TITLE, CardDirectionRow, CardHelpNotice, CardReportButton } from './cardUi';
+import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardHelpNotice, CardReportButton } from './cardUi';
+import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
 import { currentAtlasUrl } from '../../utils/reportIssue';
@@ -307,32 +309,17 @@ function RouteListSection({
   onRouteSelect: (key: string) => void;
   dimmed?: boolean;
 }) {
-  return (
-    <div className="py-1">
-      {routes.map(r => {
-        const isLive = FEATURES.live && liveShortNames.has(r.shortName);
-        const key = `${r.agencySlug}::${r.routeId}`;
-        const label = routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }).text;
-        return (
-          <div key={r.routeId} className="px-3 py-1 hover:bg-[var(--bg-btn-hover)] transition-colors">
-          <CardDirectionRow
-            label={label}
-            headway={r.headway ?? undefined}
-            headwayLabel={r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined}
-            limited={r.limited || r.noRegular === true}
-            limitedLabel={r.noRegular ? NO_REGULAR_SERVICE_LABEL : undefined}
-            subLabel={isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName })
-                ? 'Rail replacement bus'
-                : undefined}
-            live={isLive}
-              dimmed={dimmed}
-              onClick={() => onRouteSelect(key)}
-            />
-          </div>
-        );
-      })}
-    </div>
-  );
+  const rows = routes.map(r => ({
+    key: `${r.agencySlug}::${r.routeId}`,
+    label: routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }).text,
+    headway: r.headway ?? undefined,
+    headwayLabel: r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined,
+    limited: r.limited || r.noRegular === true,
+    limitedLabel: r.noRegular ? NO_REGULAR_SERVICE_LABEL : undefined,
+    subLabel: isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName }) ? 'Rail replacement bus' : undefined,
+    live: FEATURES.live && liveShortNames.has(r.shortName),
+  }));
+  return <CardRouteList rows={rows} onSelect={onRouteSelect} dimmed={dimmed} />;
 }
 
 export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard({
@@ -430,9 +417,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
         } as React.CSSProperties}
       >
-        <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
+        <div className={CARD_HEADER_BLOCK}>
           <p className={`${CARD_TITLE} mb-0`}>{[serviceName, zoneDisplayName].filter(Boolean).join(' — ')}</p>
-          <p className="text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug">
+          <p className={CARD_SUMMARY}>
             {[agencyNamePrimary, agencyNameSecondary].filter(Boolean).join(' · ')}
           </p>
         </div>
@@ -505,11 +492,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}
     >
-      <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
+      <div className={CARD_HEADER_BLOCK}>
         <div className="flex items-start gap-2 min-w-0">
           <div className="min-w-0 flex-1">
             <p className={`${CARD_TITLE} mb-0`}>{agencyNamePrimary}</p>
-          <p className="text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug">
+          <p className={CARD_SUMMARY}>
             {agency.onDemandOnly
               ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
               : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
@@ -563,15 +550,13 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               {routeFilters.map(f => {
                 const on = !onDemandOn && activeFilter === f.key;
                 return (
-                  <Pill
+                  <ModeFilterPill
                     key={f.key}
                     onClick={() => { setOnDemandChoice(false); setActiveFilter(on ? null : f.key); }}
                     selected={on}
-                    className="px-2"
-                  >
-                    {f.label}
-                    <span className={on ? 'opacity-80' : 'text-[var(--text-dim)]'}> {f.count}</span>
-                  </Pill>
+                    label={f.label}
+                    count={f.count}
+                  />
                 );
               })}
               {hasOnDemandPill && (

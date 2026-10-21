@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD } from '../../styles';
 import Pill from '../ui/Pill';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
@@ -150,14 +150,14 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
 
   return (
     <div className={`${PANEL} w-56`}>
-      <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--bg-btn)] border border-[var(--border-primary)]">
-        <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+      <div className={SEARCH_PILL}>
+        <Search className={SEARCH_ICON} />
         <input
           ref={agencySearchRef}
           value={agencyQuery}
           onChange={e => setAgencyQuery(e.target.value)}
           placeholder="Search…"
-          className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
+          className={SEARCH_FIELD}
         />
       </div>
       <div className="flex gap-1 px-1 pt-1">
