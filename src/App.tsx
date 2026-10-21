@@ -31,6 +31,7 @@ import { preloadHistory } from './utils/historyConfig';
 import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
 import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
 import { HISTORY_VIEW_ALL, type HistoryView } from './utils/historyYearMap';
+import { encodeHistoryView, parseHistoryView } from './utils/historyViewUrl';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -404,7 +405,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const handleMapDismiss = useCallback(() => setHistoryDismissKey(k => k + 1), []);
   const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
   // History's own Frequency and Time (CIV-389, CIV-392): start at All and All day, separate from the map's.
-  const [historyView, setHistoryView] = useState<HistoryView>(HISTORY_VIEW_ALL);
+  // Read from the link's h/p (the map's params) when the app opens on History.
+  const [historyView, setHistoryView] = useState<HistoryView>(() => (
+    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : HISTORY_VIEW_ALL
+  ));
+
   const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
@@ -424,6 +429,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
+  // History's Frequency and Time live in the link as the map's h/p while History is open (historyViewUrl).
+  useEffect(() => {
+    if (inHistory) syncUrlParams(encodeHistoryView(historyView));
+  }, [inHistory, historyView]);
 
   // Interval reloads all its agency data whenever this list's identity changes, so it must stay the same
   // array until its contents change (a fresh filter() every render looped History at phone width).
