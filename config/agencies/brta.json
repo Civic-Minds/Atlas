@@ -1,0 +1,25 @@
+{
+  "slug": "brta",
+  "name": "Berkshire Regional Transit Authority (BRTA)",
+  "websiteUrl": "https://www.berkshirerta.com/",
+  "center": [
+    42.4456,
+    -72.9908
+  ],
+  "bbox": [
+    42.174176,
+    -73.380916,
+    42.717058,
+    -72.600608
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/berkshire-ma-us/berkshire-ma-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-537/latest.zip",
+  "region": "Massachusetts",
+  "cities": [
+    "Pittsfield, Massachusetts",
+    "North Adams, Massachusetts",
+    "Great Barrington, Massachusetts"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "mwrta",
+  "name": "MetroWest Regional Transit Authority (MWRTA)",
+  "websiteUrl": "https://www.mwrta.com/",
+  "center": [
+    42.2749,
+    -71.4278
+  ],
+  "bbox": [
+    42.089248,
+    -71.61249,
+    42.460533,
+    -71.243103
+  ],
+  "feedUrl": "http://vc.mwrta.com/gtfs/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-439/latest.zip",
+  "region": "Massachusetts",
+  "cities": [
+    "Framingham, Massachusetts",
+    "Natick, Massachusetts"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

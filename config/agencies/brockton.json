@@ -1,0 +1,23 @@
+{
+  "slug": "brockton",
+  "name": "Brockton Area Transit Authority (BAT)",
+  "websiteUrl": "https://www.ridebat.com/",
+  "center": [
+    42.1344,
+    -71.0282
+  ],
+  "bbox": [
+    41.984266,
+    -71.148897,
+    42.284437,
+    -70.907489
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/brockton-ma-us/brockton-ma-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-422/latest.zip",
+  "region": "Massachusetts",
+  "cities": [
+    "Brockton, Massachusetts"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

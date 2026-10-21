@@ -1,0 +1,25 @@
+{
+  "slug": "mart",
+  "name": "Montachusett Regional Transit Authority (MART)",
+  "websiteUrl": "https://www.mrta.us/",
+  "center": [
+    42.4727,
+    -71.7942
+  ],
+  "bbox": [
+    42.261459,
+    -72.315242,
+    42.683959,
+    -71.273123
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/montachusett-ma-us/montachusett-ma-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-433/latest.zip",
+  "region": "Massachusetts",
+  "cities": [
+    "Fitchburg, Massachusetts",
+    "Leominster, Massachusetts",
+    "Gardner, Massachusetts"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}
