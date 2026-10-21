@@ -1,0 +1,25 @@
+{
+  "slug": "mvrta",
+  "name": "Merrimack Valley Regional Transit Authority (MeVa)",
+  "websiteUrl": "https://www.mvrta.com/",
+  "center": [
+    42.7477,
+    -71.0668
+  ],
+  "bbox": [
+    42.635974,
+    -71.313978,
+    42.859364,
+    -70.819682
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/merrimackvalley-ma-us/merrimackvalley-ma-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-445/latest.zip",
+  "region": "Massachusetts",
+  "cities": [
+    "Haverhill, Massachusetts",
+    "Lawrence, Massachusetts",
+    "Newburyport, Massachusetts"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}
