@@ -84,6 +84,66 @@ export function servicesRunningOn(calendar: readonly GtfsCalendar[], calendarDat
   return running;
 }
 
+/** Day kind of a date: 'Weekday', 'Saturday' or 'Sunday'. */
+function dayKind(date: string): 'Weekday' | 'Saturday' | 'Sunday' {
+  const dow = ymdToDate(date).getDay();
+  return dow === 0 ? 'Sunday' : dow === 6 ? 'Saturday' : 'Weekday';
+}
+
+/**
+ * Agency opt-in (`nextServiceDatesSkipWeekendEvents`, Sound Transit only, CIV-445): services
+ * that are a weekday line's occasional weekend runs, by day kind. Sounder (N and S Line) runs
+ * weekdays only, plus a few trains on Seahawks home-game Sundays (one-day or two-Sunday
+ * services such as SNDR_2026-11-08_..._Seahawks1325_Sunday). When the typical Sunday in the
+ * window is a game day, N and S Line gained a Sunday that riders don't have.
+ *
+ * Over the feed's whole date span, a route is a weekday line with occasional Saturday (or
+ * Sunday) service when it runs on at least half of the feed's weekdays and on fewer than half
+ * of its Saturdays (Sundays). A Saturday (Sunday) service is skipped when every route it serves
+ * is such a line. Weekend-only routes (a shuttle bus during a closure) and lines that run most
+ * weekends are kept. Read from the whole feed, so the result does not depend on the run date.
+ */
+function occasionalWeekendServices(
+  calendar: readonly GtfsCalendar[],
+  calendarDates: readonly GtfsCalendarDate[],
+  routesByService: ReadonlyMap<string, ReadonlySet<string>>,
+): { Saturday: Set<string>; Sunday: Set<string> } {
+  const dates = [
+    ...calendar.flatMap(c => [c.start_date, c.end_date]),
+    ...calendarDates.map(cd => cd.date),
+  ].filter(d => /^\d{8}$/.test(d)).sort();
+  const out = { Saturday: new Set<string>(), Sunday: new Set<string>() };
+  if (dates.length === 0) return out;
+  const totals = { Weekday: 0, Saturday: 0, Sunday: 0 };
+  const routeDates = new Map<string, { Weekday: number; Saturday: number; Sunday: number }>();
+  for (let date = dates[0]; date <= dates[dates.length - 1]; date = addDaysYmd(date, 1)) {
+    const kind = dayKind(date);
+    totals[kind]++;
+    const routes = new Set<string>();
+    for (const id of servicesRunningOn(calendar, calendarDates, date)) for (const r of routesByService.get(id) ?? []) routes.add(r);
+    for (const r of routes) {
+      const counts = routeDates.get(r) ?? { Weekday: 0, Saturday: 0, Sunday: 0 };
+      counts[kind]++;
+      routeDates.set(r, counts);
+    }
+  }
+  for (const kind of ['Saturday', 'Sunday'] as const) {
+    const occasional = (route: string): boolean => {
+      const counts = routeDates.get(route);
+      return !!counts && counts.Weekday * 2 >= totals.Weekday && counts[kind] * 2 < totals[kind];
+    };
+    for (const [id, routes] of routesByService) {
+      if (routes.size > 0 && [...routes].every(occasional)) out[kind].add(id);
+    }
+  }
+  return out;
+}
+
+export interface NextServiceDatesOptions {
+  /** Skip a weekday line's occasional weekend services (Sounder game days); see occasionalWeekendServices. */
+  skipWeekendEvents?: boolean;
+}
+
 export interface NextServiceDates {
   /** The dates read for each day type. */
   dates: { Weekday: string; Saturday: string; Sunday: string };
@@ -107,6 +167,7 @@ export function calendarFromNextServiceDates(
   calendarDates: readonly GtfsCalendarDate[],
   trips: ReadonlyArray<{ service_id: string; route_id: string }>,
   runDate: string,
+  options: NextServiceDatesOptions = {},
 ): NextServiceDates {
   const from = addDaysYmd(runDate, 1);
   const tripsByService = new Map<string, Map<string, number>>();
@@ -115,6 +176,16 @@ export function calendarFromNextServiceDates(
     byRoute.set(t.route_id, (byRoute.get(t.route_id) ?? 0) + 1);
     tripsByService.set(t.service_id, byRoute);
   }
+  const skipped = options.skipWeekendEvents
+    ? occasionalWeekendServices(calendar, calendarDates, new Map([...tripsByService].map(([id, byRoute]) => [id, new Set(byRoute.keys())])))
+    : null;
+  /** Services that count on a date (the agency opt-in leaves out a weekday line's occasional weekend runs). */
+  const runningOn = (date: string): Set<string> => {
+    const services = servicesRunningOn(calendar, calendarDates, date);
+    const kind = dayKind(date);
+    if (skipped && kind !== 'Weekday') for (const id of skipped[kind]) services.delete(id);
+    return services;
+  };
   /** Trips per route on a date, as a comparable key. */
   const patternKey = (services: ReadonlySet<string>): string => {
     const counts = new Map<string, number>();
@@ -127,7 +198,7 @@ export function calendarFromNextServiceDates(
     for (let k = 0; k < WINDOW_DAYS; k++) {
       const date = addDaysYmd(start, k);
       if (!dows.includes(ymdToDate(date).getDay())) continue;
-      const services = servicesRunningOn(calendar, calendarDates, date);
+      const services = runningOn(date);
       if (services.size > 0) candidates.push({ date, services, key: patternKey(services) });
     }
     if (candidates.length === 0) return null;
@@ -139,7 +210,7 @@ export function calendarFromNextServiceDates(
     return { date: chosen.date, services: chosen.services };
   };
   const hasService = (dows: readonly number[], date: string): boolean =>
-    dows.includes(ymdToDate(date).getDay()) && servicesRunningOn(calendar, calendarDates, date).size > 0;
+    dows.includes(ymdToDate(date).getDay()) && runningOn(date).size > 0;
   const pick = (dows: readonly number[]): { date: string; services: Set<string> } => {
     const near = typicalIn(dows, from);
     if (near) return near;
