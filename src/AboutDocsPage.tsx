@@ -93,8 +93,8 @@ export default function AboutDocsPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Network exploration:</strong> search agencies, routes, stops, and nearby service across a large catalogue.</li>
               <li><strong className="text-[var(--text-primary)]">Frequency analysis:</strong> compare service by day type, time period, route branch, direction, and stop.</li>
-              {showCompare && <li><strong className="text-[var(--text-primary)]">Compare:</strong> two maps side by side, each with its own frequency, day and time.</li>}
-              <li><strong className="text-[var(--text-primary)]">On phones:</strong> a Filters button in the header holds frequency, day, time, modes{showCompare ? ' and compare' : ''}.</li>
+              {showCompare && <li><strong className="text-[var(--text-primary)]">Compare:</strong> two maps side by side, each with its own frequency, day and time (desktop and tablet).</li>}
+              <li><strong className="text-[var(--text-primary)]">On phones:</strong> a Filters button in the header holds frequency, day, time and modes.</li>
               <li><strong className="text-[var(--text-primary)]">Map image export:</strong> save the map as an image with a poster layout and a source line.</li>
               <li><strong className="text-[var(--text-primary)]">Hourly schedule chart{showBetaFeatures ? ' and trip time' : ''}:</strong> each hour shows the slower direction{showBetaFeatures ? '; the full-day view also shows how long the trip takes by hour' : ''}.</li>
               <li><strong className="text-[var(--text-primary)]">Data quality:</strong> expose source dates, stale schedules, review states, corrections, geometry repairs, and known limitations.</li>

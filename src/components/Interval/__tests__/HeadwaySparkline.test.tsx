@@ -3,6 +3,21 @@ import { describe, expect, it } from 'vitest';
 import { HeadwaySparkline, sparklineBarHeight, slowerDirectionKey } from '../HeadwaySparkline';
 
 describe('HeadwaySparkline', () => {
+  it('starts the hover highlight below the period label row, so the label sits above it', () => {
+    const { container } = render(
+      <HeadwaySparkline byHour={{ 12: 20, 18: 25 }} period="midday" onPeriodChange={() => {}} allowExpand />,
+    );
+    const area = container.querySelector('.cursor-pointer') as HTMLElement;
+    area.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 48, right: 240, bottom: 48, x: 0, y: 0, toJSON: () => ({}) });
+    fireEvent.mouseMove(area, { clientX: 120 });
+    const bands = screen.getAllByTestId('sparkline-hover-band');
+    expect(bands.length).toBeGreaterThan(0);
+    for (const band of bands) {
+      expect(band).toHaveClass('top-5');
+      expect(band).not.toHaveClass('inset-y-0');
+    }
+  });
+
   it('keeps the active period label clear of the expand control', () => {
     render(
       <HeadwaySparkline

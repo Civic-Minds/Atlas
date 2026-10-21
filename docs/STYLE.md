@@ -47,7 +47,8 @@ Frequencies
 
 - Every frequency is written by `shared/headwayText.ts`. Never write "every N min" by hand. The forms:
   - "every 10 min" for a stated or scheduled spacing (`headwayEvery`)
-  - "every 10 min or better" for what a filter or threshold means (`headwayOrBetter`)
+  - "≤10 min" / "All routes" for the applied frequency limit, everywhere it is named: pickers, Compare captions, the export image (`headwayFilterLabel`)
+  - "every 10 min or better" for a threshold inside a sentence or a screen-reader label (`headwayOrBetter`)
   - "about every 16 min" for a measured or typical spacing (`headwayAbout`)
   - ranges with an en dash: "about every 6–12 min", "every 30–60 min" (`headwayAboutRange`, `headwayEveryRange`)
   - "≤10 min" and "16–30 min" in legends and keys (`headwayTierLabel`, `headwayBandLabel`)
