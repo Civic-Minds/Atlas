@@ -25,6 +25,7 @@ import { representativeRep } from './historyV2.js';
 import { buildRouteSnapshots, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
+import { historyV2FromEnv } from './historyV2Flag.js';
 import { parsePeriodKey, getPeriodKeySortValue } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
@@ -34,6 +35,12 @@ import type { HeadwayByPeriod } from '../shared/config.js';
 config({ path: resolve('.env.local') });
 
 const dryRun = process.argv.includes('--dry-run');
+
+/**
+ * History v2 is opt-in: ATLAS_HISTORY_V2=1. Unset, this build produces exactly what origin/main
+ * produced (the weekly refresh-feeds cron publishes history-config.json from here).
+ */
+const v2 = historyV2FromEnv();
 
 // Manually seeded historical data for agencies with pre-pipeline snapshots.
 // Each entry is written as if it came from atlas-archive: { headway, routeLongName, label? }.
@@ -72,8 +79,58 @@ const BASE_HISTORY: Array<{
   },
 ];
 
-/** Load current route facts from the public Atlas artifact, not the archive baseline. */
-async function loadCurrentHeadways(slug: string): Promise<Record<string, {
+/** Pre-v2 loader (origin/main): the fastest weekday direction-0 pattern's value. Default path. */
+async function loadCurrentHeadwaysLegacy(slug: string): Promise<Record<string, {
+  headway: number | null;
+  routeLongName?: string;
+  routeType?: number | string;
+  busSubType?: string;
+  headwayByPeriod?: HeadwayByPeriod;
+  geometry?: number[][];
+}>> {
+  try {
+    const raw = await r2Get(`atlas/${slug}.json`);
+    if (!raw) return {};
+    const fc = JSON.parse(raw) as { features?: Array<{ geometry?: { type?: string; coordinates?: unknown }; properties?: Record<string, unknown> }> };
+    const current: Record<string, {
+      headway: number;
+      routeLongName?: string;
+      routeType?: number | string;
+      busSubType?: string;
+      headwayByPeriod?: HeadwayByPeriod;
+      geometry?: number[][];
+    }> = {};
+    for (const feature of fc.features ?? []) {
+      const p = feature.properties;
+      if (p?.day !== 'Weekday' || p.directionId !== 0 || p.headway == null) continue;
+      const routeShortName = historyRouteKey(p);
+      if (!routeShortName) continue;
+      const headway = Number(p.headway);
+      if (!Number.isFinite(headway)) continue;
+      if (!current[routeShortName] || headway < current[routeShortName].headway) {
+        current[routeShortName] = {
+          headway,
+          routeLongName: p.routeLongName ? String(p.routeLongName) : undefined,
+          routeType: p.routeType as number | string | undefined,
+          busSubType: p.busSubType ? String(p.busSubType) : undefined,
+          headwayByPeriod: p.headwayByPeriod as HeadwayByPeriod | undefined,
+          geometry: lineStringCoordinatesOrNull(feature.geometry) ?? undefined,
+        };
+      }
+    }
+    // The most frequent pattern may be a route with no map shape (a Point). Its bare [lon, lat]
+    // is never stored as a line; borrow another shaped pattern of the same route, or store none.
+    for (const [routeShortName, route] of Object.entries(current)) {
+      route.geometry ??= historyGeometryForRoute(fc.features ?? [], routeShortName) ?? undefined;
+    }
+    return current;
+  } catch {
+    return {};
+  }
+}
+
+/** v2 loader (ATLAS_HISTORY_V2=1): current route facts from the public Atlas artifact, not the archive baseline. */
+async function loadCurrentHeadwaysV2(slug: string): Promise<Record<string, {
   headway: number | null;
   routeLongName?: string;
   routeType?: number | string;
@@ -275,8 +332,8 @@ async function main() {
   // Joined to the per-route change files by period key, never by label.
   const sidecarRoutes: Record<string, Record<string, Array<{ periodKey: string; v2: HistoryV2Sidecar['routes'][string] & { refDate: string } }>>> = {};
   const sidecarSupplementalPeriods: Record<string, Record<string, string[]>> = {};
-  const sidecarKeys = (await r2ListArchive('history-v2/')).filter(k => k.split('/').length === 3 && k.endsWith('.json'));
-  console.log(`Found ${sidecarKeys.length} v2 sidecar files in atlas-archive/history-v2/`);
+  const sidecarKeys = !v2 ? [] : (await r2ListArchive('history-v2/')).filter(k => k.split('/').length === 3 && k.endsWith('.json'));
+  if (v2) console.log(`Found ${sidecarKeys.length} v2 sidecar files in atlas-archive/history-v2/`);
   await runWithConcurrency(sidecarKeys.map(key => async () => {
     try {
       const raw = await r2GetArchive(key);
@@ -294,7 +351,7 @@ async function main() {
       console.error(`Failed to parse sidecar: ${key}`, err);
     }
   }), concurrency);
-  const routeAliases: HistoryRouteAliases = JSON.parse(readFileSync(resolve('config/history-route-aliases.json'), 'utf8'));
+  const routeAliases: HistoryRouteAliases = v2 ? JSON.parse(readFileSync(resolve('config/history-route-aliases.json'), 'utf8')) : {};
   const buildReport = newBuildReport();
   const buildYear = new Date().getFullYear();
 
@@ -321,12 +378,12 @@ async function main() {
 
   // Sidecar-only agencies and routes still get an entry, then aliases fold old keys into the
   // canonical key before the one-per-year rule.
-  for (const [slug, routes] of Object.entries(sidecarRoutes)) {
+  if (v2) for (const [slug, routes] of Object.entries(sidecarRoutes)) {
     archiveRoutes[slug] ??= {};
     for (const key of Object.keys(routes)) archiveRoutes[slug][key] ??= [];
   }
   let aliasMerged = 0;
-  for (const slug of Object.keys(archiveRoutes)) {
+  if (v2) for (const slug of Object.keys(archiveRoutes)) {
     const slugAliases = routeAliases[slug];
     const a = mergeAliasedRoutes(archiveRoutes[slug], slugAliases);
     archiveRoutes[slug] = a.routes;
@@ -341,9 +398,9 @@ async function main() {
   const slugsWithData = Object.keys(archiveRoutes);
   console.log(`Loading latest headways for ${slugsWithData.length} agencies...`);
 
-  const currentHeadways: Record<string, Record<string, Awaited<ReturnType<typeof loadCurrentHeadways>>[string]>> = {};
+  const currentHeadways: Record<string, Record<string, Awaited<ReturnType<typeof loadCurrentHeadwaysV2>>[string]>> = {};
   const headwayTasks = slugsWithData.map(slug => async () => {
-    currentHeadways[slug] = await loadCurrentHeadways(slug);
+    currentHeadways[slug] = await (v2 ? loadCurrentHeadwaysV2(slug) : loadCurrentHeadwaysLegacy(slug));
   });
   const currentDataConcurrency = Number(process.env.HISTORY_CURRENT_DATA_CONCURRENCY ?? 8);
   await runWithConcurrency(
@@ -362,15 +419,25 @@ async function main() {
     const keptByRoute: Record<string, Array<{ label: string; year: number; weekdayHeadwayMin: number }>> = {};
 
     for (const [routeShortName, changes] of Object.entries(routeMap)) {
-      // Join change files with v2 sidecar entries by period key, drop invalid snapshots,
-      // order by real date and keep one snapshot per year (see historyV2Build.ts).
-      const candidates: Candidate[] = joinCandidates(changes, sidecarRoutes[slug]?.[routeShortName] ?? []);
-      const snapshots = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport)
-        .map(({ periodKey: _pk, processedAt: _pa, ...snap }) => ({
-          ...snap,
-          geometry: isDrawableLineCoordinates(snap.geometry) ? snap.geometry : undefined,
-        }));
-      keptByRoute[routeShortName] = snapshots;
+      let snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number; headwayByPeriod?: HeadwayByPeriod; geometry?: number[][] }>;
+      if (v2) {
+        // v2: join change files with sidecar entries by period key, drop invalid snapshots,
+        // order by real date and keep one snapshot per year (see historyV2Build.ts).
+        const candidates: Candidate[] = joinCandidates(changes, sidecarRoutes[slug]?.[routeShortName] ?? []);
+        snapshots = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport)
+          .map(({ periodKey: _pk, processedAt: _pa, ...snap }) => ({
+            ...snap,
+            geometry: isDrawableLineCoordinates(snap.geometry) ? snap.geometry : undefined,
+          }));
+        keptByRoute[routeShortName] = snapshots;
+      } else {
+        // Default (origin/main): sort change events chronologically, one snapshot per archived change.
+        changes.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
+        snapshots = changes.map(c => {
+          const { year, label } = parsePeriodKey(c.periodKey);
+          return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, geometry: isDrawableLineCoordinates(c.geometry) ? c.geometry : undefined };
+        });
+      }
 
       const materializeAllPeriods = coverageBySlug[slug]?.materializeAllPeriods === true;
       // Normal history is change-only. The period-materialization experiment
@@ -389,13 +456,14 @@ async function main() {
         .find(a => a.slug === slug)?.routes
         .find(r => r.routeShortName === routeShortName);
       const currentRoute = resolveCurrentHistoryRoute(
-        { routeShortName, currentRouteShortNames: currentRouteShortNamesFor(routeShortName, manualRoute?.currentRouteShortNames, routeAliases[slug]) },
+        { routeShortName, currentRouteShortNames: v2 ? currentRouteShortNamesFor(routeShortName, manualRoute?.currentRouteShortNames, routeAliases[slug]) : manualRoute?.currentRouteShortNames },
         current,
       );
-      // A route with no all-day value now (limited, or no stamp) gets no current endpoint:
-      // the old fastest-pattern value is never used in its place.
-      if (currentRoute && currentRoute.headway != null) {
-        const alreadyCurrentYear = snapshots.some(s => s.year === currentYear);
+      // v2: a route with no all-day value now (limited, or no stamp) gets no current endpoint:
+      // the old fastest-pattern value is never used in its place. Default: origin/main's rule.
+      if (currentRoute && (!v2 || currentRoute.headway != null)) {
+        const lastSnap = deduped[deduped.length - 1];
+        const alreadyCurrentYear = v2 ? snapshots.some(s => s.year === currentYear) : lastSnap && lastSnap.year === currentYear;
         if (!alreadyCurrentYear) {
           deduped.push({
             label: String(currentYear),
@@ -480,8 +548,8 @@ async function main() {
     }
 
     // Report-only visibility checks (nothing is dropped or changed).
-    const currentKeys = Object.keys(current);
-    buildReport.visibility.push(visibilityCheck(slug, keptByRoute, currentKeys, buildYear, key =>
+    const currentKeys = v2 ? Object.keys(current) : [];
+    if (v2) buildReport.visibility.push(visibilityCheck(slug, keptByRoute, currentKeys, buildYear, key =>
       resolveCurrentHistoryRoute({ routeShortName: key, currentRouteShortNames: currentRouteShortNamesFor(key, undefined, routeAliases[slug]) }, current) != null,
       { urls: registryEntry?.supplementalFeedUrls ?? [], sidecarPeriodsByUrl: sidecarSupplementalPeriods[slug] }));
 
@@ -508,18 +576,20 @@ async function main() {
     console.log(`  ${name}: ${agencyRoutes.length} routes with changes`);
   }
 
-  // Build report: every dropped snapshot (slug, route, label, reason) and the year rules' effects.
-  const reportPath = resolve('tmp/history-build-report.json');
-  mkdirSync(dirname(reportPath), { recursive: true });
-  writeFileSync(reportPath, JSON.stringify(buildReport, null, 2));
-  console.log(`Build report: ${buildReport.drops.length} snapshots dropped, ${buildReport.superseded} same-year superseded, ${buildReport.yearDisagreements.length} year disagreements >25%, ${buildReport.mixedMethodRoutes.length} routes mixing old and v2 values -> ${reportPath}`);
-  for (const v of buildReport.visibility) {
-    if (v.currentWithoutRecentSnapshot.length || v.oldKeysWithoutCurrentMatch.length || v.spikes.length) {
-      console.log(`  visibility ${v.slug}: ${v.currentWithoutRecentSnapshot.length} current routes without a recent snapshot, ${v.oldKeysWithoutCurrentMatch.length} old keys without a current match, ${v.spikes.length} spikes`);
+  if (v2) {
+    // Build report: every dropped snapshot (slug, route, label, reason) and the year rules' effects.
+    const reportPath = resolve('tmp/history-build-report.json');
+    mkdirSync(dirname(reportPath), { recursive: true });
+    writeFileSync(reportPath, JSON.stringify(buildReport, null, 2));
+    console.log(`Build report: ${buildReport.drops.length} snapshots dropped, ${buildReport.superseded} same-year superseded, ${buildReport.yearDisagreements.length} year disagreements >25%, ${buildReport.mixedMethodRoutes.length} routes mixing old and v2 values -> ${reportPath}`);
+    for (const v of buildReport.visibility) {
+      if (v.currentWithoutRecentSnapshot.length || v.oldKeysWithoutCurrentMatch.length || v.spikes.length) {
+        console.log(`  visibility ${v.slug}: ${v.currentWithoutRecentSnapshot.length} current routes without a recent snapshot, ${v.oldKeysWithoutCurrentMatch.length} old keys without a current match, ${v.spikes.length} spikes`);
+      }
     }
+    for (const v of buildReport.visibility) for (const note of v.supplementalNotes) console.log(`  ${note}`);
+    for (const d of buildReport.drops.slice(0, 50)) console.log(`  dropped ${d.slug}/${d.route} "${d.label}": ${d.reason}`);
   }
-  for (const v of buildReport.visibility) for (const note of v.supplementalNotes) console.log(`  ${note}`);
-  for (const d of buildReport.drops.slice(0, 50)) console.log(`  dropped ${d.slug}/${d.route} "${d.label}": ${d.reason}`);
 
   if (verifyOnly) {
     if (failedFiles > 0) process.exitCode = 1;
@@ -536,7 +606,7 @@ async function main() {
   await r2Put('atlas/history-config.json', JSON.stringify(historyData));
   console.log(`Generated ${historyData.length} agencies → atlas/history-config.json (R2)`);
   // Keep the UI's small eligible-agency list in step with what was just published (commit it).
-  const eligible = writeHistoryAgencyList(historyData);
+  const eligible = writeHistoryAgencyList(historyData, { realYearsOnly: v2 });
   console.log(`Wrote shared/data/history-agencies.json (${eligible} agencies) — commit it`);
 }
 
