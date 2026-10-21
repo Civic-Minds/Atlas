@@ -43,6 +43,7 @@ import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { hasRegularServiceInPeriod, hasStretchRoles, stretchRowFeatures, variantOnlyRow } from '../../utils/stretchCard';
 import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from '../../utils/sortCompare';
+import { SIDEBAR_CARD_BODY } from './cardUi';
 
 interface SidebarControlsProps {
   query: string;
@@ -1039,7 +1040,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         data-report-anchor="true"
         className={sheetMode
           ? `relative ${FLOATING_CARD} rounded-b-none px-4 pt-0 pb-[max(0.5rem,env(safe-area-inset-bottom))] overflow-y-auto overflow-x-hidden overscroll-contain transition-[height] duration-200 ease-out ${sheetExpanded ? 'h-[calc(100dvh-76px)]' : compareActive ? COMPARE_SHEET_HEIGHT : 'h-[42dvh]'}`
-          : `relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 transition-colors ${TRANSITION_BASE} overflow-y-auto overflow-x-hidden custom-scrollbar`}
+          : `${SIDEBAR_CARD_BODY} transition-colors ${TRANSITION_BASE}`}
       >
         {sheetMode && (
           <button

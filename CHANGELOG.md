@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **History's panels sit and size like the regular cards (beta)**: the agency list and agency view open where the agency card does, a route opens in the route card's frame with its title and rows, and all match the search bar's width ([#1028](https://github.com/Civic-Minds/Atlas/issues/1028))
 - **Clicking the map or pressing Escape closes History's panel (beta)**: as on the regular map; searching or picking an agency brings it back ([#1031](https://github.com/Civic-Minds/Atlas/issues/1031))
 - **History's agency header says "1 route" (beta)**: it read "1 routes" ([#1009](https://github.com/Civic-Minds/Atlas/issues/1009))
 - **History puts same-year schedules in date order (beta)**: Dec 2026 counted as older than Sep 2026, so MBTA routes showed their change backwards; snapshots with no date or a future date are left out ([#1030](https://github.com/Civic-Minds/Atlas/issues/1030))

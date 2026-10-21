@@ -5,11 +5,12 @@ import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { FLOATING_CARD, TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_SIDEBAR, PANEL_TITLE, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardBackLink } from '../components/Interval/cardUi';
+import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardBackLink, CardDirectionRow, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import RouteCardTitle from '../components/RouteCardTitle';
 import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
 import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots';
 import { buildHistoryRouteFilters, historyRouteMatchesFilter, type HistoryRouteFilterKey } from '../utils/historyRouteFilters';
@@ -81,6 +82,8 @@ interface Props {
   pendingRouteClick?: { slug: string; routeShortName: string } | null;
   onPendingRouteHandled?: () => void;
   sidebarLeft?: number;
+  /** The search bar's width on desktop: History's panels match it, as the regular cards do. */
+  searchBarWidth?: number;
   /** The open agency's short name, or null (the top search bar then searches its routes). */
   onOpenAgencyChange?: (name: string | null) => void;
   /** Changes when the user dismisses the map's selection (empty-map click, Escape): the panel closes, as on the regular map (#1031). */
@@ -135,13 +138,18 @@ function formatXLabel(label: string): string {
 function RouteHistoryCard({
   route,
   agencyName,
-  region,
+  agencySlug,
   onBack,
+  frameClassName,
+  frameStyle,
 }: {
   route: RouteHistoryEntry;
   agencyName: string;
-  region: string;
+  agencySlug: string;
   onBack: () => void;
+  /** Placement and fade shared by History's panels (the regular cards' sidebar rule). */
+  frameClassName: string;
+  frameStyle: React.CSSProperties;
 }) {
   const { colorVisionFriendly } = useColorVision();
   const [showChart, setShowChart] = useState(false);
@@ -203,16 +211,22 @@ function RouteHistoryCard({
   }
 
   return (
-    <Panel enter>
-      {/* Header */}
-      <div className="shrink-0 px-4 pt-3 pb-2">
-        <CardBackLink onClick={onBack}>{shortenAgencyName(agencyName)} routes</CardBackLink>
-        <div className="flex items-center justify-between gap-2">
-          <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
-            <span className="text-base font-black text-[var(--text-primary)] shrink-0">{route.routeShortName}</span>
-            {route.routeName && (
-              <span className="text-xs font-semibold text-[var(--text-dim)] truncate">{titleCase(route.routeName)}</span>
-            )}
+    // The regular route card's frame, title and rows (RouteCardTitle, direction rows): the agency name
+    // above the title goes back to the agency, as on the map's route card.
+    <div className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-132px)] flex flex-col ${frameClassName}`} style={frameStyle}>
+    <div className={SIDEBAR_CARD_BODY}>
+    <SidebarCardShell>
+      <SidebarCardHeaderBlock>
+        <div className="flex items-start gap-2">
+          <div className="flex-1 min-w-0">
+            <RouteCardTitle
+              routeShortName={route.routeShortName}
+              routeLongName={route.routeName ? titleCase(route.routeName) : null}
+              routeType={route.currentRouteType ?? null}
+              agencySlug={agencySlug}
+              agencyName={agencyName}
+              onAgencyClick={onBack}
+            />
           </div>
           {snaps.length >= 2 && (
             <RoundIconButton
@@ -224,10 +238,10 @@ function RouteHistoryCard({
             </RoundIconButton>
           )}
         </div>
-      </div>
+      </SidebarCardHeaderBlock>
 
       {snaps.length >= 2 && showChart && (
-        <div className="px-4 pb-4 shrink-0">
+        <div className="mt-3">
           <div className="w-full bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3">
             <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
               <defs>
@@ -281,35 +295,24 @@ function RouteHistoryCard({
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div>
-          {snaps.map((snap, i) => {
-            const hw = snapHeadway(snap);
-            const isLatest = i === 0;
-            const hwColor = isLatest
-              ? worse ? 'text-[var(--status-negative-text)]' : better ? 'text-[var(--status-positive-text)]' : 'text-[var(--text-primary)]'
-              : 'text-[var(--text-dim)]';
-            const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
-            return (
-              <ListRow as="div" key={snap.label}>
-                <span className={`text-xs font-bold ${isLatest ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
-                  {snap.label}
-                </span>
-                <div className="flex items-center gap-2">
-                  {delta !== null && delta !== 0 && (
-                    <span className={`text-xs font-bold ${delta > 0 ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>
-                      {delta > 0 ? `+${delta}` : `${delta}`}
-                    </span>
-                  )}
-                  <span className={`text-xs font-black tabular-nums ${hwColor}`}>{headwayAmount(hw)}</span>
-                </div>
-              </ListRow>
-            );
-          })}
-        </div>
+      <SidebarCardListRows className="mt-3">
+        {snaps.map((snap, i) => {
+          const hw = snapHeadway(snap);
+          const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
+          return (
+            <CardDirectionRow
+              key={`${snap.label}-${i}`}
+              label={snap.label}
+              headway={hw}
+              headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
+              headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
+            />
+          );
+        })}
+      </SidebarCardListRows>
 
         {summary && (
-          <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-[var(--status-negative-bg)]' : 'bg-[var(--status-positive-bg)]'}`}>
+          <div className={`mt-3 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-[var(--status-negative-bg)]' : 'bg-[var(--status-positive-bg)]'}`}>
             <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>{summary.text}</p>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
             <p className="text-xs text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
@@ -317,7 +320,7 @@ function RouteHistoryCard({
         )}
 
         {route.tripDuration && (
-          <div className={`mx-4 ${summary ? '' : 'mt-3'} mb-4 rounded-xl px-3 py-2.5 bg-[var(--bg-app)] border border-[var(--border-primary)]`}>
+          <div className={`mt-3 rounded-xl px-3 py-2.5 bg-[var(--bg-app)] border border-[var(--border-primary)]`}>
             <p className="text-xs font-bold leading-tight text-[var(--text-primary)]">
               Trip time: {route.tripDuration.firstMinutes} min ({route.tripDuration.firstLabel}) → {route.tripDuration.lastMinutes} min ({route.tripDuration.lastLabel})
             </p>
@@ -326,10 +329,14 @@ function RouteHistoryCard({
             </p>
           </div>
         )}
-      </div>
-    </Panel>
+    </SidebarCardShell>
+    </div>
+    </div>
   );
 }
+
+/** The agency card's top (AgencyCard sets the same 80px over the sidebar default). */
+const AGENCY_PANEL_TOP = 80;
 
 const SINCE_FILTERS = [
   { label: 'All time', year: 0 },
@@ -344,6 +351,8 @@ function HistoryAgencyPanel({
   routeQuery,
   activeFilter,
   setActiveFilter,
+  frameClassName,
+  frameStyle,
 }: {
   agencyHistory: AgencyHistory;
   onRouteSelect: (routeShortName: string) => void;
@@ -353,6 +362,8 @@ function HistoryAgencyPanel({
   routeQuery: string;
   activeFilter: HistoryRouteFilterKey | null;
   setActiveFilter: (key: HistoryRouteFilterKey | null) => void;
+  frameClassName: string;
+  frameStyle: React.CSSProperties;
 }) {
   const tier = agencyHistoryTier(agencyHistory) ?? 'recent';
 
@@ -413,7 +424,8 @@ function HistoryAgencyPanel({
   }, [activeFilter, agencyHistory.slug, routeRows]);
 
   return (
-    <Panel enter className="max-h-[calc(100vh-104px)]">
+    // The agency card's placement: sidebar Panel, 80px from the top, the search bar's width.
+    <Panel sidebar enter className={`max-h-[calc(100vh-104px)] ${frameClassName}`} style={{ ...frameStyle, top: AGENCY_PANEL_TOP }}>
       {/* Header: the agency card's header block, with the route filter and mode pills inside it. */}
       <div className={CARD_HEADER_BLOCK}>
         <CardBackLink onClick={onBack}>Historical service</CardBackLink>
@@ -460,7 +472,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, onOpenAgencyChange, dismissKey = 0, onPanelOpenChange }: Props) {
+export default function History({ active, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, searchBarWidth, onOpenAgencyChange, dismissKey = 0, onPanelOpenChange }: Props) {
   // Applies initialAgencySlug (the currently map-selected agency) once per
   // History session, not every time selectedSlug clears -- otherwise a user
   // typing a new search gets raced back to whatever agency the map still
@@ -807,13 +819,16 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
   const showScrubber = selectedSlug && availableYears.length > 1;
   const showAgencyChooser = active && !selectedSlug && !dismissed;
   const panelInteractive = Boolean(selectedSlug || showAgencyChooser || searchFocused);
+  // Placement shared by History's panels, by the regular cards' rule: anchored under the search bar
+  // at its width on desktop (#1033 parity B). Each panel adds its own top, as its regular card does.
+  const frameStyle = {
+    '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+    ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
+  } as React.CSSProperties;
+  const frameClassName = `transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!panelInteractive ? 'pointer-events-none' : ''}`;
 
   return (
     <>
-      <div
-        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!panelInteractive ? 'pointer-events-none' : ''}`}
-        style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
-      >
         {selectedSlug ? (
         (() => {
           const agencyHistory = historyAgencies.find(a => a.slug === selectedSlug)
@@ -826,8 +841,10 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
                 <RouteHistoryCard
                   route={selectedRoute}
                   agencyName={agencyHistory.name}
-                  region={agencyHistory.region}
+                  agencySlug={agencyHistory.slug}
                   onBack={() => setSelectedRouteShortName(null)}
+                  frameClassName={frameClassName}
+                  frameStyle={frameStyle}
                 />
               );
             }
@@ -840,12 +857,16 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
               routeQuery={routeQuery}
               activeFilter={activeFilter}
               setActiveFilter={setActiveFilter}
+              frameClassName={frameClassName}
+              frameStyle={frameStyle}
             />
           );
         })()
         ) : (
-        <div
-          className={`${FLOATING_CARD} max-h-[calc(100vh-104px)] overflow-y-auto custom-scrollbar transition-[opacity,transform] duration-200 ease-out ${showAgencyChooser || searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+        <Panel
+          sidebar
+          className={`max-h-[calc(100vh-104px)] overflow-y-auto custom-scrollbar ${frameClassName} ${showAgencyChooser || searchFocused ? '' : 'opacity-0 pointer-events-none'}`}
+          style={{ ...frameStyle, top: AGENCY_PANEL_TOP }}
           onMouseDown={e => e.preventDefault()}
         >
           <PanelTitleBar>
@@ -921,9 +942,8 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
               )}
             </>
           )}
-        </div>
+        </Panel>
       )}
-      </div>
 
       {showScrubber && (
         <div
