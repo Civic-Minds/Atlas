@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The Frequency filter's no-limit option reads "All" everywhere**: it said "All routes" in the phone panel, Settings, Compare and the map export but "All" in the desktop dropdown ([#1041](https://github.com/Civic-Minds/Atlas/issues/1041))
 - **History's agency header says "1 route" (beta)**: it read "1 routes" ([#1009](https://github.com/Civic-Minds/Atlas/issues/1009))
 - **History puts same-year schedules in date order (beta)**: Dec 2026 counted as older than Sep 2026, so MBTA routes showed their change backwards; snapshots with no date or a future date are left out ([#1030](https://github.com/Civic-Minds/Atlas/issues/1030))
 - **Lists no longer show a wide scrollbar track**: panel and card lists get a thin scrollbar that appears while the pointer is over them; their styling had been lost, so lists showed the browser's default bar ([#1015](https://github.com/Civic-Minds/Atlas/issues/1015))

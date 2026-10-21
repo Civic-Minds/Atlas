@@ -23,9 +23,9 @@ describe('headwayText', () => {
     expect(headwayOrBetter(30)).toBe('every 30 min or better');
   });
 
-  it('filter label: the pickers\' short wording, and no limit is All routes (#1011)', () => {
+  it('filter label: the pickers\' short wording, and no limit is All (#1011)', () => {
     expect(headwayFilterLabel(15)).toBe('≤15 min');
-    expect(headwayFilterLabel(Infinity)).toBe('All routes');
+    expect(headwayFilterLabel(Infinity)).toBe('All');
   });
 
   it('about: a measured spacing', () => {

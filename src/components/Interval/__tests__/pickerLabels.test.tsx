@@ -9,32 +9,31 @@ import { FrequencyPicker, frequencyOptionLabel, useFrequencyOptions } from '../p
 const maxes = HEADWAY_TIERS.map(t => t.max);
 const SHORT = ['≤10 min', '≤15 min', '≤20 min', '≤30 min', '≤60 min'];
 
-function Options({ all }: { all?: string }) {
-  const options = all ? useFrequencyOptions(all) : useFrequencyOptions();
+function Options() {
+  const options = useFrequencyOptions();
   return <ul>{options.map(o => <li key={o.key}>{o.label}</li>)}</ul>;
 }
 
 describe('frequency picker labels', () => {
-  it('one function gives the short labels; only the dropdown swaps "All routes" for "All"', () => {
-    expect(maxes.map(m => frequencyOptionLabel(m))).toEqual([...SHORT, 'All routes']);
-    expect(maxes.map(m => frequencyOptionLabel(m, 'All'))).toEqual([...SHORT, 'All']);
+  it('one function gives the short labels, and no limit reads "All"', () => {
+    expect(maxes.map(m => frequencyOptionLabel(m))).toEqual([...SHORT, 'All']);
     expect(SHORT).toEqual(maxes.filter(isFinite).map(headwayTierLabel));
   });
 
   it('chip pickers (phone panel, Settings) render the shared labels', () => {
     render(<FrequencyPicker value={Infinity} onChange={() => {}} />);
-    for (const l of [...SHORT, 'All routes']) expect(screen.getByText(l)).toBeTruthy();
+    for (const l of [...SHORT, 'All']) expect(screen.getByText(l)).toBeTruthy();
   });
 
   it('the desktop dropdown rows render the shared labels', () => {
-    render(<Options all="All" />);
+    render(<Options />);
     for (const l of [...SHORT, 'All']) expect(screen.getByText(l)).toBeTruthy();
   });
 
   it('Compare shows the same visible labels, with no sentence wording', () => {
     const side = { maxHeadway: 10, day: 'Weekday', period: 'all' } as never;
     const { container } = render(<CompareSidePicker side={side} onChange={() => {}} />);
-    for (const l of [...SHORT, 'All routes']) expect(screen.getAllByText(l).length).toBeGreaterThan(0);
+    for (const l of [...SHORT, 'All']) expect(screen.getAllByText(l).length).toBeGreaterThan(0);
     expect(container.textContent).not.toContain('or better');
   });
 
