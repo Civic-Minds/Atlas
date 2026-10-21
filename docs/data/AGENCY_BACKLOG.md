@@ -77,7 +77,7 @@ These agencies passed the first sweep: active downloadable feeds, scheduled trip
 | done | `washington-county` | Johnson City | Tennessee | ntd-40054 |
 | done | `whitman-county` | City of Pullman | Washington | ntd-294 |
 
-Held for follow-up: Link Transit (`chelan`) had nine repaired/truncated shapes, and Sault Ste. Marie Transit (`sault-ste-marie`) had one truncated shape. They need a visual review before publishing. Link Transit is now registered hidden as `chelan` (2026-10-21 feed: 13 truncated highway shapes; the shape-cut fix in main draws them in full); the visual review still applies. Sault Ste. Marie is now registered hidden (2026-10-21 feed: the truncated shape belongs to a summer-only route that is not drawn today).
+Held for follow-up: Link Transit (`chelan`) had nine repaired/truncated shapes, and Sault Ste. Marie Transit (`sault-ste-marie`) had one truncated shape. They need a visual review before publishing. Link Transit is now registered hidden as `chelan` (2026-10-21 feed: with the shape-cut fix in main the highway shapes draw in full, and five shapes are repaired interleaved sub-paths, none truncated); the visual review still applies. Sault Ste. Marie is now registered hidden (2026-10-21 feed: the truncated shape belongs to a summer-only route that is not drawn today).
 
 ## Research sweep (2026-09-10 — active GTFS gap candidates)
 
