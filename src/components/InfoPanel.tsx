@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, Search, Radio, ArrowLeft } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
 import Tag from './ui/Tag';
@@ -405,7 +405,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="flex flex-col h-full min-h-0 overflow-hidden">
               <div className="shrink-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] space-y-2">
                 <div className={SEARCH_PILL}>
-                  <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+                  <Search className={SEARCH_ICON} />
                   <input
                     ref={searchInputRef}
                     type="text"

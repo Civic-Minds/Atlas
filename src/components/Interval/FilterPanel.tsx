@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import Pill from '../ui/Pill';
 import Toggle from '../ui/Toggle';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
@@ -413,7 +413,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <>
                   <div className="px-5 pt-4 pb-3">
                     <label className={SEARCH_PILL}>
-                      <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+                      <Search className={SEARCH_ICON} />
                       <input
                         value={hiddenRoutesQuery}
                         onChange={event => setHiddenRoutesQuery(event.target.value)}
@@ -485,7 +485,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   {hiddenFeedAgencies.length > 0 && (
                     <>
                       <label className={SEARCH_PILL}>
-                        <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+                        <Search className={SEARCH_ICON} />
                         <input
                           value={degradedFeedsQuery}
                           onChange={event => setDegradedFeedsQuery(event.target.value)}

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Every search field looks like the top search bar**: History's route filter, the agency searches and the filter panel's searches had a grey fill, smaller icon or square corners ([#1013](https://github.com/Civic-Minds/Atlas/issues/1013))
 - **History opens on the city you're looking at (beta)**: after you move the map to a single History city, or pick an agency, the History tab opens that agency instead of the list; with several in view the list puts them first, and a fresh page or shared link still opens the list ([#1012](https://github.com/Civic-Minds/Atlas/issues/1012))
 - **Route lists sort the same way everywhere**: routes with the same frequency in the stop view and agency card no longer swap places, and 7A now always comes before 7B. Agencies in the "In view" panel go most routes first, then A-Z, in both views; region pills and sections always put "Other" last.
 - **The Compare side picker uses the same short frequency labels** ("≤10 min" … "All routes") as every other frequency picker; one shared label function now feeds them all.

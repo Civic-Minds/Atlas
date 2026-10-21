@@ -118,8 +118,14 @@ export const CARD_NOTICE_FOOTER = 'mt-2 pt-1';
 /** In-list notice padding (e.g. outside-filters control) */
 export const CARD_NOTICE_INLINE = 'px-4 pt-2 pb-1 opacity-80';
 
-/** Pill search box wrapper — used inside panels (recessed bg-app background) */
-export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-3 gap-1.5';
+/**
+ * Pill search box wrapper inside panels and dropdowns. Same look as the top search bar (surface,
+ * edge, height, roundness, icon and text), minus its floating shadow, so every search field matches.
+ */
+export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-full pl-2 pr-3 gap-2.5';
+
+/** The magnifier in every search field, the top search bar included. */
+export const SEARCH_ICON = 'w-3.5 h-3.5 text-[var(--text-dim)] shrink-0';
 
 /** Search input text field (inside SEARCH_PILL) */
 export const SEARCH_FIELD = 'flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none';
