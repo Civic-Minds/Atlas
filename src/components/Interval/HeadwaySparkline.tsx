@@ -18,6 +18,11 @@ import { syncUrlParams } from '../../utils/syncUrlParams';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
 import { HOUR_TO_PERIOD, PERIOD_BANDS, PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
 
+/** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
+export const SPARKLINE_CARD_HEIGHT = 32;
+/** Bar area height of the expanded full-day sparkline, in px. */
+export const SPARKLINE_EXPANDED_HEIGHT = 150;
+
 const HOURS = SPARKLINE_HOURS;
 
 // Label positions: 6a, 12p, 6p, 12a
@@ -130,7 +135,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     return () => syncUrlParams({ fullday: null, fdir: null });
   }, [ownsUrl]);
 
-  const H = expanded ? 150 : 28;
+  const H = expanded ? SPARKLINE_EXPANDED_HEIGHT : SPARKLINE_CARD_HEIGHT;
   const displayedByHour = byHour;
   // The full-day view shows the direction picked with the pills above it;
   // the inline chart always shows the route's merged schedule.
