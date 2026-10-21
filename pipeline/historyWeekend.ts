@@ -74,7 +74,7 @@ export function computeFeedEvidence(rows: FeedRows, opts: { referenceDate?: stri
 
   const keyByRouteId = new Map<string, string>();
   for (const r of rows.routes) {
-    const key = historyRouteKey({ routeShortName: r.route_short_name, routeId: r.route_id, routeLongName: r.route_long_name });
+    const key = historyRouteKey({ routeShortName: r.route_short_name, routeId: r.route_id, routeLongName: r.route_long_name }, { longNameFallback: true });
     if (key) keyByRouteId.set(r.route_id, key);
   }
   const servicesByKey = new Map<string, Set<string>>();

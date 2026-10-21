@@ -84,7 +84,7 @@ export function buildV2Routes(features: Array<{ properties?: Props | null }>, ev
     if (!p) continue;
     const day = p.day;
     if (day !== 'Weekday' && day !== 'Saturday' && day !== 'Sunday') continue;
-    const key = historyRouteKey(p);
+    const key = historyRouteKey(p, { longNameFallback: true });
     if (!key) continue;
     let entry = byKey.get(key);
     if (!entry) { entry = { Weekday: [], Saturday: [], Sunday: [] }; byKey.set(key, entry); }
@@ -183,10 +183,8 @@ export function buildSidecar(
   return sc;
 }
 
-/** History v2 is an explicit opt-in: only ATLAS_HISTORY_V2=1 turns it on. */
-export function historyV2Enabled(envValue: string | undefined): boolean {
-  return envValue === '1';
-}
+/** History v2 is an explicit opt-in: only ATLAS_HISTORY_V2=1 turns it on (see historyV2Flag.ts). */
+export { historyV2Enabled } from './historyV2Flag.js';
 
 export const BUS_ONLY_NOTE = 'bus feed only; supplemental routes excluded';
 
