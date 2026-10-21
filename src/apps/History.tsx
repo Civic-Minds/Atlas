@@ -3,6 +3,7 @@ import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyCo
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
+import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_SIDEBAR, PANEL_TITLE, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
@@ -47,6 +48,8 @@ export interface RouteSnapshot {
   headwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
   note?: string;
+  /** History v2 data (real service day, weekend, flag); not read by the UI yet. */
+  v2?: HistorySnapshotV2;
 }
 
 export interface RouteTripDurationSummary {

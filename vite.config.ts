@@ -134,6 +134,25 @@ export default defineConfig(({ mode, command, isPreview }) => {
     },
   };
 
+  // Dev-only (configureServer never runs in a build): serve tmp/dev-history-v2 at /dev-history-v2 for the
+  // History v2 fixtures (`npm run history-v2:fixtures`). The UI reads it only when VITE_HISTORY_V2_BASE is set.
+  const HISTORY_V2_FIXTURES = resolve('tmp/dev-history-v2');
+  const historyV2Fixtures: Plugin = {
+    name: 'history-v2-fixtures',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const m = /^\/dev-history-v2\/([\w./-]+\.json)$/.exec((req.url ?? '').split('?')[0]);
+        if (!m || m[1].includes('..')) return next();
+        const file = resolve(HISTORY_V2_FIXTURES, m[1]);
+        if (!file.startsWith(HISTORY_V2_FIXTURES) || !existsSync(file)) return next();
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-store');
+        createReadStream(file).pipe(res);
+      });
+    },
+  };
+
   // Dev-only: serve an agency's dry-run process artifacts (see `npm run process
   // -- <feed> <slug> ... --dry-run`) instead of proxying to R2, whenever a local
   // preview file exists for that exact filename — same override-if-present,
@@ -182,6 +201,7 @@ export default defineConfig(({ mode, command, isPreview }) => {
       react(),
       tailwindcss(),
       earlyDataUrl,
+      historyV2Fixtures,
       ...(useLocalPreviews ? [localPmtilesPreview, localAgencyDataPreview] : []),
     ],
     // MapLibre spawns its worker as `type: 'module'` (see src/lib/mapStyle.ts).
