@@ -6,9 +6,10 @@
  * The final set of formats (N is always minutes, never hours):
  *
  *   headwayEvery(10)          "every 10 min"             a stated or scheduled spacing
- *   headwayOrBetter(10)       "every 10 min or better"   what a filter or threshold means
- *   headwayAbout(16)          "every 16 min"             a measured or typical (median) spacing
- *   headwayAboutRange(6, 12)  "every 6–12 min"           a spread of typical spacings
+ *   headwayOrBetter(10)       "every 10 min or better"   a threshold in a sentence or screen-reader label
+ *   headwayFilterLabel(10)    "≤10 min"                  the applied frequency limit, as the pickers show it
+ *   headwayAbout(16)          "every 16 min"       a measured or typical (median) spacing
+ *   headwayAboutRange(6, 12)  "every 6–12 min"     a spread of typical spacings
  *   headwayEveryRange(30, 60) "every 30–60 min"          a list cadence: shared stretch to each branch
  *                             ("30–60 min" compact, for narrow table cells)
  *   headwayTierLabel(10)      "≤10 min"                  a frequency band in a legend or key
@@ -57,10 +58,14 @@ export function headwayOrBetter(minutes: number | null | undefined): string {
   return isUsable(minutes) ? `every ${amount(minutes)} or better` : MISSING;
 }
 
-/** The filter's own label: "Every 10 min or better", or "All routes" when there is no limit. */
+/**
+ * The applied frequency limit's label, the same on every surface (pickers, Compare captions, the
+ * export image): "≤10 min", or "All routes" when there is no limit (#1011). Screen-reader labels
+ * that need a full phrase use headwayOrBetter instead.
+ */
 export function headwayFilterLabel(maxHeadway: number): string {
   if (maxHeadway === Infinity) return 'All routes';
-  return isUsable(maxHeadway) ? capitalizeFirst(headwayOrBetter(maxHeadway)) : MISSING;
+  return headwayTierLabel(maxHeadway);
 }
 
 /** "every 16 min": a measured or typical spacing. Above 60 minutes it rounds to the nearest 30 min. */

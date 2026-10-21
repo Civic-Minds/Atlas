@@ -1,6 +1,7 @@
 import React from 'react';
 import { APP_TAB_ACTIVE, APP_TAB_INACTIVE } from '../styles';
-import { ModeTabLabel, modeTabSpacing, modeTabCollapsed, useModeTabsCollapseOthers } from './ModeTabLabel';
+import { ModeTabLabel, modeTabSpacing, modeTabCollapsed, useModeTabsCollapseOthers, NARROW_TOP_BAR_QUERY } from './ModeTabLabel';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
 const FOCUS = 'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]';
 
@@ -23,8 +24,8 @@ export default function ModeTab({
   ariaLabel?: string;
   variant?: 'bar' | 'menu';
 }) {
-  // Shrinks to its icon while a non-map view is on and this tab is not the selected one.
-  const collapsed = modeTabCollapsed(true, useModeTabsCollapseOthers(), active);
+  // Shrinks to its icon while a non-map view is on, or on a narrow top bar, and this tab is not the selected one.
+  const collapsed = modeTabCollapsed(true, useModeTabsCollapseOthers(), active, useMediaQuery(NARROW_TOP_BAR_QUERY));
   const state = active ? APP_TAB_ACTIVE : APP_TAB_INACTIVE;
   const extraEl = extra != null && extra !== '' ? <span className="font-normal text-[var(--text-dim)]">{extra}</span> : null;
   if (variant === 'menu') {

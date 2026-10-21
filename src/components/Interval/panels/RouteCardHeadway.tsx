@@ -39,6 +39,8 @@ import {
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
+import { activeHourRanges, partPeriodNoticeApplies } from '../../../utils/periodActiveRanges';
+import { rowLabelWithOrigin } from '../../../utils/rowOriginLabel';
 import { hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, routeAllDayContract, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
@@ -147,17 +149,7 @@ function sparklineMaxGapByHour(
 }
 
 function activePeriodRanges(directions: ShapeProperties[], startHour: number, endHour: number): string[] {
-  const ranges: Array<[number, number]> = [];
-  let runStart: number | null = null;
-  for (let hour = startHour; hour <= endHour; hour++) {
-    const active = hour < endHour && directions.some(direction => direction.headwayByHour?.[hour] != null);
-    if (active && runStart === null) runStart = hour;
-    if ((!active || hour === endHour) && runStart !== null) {
-      ranges.push([runStart, hour]);
-      runStart = null;
-    }
-  }
-  return ranges.map(([start, end]) => formatPeriodRangeLong(start, end));
+  return activeHourRanges(directions, startHour, endHour).map(([start, end]) => formatPeriodRangeLong(start, end));
 }
 
 export interface DirectionGroup {
@@ -267,13 +259,20 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const primaryMultiBranch = directionGroups
     .filter(g => g.realTier.length >= 2)
     .sort((a, b) => b.realTier.length - a.realTier.length)[0];
+  const activeRangeDirections = sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
   const activePeriodRangeText = selectedPeriod
     ? activePeriodRanges(
-      sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier),
+      activeRangeDirections,
       Math.max(0, selectedPeriod.startHour - 1),
       selectedPeriod.endHour,
     ).join(', ')
     : '';
+  // #995: "but not throughout the selected period" only when service really stops short of it;
+  // a route running the whole period that misses the frequency filter gets the filter notice.
+  const showPartPeriodNotice = selectedPeriod != null
+    && partPeriodNoticeApplies(
+      activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour, maxHeadway, contract?.filterValue,
+    );
   const periodNotice = !hideFilterNotices && selectedPeriod && !hasPeriodService
       ? periodServiceNotice(
       formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
@@ -580,7 +579,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <p className={CARD_NOTICE}>
               {doesNotRun
                 ? selectedRouteOutsideFilterNotice(Infinity)
-                : selectedPeriod && activePeriodRangeText
+                : selectedPeriod && activePeriodRangeText && showPartPeriodNotice
                 ? selectedRouteFilterNotice({
                   headway: contract?.filterValue ?? null,
                   activeRange: activePeriodRangeText,
@@ -600,11 +599,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               multipleDirections: showDirectionSections,
               sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
             });
-            const sameDestinationCount = group.realTier.filter(d =>
-              (d.headsign ?? '').trim().toLowerCase() === (direction.headsign ?? '').trim().toLowerCase()
-            ).length;
-            const variant = direction.routeVariant?.trim();
-            return sameDestinationCount > 1 && variant ? `${variant} · ${label}` : label;
+            return rowLabelWithOrigin(label, direction, group.realTier);
           };
           const branchHoverProps = (dirId: number, headsign: string | null | undefined) => {
             if (!headsign) return {};
@@ -748,6 +743,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             dimmed={dimmed}
                             limited={isLimited}
                             {...branchHoverProps(group.dirId, d.headsign)}
+                            holdLayout={hoveredHour != null}
                           />
                         </FlaggableValue>
                       );

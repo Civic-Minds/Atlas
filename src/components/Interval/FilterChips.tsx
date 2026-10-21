@@ -20,7 +20,7 @@ import LegendItem from '../ui/LegendItem';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { headwayAmount, headwayBandLabel, headwayFilterLabel, headwayTierLabel } from '../../utils/headwayText';
+import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
 
 export { getNowDay };
 
@@ -358,7 +358,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                 onClick={() => { setMaxHeadway(o.max); setOpenChip(null); }}
                 className={rowBtn(isSelected)}
                 aria-pressed={isSelected}
-                aria-label={o.max === Infinity ? 'Show all routes' : headwayFilterLabel(o.max)}
+                aria-label={o.max === Infinity ? 'Show all routes' : capitalizeFirst(headwayOrBetter(o.max))}
               >
                 <LegendItem color={o.color}>{o.label}</LegendItem>
               </button>

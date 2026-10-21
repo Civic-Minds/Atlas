@@ -26,11 +26,20 @@ export function modeTabSpacing(collapsed: boolean): string {
 /**
  * The one rule for the top-bar mode tabs: while any non-map view is on (History, Live, Compare,
  * Night, Frequent Service, or a future one), every tab that is not the selected one shows only its
- * icon. On the plain map all tabs stay expanded. Off when the feature is off (public).
+ * icon. On the plain map all tabs stay expanded, except on a narrow top bar (`narrow`, below 1088px
+ * wide), where the unselected tabs also show only their icon so the bar fits on one line without
+ * squeezing the search bar, whose width the cards below it copy (#1007).
+ * The non-map rule is off when the feature is off (public).
  */
-export function modeTabCollapsed(enabled: boolean, nonMapViewActive: boolean, selected: boolean): boolean {
-  return enabled && nonMapViewActive && !selected;
+export function modeTabCollapsed(enabled: boolean, nonMapViewActive: boolean, selected: boolean, narrow = false): boolean {
+  return !selected && ((enabled && nonMapViewActive) || narrow);
 }
+
+/**
+ * Below this width the top bar has no room for the mode tabs' text beside a full-width search bar
+ * and the filters (measured with History "22+" and Compare showing, Live off; rescan if a tab is added).
+ */
+export const NARROW_TOP_BAR_QUERY = '(max-width: 1087px)';
 
 const ModeTabsContext = React.createContext(false);
 

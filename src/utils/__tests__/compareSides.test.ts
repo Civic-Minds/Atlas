@@ -5,9 +5,9 @@ const side = (over: Partial<CompareSide> = {}): CompareSide => ({ day: 'Weekday'
 
 describe('compare side labels', () => {
   it('spells out each side: day, time and frequency', () => {
-    expect(compareSideHeading(side())).toBe('Weekday night · every 10 min or better');
-    expect(compareSideHeading(side({ maxHeadway: Infinity, period: 'all' }))).toBe('Weekday, all day · all routes');
-    expect(frequencyWords(15)).toBe('every 15 min or better');
+    expect(compareSideHeading(side())).toBe('Weekday night · ≤10 min');
+    expect(compareSideHeading(side({ maxHeadway: Infinity, period: 'all' }))).toBe('Weekday, all day · All routes');
+    expect(frequencyWords(15)).toBe('≤15 min');
   });
 
   it('names the one setting that differs in the "not on" text', () => {
@@ -28,9 +28,9 @@ describe('compare side labels', () => {
 
   it('route card, same day and time: frequency once, then which maps draw it', () => {
     const summary = compareCardSummary([row('A', side(), false), row('B', side({ maxHeadway: 20 }), true)]);
-    expect(summary).toEqual({ headline: 'Every 16 min', lines: ['On map B (every 20 min or better) · not on map A (every 10 min or better)'] });
+    expect(summary).toEqual({ headline: 'Every 16 min', lines: ['On map B (≤20 min) · not on map A (≤10 min)'] });
     expect(compareCardSummary([row('A', side(), true, 8), row('B', side({ maxHeadway: Infinity }), true, 8)]).lines)
-      .toEqual(['On map A (every 10 min or better) · on map B (all routes)']);
+      .toEqual(['On map A (≤10 min) · on map B (All routes)']);
   });
 
   it('route card, different day or time: one line per side with its own frequency', () => {
@@ -43,7 +43,7 @@ describe('compare side labels', () => {
       lines: ['A · Weekday midday: every 16 min, on map', 'B · Saturday night: every 40 min, not on map'],
     });
     expect(compareCardSummary([row('A', side(), true, 8), row('B', side({ day: 'Sunday', maxHeadway: 20 }), false, null, false)]).lines)
-      .toEqual(['A · Weekday night · every 10 min or better: every 8 min, on map', 'B · Sunday night · every 20 min or better: no service, not on map']);
+      .toEqual(['A · Weekday night · ≤10 min: every 8 min, on map', 'B · Sunday night · ≤20 min: no service, not on map']);
   });
 });
 

@@ -75,6 +75,12 @@ describe.each(Object.entries(THEMES))('selected-state tokens (%s)', (_name, { to
     expect(contrast(active, pageRgb)).toBeLessThan(2);
   });
 
+  it('selected fills are opaque, so every selected option is one shade whatever sits behind it', () => {
+    for (const name of ['--control-active-bg', '--selection-active-bg']) {
+      expect(resolveToken(tokens, name)).toMatch(/^#[0-9a-f]{6}$/i);
+    }
+  });
+
   it('selected list rows keep text readable and have a clear edge', () => {
     const bg = get('--selection-active-bg');
     expect(contrast(get('--selection-active-fg'), bg)).toBeGreaterThanOrEqual(7);
