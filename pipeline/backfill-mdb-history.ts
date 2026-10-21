@@ -16,7 +16,7 @@ import { config } from 'dotenv';
 config({ path: resolve('.env.local') });
 import JSZip from 'jszip';
 import { processGtfsBuffer } from './process-core.js';
-import { historyRouteKey } from './historyRouteKey.js';
+import { backfillRouteKey } from './historyRouteKey.js';
 import { r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
@@ -111,7 +111,7 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string, o
   for (const f of fc.features) {
     const p = f.properties;
     if (p.day !== 'Weekday' || p.directionId !== 0) continue;
-    const sn = historyRouteKey(p);
+    const sn = backfillRouteKey(p);
     if (!sn) continue;
     const h = p.headway != null ? Number(p.headway) : null;
     if (h == null) continue;

@@ -10,6 +10,7 @@
   "feedUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip",
   "lastFeedExpiry": "20300129",
   "lastFeedVersion": "",
+  "referenceDateFromRunDate": true,
   "lastRefreshedAt": "2026-08-18",
   "cities": [
     "Gary, Indiana",

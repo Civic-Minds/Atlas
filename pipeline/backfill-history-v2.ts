@@ -10,6 +10,8 @@
  *                       (the atlas-archive bucket is private, so copy them down first)
  *   --out-dir <dir>     where sidecars are written (default tmp/history-v2). Nothing touches R2.
  *   --overwrite         replace a local sidecar whose content differs (default: report a conflict)
+ *   --shapes            also write each period's route shapes to {out-dir}/history-v2-shapes/{slug}/{periodKey}.json
+ *                       (docs/data/DATA_HISTORY.md "Route shapes"; off by default, so sidecar output is unchanged)
  *
  * R2 is never read or written by this script; uploading the output is a separate,
  * explicitly approved step. Each zip is processed with the agency's own settings, like
@@ -23,6 +25,9 @@ import { processAgencyFeeds } from './agencyFeeds.js';
 import { peekFeedDates } from './archiveSelection.js';
 import { backfillSupplementalPolicy, buildSidecar, buildV2Routes, localDirSink, periodKeyForZip, writeSidecar, type BuildV2Report } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
+import { buildPeriodShapes, extractRouteShapes, periodShapesKey } from './historyShapes.js';
+import { parseGtfsZip } from './parseGtfs.js';
+import { readRefDateQuality } from './historyRefQuality.js';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -43,6 +48,7 @@ async function main(): Promise<void> {
   const zips = readdirSync(resolve(zipDir)).filter(f => f.endsWith('.zip')).sort();
   if (zips.length === 0) throw new Error(`no .zip files in ${zipDir}`);
   const sink = localDirSink(outDir, { overwrite: process.argv.includes('--overwrite') });
+  const withShapes = process.argv.includes('--shapes');
   mkdirSync(outDir, { recursive: true });
 
   const rows: Array<{ zip: string; periodKey?: string; refDate?: string; result?: string; report?: BuildV2Report; error?: string }> = [];
@@ -55,9 +61,19 @@ async function main(): Promise<void> {
       const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, {}, m => process.stdout.write(`  ${m}`));
       const evidence = await readFeedEvidence(buf, agency.referenceDateFromRunDate ? { referenceDate: new Date().toISOString().slice(0, 10).replace(/-/g, '') } : {});
       const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence);
-      const result = await writeSidecar(sink, buildSidecar(slug, periodKey, evidence.refDate, built.routes));
+      const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);
+      sidecar.refDateQuality = await readRefDateQuality(buf, evidence.refDate);
+      const result = await writeSidecar(sink, sidecar);
+      let shapesNote = '';
+      if (withShapes) {
+        const gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer);
+        const period = buildPeriodShapes(slug, periodKey, evidence.refDate, extractRouteShapes(gtfs as never));
+        const shapesResult = await sink.put(periodShapesKey(slug, periodKey), JSON.stringify(period));
+        if (shapesResult === 'conflict') process.exitCode = 1;
+        shapesNote = `, shapes ${shapesResult} (${Object.keys(period.routes).length} routes)`;
+      }
       rows.push({ zip, periodKey, refDate: evidence.refDate, result, report: built.report });
-      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)`);
+      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}${sidecar.refDateQuality.holiday ? ` HOLIDAY REF DATE (the build drops it): ${sidecar.refDateQuality.reason}` : ''}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       rows.push({ zip, error: message });

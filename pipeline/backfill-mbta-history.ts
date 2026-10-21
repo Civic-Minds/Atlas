@@ -11,7 +11,7 @@ import { mkdir, writeFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import JSZip from 'jszip';
 import { processGtfsBuffer } from './process-core.js';
-import { historyRouteKey } from './historyRouteKey.js';
+import { backfillRouteKey } from './historyRouteKey.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
 const ARCHIVE_INDEX = 'https://cdn.mbta.com/archive/archived_feeds.txt';
@@ -88,7 +88,7 @@ function snapshotRoutes(geojson: string, previous: Record<string, { headway: num
   for (const feature of fc.features) {
     const properties = feature.properties;
     if (properties.day !== 'Weekday' || properties.directionId !== 0) continue;
-    const route = historyRouteKey(properties);
+    const route = backfillRouteKey(properties);
     if (!route) continue;
     const headway = properties.headway == null ? null : Number(properties.headway);
     if (headway == null) continue;

@@ -18,7 +18,7 @@ describe('routeFramePadding', () => {
   });
 
   it('uses the bottom-sheet padding on phones only when asked', () => {
-    expect(routeFramePadding(fakeMap(390, 800), 'left', { phoneSheet: true })).toEqual({ top: 60, bottom: 360, left: 30, right: 30 });
+    expect(routeFramePadding(fakeMap(390, 800), 'left', { phoneSheet: true })).toEqual({ top: 75, bottom: 360, left: 45, right: 45 });
     expect(routeFramePadding(fakeMap(390, 800))).toEqual({ top: 80, bottom: 80, left: 320, right: 80 });
     expect(routeFramePadding(fakeMap(1200, 800), 'left', { phoneSheet: true })).toEqual({ top: 80, bottom: 80, left: 320, right: 80 });
   });
@@ -42,7 +42,7 @@ describe('frameRoute', () => {
   it('honours the side, max zoom and phone sheet options', () => {
     const map = fakeMap(390, 800);
     frameRoute(map, [[0, 0], [1, 1]], { side: 'right', maxZoom: 16, phoneSheet: true });
-    expect(map.fitBounds).toHaveBeenCalledWith([[0, 0], [1, 1]], { padding: { top: 60, bottom: 360, left: 30, right: 30 }, maxZoom: 16 });
+    expect(map.fitBounds).toHaveBeenCalledWith([[0, 0], [1, 1]], { padding: { top: 75, bottom: 360, left: 45, right: 45 }, maxZoom: 16 });
   });
 
   it('flies to a single point without zooming out', () => {
@@ -74,7 +74,7 @@ describe('selectionFramePadding (main map route selection)', () => {
     // The side-card padding left a 2px-wide column, so selecting TTC 80 zoomed out to the Great Lakes.
     expect(fitArea(phone, selectionFramePadding(phone, false)).width).toBe(2);
     const padding = selectionFramePadding(phone, true);
-    expect(padding).toEqual({ top: 60, bottom: 393, left: 30, right: 30 });
+    expect(padding).toEqual({ top: 75, bottom: 393, left: 45, right: 45 });
     const area = fitArea(phone, padding);
     expect(area.width).toBeGreaterThan(300);
     expect(area.height).toBeGreaterThan(400);

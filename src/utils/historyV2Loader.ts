@@ -2,13 +2,17 @@ import {
   HISTORY_V2_BASE_OVERRIDE,
   historyV2AgencyUrl,
   historyV2SidecarUrl,
+  historyV2ShapesUrl,
   parseHistoryAgencyV2,
+  parseHistoryShapes,
   parseHistoryV2Sidecar,
   type HistoryAgencyLike,
   type HistorySnapshotLike,
+  type HistoryShapesFile,
   type HistoryV2Result,
   type HistoryV2Sidecar,
 } from '../../shared/historyV2Reader';
+import { R2_PUBLIC_URL } from '../../shared/config';
 import { loadHistoryConfig } from './historyConfig';
 
 /** Thin fetch layer over the pure reader. Fixture mode is on only when VITE_HISTORY_V2_BASE is set in `vite` dev. */
@@ -47,4 +51,16 @@ export async function loadHistoryV2Sidecar(slug: string, periodKey: string): Pro
   if (!HISTORY_V2_BASE_OVERRIDE) return { ok: false, error: { code: 'missing-field', path: periodKey, message: 'sidecars are only served in fixture mode' } };
   const raw = await getJson(historyV2SidecarUrl(HISTORY_V2_BASE_OVERRIDE, slug, periodKey));
   return raw.ok ? parseHistoryV2Sidecar(raw.value) : raw;
+}
+
+/**
+ * One agency's per-year route shapes (validated), loaded on demand: a separate file, never part of the snapshots
+ * the screen loads eagerly. Fixture mode reads {base}/{slug}-v2-shapes.json; otherwise the published
+ * `atlas/history-v2-shapes/{slug}.json` (absent until a v2 build has published it: the result is then
+ * {ok:false} and every route reads as `shapeForYear` none). Pair with `shapeForYear` from the reader.
+ */
+export async function loadHistoryShapesV2(slug: string): Promise<HistoryV2Result<HistoryShapesFile>> {
+  const url = HISTORY_V2_BASE_OVERRIDE ? historyV2ShapesUrl(HISTORY_V2_BASE_OVERRIDE, slug) : `${R2_PUBLIC_URL}/atlas/history-v2-shapes/${encodeURIComponent(slug)}.json`;
+  const raw = await getJson(url);
+  return raw.ok ? parseHistoryShapes(raw.value) : raw;
 }

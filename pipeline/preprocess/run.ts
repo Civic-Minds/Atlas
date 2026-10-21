@@ -38,7 +38,7 @@ export interface GtfsTransformOptions {
   referenceDateFromRunDate?: boolean;
   /**
    * Read Weekday, Saturday and Sunday each from one typical real date in the two weeks after
-   * the run date (feeds with rolling per-day service_ids: LA Metro Rail). Set per feed by
+   * the run date (feeds with rolling per-day service_ids: LA Metro Rail, Sound Transit). Set per feed by
    * processAgencyFeeds from the agency's `nextServiceDatesFeedUrls`; see serviceDates.ts.
    */
   dayTypesFromNextServiceDates?: boolean;

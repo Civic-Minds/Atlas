@@ -53,8 +53,6 @@ export interface RouteSnapshot {
   headwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
   note?: string;
-  /** History v2 data (real service day, weekend, flag); not read by the UI yet. */
-  v2?: HistorySnapshotV2;
 }
 
 export interface RouteTripDurationSummary {

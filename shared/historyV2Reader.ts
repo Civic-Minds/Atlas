@@ -5,21 +5,24 @@
  *  - parseHistoryV2Sidecar: validates one sidecar history-v2/{slug}/{periodKey}.json (all routes of one agency period).
  *  - parseHistoryAgencyV2: validates the agency-level file (the build output: { slug, routes: [{ snapshots }] }),
  *    which is also the shape of one entry of history-config.json.
- *  - selectors the UI uses: routesForYear, yearsAvailable, snapshotValue, snapshotFlag.
+ *  - parseHistoryShapes: validates the agency shapes file (per-year route lines, stored once, referenced by index).
+ *  - selectors the UI uses: routesForYear, yearsAvailable, snapshotValue, snapshotFlag, shapeForYear.
  *
  * Rules the UI must keep
  *  - Blank is blank: a missing weekend value means "unknown". Never show it as 0 and never fill it in.
  *  - {none:true} means the feed positively has no service that day. It is not blank and not 0.
  *  - Flags (fast / slow / limited) are stored, never hidden. The UI decides how to word them.
  *  - Old v1 snapshots (no `v2`) are fine: weekday is weekdayHeadwayMin, weekend is blank.
+ *  - A route's line for a year comes only from shapeForYear. {kind:'none'} means no shape for that year: never
+ *    draw today's geometry, another year's line, or a snapshot's old `geometry` field in its place.
  *
  * Forward compatible: unknown extra fields are ignored and kept as they are. Validation never throws;
  * it returns a typed error. A newer sidecar `version` is reported as 'unsupported-version', not guessed at.
  */
-import type { HistoryDayValue, HistoryFlag, HistoryRep, HistorySnapshotV2, HistoryV2Sidecar } from './historyV2.js';
+import type { HistoryDayValue, HistoryFlag, HistoryRep, HistoryShapeLine, HistoryShapesFile, HistorySnapshotV2, HistoryV2Sidecar } from './historyV2.js';
 import { yearOfRefDate } from './historyV2.js';
 
-export type { HistoryDayValue, HistoryFlag, HistoryRep, HistorySnapshotV2, HistoryV2Sidecar };
+export type { HistoryDayValue, HistoryFlag, HistoryRep, HistoryShapeLine, HistoryShapesFile, HistorySnapshotV2, HistoryV2Sidecar };
 
 export type HistoryV2ErrorCode =
   | 'not-object'
@@ -233,6 +236,62 @@ export function yearsAvailable(agency: { routes: Array<{ snapshots: Array<{ year
   return [...years].sort((a, b) => a - b);
 }
 
+const isCoord = (v: unknown): v is number[] => Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' && typeof v[1] === 'number'
+  && Number.isFinite(v[0]) && Number.isFinite(v[1]) && Math.abs(v[0]) <= 180 && Math.abs(v[1]) <= 90;
+
+/**
+ * Validate an agency shapes file (`{version:1, slug, decimals, toleranceM, shapes, approx?, years}`). Never throws.
+ * Checks every line (>= 2 [lon, lat] pairs) and every reference (an integer inside `shapes`), so shapeForYear can
+ * trust a parsed file. A newer `version` is 'unsupported-version', not guessed at.
+ */
+export function parseHistoryShapes(input: unknown): HistoryV2Result<HistoryShapesFile> {
+  if (!isObj(input)) return fail('not-object', '', 'shapes file must be a JSON object');
+  if (input.version === undefined) return fail('missing-field', 'version', 'version is required');
+  if (input.version !== 1) return fail('unsupported-version', 'version', `unsupported shapes version ${String(input.version)}`);
+  if (typeof input.slug !== 'string' || !input.slug) return fail('missing-field', 'slug', 'slug is required');
+  if (!Array.isArray(input.shapes)) return fail('missing-field', 'shapes', 'shapes must be an array');
+  if (!isObj(input.years)) return fail('missing-field', 'years', 'years must be an object');
+  const n = input.shapes.length;
+  for (let i = 0; i < n; i++) {
+    const line: unknown = input.shapes[i];
+    if (!Array.isArray(line) || line.length < 2 || !line.every(isCoord)) return fail('bad-field', `shapes.${i}`, 'a shape must be a list of at least 2 [lon, lat] pairs');
+  }
+  if (input.approx !== undefined) {
+    if (!Array.isArray(input.approx) || !input.approx.every(v => Number.isInteger(v) && v >= 0 && v < n)) return fail('bad-field', 'approx', 'approx must list valid shape indexes');
+  }
+  for (const [year, routes] of Object.entries(input.years)) {
+    if (!/^\d{4}$/.test(year)) return fail('bad-field', `years.${year}`, 'year must be a 4-digit key');
+    if (!isObj(routes)) return fail('bad-field', `years.${year}`, 'year entry must be an object');
+    for (const [key, idx] of Object.entries(routes)) {
+      if (!Number.isInteger(idx) || (idx as number) < 0 || (idx as number) >= n) return fail('bad-field', `years.${year}.${key}`, 'shape reference must be an index into shapes');
+    }
+  }
+  return { ok: true, value: input as unknown as HistoryShapesFile };
+}
+
+/** What the shapes file says about one route in one year. `none` = no shape stored for that year (never a fallback). */
+export type ShapeForYear =
+  | { kind: 'shape'; coordinates: HistoryShapeLine; /** Drawn from the stop order, not a published shape. */ approximate: boolean }
+  | { kind: 'none' };
+
+/**
+ * The line to draw for `routeKey` in `year`. Only that year's entry is read: a missing file, year or route is
+ * `{kind:'none'}`, and nothing falls back to another year, today's geometry or a snapshot's old `geometry`.
+ * `routeKey` is the route's key (`routeShortName` in the agency file, i.e. historyRouteKey). Never throws.
+ */
+export function shapeForYear(shapes: HistoryShapesFile | null | undefined, routeKey: string, year: number): ShapeForYear {
+  const idx = shapes?.years?.[String(year)]?.[routeKey];
+  if (typeof idx !== 'number') return { kind: 'none' };
+  const line = shapes?.shapes?.[idx];
+  if (!Array.isArray(line) || line.length < 2) return { kind: 'none' };
+  return { kind: 'shape', coordinates: line, approximate: shapes?.approx?.includes(idx) === true };
+}
+
+/** Years that have at least one stored shape, ascending. */
+export function shapeYears(shapes: HistoryShapesFile | null | undefined): number[] {
+  return Object.keys(shapes?.years ?? {}).map(Number).filter(Number.isInteger).sort((a, b) => a - b);
+}
+
 /** Dev-only base-URL override for local fixtures (see the contract). Ignored in every built site. */
 const devBase: unknown =
   typeof import.meta !== 'undefined' && (import.meta as { env?: Record<string, unknown> })?.env?.DEV
@@ -244,3 +303,6 @@ export const HISTORY_V2_BASE_OVERRIDE: string | undefined =
 /** URLs under a base (fixtures: tmp/dev-history-v2 served at /dev-history-v2). */
 export const historyV2AgencyUrl = (base: string, slug: string): string => `${base}/${slug}-v2-agency.json`;
 export const historyV2SidecarUrl = (base: string, slug: string, periodKey: string): string => `${base}/history-v2/${slug}/${periodKey}.json`;
+
+/** Agency shapes file under a base (fixtures: tmp/dev-history-v2). In production it is atlas/history-v2-shapes/{slug}.json. */
+export const historyV2ShapesUrl = (base: string, slug: string): string => `${base}/${slug}-v2-shapes.json`;

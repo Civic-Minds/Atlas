@@ -26,7 +26,7 @@ export function compareSideLabel(side: Pick<CompareSide, 'day' | 'period'>): str
   return describeDayAndPeriod(side.day, side.period);
 }
 
-/** The side's frequency limit, worded like the pickers: "≤10 min", or "All routes" (#1011). */
+/** The side's frequency limit, worded like the pickers: "≤10 min", or "All" (#1011). */
 export function frequencyWords(maxHeadway: number): string {
   return headwayFilterLabel(maxHeadway);
 }

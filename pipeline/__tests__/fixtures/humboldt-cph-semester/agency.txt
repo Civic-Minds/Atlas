@@ -1,0 +1,7 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email
+RTS,Redwood Transit System,https://hta.org/agencies/redwood-transit-system/?referrer=gtfs,America/Los_Angeles,en,(707) 443-0826,https://hta.org/fares/,frontdesk@hta.org
+ETS,Eureka Transit System,https://hta.org/agencies/eureka-transit-service/?referrer=gtfs,America/Los_Angeles,en,(707) 443-0826,https://hta.org/fares/,frontdesk@hta.org
+A&MRTS,Arcata & Mad River Transit System,https://hta.org/agencies/arcata-and-mad-river/?referrer=gtfs,America/Los_Angeles,en,(707) 443-0826,https://hta.org/fares/,frontdesk@hta.org
+NSE101,North State Express: 101,https://hta.org/north-state-express/?referrer=gtfs,America/Los_Angeles,en,(707) 443-0826,https://hta.org/fares/,frontdesk@hta.org
+NSE299,North State Express: 299,https://hta.org/agencies/willow-creek/?referrer=gtfs,America/Los_Angeles,en,(707) 443-0826,https://hta.org/fares/,frontdesk@hta.org
+SHI,Southern Humboldt Line,https://hta.org/agencies/southern-humboldt-intercity/?referrer=gtfs,America/Los_Angeles,en,(707) 443-0826,https://hta.org/fares/,frontdesk@hta.org

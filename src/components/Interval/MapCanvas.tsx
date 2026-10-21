@@ -1311,7 +1311,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Map controls — one stack keeps the gaps identical at every map size. */}
-      {showMapControls && <div className={`absolute bottom-6 right-3 ${Z_PANEL} flex flex-col gap-2 pointer-events-auto`}>
+      {showMapControls && <div className={`absolute bottom-6 right-3 max-sm:right-6 ${Z_PANEL} flex flex-col items-center gap-2 pointer-events-auto`}>
         {exportEnabled && (
           <button
             onClick={() => setExportDialogOpen(true)}

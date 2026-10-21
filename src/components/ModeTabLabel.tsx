@@ -9,7 +9,9 @@ export function ModeTabLabel({ collapsed, children }: { collapsed: boolean; chil
   return (
     <span
       className={`inline-flex items-center gap-1.5 overflow-hidden whitespace-nowrap transition-[max-width,opacity] duration-200 ease-out motion-reduce:transition-none ${
-        collapsed ? 'max-w-0 opacity-0' : 'max-w-[10rem] opacity-100'
+        collapsed
+          ? 'max-w-0 opacity-0 group-hover/tab:max-w-[10rem] group-hover/tab:opacity-100 group-focus-visible/tab:max-w-[10rem] group-focus-visible/tab:opacity-100'
+          : 'max-w-[10rem] opacity-100'
       }`}
       aria-hidden={collapsed || undefined}
     >
@@ -30,9 +32,12 @@ export function modeTabSpacing(collapsed: boolean): string {
  * wide), where the unselected tabs also show only their icon so the bar fits on one line without
  * squeezing the search bar, whose width the cards below it copy (#1007).
  * The non-map rule is off when the feature is off (public).
+ * On a compact top bar (`compact`, below 816px wide) the selected tab folds too, since its text
+ * and count are the next thing to give when the search bar would otherwise shrink below a usable
+ * width (#1020). The selected tab keeps its pressed look, so the icon still says which view is on.
  */
-export function modeTabCollapsed(enabled: boolean, nonMapViewActive: boolean, selected: boolean, narrow = false): boolean {
-  return !selected && ((enabled && nonMapViewActive) || narrow);
+export function modeTabCollapsed(enabled: boolean, nonMapViewActive: boolean, selected: boolean, narrow = false, compact = false): boolean {
+  return compact || (!selected && ((enabled && nonMapViewActive) || narrow));
 }
 
 /**
@@ -40,6 +45,14 @@ export function modeTabCollapsed(enabled: boolean, nonMapViewActive: boolean, se
  * and the filters (measured with History "22+" and Compare showing, Live off; rescan if a tab is added).
  */
 export const NARROW_TOP_BAR_QUERY = '(max-width: 1087px)';
+
+/**
+ * Below this width even the selected tab and the Compare "Both maps" label fold to their icon or
+ * badge, so the search bar keeps at least 128px (the width its "Search routes" hint needs) down to
+ * 640px, the tablet lower bound. Measured with History "22+" and Compare showing, Live off; rescan
+ * if a tab or top-bar chip is added (#1020).
+ */
+export const COMPACT_TOP_BAR_QUERY = '(max-width: 815px)';
 
 const ModeTabsContext = React.createContext(false);
 

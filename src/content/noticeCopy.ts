@@ -29,7 +29,7 @@ export function periodServiceNotice(periodRange: string, partial: boolean, activ
 }
 
 export function unevenServiceNotice(longestGap: number): string {
-  return `Service runs throughout the selected period, but not consistently. Longest gap: ${delayAmount(longestGap)}.`;
+  return `Service runs all period, but unevenly, with a longest gap of ${delayAmount(longestGap)}.`;
 }
 
 export const NO_ROUTE_SHAPE_NOTICE = 'Route map unavailable.';

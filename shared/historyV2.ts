@@ -45,6 +45,16 @@ export interface HistoryV2SidecarRoute {
   flag?: HistoryFlag;
 }
 
+/** Is the snapshot's reference date a holiday-week date? Computed by the sidecar writer (pipeline/historyRefQuality.ts). */
+export interface RefDateQuality {
+  holiday: boolean;
+  reason: string;
+  /** Trips running on refDate. */
+  tripsOnRef: number;
+  /** Median trips over the other days of the same day type in the feed's calendar window. */
+  medianTrips: number;
+}
+
 export interface HistoryV2Sidecar {
   version: 2;
   slug: string;
@@ -56,6 +66,8 @@ export interface HistoryV2Sidecar {
    * when a supplemental feed was part of this snapshot; its absence means bus feed only.
    */
   supplementalRoutes?: Record<string, string[]>;
+  /** Optional and additive: absent on sidecars written before the holiday check. */
+  refDateQuality?: RefDateQuality;
 }
 
 export function historyFlagFor(rep: HistoryRep): HistoryFlag | undefined {
@@ -70,4 +82,41 @@ export function historyFlagFor(rep: HistoryRep): HistoryFlag | undefined {
 export function yearOfRefDate(refDate: string | null | undefined): number | null {
   const match = /^(\d{4})(\d{2})(\d{2})$/.exec(refDate ?? '');
   return match ? Number(match[1]) : null;
+}
+
+// ---- per-year route shapes (History v2, flag-gated; see docs/data/DATA_HISTORY.md "Route shapes") ----
+
+/** One [lon, lat] vertex list. Always >= 2 vertices, rounded to `decimals` places. */
+export type HistoryShapeLine = number[][];
+
+/**
+ * Agency-level shapes file `atlas/history-v2-shapes/{slug}.json` (a separate, lazily loaded file: it is never
+ * part of history-config.json or of a snapshot). Shapes are stored ONCE in `shapes` and referenced by index:
+ * a route whose line is identical in several years points at the same entry.
+ */
+export interface HistoryShapesFile {
+  version: 1;
+  slug: string;
+  /** Coordinate decimals the lines were rounded to. */
+  decimals: number;
+  /** Douglas-Peucker tolerance (metres) the lines were simplified with. */
+  toleranceM: number;
+  /** Distinct lines. */
+  shapes: HistoryShapeLine[];
+  /** Indexes into `shapes` that are drawn from the stop order (straight links between stops), not a real shape. */
+  approx?: number[];
+  /** year -> route key -> index into `shapes`. A route absent from a year has no shape that year. */
+  years: Record<string, Record<string, number>>;
+}
+
+/** One archived period's shapes (build input, `history-v2-shapes/{slug}/{periodKey}.json`, immutable like a sidecar). */
+export interface HistoryPeriodShapes {
+  version: 1;
+  slug: string;
+  periodKey: string;
+  refDate: string;
+  decimals: number;
+  toleranceM: number;
+  /** route key -> line (`a: true` = derived from the stop order). */
+  routes: Record<string, { c: HistoryShapeLine; a?: true }>;
 }

@@ -1,0 +1,133 @@
+import JSZip from 'jszip';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { processAgencyFeeds } from '../agencyFeeds';
+
+// Sound Transit (#1035, release-mvf8jscd): light rail, Sounder and T Line share one main feed.
+// Link's long-range Saturday and Sunday services are removed every weekend from Oct 17 to
+// Nov 15 and replaced by one-day calendar_dates services (rail milling, closures). The default
+// calendar logic reads one reference date and skips one-day ids while the T Line's long-range
+// weekend service keeps the day non-empty, so the 1 Line and 2 Line showed Weekday only. A
+// weekend shuttle bus period (Oct 17 to Nov 15) pulls the reference date into that stretch.
+// The main feed opts in by listing its feedUrl in nextServiceDatesFeedUrls. Run date: Wed Oct 21, 2026.
+
+const RUN = new Date('2026-10-21T08:00:00');
+const MAIN_URL = 'https://example.test/main.zip';
+const HEADER = 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date';
+
+function minutes(m: number): string {
+  return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}:00`;
+}
+
+/** L (light rail), T (a line with its own long-range weekend service) and X (weekend shuttle bus). */
+async function soundTransitZip(): Promise<Buffer> {
+  const calendar = [
+    'L-wk,1,1,1,1,1,0,0,20261019,20270326',
+    'L-sat,0,0,0,0,0,1,0,20261003,20270327',
+    'L-sun,0,0,0,0,0,0,1,20261004,20270328',
+    'T-wk,1,1,1,1,1,0,0,20261001,20270326',
+    'T-sat,0,0,0,0,0,1,0,20261001,20270320',
+    'T-sun,0,0,0,0,0,0,1,20261001,20270321',
+    'X-sat,0,0,0,0,0,1,0,20261017,20261115',
+    'X-sun,0,0,0,0,0,0,1,20261017,20261115',
+  ];
+  // Like the real feed: every weekend from Oct 17 to Nov 15 runs a one-day replacement.
+  const weekends = [['20261017', '20261018'], ['20261024', '20261025'], ['20261031', '20261101'], ['20261107', '20261108'], ['20261114', '20261115']];
+  const calendarDates = ['service_id,date,exception_type'];
+  for (const [sat, sun] of weekends) {
+    calendarDates.push(`L-sat,${sat},2`, `L-sun,${sun},2`, `L-sat-${sat},${sat},1`, `L-sun-${sun},${sun},1`);
+  }
+  // The shuttle runs only on the first and last weekend of its period.
+  for (const [sat, sun] of weekends.slice(1, -1)) calendarDates.push(`X-sat,${sat},2`, `X-sun,${sun},2`);
+  // Service id -> [route, minutes between trips].
+  const services: Array<[string, string, number]> = [
+    ['L-wk', 'L', 10], ['L-sat', 'L', 10], ['L-sun', 'L', 10],
+    ...weekends.flatMap(([sat, sun]): Array<[string, string, number]> => [[`L-sat-${sat}`, 'L', 10], [`L-sun-${sun}`, 'L', 10]]),
+    ['T-wk', 'T', 12], ['T-sat', 'T', 12], ['T-sun', 'T', 20],
+    ['X-sat', 'X', 15], ['X-sun', 'X', 15],
+  ];
+  const zip = new JSZip();
+  zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\nst,Sound Transit,https://example.test,America/Los_Angeles\n');
+  zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nL,1 Line,Light rail,0\nT,T Line,Tacoma,0\nX,Shuttle,Shuttle bus,3\n');
+  zip.file('stops.txt', [
+    'stop_id,stop_name,stop_lat,stop_lon',
+    'l1,L North,47.70,-122.30', 'l2,L South,47.50,-122.30',
+    't1,T West,47.25,-122.45', 't2,T East,47.25,-122.40',
+    'x1,X North,47.70,-122.32', 'x2,X South,47.60,-122.32',
+  ].join('\n') + '\n');
+  zip.file('shapes.txt', [
+    'shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence',
+    'shL,47.70,-122.30,1', 'shL,47.60,-122.30,2', 'shL,47.50,-122.30,3',
+    'shT,47.25,-122.45,1', 'shT,47.25,-122.425,2', 'shT,47.25,-122.40,3',
+    'shX,47.70,-122.32,1', 'shX,47.65,-122.32,2', 'shX,47.60,-122.32,3',
+  ].join('\n') + '\n');
+  zip.file('calendar.txt', [HEADER, ...calendar].join('\n') + '\n');
+  zip.file('calendar_dates.txt', calendarDates.join('\n') + '\n');
+  const trips = ['route_id,service_id,trip_id,trip_headsign,direction_id,shape_id'];
+  const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+  for (const [serviceId, route, every] of services) {
+    const [s1, s2] = route === 'L' ? ['l1', 'l2'] : route === 'T' ? ['t1', 't2'] : ['x1', 'x2'];
+    for (let m = 6 * 60, i = 0; m <= 22 * 60; m += every, i++) {
+      const id = `${serviceId}-${i}`;
+      trips.push(`${route},${serviceId},${id},${route} terminal,0,sh${route}`);
+      stopTimes.push(`${id},${minutes(m)},${minutes(m)},${s1},1`, `${id},${minutes(m + 20)},${minutes(m + 20)},${s2},2`);
+    }
+  }
+  zip.file('trips.txt', trips.join('\n') + '\n');
+  zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+  return zip.generateAsync({ type: 'nodebuffer' });
+}
+
+type Props = { routeId: string; day: string; headway: number | null };
+function lineFeatures(geojson: string): Props[] {
+  return JSON.parse(geojson).features
+    .filter((f: { geometry?: { type?: string } }) => f.geometry?.type !== 'Point')
+    .map((f: { properties: Props }) => f.properties);
+}
+function daysByRoute(props: Props[]): Record<string, string[]> {
+  const out: Record<string, Set<string>> = {};
+  for (const p of props) (out[p.routeId] ??= new Set()).add(p.day);
+  return Object.fromEntries(Object.entries(out).map(([r, s]) => [r, [...s].sort()]));
+}
+
+describe('nextServiceDatesFeedUrls naming the main feed (Sound Transit, #1035)', () => {
+  beforeEach(() => { vi.useFakeTimers({ toFake: ['Date'], now: RUN }); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('default logic loses the light rail weekend while the other line keeps it (the reported bug)', async () => {
+    const plain = await processAgencyFeeds(await soundTransitZip(), [], { slug: 'st', feedUrl: MAIN_URL });
+    expect(daysByRoute(lineFeatures(plain.geojson))).toEqual({ L: ['Weekday'], T: ['Saturday', 'Sunday', 'Weekday'] });
+  });
+
+  it('gives the light rail Weekday, Saturday and Sunday when the main feed is listed', async () => {
+    const optedIn = await processAgencyFeeds(await soundTransitZip(), [], { slug: 'st', feedUrl: MAIN_URL, nextServiceDatesFeedUrls: [MAIN_URL] });
+    const props = lineFeatures(optedIn.geojson);
+    expect(daysByRoute(props)).toEqual({ L: ['Saturday', 'Sunday', 'Weekday'], T: ['Saturday', 'Sunday', 'Weekday'] });
+    for (const p of props.filter(p => p.routeId === 'L')) expect(p.headway).toBe(10);
+  });
+
+  it('leaves a line with only long-range services unchanged', async () => {
+    const buf = await soundTransitZip();
+    const plain = await processAgencyFeeds(buf, [], { slug: 'st', feedUrl: MAIN_URL });
+    const optedIn = await processAgencyFeeds(buf, [], { slug: 'st', feedUrl: MAIN_URL, nextServiceDatesFeedUrls: [MAIN_URL] });
+    const t = (geojson: string) => lineFeatures(geojson).filter(p => p.routeId === 'T');
+    expect(t(optedIn.geojson)).toEqual(t(plain.geojson));
+    expect(optedIn.calendarExpiry).toBe(plain.calendarExpiry);
+  });
+
+  it('keeps the main feed on the default logic when only a supplemental feed is listed', async () => {
+    const buf = await soundTransitZip();
+    const plain = await processAgencyFeeds(buf, [], { slug: 'st', feedUrl: MAIN_URL });
+    const other = await processAgencyFeeds(buf, [], { slug: 'st', feedUrl: MAIN_URL, nextServiceDatesFeedUrls: ['https://example.test/rail.zip'] });
+    expect(other.geojson).toBe(plain.geojson);
+    expect(other.stopsJson).toBe(plain.stopsJson);
+    expect(other.tripsJson).toBe(plain.tripsJson);
+    expect(other.corridorsGeojson).toBe(plain.corridorsGeojson);
+  });
+
+  it('does not opt in an agency with no feedUrl', async () => {
+    const buf = await soundTransitZip();
+    const plain = await processAgencyFeeds(buf, [], { slug: 'st' });
+    const noUrl = await processAgencyFeeds(buf, [], { slug: 'st', feedUrl: null, nextServiceDatesFeedUrls: [MAIN_URL] });
+    expect(noUrl.geojson).toBe(plain.geojson);
+  });
+});
