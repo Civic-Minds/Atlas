@@ -1,0 +1,24 @@
+{
+  "slug": "prince-george",
+  "name": "BC Transit (Prince George)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    53.9982,
+    -123.5098
+  ],
+  "bbox": [
+    53.80656,
+    -127.17682,
+    54.79534,
+    -122.72791
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=22",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2510/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Prince George, British Columbia",
+    "Burns Lake, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

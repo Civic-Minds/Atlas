@@ -1,0 +1,26 @@
+{
+  "slug": "east-kootenay",
+  "name": "BC Transit (East Kootenay)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    49.7917,
+    -115.7089
+  ],
+  "bbox": [
+    49.4796,
+    -116.14459,
+    50.70791,
+    -114.8606
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=21",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2520/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Cranbrook, British Columbia",
+    "Kimberley, British Columbia",
+    "Fernie, British Columbia",
+    "Invermere, British Columbia"
+  ],
+  "timezone": "America/Edmonton",
+  "hiddenInProduction": true
+}

@@ -28312,6 +28312,128 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastPeekedExpiry": "20270301"
+    },
+    {
+      "slug": "prince-george",
+      "name": "BC Transit (Prince George)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        53.9982,
+        -123.5098
+      ],
+      "bbox": [
+        53.80656,
+        -127.17682,
+        54.79534,
+        -122.72791
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=22",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2510/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Prince George, British Columbia",
+        "Burns Lake, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "east-kootenay",
+      "name": "BC Transit (East Kootenay)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        49.7917,
+        -115.7089
+      ],
+      "bbox": [
+        49.4796,
+        -116.14459,
+        50.70791,
+        -114.8606
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=21",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2520/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Cranbrook, British Columbia",
+        "Kimberley, British Columbia",
+        "Fernie, British Columbia",
+        "Invermere, British Columbia"
+      ],
+      "timezone": "America/Edmonton",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "terrace-kitimat",
+      "name": "BC Transit (Terrace-Kitimat-Hazelton)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        54.687,
+        -128.2467
+      ],
+      "bbox": [
+        53.95613,
+        -128.71983,
+        55.36218,
+        -127.15697
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=26",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2462/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Terrace, British Columbia",
+        "Kitimat, British Columbia",
+        "Hazelton, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "powell-river",
+      "name": "BC Transit (Powell River)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        49.8393,
+        -124.5115
+      ],
+      "bbox": [
+        49.64439,
+        -124.77096,
+        49.99142,
+        -124.16795
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=29",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2529/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Powell River, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "mount-waddington",
+      "name": "BC Transit (Mount Waddington)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        50.6515,
+        -127.3869
+      ],
+      "bbox": [
+        50.5614,
+        -127.59737,
+        50.74093,
+        -127.0009
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=17",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2467/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Port Hardy, British Columbia",
+        "Port McNeill, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
     }
   ]
 }

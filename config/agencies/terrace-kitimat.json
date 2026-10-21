@@ -1,0 +1,25 @@
+{
+  "slug": "terrace-kitimat",
+  "name": "BC Transit (Terrace-Kitimat-Hazelton)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    54.687,
+    -128.2467
+  ],
+  "bbox": [
+    53.95613,
+    -128.71983,
+    55.36218,
+    -127.15697
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=26",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2462/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Terrace, British Columbia",
+    "Kitimat, British Columbia",
+    "Hazelton, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

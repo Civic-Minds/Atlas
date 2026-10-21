@@ -1,0 +1,24 @@
+{
+  "slug": "mount-waddington",
+  "name": "BC Transit (Mount Waddington)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    50.6515,
+    -127.3869
+  ],
+  "bbox": [
+    50.5614,
+    -127.59737,
+    50.74093,
+    -127.0009
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=17",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2467/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Port Hardy, British Columbia",
+    "Port McNeill, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "powell-river",
+  "name": "BC Transit (Powell River)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    49.8393,
+    -124.5115
+  ],
+  "bbox": [
+    49.64439,
+    -124.77096,
+    49.99142,
+    -124.16795
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=29",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2529/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Powell River, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}
