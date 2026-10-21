@@ -497,16 +497,17 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       } as React.CSSProperties}
     >
       <div className={CARD_HEADER_BLOCK}>
-        <div className="flex items-start gap-2 min-w-0">
-          <div className="min-w-0 flex-1">
-            <p className={`${CARD_TITLE} mb-0`}>{agencyNamePrimary}</p>
+        {/* The report flag sits in the top-right corner over the card's full width, so the area chip and links below can use all of it. */}
+        <div className="relative min-w-0">
+          <div className="min-w-0">
+            <p className={`${CARD_TITLE} mb-0 pr-7`}>{agencyNamePrimary}</p>
           {(() => {
             const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
             const area = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
             return (
               <>
                 <div className="flex flex-wrap items-baseline gap-x-2">
-                  <p className={CARD_SUMMARY}>
+                  <p className={`${CARD_SUMMARY} pr-7`}>
                     {agency.onDemandOnly
                       ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
                       : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
@@ -627,11 +628,13 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             </div>
           )}
           </div>
+          <div className="absolute right-0 top-0">
           <CardReportButton
             title={`Agency issue: ${agency.name}`}
             details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
           />
+          </div>
         </div>
       </div>
 
