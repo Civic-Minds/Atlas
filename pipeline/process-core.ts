@@ -744,7 +744,9 @@ export async function processGtfsBuffer(
   // typical real weekday, Saturday and Sunday after the run date instead of one reference date. LA Metro Rail lost
   // Weekday and Sunday on A, B and D in release-mvf8jscd. See serviceDates.ts.
   const nextServiceDates = options?.dayTypesFromNextServiceDates
-    ? calendarFromNextServiceDates(gtfs.calendar ?? [], gtfs.calendarDates ?? [], gtfs.trips ?? [], runDateYmd())
+    ? calendarFromNextServiceDates(gtfs.calendar ?? [], gtfs.calendarDates ?? [], gtfs.trips ?? [], runDateYmd(), {
+      skipWeekendEvents: options?.nextServiceDatesSkipWeekendEvents,
+    })
     : null;
   if (nextServiceDates) {
     gtfs = { ...gtfs, calendar: nextServiceDates.calendar, calendarDates: [] };

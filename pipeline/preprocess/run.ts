@@ -42,6 +42,12 @@ export interface GtfsTransformOptions {
    * processAgencyFeeds from the agency's `nextServiceDatesFeedUrls`; see serviceDates.ts.
    */
   dayTypesFromNextServiceDates?: boolean;
+  /**
+   * With dayTypesFromNextServiceDates: leave a weekday line's occasional weekend services out of
+   * the Saturday and Sunday read (Sounder game days, CIV-445). From the agency's
+   * `nextServiceDatesSkipWeekendEvents`; see serviceDates.ts.
+   */
+  nextServiceDatesSkipWeekendEvents?: boolean;
 }
 
 /** Parse → filter → merge branches → agency preprocess → synthesize trip metadata. */

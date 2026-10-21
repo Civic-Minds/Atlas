@@ -57,7 +57,7 @@ describe('HeadwaySparkline', () => {
     expect(within(dialog).getByRole('button', { name: 'Southbound' })).toHaveClass('h-7', 'px-2.5');
     expect(within(dialog).getByRole('button', { name: 'Southbound' })).toHaveAttribute('aria-pressed', 'true');
     expect(within(dialog).getByRole('button', { name: 'Northbound' })).toHaveAttribute('aria-pressed', 'false');
-    expect(within(dialog).getByText('Hover over an hour to inspect its scheduled headway window.')).toBeInTheDocument();
+    expect(within(dialog).queryByText(/Hover over an hour/)).toBeNull();
   });
 
   it('closes the full-day schedule view', () => {
@@ -103,7 +103,7 @@ describe('HeadwaySparkline', () => {
     });
   });
 
-  it('labels each hour with its headway and explains colour in the full-day view', () => {
+  it('prints no numbers on the bars in the full-day view', () => {
     render(
       <HeadwaySparkline
         byHour={{ 6: 35, 9: 23, 14: 40 }}
@@ -113,10 +113,9 @@ describe('HeadwaySparkline', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
     const dialog = screen.getByRole('dialog');
-    const labels = within(dialog).getAllByTestId('sparkline-headway-label').map(el => el.textContent);
-    expect(labels).toEqual(['35', '23', '40']);
-    expect(within(dialog).getByTestId('sparkline-legend')).toHaveTextContent('minutes between trips');
-    expect(within(dialog).getByTestId('sparkline-legend')).toHaveTextContent('≤60 min');
+    expect(within(dialog).queryAllByTestId('sparkline-headway-label')).toHaveLength(0);
+    expect(within(dialog).getAllByTitle(/every/)).toHaveLength(3);
+    expect(within(dialog).queryByTestId('sparkline-legend')).toBeNull();
   });
 
   it('switches the full-day chart to the picked direction', () => {
@@ -133,14 +132,14 @@ describe('HeadwaySparkline', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
     const dialog = screen.getByRole('dialog');
-    const labels = () => within(dialog).getAllByTestId('sparkline-headway-label').map(el => el.textContent);
+    const labels = () => within(dialog).getAllByTitle(/every/).map(el => el.getAttribute('title'));
     // Opens on the slower direction.
     expect(within(dialog).getByRole('button', { name: 'Westbound' })).toHaveAttribute('aria-pressed', 'true');
-    expect(labels()).toEqual(['40', '30']);
+    expect(labels()).toEqual([expect.stringContaining('every 40 min'), expect.stringContaining('every 30 min')]);
     fireEvent.click(within(dialog).getByRole('button', { name: 'Eastbound' }));
     expect(within(dialog).getByRole('button', { name: 'Eastbound' })).toHaveAttribute('aria-pressed', 'true');
     expect(within(dialog).getByRole('button', { name: 'Westbound' })).toHaveAttribute('aria-pressed', 'false');
-    expect(labels()).toEqual(['20', '15']);
+    expect(labels()).toEqual([expect.stringContaining('every 20 min'), expect.stringContaining('every 15 min')]);
   });
 
   it('shows no direction pills for a single-direction route', () => {

@@ -4,7 +4,7 @@ Reference for Atlas's live GTFS-RT integration status — which agencies are pol
 
 For where this fits in the platform's future direction, see [Live Data Infrastructure](../roadmap/TECHNICAL.md#live-data-infrastructure).
 
-**Status:** TTC vehicle positions are still recorded every minute by the ttc-positions Worker's cron, which is set in Cloudflare; the repo's Worker config has no `[triggers]` block (CIV-317). Whether the other shards still write is unverified. Existing R2 snapshots remain available.
+**Status:** TTC vehicle positions are still recorded every minute by the ttc-positions Worker's cron, which is set in Cloudflare; the repo's Worker config has no `[triggers]` block (CIV-317). The positions archive was verified running in the Cloudflare dashboard on 2026-10-21 (every minute, 0 errors). The ttc-trips, Hamilton, STM and Burlington/Halifax shards stopped on 2026-10-14, so their R2 data ends there. The 30-day lifecycle keeps only the last 30 days. Existing R2 snapshots remain available.
 
 ---
 
