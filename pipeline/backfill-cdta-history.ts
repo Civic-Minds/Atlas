@@ -11,6 +11,7 @@ import { config } from 'dotenv';
 config({ path: resolve('.env.local') });
 import JSZip from 'jszip';
 import { processGtfsBuffer } from './process-core.js';
+import { historyRouteKey } from './historyRouteKey.js';
 import { r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
 
 const FEEDS = [
@@ -46,8 +47,9 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string) {
   const current: Record<string, { headway: number; tier: string | null; routeLongName?: string }> = {};
   for (const f of fc.features) {
     const p = f.properties;
-    if (!p.routeShortName || p.day !== 'Weekday' || p.directionId !== 0) continue;
-    const sn = String(p.routeShortName);
+    if (p.day !== 'Weekday' || p.directionId !== 0) continue;
+    const sn = historyRouteKey(p);
+    if (!sn) continue;
     const h = p.headway != null ? Number(p.headway) : null;
     if (h == null) continue;
     const t = p.tier != null ? String(p.tier) : null;
