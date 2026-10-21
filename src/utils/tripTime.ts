@@ -60,24 +60,6 @@ export function formatHourPlain(hour: number): string {
   return `${h12} ${suffix}`;
 }
 
-/**
- * Plain-words summary line, or null when there is nothing to say.
- * "Trip time: 38–52 min" / "Trip time: about 41 min all day".
- */
-export function tripTimeSummary(series: TripTimeSeries | null | undefined, label = 'Trip time'): string | null {
-  if (!series) return null;
-  const entries = SPARKLINE_HOURS
-    .map(hour => [hour, series.byHour[hour]] as const)
-    .filter((e): e is readonly [number, number] => e[1] != null);
-  if (entries.length === 0) return null;
-  const values = entries.map(([, m]) => m);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  if (min === max) return `${label}: about ${min} min all day`;
-  // The hours with the longest trip time are shown in the strip (darkest, tallest bars), not named here (CIV-493).
-  return `${label}: ${min}–${max} min`;
-}
-
 /** Hover text for one hour. */
 export function tripTimeHourTitle(hour: number, minutes: number): string {
   return `${formatHourPlain(hour)}: about ${minutes} min`;

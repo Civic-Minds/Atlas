@@ -229,7 +229,16 @@ describe('HeadwaySparkline', () => {
     // Opens on the slower direction, which has no trip time data.
     expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
     fireEvent.click(within(dialog).getByRole('button', { name: 'Eastbound' }));
-    expect(within(dialog).getByText('Trip time: 38\u201352 min')).toBeInTheDocument();
+    expect(within(dialog).getByText('Trip time')).toBeInTheDocument();
+    // CIV-510: the strip sits directly under the frequency chart, the same height, with one row of
+    // clock labels under both (none between the charts).
+    const tripStrip = within(dialog).getByTestId('trip-time-strip');
+    const chartColumn = dialog.querySelector<HTMLElement>('.relative.z-10.flex > div > div')!;
+    expect((tripStrip.children[1].children[0] as HTMLElement).style.height).toBe(chartColumn.style.height);
+    expect(chartColumn.style.height).toBe('150px');
+    const clock = within(dialog).getByText('6:00a');
+    expect(tripStrip.compareDocumentPosition(clock) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(dialog).getAllByText('6:00a')).toHaveLength(1);
     const bars = within(dialog).getAllByTestId('trip-time-bar');
     expect(bars).toHaveLength(3);
     // 9 p.m. has trips but no trip time: a faint tick, not a gap that reads as no service.

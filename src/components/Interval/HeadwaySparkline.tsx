@@ -15,13 +15,16 @@ import { delayAmount, headwayEvery } from '../../utils/headwayText';
 import { TripTimeStrip, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
 import { tripTimeHourTitle, type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
+import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
 import { HOUR_TO_PERIOD, PERIOD_BANDS, PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
 export const SPARKLINE_CARD_HEIGHT = 32;
-/** Bar area height of the expanded full-day sparkline, in px. */
+/** Bar area height of each full-day chart (frequency and trip time, the same so they compare), in px. */
 export const SPARKLINE_EXPANDED_HEIGHT = 150;
+/** The same on phones, where the two charts stack in a short screen. */
+export const SPARKLINE_EXPANDED_HEIGHT_PHONE = 100;
 
 const HOURS = SPARKLINE_HOURS;
 
@@ -104,6 +107,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
+  const phone = useMediaQuery(PHONE_MEDIA_QUERY);
   // Hovering the trip-time strip reports that hour's trip time in the hover line instead.
   const [hoveredTripHour, setHoveredTripHour] = useState<number | null>(null);
   // Only the route card's chart (not the copy inside the full-day view) is linkable.
@@ -139,7 +143,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     return () => syncUrlParams({ fullday: null, fdir: null });
   }, [ownsUrl]);
 
-  const H = expanded ? SPARKLINE_EXPANDED_HEIGHT : SPARKLINE_CARD_HEIGHT;
+  const H = expanded ? (phone ? SPARKLINE_EXPANDED_HEIGHT_PHONE : SPARKLINE_EXPANDED_HEIGHT) : SPARKLINE_CARD_HEIGHT;
   const displayedByHour = byHour;
   // The full-day view shows the direction picked with the pills above it;
   // the inline chart always shows the route's merged schedule.
@@ -320,6 +324,18 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           ))}
         </div>
       )}
+      {expanded && (
+        // Directly under the frequency chart, the same height, on the same hour columns; one row of
+        // clock labels under both (CIV-510).
+        <TripTimeStrip
+          series={tripTime}
+          height={H}
+          serviceHours={new Set(HOURS.filter(h => displayedByHour[h] != null))}
+          // Two-way hover (CIV-505): an hour hovered in either chart lights the same column in both.
+          hoveredHour={hoveredTripHour ?? hoveredHour}
+          onHourHover={setHoveredTripHour}
+        />
+      )}
       <div className="flex gap-px mt-1">
         {HOURS.map(h => (
           <div key={h} className="flex-1 min-w-0 text-center">
@@ -337,16 +353,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         ))}
       </div>
       {expanded && (
-        <TripTimeStrip
-          series={tripTime}
-          label="Trip time"
-          serviceHours={new Set(HOURS.filter(h => displayedByHour[h] != null))}
-          // Two-way hover (CIV-505): an hour hovered in either chart lights the same column in both.
-          hoveredHour={hoveredTripHour ?? hoveredHour}
-          onHourHover={setHoveredTripHour}
-        />
-      )}
-      {expanded && (
         <div className="mt-3 min-h-5 text-center text-xs font-bold text-[var(--text-muted)]" aria-live="polite">
           {hoveredTripHour != null && tripTime?.byHour[hoveredTripHour] != null
             ? tripTimeHourTitle(hoveredTripHour, tripTime.byHour[hoveredTripHour]!)
@@ -363,7 +369,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           className="fixed inset-0 z-[1700] flex items-center justify-center bg-[var(--bg-app)]/60 p-4 backdrop-blur-sm"
           onMouseDown={event => { if (event.target === event.currentTarget) setIsExpanded(false); }}
         >
-          <div className="w-full max-w-6xl max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 shadow-2xl">
+          <div className="w-full max-w-[900px] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-base font-black text-[var(--text-primary)]">{title}</h2>
