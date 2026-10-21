@@ -33,6 +33,13 @@ export interface AgencyFeedConfig {
   referenceDateFromRunDate?: boolean;
   fare?: number;
   supplementalFeedUrls?: string[];
+  /**
+   * Supplemental feeds (by URL, from supplementalFeedUrls) that give each day or few days its
+   * own short service_id. Each day type is read from one typical real date in the two weeks
+   * after the run date instead of one reference date (LA Metro Rail; see serviceDates.ts). The main
+   * feed and other supplementals keep the default calendar logic.
+   */
+  nextServiceDatesFeedUrls?: string[];
 }
 
 export interface AgencyProcessOverrides {
@@ -168,8 +175,9 @@ export async function processAgencyFeeds(
   const supplementalFeatureCounts: AgencyFeedResult['supplementalFeatureCounts'] = [];
   let featureCount = primary.featureCount;
 
+  const nextServiceDatesUrls = new Set(agency.nextServiceDatesFeedUrls ?? []);
   for (const { url, buf } of supplementalFeeds) {
-    const supp = await processGtfsBuffer(buf, onProgress, options);
+    const supp = await processGtfsBuffer(buf, onProgress, nextServiceDatesUrls.has(url) ? { ...options, dayTypesFromNextServiceDates: true } : options);
     const suppCollection = JSON.parse(supp.geojson) as FeatureCollection;
     features.push(...suppCollection.features);
     Object.assign(runningTimes, suppCollection.runningTimes ?? {});
