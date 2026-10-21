@@ -60,6 +60,7 @@ import { historyRouteKey } from './historyRouteKey.js';
 import { baselineFingerprint, buildSidecar, buildV2Routes, buildV2RoutesMerged, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, splitFeaturesBySource, writeSidecar, type LatestRouteEntry, type V2FeedPart } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
 import { readRefDateQuality } from './historyRefQuality.js';
+import { assessWithWeekCheck, readRepickRows } from './historyRefRepick.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
@@ -204,7 +205,11 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
       collisionNote = `; ${built.collisions.length} route-key collision(s) between feeds, earlier feed's route kept: ${built.collisions.map(c => `${c.key} (${c.droppedFrom} dropped)`).join(', ')}`;
     }
     const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes, built.supplementalRoutes);
-    sidecar.refDateQuality = await readRefDateQuality(v2Input.buf, evidence.refDate);
+    // The writer reuses the live map's geojson, so it cannot re-read the feed at another date: a split or
+    // Thanksgiving-week reading is flagged here and the build drops the period (the backfill re-picks instead).
+    sidecar.refDateQuality = v2Input.referenceDateFromRunDate
+      ? await readRefDateQuality(v2Input.buf, evidence.refDate)
+      : assessWithWeekCheck(await readRepickRows(v2Input.buf), evidence.refDate);
     await writeSidecar(await r2ArchiveSink(), sidecar);
   }
 

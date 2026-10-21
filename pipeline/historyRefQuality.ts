@@ -19,6 +19,8 @@ export const HOLIDAY_WINDOW = { from: '12-20', to: '01-06' } as const;
 export const LOW_TRIPS_RATIO = 0.6;
 /** Inside the holiday window, below this share is enough. (Window AND trips; see DATA_HISTORY.md.) */
 export const HOLIDAY_WINDOW_RATIO = 0.9;
+/** Comparison days below this share of the day type's 90th-percentile trips are stub days and are ignored. */
+export const STUB_DAY_RATIO = 0.25;
 /** Fewer same-day-type comparison days than this = no trips evidence. */
 export const MIN_COMPARISON_DAYS = 3;
 
@@ -117,6 +119,21 @@ export function assessRefDate(rows: QualityRows, refDate: string): RefQualityDet
     if (d !== refDate && classOf(dowOf(dn)) === type) others.push(n);
     if (classOf(dowOf(dn)) === 'weekday' && Math.abs(dn - rn) > NEARBY_DAYS) weekdays.push(n);
   }
+  // A feed can carry months of stub days: a few leftover boat/rail services from an older
+  // period, with no bus or subway (MBTA Aug 2016: 121 of 230 weekdays had 64 trips against ~17,900).
+  // They are not real service, so they must not set the median. Compare against full-service
+  // days only; with too few of those, fall back to every day as before.
+  const fullService = (xs: number[]): number[] => {
+    if (xs.length === 0) return xs;
+    const s = [...xs].sort((a, b) => a - b);
+    const floor = STUB_DAY_RATIO * s[Math.min(s.length - 1, Math.floor(s.length * 0.9))];
+    const kept = xs.filter(n => n >= floor);
+    return kept.length >= MIN_COMPARISON_DAYS ? kept : xs;
+  };
+  const othersFull = fullService(others);
+  const weekdaysFull = fullService(weekdays);
+  others.splice(0, others.length, ...othersFull);
+  weekdays.splice(0, weekdays.length, ...weekdaysFull);
   const tripsOnRef = byDate.get(refDate) ?? 0;
   const inWindow = inHolidayWindow(refDate);
   const base = { refDate, dayType: type, inWindow, isLastDate: refDate === last, comparisonDays: others.length };
@@ -186,4 +203,25 @@ export function holidayDropFor(slug: string, periodKey: string, sc: Pick<History
   const q = sc.refDateQuality;
   if (!q || q.holiday !== true) return null;
   return { slug, periodKey, refDate: sc.refDate, reason: q.reason, routesAffected: Object.keys(sc.routes ?? {}).length };
+}
+
+/** A kept sidecar period whose reference date the v2 backfill replaced by a normal week of the same feed. */
+export interface RepickedPeriod {
+  slug: string;
+  periodKey: string;
+  from: string;
+  to: string;
+  fromYear: number;
+  toYear: number;
+  reason: string;
+  tripsOnFrom: number;
+  tripsOnTo: number;
+  routes: number;
+}
+
+/** The re-pick record for a sidecar (null = not re-picked). */
+export function repickedFor(slug: string, periodKey: string, sc: Pick<HistoryV2Sidecar, 'routes' | 'refDateQuality'>): RepickedPeriod | null {
+  const r = sc.refDateQuality?.repicked;
+  if (!r) return null;
+  return { slug, periodKey, ...r, routes: Object.keys(sc.routes ?? {}).length };
 }

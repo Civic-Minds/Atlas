@@ -32,6 +32,25 @@ describe('holiday-week reference dates', () => {
     expect(a.nearbyWeekdayLow?.date).toBe('20250102'); // Jan 1 is 4 days away, outside the 3-day read
   });
 
+  it('ignores stub days (a feed carrying months of leftover boat/rail service) when finding the median (MBTA Aug 2016)', () => {
+    // Weekdays Jan-Sep run a 5-trip leftover service; real service (100 trips) only Oct 3 - Dec 23; Mon Dec 26 runs 40 trips.
+    const wk = (from: string, to: string, svc: string) => dates(from, to).filter(d => dow(d) >= 1 && dow(d) <= 5).map(d => ({ service_id: svc, date: d, exception_type: '1' }));
+    const rows: QualityRows = {
+      calendar: [],
+      calendarDates: [...wk('20160104', '20160930', 'STUB'), ...wk('20161003', '20161223', 'WK'), { service_id: 'HOL', date: '20161226', exception_type: '1' }] as any,
+      trips: [...nTrips('STUB', 5), ...nTrips('WK', 100), ...nTrips('HOL', 40)],
+    };
+    const a = assessRefDate(rows, '20161226');
+    expect(a.medianTrips).toBe(100);
+    expect(a.holiday).toBe(true);
+  });
+
+  it('keeps a feed whose weekdays are all low-volume (no stub filtering when every day is similar)', () => {
+    const q = refDateQuality(datesOnlyFeed('20240826', '20241130', {}, { WK: 8, SA: 5, SU: 4 }), '20241016');
+    expect(q.holiday).toBe(false);
+    expect(q.medianTrips).toBe(8);
+  });
+
   it('keeps a normal mid-year reference date', () => {
     const q = refDateQuality(datesOnlyFeed('20240826', '20241130'), '20241016');
     expect(q.holiday).toBe(false);

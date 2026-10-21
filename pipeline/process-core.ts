@@ -482,6 +482,12 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * omit this and continue to use the default analysis criteria.
    */
   analysisCriteriaFn?: (raw: RawRouteDepartures[]) => AnalysisResult[];
+  /**
+   * Explicit reference date (YYYYMMDD) in place of the detected one. Only the History v2 backfill
+   * sets it (flag-gated), to re-read a feed at a normal week instead of a holiday-week date. Unset
+   * everywhere else, so the picker below is unchanged.
+   */
+  referenceDate?: string;
   /** Read-only view of the phase 2 results, for tests and audits. Does not change the output. */
   onAnalysisResults?: (results: readonly AnalysisResult[]) => void;
   /** Tests only (frequency focus step 3): the stretch selector's output beside stopDepsByGroup, for the trip-membership check. */
@@ -747,6 +753,8 @@ export async function processGtfsBuffer(
   }
   const refDate = nextServiceDates
     ? nextServiceDates.referenceDate
+    : options?.referenceDate
+    ? options.referenceDate
     : options?.referenceDateFromRunDate
     ? runDateYmd()
     : detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
