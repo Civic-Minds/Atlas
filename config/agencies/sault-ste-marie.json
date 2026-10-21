@@ -1,0 +1,23 @@
+{
+  "slug": "sault-ste-marie",
+  "name": "Sault Ste. Marie Transit",
+  "websiteUrl": "https://saultstemarie.ca/City-Hall/City-Departments/Community-Development-Enterprise-Services/Community-Services/Transit.aspx",
+  "center": [
+    46.5272,
+    -84.321
+  ],
+  "bbox": [
+    46.46364,
+    -84.53143,
+    46.57713,
+    -84.22563
+  ],
+  "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-saultstemarie.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4740/latest.zip",
+  "region": "Ontario",
+  "cities": [
+    "Sault Ste. Marie, Ontario"
+  ],
+  "timezone": "America/Toronto",
+  "hiddenInProduction": true
+}

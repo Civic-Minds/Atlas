@@ -22,7 +22,6 @@ Permanent blockers only — agencies we cannot add because upstream has no fixed
 | Quincy Transit Lines | No usable public feed | Fixed-route service exists, but no current public static GTFS URL was found; Transitland has a catalogued feed but no accessible current download; retry periodically |
 | Lyon County Area Transportation (LCAT) | Expired feed | Emporia has fixed/deviated-fixed service plus demand-response service, but the current public GTFS expires 2025-06-30; retry after the feed is refreshed |
 | Dodge City Public Transportation (D-TRAN) | No route shapes | The current GTFS lists three fixed routes but ships an empty `shapes.txt`, so Atlas cannot produce route geometry; retry after the feed is corrected |
-| STTR Trois-Rivières | Dead feed | MDB/official URL unreturnable; retry periodically |
 | Peterborough Transit | No public GTFS | Metrolinx tmix slug 404; not in MDB; retry periodically |
 | Brockville Transit | No public GTFS | Official site publishes schedules and maps, but no public static GTFS URL found; retry periodically |
 | Transit Cape Breton | No public GTFS | Not in MDB / Canadian INF sources; retry periodically |
