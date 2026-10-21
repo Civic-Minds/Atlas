@@ -21,6 +21,9 @@ import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
 import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey } from '../utils/routeModeFilters';
 import { useColorVision } from '../context/ColorVisionContext';
+import { loadHistoryAgencyV2 } from '../utils/historyV2Loader';
+import { yearsAvailable } from '../../shared/historyV2Reader';
+import { historyYearRoutes } from '../utils/historyYearMap';
 import RegionFilterPills from '../components/RegionFilterPills';
 import {
   agencyHistoryTier,
@@ -614,47 +617,43 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
     }
   }, [active, historyAgencies, selectedSlug]);
 
+  // The open agency, validated by the v2 reader (one result for the panel, slider and map, #1028
+  // batch A). In fixture mode the agency file carries only routes, so the name, region and centre
+  // come from the History list. A file that fails to parse shows an error, never partial data.
+  const [openAgency, setOpenAgency] = useState<{ slug: string; agency: AgencyHistory | null } | null>(null);
+  useEffect(() => {
+    if (!selectedSlug || historyData === null) { setOpenAgency(null); return; }
+    let cancelled = false;
+    const slug = selectedSlug;
+    const base = historyData.find(a => a.slug === slug);
+    loadHistoryAgencyV2<RouteSnapshot>(slug).then(result => {
+      if (cancelled) return;
+      if (!result.ok) { setOpenAgency({ slug, agency: null }); return; }
+      const merged = { ...base, ...result.value, name: base?.name ?? slug, region: base?.region ?? '', center: base?.center } as AgencyHistory;
+      setOpenAgency({ slug, agency: withUsableSnapshots(merged) });
+    });
+    return () => { cancelled = true; };
+  }, [selectedSlug, historyData]);
+  const openAgencyHistory = openAgency?.slug === selectedSlug ? openAgency.agency : null;
+  const openAgencyFailed = openAgency?.slug === selectedSlug && openAgency.agency === null;
+
+  // The map draws the selected year's routes only (routesForYear: no fallback to another year),
+  // coloured by that year's weekday value (historyYearRoutes).
+  const { colorVisionFriendly: historyColorFriendly } = useColorVision();
   useEffect(() => {
     if (!active) { setOverlay(null); return; }
-    const agency = selectedSlug ? (historyAgencies.find(a => a.slug === selectedSlug) ?? null) : null;
-    if (agency?.center) {
-      let routeGeometry: number[][] | undefined;
-      let historicalRouteGeometries: Array<{routeShortName: string, coordinates: number[][], headway: number}> | undefined;
-      if (selectedYear > 0) {
-        historicalRouteGeometries = [];
-        agency.routes.forEach(route => {
-          const snap = route.snapshots.find(s => s.year === selectedYear) || route.snapshots[route.snapshots.length - 1];
-          // Older snapshots can hold a bare [lon, lat] from a route with no map shape;
-          // only real lines are drawn or used for camera bounds.
-          const snapGeometry = isDrawableLineCoordinates(snap?.geometry) ? snap.geometry : undefined;
-          if (route.routeShortName === selectedRouteShortName) routeGeometry = snapGeometry;
-          if (snap && snapGeometry) {
-            historicalRouteGeometries!.push({
-              routeShortName: route.routeShortName,
-              coordinates: snapGeometry,
-              headway: snap.weekdayHeadwayMin
-            });
-          }
-        });
-      } else if (selectedRouteShortName) {
-        const rt = agency.routes.find(r => r.routeShortName === selectedRouteShortName);
-        if (rt && rt.snapshots.length > 0) {
-          const latest = rt.snapshots[rt.snapshots.length - 1]?.geometry;
-          routeGeometry = isDrawableLineCoordinates(latest) ? latest : undefined;
-        }
-      }
-      setOverlay({
-        slug: agency.slug,
-        routeShortName: selectedRouteShortName ?? '',
-        agencyCenter: agency.center,
-        routeGeometry,
-        selectedYear: selectedYear > 0 ? selectedYear : undefined,
-        historicalRouteGeometries
-      });
-    } else {
-      setOverlay(null);
-    }
-  }, [active, selectedSlug, selectedRouteShortName, setOverlay, historyAgencies, selectedYear]);
+    const agency = openAgencyHistory;
+    if (!agency) { setOverlay(null); return; }
+    const yearRoutes = selectedYear > 0 ? historyYearRoutes(agency, selectedYear, historyColorFriendly ? 'friendly' : 'default') : [];
+    setOverlay({
+      slug: agency.slug,
+      routeShortName: selectedRouteShortName ?? '',
+      agencyCenter: agency.center,
+      routeGeometry: yearRoutes.find(r => r.routeShortName === selectedRouteShortName)?.coordinates,
+      selectedYear: selectedYear > 0 ? selectedYear : undefined,
+      yearRoutes,
+    });
+  }, [active, openAgencyHistory, selectedRouteShortName, setOverlay, selectedYear, historyColorFriendly]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
 
@@ -776,14 +775,8 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
     return inViewFirst([...map.entries()].sort(([a], [b]) => compareRegion(a, b)), openInView);
   }, [filtered, openInView]);
 
-  const availableYears = useMemo(() => {
-    if (!selectedSlug) return [];
-    const agency = historyAgencies.find(a => a.slug === selectedSlug);
-    if (!agency) return [];
-    const years = new Set<number>();
-    agency.routes.forEach(r => r.snapshots.forEach(s => years.add(s.year)));
-    return Array.from(years).sort((a,b) => a-b);
-  }, [historyAgencies, selectedSlug]);
+  // Slider stops: the years with a snapshot (yearsAvailable); the latest is the default stop.
+  const availableYears = useMemo(() => (openAgencyHistory ? yearsAvailable(openAgencyHistory) : []), [openAgencyHistory]);
 
   useEffect(() => {
     if (selectedSlug && availableYears.length > 0) {
@@ -791,11 +784,13 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
       pendingUrlYearRef.current = 0;
       setSelectedYear(availableYears.includes(linkedYear) ? linkedYear : availableYears[availableYears.length - 1]);
     } else {
-      // Once the data is in, a linked year that never matched is dropped.
-      if (historyData !== null) pendingUrlYearRef.current = 0;
+      // Once the data is in (and the open agency has loaded or failed), a linked year that never
+      // matched is dropped.
+      const agencyResolved = !selectedSlug || openAgency?.slug === selectedSlug;
+      if (historyData !== null && agencyResolved) pendingUrlYearRef.current = 0;
       setSelectedYear(0);
     }
-  }, [selectedSlug, availableYears, historyData]);
+  }, [selectedSlug, availableYears, historyData, openAgency]);
 
   // Keep the URL in step so the page link reproduces this view. Waits for the data so the
   // linked values (and the default year, the newest one) are known before anything is rewritten.
@@ -832,9 +827,21 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
     <>
         {selectedSlug ? (
         (() => {
-          const agencyHistory = historyAgencies.find(a => a.slug === selectedSlug)
-            ?? (() => { const raw = historyData?.find(a => a.slug === selectedSlug); return raw ? withUsableSnapshots(raw) : null; })();
-          if (!agencyHistory) return null;
+          if (openAgencyFailed) {
+            return (
+              <Panel sidebar style={{ ...frameStyle, top: AGENCY_PANEL_TOP }} className={frameClassName}>
+                <PanelEmpty kind="error">{loadErrorText('history data')}</PanelEmpty>
+              </Panel>
+            );
+          }
+          const agencyHistory = openAgencyHistory;
+          if (!agencyHistory) {
+            return (
+              <Panel sidebar style={{ ...frameStyle, top: AGENCY_PANEL_TOP }} className={frameClassName}>
+                <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+              </Panel>
+            );
+          }
           if (selectedRouteShortName) {
             const selectedRoute = agencyHistory.routes.find(r => r.routeShortName === selectedRouteShortName) ?? null;
             if (selectedRoute && selectedRoute.snapshots.length > 0) {

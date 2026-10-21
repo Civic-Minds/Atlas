@@ -17,9 +17,11 @@ import {
   buildEffectiveHeadwayColorExpression,
   buildFriendlyRouteWidthExpression,
   ROUTE_LINE_WIDTH_BY_ZOOM,
+  ROUTE_LINE_WIDTH_STOPS,
   setRouteLayerPaint,
   resetRoutesLayerDefaultPaint,
 } from './routeStyle';
+import { historyYearColorExpression, onTodaysLines } from '../../../utils/historyYearMap';
 
 export interface RouteStylingInput {
   agencies: Agency[];
@@ -143,6 +145,16 @@ export function useRouteStyling(
       routeFilter = concatFilters(routeFilter, slugAllowlist);
     }
 
+    // History's year view (#1028 batch A): the open agency shows exactly that year's routes that have
+    // no shape of their own (those draw on history-routes-layer), whatever today's filters say;
+    // other agencies keep the regular filter.
+    const historyYearAgencyMatch: any = historyOverlay?.slug && historyOverlay.yearRoutes ? ['==', ['get', 'agencySlug'], historyOverlay.slug] : null;
+    if (historyYearAgencyMatch) {
+      const names = onTodaysLines(historyOverlay!.yearRoutes!).map(r => r.routeShortName);
+      const yearClause = ['all', historyYearAgencyMatch, ['in', ['to-string', ['get', 'routeShortName']], ['literal', names]]];
+      routeFilter = ['any', concatFilters(routeFilter, ['!', historyYearAgencyMatch]) ?? true, yearClause];
+    }
+
     if (liveRoutesOnly) {
       // Live draws only the routes with Live route data; vehicles of other routes still show as dots.
       const livePairs = LIVE_ANALYSIS_ROUTES
@@ -202,6 +214,10 @@ export function useRouteStyling(
       } else {
         lineColorExpr = buildEffectiveHeadwayColorExpression(period, colorMode);
       }
+      // History's year view: the open agency's lines take that year's colours.
+      if (historyYearAgencyMatch) {
+        lineColorExpr = ['case', historyYearAgencyMatch, historyYearColorExpression(historyOverlay!.yearRoutes!, lineColorExpr), lineColorExpr];
+      }
 
       if (hasOverviewRoutes) map.setPaintProperty('overview-routes-layer', 'line-color', lineColorExpr);
       if (hasRoutes) map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
@@ -242,14 +258,10 @@ export function useRouteStyling(
         setRouteLayerPaint(map, 'line-opacity', focusedPaint.opacity as any);
         setRouteLayerPaint(map, 'line-width', focusedPaint.width as any);
         if (map.getLayer('history-routes-layer')) {
-          map.setPaintProperty('history-routes-layer', 'line-opacity', ['case', ['get', 'selected'], 1.0, DIM_OPACITY] as any);
-          map.setPaintProperty('history-routes-layer', 'line-width', [
-            'interpolate', ['linear'], ['zoom'],
-            8, ['case', ['get', 'selected'], 3.5, DIM_WIDTH],
-            11, ['case', ['get', 'selected'], 4.0, DIM_WIDTH],
-            14, ['case', ['get', 'selected'], 4.5, DIM_WIDTH],
-            17, ['case', ['get', 'selected'], 5.0, DIM_WIDTH],
-          ] as any);
+          // The same focus paint as the tile lines, for the routes drawn on their own shape.
+          const ownShapeFocus = buildFocusedRoutePaint(['==', ['get', 'routeShortName'], historyOverlay.routeShortName], DIM_OPACITY, DIM_WIDTH);
+          map.setPaintProperty('history-routes-layer', 'line-opacity', ownShapeFocus.opacity as any);
+          map.setPaintProperty('history-routes-layer', 'line-width', ownShapeFocus.width as any);
         }
       } else if (historyOverlay?.slug) {
         // History agency selection keeps the whole agency visible while dimming
@@ -258,16 +270,15 @@ export function useRouteStyling(
         setRouteLayerPaint(map, 'line-opacity', [
           'case', historyAgencyMatch, 1.0, DIM_OPACITY,
         ] as any);
-        setRouteLayerPaint(map, 'line-width', [
-          'interpolate', ['linear'], ['zoom'],
-          8, ['case', historyAgencyMatch, 2.8, DIM_WIDTH],
-          11, ['case', historyAgencyMatch, 3.2, DIM_WIDTH],
-          14, ['case', historyAgencyMatch, 3.8, DIM_WIDTH],
-          17, ['case', historyAgencyMatch, 4.5, DIM_WIDTH],
-        ] as any);
+        // The agency's lines at the regular route widths (ROUTE_LINE_WIDTH_STOPS), the rest dimmed.
+        const widthStops: unknown[] = [];
+        for (let i = 0; i < ROUTE_LINE_WIDTH_STOPS.length; i += 2) {
+          widthStops.push(ROUTE_LINE_WIDTH_STOPS[i], ['case', historyAgencyMatch, ROUTE_LINE_WIDTH_STOPS[i + 1], DIM_WIDTH]);
+        }
+        setRouteLayerPaint(map, 'line-width', ['interpolate', ['linear'], ['zoom'], ...widthStops] as any);
         if (map.getLayer('history-routes-layer')) {
-          map.setPaintProperty('history-routes-layer', 'line-opacity', 0.85);
-          map.setPaintProperty('history-routes-layer', 'line-width', 2.5);
+          map.setPaintProperty('history-routes-layer', 'line-opacity', 1);
+          map.setPaintProperty('history-routes-layer', 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
         }
       } else if (selectedRoute) {
         const selKey = selectedRoute;

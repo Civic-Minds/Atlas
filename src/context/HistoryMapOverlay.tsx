@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import type { HistoryYearRoute } from '../utils/historyYearMap';
 
 export interface HistoryMapOverlay {
   slug: string;
@@ -6,7 +7,8 @@ export interface HistoryMapOverlay {
   agencyCenter?: [number, number];
   routeGeometry?: number[][];  // historical shape for the selected period (AI-162, AI-161)
   selectedYear?: number;
-  historicalRouteGeometries?: Array<{routeShortName: string, coordinates: number[][], headway: number}>;
+  /** The selected year's routes (#1028 batch A): drawn on their own shape when they have one, else on today's map line. */
+  yearRoutes?: HistoryYearRoute[];
 }
 
 interface ContextValue {
