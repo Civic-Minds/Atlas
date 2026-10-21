@@ -7,7 +7,7 @@ import {
   baselineFingerprint, buildSidecar, buildV2Routes, fingerprintChanged, fingerprintOf, localDirSink,
   periodKeyForZip, representativeRep, writeSidecar,
 } from '../historyV2.js';
-import { buildRouteSnapshots, joinCandidates, newBuildReport } from '../historyV2Build.js';
+import { buildRouteSnapshots, joinCandidates, newBuildReport, visibilityCheck } from '../historyV2Build.js';
 import { mergeAliasedRoutes, currentRouteShortNamesFor } from '../historyIdentity.js';
 import { historyFlagFor } from '../../shared/historyV2.js';
 
@@ -271,5 +271,31 @@ describe('aliases', () => {
   });
   it('resolves current names through aliases and the manual list', () => {
     expect(currentRouteShortNamesFor('51-51A', ['X'], { 51: ['51-51A'] })).toEqual(['X', '51']);
+  });
+});
+
+describe('visibility check (report-only)', () => {
+  const sn = (year: number, h: number) => ({ label: `Oct ${year}`, year, weekdayHeadwayMin: h });
+  it('lists current routes with no snapshot in the last 5 years', () => {
+    const hist = { A: [sn(2015, 10), sn(2024, 10)], B: [sn(2015, 10), sn(2019, 12)] };
+    const v = visibilityCheck('s', hist, ['A', 'B', 'C'], 2026);
+    expect(v.currentWithoutRecentSnapshot).toEqual(['B', 'C']);
+  });
+  it('lists old keys with no current match, honouring a resolver', () => {
+    const hist = { A: [sn(2020, 10)], '12': [sn(2020, 10)], '12X': [sn(2020, 10)] };
+    expect(visibilityCheck('s', hist, ['A'], 2026).oldKeysWithoutCurrentMatch).toEqual(['12', '12X']);
+    expect(visibilityCheck('s', hist, ['A'], 2026, k => k !== '12X').oldKeysWithoutCurrentMatch).toEqual(['12X']);
+  });
+  it('flags a weekday value >= 5x both neighbours only', () => {
+    const hist = { A: [sn(2018, 10), sn(2019, 60), sn(2020, 12)], B: [sn(2018, 10), sn(2019, 60), sn(2020, 30)], E: [sn(2018, 10), sn(2019, 60)] };
+    const v = visibilityCheck('s', hist, [], 2026);
+    expect(v.spikes).toEqual([{ route: 'A', label: 'Oct 2019', year: 2019, value: 60, prev: 10, next: 12 }]);
+  });
+  it('never changes the input snapshots', () => {
+    const hist = { A: [sn(2018, 10), sn(2019, 60), sn(2020, 12)] };
+    const before = JSON.stringify(hist);
+    visibilityCheck('s', hist, ['A'], 2026);
+    expect(JSON.stringify(hist)).toBe(before);
+    expect(newBuildReport().visibility).toEqual([]);
   });
 });

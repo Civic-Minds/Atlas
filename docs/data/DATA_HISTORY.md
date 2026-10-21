@@ -24,6 +24,7 @@ Each v2 snapshot carries `v2: {refDate, key, rep, sat?, sun?, flag?}`; old snaps
 *   **Aliases.** `config/history-route-aliases.json` (`{slug: {canonicalKey: [oldKeys]}}`) folds old keys into the canonical key before the one-per-year rule. It is empty until an alias is verified from data. Candidate to verify first: gcrta `HealthLine` -> `HL` (already a manual current-name alias in `build-history.ts`).
 *   **Storage.** Immutable sidecar objects `history-v2/{slug}/{periodKey}.json` (all routes of one agency period). Per-route archive files are untouched; `build-history` joins by period key, never by label. A sidecar with the same key and different content is a conflict, not an overwrite.
 *   **Change detection.** The fingerprint is weekday + Saturday + Sunday headlines; unknown is a wildcard, so an old baseline against a new snapshot is not a change. `latest.json` gains `sat`/`sun` (and `wk`, marked `v: 2`).
+*   **Visibility report (report-only).** `visibility` in the build report lists per agency: (a) current routes with no kept snapshot in the last 5 years, (b) history keys that match no current route (candidate split or renumbered keys; aliases count as a match), (c) spikes, a weekday value at least 5x both the previous and next kept snapshot (route, label, values). Nothing is dropped, hidden or changed by it.
 *   **Writers.** `refresh` writes v2 only with `ATLAS_HISTORY_V2=1` (opt-in). `pipeline/backfill-history-v2.ts` rebuilds sidecars from archived zips into a local `--out-dir` and never touches R2.
 
 ### Data sourcing

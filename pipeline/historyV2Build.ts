@@ -46,10 +46,61 @@ export interface BuildReport {
   yearDisagreements: Array<{ slug: string; route: string; year: number }>;
   superseded: number;
   mixedMethodRoutes: string[];
+  /** Report-only visibility checks per agency (see visibilityCheck); nothing here changes a snapshot. */
+  visibility: AgencyVisibility[];
 }
 
 export function newBuildReport(): BuildReport {
-  return { drops: [], yearDisagreements: [], superseded: 0, mixedMethodRoutes: [] };
+  return { drops: [], yearDisagreements: [], superseded: 0, mixedMethodRoutes: [], visibility: [] };
+}
+
+export interface VisibilitySpike { route: string; label: string; year: number; value: number; prev: number; next: number }
+
+export interface AgencyVisibility {
+  slug: string;
+  /** (a) current routes with no kept snapshot in the last 5 years. */
+  currentWithoutRecentSnapshot: string[];
+  /** (b) history keys that match no current route (candidate split or renumbered keys). */
+  oldKeysWithoutCurrentMatch: string[];
+  /** (c) weekday value >= 5x both the previous and the next kept snapshot. */
+  spikes: VisibilitySpike[];
+}
+
+export const SPIKE_FACTOR = 5;
+export const RECENT_YEARS = 5;
+
+/**
+ * Report-only: never drops, hides or edits a snapshot.
+ * `history` is route key -> kept snapshots (ascending); `currentKeys` are the routes of the
+ * newest feed; `resolves(key)` says whether an old key maps to a current route (aliases
+ * included), defaulting to an exact key match.
+ */
+export function visibilityCheck(
+  slug: string,
+  history: Record<string, Array<{ label: string; year: number; weekdayHeadwayMin: number }>>,
+  currentKeys: string[],
+  buildYear: number,
+  resolves: (key: string) => boolean = k => currentKeys.includes(k),
+): AgencyVisibility {
+  const current = new Set(currentKeys);
+  const recent = new Set<string>();
+  const spikes: VisibilitySpike[] = [];
+  for (const [route, snaps] of Object.entries(history)) {
+    if (snaps.some(s => s.year > buildYear - RECENT_YEARS)) recent.add(route);
+    for (let i = 1; i < snaps.length - 1; i++) {
+      const v = snaps[i].weekdayHeadwayMin, a = snaps[i - 1].weekdayHeadwayMin, b = snaps[i + 1].weekdayHeadwayMin;
+      if (v >= SPIKE_FACTOR * a && v >= SPIKE_FACTOR * b) {
+        spikes.push({ route, label: snaps[i].label, year: snaps[i].year, value: v, prev: a, next: b });
+      }
+    }
+  }
+  const cmp = (x: string, y: string) => x.localeCompare(y, undefined, { numeric: true });
+  return {
+    slug,
+    currentWithoutRecentSnapshot: [...current].filter(k => !recent.has(k)).sort(cmp),
+    oldKeysWithoutCurrentMatch: Object.keys(history).filter(k => !resolves(k)).sort(cmp),
+    spikes,
+  };
 }
 
 const MIN_YEAR = 1990;

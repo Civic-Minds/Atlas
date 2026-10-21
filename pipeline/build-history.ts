@@ -22,7 +22,7 @@ import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
 import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, type HistoryRouteAliases } from './historyIdentity.js';
 import { representativeRep } from './historyV2.js';
-import { buildRouteSnapshots, joinCandidates, newBuildReport, type Candidate } from './historyV2Build.js';
+import { buildRouteSnapshots, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { parsePeriodKey, getPeriodKeySortValue } from './historyPeriods.js';
@@ -357,6 +357,7 @@ async function main() {
     const registryEntry = registryBySlug.get(slug);
     const current = currentHeadways[slug] ?? {};
     const agencyRoutes: any[] = [];
+    const keptByRoute: Record<string, Array<{ label: string; year: number; weekdayHeadwayMin: number }>> = {};
 
     for (const [routeShortName, changes] of Object.entries(routeMap)) {
       // Join change files with v2 sidecar entries by period key, drop invalid snapshots,
@@ -367,6 +368,7 @@ async function main() {
           ...snap,
           geometry: isDrawableLineCoordinates(snap.geometry) ? snap.geometry : undefined,
         }));
+      keptByRoute[routeShortName] = snapshots;
 
       const materializeAllPeriods = coverageBySlug[slug]?.materializeAllPeriods === true;
       // Normal history is change-only. The period-materialization experiment
@@ -475,6 +477,11 @@ async function main() {
       });
     }
 
+    // Report-only visibility checks (nothing is dropped or changed).
+    const currentKeys = Object.keys(current);
+    buildReport.visibility.push(visibilityCheck(slug, keptByRoute, currentKeys, buildYear, key =>
+      resolveCurrentHistoryRoute({ routeShortName: key, currentRouteShortNames: currentRouteShortNamesFor(key, undefined, routeAliases[slug]) }, current) != null));
+
     if (agencyRoutes.length === 0) continue;
 
     // Sort routes by magnitude of change (biggest % shift first)
@@ -503,6 +510,11 @@ async function main() {
   mkdirSync(dirname(reportPath), { recursive: true });
   writeFileSync(reportPath, JSON.stringify(buildReport, null, 2));
   console.log(`Build report: ${buildReport.drops.length} snapshots dropped, ${buildReport.superseded} same-year superseded, ${buildReport.yearDisagreements.length} year disagreements >25%, ${buildReport.mixedMethodRoutes.length} routes mixing old and v2 values -> ${reportPath}`);
+  for (const v of buildReport.visibility) {
+    if (v.currentWithoutRecentSnapshot.length || v.oldKeysWithoutCurrentMatch.length || v.spikes.length) {
+      console.log(`  visibility ${v.slug}: ${v.currentWithoutRecentSnapshot.length} current routes without a recent snapshot, ${v.oldKeysWithoutCurrentMatch.length} old keys without a current match, ${v.spikes.length} spikes`);
+    }
+  }
   for (const d of buildReport.drops.slice(0, 50)) console.log(`  dropped ${d.slug}/${d.route} "${d.label}": ${d.reason}`);
 
   if (verifyOnly) {
