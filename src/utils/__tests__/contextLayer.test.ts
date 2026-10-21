@@ -3,6 +3,10 @@ import {
   CONTEXT_BREAKS, CONTEXT_COLOURS, INCOME_TOP_CODE, UNRELIABLE_MOE_FRACTION, acsWindow, contextClassIndex,
   contextClassLabels, contextFillColorExpr, contextNoDataFilter, contextValidFilter, readContext,
 } from '../contextLayer';
+import {
+  CONTEXT_CONTROL_TITLE, CONTEXT_CREDIT_SHORT, CONTEXT_INCOME_TOP, CONTEXT_LEGEND_TITLE_DENSITY, CONTEXT_LEGEND_TITLE_INCOME,
+  CONTEXT_NO_DATA_LABEL, CONTEXT_OPTION_DENSITY, CONTEXT_OPTION_INCOME, CONTEXT_OPTION_OFF,
+} from '../../content/contextLayerCopy';
 import { contextPopupLines } from '../../components/Interval/ContextPopup';
 
 describe('context layer scales', () => {
@@ -63,6 +67,22 @@ describe('what counts as no reliable figure', () => {
     expect(readContext('income', { income: 70000 })).toMatchObject({ kind: 'uncertain', marginPct: null });
     expect(readContext('income', { income: 70000, income_moe_pct: UNRELIABLE_MOE_FRACTION + 0.01 })).toMatchObject({ kind: 'uncertain' });
     expect(readContext('income', { income: 70000, income_moe_pct: UNRELIABLE_MOE_FRACTION })).toMatchObject({ kind: 'value', marginPct: UNRELIABLE_MOE_FRACTION });
+  });
+
+  it('the too-uncertain line is 50% (Ryan, 2026-10-21): 50% is shown, over 50% is no-data', () => {
+    expect(UNRELIABLE_MOE_FRACTION).toBe(0.5);
+    expect(readContext('income', { income: 70000, income_moe_pct: 0.45 })).toMatchObject({ kind: 'value' });
+    expect(readContext('income', { income: 70000, income_moe_pct: 0.5 })).toMatchObject({ kind: 'value' });
+    expect(readContext('income', { income: 70000, income_moe_pct: 0.51 })).toMatchObject({ kind: 'uncertain' });
+    expect(JSON.stringify(contextValidFilter('income'))).toContain('0.5');
+  });
+
+  it('the approved wording is on screen', () => {
+    expect(contextClassLabels('income')).toEqual(['Under $50,000', '$50,000–$65,000', '$65,000–$80,000', '$80,000–$105,000', '$105,000 or more']);
+    expect(CONTEXT_LEGEND_TITLE_DENSITY).toBe('People per square kilometre');
+    expect(CONTEXT_LEGEND_TITLE_INCOME).toBe('Typical household income');
+    expect([CONTEXT_CONTROL_TITLE, CONTEXT_OPTION_OFF, CONTEXT_OPTION_DENSITY, CONTEXT_OPTION_INCOME, CONTEXT_INCOME_TOP, CONTEXT_NO_DATA_LABEL, CONTEXT_CREDIT_SHORT])
+      .toEqual(['Neighbourhood shading', 'None', 'Population density', 'Median household income', '$250,000 or more', 'No reliable figure', 'U.S. Census Bureau']);
   });
 
   it('income at the top code is a valid figure even with a huge margin', () => {

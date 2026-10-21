@@ -17,7 +17,7 @@ export const CONTEXT_METRICS: readonly ContextMetric[] = ['density', 'income'];
  * it is deliberately ignored: deriving the rule here from `income_moe_pct` keeps this constant the only
  * place that decides, and lets it change without rebuilding tiles.
  */
-export const UNRELIABLE_MOE_FRACTION = 0.3;
+export const UNRELIABLE_MOE_FRACTION = 0.5;
 
 /** ACS reports this value for "$250,000 or more". It is a real (capped) figure, never uncertain. */
 export const INCOME_TOP_CODE = 250001;

@@ -1,6 +1,6 @@
 /**
  * Every user-facing string of the population / income map layer (CIV-482), in one place.
- * PROVISIONAL placeholders: none of this wording is approved yet (docs/STYLE.md: new wording needs a yes).
+ * Wording approved by Ryan (option 1; legend titles option 2) except the control hint, which is still a placeholder.
  * Only the attribution line is fixed.
  */
 
@@ -14,11 +14,9 @@ export const CONTEXT_OPTION_OFF = 'None';
 export const CONTEXT_OPTION_DENSITY = 'Population density';
 export const CONTEXT_OPTION_INCOME = 'Median household income';
 
-/** Legend titles and units, per metric. */
-export const CONTEXT_LEGEND_TITLE_DENSITY = 'Population density';
-export const CONTEXT_LEGEND_TITLE_INCOME = 'Median household income';
-export const CONTEXT_UNIT_DENSITY = 'People per square kilometre';
-export const CONTEXT_UNIT_INCOME = 'US dollars per year';
+/** Legend titles, per metric. The unit is in the density title and in the income class labels ($), so there is no unit line. */
+export const CONTEXT_LEGEND_TITLE_DENSITY = 'People per square kilometre';
+export const CONTEXT_LEGEND_TITLE_INCOME = 'Typical household income';
 
 /** The grey hatched swatch. */
 export const CONTEXT_NO_DATA_LABEL = 'No reliable figure';
