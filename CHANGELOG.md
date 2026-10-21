@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Agency card header is tidier**: "All <place> area agencies" is now a small chip under the summary line and "About this agency" sits on one line (with "Data source" in beta), all with the same trailing arrow; the long Toronto area name no longer wraps into a link line of its own (CIV-503)
 - **Long rural and highway routes are drawn in full, and their frequency is read at the real end of the line**: sparse shape points on a long straight road were mistaken for bad data and the rest of the line was dropped, as on Prince George routes ([#1057](https://github.com/Civic-Minds/Atlas/issues/1057))
 - **The Atlas logo is a light circle with a dark map icon on desktop too, in both themes**: it was still a solid dark circle (and a washed-out one in the dark theme) above phone width ([#1058](https://github.com/Civic-Minds/Atlas/issues/1058))
 - **The route card's hour chart colours every hour with trips**: hours outside the chosen period are faded instead of some going grey ([#1055](https://github.com/Civic-Minds/Atlas/issues/1055))

@@ -70,4 +70,25 @@ describe('Data source link', () => {
       expect(screen.queryByText('Data source')).toBeNull();
     });
   });
+
+  describe('header links', () => {
+    const ttc = { ...base, slug: 'ttc', name: 'Toronto Transit Commission', websiteUrl: 'https://www.ttc.ca' } as unknown as Agency;
+
+    it('groups About + Data source as a pair and the area link as a chip', () => {
+      card(ttc);
+      expect(screen.getByRole('link', { name: 'About this agency' })).toHaveAttribute('href', '/agency/ttc');
+      expect(screen.getByRole('link', { name: /Data source/ })).toBeInTheDocument();
+      const chip = screen.getByRole('link', { name: /^All Greater Toronto and Hamilton Area agencies/ });
+      expect(chip).toHaveAttribute('href', '/area/toronto');
+      expect(chip.className).toContain('rounded-full');
+    });
+
+    it('public mode keeps About and the area chip, drops only Data source', () => {
+      flags.on = false;
+      card(ttc);
+      expect(screen.getByRole('link', { name: 'About this agency' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^All Greater Toronto/ })).toBeInTheDocument();
+      expect(screen.queryByText('Data source')).toBeNull();
+    });
+  });
 });

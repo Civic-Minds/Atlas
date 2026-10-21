@@ -20,7 +20,7 @@ import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardHelpNotice, CardReportButton } from './cardUi';
+import { AgencyAreaChip, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardHelpNotice, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
@@ -500,21 +500,26 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         <div className="flex items-start gap-2 min-w-0">
           <div className="min-w-0 flex-1">
             <p className={`${CARD_TITLE} mb-0`}>{agencyNamePrimary}</p>
-          <p className={CARD_SUMMARY}>
-            {agency.onDemandOnly
-              ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
-              : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
-          </p>
           {(() => {
             const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
-            const dataSourceUrl = FEATURES.dataSourceLink ? agency.websiteUrl : undefined; // same condition as AgencyDataSourceLink
-            if (!hasAboutPage && !dataSourceUrl) return null;
+            const area = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
             return (
-              <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-                {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>}
-                {hasAboutPage && (() => { const area = areaLinkFor(agency.slug, FEATURES.agencyPages); return area && <ArrowLink size="xs" tone="inline" wrap href={area.href}>{area.label}</ArrowLink>; })()}
-                <AgencyDataSourceLink agency={agency} />
-              </p>
+              <>
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <p className={CARD_SUMMARY}>
+                    {agency.onDemandOnly
+                      ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
+                      : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
+                  </p>
+                  {area && <AgencyAreaChip href={area.href} label={area.label} />}
+                </div>
+                {(hasAboutPage || (FEATURES.dataSourceLink && agency.websiteUrl)) && (
+                  <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
+                    {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>}
+                    <AgencyDataSourceLink agency={agency} />
+                  </p>
+                )}
+              </>
             );
           })()}
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
