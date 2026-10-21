@@ -44,6 +44,7 @@ import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { hasRegularServiceInPeriod, hasStretchRoles, stretchRowFeatures, variantOnlyRow } from '../../utils/stretchCard';
 import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from '../../utils/sortCompare';
 import { SIDEBAR_CARD_BODY } from './cardUi';
+import { useRecentSearches } from '../../hooks/useRecentSearches';
 
 interface SidebarControlsProps {
   query: string;
@@ -150,7 +151,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const { recentSearches, saveRecentSearch, clearRecentSearches } = useRecentSearches(!!searchFocused);
   const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number }>>([]);
   const [showAllSearchResults, setShowAllSearchResults] = useState(false);
 
@@ -187,9 +188,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const loadRecents = useCallback(() => {
     try {
-      const qRecents = localStorage.getItem('atlas_recent_searches');
-      if (qRecents) setRecentSearches(JSON.parse(qRecents));
-
       const rRecents = localStorage.getItem('atlas_recently_viewed_routes');
       if (rRecents) {
         const parsed: Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number }> = JSON.parse(rRecents);
@@ -218,30 +216,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     setShowAllSearchResults(false);
   }, [query]);
 
-  const saveRecentSearch = useCallback((q: string) => {
-    const trimmed = q.trim();
-    if (!trimmed) return;
-    try {
-      const recentsRaw = localStorage.getItem('atlas_recent_searches');
-      const recents: string[] = recentsRaw ? JSON.parse(recentsRaw) : [];
-      const filtered = recents.filter(s => s.toLowerCase() !== trimmed.toLowerCase());
-      filtered.unshift(trimmed);
-      const limited = filtered.slice(0, 5);
-      localStorage.setItem('atlas_recent_searches', JSON.stringify(limited));
-      setRecentSearches(limited);
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
-
-  const clearRecentSearches = useCallback(() => {
-    try {
-      localStorage.removeItem('atlas_recent_searches');
-      setRecentSearches([]);
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
 
   // Save recently viewed route
   useEffect(() => {

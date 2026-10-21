@@ -6,11 +6,13 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_SIDEBAR, PANEL_TITLE, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
-import RouteListRow from '../components/RouteListRow';
 import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardBackLink, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
+import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
+import type { RouteListDisplay } from '../utils/effectiveHeadway';
+import { useRecentSearches } from '../hooks/useRecentSearches';
 import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
 import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey } from '../utils/routeModeFilters';
@@ -336,6 +338,12 @@ function RouteHistoryCard({
 
 /** The agency card's top (AgencyCard sets the same 80px over the sidebar default). */
 const AGENCY_PANEL_TOP = 80;
+
+/** History's suggestions are recent searches only: its routes have no map keys to suggest. */
+const NO_RECENT_ROUTES: RecentRoute[] = [];
+const NO_SUGGESTED_ROUTES: SuggestedRoute[] = [];
+const NO_ROUTE_PICK = () => {};
+const NO_ROUTE_DISPLAY = () => ({}) as RouteListDisplay;
 
 const SINCE_FILTERS = [
   { label: 'All time', year: 0 },
@@ -722,43 +730,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
     }
   }, [historyData, selectedSlug]);
 
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (searchFocused) {
-      try {
-        const qRecents = localStorage.getItem('atlas_recent_searches');
-        if (qRecents) setRecentSearches(JSON.parse(qRecents));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }, [searchFocused]);
-
-  const saveRecentSearch = useCallback((q: string) => {
-    const trimmed = q.trim();
-    if (!trimmed) return;
-    try {
-      const recentsRaw = localStorage.getItem('atlas_recent_searches');
-      const recents: string[] = recentsRaw ? JSON.parse(recentsRaw) : [];
-      const filtered = recents.filter(s => s.toLowerCase() !== trimmed.toLowerCase());
-      filtered.unshift(trimmed);
-      const limited = filtered.slice(0, 5);
-      localStorage.setItem('atlas_recent_searches', JSON.stringify(limited));
-      setRecentSearches(limited);
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
-
-  const clearRecentSearches = useCallback(() => {
-    try {
-      localStorage.removeItem('atlas_recent_searches');
-      setRecentSearches([]);
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
+  const { recentSearches, saveRecentSearch, clearRecentSearches } = useRecentSearches(searchFocused);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
@@ -835,6 +807,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
 
   const showScrubber = selectedSlug && availableYears.length > 1;
   const showAgencyChooser = active && !selectedSlug && !dismissed;
+  const showRecentSearches = searchFocused && query === '' && recentSearches.length > 0;
   const panelInteractive = Boolean(selectedSlug || showAgencyChooser || searchFocused);
   // Placement shared by History's panels, by the regular cards' rule: anchored under the search bar
   // at its width on desktop (#1033 parity B). Each panel adds its own top, as its regular card does.
@@ -880,6 +853,19 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
             />
           );
         })()
+        ) : showRecentSearches ? (
+        // Recent searches: the map's shared suggestions panel, where the map shows it (#1028 item 22).
+        <div className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-132px)] flex flex-col ${frameClassName}`} style={frameStyle} onMouseDown={e => e.preventDefault()}>
+          <SearchSuggestionsPanel
+            recentSearches={recentSearches}
+            clearRecentSearches={clearRecentSearches}
+            setQuery={setQuery}
+            recentlyViewed={NO_RECENT_ROUTES}
+            suggestedRoutes={NO_SUGGESTED_ROUTES}
+            pickRoute={NO_ROUTE_PICK}
+            displayForRouteKey={NO_ROUTE_DISPLAY}
+          />
+        </div>
         ) : (
         <Panel
           sidebar
@@ -891,28 +877,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
             <HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
             <span className={PANEL_TITLE}>Historical service</span>
           </PanelTitleBar>
-          {query === '' && recentSearches.length > 0 ? (
-            <>
-              <div className="px-5 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">
-                <p className="text-xs font-bold text-[var(--text-muted)]">Recent searches</p>
-                <button
-                  onClick={clearRecentSearches}
-                  className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
-                >
-                  Clear
-                </button>
-              </div>
-              {recentSearches.map((s, i) => (
-                <RouteListRow
-                  key={i}
-                  shortName={s}
-                  onClick={() => setQuery(s)}
-                  variant="spaced"
-                  right={<span className="text-xs text-[var(--text-dim)] font-mono">↵</span>}
-                />
-              ))}
-            </>
-          ) : (
+          {(
             <>
               {historyData !== null && !historyLoadFailed && (
                 <div className={AGENCY_LIST_FILTERS}>
