@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Maximize2, X } from 'lucide-react';
-import { headwayToTierColor, getHeadwayTiers } from '../../utils/colors';
+import { headwayToTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 export { headwayToTierColor };
 import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS, TIME_PERIODS } from '../../../shared/config';
@@ -147,7 +147,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   if (valids.length === 0) return null;
 
   const maxFreq = Math.max(...valids.map(v => 1 / v));
-  const tierLegend = getHeadwayTiers(colorMode);
 
   const activePeriodKey = expanded ? null : period && period !== 'all' ? period : null;
 
@@ -344,14 +343,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           {hoveredHour != null && displayedByHour[hoveredHour] != null
             ? formatHourTitle(hoveredHour, displayedByHour[hoveredHour]!)
             : 'Hover over an hour to inspect its scheduled headway window.'}
-        </div>
-      )}
-      {expanded && (
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs font-bold text-[var(--text-dim)]" data-testid="sparkline-legend">
-          <span className="text-[var(--text-muted)]">Numbers = minutes between trips. Taller bar = more trips that hour. Colour:</span>
-          {tierLegend.map(tier => (
-            <LegendItem key={tier.label} color={tier.color}>{tier.label}</LegendItem>
-          ))}
         </div>
       )}
       {allowExpand && !expanded && isExpanded && createPortal(
