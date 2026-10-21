@@ -7,8 +7,24 @@ Atlas's **History** app displays route frequency changes over a 10-year period. 
 ## History model & eligibility
 
 For an agency to show up in the History app, it must satisfy both of these:
-*   **Distinct Years** (frontend eligibility): Must have at least **10 distinct years** across its route snapshots and any `history/{slug}/coverage.json` coverage years (`MIN_HISTORY_DISTINCT_YEARS = 10` in `shared/historyEligibility.ts`).
+*   **Distinct Years** (frontend eligibility): Must have at least **10 distinct real snapshot years** across its route snapshots, none after the build year (`MIN_HISTORY_DISTINCT_YEARS = 10` in `shared/historyEligibility.ts`). `coverage.json` coverage years no longer count: a year counts only when a route has a snapshot for it.
 *   **Change Detection** (`pipeline/build-history.ts`): Must have at least **1 route** with a recorded headway change that differs from current live data before it is compiled into the history config at all.
+
+### History v2 snapshots (additive, versioned)
+
+Each v2 snapshot carries `v2: {refDate, key, rep, sat?, sun?, flag?}`; old snapshots stay as they are.
+
+*   **Real date.** `refDate` is the service day the processor read (the same auto-detected reference date as the map). A v2 snapshot's `year` is the year of `refDate`; an old snapshot keeps the year of its period key. At build time every snapshot whose year is after the build year is dropped (no archive file is rewritten).
+*   **Dropped snapshots are reported.** The build also drops any snapshot with an empty or unparseable label, an unreadable `refDate`, or no year, and lists each in `tmp/history-build-report.json` (slug, route, label, reason).
+*   **One per route per year.** Snapshots group by (route key, year). The winner is the latest `refDate` (when both have one), else the latest period key, then `processedAt`. If two disagree by more than 25% the later is kept and the build report counts it. Snapshots are ordered by real date, never by month-name labels.
+*   **Representative weekday value.** `rep.h` is the route's all-day value (`routeAllDayHeadway`: worst direction, main-stretch median, settled rules), never the fastest pattern or direction 0. The no-service sentinel (or a route whose rows are all `span`) is stored as `rep.lim`, with no number. No stamp means blank. `rep.p` holds the per-period values (`routeFilterHeadwayByPeriod`, else `worstDirectionHeadwayByPeriod`). A limited or blank v2 snapshot is dropped from the published list rather than filled from an old pattern minimum.
+*   **Weekend.** `sat` / `sun` are optional; a missing key is unknown (blank), never 0. `{none:true}` is stored only when the feed's calendar proves it (`pipeline/historyWeekend.ts`): the reference week is inside the calendar window, calendar.txt has rows, none of the route's services flags the day and none is added on that weekday, the route has weekday service, and either other routes run the day or nothing in the feed does or adds it. Expired or non-covering calendars stay blank, and a one-day holiday row never counts as Saturday service.
+*   **Flags.** `flag` is `fast` (under 2 min), `slow` (over 300 min) or `limited`. Stored only; nothing is hidden anywhere.
+*   **Keys.** `historyRouteKey` (short name, else route_id, else long name) is the only key function; backfills must not skip a blank short name (a test enforces it). The display name is the long name, then the key.
+*   **Aliases.** `config/history-route-aliases.json` (`{slug: {canonicalKey: [oldKeys]}}`) folds old keys into the canonical key before the one-per-year rule. It is empty until an alias is verified from data. Candidate to verify first: gcrta `HealthLine` -> `HL` (already a manual current-name alias in `build-history.ts`).
+*   **Storage.** Immutable sidecar objects `history-v2/{slug}/{periodKey}.json` (all routes of one agency period). Per-route archive files are untouched; `build-history` joins by period key, never by label. A sidecar with the same key and different content is a conflict, not an overwrite.
+*   **Change detection.** The fingerprint is weekday + Saturday + Sunday headlines; unknown is a wildcard, so an old baseline against a new snapshot is not a change. `latest.json` gains `sat`/`sun` (and `wk`, marked `v: 2`).
+*   **Writers.** `refresh` writes v2 only with `ATLAS_HISTORY_V2=1` (opt-in). `pipeline/backfill-history-v2.ts` rebuilds sidecars from archived zips into a local `--out-dir` and never touches R2.
 
 ### Data sourcing
 Historical snapshots are compiled via two methods:

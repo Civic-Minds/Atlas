@@ -57,6 +57,8 @@ import {
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
 import type { FeedQuality } from '../shared/feedQuality.js';
 import { historyRouteKey } from './historyRouteKey.js';
+import { baselineFingerprint, buildSidecar, buildV2Routes, fingerprintChanged, fingerprintOf, r2ArchiveSink, writeSidecar, type LatestRouteEntry } from './historyV2.js';
+import { readFeedEvidence } from './historyWeekend.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
@@ -133,7 +135,14 @@ interface RefreshAgencyResult {
   hiddenRoutes?: HiddenRouteRecord[];
 }
 
-async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null): Promise<string> {
+/**
+ * History v2 is an explicit opt-in (ATLAS_HISTORY_V2=1): it writes an immutable sidecar
+ * history-v2/{slug}/{periodKey}.json to the archive bucket and adds weekday/sat/sun
+ * fingerprints to latest.json. Off by default, so a normal refresh writes exactly what it did.
+ */
+interface HistoryV2Input { buf: Buffer; referenceDateFromRunDate?: boolean }
+
+async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null, v2Input?: HistoryV2Input): Promise<string> {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
   const current: Record<string, RouteSummary> = {};
   for (const f of fc.features) {
@@ -157,7 +166,7 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
 
   // Load previous headways from agency-level latest.json (compact baseline for diffing).
   const latestKey = `history/${slug}/latest.json`;
-  let prev: Record<string, { headway: number }> = {};
+  let prev: Record<string, LatestRouteEntry & { headway: number }> = {};
   try {
     const raw = await r2GetArchive(latestKey);
     if (raw) prev = JSON.parse(raw).routes ?? {};
@@ -168,11 +177,25 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   const processedAt = new Date().toISOString();
   const changed: string[] = [];
 
+  let v2Routes: ReturnType<typeof buildV2Routes>['routes'] | undefined;
+  if (v2Input) {
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const evidence = await readFeedEvidence(v2Input.buf, v2Input.referenceDateFromRunDate ? { referenceDate: today } : {});
+    const built = buildV2Routes(fc.features, evidence);
+    v2Routes = built.routes;
+    await writeSidecar(await r2ArchiveSink(), buildSidecar(slug, periodKey, evidence.refDate, built.routes));
+  }
+
   // Collect per-route writes — only for routes whose headway changed.
   const routeWrites: Array<() => Promise<void>> = [];
   for (const [routeShortName, route] of Object.entries(current)) {
     const prevHeadway = prev[routeShortName]?.headway ?? null;
-    if (prevHeadway !== null && prevHeadway === route.headway) continue;
+    // v2: a change is a different weekday/sat/sun headline; unknown (including any old
+    // baseline) is a wildcard, so old -> new is not a change by itself.
+    const unchanged = v2Routes && v2Routes[routeShortName]
+      ? prev[routeShortName] !== undefined && !fingerprintChanged(baselineFingerprint(prev[routeShortName]), fingerprintOf(v2Routes[routeShortName]))
+      : prevHeadway !== null && prevHeadway === route.headway;
+    if (unchanged) continue;
     changed.push(routeShortName);
     const key = `history/${slug}/${routeShortName}/${periodKey}.json`;
     // Capture the route's geometry at this historical period for map rendering in History app (AI-162, AI-161)
@@ -191,7 +214,12 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   // Always update latest.json as the baseline for the next diff.
   await r2PutArchiveJson(latestKey, JSON.stringify({
     processedAt,
-    routes: Object.fromEntries(Object.entries(current).map(([sn, r]) => [sn, { headway: r.headway }])),
+    routes: Object.fromEntries(Object.entries(current).map(([sn, r]) => {
+      const rec = v2Routes?.[sn];
+      if (!rec) return [sn, { headway: r.headway }];
+      const fp = fingerprintOf(rec);
+      return [sn, { headway: r.headway, v: 2, wk: fp.wk, sat: fp.sat, sun: fp.sun }];
+    })),
   }));
 
   if (changed.length === 0) return 'unchanged';
@@ -606,7 +634,7 @@ async function refreshAgency(
   }
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
-  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion);
+  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, process.env.ATLAS_HISTORY_V2 === '1' ? { buf, referenceDateFromRunDate: agency.referenceDateFromRunDate } : undefined);
   writeLog(`  history: ${histResult}\n`);
 
   if (nightServiceCollector) {

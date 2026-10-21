@@ -1,0 +1,156 @@
+/**
+ * Build-time rules for History snapshots (pure; build-history.ts only calls these).
+ *
+ *  - join legacy per-route change files and v2 sidecar entries by period key
+ *  - drop invalid snapshots (empty/unparseable label, bad refDate/year, year after the build year)
+ *  - order by real date, then keep one snapshot per route per year
+ */
+import type { HeadwayByPeriod } from '../shared/config.js';
+import { yearOfRefDate, type HistorySnapshotV2, type HistoryV2SidecarRoute } from '../shared/historyV2.js';
+import { getPeriodKeySortValue, labelFromRefDate, parsePeriodKey } from './historyPeriods.js';
+
+export interface ArchiveChange {
+  periodKey: string;
+  headway?: number;
+  routeLongName?: string;
+  label?: string;
+  headwayByPeriod?: HeadwayByPeriod;
+  geometry?: unknown;
+  processedAt?: string;
+}
+
+export interface BuiltSnapshot {
+  periodKey: string;
+  label: string;
+  year: number;
+  weekdayHeadwayMin: number;
+  headwayByPeriod?: HeadwayByPeriod;
+  geometry?: unknown;
+  v2?: HistorySnapshotV2;
+  processedAt?: string;
+}
+
+export type DropReason =
+  | 'empty label'
+  | 'unparseable label'
+  | 'bad refDate'
+  | 'bad year'
+  | 'after build year'
+  | 'no weekday headline';
+
+export interface DropRecord { slug: string; route: string; label: string; reason: DropReason }
+
+export interface BuildReport {
+  drops: DropRecord[];
+  /** Same-year snapshots whose headlines disagreed by more than 25% (the later was kept). */
+  yearDisagreements: Array<{ slug: string; route: string; year: number }>;
+  superseded: number;
+  mixedMethodRoutes: string[];
+}
+
+export function newBuildReport(): BuildReport {
+  return { drops: [], yearDisagreements: [], superseded: 0, mixedMethodRoutes: [] };
+}
+
+const MIN_YEAR = 1990;
+
+/** Why a candidate cannot be published, or null when it is fine. */
+export function invalidReason(label: string, year: number, v2: HistorySnapshotV2 | undefined, buildYear: number): DropReason | null {
+  if (v2 && yearOfRefDate(v2.refDate) == null) return 'bad refDate';
+  if (!label || !label.trim()) return 'empty label';
+  if (!/(?:19|20)\d{2}/.test(label)) return 'unparseable label';
+  if (!Number.isInteger(year) || year < MIN_YEAR) return 'bad year';
+  if (year > buildYear) return 'after build year';
+  return null;
+}
+
+export interface Candidate {
+  periodKey: string;
+  change?: ArchiveChange;
+  v2?: HistoryV2SidecarRoute & { refDate: string };
+}
+
+/** Real-date sort key: refDate when known, else the period key's date. */
+export function effectiveDate(c: { v2?: { refDate: string }; periodKey: string }): number {
+  const ref = c.v2 ? Number(c.v2.refDate) : NaN;
+  return Number.isFinite(ref) ? ref : getPeriodKeySortValue(c.periodKey);
+}
+
+/**
+ * Join change files and sidecar entries that share a period key into one candidate each
+ * (sidecar keyed by period key, not label).
+ */
+export function joinCandidates(changes: ArchiveChange[], sidecar: Array<{ periodKey: string; v2: HistoryV2SidecarRoute & { refDate: string } }>): Candidate[] {
+  const byPeriod = new Map<string, Candidate>();
+  for (const c of changes) byPeriod.set(c.periodKey, { periodKey: c.periodKey, change: c });
+  for (const s of sidecar) {
+    const cur = byPeriod.get(s.periodKey);
+    if (cur) cur.v2 = s.v2; else byPeriod.set(s.periodKey, { periodKey: s.periodKey, v2: s.v2 });
+  }
+  return [...byPeriod.values()];
+}
+
+function disagree(a: number, b: number): boolean {
+  return Math.abs(a - b) / Math.min(a, b) > 0.25;
+}
+
+/**
+ * Candidates -> published snapshots, ascending by real date, one per year. Winner of a
+ * year is the latest refDate (when both have one), else the latest period key, then
+ * processedAt.
+ */
+export function buildRouteSnapshots(
+  slug: string,
+  route: string,
+  candidates: Candidate[],
+  buildYear: number,
+  report: BuildReport,
+): BuiltSnapshot[] {
+  const valid: BuiltSnapshot[] = [];
+  let usedV1 = false;
+  let usedV2 = false;
+  for (const c of candidates) {
+    const v2 = c.v2 ? { refDate: c.v2.refDate, key: route, rep: c.v2.rep, sat: c.v2.sat, sun: c.v2.sun, flag: c.v2.flag } : undefined;
+    if (v2) { for (const k of ['sat', 'sun', 'flag'] as const) if (v2[k] === undefined) delete v2[k]; }
+    const parsed = parsePeriodKey(c.periodKey);
+    const year = v2 ? (yearOfRefDate(v2.refDate) ?? NaN) : parsed.year;
+    const label = c.change?.label ?? (v2 ? (labelFromRefDate(v2.refDate) ?? '') : parsed.label);
+    const reason = invalidReason(label, year, v2, buildYear);
+    if (reason) { report.drops.push({ slug, route, label, reason }); continue; }
+    // A v2 value is the representative; a limited or blank route has no number and is never
+    // backfilled from the fastest pattern in the old change file.
+    const h = v2 ? v2.rep.h : c.change?.headway;
+    if (h == null) { report.drops.push({ slug, route, label, reason: 'no weekday headline' }); continue; }
+    if (v2) usedV2 = true; else usedV1 = true;
+    valid.push({
+      periodKey: c.periodKey,
+      label,
+      year,
+      weekdayHeadwayMin: h,
+      headwayByPeriod: v2 ? v2.rep.p : c.change?.headwayByPeriod,
+      geometry: c.change?.geometry,
+      v2,
+      processedAt: c.change?.processedAt,
+    });
+  }
+  if (usedV1 && usedV2) report.mixedMethodRoutes.push(`${slug}/${route}`);
+
+  const rank = (s: BuiltSnapshot) => effectiveDate({ v2: s.v2, periodKey: s.periodKey });
+  const later = (a: BuiltSnapshot, b: BuiltSnapshot): boolean => {
+    // refDate only when both have one; otherwise both fall back to the period key
+    const bothRef = a.v2 && b.v2;
+    const ka = bothRef ? Number(a.v2!.refDate) : getPeriodKeySortValue(a.periodKey);
+    const kb = bothRef ? Number(b.v2!.refDate) : getPeriodKeySortValue(b.periodKey);
+    if (ka !== kb) return ka > kb;
+    return (a.processedAt ?? '') >= (b.processedAt ?? '');
+  };
+  const winners = new Map<number, BuiltSnapshot>();
+  for (const s of valid) {
+    const cur = winners.get(s.year);
+    if (!cur) { winners.set(s.year, s); continue; }
+    report.superseded++;
+    if (disagree(cur.weekdayHeadwayMin, s.weekdayHeadwayMin)) report.yearDisagreements.push({ slug, route, year: s.year });
+    if (later(s, cur)) winners.set(s.year, s);
+  }
+  return [...winners.values()].sort((a, b) => rank(a) - rank(b) || a.year - b.year);
+}
