@@ -16,13 +16,31 @@ import type { HeadwayByPeriod } from '../shared/config.js';
 
 const ARCHIVE_INDEX = 'https://cdn.mbta.com/archive/archived_feeds.txt';
 const SLUG = 'mbta';
-// These later archive entries are more usable than the first September/October
-// entries for their years: the 2010 September feed has no route features, and
-// the late-2015 feed has a fuller schedule while still ending in 2015.
-const ARCHIVE_OVERRIDES: Record<number, string> = {
-  2010: '20101231',
-  2015: '20151127',
-};
+// Years left out on purpose (blank beats misleading):
+// - 2010: the only usable feed is the holiday-week one (20101231), not a normal service period.
+// - 2015: the only usable feed (20151127) is the Thanksgiving-weekend schedule, not a normal period.
+// The other 2015 feeds predate the Nov 2015 ID change, so they can't be linked to later rail IDs either.
+const EXCLUDED_YEARS = new Set([2010, 2015]);
+
+// Before the Nov 2015 feed, subway and light-rail lines are many separate pattern IDs
+// (Orange 903_/913_, Red 931_/933_, Blue 946_/948_, Green 810_...899_, Mattapan 899_).
+// Only these IDs are one real route each, so they link across years from the Nov 2015 feed on.
+const REAL_SUBWAY_IDS = /^(Red|Orange|Blue|Mattapan|Green-[BCDE])$/;
+
+/**
+ * Whether a route key can be linked across years.
+ * - Legacy pattern IDs (blank short name on a subway/light-rail route that is not a real line ID) are dropped,
+ *   because stitching guessed IDs into a line would be made up.
+ * - Temporary rail-replacement shuttles (Shuttle-*) are dropped: they run for a few weeks and have no counterpart.
+ */
+function isLinkableRoute(properties: Record<string, unknown>): boolean {
+  const shortName = String(properties.routeShortName ?? '').trim();
+  const routeId = String(properties.routeId ?? '').trim();
+  const type = Number(properties.routeType);
+  if (!shortName && (type === 0 || type === 1) && !REAL_SUBWAY_IDS.test(routeId)) return false;
+  if (routeId.startsWith('Shuttle-')) return false;
+  return true;
+}
 
 interface ArchiveFeed {
   startDate: string;
@@ -57,7 +75,7 @@ function pickOnePerYear(feeds: ArchiveFeed[], startYear: number, endYear: number
   for (const feed of feeds) {
     const year = Number(feed.startDate.slice(0, 4));
     if (year < startYear || year > endYear) continue;
-    if (ARCHIVE_OVERRIDES[year] && feed.startDate !== String(ARCHIVE_OVERRIDES[year])) continue;
+    if (EXCLUDED_YEARS.has(year)) continue;
     const existing = byYear.get(year);
     if (!existing || Math.abs(Number(feed.startDate.slice(4)) - 900) < Math.abs(Number(existing.startDate.slice(4)) - 900)) {
       byYear.set(year, feed);
@@ -89,7 +107,7 @@ function snapshotRoutes(geojson: string, previous: Record<string, { headway: num
     const properties = feature.properties;
     // Same route key build-history uses: rail and ferry routes have a blank short name but a route_id.
     const route = historyRouteKey(properties);
-    if (!route || properties.day !== 'Weekday' || properties.directionId !== 0) continue;
+    if (!route || properties.day !== 'Weekday' || properties.directionId !== 0 || !isLinkableRoute(properties)) continue;
     const headway = properties.headway == null ? null : Number(properties.headway);
     if (headway == null) continue;
     if (!current[route] || headway < current[route].headway) {
@@ -131,6 +149,8 @@ async function main() {
   const skipped: Array<{ year: number; error: string }> = [];
   const coverageYears = new Set<number>();
   const reports: FeedReport[] = [];
+  // Every linkable route's weekday value per feed (not only the changes), for checking the output.
+  const yearTables: Record<string, Record<string, { headway: number; headwayByPeriod: HeadwayByPeriod | null; routeLongName: string | null }>> = {};
   const allSnapshots: Array<{ key: string; body: string }> = [];
   let previous: Record<string, { headway: number }> = {};
 
@@ -151,6 +171,7 @@ async function main() {
       const { current, snapshots } = snapshotRoutes(result.geojson, previous, periodKey);
       const routeFeatures = (JSON.parse(result.geojson) as { features: Array<{ geometry?: { type?: string }; properties?: Record<string, unknown> }> }).features
         .filter(feature => feature.geometry?.type === 'LineString' && feature.properties?.routeShortName != null).length;
+      yearTables[periodKey] = Object.fromEntries(Object.entries(current).map(([route, value]) => [route, { headway: value.headway, headwayByPeriod: value.headwayByPeriod ?? null, routeLongName: value.routeLongName ?? null }]));
       previous = Object.fromEntries(Object.entries(current).map(([route, value]) => [route, { headway: value.headway }]));
       allSnapshots.push(...snapshots.map(snapshot => ({
         key: snapshot.key,
@@ -180,6 +201,7 @@ async function main() {
   await mkdir(dirname(reportPath), { recursive: true });
   const sortedCoverageYears = [...coverageYears].sort();
   await writeFile(reportPath, JSON.stringify({ generatedAt: new Date().toISOString(), slug: SLUG, startYear, endYear, source: ARCHIVE_INDEX, coverageYears: sortedCoverageYears, coverageMetadata: { coverageYears: sortedCoverageYears, materializeAllPeriods: true }, reports, skipped, snapshots: allSnapshots }, null, 2));
+  await writeFile(resolve(`tmp/history-dry-run/${SLUG}-year-tables.json`), JSON.stringify(yearTables));
   console.log(`\nReport → ${reportPath} (${reports.length} feeds, ${allSnapshots.length} snapshots, ${skipped.length} skipped)`);
 }
 
