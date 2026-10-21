@@ -5,6 +5,8 @@ const SWATCH = {
   line: 'h-1 w-3 rounded-full',
   /** A round dot: the key for bars, segments and counts. */
   dot: 'h-2 w-2 rounded-full',
+  /** A small filled square with a thin border: the key for a shaded area (the population / income scale). */
+  square: 'h-2.5 w-2.5 rounded-[2px] border border-[var(--border-primary)]',
 } as const;
 
 /** One legend entry: a coloured swatch and its label. Every legend (map, research, charts, agency pages) uses this. */

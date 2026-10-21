@@ -19,10 +19,11 @@ describe('context layer scales', () => {
     expect(contextClassIndex('density', 0)).toBe(0);
     expect(contextClassIndex('density', 49.9)).toBe(0);
     expect(contextClassIndex('density', 50)).toBe(1);
-    expect(contextClassIndex('density', 1161.8)).toBe(4);
+    expect(contextClassIndex('density', 1199.9)).toBe(3);
+    expect(contextClassIndex('density', 1200)).toBe(4);
     expect(contextClassIndex('density', 60000)).toBe(4);
-    expect(contextClassIndex('income', 49642)).toBe(0);
-    expect(contextClassIndex('income', 63750)).toBe(2);
+    expect(contextClassIndex('income', 49999)).toBe(0);
+    expect(contextClassIndex('income', 65000)).toBe(2);
     expect(contextClassIndex('income', 250001)).toBe(4);
   });
 
@@ -33,14 +34,14 @@ describe('context layer scales', () => {
 
   it('builds a step expression with every break and colour', () => {
     const expr = contextFillColorExpr('income');
-    expect(expr).toEqual(['step', ['get', 'income'], ...[CONTEXT_COLOURS.income[0], 49643, CONTEXT_COLOURS.income[1], 63750, CONTEXT_COLOURS.income[2], 79750, CONTEXT_COLOURS.income[3], 105547, CONTEXT_COLOURS.income[4]]]);
+    expect(expr).toEqual(['step', ['get', 'income'], ...[CONTEXT_COLOURS.income[0], 50000, CONTEXT_COLOURS.income[1], 65000, CONTEXT_COLOURS.income[2], 80000, CONTEXT_COLOURS.income[3], 105000, CONTEXT_COLOURS.income[4]]]);
   });
 
   it('labels five classes without all-caps', () => {
     const labels = contextClassLabels('income');
     expect(labels).toHaveLength(5);
-    expect(labels[0]).toBe('Under $49,643');
-    expect(labels[4]).toBe('$105,547 or more');
+    expect(labels).toEqual(['Under $50,000', '$50,000–$65,000', '$65,000–$80,000', '$80,000–$105,000', '$105,000 or more']);
+    expect(contextClassLabels('density')).toEqual(['Under 50', '50–300', '300–700', '700–1,200', '1,200 or more']);
     for (const l of [...labels, ...contextClassLabels('density')]) expect(/\p{Ll}/u.test(l) || /^[\d$,.–]+$/.test(l)).toBe(true);
   });
 

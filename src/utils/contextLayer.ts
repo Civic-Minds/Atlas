@@ -25,12 +25,15 @@ export const INCOME_TOP_CODE = 250001;
 /**
  * Fixed class breaks, one set per metric (no cross-country comparison, each metric has its own scale).
  * Four breaks make five classes: below the first, between each pair, and at or above the last.
- * Values are the quintiles of the Georgia tracts (2019-2023 ACS, 2023 TIGER), rounded; a class holds
- * roughly a fifth of tracts there. Revisit when more states are added.
+ * The edges are round numbers so the legend can print them as they are (the map colours and the legend read the
+ * same values). They started as the exact quintiles of the Georgia tracts (2019-2023 ACS, 2023 TIGER) --
+ * density 50 / 277.5 / 700.5 / 1161.8, income 49,643 / 63,750 / 79,750 / 105,547 -- and were rounded to the
+ * nearest tidy value, so classes now hold roughly (not exactly) a fifth of Georgia's tracts. Revisit when more
+ * states are added.
  */
 export const CONTEXT_BREAKS: Record<ContextMetric, readonly [number, number, number, number]> = {
-  density: [50, 277.5, 700.5, 1161.8],
-  income: [49643, 63750, 79750, 105547],
+  density: [50, 300, 700, 1200],
+  income: [50000, 65000, 80000, 105000],
 };
 
 /** Five-step sequential colours, lightest to darkest. Density is blue, income purple, so the two scales never read as one. */
@@ -41,7 +44,7 @@ export const CONTEXT_COLOURS: Record<ContextMetric, readonly [string, string, st
 
 /** The no-data fill: grey with diagonal hatching. */
 export const CONTEXT_NO_DATA_COLOUR = '#8b949e';
-export const CONTEXT_FILL_OPACITY = 0.55;
+export const CONTEXT_FILL_OPACITY = 0.38;
 
 /** The index (0-4) of the class a value falls in. Breaks are lower bounds: a value equal to a break is in the upper class. */
 export function contextClassIndex(metric: ContextMetric, value: number): number {

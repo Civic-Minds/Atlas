@@ -24,6 +24,7 @@ import MenuButton from '../ui/MenuButton';
 import { contextLayerAvailable } from './map/useContextLayer';
 import { CONTEXT_CONTROL_HINT, CONTEXT_CONTROL_TITLE, CONTEXT_OPTION_DENSITY, CONTEXT_OPTION_INCOME, CONTEXT_OPTION_OFF } from '../../content/contextLayerCopy';
 import type { ContextMetric } from '../../utils/contextLayer';
+import { ContextKey } from './ContextLegend';
 
 const CONTEXT_OPTIONS = [
   { key: 'off', label: CONTEXT_OPTION_OFF },
@@ -624,6 +625,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       onChange={key => setContextMetric(key === 'off' ? null : key)}
                     />
                   </div>
+                  {/* The scale is always one tap away here, even with the persistent legend off. */}
+                  {contextMetric && <div className="mt-2"><ContextKey metric={contextMetric} /></div>}
                 </div>
               )}
 

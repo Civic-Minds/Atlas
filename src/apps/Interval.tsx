@@ -169,6 +169,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [searchParams] = useSearchParams();
   // Population / income shading (beta trial, CIV-482). Off until chosen, never saved.
   const [contextMetric, setContextMetric] = useState<ContextMetric | null>(null);
+  const [contextYear, setContextYear] = useState<number | null>(null);
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
   const [mapContextAgencyCount, setMapContextAgencyCount] = useState(0);
@@ -909,7 +910,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         <div className="relative flex-1 min-h-0 min-w-0">
           <MapCanvas
             contextMetric={contextMetric}
-            contextLegendRaised={showMapLegend && !nightServiceView}
+            onContextYearChange={setContextYear}
             agencies={agencies}
             layers={layers}
             filteredLayers={filteredLayers}
@@ -995,7 +996,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           <div className="relative flex-1 min-h-0 min-w-0">
               <MapCanvas
             contextMetric={contextMetric}
-            contextLegendRaised={showMapLegend && !nightServiceView}
                 agencies={agencies}
                 layers={layers}
                 filteredLayers={compareStats.filteredLayers}
@@ -1073,14 +1073,14 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         )}
       </div>
 
-      {showMapLegend && !nightServiceView && <PersistentMapLegend />}
+      {showMapLegend && !nightServiceView && <PersistentMapLegend contextMetric={contextLayerAvailable() ? contextMetric : null} />}
 
       {/* On sm and up the bottom-left pills and the bottom-right counts share one row, so the pills
           (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).
           Phones drop the wrapper (contents) and keep each group's own position. No z-index here, so
           the pills keep their own layer and the What's new panel still opens above the header. */}
       <div className="max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none">
-      <MapAttribution contextLayerOn={contextLayerAvailable() && contextMetric !== null} />
+      <MapAttribution contextLayerOn={contextLayerAvailable() && contextMetric !== null} contextYear={contextYear} />
 
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
         <div className={`max-sm:absolute max-sm:bottom-[7rem] max-sm:right-[4.25rem] ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>

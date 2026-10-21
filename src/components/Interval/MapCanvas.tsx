@@ -12,9 +12,8 @@ import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
 import { useHistoryLayer } from './map/useHistoryLayer';
 import { addMapLayers } from './map/mapLayers';
-import { contextLayerAvailable, useContextLayer } from './map/useContextLayer';
+import { useContextLayer } from './map/useContextLayer';
 import { ContextPopup } from './ContextPopup';
-import { ContextLegend } from './ContextLegend';
 import type { ContextMetric } from '../../utils/contextLayer';
 import { resetRoutesLayerDefaultPaint as resetRouteLayersPaint, localRouteHeadwayColor } from './map/routeStyle';
 import { useRouteStyling } from './map/useRouteStyling';
@@ -231,8 +230,8 @@ interface MapCanvasProps {
   agencyDataFailedCount?: number;
   /** Population / income shading under the routes; null is off (beta trial, CIV-482). */
   contextMetric?: ContextMetric | null;
-  /** The persistent legend is showing, so the shading legend sits above it. */
-  contextLegendRaised?: boolean;
+  /** Tells the app which survey years the shading tiles carry (last year of the 5-year window), for the credit's hover text. */
+  onContextYearChange?: (year: number | null) => void;
 }
 
 const MapCanvasInner: React.FC<MapCanvasProps> = ({
@@ -305,7 +304,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   agencyDataLoading = false,
   agencyDataFailedCount = 0,
   contextMetric = null,
-  contextLegendRaised = false,
+  onContextYearChange,
 }) => {
   const { colorVisionFriendly } = useColorVision();
   const colorMode: ColorVisionMode = colorVisionFriendly ? 'friendly' : 'default';
@@ -1240,6 +1239,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Overlay layers (history, live vehicles) — extracted to hooks
   useHistoryLayer(mapRef, mapLoaded);
   const contextLayer = useContextLayer(mapRef, mapLoaded, contextMetric);
+  useEffect(() => { onContextYearChange?.(contextLayer.year); }, [contextLayer.year]);
   // Clean up deck overlay on unmount
   useEffect(() => {
     return () => {
@@ -1261,7 +1261,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       {contextMetric && contextLayer.popup && (
         <ContextPopup metric={contextMetric} {...contextLayer.popup} onClose={contextLayer.closePopup} />
       )}
-      {contextMetric && contextLayerAvailable() && <ContextLegend metric={contextMetric} year={contextLayer.year} raised={contextLegendRaised} />}
 
       {/* Geolocate Button Control Overlay */}
       {onDemandStatus === 'error' && onDemandShown && (

@@ -1,14 +1,16 @@
 import { FLOATING_CARD } from '../../styles';
 import { useHeadwayTiers } from '../../hooks/useHeadwayTiers';
 import LegendItem from '../ui/LegendItem';
+import { ContextKey } from './ContextLegend';
+import type { ContextMetric } from '../../utils/contextLayer';
 
 /** The map's colour key. It reads the same palette as the map, so with colour-vision mode on it shows the friendly colours. */
-export function PersistentMapLegend() {
+export function PersistentMapLegend({ contextMetric = null }: { /** The population / income shading that is on, if any: its scale joins this card. */ contextMetric?: ContextMetric | null } = {}) {
   const tiers = useHeadwayTiers();
   return (
     <aside
       aria-label="Map legend"
-      className={`${FLOATING_CARD} absolute bottom-16 left-5 z-[500] w-72 max-w-[calc(100vw-2.5rem)] p-3 pointer-events-auto`}
+      className={`${FLOATING_CARD} absolute bottom-16 ${contextMetric ? 'max-sm:bottom-[6.5rem]' : ''} left-5 z-[500] w-72 max-w-[calc(100vw-2.5rem)] p-3 pointer-events-auto`}
     >
       <div className="space-y-1">
         <p className="text-xs font-bold text-[var(--text-muted)]">Frequency</p>
@@ -21,6 +23,7 @@ export function PersistentMapLegend() {
           <LegendItem kind="line" color="var(--text-primary)" className="flex text-xs text-[var(--text-primary)]">Selected / qualifying</LegendItem>
           <LegendItem kind="line" color="var(--text-muted)" swatchClassName="opacity-40" className="flex text-xs text-[var(--text-muted)]">Other routes</LegendItem>
         </div>
+        {contextMetric && <div className="border-t border-[var(--border-primary)] pt-1.5"><ContextKey metric={contextMetric} /></div>}
       </div>
     </aside>
   );

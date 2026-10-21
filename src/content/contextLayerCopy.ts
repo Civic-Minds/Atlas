@@ -20,13 +20,13 @@ export const CONTEXT_LEGEND_TITLE_INCOME = 'Median household income';
 export const CONTEXT_UNIT_DENSITY = 'People per square kilometre';
 export const CONTEXT_UNIT_INCOME = 'US dollars per year';
 
-/** The grey hatched swatch and its note. */
+/** The grey hatched swatch. */
 export const CONTEXT_NO_DATA_LABEL = 'No reliable figure';
-export const CONTEXT_NO_DATA_NOTE_DENSITY = 'Hatched: no population figure for this area.';
-export const CONTEXT_NO_DATA_NOTE_INCOME = 'Hatched: no figure, or too uncertain to show.';
 
-/** Legend source line: "Census tracts, 2019–2023 estimates". */
-export const contextLegendSource = (firstYear: number, lastYear: number) => `Census tracts, ${firstYear}–${lastYear} survey estimates`;
+/** Short credit in the map's attribution pill (next to "OpenStreetMap · CARTO"), shown only while the shading is on. */
+export const CONTEXT_CREDIT_SHORT = 'U.S. Census Bureau';
+/** Hover text on the credit: the fixed attribution line, plus the survey years once the tiles have said which. */
+export const contextCreditTitle = (years: [number, number] | null) => (years ? `${CONTEXT_ATTRIBUTION} (${years[0]}–${years[1]})` : CONTEXT_ATTRIBUTION);
 
 /** Popup lines. */
 export const CONTEXT_POPUP_DENSITY = (value: string) => `${value} people per square kilometre`;
