@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { ShapeProperties } from '../../../hooks/useIntervalStats';
 import type { HoveredBranch } from '../../../hooks/useIntervalStats';
@@ -57,5 +57,49 @@ describe('route card hour chart: one fixed scale, a selected branch shows its sh
     // The part-day branch is a segment: the selected one in full colour, the other faded.
     expect(after[i12].segments).toHaveLength(2);
     expect(after[i12].segments.map(s => s.className.includes('opacity-40'))).toEqual([true, false]);
+  });
+});
+
+// #1064, shaped like TTC 51 Southbound: two rows share the headsign and differ only by pattern
+// (one per origin), so hovering one must not highlight the other.
+describe('route card hover: two rows with one headsign (#1064)', () => {
+  const sb = { ...base, routeId: '51', routeShortName: '51', directionId: 0, headsign: 'Donlands via Laird', tier: '15', headway: 15,
+    headwayByHour: { 17: 15 }, headwayByPeriod: { pmPeak: 15 } };
+  const fromLeslie = { ...sb, routeVariant: '51A' } as unknown as ShapeProperties;
+  const fromDonway = { ...sb, routeVariant: '51B' } as unknown as ShapeProperties;
+  const renderRows = (hoveredBranch: HoveredBranch | null, setHoveredBranch: (b: HoveredBranch | null) => void = () => {}) => render(
+    <RouteCardHeadway
+      currentRoute={{ routeShortName: '51', routeLongName: null, directions: [fromLeslie, fromDonway] }}
+      routeSlug="ttc"
+      routeAgency={undefined}
+      setSelectedAgencySlug={undefined}
+      setSelectedRoute={() => {}}
+      maxHeadway={Infinity}
+      period="all"
+      setPeriod={() => {}}
+      directionGroups={[{ dirId: 0, realTier: [fromLeslie, fromDonway], span: [] }]}
+      hideSpan={false}
+      routeIsStale={false}
+      selectedRouteOutOfFilter={false}
+      expDateStr=""
+      hoveredBranch={hoveredBranch}
+      setHoveredBranch={setHoveredBranch}
+    />,
+  );
+  const highlighted = (c: HTMLElement) => c.querySelectorAll('[class*="bg-[var(--bg-hover)]"]').length;
+
+  it('hovering a row records its pattern, and only that row is highlighted', () => {
+    const seen: (HoveredBranch | null)[] = [];
+    const { container, unmount } = renderRows(null, b => seen.push(b));
+    const rows = [...container.querySelectorAll<HTMLElement>('[class*="cursor-pointer"]')];
+    expect(rows.length).toBeGreaterThanOrEqual(2);
+    // The two branch rows are the last two hoverable elements (the chart comes first).
+    fireEvent.mouseEnter(rows.at(-2)!);
+    expect(seen.at(-1)).toMatchObject({ directionId: 0, headsign: 'Donlands via Laird', routeVariant: '51A' });
+    fireEvent.mouseEnter(rows.at(-1)!);
+    expect(seen.at(-1)).toMatchObject({ directionId: 0, headsign: 'Donlands via Laird', routeVariant: '51B' });
+    unmount();
+    const one = renderRows({ directionId: 0, headsign: 'Donlands via Laird', routeVariant: '51B' });
+    expect(highlighted(one.container)).toBe(1);
   });
 });

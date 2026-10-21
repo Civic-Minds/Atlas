@@ -300,6 +300,8 @@ export function useRouteStyling(
             routeMatch,
             ['==', ['get', 'directionId'], hoveredBranch.directionId],
             branchHeadSignMatch,
+            // Two rows can share a headsign and differ only by pattern (#1064): match the hovered one's.
+            ...(hoveredBranch.routeVariant ? [['==', ['coalesce', ['get', 'routeVariant'], ''], hoveredBranch.routeVariant]] : []),
           ];
           setRouteLayerPaint(map, 'line-opacity', [
             'case', branchMatch, 1.0, routeMatch, 0.4, DIM_OPACITY,

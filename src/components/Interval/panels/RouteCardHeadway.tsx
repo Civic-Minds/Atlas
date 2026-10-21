@@ -526,8 +526,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         const selectedGroup = hoveredSingleBranch
           ? displayGroups.find(group => dirIdNum(group.dirId) === dirIdNum(hoveredBranch!.directionId))
           : undefined;
-        const isSelectedBranch = (b: ShapeProperties) => b.headsign === hoveredBranch?.headsign
-          || hoveredBranch?.headsigns?.includes(b.headsign ?? '') === true;
+        const isSelectedBranch = (b: ShapeProperties) => (b.headsign === hoveredBranch?.headsign
+          || hoveredBranch?.headsigns?.includes(b.headsign ?? '') === true)
+          && (!hoveredBranch?.routeVariant || (b.routeVariant ?? '') === hoveredBranch.routeVariant);
         const selectionStacked = selectedGroup
           ? Object.fromEntries(HOURS.map(h => [h, stackOf(selectedGroup, h, isSelectedBranch)]))
           : null;
@@ -619,12 +620,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             });
             return rowLabelWithOrigin(label, direction, group.realTier);
           };
-          const branchHoverProps = (dirId: number, headsign: string | null | undefined) => {
+          // A row is matched by direction, headsign and, when the hovered row has one, its pattern, so two
+          // rows sharing a headsign from different origins highlight one at a time (#1064).
+          const branchHoverProps = (dirId: number, headsign: string | null | undefined, routeVariant?: string | null) => {
             if (!headsign) return {};
             const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId)
-              && (hoveredBranch?.headsign === headsign || hoveredBranch?.headsigns?.includes(headsign ?? '') === true);
+              && (hoveredBranch?.headsign === headsign || hoveredBranch?.headsigns?.includes(headsign ?? '') === true)
+              && (!hoveredBranch?.routeVariant || (routeVariant ?? '') === hoveredBranch.routeVariant);
             return {
-              onHoverStart: () => setHoveredBranch({ directionId: dirId, headsign }),
+              onHoverStart: () => setHoveredBranch({ directionId: dirId, headsign, ...(routeVariant ? { routeVariant } : {}) }),
               onHoverEnd: () => setHoveredBranch(null),
               branchHovered: isHovered,
               branchDimmed: !!hoveredBranch && !isHovered,
@@ -760,7 +764,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}
                             dimmed={dimmed}
                             limited={isLimited}
-                            {...branchHoverProps(group.dirId, d.headsign)}
+                            {...branchHoverProps(group.dirId, d.headsign, d.routeVariant)}
                             holdLayout={hoveredHour != null}
                           />
                         </FlaggableValue>
@@ -774,7 +778,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       key="s0"
                       label={branchLabel(group, exclusiveSpans[0], gi) || 'limited service'}
                       limited
-                      {...branchHoverProps(group.dirId, exclusiveSpans[0].headsign)}
+                      {...branchHoverProps(group.dirId, exclusiveSpans[0].headsign, exclusiveSpans[0].routeVariant)}
                     />
                   )}
                   {exclusiveSpans.length > 1 && (
