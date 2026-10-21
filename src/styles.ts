@@ -94,6 +94,9 @@ export const PANEL_HELPER = 'px-4 pt-2 pb-2 text-xs text-[var(--text-dim)] font-
 export const PANEL_CARD_HEADER = 'flex items-start gap-2 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
 
 /** Section label inside a floating panel list */
+/** Region heading in an agency list (About panel's agency list, History's agency chooser). */
+export const LIST_REGION_HEAD = 'px-5 pt-3 pb-1 text-xs font-bold text-[var(--text-dim)]';
+
 export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black tracking-wide text-[var(--text-dim)]';
 
 /** Accent group label in search results */

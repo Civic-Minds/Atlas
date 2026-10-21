@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, Search, Radio, ArrowLeft } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, LIST_REGION_HEAD, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
 import Tag from './ui/Tag';
@@ -460,7 +460,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   <div className="py-2">
                     {[...byRegion.entries()].map(([region, list]) => (
                       <div key={region}>
-                        <p className="px-5 pt-3 pb-1 text-xs font-bold text-[var(--text-dim)]">{region}</p>
+                        <p className={LIST_REGION_HEAD}>{region}</p>
                         {list.map(a => {
                           const hasLive = liveBySlug.has(a.slug);
                           const hasHistory = historyBySlug.has(a.slug);

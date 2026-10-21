@@ -5,7 +5,7 @@ import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { FLOATING_CARD, TRANSITION_SLOW, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_PRIMARY, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
+import { FLOATING_CARD, TRANSITION_SLOW, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, LIST_REGION_HEAD, AGENCY_LIST_PRIMARY, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName, titleCase } from '../utils/format';
 import { buildHistoryRouteFilters, historyRouteMatchesFilter, type HistoryRouteFilterKey } from '../utils/historyRouteFilters';
@@ -19,7 +19,7 @@ import {
 import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayText';
 import Panel, { PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
-import Pill from '../components/ui/Pill';
+import ModeFilterPill from '../components/ui/ModeFilterPill';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
@@ -447,14 +447,14 @@ function HistoryAgencyPanel({
             {routeFilters.map(filter => {
               const active = activeFilter === filter.key;
               return (
-                <Pill
+                <ModeFilterPill
                   key={filter.key}
                   onClick={() => setActiveFilter(active ? null : filter.key)}
                   selected={active}
                   title="Filters by current route metadata"
-                >
-                  {filter.label} {filter.count}
-                </Pill>
+                  label={filter.label}
+                  count={filter.count}
+                />
               );
             })}
           </div>
@@ -876,7 +876,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
               )}
               {agenciesByRegion.map(([region, agencies]) => (
                 <div key={region}>
-                  <p className="px-5 pt-3 pb-1 text-xs font-bold text-[var(--text-dim)]">{region}</p>
+                  <p className={LIST_REGION_HEAD}>{region}</p>
                   {agencies.map(agency => (
                     <ListRow
                       key={agency.slug}
@@ -893,7 +893,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
                           {agency.routes.length} {plural(agency.routes.length, 'route')}
                         </span>
                       </span>
-                      <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
+                      <ChevronRight className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
                     </ListRow>
                   ))}
                 </div>

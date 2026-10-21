@@ -10,7 +10,7 @@ import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import Panel from '../ui/Panel';
-import Pill from '../ui/Pill';
+import ModeFilterPill from '../ui/ModeFilterPill';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
 import { headwayEveryRange } from '../../utils/headwayText';
@@ -571,15 +571,13 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               {routeFilters.map(f => {
                 const on = activeFilter === f.key;
                 return (
-                  <Pill
+                  <ModeFilterPill
                     key={f.key}
                     onClick={() => setActiveFilter(on ? null : f.key)}
                     selected={on}
-                    className="px-2"
-                  >
-                    {f.label}
-                    <span className={on ? 'opacity-80' : 'text-[var(--text-dim)]'}> {f.count}</span>
-                  </Pill>
+                    label={f.label}
+                    count={f.count}
+                  />
                 );
               })}
             </div>
