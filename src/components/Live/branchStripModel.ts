@@ -149,6 +149,37 @@ export function branchStripFromV3(v3: LiveV3, directionId: number, band: Dashboa
   return { directionId, label: straight.label, ...found, delaysStart: straight.delaysStart, bunchingForms: straight.bunchingForms };
 }
 
+/** One part of the phone strip: a lead-in branch, the shared line, or a lead-out branch. `terminal` is the row of the branch's end stop (-1 for the trunk). */
+export interface PhoneSection { key: string; branch: boolean; terminal: number; stops: RouteStripStop[] }
+
+/**
+ * The phone strip's parts, top to bottom: lead-in branches, the shared line, lead-out branches. The main pattern's own
+ * lead-in sits next to the trunk and its lead-out right after it, so the main line (where the marked stretch is
+ * measured) runs unbroken down the strip and a bracket over it never passes another branch's rows.
+ */
+export function phoneSections(model: BranchModel): PhoneSection[] {
+  const main = model.lines[0];
+  const starts = model.starts.map((stops, k) => ({ key: `s${k}`, branch: true, terminal: 0, stops }));
+  const ends = model.ends.map((stops, k) => ({ key: `e${k}`, branch: true, terminal: stops.length - 1, stops }));
+  const mainStart = starts.findIndex(s => s.stops[0].stopId === main[0].stopId);
+  if (mainStart >= 0) starts.push(...starts.splice(mainStart, 1));
+  const mainEnd = ends.findIndex(s => s.stops[s.stops.length - 1].stopId === main[main.length - 1].stopId);
+  if (mainEnd >= 0) ends.unshift(...ends.splice(mainEnd, 1));
+  return [...starts, { key: 'trunk', branch: false, terminal: -1, stops: model.trunk }, ...ends];
+}
+
+/**
+ * Where a marked stretch is drawn on the phone strip: the rows (one per distinct stop, in strip order) of exactly the
+ * stops from `firstId` to `lastId` on the main line. A bracket only covers these rows, so it never spans another branch.
+ */
+export function phoneStretchRows(sections: readonly PhoneSection[], mainStops: readonly { stopId: string }[], from: number, to: number): { ids: Set<string>; first: number; last: number } {
+  const ids = new Set(mainStops.slice(from, to + 1).map(s => s.stopId));
+  const rowOf = new Map<string, number>();
+  sections.forEach(sec => sec.stops.forEach(s => { if (!rowOf.has(s.stopId)) rowOf.set(s.stopId, rowOf.size); }));
+  const rows = [...ids].map(id => rowOf.get(id)!);
+  return { ids, first: Math.min(...rows), last: Math.max(...rows) };
+}
+
 /** Every stop of a model, trunk and forks, in drawing order. */
 export function allBranchStops(m: BranchModel): RouteStripStop[] {
   const seen = new Set<string>();

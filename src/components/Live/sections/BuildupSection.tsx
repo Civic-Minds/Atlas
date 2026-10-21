@@ -91,8 +91,8 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={full ? [
                     { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal break-words', cell: s => { const [a, b] = stretchEnds(s.fromName, s.toName); return <span title={`${s.fromName} to ${s.toName}`}>{a} to {b}</span>; } },
-                    { key: 'added', header: 'Typical added', width: 7, worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: 'Trips where it grows', width: 10, worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
+                    { key: 'added', header: 'Typical added', width: 7, className: 'max-sm:!pr-1', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
+                    { key: 'grows', header: 'Trips where it grows', width: 10, className: 'whitespace-nowrap max-sm:!pr-1.5', worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ] : [
                     { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => `${s.fromName} to ${s.toName}` },
                     { key: 'added', header: 'Typical added', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },

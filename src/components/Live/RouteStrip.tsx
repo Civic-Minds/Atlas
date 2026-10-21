@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react';
+import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
@@ -345,6 +345,11 @@ export function StretchBracketPiece({ track, first, last, centred }: { track: nu
   );
 }
 
+/** A marked stretch's name ("Delays start", "Bunching forms"), on the stretch's first named row right after the stop name, beside the bracket's top tick. */
+export function StretchNote({ children }: { children: ReactNode }) {
+  return <span className="pointer-events-none shrink-0 whitespace-nowrap text-xs font-bold text-[var(--text-primary)]">{children}</span>;
+}
+
 function TrackHeads({ tracks }: { tracks: readonly Track[] }) {
   return (
     <div className="relative h-5 text-xs font-bold text-[var(--text-secondary)]" aria-hidden="true">
@@ -448,10 +453,10 @@ function CompactList({ stops, tracks, active, setActive, showDetail = true }: {
               <TrackDots tracks={tracks} s={s} i={i} last={last} size={phoneDotSize(isNamed, !!s.uncertain)} active={active === i} centred="50%" />
               {isNamed && (
                 <span className="flex min-w-0 flex-1 items-baseline gap-2" style={{ marginLeft: NAME_LEFT }}>
-                  <span className={`min-w-0 flex-1 break-words py-0.5 text-sm leading-5 ${i === 0 || i === last || marked ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>
+                  <span className={`min-w-0 ${note ? '' : 'flex-1'} break-words py-0.5 text-sm leading-5 ${i === 0 || i === last || marked ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>
+                  {note && <StretchNote>{note}</StretchNote>}
                 </span>
               )}
-              {note && <span className="pointer-events-none absolute right-0 text-xs font-bold text-[var(--text-primary)]" style={{ top: isNamed ? -14 : -10 }}>{note}</span>}
             </div>
           );
         })}
