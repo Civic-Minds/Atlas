@@ -62,7 +62,7 @@ export function formatHourPlain(hour: number): string {
 
 /**
  * Plain-words summary line, or null when there is nothing to say.
- * "Trip time: 38–52 min, slowest 5 p.m." / "Trip time: about 41 min all day".
+ * "Trip time: 38–52 min" / "Trip time: about 41 min all day".
  */
 export function tripTimeSummary(series: TripTimeSeries | null | undefined, label = 'Trip time'): string | null {
   if (!series) return null;
@@ -74,8 +74,8 @@ export function tripTimeSummary(series: TripTimeSeries | null | undefined, label
   const min = Math.min(...values);
   const max = Math.max(...values);
   if (min === max) return `${label}: about ${min} min all day`;
-  const slowest = entries.find(([, m]) => m === max)![0];
-  return `${label}: ${min}–${max} min, slowest ${formatHourPlain(slowest)}`;
+  // The hours with the longest trip time are shown in the strip (darkest, tallest bars), not named here (CIV-493).
+  return `${label}: ${min}–${max} min`;
 }
 
 /** Hover text for one hour. */
@@ -84,12 +84,10 @@ export function tripTimeHourTitle(hour: number, minutes: number): string {
 }
 
 /**
- * A trip-time bar's height in the strip: scaled across the route's own range (fastest to slowest
- * hour), not from zero, so a 43-67 min route shows its variation; the slowest hour is the full
- * height and the fastest a quarter of it, so every bar stays visible. One time all day: half height.
+ * A trip-time bar's height in the strip: proportional to the trip time itself, from zero, with the
+ * longest trip time at full height (CIV-493). A range-stretched scale made 45 vs 60 min look like 4x.
  */
-export function tripTimeBarHeight(minutes: number, min: number, max: number, stripHeight: number): number {
-  const floor = Math.max(3, Math.round(stripHeight / 4));
-  if (!(max > min)) return Math.round(stripHeight / 2);
-  return Math.round(floor + ((minutes - min) / (max - min)) * (stripHeight - floor));
+export function tripTimeBarHeight(minutes: number, max: number, stripHeight: number): number {
+  if (!(max > 0)) return 0;
+  return Math.max(2, Math.round((minutes / max) * stripHeight));
 }
