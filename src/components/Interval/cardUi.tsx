@@ -9,6 +9,7 @@ import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
+import RoundIconButton from '../ui/RoundIconButton';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -278,9 +279,9 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                 <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
                 <p className={`${CARD_NOTICE} mt-0.5`}>Choose a category, or click a card value to preselect its reason.</p>
               </div>
-              <button type="button" onClick={reset} aria-label="Close report form" className="w-7 h-7 flex items-center justify-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)]">
+              <RoundIconButton onClick={reset} aria-label="Close report form">
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </RoundIconButton>
             </div>
 
             <div className="px-4 py-3 space-y-2">

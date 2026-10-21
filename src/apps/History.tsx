@@ -5,7 +5,7 @@ import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { FLOATING_CARD, TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
+import { FLOATING_CARD, TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
@@ -23,6 +23,7 @@ import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayTe
 import Panel, { PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
+import RoundIconButton from '../components/ui/RoundIconButton';
 import ModeFilterPill from '../components/ui/ModeFilterPill';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
@@ -204,14 +205,13 @@ function RouteHistoryCard({
             )}
           </div>
           {snaps.length >= 2 && (
-            <button
+            <RoundIconButton
               onClick={() => setShowChart(v => !v)}
-              className={`w-7 h-7 flex items-center justify-center rounded-full border transition-colors shrink-0 ${showChart ? CONTROL_ACTIVE : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
               aria-label="Toggle chart"
-              aria-pressed={showChart}
+              pressed={showChart}
             >
               <TrendingUp className="w-3.5 h-3.5" />
-            </button>
+            </RoundIconButton>
           )}
         </div>
       </div>

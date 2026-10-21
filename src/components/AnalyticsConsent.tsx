@@ -4,6 +4,7 @@ import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type Analytics
 import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
 import Toggle from './ui/Toggle';
 import ArrowLink from './ui/ArrowLink';
+import RoundIconButton from './ui/RoundIconButton';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
 
@@ -21,9 +22,9 @@ function Controls({ onClose }: { onClose: () => void }) {
           </button>
           <h2 id="privacy-settings-title" className="text-xs font-black text-[var(--text-primary)]">Privacy &amp; analytics</h2>
         </div>
-        <button type="button" aria-label="Close privacy and analytics settings" onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors">
+        <RoundIconButton aria-label="Close privacy and analytics settings" onClick={onClose}>
           <X className="w-3.5 h-3.5" />
-        </button>
+        </RoundIconButton>
       </div>
       <div className="overflow-y-auto px-5 py-4 space-y-5 text-xs">
         <p className="leading-relaxed text-[var(--text-dim)]">When enabled, Atlas sends page views and basic usage information to Google Analytics. Atlas does not use this information for advertising or account profiling.</p>

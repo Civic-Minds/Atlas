@@ -24,6 +24,7 @@ import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
+import RoundIconButton from './ui/RoundIconButton';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -345,13 +346,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           </div>
 
           <div className="flex-1" />
-          <button
+          <RoundIconButton
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors shrink-0 z-10"
+            className="z-10"
             aria-label="Close"
-          >
+         >
             <X className="w-4 h-4" />
-          </button>
+          </RoundIconButton>
         </div>
 
         {/* Content View Container */}

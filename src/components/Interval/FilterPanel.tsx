@@ -19,7 +19,7 @@ import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { loadingText } from '../../content/stateCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
-
+import RoundIconButton from '../ui/RoundIconButton';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -399,13 +399,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       : isFilters ? 'Filters' : 'Settings'}
                 </h2>
               </div>
-              <button
+              <RoundIconButton
                 onClick={close}
-                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
                 aria-label={isFilters ? 'Close filters' : 'Close settings'}
               >
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </RoundIconButton>
             </div>
 
             <div className="overflow-y-auto flex flex-col">
