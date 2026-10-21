@@ -21,9 +21,9 @@ describe('tripTime', () => {
     expect(tripTimeSeriesFor(published, ['77', '14'], 0, 'Weekday')).not.toBeNull();
   });
 
-  it('says the range and the slowest hour in plain words', () => {
+  it('says the range in plain words; the longest hours are left to the chart (CIV-493)', () => {
     const series = tripTimeSeriesFor(published, ['14'], 0, 'Weekday');
-    expect(tripTimeSummary(series)).toBe('Trip time: 38–52 min, slowest 5 p.m.');
+    expect(tripTimeSummary(series)).toBe('Trip time: 38–52 min');
   });
 
   it('says "about N min all day" when every hour is the same, and hides with no data', () => {
@@ -47,12 +47,12 @@ describe('tripTime', () => {
 });
 
 describe('tripTimeBarHeight', () => {
-  it('scales across the route range, not from zero: slowest is full height, fastest a quarter', () => {
-    expect(tripTimeBarHeight(67, 43, 67, 32)).toBe(32);
-    expect(tripTimeBarHeight(43, 43, 67, 32)).toBe(8);
-    expect(tripTimeBarHeight(55, 43, 67, 32)).toBe(20);
+  it('scales from zero, so bar heights keep the true ratio: slowest is full height (CIV-493)', () => {
+    expect(tripTimeBarHeight(60, 60, 80)).toBe(80);
+    expect(tripTimeBarHeight(45, 60, 80)).toBe(60);
+    expect(tripTimeBarHeight(30, 60, 80)).toBe(40);
   });
-  it('one trip time all day draws every bar at half height', () => {
-    expect(tripTimeBarHeight(50, 50, 50, 32)).toBe(16);
+  it('one trip time all day draws every bar at full height', () => {
+    expect(tripTimeBarHeight(50, 50, 80)).toBe(80);
   });
 });

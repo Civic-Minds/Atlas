@@ -10,6 +10,7 @@ import { FEATURES } from '../../../shared/config';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
 import RoundIconButton from '../ui/RoundIconButton';
+import { OutboundLink } from '../OutboundLink';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -694,5 +695,15 @@ export function CardSublineButton({
     >
       {children}
     </button>
+  );
+}
+
+/** "Data source": a link to the agency's own website in an agency card's header. Beta-only; nothing for an agency with no website. */
+export function AgencyDataSourceLink({ agency }: { agency: { slug: string; websiteUrl?: string } }) {
+  if (!FEATURES.dataSourceLink || !agency.websiteUrl) return null;
+  return (
+    <ArrowLink as={OutboundLink} size="xs" tone="inline" external href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug}>
+      Data source
+    </ArrowLink>
   );
 }

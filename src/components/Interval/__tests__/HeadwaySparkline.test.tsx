@@ -1,8 +1,20 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { HeadwaySparkline, sparklineBarHeight, slowerDirectionKey } from '../HeadwaySparkline';
+import { SPARKLINE_HOURS } from '../../../../shared/config';
 
 describe('HeadwaySparkline', () => {
+  it('every hour with trips keeps its colour outside the selected period, faded; none goes grey (CIV-497)', () => {
+    const { container } = render(
+      <HeadwaySparkline byHour={{ 7: 10, 12: 20, 20: 30 }} period="midday" onPeriodChange={() => {}} />,
+    );
+    const bars = [...container.querySelectorAll('.rounded-full')].filter(el => (el as HTMLElement).style.background && (el as HTMLElement).style.height);
+    expect(bars).toHaveLength(3);
+    for (const bar of bars) expect((bar as HTMLElement).style.background).not.toContain('--border-primary');
+    const faded = bars.filter(bar => bar.className.includes('opacity-40'));
+    expect(faded).toHaveLength(2);
+  });
+
   it('starts the hover highlight below the period label row, so the label sits above it', () => {
     const { container } = render(
       <HeadwaySparkline byHour={{ 12: 20, 18: 25 }} period="midday" onPeriodChange={() => {}} allowExpand />,
@@ -16,6 +28,20 @@ describe('HeadwaySparkline', () => {
       expect(band).toHaveClass('top-5');
       expect(band).not.toHaveClass('inset-y-0');
     }
+  });
+
+  it('draws every full-day period band and the hover band over the same plot height, with no second period label', () => {
+    const { container } = render(
+      <HeadwaySparkline byHour={{ 6: 30, 12: 20, 18: 25, 21: 20, 24: 45 }} period="all" onPeriodChange={() => {}} expanded />,
+    );
+    const area = container.querySelector('.cursor-pointer') as HTMLElement;
+    const staticBands = Array.from(area.querySelectorAll(':scope > div.opacity-40'));
+    expect(staticBands).toHaveLength(6);
+    for (const band of staticBands) expect(band).toHaveClass('top-12', 'bottom-0');
+    area.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 48, right: 240, bottom: 48, x: 0, y: 0, toJSON: () => ({}) });
+    fireEvent.mouseMove(area, { clientX: 120 });
+    for (const band of screen.getAllByTestId('sparkline-hover-band')) expect(band).toHaveClass('top-12', 'bottom-0');
+    expect(area.querySelectorAll(':scope > span')).toHaveLength(0);
   });
 
   it('keeps the active period label clear of the expand control', () => {
@@ -193,7 +219,7 @@ describe('HeadwaySparkline', () => {
         allowExpand
         title="Route 14"
         directionOptions={[
-          { key: 'east', label: 'Eastbound', byHour: { 7: 30, 12: 20, 17: 25 }, tripTime: { byHour: { 7: 38, 12: 41, 17: 52 } } },
+          { key: 'east', label: 'Eastbound', byHour: { 7: 30, 12: 20, 17: 25, 21: 30 }, tripTime: { byHour: { 7: 38, 12: 41, 17: 52 } } },
           { key: 'west', label: 'Westbound', byHour: { 7: 40, 12: 30, 17: 35 }, tripTime: null },
         ]}
       />,
@@ -203,9 +229,32 @@ describe('HeadwaySparkline', () => {
     // Opens on the slower direction, which has no trip time data.
     expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
     fireEvent.click(within(dialog).getByRole('button', { name: 'Eastbound' }));
-    expect(within(dialog).getByText('Trip time: 38\u201352 min, slowest 5 p.m.')).toBeInTheDocument();
-    expect(within(dialog).getAllByTestId('trip-time-bar')).toHaveLength(3);
-    expect(dialog.querySelector('[title="5 p.m.: about 52 min"]')).not.toBeNull();
+    expect(within(dialog).getByText('Trip time: 38\u201352 min')).toBeInTheDocument();
+    const bars = within(dialog).getAllByTestId('trip-time-bar');
+    expect(bars).toHaveLength(3);
+    // 9 p.m. has trips but no trip time: a faint tick, not a gap that reads as no service.
+    expect(within(dialog).getAllByTestId('trip-time-missing')).toHaveLength(1);
+    // The hour with the longest trip time (5 p.m.) is the darker bar; the others are lighter.
+    expect(bars.map(bar => bar.className.includes('opacity-100'))).toEqual([false, false, true]);
+    const slowestColumn = dialog.querySelector('[title="5 p.m.: about 52 min"]')!;
+    expect(slowestColumn).not.toBeNull();
+    // The strip sits on the chart's own hour columns: one column per chart hour, same row layout.
+    const strip = within(dialog).getByTestId('trip-time-strip');
+    expect(strip.children[1].children).toHaveLength(dialog.querySelector('.relative.z-10.flex')!.children.length);
+    // Hovering a strip bar reports that hour's trip time in the chart's hover line.
+    fireEvent.mouseEnter(slowestColumn);
+    expect(dialog.querySelector('[aria-live="polite"]')!.textContent).toBe('5 p.m.: about 52 min');
+    fireEvent.mouseLeave(strip.children[1]);
+    expect(dialog.querySelector('[aria-live="polite"]')!.textContent).toBe('');
+    // Hovering an hour in the frequency chart lights the matching trip-time bar a step darker (CIV-505).
+    const chart = dialog.querySelector('.relative.z-10.flex')!.parentElement!;
+    chart.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 100, right: 240, bottom: 100, x: 0, y: 0, toJSON: () => ({}) });
+    const xFor = (hour: number) => ((SPARKLINE_HOURS.indexOf(hour) + 0.5) / SPARKLINE_HOURS.length) * 240;
+    fireEvent.mouseMove(chart, { clientX: xFor(7) });
+    expect(bars[0].className).toContain('opacity-75');
+    expect(bars[1].className).toContain('opacity-50');
+    fireEvent.mouseLeave(chart);
+    expect(bars[0].className).toContain('opacity-50');
     fireEvent.click(within(dialog).getByRole('button', { name: 'Westbound' }));
     expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
   });
