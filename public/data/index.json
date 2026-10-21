@@ -28737,6 +28737,110 @@
       ],
       "timezone": "America/Vancouver",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "exo-chambly-richelieu-carignan",
+      "name": "exo (Chambly-Richelieu-Carignan)",
+      "displayArea": "Chambly-Richelieu-Carignan",
+      "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITCRC",
+      "center": [
+        45.4465,
+        -73.3153
+      ],
+      "bbox": [
+        45.287998,
+        -73.532258,
+        45.551144,
+        -73.13027
+      ],
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citcrc/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-750/latest.zip",
+      "region": "Quebec",
+      "cities": [
+        "Chambly, Quebec",
+        "Carignan, Quebec",
+        "Richelieu, Quebec"
+      ],
+      "timezone": "America/Montreal",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "exo-sainte-julie",
+      "name": "exo (Sainte-Julie)",
+      "displayArea": "Sainte-Julie",
+      "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/OMITSJU",
+      "center": [
+        45.5756,
+        -73.3535
+      ],
+      "bbox": [
+        45.426658,
+        -73.532217,
+        45.64294,
+        -72.950053
+      ],
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/omitsju/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-753/latest.zip",
+      "region": "Quebec",
+      "cities": [
+        "Sainte-Julie, Quebec",
+        "Varennes, Quebec",
+        "Saint-Bruno-de-Montarville, Quebec"
+      ],
+      "timezone": "America/Montreal",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "exo-lassomption",
+      "name": "exo (L'Assomption)",
+      "displayArea": "L'Assomption",
+      "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/MRCLASSO",
+      "center": [
+        45.7666,
+        -73.4564
+      ],
+      "bbox": [
+        45.579489,
+        -73.549766,
+        45.911451,
+        -73.267383
+      ],
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/mrclasso/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-755/latest.zip",
+      "region": "Quebec",
+      "cities": [
+        "L'Assomption, Quebec",
+        "Repentigny, Quebec",
+        "Charlemagne, Quebec"
+      ],
+      "timezone": "America/Montreal",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "exo-sorel-varennes",
+      "name": "exo (Sorel-Varennes)",
+      "displayArea": "Sorel-Varennes",
+      "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITSV",
+      "center": [
+        45.6882,
+        -73.377
+      ],
+      "bbox": [
+        45.514306,
+        -73.547584,
+        46.047705,
+        -73.078163
+      ],
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citsv/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-741/latest.zip",
+      "region": "Quebec",
+      "cities": [
+        "Sorel-Tracy, Quebec",
+        "Varennes, Quebec",
+        "Contrecoeur, Quebec"
+      ],
+      "timezone": "America/Montreal",
+      "hiddenInProduction": true
     }
   ]
 }

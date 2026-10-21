@@ -1,0 +1,26 @@
+{
+  "slug": "exo-lassomption",
+  "name": "exo (L'Assomption)",
+  "displayArea": "L'Assomption",
+  "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/MRCLASSO",
+  "center": [
+    45.7666,
+    -73.4564
+  ],
+  "bbox": [
+    45.579489,
+    -73.549766,
+    45.911451,
+    -73.267383
+  ],
+  "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/mrclasso/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-755/latest.zip",
+  "region": "Quebec",
+  "cities": [
+    "L'Assomption, Quebec",
+    "Repentigny, Quebec",
+    "Charlemagne, Quebec"
+  ],
+  "timezone": "America/Montreal",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "exo-chambly-richelieu-carignan",
+  "name": "exo (Chambly-Richelieu-Carignan)",
+  "displayArea": "Chambly-Richelieu-Carignan",
+  "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITCRC",
+  "center": [
+    45.4465,
+    -73.3153
+  ],
+  "bbox": [
+    45.287998,
+    -73.532258,
+    45.551144,
+    -73.13027
+  ],
+  "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citcrc/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-750/latest.zip",
+  "region": "Quebec",
+  "cities": [
+    "Chambly, Quebec",
+    "Carignan, Quebec",
+    "Richelieu, Quebec"
+  ],
+  "timezone": "America/Montreal",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "exo-sorel-varennes",
+  "name": "exo (Sorel-Varennes)",
+  "displayArea": "Sorel-Varennes",
+  "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITSV",
+  "center": [
+    45.6882,
+    -73.377
+  ],
+  "bbox": [
+    45.514306,
+    -73.547584,
+    46.047705,
+    -73.078163
+  ],
+  "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citsv/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-741/latest.zip",
+  "region": "Quebec",
+  "cities": [
+    "Sorel-Tracy, Quebec",
+    "Varennes, Quebec",
+    "Contrecoeur, Quebec"
+  ],
+  "timezone": "America/Montreal",
+  "hiddenInProduction": true
+}
