@@ -7,7 +7,7 @@ describe('HeadwaySparkline', () => {
     const { container } = render(
       <HeadwaySparkline byHour={{ 7: 10, 12: 20, 20: 30 }} period="midday" onPeriodChange={() => {}} />,
     );
-    const bars = [...container.querySelectorAll('.rounded-sm')].filter(el => (el as HTMLElement).style.background && (el as HTMLElement).style.height);
+    const bars = [...container.querySelectorAll('.rounded-full')].filter(el => (el as HTMLElement).style.background && (el as HTMLElement).style.height);
     expect(bars).toHaveLength(3);
     for (const bar of bars) expect((bar as HTMLElement).style.background).not.toContain('--border-primary');
     const faded = bars.filter(bar => bar.className.includes('opacity-40'));

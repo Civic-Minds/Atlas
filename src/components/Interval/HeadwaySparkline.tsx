@@ -151,6 +151,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const activePeriodKey = expanded ? null : period && period !== 'all' ? period : null;
 
   const interactive = !!onPeriodChange;
+  // One bar look at both sizes (CIV-496): round-ended bars filling the same share of each
+  // hour's column. The card's 7px bar fills about half its column; the full-day view keeps that share.
+  const barShape = expanded ? 'w-[55%] max-w-[24px] rounded-full' : 'w-[7px] rounded-full';
 
   const posFromEvent = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -283,7 +286,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   )}
                   {hasValue && (
                     segments.length > 0 && segmentTotalFreq > 0 ? (
-                      <div className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} flex flex-col-reverse overflow-hidden rounded-sm transition-opacity duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}>
+                      <div className={`${barShape} flex flex-col-reverse overflow-hidden transition-opacity duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}>
                         {segments.map(segment => (
                           <div
                             key={segment.label}
@@ -294,7 +297,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     ) : (
                       <div
                         style={{ height: barH, background: barColor }}
-                        className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} rounded-sm transition-[background,opacity] duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}
+                        className={`${barShape} transition-[background,opacity] duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}
                       />
                     )
                   )}
