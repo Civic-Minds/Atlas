@@ -32,13 +32,19 @@ describe('historyEligibility', () => {
     ).toBe(false);
   });
 
-  it('uses coverage metadata without requiring duplicate route snapshots', () => {
+  it('ignores coverage metadata: only real snapshot years count', () => {
     expect(
       agencyQualifiesForHistoryExplore({
         coverageYears: Array.from({ length: MIN_HISTORY_DISTINCT_YEARS }, (_, i) => 2012 + i),
         routes: [{ snapshots: [{ year: 2012 }, { year: 2020 }] }],
       }),
-    ).toBe(true);
+    ).toBe(false);
+    expect(distinctSnapshotYears({ coverageYears: [2010, 2011], routes: [{ snapshots: [{ year: 2020 }] }] })).toEqual([2020]);
+  });
+
+  it('does not count years after the build year', () => {
+    const agency = { routes: [{ snapshots: [{ year: 2024 }, { year: 2026 }, { year: 2027 }, { year: 2099 }] }] };
+    expect(distinctSnapshotYears(agency, 2026)).toEqual([2024, 2026]);
   });
 
   it('does not qualify a short multi-snapshot series', () => {
@@ -60,11 +66,11 @@ describe('historyEligibility', () => {
     expect(agencyQualifiesForHistory(agency)).toBe(false);
   });
 
-  it('prefers Explore when year coverage hits the deep bar even with few route snaps', () => {
+  it('coverage years never raise the tier', () => {
     const agency = {
       coverageYears: Array.from({ length: MIN_HISTORY_DISTINCT_YEARS }, (_, i) => 2010 + i),
       routes: [{ snapshots: [{ year: 2010 }, { year: 2019 }] }],
     };
-    expect(agencyHistoryTier(agency)).toBe('explore');
+    expect(agencyHistoryTier(agency)).toBeNull();
   });
 });

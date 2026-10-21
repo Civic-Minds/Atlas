@@ -3,16 +3,20 @@ export const MIN_HISTORY_DISTINCT_YEARS = 10;
 
 export type HistorySnapshot = { year?: number; label?: string };
 export type HistoryRoute = { snapshots?: HistorySnapshot[] };
+/** `coverageYears` may still be present on published data; eligibility ignores it. */
 export type HistoryAgencyLike = { routes?: HistoryRoute[]; coverageYears?: number[] };
 
 export type HistoryTier = 'explore';
 
-/** Distinct calendar years covered by route snapshots or lightweight coverage metadata. */
-export function distinctSnapshotYears(agency: HistoryAgencyLike): number[] {
-  const years = new Set<number>(agency.coverageYears ?? []);
+/**
+ * Distinct real snapshot years, none after the build year. Coverage metadata
+ * (`coverageYears`) is ignored: a year only counts when a route has a snapshot for it.
+ */
+export function distinctSnapshotYears(agency: HistoryAgencyLike, buildYear: number = new Date().getFullYear()): number[] {
+  const years = new Set<number>();
   for (const route of agency.routes ?? []) {
     for (const snap of route.snapshots ?? []) {
-      if (snap.year != null) years.add(snap.year);
+      if (snap.year != null && Number.isInteger(snap.year) && snap.year <= buildYear) years.add(snap.year);
     }
   }
   return [...years].sort((a, b) => a - b);
