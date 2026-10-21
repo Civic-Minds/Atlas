@@ -350,8 +350,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             onClick={onClose}
             className="z-10"
             aria-label="Close"
-         >
-            <X className="w-4 h-4" />
+          >
+            <X className="w-3.5 h-3.5" />
           </RoundIconButton>
         </div>
 
