@@ -20,6 +20,7 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `FEATURES.feedQuality` | Feed-quality notes on route and agency cards | off | on (follows `beta`/`dev` mode) | Same: named stand-in for `FEATURES.beta`. |
 | `FEATURES.outdatedFilter` | "Outdated" choice in the agency list filter (`InfoPanel.tsx`) | off | on (follows `beta`/`dev` mode) | Same: named stand-in for `FEATURES.beta`. |
 | `FEATURES.whatsNewBetaItems` | Beta-only entries in "What's new" (`ChangelogPage.tsx`, `MapAttribution.tsx`) | off | on (follows `beta`/`dev` mode) | Same: named stand-in for `FEATURES.beta`. |
+| `FEATURES.dataSourceLink` | "Data source" link to the agency's own website on the agency card (`AgencyCard.tsx`); hidden for agencies with no website (CIV-467) | off | on (follows `beta`/`dev` mode) | Named stand-in for `FEATURES.beta`; shown internally first. |
 | `FEATURES.routeVariants`, `FEATURES.runningTimes`, `FEATURES.sparklineExpand` | "Includes variants" line, trip running times and the expand control on the route card's frequency chart (`RouteCardHeadway.tsx`) | off | on (follows `beta`/`dev` mode) | Same: named stand-ins for `FEATURES.beta`. |
 | `ATLAS_MODE=preview` | Preview title and research-app visibility | off | not configured for the stable domains | Stable Preview uses the Beta project's production deployment; there is no separate Preview project or verified `preview` mode. |
 

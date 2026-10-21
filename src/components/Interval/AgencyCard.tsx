@@ -502,12 +502,18 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
               : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
           </p>
-          {FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug) && (
-            <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-              <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>
-              {(() => { const area = areaLinkFor(agency.slug, FEATURES.agencyPages); return area && <ArrowLink size="xs" tone="inline" wrap href={area.href}>{area.label}</ArrowLink>; })()}
-            </p>
-          )}
+          {(() => {
+            const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
+            const dataSourceUrl = FEATURES.dataSourceLink ? agency.websiteUrl : undefined;
+            if (!hasAboutPage && !dataSourceUrl) return null;
+            return (
+              <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
+                {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>}
+                {hasAboutPage && (() => { const area = areaLinkFor(agency.slug, FEATURES.agencyPages); return area && <ArrowLink size="xs" tone="inline" wrap href={area.href}>{area.label}</ArrowLink>; })()}
+                {dataSourceUrl && <ArrowLink as={OutboundLink} size="xs" tone="inline" external href={dataSourceUrl} kind="agency_website" agencySlug={agency.slug}>Data source</ArrowLink>}
+              </p>
+            );
+          })()}
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
               <div className="flex items-baseline justify-between gap-2">

@@ -137,6 +137,8 @@ export const ROUTE_VARIANTS_ENABLED = BETA_BUILD;
 export const RUNNING_TIMES_ENABLED = BETA_BUILD;
 // The expand control on the route card's frequency chart.
 export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
+// "Data source" link to the agency's own website on the agency card (CIV-467).
+export const DATA_SOURCE_LINK_ENABLED = BETA_BUILD;
 
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
@@ -172,6 +174,7 @@ export const FEATURES = {
   routeVariants: ROUTE_VARIANTS_ENABLED,
   runningTimes: RUNNING_TIMES_ENABLED,
   sparklineExpand: SPARKLINE_EXPAND_ENABLED,
+  dataSourceLink: DATA_SOURCE_LINK_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */
