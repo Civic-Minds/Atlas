@@ -340,7 +340,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           series={tripTime}
           label="Trip time"
           serviceHours={new Set(HOURS.filter(h => displayedByHour[h] != null))}
-          hoveredHour={hoveredTripHour}
+          // Two-way hover (CIV-505): an hour hovered in either chart lights the same column in both.
+          hoveredHour={hoveredTripHour ?? hoveredHour}
           onHourHover={setHoveredTripHour}
         />
       )}

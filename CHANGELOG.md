@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Hovering an hour in the full-day frequency chart lights its trip-time bar too (beta)**: either chart picks out the same hour in both
 - **The full-day hour chart's bars match the route card's**: the same round-ended bars at a bigger size, so both read as one chart
 - **The route card's hour chart colours every hour with trips**: hours outside the chosen period are faded instead of some going grey ([#1055](https://github.com/Civic-Minds/Atlas/issues/1055))
 - **The full-day view's trip-time bars sit under their hour and are much taller (beta)**: each bar lines up with the hour above it, the slowest hour is drawn darker, and hovering a bar shows that hour's trip time

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { HeadwaySparkline, sparklineBarHeight, slowerDirectionKey } from '../HeadwaySparkline';
+import { SPARKLINE_HOURS } from '../../../../shared/config';
 
 describe('HeadwaySparkline', () => {
   it('every hour with trips keeps its colour outside the selected period, faded; none goes grey (CIV-497)', () => {
@@ -231,6 +232,15 @@ describe('HeadwaySparkline', () => {
     expect(dialog.querySelector('[aria-live="polite"]')!.textContent).toBe('5 p.m.: about 52 min');
     fireEvent.mouseLeave(strip.children[1]);
     expect(dialog.querySelector('[aria-live="polite"]')!.textContent).toBe('');
+    // Hovering an hour in the frequency chart lights the matching trip-time bar a step darker (CIV-505).
+    const chart = dialog.querySelector('.relative.z-10.flex')!.parentElement!;
+    chart.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 100, right: 240, bottom: 100, x: 0, y: 0, toJSON: () => ({}) });
+    const xFor = (hour: number) => ((SPARKLINE_HOURS.indexOf(hour) + 0.5) / SPARKLINE_HOURS.length) * 240;
+    fireEvent.mouseMove(chart, { clientX: xFor(7) });
+    expect(bars[0].className).toContain('opacity-75');
+    expect(bars[1].className).toContain('opacity-50');
+    fireEvent.mouseLeave(chart);
+    expect(bars[0].className).toContain('opacity-50');
     fireEvent.click(within(dialog).getByRole('button', { name: 'Westbound' }));
     expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
   });
