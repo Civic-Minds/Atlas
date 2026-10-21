@@ -45,6 +45,16 @@ export interface HistoryV2SidecarRoute {
   flag?: HistoryFlag;
 }
 
+/** Is the snapshot's reference date a holiday-week date? Computed by the sidecar writer (pipeline/historyRefQuality.ts). */
+export interface RefDateQuality {
+  holiday: boolean;
+  reason: string;
+  /** Trips running on refDate. */
+  tripsOnRef: number;
+  /** Median trips over the other days of the same day type in the feed's calendar window. */
+  medianTrips: number;
+}
+
 export interface HistoryV2Sidecar {
   version: 2;
   slug: string;
@@ -56,6 +66,8 @@ export interface HistoryV2Sidecar {
    * when a supplemental feed was part of this snapshot; its absence means bus feed only.
    */
   supplementalRoutes?: Record<string, string[]>;
+  /** Optional and additive: absent on sidecars written before the holiday check. */
+  refDateQuality?: RefDateQuality;
 }
 
 export function historyFlagFor(rep: HistoryRep): HistoryFlag | undefined {
