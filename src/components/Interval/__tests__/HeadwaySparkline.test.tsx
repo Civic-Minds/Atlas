@@ -103,7 +103,7 @@ describe('HeadwaySparkline', () => {
     });
   });
 
-  it('labels each hour with its headway in the full-day view', () => {
+  it('prints no numbers on the bars in the full-day view', () => {
     render(
       <HeadwaySparkline
         byHour={{ 6: 35, 9: 23, 14: 40 }}
@@ -113,8 +113,8 @@ describe('HeadwaySparkline', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
     const dialog = screen.getByRole('dialog');
-    const labels = within(dialog).getAllByTestId('sparkline-headway-label').map(el => el.textContent);
-    expect(labels).toEqual(['35', '23', '40']);
+    expect(within(dialog).queryAllByTestId('sparkline-headway-label')).toHaveLength(0);
+    expect(within(dialog).getAllByTitle(/every/)).toHaveLength(3);
     expect(within(dialog).queryByTestId('sparkline-legend')).toBeNull();
   });
 
@@ -132,14 +132,14 @@ describe('HeadwaySparkline', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
     const dialog = screen.getByRole('dialog');
-    const labels = () => within(dialog).getAllByTestId('sparkline-headway-label').map(el => el.textContent);
+    const labels = () => within(dialog).getAllByTitle(/every/).map(el => el.getAttribute('title'));
     // Opens on the slower direction.
     expect(within(dialog).getByRole('button', { name: 'Westbound' })).toHaveAttribute('aria-pressed', 'true');
-    expect(labels()).toEqual(['40', '30']);
+    expect(labels()).toEqual([expect.stringContaining('every 40 min'), expect.stringContaining('every 30 min')]);
     fireEvent.click(within(dialog).getByRole('button', { name: 'Eastbound' }));
     expect(within(dialog).getByRole('button', { name: 'Eastbound' })).toHaveAttribute('aria-pressed', 'true');
     expect(within(dialog).getByRole('button', { name: 'Westbound' })).toHaveAttribute('aria-pressed', 'false');
-    expect(labels()).toEqual(['20', '15']);
+    expect(labels()).toEqual([expect.stringContaining('every 20 min'), expect.stringContaining('every 15 min')]);
   });
 
   it('shows no direction pills for a single-direction route', () => {
