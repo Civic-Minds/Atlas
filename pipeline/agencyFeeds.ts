@@ -33,11 +33,14 @@ export interface AgencyFeedConfig {
   referenceDateFromRunDate?: boolean;
   fare?: number;
   supplementalFeedUrls?: string[];
+  /** The main feed's configured URL; matched against nextServiceDatesFeedUrls. */
+  feedUrl?: string | null;
   /**
-   * Supplemental feeds (by URL, from supplementalFeedUrls) that give each day or few days its
-   * own short service_id. Each day type is read from one typical real date in the two weeks
-   * after the run date instead of one reference date (LA Metro Rail; see serviceDates.ts). The main
-   * feed and other supplementals keep the default calendar logic.
+   * Feeds (by URL: the main feedUrl or one of supplementalFeedUrls) that give each day or few
+   * days its own short service_id. Each day type is read from one typical real date in the two
+   * weeks after the run date instead of one reference date (LA Metro Rail supplemental, #1019;
+   * Sound Transit main feed, #1035; see serviceDates.ts). Feeds not listed keep the default
+   * calendar logic.
    */
   nextServiceDatesFeedUrls?: string[];
 }
@@ -162,7 +165,11 @@ export async function processAgencyFeeds(
   }
 
   const options = agencyProcessOptions(agency, overrides);
-  const primary = await processGtfsBuffer(primaryBuf, onProgress, options);
+  const nextServiceDatesUrls = new Set(agency.nextServiceDatesFeedUrls ?? []);
+  const withNextServiceDates = (url: string | null | undefined): ProcessOptions =>
+    url && nextServiceDatesUrls.has(url) ? { ...options, dayTypesFromNextServiceDates: true } : options;
+  // The main feed opts in by its configured URL, whichever source the zip came from (archive, mirror).
+  const primary = await processGtfsBuffer(primaryBuf, onProgress, withNextServiceDates(agency.feedUrl));
   const primaryCollection = JSON.parse(primary.geojson) as FeatureCollection;
   const features = primaryCollection.features;
   // Running time (CIV-84) per feed; the main feed wins any key a supplemental feed repeats.
@@ -175,9 +182,8 @@ export async function processAgencyFeeds(
   const supplementalFeatureCounts: AgencyFeedResult['supplementalFeatureCounts'] = [];
   let featureCount = primary.featureCount;
 
-  const nextServiceDatesUrls = new Set(agency.nextServiceDatesFeedUrls ?? []);
   for (const { url, buf } of supplementalFeeds) {
-    const supp = await processGtfsBuffer(buf, onProgress, nextServiceDatesUrls.has(url) ? { ...options, dayTypesFromNextServiceDates: true } : options);
+    const supp = await processGtfsBuffer(buf, onProgress, withNextServiceDates(url));
     const suppCollection = JSON.parse(supp.geojson) as FeatureCollection;
     features.push(...suppCollection.features);
     Object.assign(runningTimes, suppCollection.runningTimes ?? {});

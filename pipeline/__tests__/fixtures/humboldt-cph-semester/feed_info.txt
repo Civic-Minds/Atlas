@@ -1,0 +1,2 @@
+feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_contact_email,feed_contact_url,feed_version
+Humboldt Transit Authority,https://optibus.com/,en,20260907,20270630,frontdesk@hta.org,https://hta.org/contact/,UTC: 14-Oct-2026 14:35
