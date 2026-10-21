@@ -239,3 +239,34 @@ export function buildRouteSnapshots(
   }
   return [...winners.values()].sort((a, b) => rank(a) - rank(b) || a.year - b.year);
 }
+
+/**
+ * v2 publish filter. Legacy history is change-only: a snapshot is dropped when its weekday value
+ * equals the previous one. Under v2 a snapshot that came from a sidecar (it carries `v2`) is a
+ * documented "this route ran in this year" fact and is never dropped, so routesForYear lists every
+ * route in every year it ran. Snapshots from the old per-route change files (no `v2`) only record
+ * changes, so for them an unchanged year is unknown and the legacy rule still applies: nothing is
+ * invented for a period that has no sidecar.
+ */
+export function filterSnapshotsForPublish<T extends { weekdayHeadwayMin: number; v2?: unknown }>(
+  snapshots: T[],
+  opts: { materializeAllPeriods: boolean; keepEveryV2Year: boolean },
+): T[] {
+  if (opts.materializeAllPeriods) return [...snapshots];
+  return snapshots.filter((s, i) =>
+    (opts.keepEveryV2Year && s.v2 !== undefined) || i === 0 || s.weekdayHeadwayMin !== snapshots[i - 1].weekdayHeadwayMin);
+}
+
+/**
+ * A route whose first and last value are equal is normally left out (nothing changed). A v2 route
+ * with any sidecar-backed snapshot ran in those years, so it stays: a flat route is still on the
+ * map in the year being viewed.
+ */
+export function isFlatRouteToSkip(
+  snapshots: Array<{ weekdayHeadwayMin: number; v2?: unknown }>,
+  opts: { materializeAllPeriods: boolean; hasTripDuration: boolean; keepEveryV2Year: boolean },
+): boolean {
+  if (opts.materializeAllPeriods || opts.hasTripDuration) return false;
+  if (opts.keepEveryV2Year && snapshots.some(s => s.v2 !== undefined)) return false;
+  return snapshots[0].weekdayHeadwayMin === snapshots[snapshots.length - 1].weekdayHeadwayMin;
+}

@@ -22,7 +22,7 @@ import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
 import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, type HistoryRouteAliases } from './historyIdentity.js';
 import { representativeRep } from './historyV2.js';
-import { buildRouteSnapshots, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
+import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { holidayDropFor, type HolidayPeriodDrop } from './historyRefQuality.js';
@@ -479,11 +479,9 @@ async function main() {
       // Normal history is change-only. The period-materialization experiment
       // deliberately keeps each archived period so the scrubber can land on
       // a documented schedule even when the route's headway is unchanged.
-      const deduped: any[] = materializeAllPeriods
-        ? [...snapshots]
-        : snapshots.filter((s, i) =>
-            i === 0 || s.weekdayHeadwayMin !== snapshots[i - 1].weekdayHeadwayMin
-          );
+      // v2: a sidecar-backed snapshot is never dropped for being unchanged (every year the route ran
+      // is listed); old change-file snapshots still follow the change-only rule.
+      const deduped: any[] = filterSnapshotsForPublish(snapshots, { materializeAllPeriods, keepEveryV2Year: v2 });
 
       // Add current Atlas data as the final point whenever it is newer than
       // the archive. Even an unchanged headway gets a current endpoint when
@@ -564,9 +562,7 @@ async function main() {
       // even when a route's value stayed constant across the archive. A
       // stable trip-duration comparison is also reason enough to keep a
       // route whose headway itself never changed.
-      const first = deduped[0];
-      const last = deduped[deduped.length - 1];
-      if (!materializeAllPeriods && !tripDuration && first.weekdayHeadwayMin === last.weekdayHeadwayMin) continue;
+      if (isFlatRouteToSkip(deduped, { materializeAllPeriods, hasTripDuration: !!tripDuration, keepEveryV2Year: v2 })) continue;
 
       const routeLongName = currentRoute?.routeLongName
         ?? changes.find(c => c.routeLongName)?.routeLongName
