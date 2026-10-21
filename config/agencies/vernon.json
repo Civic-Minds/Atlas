@@ -1,0 +1,26 @@
+{
+  "slug": "vernon",
+  "name": "BC Transit (Vernon)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    50.4343,
+    -119.2919
+  ],
+  "bbox": [
+    49.92997,
+    -119.49817,
+    50.94248,
+    -118.95294
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=14",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2508/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Vernon, British Columbia",
+    "Coldstream, British Columbia",
+    "Lake Country, British Columbia",
+    "Salmon Arm, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

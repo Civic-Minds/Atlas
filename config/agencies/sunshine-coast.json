@@ -1,0 +1,24 @@
+{
+  "slug": "sunshine-coast",
+  "name": "BC Transit (Sunshine Coast)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    49.4399,
+    -123.6572
+  ],
+  "bbox": [
+    49.38185,
+    -123.9215,
+    49.52393,
+    -123.46496
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=18",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2567/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Sechelt, British Columbia",
+    "Gibsons, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

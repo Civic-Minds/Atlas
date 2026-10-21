@@ -1,0 +1,23 @@
+{
+  "slug": "merritt",
+  "name": "BC Transit (Merritt)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    50.1253,
+    -120.8022
+  ],
+  "bbox": [
+    50.09234,
+    -120.89264,
+    50.18715,
+    -120.73949
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=37",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2471/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Merritt, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

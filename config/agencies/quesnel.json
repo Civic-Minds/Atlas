@@ -1,0 +1,23 @@
+{
+  "slug": "quesnel",
+  "name": "BC Transit (Quesnel)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    52.993,
+    -122.4904
+  ],
+  "bbox": [
+    52.92856,
+    -123.59385,
+    53.11612,
+    -121.50474
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=32",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2463/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Quesnel, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

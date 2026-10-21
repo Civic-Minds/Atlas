@@ -1,0 +1,24 @@
+{
+  "slug": "smithers",
+  "name": "BC Transit (Smithers)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    54.8424,
+    -127.2046
+  ],
+  "bbox": [
+    54.67235,
+    -127.34297,
+    55.02921,
+    -127.0372
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=31",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2472/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Smithers, British Columbia",
+    "Telkwa, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

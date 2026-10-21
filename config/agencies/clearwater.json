@@ -1,0 +1,23 @@
+{
+  "slug": "clearwater",
+  "name": "BC Transit (Clearwater)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    51.2984,
+    -120.1245
+  ],
+  "bbox": [
+    50.64533,
+    -120.38239,
+    51.68949,
+    -119.71799
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=35",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2515/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Clearwater, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}
