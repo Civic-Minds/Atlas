@@ -57,7 +57,7 @@ describe('HeadwaySparkline', () => {
     expect(within(dialog).getByRole('button', { name: 'Southbound' })).toHaveClass('h-7', 'px-2.5');
     expect(within(dialog).getByRole('button', { name: 'Southbound' })).toHaveAttribute('aria-pressed', 'true');
     expect(within(dialog).getByRole('button', { name: 'Northbound' })).toHaveAttribute('aria-pressed', 'false');
-    expect(within(dialog).getByText('Hover over an hour to inspect its scheduled headway window.')).toBeInTheDocument();
+    expect(within(dialog).queryByText(/Hover over an hour/)).toBeNull();
   });
 
   it('closes the full-day schedule view', () => {
