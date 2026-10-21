@@ -4,6 +4,7 @@ import { FEATURES } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
 import { areaLinkFor } from '../../../shared/agencyArea';
+import { ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_PILL_LABEL, onDemandPillSelected } from '../../utils/onDemandPill';
 import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
@@ -358,8 +359,12 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   const [activeFilter, setActiveFilter] = useState<AgencyRouteFilterKey | null>(null);
   const [showOtherRoutes, setShowOtherRoutes] = useState(false);
 
+  // null until the viewer picks the On-Demand pill or another pill (onDemandPillSelected).
+  const [onDemandChoice, setOnDemandChoice] = useState<boolean | null>(null);
+
   useEffect(() => {
     setActiveFilter(null);
+    setOnDemandChoice(null);
   }, [agency.slug]);
 
   const filteredRoutes = useMemo(() => {
@@ -393,6 +398,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   );
   const rolloutNotice = getRolloutNotice(agency);
   const coverageNote = FEATURES.onDemand ? onDemandCoverageNote(agency) : null;
+  // Zone not on the map yet: an "On-Demand" pill beside the mode pills instead of a notice block.
+  const hasOnDemandPill = !agency.onDemandOnly && coverageNote?.kind === 'not-mapped';
+  const onDemandOn = onDemandPillSelected({ hasPill: hasOnDemandPill, choice: onDemandChoice, routeCount: routes.length });
 
   if (onDemandFocus && agency.onDemandServiceArea) {
     const service = agency.onDemandServiceArea;
@@ -509,7 +517,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug) && (
             <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
               <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>
-              {(() => { const area = areaLinkFor(agency.slug, FEATURES.agencyPages); return area && <a href={area.href} className="text-[var(--accent)] hover:underline">{area.label}</a>; })()}
+              {(() => { const area = areaLinkFor(agency.slug, FEATURES.agencyPages); return area && <ArrowLink size="xs" tone="inline" wrap href={area.href}>{area.label}</ArrowLink>; })()}
             </p>
           )}
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
@@ -550,30 +558,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               )}
             </div>
           )}
-          {!agency.onDemandOnly && coverageNote?.kind === 'not-mapped' && (
-            <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
-              <div className="flex items-baseline justify-between gap-2">
-                <p className="text-xs font-black text-[var(--accent)]">On-demand service</p>
-                {coverageNote.url && (
-                  <ArrowLink as={OutboundLink} size="xs" tone="inline" href={coverageNote.url} kind="coverage_note" agencySlug={agency.slug} className="shrink-0">
-                    Details
-                  </ArrowLink>
-                )}
-              </div>
-              <p className="text-xs font-bold text-[var(--text-primary)] mt-0.5">{coverageNote.serviceName}</p>
-              <p className="text-xs leading-snug text-[var(--text-muted)] mt-0.5">
-                Its service area isn't on the map yet.
-              </p>
-            </div>
-          )}
-          {routeFilters.length > 0 && (
+          {(routeFilters.length > 0 || hasOnDemandPill) && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {routeFilters.map(f => {
-                const on = activeFilter === f.key;
+                const on = !onDemandOn && activeFilter === f.key;
                 return (
                   <Pill
                     key={f.key}
-                    onClick={() => setActiveFilter(on ? null : f.key)}
+                    onClick={() => { setOnDemandChoice(false); setActiveFilter(on ? null : f.key); }}
                     selected={on}
                     className="px-2"
                   >
@@ -582,6 +574,15 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                   </Pill>
                 );
               })}
+              {hasOnDemandPill && (
+                <Pill
+                  onClick={() => { setActiveFilter(null); setOnDemandChoice(!onDemandOn); }}
+                  selected={onDemandOn}
+                  className="px-2"
+                >
+                  {ON_DEMAND_PILL_LABEL}
+                </Pill>
+              )}
             </div>
           )}
           {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
@@ -635,7 +636,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {visibleRoutes.length === 0 ? (
+        {onDemandOn ? (
+          <PanelEmpty>{ON_DEMAND_NOT_MAPPED_NOTE}</PanelEmpty>
+        ) : visibleRoutes.length === 0 ? (
           <PanelEmpty>{activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}</PanelEmpty>
         ) : hasFilterSplit ? (
           <>

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import Pill from '../ui/Pill';
 import LegendItem from '../ui/LegendItem';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { headwayTierLabel } from '../../utils/headwayText';
+import { headwayFilterLabel } from '../../utils/headwayText';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { DAY_TYPES, type DayType } from '../../../shared/dayTypes';
 import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
@@ -13,7 +13,7 @@ import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useInte
  */
 
 /** The text of a frequency choice: the short map-key wording ("≤10 min"), the same on every surface. `allLabel` is the wording for no limit ("All routes"; the desktop dropdown says "All"). */
-export const frequencyOptionLabel = (max: number, allLabel = 'All routes') => (max === Infinity ? allLabel : headwayTierLabel(max));
+export const frequencyOptionLabel = (max: number, allLabel = 'All routes') => (max === Infinity ? allLabel : headwayFilterLabel(max));
 
 /** The dot colour of a frequency choice (grey for "All routes"). */
 export function tierDotColor(max: number, colorMode: 'default' | 'friendly'): string {
