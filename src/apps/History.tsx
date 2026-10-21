@@ -3,7 +3,7 @@ import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyCo
 import { TrendingUp, History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
-import { plural } from '../../shared/overflowText';
+import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { FLOATING_CARD, TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
@@ -415,7 +415,7 @@ function HistoryAgencyPanel({
         <CardBackLink onClick={onBack}>Historical service</CardBackLink>
         <h2 className={`${CARD_TITLE} truncate`}>{shortenAgencyName(agencyHistory.name)}</h2>
         <p className={CARD_SUMMARY}>
-          {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
+          {agencyHistory.region} · {countOf(agencyHistory.routes.length, 'route')} · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
         </p>
         {!routeQuery && !activeFilter && (
           <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
