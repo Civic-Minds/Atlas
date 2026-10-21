@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { LiveV3 } from '../../../../shared/liveDashboard';
 import RouteStrip, { ROW_DOT } from '../RouteStrip';
@@ -178,6 +178,23 @@ describe('RouteStrip', () => {
     expect(branchRows).toContain(`${ROW_DOT}px`);
     // No looser spacing than the straight strip's: every unnamed stop gets the same short row.
     expect(new Set(branchRows)).toEqual(new Set(straightRows));
+  });
+
+  it('on phones, a branching strip brackets the marked stretch with its name, names each terminal once, and keeps less exact dots full size (CIV-502)', () => {
+    setWidth(300);
+    const stops = STOPS.map((x, i) => (i === 5 ? { ...x, uncertain: true } : x));
+    const parts = branchesOf([{ stops: stops.slice(0, 9) }, { stops: [...stops.slice(2, 9), ...stops.slice(9)] }], s => stops.find(x => x.stopId === s.stopId)!)!;
+    const model = { directionId: 0, label: 'Southbound', ...parts, delaysStart: { fromStopId: 'S3', toStopId: 'S4' } } as BranchModel;
+    const { container } = render(<BranchStrip model={model} modes={['delay']} />);
+    const drawn = container.querySelector<HTMLElement>('[aria-hidden="true"]')!;
+    // The bracket's name, as on the wide strip.
+    expect(within(drawn).getAllByText('Delays start')).toHaveLength(1);
+    // The route's first stop (a branch terminal) is named once, not again as a branch title above it.
+    expect(within(drawn).getAllByText(shortStopName(stops[0].name))).toHaveLength(1);
+    // An unnamed less exact stop keeps the full 10px dot, so its hatching shows.
+    const rows = [...drawn.querySelectorAll<HTMLElement>('button')];
+    const uncertainDot = rows[stops.findIndex(x => x.uncertain)].querySelector<HTMLElement>('.rounded-full')!;
+    expect(uncertainDot.style.width).toBe('10px');
   });
 
   it('draws delay on top and bunching underneath by default, each with its own legend and marker', () => {

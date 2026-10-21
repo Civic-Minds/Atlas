@@ -6,7 +6,7 @@ import {
   MIN_N, bunchParts, delayText, labelWidth, pct, shortStopName, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan,
   type RouteStripMode, type RouteStripStop, type Step,
 } from './routeStripModel';
-import { DOT_NAMED, DOT_SMALL, ROW_DOT, ROW_NAMED, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
+import { COL_X, NAME_LEFT, StretchBracketPiece, phoneDotSize, phoneRowHeight, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
 import { allBranchStops, columnsOf, type BranchModel } from './branchStripModel';
 
 export interface BranchStripProps {
@@ -315,27 +315,33 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   );
 }
 
-const COL_X = [16, 70];
-const NAME_LEFT = 94;
-
 /**
  * Phones: the lead-in branches, the shared line, then the lead-out branches, one after another, on two rails (delay and
- * bunching). A branch is named by its end stop above its stops and marked with a bar beside its names. Only the key
- * stops are named (both ends of each part and stations); "Show all stops" names them all.
+ * bunching). A branch is marked with a bar beside its names and named once, by its end stop in bold on that stop's row.
+ * The marked stretch (Delays start, Bunching forms) is bracketed beside its track's dots with its name, as on the
+ * straight strip. Only the key stops are named (each part's ends, stations, the stretch's ends); "Show all stops" names them all.
  */
 function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
   model: BranchModel; modes: readonly RouteStripMode[]; minN: number; allStops: boolean; active: string | null; setActive: (id: string) => void;
 }) {
-  const sections: Array<{ key: string; branch: boolean; title: string | null; stops: RouteStripStop[] }> = [
-    ...model.starts.map((f, k) => ({ key: `s${k}`, branch: true, title: shortStopName(f[0].name), stops: f })),
-    { key: 'trunk', branch: false, title: null, stops: model.trunk },
-    ...model.ends.map((f, k) => ({ key: `e${k}`, branch: true, title: shortStopName(f[f.length - 1].name), stops: f })),
+  // `terminal`: the row of the branch's end stop (a lead-in's first stop, a lead-out's last), which names the branch.
+  const sections: Array<{ key: string; branch: boolean; terminal: number; stops: RouteStripStop[] }> = [
+    ...model.starts.map((f, k) => ({ key: `s${k}`, branch: true, terminal: 0, stops: f })),
+    { key: 'trunk', branch: false, terminal: -1, stops: model.trunk },
+    ...model.ends.map((f, k) => ({ key: `e${k}`, branch: true, terminal: f.length - 1, stops: f })),
   ];
-  const rails = (
-    <>
-      {modes.map((m, k) => <span key={m} className="pointer-events-none absolute bottom-0 top-0 w-0.5 bg-[var(--text-dim)] opacity-40" style={{ left: COL_X[k] - 1 }} />)}
-    </>
-  );
+  // Each track's marked stretch, on the main line (as on the wide strip): its stops, first and last stop, and name.
+  const mainStops = model.lines[0];
+  const stretches = useMemo(() => modes.map(mode => {
+    const span = stretchSpan(mainStops, mode === 'delay' ? model.delaysStart : model.bunchingForms, mode === 'delay' ? 'delaysStart' : 'bunchingForms');
+    return span ? { label: span.label, ids: new Set(mainStops.slice(span.from, span.to + 1).map(s => s.stopId)), first: mainStops[span.from].stopId, last: mainStops[span.to].stopId } : null;
+  }), [modes, mainStops, model]);
+  // The bracket runs unbroken from the stretch's first row to its last, even past another branch's rows in between.
+  const rowOf = new Map<string, number>();
+  sections.forEach(sec => sec.stops.forEach(s => { if (!rowOf.has(s.stopId)) rowOf.set(s.stopId, rowOf.size); }));
+  const bracketRows = stretches.map(st => (st ? { from: rowOf.get(st.first)!, to: rowOf.get(st.last)! } : null));
+  const routeFirst = model.starts.length === 0 ? model.trunk[0]?.stopId : null;
+  const routeLast = model.ends.length === 0 ? model.trunk[model.trunk.length - 1]?.stopId : null;
   return (
     <div aria-hidden="true">
       <div className="relative h-5 text-xs font-bold text-[var(--text-secondary)]">
@@ -343,24 +349,28 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
       </div>
       {sections.map(sec => (
         <div key={sec.key}>
-          {sec.title && (
-            <div className="relative" style={{ paddingLeft: NAME_LEFT }}>
-              {rails}
-              <div className="py-0.5 text-xs font-bold leading-5 text-[var(--text-primary)]">{sec.title}</div>
-            </div>
-          )}
           {sec.stops.map((s, i) => {
-            const named = allStops || i === 0 || i === sec.stops.length - 1 || isMajorStop(s.name);
+            const isEnd = (sec.branch && i === sec.terminal) || s.stopId === routeFirst || s.stopId === routeLast;
+            const stretchEnd = stretches.some(st => st && (st.first === s.stopId || st.last === s.stopId));
+            const named = allStops || i === 0 || i === sec.stops.length - 1 || isMajorStop(s.name) || stretchEnd;
+            const marked = stretches.some(st => st?.ids.has(s.stopId));
+            const note = stretches.filter(st => st && st.first === s.stopId).map(st => st!.label).join(', ');
             const on = active === s.stopId;
             return (
-              <button key={s.stopId} type="button" tabIndex={-1} onClick={() => setActive(s.stopId)} className={`relative flex w-full items-center rounded-md text-left ${on ? 'bg-[var(--accent-selected-bg)]' : ''}`} style={{ minHeight: named ? ROW_NAMED : ROW_DOT, paddingLeft: NAME_LEFT }}>
-                {rails}
+              <button key={s.stopId} type="button" tabIndex={-1} onClick={() => setActive(s.stopId)} className={`relative flex w-full items-center rounded-md text-left ${on ? 'bg-[var(--accent-selected-bg)]' : ''}`} style={{ minHeight: phoneRowHeight(named, !!s.uncertain), paddingLeft: NAME_LEFT }}>
+                {modes.map((m, k) => <span key={m} className="pointer-events-none absolute bottom-0 top-0 w-0.5 bg-[var(--text-dim)] opacity-40" style={{ left: COL_X[k] - 1 }} />)}
                 {modes.map((m, k) => {
-                  const size = named ? DOT_NAMED : DOT_SMALL;
+                  const row = rowOf.get(s.stopId)!, br = bracketRows[k];
+                  return br && row >= Math.min(br.from, br.to) && row <= Math.max(br.from, br.to) && <StretchBracketPiece key={`b-${m}`} track={k} first={row === Math.min(br.from, br.to)} last={row === Math.max(br.from, br.to)} centred="50%" />;
+                })}
+                {modes.map((m, k) => {
+                  const size = phoneDotSize(named, !!s.uncertain);
                   return <span key={m} className="absolute rounded-full" style={{ ...swatchStyle(m, stopStep(s, m), !!s.uncertain), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(50% - ${size / 2}px)`, opacity: stopN(s, m) > 0 && stopN(s, m) < minN ? 0.35 : 1, outline: on ? '2px solid var(--accent)' : undefined, outlineOffset: 1 }} />;
                 })}
-                {sec.branch && <span className="pointer-events-none absolute bottom-0 top-0 w-0.5 bg-[var(--text-secondary)]" style={{ left: NAME_LEFT - 10 }} />}
-                {named && <span className="min-w-0 flex-1 break-words py-0.5 text-sm leading-5 text-[var(--text-secondary)]">{shortStopName(s.name)}</span>}
+                {/* The branch bar runs from the branch's first stop to its last, so two branches one after another read as two. */}
+                {sec.branch && <span className="pointer-events-none absolute w-0.5 bg-[var(--text-secondary)]" style={{ left: NAME_LEFT - 10, top: i === 0 ? '50%' : 0, bottom: i === sec.stops.length - 1 ? '50%' : 0 }} />}
+                {named && <span className={`min-w-0 flex-1 break-words py-0.5 text-sm leading-5 ${isEnd || marked ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>}
+                {note && <span className="pointer-events-none absolute right-0 text-xs font-bold text-[var(--text-primary)]" style={{ top: named ? -14 : -10 }}>{note}</span>}
               </button>
             );
           })}

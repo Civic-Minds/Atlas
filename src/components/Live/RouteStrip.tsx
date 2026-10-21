@@ -307,20 +307,19 @@ export function Tooltip({ stop, x, width, top }: { stop: RouteStripStop; x: numb
 }
 
 /** Columns of dots for the vertical layouts: one per track, side by side, each on its own line. */
-const COL_X = [16, 70];
-const NAME_LEFT = 94;
+/** Phone strips: the x of each track's dots, and where stop names start. Shared by the straight and the branching strip. */
+export const COL_X = [16, 70];
+export const NAME_LEFT = 94;
 
 function TrackDots({ tracks, s, i, last, size, active, centred }: { tracks: readonly Track[]; s: RouteStripStop; i: number; last: number; size: number; active: boolean; centred: string }) {
   return (
     <>
       {tracks.map((t, k) => {
         const inStretch = t.stretch != null && i >= t.stretch.from && i <= t.stretch.to;
-        const bx = COL_X[k] + (k === 0 ? -10 : 10);
         return (
           <Fragment key={t.mode}>
             <span className="pointer-events-none absolute w-0.5 bg-[var(--text-dim)] opacity-40" style={{ left: COL_X[k] - 1, top: i === 0 ? centred : 0, bottom: i === last ? `calc(100% - ${centred})` : 0 }} />
-            {inStretch && <span className="pointer-events-none absolute w-0.5 bg-[var(--text-secondary)]" style={{ left: bx, top: i === t.stretch!.from ? centred : 0, bottom: i === t.stretch!.to ? `calc(100% - ${centred})` : 0 }} />}
-            {inStretch && (i === t.stretch!.from || i === t.stretch!.to) && <span className="pointer-events-none absolute h-0.5 w-1.5 bg-[var(--text-secondary)]" style={{ left: k === 0 ? bx : bx - 5, top: centred }} />}
+            {inStretch && <StretchBracketPiece track={k} first={i === t.stretch!.from} last={i === t.stretch!.to} centred={centred} />}
             <span
               className="absolute rounded-full"
               style={{ ...swatchStyle(t.mode, t.steps[i], !!s.uncertain), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(${centred} - ${size / 2}px)`, opacity: t.faded(s) ? 0.35 : 1, outline: active ? '2px solid var(--text-primary)' : undefined, outlineOffset: 2 }}
@@ -328,6 +327,20 @@ function TrackDots({ tracks, s, i, last, size, active, centred }: { tracks: read
           </Fragment>
         );
       })}
+    </>
+  );
+}
+
+/**
+ * One row's piece of a marked stretch's bracket on a phone strip: a bar beside the track's dots, with a tick at the
+ * stretch's first and last stop. Shared by the straight and the branching strip.
+ */
+export function StretchBracketPiece({ track, first, last, centred }: { track: number; first: boolean; last: boolean; centred: string }) {
+  const bx = COL_X[track] + (track === 0 ? -10 : 10);
+  return (
+    <>
+      <span className="pointer-events-none absolute w-0.5 bg-[var(--text-secondary)]" style={{ left: bx, top: first ? centred : 0, bottom: last ? `calc(100% - ${centred})` : 0 }} />
+      {(first || last) && <span className="pointer-events-none absolute h-0.5 w-1.5 bg-[var(--text-secondary)]" style={{ left: track === 0 ? bx : bx - 5, top: centred }} />}
     </>
   );
 }
@@ -390,6 +403,9 @@ export const ROW_DOT = 6;
 export const ROW_NAMED = 22;
 export const DOT_SMALL = 5;
 export const DOT_NAMED = 10;
+/** A "less exact" stop keeps the full dot even unnamed: its hatching does not show at the small size. */
+export const phoneDotSize = (named: boolean, uncertain: boolean) => (named || uncertain ? DOT_NAMED : DOT_SMALL);
+export const phoneRowHeight = (named: boolean, uncertain: boolean) => (named ? ROW_NAMED : uncertain ? DOT_NAMED + 2 : ROW_DOT);
 
 /**
  * Phones: a vertical line per track, side by side, with only the key stops named (both ends, the marked stretches, a
@@ -409,7 +425,7 @@ function CompactList({ stops, tracks, active, setActive, showDetail = true }: {
     return keep;
   }, [stops, tracks]);
   const last = stops.length - 1;
-  const height = (i: number) => (named.has(i) ? ROW_NAMED : ROW_DOT);
+  const height = (i: number) => phoneRowHeight(named.has(i), !!stops[i].uncertain);
   // A tap picks the stop whose row centre is nearest (rows with long names wrap, so measure them).
   const pick = (e: PointerEvent<HTMLDivElement>) => {
     const y = e.clientY;
@@ -429,7 +445,7 @@ function CompactList({ stops, tracks, active, setActive, showDetail = true }: {
           const note = stretchNote(tracks, i);
           return (
             <div key={`${s.stopId}-${i}`} className="relative flex items-center" style={{ minHeight: height(i) }}>
-              <TrackDots tracks={tracks} s={s} i={i} last={last} size={isNamed ? DOT_NAMED : DOT_SMALL} active={active === i} centred="50%" />
+              <TrackDots tracks={tracks} s={s} i={i} last={last} size={phoneDotSize(isNamed, !!s.uncertain)} active={active === i} centred="50%" />
               {isNamed && (
                 <span className="flex min-w-0 flex-1 items-baseline gap-2" style={{ marginLeft: NAME_LEFT }}>
                   <span className={`min-w-0 flex-1 break-words py-0.5 text-sm leading-5 ${i === 0 || i === last || marked ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>
