@@ -23,6 +23,11 @@ function deltaFixture() {
   // M: old per-route change files only for 2012-2015 (no sidecar covers 2012-2013 at all; the
   // 2014 and 2015 sidecars exist but do not list M). Same value in 2012-2014: change-only keeps 2012.
   for (const [pk, h] of [['20120901', 30], ['20130901', 30], ['20140901', 30], ['20150901', 20]] as const) archive[`history/delta/M/${pk}.json`] = j({ headway: h });
+  // S: one sidecar year (2018), no current endpoint (not on the map), plus a lone old change file
+  // for the same period so the legacy path sees exactly one snapshot. V: a v1-only single snapshot.
+  archive['history-v2/delta/20180901.json'] = side('20180901', { S: { name: 'Sierra', rep: { h: 45 } } });
+  archive['history/delta/S/20180901.json'] = j({ headway: 50 });
+  archive['history/delta/V/20190901.json'] = j({ headway: 35 });
   const feature = (props: Record<string, unknown>) => ({ type: 'Feature', geometry: { type: 'LineString', coordinates: [[-79, 43], [-79, 43.1]] }, properties: { day: 'Weekday', directionId: 0, routeType: 3, ...props } });
   const pub = { 'atlas/delta.json': j({ type: 'FeatureCollection', features: [feature({ routeShortName: 'A', routeLongName: 'Alpha', headway: 20, routeAllDayHeadway: 20 })] }) };
   return { archive, pub, index: { agencies: [{ slug: 'delta', name: 'Delta Transit', region: 'Ontario', center: [-79, 43] }] }, aliases: {} };
@@ -110,6 +115,11 @@ describe('build-history with ATLAS_HISTORY_V2=1: every year a route ran', () => 
     expect(pairs('B')).toEqual([[2014, 30], [2016, 30]]);
     // Limited (C) and blank weekday (D): never listed, nothing invented.
     expect(agency.routes.some(r => r.routeShortName === 'C' || r.routeShortName === 'D')).toBe(false);
+    // A single sidecar-backed point with no current endpoint is listed in its year (v1-only single V is not).
+    expect(pairs('S')).toEqual([[2018, 45]]);
+    expect(keys(2018)).toEqual(['S']);
+    expect(keys(2019)).toEqual([]);
+    expect(agency.routes.some(r => r.routeShortName === 'V')).toBe(false);
     expect(keys(2014)).toEqual(['A', 'B']); // M's 2014 old-file value equals 2013: not expanded
     expect(keys(2015)).toEqual(['A', 'M']);
     expect(keys(2016)).toEqual(['A', 'B', 'M']);
@@ -117,7 +127,7 @@ describe('build-history with ATLAS_HISTORY_V2=1: every year a route ran', () => 
     // v1-only periods are not expanded: M 2012 (first) and 2015 (changed) from old files; 2013, 2014 stay absent.
     expect(pairs('M')).toEqual([[2012, 30], [2015, 20], [2016, 20], [2017, 20]]);
     expect(keys(2013)).toEqual([]);
-    expect(yearsAvailable(agency)).toEqual([2012, 2014, 2015, 2016, 2017, 2026]);
+    expect(yearsAvailable(agency)).toEqual([2012, 2014, 2015, 2016, 2017, 2018, 2026]);
     // The sidecar-backed years read as values; the old-file years too (weekday only).
     const a2015 = routesForYear(agency, 2015).find(r => r.route.routeShortName === 'A')!;
     expect(snapshotValue(a2015.snapshot, 'weekday')).toEqual({ kind: 'value', min: 20 });
@@ -125,5 +135,19 @@ describe('build-history with ATLAS_HISTORY_V2=1: every year a route ran', () => 
     // Visibility/report: the limited and blank drops are reported, not silent.
     const report = JSON.parse(cap.files[Object.keys(cap.files).find(f => f.includes('history-build-report.json'))!]) as { drops: Array<{ route: string; reason: string }> };
     expect(report.drops.map(d => `${d.route}:${d.reason}`).sort()).toEqual(['C:no weekday headline', 'C:no weekday headline', 'D:no weekday headline']);
+  }, 30_000);
+
+  it('flag unset (legacy): the same single-snapshot route is still dropped', async () => {
+    vi.resetModules();
+    const cap = resetCapture();
+    delete process.env.ATLAS_HISTORY_V2;
+    process.env.R2_ACCESS_KEY_ID = 'test';
+    await import('../build-history.js');
+    await cap.done;
+    const agency = (JSON.parse(cap.historyConfig!) as Array<{ slug: string; routes: Route[] }>).find(r => r.slug === 'delta');
+    const names = (agency?.routes ?? []).map(r => r.routeShortName);
+    expect(names).not.toContain('S');
+    expect(names).not.toContain('V');
+    expect(names).toContain('M');
   }, 30_000);
 });

@@ -555,7 +555,9 @@ async function main() {
       // Always require at least 2 snapshot points structurally -- the History
       // UI's oldest-vs-newest display needs a real range regardless of
       // whether a trip-duration comparison also exists for this route.
-      if (deduped.length < 2) continue;
+      // v2: a route with a sidecar-backed snapshot ran in that year, so a single point is listed
+      // (every route that ran in a year is drawn). A v1-only single snapshot is still dropped.
+      if (deduped.length < 2 && !(v2 && deduped.some(s => s.v2 !== undefined))) continue;
 
       // Only include if headway actually changed between first and last in
       // normal change-only mode. Materialized periods are intentionally kept
