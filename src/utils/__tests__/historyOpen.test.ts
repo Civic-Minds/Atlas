@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { historyAgencyToOpen, historyRouteSearchPlaceholder, inViewFirst } from '../historyOpen';
+import { historyAgencyToOpen, historyRouteFromRouteKey, historyRouteSearchPlaceholder, inViewFirst } from '../historyOpen';
 
 const HISTORY = new Set(['ttc', 'marta', 'yrt', 'miway']);
 
@@ -54,5 +54,21 @@ describe('inViewFirst', () => {
 describe('historyRouteSearchPlaceholder (CIV-402)', () => {
   it('names the open agency, since the bar searches its routes', () => {
     expect(historyRouteSearchPlaceholder('MARTA')).toBe('Find a MARTA route…');
+  });
+});
+
+describe('historyRouteFromRouteKey (#1028 item 24)', () => {
+  const features = [
+    { properties: { routeId: '10937', routeShortName: '6' } },
+    { properties: { routeId: '10937', routeShortName: '6' } },
+    { properties: { routeId: '20001', routeShortName: '117' } },
+  ];
+  it('reads a map route link as the History route of the same number', () => {
+    expect(historyRouteFromRouteKey('marta::10937', features)).toEqual({ slug: 'marta', routeShortName: '6' });
+    expect(historyRouteFromRouteKey('marta::20001::branch:east', features)).toEqual({ slug: 'marta', routeShortName: '117' });
+  });
+  it('gives nothing for a route id the agency does not have, or a malformed key', () => {
+    expect(historyRouteFromRouteKey('marta::nope', features)).toBeNull();
+    expect(historyRouteFromRouteKey('10937', features)).toBeNull();
   });
 });

@@ -661,7 +661,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
     const agency = historyData.find(a => a.slug === slug);
     if (agency) {
       setSelectedSlug(slug);
-      setSelectedRouteShortName(routeShortName);
+      setSelectedRouteShortName(routeShortName || null);
     }
     onPendingRouteHandled?.();
   }, [pendingRouteClick, historyData, onPendingRouteHandled]);

@@ -28,7 +28,8 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
-import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
+import { historyAgencyToOpen, historyRouteFromRouteKey, historyRouteSearchPlaceholder } from './utils/historyOpen';
+import { splitRouteKey } from './utils/routeKey';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -194,8 +195,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     if (gated && !liveOffHere) navigate('/', { replace: true });
   }, [gated, liveOffHere, navigate]);
 
+  // The map's open route when History is opened from the tab (the switch drops the URL's params),
+  // so History opens on the same route, as a route link does (#1028 item 24).
+  const routeAtHistorySwitchRef = useRef<string | null>(null);
   function setActiveApp(app: AppId) {
     trackEvent('app_opened', { app });
+    if (app === 'history') routeAtHistorySwitchRef.current = new URLSearchParams(window.location.search).get('route');
     navigate(APP_TO_PATH[app]);
   }
 
@@ -521,6 +526,32 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     if (activeApp === 'live') setLiveMounted(true);
   }, [activeApp]);
+
+  // A regular map route link (route=agency::routeId) opens that route in History too, read through the
+  // agency's loaded map routes (#1028 item 24). History's own links (agency, hroute, rq, rmode) win.
+  // The link is read as History opens: the map drops its own route param once it leaves the
+  // frequency view, so it can't be read again after the agency's routes load.
+  const historyRouteLinkRef = useRef<string | null>(null);
+  const wasInHistoryRef = useRef(false);
+  useEffect(() => {
+    if (inHistory && !wasInHistoryRef.current) {
+      const params = new URLSearchParams(window.location.search);
+      historyRouteLinkRef.current = params.get('agency') ? null : (params.get('route') ?? routeAtHistorySwitchRef.current);
+      routeAtHistorySwitchRef.current = null;
+      // Open the linked agency now: its map routes may not be loaded yet (the map can be elsewhere),
+      // and opening it brings the map there; the route follows once they load.
+      const linkedSlug = historyRouteLinkRef.current ? splitRouteKey(historyRouteLinkRef.current).agencySlug : '';
+      if (linkedSlug) setPendingHistoryRoute({ slug: linkedSlug, routeShortName: '' });
+    }
+    wasInHistoryRef.current = inHistory;
+    const key = historyRouteLinkRef.current;
+    if (!inHistory || !key) return;
+    const layer = layers[splitRouteKey(key).agencySlug];
+    if (!layer) return; // waits for the agency's map data
+    historyRouteLinkRef.current = null;
+    const target = historyRouteFromRouteKey(key, layer.features);
+    if (target) setPendingHistoryRoute(target);
+  }, [inHistory, layers]);
 
   // Clear history-specific pending state when leaving history mode
   // (prevents lingering state after idle + exit, e.g. back arrow or panels)

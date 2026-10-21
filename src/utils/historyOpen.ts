@@ -1,3 +1,5 @@
+import { splitRouteKey } from './routeKey';
+
 /**
  * Which agency the History tab opens on (#1012). History opens on the agency chooser unless the
  * user has shown which city they mean: an agency they selected, or the one History agency left in
@@ -24,6 +26,22 @@ export function historyAgencyToOpen({
   if (!userMovedMap) return null;
   const inView = [...new Set(viewportSlugs)].filter(slug => historySlugs.has(slug));
   return inView.length === 1 ? inView[0] : null;
+}
+
+/**
+ * The History route a regular map link names (#1028 item 24): `route=agency::routeId` is the map's
+ * route key; History lists routes by number, so the key is read through the agency's loaded map
+ * routes. Null when the agency's routes don't include that route id.
+ */
+export function historyRouteFromRouteKey(
+  key: string,
+  features: readonly { properties?: { routeId?: unknown; routeShortName?: unknown } | null }[],
+): { slug: string; routeShortName: string } | null {
+  // A branch part after the route id doesn't change which History route it is.
+  const { agencySlug: slug, routeId } = splitRouteKey(key);
+  if (!slug || !routeId) return null;
+  const match = features.find(f => String(f.properties?.routeId ?? '') === routeId && f.properties?.routeShortName != null);
+  return match ? { slug, routeShortName: String(match.properties!.routeShortName) } : null;
 }
 
 /**
