@@ -563,16 +563,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </>
         );
       })()}
-      {periodNotice && (
-        <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
-          <p className="text-xs font-normal text-[var(--text-primary)]">{periodNotice}</p>
-        </div>
-      )}
-      {unevenNotice && (
-        <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
-          <p className="text-xs font-black text-[var(--text-primary)]">{unevenNotice}</p>
-        </div>
-      )}
       <SidebarCardList>
         {selectedRouteOutOfFilter && (
           <div className={CARD_NOTICE_FOOTER}>
@@ -767,6 +757,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
+        {(periodNotice || unevenNotice) && (
+          <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+            <CardHelpNotice message={(periodNotice ?? unevenNotice) as string} />
+          </div>
+        )}
         {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning || hasNoRouteShape || hasWeekdayTierVariation) && onInfoOpen && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             {hasNoRouteShape && (

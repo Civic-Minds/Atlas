@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The Frequency filter's no-limit option reads "All" everywhere**: it said "All routes" in the phone panel, Settings, Compare and the map export but "All" in the desktop dropdown ([#1041](https://github.com/Civic-Minds/Atlas/issues/1041))
+- **Uneven-service notice sits in the card footer**: the boxed bold notice in the middle of the route card is now a muted footer line, "Service runs all period, but unevenly, with a longest gap of 30 min.", like the other card notices; the no-service notice moved with it ([#1042](https://github.com/Civic-Minds/Atlas/issues/1042))
 - **History's agency header says "1 route" (beta)**: it read "1 routes" ([#1009](https://github.com/Civic-Minds/Atlas/issues/1009))
 - **History puts same-year schedules in date order (beta)**: Dec 2026 counted as older than Sep 2026, so MBTA routes showed their change backwards; snapshots with no date or a future date are left out ([#1030](https://github.com/Civic-Minds/Atlas/issues/1030))
 - **Lists no longer show a wide scrollbar track**: panel and card lists get a thin scrollbar that appears while the pointer is over them; their styling had been lost, so lists showed the browser's default bar ([#1015](https://github.com/Civic-Minds/Atlas/issues/1015))
@@ -15,6 +17,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **History opens on the city you're looking at (beta)**: after you move the map to a single History city, or pick an agency, the History tab opens that agency instead of the list; with several in view the list puts them first, and a fresh page or shared link still opens the list ([#1012](https://github.com/Civic-Minds/Atlas/issues/1012))
 - **LA Metro rail lines show weekday, Saturday and Sunday service again**: the rail feed gives each day its own short schedule id, so the A, B and D Lines showed Saturday only ([#1019](https://github.com/Civic-Minds/Atlas/issues/1019))
 - **Frequency rows now read "every 15 min" without "about"**: the word added nothing on every route; gaps above 60 minutes are still rounded to the half hour.
+- **On phones, the zoom and locate buttons line up with the top bar's right edge and with each other, and the analytics notice fits at 360px**: the buttons sat about 10px closer to the screen edge, the locate button was 1px off the zoom column, and Decline touched the notice's edge ([#1022](https://github.com/Civic-Minds/Atlas/issues/1022))
+- **The top bar no longer overlaps or squeezes the search bar at 640-815px wide**: the selected tab and Compare's "Both maps" label show just their icon or badge there, which freed room for the search bar ([#1020](https://github.com/Civic-Minds/Atlas/issues/1020))
+- **Hovering a collapsed top-bar tab shows its name**: History and Compare expand and nudge the controls beside them over, so you can tell which icon is which ([#1018](https://github.com/Civic-Minds/Atlas/issues/1018))
 - **Compare captions and the map export image name the frequency limit the way the pickers do**: "Weekday evening · ≤15 min" instead of "every 15 min or better" ([#1011](https://github.com/Civic-Minds/Atlas/issues/1011))
 - **The top bar fits on one line from tablet to desktop widths**: below 1088px History and Compare show just their icons, so Compare no longer sits under the Frequency filter at 1024px and the buttons on the right no longer run off narrow screens ([#1007](https://github.com/Civic-Minds/Atlas/issues/1007))
 - **Map counts say "1 agency" and "1 route"**: the bottom bar and the In view panel read "1 agencies" ([#1009](https://github.com/Civic-Minds/Atlas/issues/1009))

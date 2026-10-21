@@ -6,7 +6,7 @@ const side = (over: Partial<CompareSide> = {}): CompareSide => ({ day: 'Weekday'
 describe('compare side labels', () => {
   it('spells out each side: day, time and frequency', () => {
     expect(compareSideHeading(side())).toBe('Weekday night · ≤10 min');
-    expect(compareSideHeading(side({ maxHeadway: Infinity, period: 'all' }))).toBe('Weekday, all day · All routes');
+    expect(compareSideHeading(side({ maxHeadway: Infinity, period: 'all' }))).toBe('Weekday, all day · All');
     expect(frequencyWords(15)).toBe('≤15 min');
   });
 
@@ -30,7 +30,7 @@ describe('compare side labels', () => {
     const summary = compareCardSummary([row('A', side(), false), row('B', side({ maxHeadway: 20 }), true)]);
     expect(summary).toEqual({ headline: 'Every 16 min', lines: ['On map B (≤20 min) · not on map A (≤10 min)'] });
     expect(compareCardSummary([row('A', side(), true, 8), row('B', side({ maxHeadway: Infinity }), true, 8)]).lines)
-      .toEqual(['On map A (≤10 min) · on map B (All routes)']);
+      .toEqual(['On map A (≤10 min) · on map B (All)']);
   });
 
   it('route card, different day or time: one line per side with its own frequency', () => {

@@ -42,7 +42,7 @@ const BASE: MapExportState = {
 describe('filter wording', () => {
   it('matches the app filter labels', () => {
     expect(describeHeadwayFilter(20)).toBe('≤20 min');
-    expect(describeHeadwayFilter(Infinity)).toBe('All routes');
+    expect(describeHeadwayFilter(Infinity)).toBe('All');
     expect(describeDayAndPeriod('Saturday', 'midday')).toBe('Saturday midday');
     expect(describeDayAndPeriod('Weekday', 'amPeak')).toBe('Weekday AM peak');
     expect(describeDayAndPeriod('Sunday', 'all')).toBe('Sunday, all day');

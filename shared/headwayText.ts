@@ -23,7 +23,7 @@
  * each number; the docs say once that gaps above 60 minutes are rounded to the half hour.
  *
  * Whole numbers print as they are; other numbers print to one decimal ("7.5 min"). Missing or
- * non-finite values print "—" (headwayFilterLabel is the one exception: no limit is "All routes").
+ * non-finite values print "—" (headwayFilterLabel is the one exception: no limit is "All").
  * Nothing here changes a number except that rounding of measured gaps above 60 minutes and the
  * one-decimal rounding, so the wording can change without the data changing.
  */
@@ -60,11 +60,11 @@ export function headwayOrBetter(minutes: number | null | undefined): string {
 
 /**
  * The applied frequency limit's label, the same on every surface (pickers, Compare captions, the
- * export image): "≤10 min", or "All routes" when there is no limit (#1011). Screen-reader labels
+ * export image): "≤10 min", or "All" when there is no limit (#1011). Screen-reader labels
  * that need a full phrase use headwayOrBetter instead.
  */
 export function headwayFilterLabel(maxHeadway: number): string {
-  if (maxHeadway === Infinity) return 'All routes';
+  if (maxHeadway === Infinity) return 'All';
   return headwayTierLabel(maxHeadway);
 }
 
