@@ -28,5 +28,6 @@
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/PART_Putnam_Area_Rapid_Transit.zip"
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/PART_Putnam_Area_Rapid_Transit.zip",
+  "lastPeekedExpiry": "20261231"
 }

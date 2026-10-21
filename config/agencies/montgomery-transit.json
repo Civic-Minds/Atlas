@@ -26,5 +26,6 @@
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/montgomerytransit-al-us/montgomerytransit-al-us.zip"
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/montgomerytransit-al-us/montgomerytransit-al-us.zip",
+  "lastPeekedExpiry": "20261231"
 }

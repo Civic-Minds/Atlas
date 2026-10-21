@@ -34,5 +34,6 @@
   "expiredFeedCheckExpiry": "20280930",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.fairfaxcounty.gov/connector/sites/connector/files/assets/connector_gtfs.zip"
+  "lastFeedSourceUrl": "https://www.fairfaxcounty.gov/connector/sites/connector/files/assets/connector_gtfs.zip",
+  "lastPeekedExpiry": "20280930"
 }

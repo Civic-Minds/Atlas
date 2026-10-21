@@ -16,7 +16,7 @@
   "websiteUrl": "https://townofmountainvillage.com/getting-around/",
   "region": "Colorado",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
-  "lastFeedExpiry": "20280503",
+  "lastFeedExpiry": "20270404",
   "lastFeedVersion": "UTC: 16-Oct-2026 21:24",
   "lastRefreshedAt": "2026-10-19",
   "cities": [
@@ -50,5 +50,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
-  "lastPeekedExpiry": "20280503"
+  "lastPeekedExpiry": "20270404"
 }

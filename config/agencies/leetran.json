@@ -29,5 +29,6 @@
   "expiredFeedCheckExpiry": "20261118",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-324/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-324/latest.zip",
+  "lastPeekedExpiry": "20261118"
 }

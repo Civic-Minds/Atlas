@@ -21,5 +21,6 @@
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://cats.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "https://cats.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "lastPeekedExpiry": "20261231"
 }
