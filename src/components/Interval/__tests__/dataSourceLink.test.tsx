@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Agency } from '../../../App';
+import { HAMILTON_MY_RIDE_SERVICE_AREA } from '../../../data/onDemandServiceAreas';
 
 const flags = vi.hoisted(() => ({ on: true }));
 vi.mock('../../../../shared/config', async (importOriginal) => {
@@ -41,5 +42,32 @@ describe('Data source link', () => {
   it('agency card: absent when the agency has no website', () => {
     card(withoutSite);
     expect(screen.queryByText('Data source')).toBeNull();
+  });
+
+  describe('on-demand card', () => {
+    const onDemand = (a: Agency) => ({ ...a, onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA }) as unknown as Agency;
+    const demandCard = (agency: Agency) => render(
+      <AgencyCard agency={onDemand(agency)} layers={{}} day="Weekday" period="midday" maxHeadway={Infinity} selectedModes={new Set()}
+        hideSpan={false} hideLimitedService={false} onRouteSelect={() => {}} onDemandFocus onDemandZoneId={null} />,
+    );
+
+    it('shows in beta, pointing at the agency website in a new tab', () => {
+      demandCard(withSite);
+      const link = screen.getByRole('link', { name: /Data source/ });
+      expect(link).toHaveAttribute('href', 'https://example.org/transit');
+      expect(link).toHaveAttribute('target', '_blank');
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    });
+
+    it('is absent in public mode', () => {
+      flags.on = false;
+      demandCard(withSite);
+      expect(screen.queryByText('Data source')).toBeNull();
+    });
+
+    it('is absent when the agency has no website', () => {
+      demandCard(withoutSite);
+      expect(screen.queryByText('Data source')).toBeNull();
+    });
   });
 });
