@@ -60,6 +60,16 @@ describe('route card hour chart: one fixed scale, a selected branch shows its sh
   });
 });
 
+describe('route card hour chart: a one-branch row leaves the chart as it is (CIV-512)', () => {
+  it('hovering the only branch of a direction redraws nothing', () => {
+    const plain = renderCard(null);
+    const before = bars(plain.container).map(b => [b.height, b.segments.length]);
+    plain.unmount();
+    const hovered = renderCard({ directionId: 1, headsign: 'Five Points' });
+    expect(bars(hovered.container).map(b => [b.height, b.segments.length])).toEqual(before);
+  });
+});
+
 // #1064, shaped like TTC 51 Southbound: two rows share the headsign and differ only by pattern
 // (one per origin), so hovering one must not highlight the other.
 describe('route card hover: two rows with one headsign (#1064)', () => {

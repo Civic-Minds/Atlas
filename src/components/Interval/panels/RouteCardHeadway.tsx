@@ -523,9 +523,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           // Whole minutes, like the Combined row (groupTrunkHeadway), so the hour tooltip reads "every 15 min".
           return perMinute > 0 ? Math.max(1, Math.round(1 / perMinute)) : null;
         };
-        const selectedGroup = hoveredSingleBranch
+        // Only a direction with two or more branches has a share to show; a one-branch row (Milton 4,
+        // MARTA 20's Five Points, TTC 94) leaves the chart exactly as it is.
+        const hoveredGroup = hoveredSingleBranch
           ? displayGroups.find(group => dirIdNum(group.dirId) === dirIdNum(hoveredBranch!.directionId))
           : undefined;
+        const selectedGroup = hoveredGroup && branchesOf(hoveredGroup).length >= 2 ? hoveredGroup : undefined;
         const isSelectedBranch = (b: ShapeProperties) => (b.headsign === hoveredBranch?.headsign
           || hoveredBranch?.headsigns?.includes(b.headsign ?? '') === true)
           && (!hoveredBranch?.routeVariant || (b.routeVariant ?? '') === hoveredBranch.routeVariant);
