@@ -408,9 +408,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
         } as React.CSSProperties}
       >
-        <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
+        <div className={CARD_HEADER_BLOCK}>
           <p className={`${CARD_TITLE} mb-0`}>{[serviceName, zoneDisplayName].filter(Boolean).join(' — ')}</p>
-          <p className="text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug">
+          <p className={CARD_SUMMARY}>
             {[agencyNamePrimary, agencyNameSecondary].filter(Boolean).join(' · ')}
           </p>
         </div>

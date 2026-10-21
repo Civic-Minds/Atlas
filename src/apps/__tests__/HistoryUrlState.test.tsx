@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import History, { type AgencyHistory } from '../History';
@@ -16,12 +17,23 @@ const agency = (slug: string, name: string, region: string): AgencyHistory => ({
 });
 const DATA = [agency('ttc', 'Toronto Transit Commission', 'Ontario'), agency('sta', 'Spokane Transit', 'Washington')];
 
+/** History with a stand-in for the app's top search bar, which History shares (#1015). */
+function WithTopBar() {
+  const [query, setQuery] = useState('');
+  return (
+    <>
+      <input aria-label="Top search" value={query} onChange={e => setQuery(e.target.value)} />
+      <History active query={query} searchFocused={false} setQuery={setQuery} />
+    </>
+  );
+}
+
 function renderHistory(search: string) {
   window.history.replaceState(null, '', `/apps/history${search}`);
   vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => DATA })));
   return render(
     <HistoryMapOverlayProvider>
-      <History active query="" searchFocused={false} setQuery={() => {}} />
+      <WithTopBar />
     </HistoryMapOverlayProvider>,
   );
 }
@@ -43,9 +55,9 @@ describe('History shared links', () => {
     expect(sp.get('year')).toBe('2019');
   });
 
-  it('restores the route search and mode filter on the agency list', async () => {
+  it('restores the route search into the top search bar and filters the agency list', async () => {
     renderHistory('?agency=ttc&rq=duff');
-    expect(await screen.findByDisplayValue('duff')).toBeInTheDocument();
+    expect(await screen.findByDisplayValue('duff')).toBe(screen.getByLabelText('Top search'));
     expect(screen.queryByText('King')).not.toBeInTheDocument();
     await waitFor(() => expect(new URLSearchParams(window.location.search).get('rq')).toBe('duff'));
   });
