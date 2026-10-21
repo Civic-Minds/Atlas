@@ -320,6 +320,7 @@ interface AgencyEntry {
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
   nextServiceDatesFeedUrls?: string[];
+  nextServiceDatesSkipWeekendEvents?: boolean;
   staged?: boolean;
   hiddenInProduction?: boolean;
   fare?: number;
