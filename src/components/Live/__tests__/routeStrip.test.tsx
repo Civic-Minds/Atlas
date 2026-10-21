@@ -1,7 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { LiveV3 } from '../../../../shared/liveDashboard';
-import RouteStrip from '../RouteStrip';
+import RouteStrip, { ROW_DOT } from '../RouteStrip';
+import BranchStrip from '../BranchStrip';
+import { branchesOf, type BranchModel } from '../branchStripModel';
 import { keyStops, pickLabels, routeStripFromV3, shortStopName, stepFor, stretchSpan, stripSummary, type RouteStripStop } from '../routeStripModel';
 
 const stop = (i: number, over: Partial<RouteStripStop> = {}): RouteStripStop => ({
@@ -160,6 +162,22 @@ describe('RouteStrip', () => {
     for (const s of STOPS) expect(screen.getAllByText(s.name).length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByText(STOPS[3].name)[0]);
     expect(screen.getAllByText(/^Usually /).length).toBeGreaterThan(0);
+  });
+
+  it('packs unnamed stops on phones the same way on a straight and a branching strip (CIV-502)', () => {
+    setWidth(300);
+    const rowHeights = (root: HTMLElement) => [...root.querySelectorAll<HTMLElement>('[aria-hidden="true"] [style*="min-height"]')].map(el => el.style.minHeight);
+    const straight = render(<RouteStrip stops={STOPS} modes={['delay']} directionLabel="Southbound" />);
+    const straightRows = rowHeights(straight.container);
+    expect(straightRows).toContain(`${ROW_DOT}px`);
+    straight.unmount();
+    const parts = branchesOf([{ stops: STOPS.slice(0, 9) }, { stops: [...STOPS.slice(2, 9), ...STOPS.slice(9)] }], s => STOPS.find(x => x.stopId === s.stopId)!)!;
+    const model = { directionId: 0, label: 'Southbound', ...parts } as BranchModel;
+    const branch = render(<BranchStrip model={model} modes={['delay']} />);
+    const branchRows = rowHeights(branch.container);
+    expect(branchRows).toContain(`${ROW_DOT}px`);
+    // No looser spacing than the straight strip's: every unnamed stop gets the same short row.
+    expect(new Set(branchRows)).toEqual(new Set(straightRows));
   });
 
   it('draws delay on top and bunching underneath by default, each with its own legend and marker', () => {

@@ -385,8 +385,11 @@ function VerticalList({ stops, tracks, active, setActive }: {
   );
 }
 
-const ROW_DOT = 6;
-const ROW_NAMED = 22;
+/** Phone (vertical) strips, straight and branching alike: row height and dot size of an unnamed and a named stop. */
+export const ROW_DOT = 6;
+export const ROW_NAMED = 22;
+export const DOT_SMALL = 5;
+export const DOT_NAMED = 10;
 
 /**
  * Phones: a vertical line per track, side by side, with only the key stops named (both ends, the marked stretches, a
@@ -426,7 +429,7 @@ function CompactList({ stops, tracks, active, setActive, showDetail = true }: {
           const note = stretchNote(tracks, i);
           return (
             <div key={`${s.stopId}-${i}`} className="relative flex items-center" style={{ minHeight: height(i) }}>
-              <TrackDots tracks={tracks} s={s} i={i} last={last} size={isNamed ? 10 : 5} active={active === i} centred="50%" />
+              <TrackDots tracks={tracks} s={s} i={i} last={last} size={isNamed ? DOT_NAMED : DOT_SMALL} active={active === i} centred="50%" />
               {isNamed && (
                 <span className="flex min-w-0 flex-1 items-baseline gap-2" style={{ marginLeft: NAME_LEFT }}>
                   <span className={`min-w-0 flex-1 break-words py-0.5 text-sm leading-5 ${i === 0 || i === last || marked ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>

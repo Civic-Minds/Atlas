@@ -6,7 +6,7 @@ import {
   MIN_N, bunchParts, delayText, labelWidth, pct, shortStopName, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan,
   type RouteStripMode, type RouteStripStop, type Step,
 } from './routeStripModel';
-import { StripLegend, Tooltip, swatchStyle } from './RouteStrip';
+import { DOT_NAMED, DOT_SMALL, ROW_DOT, ROW_NAMED, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
 import { allBranchStops, columnsOf, type BranchModel } from './branchStripModel';
 
 export interface BranchStripProps {
@@ -353,10 +353,10 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
             const named = allStops || i === 0 || i === sec.stops.length - 1 || isMajorStop(s.name);
             const on = active === s.stopId;
             return (
-              <button key={s.stopId} type="button" tabIndex={-1} onClick={() => setActive(s.stopId)} className={`relative flex w-full items-center rounded-md text-left ${on ? 'bg-[var(--accent-selected-bg)]' : ''}`} style={{ minHeight: named ? 22 : 12, paddingLeft: NAME_LEFT }}>
+              <button key={s.stopId} type="button" tabIndex={-1} onClick={() => setActive(s.stopId)} className={`relative flex w-full items-center rounded-md text-left ${on ? 'bg-[var(--accent-selected-bg)]' : ''}`} style={{ minHeight: named ? ROW_NAMED : ROW_DOT, paddingLeft: NAME_LEFT }}>
                 {rails}
                 {modes.map((m, k) => {
-                  const size = named ? 10 : 6;
+                  const size = named ? DOT_NAMED : DOT_SMALL;
                   return <span key={m} className="absolute rounded-full" style={{ ...swatchStyle(m, stopStep(s, m), !!s.uncertain), width: size, height: size, left: COL_X[k] - size / 2, top: `calc(50% - ${size / 2}px)`, opacity: stopN(s, m) > 0 && stopN(s, m) < minN ? 0.35 : 1, outline: on ? '2px solid var(--accent)' : undefined, outlineOffset: 1 }} />;
                 })}
                 {sec.branch && <span className="pointer-events-none absolute bottom-0 top-0 w-0.5 bg-[var(--text-secondary)]" style={{ left: NAME_LEFT - 10 }} />}
