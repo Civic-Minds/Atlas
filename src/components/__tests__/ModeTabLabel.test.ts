@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { modeTabCollapsed, modeTabSpacing } from '../ModeTabLabel';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { modeTabCollapsed, modeTabSpacing, ModeTabLabel } from '../ModeTabLabel';
 
 describe('mode tabs shrink to icons while any non-map view is on', () => {
   it('collapses the unselected tabs, never the selected one', () => {
@@ -27,5 +29,20 @@ describe('mode tabs shrink to icons while any non-map view is on', () => {
   it('drops the gap and tightens padding when collapsed', () => {
     expect(modeTabSpacing(true)).toBe('px-2.5 gap-0');
     expect(modeTabSpacing(false)).toBe('px-3 gap-1.5');
+  });
+});
+
+describe('a collapsed tab opens its name on hover or focus', () => {
+  const html = (collapsed: boolean) => renderToStaticMarkup(React.createElement(ModeTabLabel, { collapsed, children: 'History' }));
+
+  it('opens in normal layout flow (width, not an overlay), so neighbours move over', () => {
+    const collapsed = html(true);
+    expect(collapsed).toContain('group-hover/tab:max-w-[10rem]');
+    expect(collapsed).toContain('group-focus-visible/tab:max-w-[10rem]');
+    expect(collapsed).not.toMatch(/absolute|z-10/);
+  });
+
+  it('leaves an expanded tab alone', () => {
+    expect(html(false)).not.toContain('group-hover/tab');
   });
 });

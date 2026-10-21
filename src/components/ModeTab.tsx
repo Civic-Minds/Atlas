@@ -6,6 +6,13 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 const FOCUS = 'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]';
 
 /**
+ * A collapsed tab shows its name while hovered or keyboard-focused (the label in ModeTabLabel
+ * opens), and the controls to its right move over to make room. Tailwind only applies `hover:` on
+ * devices that can hover, so touch screens never expand it.
+ */
+const MODE_TAB_PEEK = 'hover:gap-1.5 focus-visible:gap-1.5 hover:pr-3 focus-visible:pr-3';
+
+/**
  * One view tab (Live, History, Compare) in the top bar, or as an item in the phone "More" menu.
  * Every mode switches in place through `onClick` (no page load, so the map stays mounted, #888);
  * none of them is a link.
@@ -56,7 +63,7 @@ export default function ModeTab({
       aria-pressed={active}
       aria-label={ariaLabel}
       title={collapsed ? label : undefined}
-      className={`hidden sm:flex h-8 ${modeTabSpacing(collapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border ${FOCUS} ${state}`}
+      className={`group/tab hidden sm:flex h-8 ${modeTabSpacing(collapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border ${FOCUS} ${state} ${collapsed ? MODE_TAB_PEEK : ''}`}
     >
       {icon}
       <ModeTabLabel collapsed={collapsed}>

@@ -9,7 +9,9 @@ export function ModeTabLabel({ collapsed, children }: { collapsed: boolean; chil
   return (
     <span
       className={`inline-flex items-center gap-1.5 overflow-hidden whitespace-nowrap transition-[max-width,opacity] duration-200 ease-out motion-reduce:transition-none ${
-        collapsed ? 'max-w-0 opacity-0' : 'max-w-[10rem] opacity-100'
+        collapsed
+          ? 'max-w-0 opacity-0 group-hover/tab:max-w-[10rem] group-hover/tab:opacity-100 group-focus-visible/tab:max-w-[10rem] group-focus-visible/tab:opacity-100'
+          : 'max-w-[10rem] opacity-100'
       }`}
       aria-hidden={collapsed || undefined}
     >
