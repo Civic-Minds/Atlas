@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
-import { TrendingUp, History as HistoryIcon } from 'lucide-react';
+import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
@@ -9,11 +9,11 @@ import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_SIDEBAR, P
 import RouteListRow from '../components/RouteListRow';
 import { routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardBackLink, CardDirectionRow, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardBackLink, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
 import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots';
-import { buildHistoryRouteFilters, historyRouteMatchesFilter, type HistoryRouteFilterKey } from '../utils/historyRouteFilters';
+import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey } from '../utils/routeModeFilters';
 import { useColorVision } from '../context/ColorVisionContext';
 import RegionFilterPills from '../components/RegionFilterPills';
 import {
@@ -25,7 +25,8 @@ import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayTe
 import Panel, { PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
-import RoundIconButton from '../components/ui/RoundIconButton';
+import ArrowLink from '../components/ui/ArrowLink';
+import { currentAtlasUrl } from '../utils/reportIssue';
 import ModeFilterPill from '../components/ui/ModeFilterPill';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
@@ -152,7 +153,6 @@ function RouteHistoryCard({
   frameStyle: React.CSSProperties;
 }) {
   const { colorVisionFriendly } = useColorVision();
-  const [showChart, setShowChart] = useState(false);
   const { newestFirst: snaps, oldestFirst: chartSnaps } = routeHistorySnapshots(route);
 
   function snapHeadway(snap: RouteSnapshot): number {
@@ -228,19 +228,16 @@ function RouteHistoryCard({
               onAgencyClick={onBack}
             />
           </div>
-          {snaps.length >= 2 && (
-            <RoundIconButton
-              onClick={() => setShowChart(v => !v)}
-              aria-label="Toggle chart"
-              pressed={showChart}
-            >
-              <TrendingUp className="w-3.5 h-3.5" />
-            </RoundIconButton>
-          )}
+          <CardReportButton
+            title={`History: ${agencyName} ${route.routeShortName}`}
+            details={`**Agency:** ${agencyName}\n**Agency slug:** ${agencySlug}\n**Route:** ${route.routeShortName}${route.routeName ? ` ${route.routeName}` : ''}\n**Snapshots:** ${snaps.map(s => s.label).join(', ')}\n**Atlas URL:** ${currentAtlasUrl()}`}
+            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+          />
         </div>
       </SidebarCardHeaderBlock>
 
-      {snaps.length >= 2 && showChart && (
+      {/* The frequency chart shows inline, as the route card's hour chart does (#1028 item 10). */}
+      {snaps.length >= 2 && (
         <div className="mt-3">
           <div className="w-full bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3">
             <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
@@ -360,8 +357,8 @@ function HistoryAgencyPanel({
   onBack: () => void;
   /** The top search bar's text while this agency is open (it searches the agency's routes). Held by History so it can live in the URL. */
   routeQuery: string;
-  activeFilter: HistoryRouteFilterKey | null;
-  setActiveFilter: (key: HistoryRouteFilterKey | null) => void;
+  activeFilter: RouteModeFilterKey | null;
+  setActiveFilter: (key: RouteModeFilterKey | null) => void;
   frameClassName: string;
   frameStyle: React.CSSProperties;
 }) {
@@ -410,11 +407,11 @@ function HistoryAgencyPanel({
     agencySlug: agencyHistory.slug,
   })), [agencyHistory]);
 
-  const routeFilters = useMemo(() => buildHistoryRouteFilters(filterRoutes), [filterRoutes]);
+  const routeFilters = useMemo(() => buildRouteModeFilters(filterRoutes), [filterRoutes]);
 
   const visibleRouteRows = useMemo(() => {
     if (!activeFilter) return routeRows;
-    return routeRows.filter(({ route }) => historyRouteMatchesFilter({
+    return routeRows.filter(({ route }) => routeMatchesModeFilter({
       routeShortName: route.routeShortName,
       routeLongName: route.routeName,
       routeType: route.currentRouteType,
@@ -428,6 +425,8 @@ function HistoryAgencyPanel({
     <Panel sidebar enter className={`max-h-[calc(100vh-104px)] ${frameClassName}`} style={{ ...frameStyle, top: AGENCY_PANEL_TOP }}>
       {/* Header: the agency card's header block, with the route filter and mode pills inside it. */}
       <div className={CARD_HEADER_BLOCK}>
+        <div className="flex items-start gap-2 min-w-0">
+        <div className="min-w-0 flex-1">
         <CardBackLink onClick={onBack}>Historical service</CardBackLink>
         <h2 className={`${CARD_TITLE} truncate`}>{shortenAgencyName(agencyHistory.name)}</h2>
         <p className={CARD_SUMMARY}>
@@ -436,6 +435,13 @@ function HistoryAgencyPanel({
         {!routeQuery && !activeFilter && (
           <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
         )}
+        </div>
+        <CardReportButton
+          title={`History: ${agencyHistory.name}`}
+          details={`**Agency:** ${agencyHistory.name}\n**Agency slug:** ${agencyHistory.slug}\n**Atlas URL:** ${currentAtlasUrl()}`}
+          excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
+        />
+        </div>
         {routeFilters.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {routeFilters.map(filter => {
@@ -445,7 +451,6 @@ function HistoryAgencyPanel({
                   key={filter.key}
                   onClick={() => setActiveFilter(active ? null : filter.key)}
                   selected={active}
-                  title="Filters by current route metadata"
                   label={filter.label}
                   count={filter.count}
                 />
@@ -489,7 +494,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
   const pendingUrlYearRef = useRef<number>(urlState?.year ?? 0);
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set(urlState?.regions ?? []));
   const [routeQuery, setRouteQuery] = useState(() => urlState?.routeQuery ?? '');
-  const [activeFilter, setActiveFilter] = useState<HistoryRouteFilterKey | null>(() => (urlState?.routeMode as HistoryRouteFilterKey | null) ?? null);
+  const [activeFilter, setActiveFilter] = useState<RouteModeFilterKey | null>(() => (urlState?.routeMode as RouteModeFilterKey | null) ?? null);
   // The city to open on and the agencies in view are read once, as History opens: panning the map
   // while browsing History must not jump to another agency or reorder the list (#1012).
   const openOnSlugRef = useRef<string | null>(active ? initialAgencySlug ?? null : null);
@@ -506,7 +511,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
       pendingUrlYearRef.current = fresh?.year ?? 0;
       setRegionFilter(new Set(fresh?.regions ?? []));
       setRouteQuery(fresh?.routeQuery ?? '');
-      setActiveFilter((fresh?.routeMode as HistoryRouteFilterKey | null) ?? null);
+      setActiveFilter((fresh?.routeMode as RouteModeFilterKey | null) ?? null);
       openOnSlugRef.current = initialAgencySlug ?? null;
       setOpenInView(new Set(inViewAgencySlugs ?? []));
     }
@@ -913,7 +918,7 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
               {historyData !== null && historyLoadFailed && (
                 <PanelEmpty
                   kind="error"
-                  action={<button onClick={loadHistoryConfig} className="shrink-0 text-xs font-black text-[var(--accent)] hover:underline">Retry</button>}
+                  action={<ArrowLink as="button" tone="inline" size="xs" onClick={loadHistoryConfig} className="shrink-0 whitespace-nowrap">Retry</ArrowLink>}
                 >
                   {loadErrorText('history data')} {RETRY_HINT}
                 </PanelEmpty>

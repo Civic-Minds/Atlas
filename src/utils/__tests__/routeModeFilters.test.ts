@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
-  buildHistoryRouteFilters,
-  historyRouteMatchesFilter,
-  historyRouteModeLabel,
-} from '../historyRouteFilters';
+  buildRouteModeFilters,
+  routeMatchesModeFilter,
+  routeModeFilterLabel,
+} from '../routeModeFilters';
 
 const gold = {
   routeShortName: 'Gold',
@@ -12,13 +12,13 @@ const gold = {
   agencySlug: 'sacrt',
 };
 
-describe('historyRouteFilters', () => {
+describe('routeModeFilters', () => {
   it('classifies SacRT route_type=0 light rail as light rail', () => {
-    expect(historyRouteModeLabel(gold)).toBe('Light rail');
+    expect(routeModeFilterLabel(gold)).toBe('Light rail');
   });
 
   it('builds mode and subtype filter counts', () => {
-    expect(buildHistoryRouteFilters([
+    expect(buildRouteModeFilters([
       gold,
       { routeShortName: '1', routeLongName: 'Greenback', routeType: 3, busSubType: 'local', agencySlug: 'sacrt' },
       { routeShortName: '2', routeLongName: 'Express', routeType: 3, busSubType: 'express', agencySlug: 'sacrt' },
@@ -29,7 +29,7 @@ describe('historyRouteFilters', () => {
   });
 
   it('matches only routes with the selected current metadata', () => {
-    expect(historyRouteMatchesFilter(gold, 'mode:100')).toBe(true);
-    expect(historyRouteMatchesFilter({ ...gold, routeType: 3 }, 'mode:100')).toBe(false);
+    expect(routeMatchesModeFilter(gold, 'mode:100')).toBe(true);
+    expect(routeMatchesModeFilter({ ...gold, routeType: 3 }, 'mode:100')).toBe(false);
   });
 });
