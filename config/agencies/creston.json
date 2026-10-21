@@ -1,0 +1,23 @@
+{
+  "slug": "creston",
+  "name": "BC Transit (Creston Valley)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    49.114,
+    -116.5146
+  ],
+  "bbox": [
+    49.0783,
+    -116.56435,
+    49.19205,
+    -116.45612
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=16",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2536/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Creston, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

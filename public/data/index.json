@@ -28312,6 +28312,431 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastPeekedExpiry": "20270301"
+    },
+    {
+      "slug": "vernon",
+      "name": "BC Transit (Vernon)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        50.4343,
+        -119.2919
+      ],
+      "bbox": [
+        49.92997,
+        -119.49817,
+        50.94248,
+        -118.95294
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=14",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2508/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Vernon, British Columbia",
+        "Coldstream, British Columbia",
+        "Lake Country, British Columbia",
+        "Salmon Arm, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "west-kootenay",
+      "name": "BC Transit (West Kootenay)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        49.4908,
+        -117.4862
+      ],
+      "bbox": [
+        49.06145,
+        -118.15047,
+        50.30661,
+        -116.8885
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=20",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2579/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Nelson, British Columbia",
+        "Trail, British Columbia",
+        "Castlegar, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "prince-rupert",
+      "name": "BC Transit (Prince Rupert)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        54.3028,
+        -130.315
+      ],
+      "bbox": [
+        54.20791,
+        -130.36283,
+        54.34055,
+        -130.25746
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=23",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2543/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Prince Rupert, British Columbia",
+        "Port Edward, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "fort-st-john",
+      "name": "BC Transit (Fort St. John)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        56.2457,
+        -120.8377
+      ],
+      "bbox": [
+        56.22176,
+        -120.88389,
+        56.27684,
+        -120.79302
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=28",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2547/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Fort St. John, British Columbia"
+      ],
+      "timezone": "America/Dawson_Creek",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "sunshine-coast",
+      "name": "BC Transit (Sunshine Coast)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        49.4399,
+        -123.6572
+      ],
+      "bbox": [
+        49.38185,
+        -123.9215,
+        49.52393,
+        -123.46496
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=18",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2567/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Sechelt, British Columbia",
+        "Gibsons, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "williams-lake",
+      "name": "BC Transit (Williams Lake)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        52.1267,
+        -122.1272
+      ],
+      "bbox": [
+        52.09826,
+        -122.17661,
+        52.17798,
+        -121.98199
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=33",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2587/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Williams Lake, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "creston",
+      "name": "BC Transit (Creston Valley)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        49.114,
+        -116.5146
+      ],
+      "bbox": [
+        49.0783,
+        -116.56435,
+        49.19205,
+        -116.45612
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=16",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2536/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Creston, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "port-alberni",
+      "name": "BC Transit (Port Alberni)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        49.2507,
+        -124.8051
+      ],
+      "bbox": [
+        49.20849,
+        -124.86043,
+        49.28741,
+        -124.77265
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=11",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-761/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Port Alberni, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "dawson-creek",
+      "name": "BC Transit (Dawson Creek)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        55.753,
+        -120.2308
+      ],
+      "bbox": [
+        55.7287,
+        -120.26691,
+        55.78627,
+        -120.19964
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=27",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-710/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Dawson Creek, British Columbia"
+      ],
+      "timezone": "America/Dawson_Creek",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "smithers",
+      "name": "BC Transit (Smithers)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        54.8424,
+        -127.2046
+      ],
+      "bbox": [
+        54.67235,
+        -127.34297,
+        55.02921,
+        -127.0372
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=31",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2472/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Smithers, British Columbia",
+        "Telkwa, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "quesnel",
+      "name": "BC Transit (Quesnel)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        52.993,
+        -122.4904
+      ],
+      "bbox": [
+        52.92856,
+        -123.59385,
+        53.11612,
+        -121.50474
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=32",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2463/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Quesnel, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "100-mile-house",
+      "name": "BC Transit (100 Mile House)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        51.6968,
+        -121.3235
+      ],
+      "bbox": [
+        51.62143,
+        -121.389,
+        51.7527,
+        -121.28044
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=34",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2469/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "100 Mile House, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "clearwater",
+      "name": "BC Transit (Clearwater)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        51.2984,
+        -120.1245
+      ],
+      "bbox": [
+        50.64533,
+        -120.38239,
+        51.68949,
+        -119.71799
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=35",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2515/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Clearwater, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "revelstoke",
+      "name": "BC Transit (Revelstoke)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        50.9934,
+        -118.1931
+      ],
+      "bbox": [
+        50.9447,
+        -118.24056,
+        51.03136,
+        -118.15085
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=36",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2464/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Revelstoke, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "merritt",
+      "name": "BC Transit (Merritt)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        50.1253,
+        -120.8022
+      ],
+      "bbox": [
+        50.09234,
+        -120.89264,
+        50.18715,
+        -120.73949
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=37",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2471/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Merritt, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "ashcroft",
+      "name": "BC Transit (Ashcroft, Cache Creek, Clinton)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        50.9048,
+        -121.4225
+      ],
+      "bbox": [
+        50.70437,
+        -121.59412,
+        51.10333,
+        -121.26924
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=38",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2468/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Ashcroft, British Columbia",
+        "Cache Creek, British Columbia",
+        "Clinton, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "salt-spring",
+      "name": "BC Transit (Salt Spring Island)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        48.8563,
+        -123.5088
+      ],
+      "bbox": [
+        48.75902,
+        -123.58247,
+        48.92476,
+        -123.43576
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=39",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2466/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Salt Spring Island, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "west-coast",
+      "name": "BC Transit (West Coast)",
+      "websiteUrl": "https://www.bctransit.com/",
+      "center": [
+        49.0539,
+        -125.7462
+      ],
+      "bbox": [
+        48.928,
+        -125.91901,
+        49.16361,
+        -125.51496
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=51",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2575/latest.zip",
+      "region": "British Columbia",
+      "cities": [
+        "Ucluelet, British Columbia",
+        "Tofino, British Columbia"
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
     }
   ]
 }

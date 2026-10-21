@@ -1,0 +1,23 @@
+{
+  "slug": "100-mile-house",
+  "name": "BC Transit (100 Mile House)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    51.6968,
+    -121.3235
+  ],
+  "bbox": [
+    51.62143,
+    -121.389,
+    51.7527,
+    -121.28044
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=34",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2469/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "100 Mile House, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

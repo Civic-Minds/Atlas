@@ -1,0 +1,23 @@
+{
+  "slug": "williams-lake",
+  "name": "BC Transit (Williams Lake)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    52.1267,
+    -122.1272
+  ],
+  "bbox": [
+    52.09826,
+    -122.17661,
+    52.17798,
+    -121.98199
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=33",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2587/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Williams Lake, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

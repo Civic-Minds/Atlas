@@ -1,0 +1,24 @@
+{
+  "slug": "prince-rupert",
+  "name": "BC Transit (Prince Rupert)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    54.3028,
+    -130.315
+  ],
+  "bbox": [
+    54.20791,
+    -130.36283,
+    54.34055,
+    -130.25746
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=23",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2543/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Prince Rupert, British Columbia",
+    "Port Edward, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

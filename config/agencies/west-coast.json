@@ -1,0 +1,24 @@
+{
+  "slug": "west-coast",
+  "name": "BC Transit (West Coast)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    49.0539,
+    -125.7462
+  ],
+  "bbox": [
+    48.928,
+    -125.91901,
+    49.16361,
+    -125.51496
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=51",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2575/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Ucluelet, British Columbia",
+    "Tofino, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

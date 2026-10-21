@@ -1,0 +1,23 @@
+{
+  "slug": "revelstoke",
+  "name": "BC Transit (Revelstoke)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    50.9934,
+    -118.1931
+  ],
+  "bbox": [
+    50.9447,
+    -118.24056,
+    51.03136,
+    -118.15085
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=36",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2464/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Revelstoke, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

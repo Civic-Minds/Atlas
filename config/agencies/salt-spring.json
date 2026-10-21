@@ -1,0 +1,23 @@
+{
+  "slug": "salt-spring",
+  "name": "BC Transit (Salt Spring Island)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    48.8563,
+    -123.5088
+  ],
+  "bbox": [
+    48.75902,
+    -123.58247,
+    48.92476,
+    -123.43576
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=39",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2466/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Salt Spring Island, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

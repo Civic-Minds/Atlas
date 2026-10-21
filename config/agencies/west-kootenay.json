@@ -1,0 +1,25 @@
+{
+  "slug": "west-kootenay",
+  "name": "BC Transit (West Kootenay)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    49.4908,
+    -117.4862
+  ],
+  "bbox": [
+    49.06145,
+    -118.15047,
+    50.30661,
+    -116.8885
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=20",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2579/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Nelson, British Columbia",
+    "Trail, British Columbia",
+    "Castlegar, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

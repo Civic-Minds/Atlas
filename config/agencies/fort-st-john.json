@@ -1,0 +1,23 @@
+{
+  "slug": "fort-st-john",
+  "name": "BC Transit (Fort St. John)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    56.2457,
+    -120.8377
+  ],
+  "bbox": [
+    56.22176,
+    -120.88389,
+    56.27684,
+    -120.79302
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=28",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2547/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Fort St. John, British Columbia"
+  ],
+  "timezone": "America/Dawson_Creek",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "port-alberni",
+  "name": "BC Transit (Port Alberni)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    49.2507,
+    -124.8051
+  ],
+  "bbox": [
+    49.20849,
+    -124.86043,
+    49.28741,
+    -124.77265
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=11",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-761/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Port Alberni, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

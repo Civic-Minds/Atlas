@@ -1,0 +1,25 @@
+{
+  "slug": "ashcroft",
+  "name": "BC Transit (Ashcroft, Cache Creek, Clinton)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    50.9048,
+    -121.4225
+  ],
+  "bbox": [
+    50.70437,
+    -121.59412,
+    51.10333,
+    -121.26924
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=38",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2468/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Ashcroft, British Columbia",
+    "Cache Creek, British Columbia",
+    "Clinton, British Columbia"
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "dawson-creek",
+  "name": "BC Transit (Dawson Creek)",
+  "websiteUrl": "https://www.bctransit.com/",
+  "center": [
+    55.753,
+    -120.2308
+  ],
+  "bbox": [
+    55.7287,
+    -120.26691,
+    55.78627,
+    -120.19964
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=27",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-710/latest.zip",
+  "region": "British Columbia",
+  "cities": [
+    "Dawson Creek, British Columbia"
+  ],
+  "timezone": "America/Dawson_Creek",
+  "hiddenInProduction": true
+}
