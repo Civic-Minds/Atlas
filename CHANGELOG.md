@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The Atlas logo is a light circle with a dark map icon on desktop too, in both themes**: it was still a solid dark circle (and a washed-out one in the dark theme) above phone width ([#1058](https://github.com/Civic-Minds/Atlas/issues/1058))
 - **History draws each year's routes on that year's own lines (beta)**: sliding back shows the network as it ran, including routes that no longer exist; the latest year uses today's map
 - **History has the map's Frequency and Time filters (beta)**: pick "≤15 min" and a time of day, then slide through the years to see how that network changed; the map, the year's route list and an opened route all follow
 - **History's route list follows the year slider (beta)**: it lists only the routes that ran that year, with that year's frequency and the change from the route's previous snapshot, like the map
