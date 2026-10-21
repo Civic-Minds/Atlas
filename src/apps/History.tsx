@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
-import { ChevronLeft, X, Search, TrendingUp, History as HistoryIcon } from 'lucide-react';
+import { TrendingUp, History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { FLOATING_CARD, TRANSITION_SLOW, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
+import { FLOATING_CARD, TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE } from '../components/Interval/cardUi';
+import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardBackLink } from '../components/Interval/cardUi';
+import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
 import { buildHistoryRouteFilters, historyRouteMatchesFilter, type HistoryRouteFilterKey } from '../utils/historyRouteFilters';
 import { useColorVision } from '../context/ColorVisionContext';
 import RegionFilterPills from '../components/RegionFilterPills';
@@ -78,6 +79,8 @@ interface Props {
   pendingRouteClick?: { slug: string; routeShortName: string } | null;
   onPendingRouteHandled?: () => void;
   sidebarLeft?: number;
+  /** Whether an agency is open in History (the top search bar then searches its routes). */
+  onAgencyOpenChange?: (open: boolean) => void;
 }
 
 function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: string; worse: boolean } | null {
@@ -192,14 +195,7 @@ function RouteHistoryCard({
     <Panel enter>
       {/* Header */}
       <div className="shrink-0 px-4 pt-3 pb-2">
-        <button
-          onClick={(e) => { e.stopPropagation(); onBack(); }}
-          className="flex items-center gap-0.5 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mb-2"
-          aria-label="Back to routes"
-        >
-          <ChevronLeft className="w-3 h-3 shrink-0" />
-          <span className="text-xs font-bold">{shortenAgencyName(agencyName)} routes</span>
-        </button>
+        <CardBackLink onClick={onBack}>{shortenAgencyName(agencyName)} routes</CardBackLink>
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
             <span className="text-base font-black text-[var(--text-primary)] shrink-0">{route.routeShortName}</span>
@@ -334,16 +330,17 @@ const SINCE_FILTERS = [
 function HistoryAgencyPanel({
   agencyHistory,
   onRouteSelect,
+  onBack,
   routeQuery,
-  setRouteQuery,
   activeFilter,
   setActiveFilter,
 }: {
   agencyHistory: AgencyHistory;
   onRouteSelect: (routeShortName: string) => void;
-  /** Held by History so they can live in the URL; History resets them when the agency changes or a route opens. */
+  /** Back to the agency chooser. */
+  onBack: () => void;
+  /** The top search bar's text while this agency is open (it searches the agency's routes). Held by History so it can live in the URL. */
   routeQuery: string;
-  setRouteQuery: (q: string) => void;
   activeFilter: HistoryRouteFilterKey | null;
   setActiveFilter: (key: HistoryRouteFilterKey | null) => void;
 }) {
@@ -373,11 +370,7 @@ function HistoryAgencyPanel({
         return { route, first, last, ratio, worse, better };
       })
       .filter((r): r is NonNullable<typeof r> => r !== null)
-      .filter(({ route }) =>
-        !q ||
-        route.routeShortName.toLowerCase().includes(q) ||
-        route.routeName.toLowerCase().includes(q)
-      )
+      .filter(({ route }) => historyRouteMatchesQuery(route, q))
       .sort((a, b) => {
         // Biggest frequency swing first (worse, then better, then flat)
         if (a.worse && b.worse) return b.ratio - a.ratio;
@@ -413,6 +406,7 @@ function HistoryAgencyPanel({
     <Panel enter className="max-h-[calc(100vh-104px)]">
       {/* Header: the agency card's header block, with the route filter and mode pills inside it. */}
       <div className={CARD_HEADER_BLOCK}>
+        <CardBackLink onClick={onBack}>Historical service</CardBackLink>
         <h2 className={`${CARD_TITLE} truncate`}>{shortenAgencyName(agencyHistory.name)}</h2>
         <p className={CARD_SUMMARY}>
           {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
@@ -420,21 +414,6 @@ function HistoryAgencyPanel({
         {!routeQuery && !activeFilter && (
           <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
         )}
-        <div className={`${SEARCH_PILL} mt-2`}>
-          <Search className={SEARCH_ICON} />
-          <input
-            type="text"
-            value={routeQuery}
-            onChange={e => setRouteQuery(e.target.value)}
-            placeholder="Filter routes…"
-            className={SEARCH_FIELD}
-          />
-          {routeQuery && (
-            <button onClick={() => setRouteQuery('')} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
-              <X className="w-3 h-3" />
-            </button>
-          )}
-        </div>
         {routeFilters.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {routeFilters.map(filter => {
@@ -471,7 +450,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft }: Props) {
+export default function History({ active, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, onAgencyOpenChange }: Props) {
   // Applies initialAgencySlug (the currently map-selected agency) once per
   // History session, not every time selectedSlug clears -- otherwise a user
   // typing a new search gets raced back to whatever agency the map still
@@ -630,15 +609,32 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
     }
     onPendingRouteHandled?.();
   }, [pendingRouteClick, historyData, onPendingRouteHandled]);
-  // A new search clears the selection. Compared with the last value (not skipped once) so a linked
-  // selection survives mount, including StrictMode's repeated effects.
+  // The top search bar searches agencies on the chooser and the open agency's routes once one is
+  // open (#1015). On the chooser a new search clears the selection, as before. Compared with the last
+  // value (not skipped once) so a linked selection survives mount, including StrictMode's repeated effects.
   const lastQueryRef = useRef(query);
   useEffect(() => {
     if (lastQueryRef.current === query) return;
     lastQueryRef.current = query;
+    if (selectedSlug) {
+      setRouteQuery(query);
+      return;
+    }
     setSelectedSlug(null);
     setSelectedRouteShortName(null);
+    // Only the query decides; the selection is read as it stands when the text changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
+  // A linked route search fills the top bar when History opens on that agency.
+  const appliedUrlRouteQueryRef = useRef(false);
+  useEffect(() => {
+    if (!active) { appliedUrlRouteQueryRef.current = false; return; }
+    if (appliedUrlRouteQueryRef.current || !selectedSlug || !routeQuery) return;
+    appliedUrlRouteQueryRef.current = true;
+    if (query !== routeQuery) setQuery(routeQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, selectedSlug]);
+  useEffect(() => { onAgencyOpenChange?.(active && !!selectedSlug); }, [active, selectedSlug, onAgencyOpenChange]);
 
   // The route search and mode filter belong to one agency's list: they reset when the agency
   // changes or a route opens, as they did when the list kept them itself.
@@ -649,6 +645,8 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
     if (last.slug !== selectedSlug || (selectedRouteShortName && last.route !== selectedRouteShortName)) {
       setRouteQuery('');
       setActiveFilter(null);
+      // The top bar held the last agency or route search; it starts empty for the new view.
+      setQuery('');
     }
   }, [selectedSlug, selectedRouteShortName]);
 
@@ -803,8 +801,8 @@ export default function History({ active, initialAgencySlug, inViewAgencySlugs, 
             <HistoryAgencyPanel
               agencyHistory={agencyHistory}
               onRouteSelect={setSelectedRouteShortName}
+              onBack={() => { setSelectedSlug(null); setSelectedRouteShortName(null); }}
               routeQuery={routeQuery}
-              setRouteQuery={setRouteQuery}
               activeFilter={activeFilter}
               setActiveFilter={setActiveFilter}
             />

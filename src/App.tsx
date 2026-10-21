@@ -390,6 +390,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
   const [viewportAgencySlugs, setViewportAgencySlugs] = useState<string[]>([]);
   const [userMovedMap, setUserMovedMap] = useState(false);
+  // History with an agency open: the top search bar searches that agency's routes (#1015).
+  const [historyAgencyOpen, setHistoryAgencyOpen] = useState(false);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
     const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
@@ -481,7 +483,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   });
   const searchPlaceholder = inFrequency
     ? 'Search routes'
-    : inHistory ? 'Find an agency…'
+    : inHistory ? (historyAgencyOpen ? 'Find a route…' : 'Find an agency…')
     : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
 
@@ -836,7 +838,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             />
             {historyOn && (historyOpened || inHistory) && (
               <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
-                <History active={inHistory} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+                <History active={inHistory} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onAgencyOpenChange={setHistoryAgencyOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (

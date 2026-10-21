@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **In History the top search bar finds routes in the open agency (beta)**: the card had its own route filter field, unlike the regular agency card; the bar now reads "Find a route…" while an agency is open ([#1015](https://github.com/Civic-Minds/Atlas/issues/1015))
 - **History's lists look like the regular lists (beta)**: the agency chooser matches the About panel's agency list, and an agency's History view uses the agency card's header and route rows ([#1015](https://github.com/Civic-Minds/Atlas/issues/1015))
 - **History's mode pills look like the agency card's (beta)**: they were wider and didn't dim the route count ([#1014](https://github.com/Civic-Minds/Atlas/issues/1014))
 - **Every search field looks like the top search bar**: History's route filter, the agency searches and the filter panel's searches had a grey fill, smaller icon or square corners ([#1013](https://github.com/Civic-Minds/Atlas/issues/1013))
