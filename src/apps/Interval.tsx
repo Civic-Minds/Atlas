@@ -11,6 +11,8 @@ import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
 import { MapAttribution } from '../components/Interval/MapAttribution';
 import { PersistentMapLegend } from '../components/Interval/PersistentMapLegend';
+import { contextLayerAvailable } from '../components/Interval/map/useContextLayer';
+import type { ContextMetric } from '../utils/contextLayer';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
@@ -165,6 +167,8 @@ const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
 export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
+  // Population / income shading (beta trial, CIV-482). Off until chosen, never saved.
+  const [contextMetric, setContextMetric] = useState<ContextMetric | null>(null);
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
   const [mapContextAgencyCount, setMapContextAgencyCount] = useState(0);
@@ -904,6 +908,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       <div className={`absolute inset-0 flex ${compareActive ? 'flex-col sm:flex-row gap-1 bg-[var(--text-primary)]' : ''}`}>
         <div className="relative flex-1 min-h-0 min-w-0">
           <MapCanvas
+            contextMetric={contextMetric}
+            contextLegendRaised={showMapLegend && !nightServiceView}
             agencies={agencies}
             layers={layers}
             filteredLayers={filteredLayers}
@@ -988,6 +994,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         {compareActive && (
           <div className="relative flex-1 min-h-0 min-w-0">
               <MapCanvas
+            contextMetric={contextMetric}
+            contextLegendRaised={showMapLegend && !nightServiceView}
                 agencies={agencies}
                 layers={layers}
                 filteredLayers={compareStats.filteredLayers}
@@ -1072,7 +1080,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           Phones drop the wrapper (contents) and keep each group's own position. No z-index here, so
           the pills keep their own layer and the What's new panel still opens above the header. */}
       <div className="max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none">
-      <MapAttribution />
+      <MapAttribution contextLayerOn={contextLayerAvailable() && contextMetric !== null} />
 
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
         <div className={`max-sm:absolute max-sm:bottom-[7rem] max-sm:right-[4.25rem] ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
@@ -1325,6 +1333,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
           {!hideFilterPanel && (
               <FilterPanel
+              contextMetric={contextMetric}
+              setContextMetric={setContextMetric}
               lightMode={lightMode}
               setLightMode={setLightMode}
               hideSpan={hideSpan}

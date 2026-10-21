@@ -20,6 +20,16 @@ import AgencyName from '../ui/AgencyName';
 import { loadingText } from '../../content/stateCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import RoundIconButton from '../ui/RoundIconButton';
+import MenuButton from '../ui/MenuButton';
+import { contextLayerAvailable } from './map/useContextLayer';
+import { CONTEXT_CONTROL_HINT, CONTEXT_CONTROL_TITLE, CONTEXT_OPTION_DENSITY, CONTEXT_OPTION_INCOME, CONTEXT_OPTION_OFF } from '../../content/contextLayerCopy';
+import type { ContextMetric } from '../../utils/contextLayer';
+
+const CONTEXT_OPTIONS = [
+  { key: 'off', label: CONTEXT_OPTION_OFF },
+  { key: 'density', label: CONTEXT_OPTION_DENSITY },
+  { key: 'income', label: CONTEXT_OPTION_INCOME },
+] as const;
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -58,6 +68,9 @@ interface FilterPanelProps {
   setShowMapLegend: (v: boolean | ((prev: boolean) => boolean)) => void;
   dataSaver: boolean;
   setDataSaver: (v: boolean | ((prev: boolean) => boolean)) => void;
+  /** Population / income shading under the routes (beta only; null is off). */
+  contextMetric?: ContextMetric | null;
+  setContextMetric?: (metric: ContextMetric | null) => void;
   /** Compare mode controls (phones reach them here); undefined when compare is unavailable. */
   compare?: {
     side: CompareSide | null;
@@ -133,6 +146,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   showMapLegend,
   setShowMapLegend,
   dataSaver,
+  contextMetric = null,
+  setContextMetric,
   setDataSaver,
 }) => {
   const { colorVisionFriendly, setColorVisionFriendly } = useColorVision();
@@ -592,6 +607,24 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </div>
                   </div>
                 </>
+              )}
+
+              {contextLayerAvailable() && setContextMetric && (
+                <div className="px-5 pb-3">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">{CONTEXT_CONTROL_TITLE}</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{CONTEXT_CONTROL_HINT}</p>
+                    </div>
+                    <MenuButton
+                      className="text-xs shrink-0"
+                      label={CONTEXT_OPTIONS.find(o => o.key === (contextMetric ?? 'off'))!.label}
+                      value={contextMetric ?? 'off'}
+                      options={CONTEXT_OPTIONS}
+                      onChange={key => setContextMetric(key === 'off' ? null : key)}
+                    />
+                  </div>
+                </div>
               )}
 
               {FEATURES.persistedSettings && (

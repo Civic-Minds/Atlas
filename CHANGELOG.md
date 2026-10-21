@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **A population density and median household income layer on the map (beta, trial)**: shades areas under the route lines in five steps, greys out figures too uncertain to trust, and shows each area's value and margin of error on hover or tap; off by default and only for US census tracts ([#1053](https://github.com/Civic-Minds/Atlas/issues/1053))
 - **History draws each year's routes on that year's own lines (beta)**: sliding back shows the network as it ran, including routes that no longer exist; the latest year uses today's map
 - **History has the map's Frequency and Time filters (beta)**: pick "≤15 min" and a time of day, then slide through the years to see how that network changed; the map, the year's route list and an opened route all follow
 - **History's route list follows the year slider (beta)**: it lists only the routes that ran that year, with that year's frequency and the change from the route's previous snapshot, like the map

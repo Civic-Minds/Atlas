@@ -8,6 +8,7 @@ import { trackEvent } from '../../lib/analytics';
 import { OutboundLink } from '../OutboundLink';
 import { ConsentPill } from '../AnalyticsConsent';
 import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
+import { CONTEXT_ATTRIBUTION } from '../../content/contextLayerCopy';
 
 const ATTRIB_LINK =
   `${MAP_BADGE_LABEL} text-[var(--text-dim)] no-underline hover:text-[var(--text-primary)]`;
@@ -16,7 +17,7 @@ const FULL_ATTRIBUTION =
   'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.';
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
-export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsNewEnabled?: boolean } = {}) {
+export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLayerOn = false }: { whatsNewEnabled?: boolean; /** The population / income shading is on: add its data credit. */ contextLayerOn?: boolean } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   // The analytics prompt is this row's last pill on sm and up, so it shares the row's baseline
   // and wraps above it (flex-wrap-reverse) only when the row is out of width (#999).
@@ -125,6 +126,11 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
           </OutboundLink>
         </p>
       </div>
+      {contextLayerOn && (
+        <div className={`${MAP_BADGE} h-8 max-sm:h-auto max-sm:py-1.5 max-sm:rounded-2xl`}>
+          <p className={`${MAP_BADGE_LABEL} sm:whitespace-nowrap max-sm:leading-snug`}>{CONTEXT_ATTRIBUTION}</p>
+        </div>
+      )}
       {consent.open && <ConsentPill className="max-sm:hidden" choose={consent.choose} />}
     </div>
     {whatsNewEnabled && whatsNewOpen && (
