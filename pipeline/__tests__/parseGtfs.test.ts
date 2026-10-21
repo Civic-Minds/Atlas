@@ -26,7 +26,7 @@ describe('truncateAtImplausibleJump', () => {
       [20.60, -103.38], [20.6005, -103.3805], [20.601, -103.381], [20.6015, -103.3815],
       [20.6058, -103.3850], // last good point before the jump
       [20.7541, -103.3591], // ~16.7km away — the corrupted jump
-      [20.7545, -103.3595],
+      [20.7537, -103.3587], // doubles back toward the start: the reversal that marks the jump as corruption
     ];
     const result = truncateAtImplausibleJump(points);
     expect(result).toEqual(points.slice(0, 5));
@@ -44,6 +44,109 @@ describe('truncateAtImplausibleJump', () => {
   it('leaves short shapes (fewer than 4 points) untouched', () => {
     const points: [number, number][] = [[20.0, -103.0], [25.0, -108.0]];
     expect(truncateAtImplausibleJump(points)).toEqual(points);
+  });
+});
+
+/** Flat-earth walk: `count` points from `from`, each `stepM` metres further along compass `bearingDeg`. */
+function walk(from: [number, number], bearingDeg: number, count: number, stepM: number): [number, number][] {
+  const out: [number, number][] = [];
+  let [lat, lon] = from;
+  const b = (bearingDeg * Math.PI) / 180;
+  for (let i = 0; i < count; i++) {
+    lat += (stepM * Math.cos(b)) / 111320;
+    lon += (stepM * Math.sin(b)) / (111320 * Math.cos((lat * Math.PI) / 180));
+    out.push([lat, lon]);
+  }
+  return out;
+}
+
+/**
+ * Dense 140 m shape heading `inBearing`, one long step of `stepM` heading `stepBearing`, then a
+ * dense 140 m tail heading `outBearing`. Returns the points and the index of the last point before the step.
+ */
+function shapeWithStep(opts: { inBearing: number; stepBearing: number; outBearing: number; stepM: number; before?: number; after?: number }) {
+  const { inBearing, stepBearing, outBearing, stepM, before = 30, after = 30 } = opts;
+  const head: [number, number][] = [[43.0, -79.0], ...walk([43.0, -79.0], inBearing, before - 1, 140)];
+  const stepEnd = walk(head[head.length - 1], stepBearing, 1, stepM)[0];
+  const tail = walk(stepEnd, outBearing, after - 1, 140);
+  return { points: [...head, stepEnd, ...tail], lastBeforeStep: head.length - 1 };
+}
+
+describe('truncateAtImplausibleJump long steps need a reversal', () => {
+  it('keeps a straight 2.5 km step in 140 m spacing whole (rural highway)', () => {
+    const { points } = shapeWithStep({ inBearing: 0, stepBearing: 0, outBearing: 0, stepM: 2500 });
+    expect(truncateAtImplausibleJump(points)).toEqual(points);
+  });
+
+  it('still cuts a 16.7 km jump that reverses on the way out (T14B_r2 style, ~165 degrees)', () => {
+    const { points, lastBeforeStep } = shapeWithStep({ inBearing: 0, stepBearing: 0, outBearing: 165, stepM: 16700 });
+    expect(truncateAtImplausibleJump(points)).toEqual(points.slice(0, lastBeforeStep + 1));
+  });
+
+  it('still cuts a 16.7 km jump that reverses on the way in (~165 degrees)', () => {
+    const { points, lastBeforeStep } = shapeWithStep({ inBearing: 195, stepBearing: 0, outBearing: 0, stepM: 16700 });
+    expect(truncateAtImplausibleJump(points)).toEqual(points.slice(0, lastBeforeStep + 1));
+  });
+
+  it('keeps a 6.4 km step with a ~57 degree bend whole (Powell River style)', () => {
+    const { points } = shapeWithStep({ inBearing: 0, stepBearing: 57, outBearing: 57, stepM: 6400 });
+    expect(truncateAtImplausibleJump(points)).toEqual(points);
+  });
+
+  it('still cuts when the long step is the first segment (no bend into it to judge)', () => {
+    const tail = walk([43.0, -79.0], 0, 30, 140);
+    const points: [number, number][] = [[43.0, -79.0], ...walk([43.0, -79.0], 0, 1, 2500), ...tail.map(([la, lo]) => [la + 0.0225, lo] as [number, number])];
+    expect(truncateAtImplausibleJump(points)).toEqual(points.slice(0, 1));
+  });
+
+  it('cuts at a bend into the step just over the threshold and keeps it just under (105 vs 95 degrees)', () => {
+    const over = shapeWithStep({ inBearing: 0, stepBearing: 105, outBearing: 105, stepM: 3000 });
+    expect(truncateAtImplausibleJump(over.points)).toEqual(over.points.slice(0, over.lastBeforeStep + 1));
+    const under = shapeWithStep({ inBearing: 0, stepBearing: 95, outBearing: 95, stepM: 3000 });
+    expect(truncateAtImplausibleJump(under.points)).toEqual(under.points);
+  });
+
+  it('cuts at a bend out of the step just over the threshold and keeps it just under (105 vs 95 degrees)', () => {
+    const over = shapeWithStep({ inBearing: 0, stepBearing: 0, outBearing: 105, stepM: 3000 });
+    expect(truncateAtImplausibleJump(over.points)).toEqual(over.points.slice(0, over.lastBeforeStep + 1));
+    const under = shapeWithStep({ inBearing: 0, stepBearing: 0, outBearing: 95, stepM: 3000 });
+    expect(truncateAtImplausibleJump(under.points)).toEqual(under.points);
+  });
+
+  it('still cuts a step with a 76 degree bend that teleports back onto the route (Rennes 0061-A-1090-3801 style)', () => {
+    const leg1: [number, number][] = [[43.0, -79.0], ...walk([43.0, -79.0], 90, 42, 140)]; // east along one road
+    const leg2 = walk(leg1[leg1.length - 1], 300, 28, 140); // loops back north-west
+    const land = leg1[4]; // the long step ends exactly on leg1 again, ~4.9 km away, chord far from the route
+    const tail = walk(land, 270, 10, 140);
+    const points: [number, number][] = [...leg1, ...leg2, land, ...tail];
+    expect(truncateAtImplausibleJump(points)).toEqual(points.slice(0, leg1.length + leg2.length));
+  });
+
+  it('keeps a long step that retraces the same highway on the return trip (Mount Waddington, Sarnia style)', () => {
+    const a = walk([43.0, -79.0], 90, 15, 140);
+    const b = walk(a[a.length - 1], 90, 1, 3000);
+    const c = walk(b[0], 90, 11, 140);
+    const back = walk(c[c.length - 1], 270, 11, 140);
+    const ret = walk(back[back.length - 1], 270, 1, 3000);
+    const d = walk(ret[0], 270, 15, 140);
+    const points: [number, number][] = [...a, ...b, ...c, ...back, ...ret, ...d];
+    expect(truncateAtImplausibleJump(points)).toEqual(points);
+  });
+
+  it('is not fooled by a one-point kink right after a straight step (emta 10311 style)', () => {
+    const { points, lastBeforeStep } = shapeWithStep({ inBearing: 0, stepBearing: 0, outBearing: 0, stepM: 2100 });
+    const [lat, lon] = points[lastBeforeStep + 1];
+    // a single point 40 m back toward the step, then the road carries on straight north
+    const kinked = [...points.slice(0, lastBeforeStep + 2), [lat - 40 / 111320, lon] as [number, number], ...points.slice(lastBeforeStep + 2)];
+    expect(truncateAtImplausibleJump(kinked)).toEqual(kinked);
+  });
+
+  it('ignores tiny jitter segments next to the step when taking the direction', () => {
+    const { points, lastBeforeStep } = shapeWithStep({ inBearing: 0, stepBearing: 0, outBearing: 165, stepM: 16700 });
+    // 1 m reverse wiggle just before the step must not hide the real direction of travel
+    const [lat, lon] = points[lastBeforeStep];
+    const jittered = [...points.slice(0, lastBeforeStep + 1), [lat + 0.000004, lon] as [number, number], ...points.slice(lastBeforeStep + 1)];
+    expect(truncateAtImplausibleJump(jittered)).toEqual(jittered.slice(0, lastBeforeStep + 2));
   });
 });
 
@@ -462,11 +565,13 @@ describe('synthesizeCalendarFromDates', () => {
 });
 
 describe('parseGtfsZip keepLongShapeJumps (#776)', () => {
-  // RCT 20 shape: ~40 m town spacing, then a 2.7 km step on the highway, then more town points.
-  async function feed(): Promise<ArrayBuffer> {
+  // ~40 m town spacing, then a 2.7 km step on the highway, then more town points. `tailDir` is the
+  // direction of the second town section: +1 continues north (straight highway, RCT 20), -1 doubles
+  // back south (a reversal at the step, the corruption signature).
+  async function feed(tailDir: 1 | -1, routeType = 3): Promise<ArrayBuffer> {
     const zip = new JSZip();
     zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,RCT,https://x,America/Los_Angeles\n');
-    zip.file('routes.txt', 'route_id,agency_id,route_short_name,route_type\n120,a,20,3\n');
+    zip.file('routes.txt', `route_id,agency_id,route_short_name,route_type\n120,a,20,${routeType}\n`);
     zip.file('trips.txt', 'route_id,service_id,trip_id,shape_id,direction_id\n120,s,t1,trunk,1\n');
     zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\np,P,40.78,-124.16\n');
     zip.file('stop_times.txt', 'trip_id,arrival_time,departure_time,stop_id,stop_sequence\nt1,08:00:00,08:00:00,p,1\n');
@@ -474,18 +579,28 @@ describe('parseGtfsZip keepLongShapeJumps (#776)', () => {
     const rows = ['shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence'];
     let seq = 0;
     for (let i = 0; i < 10; i++) rows.push(`trunk,${(40.78 + i * 0.00036).toFixed(6)},-124.16,${seq++}`);
-    for (let i = 0; i < 10; i++) rows.push(`trunk,${(40.81 + i * 0.00036).toFixed(6)},-124.16,${seq++}`);
+    for (let i = 0; i < 10; i++) rows.push(`trunk,${(40.81 + tailDir * i * 0.00036).toFixed(6)},-124.16,${seq++}`);
     zip.file('shapes.txt', rows.join('\n') + '\n');
     return zip.generateAsync({ type: 'arraybuffer' });
   }
 
-  it('truncates a bus shape at a long step by default', async () => {
-    const gtfs = await parseGtfsZip(await feed());
+  it('truncates a bus shape at a long step that reverses, by default', async () => {
+    const gtfs = await parseGtfsZip(await feed(-1));
     expect(gtfs.shapes.find(s => s.id === 'trunk')!.points).toHaveLength(10);
   });
 
-  it('keeps the whole shape when the agency opts in', async () => {
-    const gtfs = await parseGtfsZip(await feed(), undefined, { keepLongShapeJumps: true });
+  it('keeps a straight long step whole by default (RCT 20 highway)', async () => {
+    const gtfs = await parseGtfsZip(await feed(1));
+    expect(gtfs.shapes.find(s => s.id === 'trunk')!.points).toHaveLength(20);
+  });
+
+  it('keeps the whole shape when the agency opts in, even with a reversal', async () => {
+    const gtfs = await parseGtfsZip(await feed(-1), undefined, { keepLongShapeJumps: true });
+    expect(gtfs.shapes.find(s => s.id === 'trunk')!.points).toHaveLength(20);
+  });
+
+  it('keeps a rail shape whole even with a reversal at the step', async () => {
+    const gtfs = await parseGtfsZip(await feed(-1, 2));
     expect(gtfs.shapes.find(s => s.id === 'trunk')!.points).toHaveLength(20);
   });
 });

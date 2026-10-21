@@ -24,6 +24,74 @@ export const parseCsv = <T>(text: string): T[] => {
 };
 
 /**
+ * A long step is only read as corruption when the line turns back on itself at it.
+ * Guadalajara T14B r1/r2 (#219, #244) jump 16.7 km with a 162-170 degree reversal on
+ * the way in or out; real rural highway steps (Powell River 6.4 km, Chatham-Kent,
+ * Prince George, Nashville) bend 0-76 degrees. Bend = change of direction: 0 is
+ * straight on, 180 is a full reversal.
+ */
+const MIN_REVERSAL_BEND_DEG = 100;
+/**
+ * Direction of travel into / out of a long step is measured over at least this far from the
+ * step's end (not from the single next segment), so a one-point GPS kink next to the step
+ * cannot fake a reversal (emta 10311 read 101 degrees off one wiggle on a smooth route).
+ */
+const MIN_DIRECTION_SPAN_M = 100;
+/** Points closer than this to the step's end are too close to give a direction at all. */
+const MIN_DIRECTION_FALLBACK_M = 5;
+
+/**
+ * Compass direction of travel next to a step: from `anchor` to the first vertex at least
+ * MIN_DIRECTION_SPAN_M away, walking from index `from` by `dir` (the farthest vertex of
+ * at least MIN_DIRECTION_FALLBACK_M when the shape ends sooner). Returns the bearing as
+ * travelled: toward the vertex for dir 1, from the vertex to the anchor for dir -1. Null if none.
+ */
+function neighbourBearing(points: [number, number][], anchor: [number, number], from: number, dir: 1 | -1): number | null {
+    let far: [number, number] | null = null;
+    for (let j = from; j >= 0 && j < points.length; j += dir) {
+        const d = haversineDistance(anchor[0], anchor[1], points[j][0], points[j][1]);
+        if (d >= MIN_DIRECTION_FALLBACK_M) far = points[j];
+        if (d >= MIN_DIRECTION_SPAN_M) break;
+    }
+    if (!far) return null;
+    return dir === 1
+        ? bearing(anchor[0], anchor[1], far[0], far[1])
+        : bearing(far[0], far[1], anchor[0], anchor[1]);
+}
+
+/**
+ * A long step with no sharp bend is still cut when it "teleports": it ends back on the
+ * route already drawn (within LANDING_TOLERANCE_M) but its midpoint is far from that
+ * route (over MIN_TELEPORT_OFFSET_M), so it is a straight line across empty ground
+ * between two points of the same path. Rennes 0061-A-1090-3801 (4.4 km step, 76 degree
+ * bend, midpoint 1.1 km off the route). Real out-and-back steps along one highway
+ * (Powell River, Mount Waddington, Sarnia, Laketran) keep the midpoint within 35 m.
+ */
+const LANDING_TOLERANCE_M = 100;
+const MIN_TELEPORT_OFFSET_M = 500;
+
+/** Shortest distance in metres from `p` to the polyline through points[0..lastIdx] (flat-earth, fine at these scales). */
+function distanceToPolyline(p: [number, number], points: [number, number][], lastIdx: number): number {
+    const k = Math.cos((p[0] * Math.PI) / 180);
+    let best = Infinity;
+    for (let j = 0; j < lastIdx; j++) {
+        const ax = (points[j][1] - p[1]) * k, ay = points[j][0] - p[0];
+        const dx = (points[j + 1][1] - p[1]) * k - ax, dy = points[j + 1][0] - p[0] - ay;
+        const len2 = dx * dx + dy * dy;
+        const t = len2 > 0 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len2)) : 0;
+        best = Math.min(best, Math.hypot(ax + t * dx, ay + t * dy) * (Math.PI / 180) * 6371000);
+    }
+    return best;
+}
+
+function teleportsOntoEarlierPath(points: [number, number][], i: number): boolean {
+    const end = points[i + 1];
+    if (distanceToPolyline(end, points, i) > LANDING_TOLERANCE_M) return false;
+    const mid: [number, number] = [(points[i][0] + end[0]) / 2, (points[i][1] + end[1]) / 2];
+    return distanceToPolyline(mid, points, i) > MIN_TELEPORT_OFFSET_M;
+}
+
+/**
  * Some feeds have a single corrupted shapes.txt jump — one pair of consecutive
  * points, after sorting by shape_pt_sequence, implausibly far apart relative to
  * the rest of the shape (e.g. Mi Transporte Guadalajara's T14B_r2, #219: a
@@ -32,6 +100,12 @@ export const parseCsv = <T>(text: string): T[] => {
  * segment across the whole city. Only fires on a dramatic, unambiguous outlier
  * against sane surrounding data, so well-formed shapes (including sparse rail
  * corridors with naturally longer gaps throughout) are unaffected.
+ *
+ * A step that is long (> 2 km and > 15x the median step) is cut only when it is
+ * the first segment or the line reverses at it (bend into or out of the step
+ * over MIN_REVERSAL_BEND_DEG) or it teleports back onto the route already drawn.
+ * A long step that continues in a straight line is a real rural stretch with
+ * sparse points, not corruption.
  */
 export function truncateAtImplausibleJump(points: [number, number][]): [number, number][] {
     if (points.length < 4) return points;
@@ -48,7 +122,12 @@ export function truncateAtImplausibleJump(points: [number, number][]): [number, 
     const RELATIVE_MULTIPLE = 15;
     for (let i = 0; i < segLens.length; i++) {
         if (segLens[i] > ABSOLUTE_THRESHOLD_M && segLens[i] > median * RELATIVE_MULTIPLE) {
-            return points.slice(0, i + 1);
+            const stepBearing = bearing(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1]);
+            const into = neighbourBearing(points, points[i], i - 1, -1);
+            const out = neighbourBearing(points, points[i + 1], i + 2, 1);
+            const reversesIn = into === null || bearingDiff(into, stepBearing) > MIN_REVERSAL_BEND_DEG;
+            const reversesOut = out !== null && bearingDiff(stepBearing, out) > MIN_REVERSAL_BEND_DEG;
+            if (reversesIn || reversesOut || teleportsOntoEarlierPath(points, i)) return points.slice(0, i + 1);
         }
     }
     return points;
