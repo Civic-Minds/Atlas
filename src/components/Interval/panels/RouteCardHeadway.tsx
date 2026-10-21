@@ -472,11 +472,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         const HOURS = SPARKLINE_HOURS;
         const hoveredSingleBranch = hoveredBranch?.headsign != null;
         const defaultSparklineDirs = sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
-        const hoveredSparklineDirs = hoveredSingleBranch
-          ? currentRoute.directions.filter(
-            d => dirIdNum(d.directionId) === dirIdNum(hoveredBranch.directionId) && d.headsign === hoveredBranch.headsign,
-          )
-          : defaultSparklineDirs;
         // One hourly series per direction, as shown by the direction pills. A
         // multi-branch direction whose branches share a trunk uses the combined
         // trunk curve; otherwise its branches are merged.
@@ -491,27 +486,17 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           ? worstDirectionByHour(directionsWithHours.map(entry => entry.byHour), HOURS)
           : sparklineHeadwayByHour(defaultSparklineDirs, HOURS);
         const hasTrunkSparkline = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
-        const showTrunkSparkline = !hoveredSingleBranch && hasTrunkSparkline;
         const defaultMerged = allDirections;
-        const hoveredMerged = hoveredSingleBranch
-          ? sparklineHeadwayByHour(hoveredSparklineDirs, HOURS)
-          : defaultMerged;
-        const mergedMaxGaps = hoveredSingleBranch
-          ? sparklineMaxGapByHour(hoveredSparklineDirs, HOURS)
-          : sparklineMaxGapByHour(
-            directionsWithHours.length > 0 ? directionsWithHours.flatMap(entry => entry.group.realTier) : defaultSparklineDirs,
-            HOURS,
-          );
-        // A hovered destination can have no hourly data in the active period.
-        // Falling back to the route chart keeps the chart mounted, so its layout
-        // does not shift under the pointer and cause hover flicker (#550).
-        const merged = HOURS.some(h => hoveredMerged[h] != null) ? hoveredMerged : defaultMerged;
+        const mergedMaxGaps = sparklineMaxGapByHour(
+          directionsWithHours.length > 0 ? directionsWithHours.flatMap(entry => entry.group.realTier) : defaultSparklineDirs,
+          HOURS,
+        );
         // Branch stacks describe the primary multi-branch direction: every hour that direction
         // runs is stacked, so whether an hour shows branch colours never depends on two series
         // landing on the same number (CIV-497).
-        const primaryTrunkByHour = showTrunkSparkline ? trunkSparklineByHour(primaryMultiBranch!.realTier, HOURS) : null;
-        const stackedByHour = showTrunkSparkline
-          ? Object.fromEntries(HOURS.map(h => [h, primaryTrunkByHour![h] != null && merged[h] != null
+        const primaryTrunkByHour = hasTrunkSparkline ? trunkSparklineByHour(primaryMultiBranch!.realTier, HOURS) : null;
+        const defaultStackedByHour = hasTrunkSparkline
+          ? Object.fromEntries(HOURS.map(h => [h, primaryTrunkByHour![h] != null && defaultMerged[h] != null
             ? primaryMultiBranch!.realTier
               .map((branch, i) => ({
                 label: branch.headsign ?? `Branch ${i + 1}`,
@@ -521,6 +506,44 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               .filter((segment): segment is { label: string; headway: number; color: string } => segment.headway != null)
             : []]))
           : undefined;
+        // A selected branch row (CIV-512) keeps the chart and its scale: the bars become that direction's
+        // trips each hour, split by branch (part-day branches too), each segment its own trips on the
+        // route's fixed axis, with the selected branch in full colour and the others faded.
+        const branchesOf = (group: DirectionGroup) => [...group.realTier, ...group.span];
+        const stackOf = (group: DirectionGroup, h: number, isSelected?: (b: ShapeProperties) => boolean) => branchesOf(group)
+          .map((branch, i) => ({
+            label: branch.headsign ?? `Branch ${i + 1}`,
+            headway: branchDisplayHourHeadway(branch, h),
+            color: branchStackColor(i),
+            ...(isSelected ? { faded: !isSelected(branch) } : {}),
+          }))
+          .filter((segment): segment is { label: string; headway: number; color: string; faded?: boolean } => segment.headway != null);
+        const tripsEvery = (segments: { headway: number }[]) => {
+          const perMinute = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
+          // Whole minutes, like the Combined row (groupTrunkHeadway), so the hour tooltip reads "every 15 min".
+          return perMinute > 0 ? Math.max(1, Math.round(1 / perMinute)) : null;
+        };
+        const selectedGroup = hoveredSingleBranch
+          ? displayGroups.find(group => dirIdNum(group.dirId) === dirIdNum(hoveredBranch!.directionId))
+          : undefined;
+        const isSelectedBranch = (b: ShapeProperties) => b.headsign === hoveredBranch?.headsign
+          || hoveredBranch?.headsigns?.includes(b.headsign ?? '') === true;
+        const selectionStacked = selectedGroup
+          ? Object.fromEntries(HOURS.map(h => [h, stackOf(selectedGroup, h, isSelectedBranch)]))
+          : null;
+        const selectionByHour = selectionStacked
+          ? Object.fromEntries(HOURS.map(h => [h, tripsEvery(selectionStacked[h])])) as Record<number, number | null>
+          : null;
+        // A selected branch's direction can have no hourly data in the active period. Falling back to
+        // the route chart keeps the chart mounted, so its layout does not shift under the pointer (#550).
+        const selected = !!selectionByHour && HOURS.some(h => selectionByHour[h] != null);
+        const merged = selected ? selectionByHour! : defaultMerged;
+        const stackedByHour = selected ? selectionStacked! : defaultStackedByHour;
+        // One y-axis top for the route: the busiest hour of anything the card or the full-day view can
+        // draw (the default chart, each direction, each direction's branches together).
+        const freqsOf = (series: Record<number, number | null>) => HOURS.map(h => series[h]).filter((v): v is number => v != null && v > 0).map(v => 1 / v);
+        const scaleMaxFreq = Math.max(0, ...freqsOf(defaultMerged), ...perDirection.flatMap(entry => freqsOf(entry.byHour)),
+          ...displayGroups.flatMap(group => HOURS.map(h => tripsEvery(stackOf(group, h))).filter((v): v is number => v != null).map(v => 1 / v)));
         // Full-day view: one pill per direction, opening on the slower one.
         // Single-direction routes get no pills.
         const pillLabels = directionPillLabels(
@@ -553,6 +576,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               maxGapByHour={mergedMaxGaps}
               seriesLabel={merged === defaultMerged && directionsWithHours.length > 1 ? 'slower direction' : undefined}
               stackedByHour={stackedByHour}
+              // The legend always names the default stack (none when there is none), so a selection never adds or swaps it.
+              legendStackedByHour={defaultStackedByHour ?? {}}
+              legendInvisible={selected}
+              scaleMaxFreq={scaleMaxFreq || undefined}
               directionOptions={directionOptions}
               period={period}
               onPeriodChange={p => setPeriod(p as TimePeriod)}

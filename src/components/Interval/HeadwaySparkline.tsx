@@ -83,7 +83,17 @@ export function slowerDirectionKey(options: { key: string; byHour: HeadwayByHour
 interface HourlySparklineProps {
   byHour: HeadwayByHour;
   maxGapByHour?: HeadwayByHourMaxGap;
-  stackedByHour?: Record<number, { label: string; headway: number; color: string }[]>;
+  /** Branch segments per hour; a `faded` segment is drawn at the out-of-period fade (a selected branch's others). */
+  stackedByHour?: Record<number, { label: string; headway: number; color: string; faded?: boolean }[]>;
+  /** The legend's branches, when they differ from the stack's (default: the stack's own). */
+  legendStackedByHour?: Record<number, { label: string; headway: number; color: string; faded?: boolean }[]>;
+  /** Keep the legend's space but hide it, so a selection doesn't shift the card under the pointer. */
+  legendInvisible?: boolean;
+  /**
+   * The route's one y-axis top, as trips per minute (1 / shortest headway across every direction and
+   * branch), so selecting a branch or a full-day direction never rescales the bars (CIV-512).
+   */
+  scaleMaxFreq?: number;
   directionOptions?: { key: string; label: string; byHour: HeadwayByHour; tripTime?: TripTimeSeries | null }[];
   period?: string;
   onPeriodChange?: (period: string) => void;
@@ -102,7 +112,7 @@ interface HourlySparklineProps {
   tripTime?: TripTimeSeries | null;
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq }: HourlySparklineProps) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
@@ -154,7 +164,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const valids = HOURS.map(h => displayedByHour[h]).filter((v): v is number => v != null);
   if (valids.length === 0) return null;
 
-  const maxFreq = Math.max(...valids.map(v => 1 / v));
+  // The route's fixed top when given (never below the tallest bar shown), else this series' busiest hour.
+  const ownMaxFreq = Math.max(...valids.map(v => 1 / v));
+  const maxFreq = scaleMaxFreq != null && scaleMaxFreq > 0 ? Math.max(scaleMaxFreq, ownMaxFreq) : ownMaxFreq;
 
   const activePeriodKey = expanded ? null : period && period !== 'all' ? period : null;
 
@@ -197,9 +209,10 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const bands = hoveredPeriod ? PERIOD_BANDS[hoveredPeriod] : null;
   // The full-day chart already labels every period along its top, so only the route card's chart names the hovered one.
   const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
-  const stackedLegend = stackedByHour
+  const legendSource = legendStackedByHour ?? stackedByHour;
+  const stackedLegend = legendSource
     ? Array.from(new Map(
-      Object.values(stackedByHour).flat().map(segment => [segment.label, segment]),
+      Object.values(legendSource).flat().map(segment => [segment.label, segment]),
     ).values())
     : [];
 
@@ -299,6 +312,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                         {segments.map(segment => (
                           <div
                             key={segment.label}
+                            className={segment.faded ? 'opacity-40' : undefined}
                             style={{ height: Math.max(2, barH * ((1 / segment.headway) / segmentTotalFreq)), background: segment.color }}
                           />
                         ))}
@@ -318,7 +332,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 
       </div>
       {(stackedLegend.length > 0 || reserveStackedLegendSpace) && (
-        <div className={`flex min-h-[10px] flex-col items-start gap-y-0.5 mt-1 text-xs font-bold text-[var(--text-dim)] leading-tight`}>
+        <div className={`flex min-h-[10px] flex-col items-start gap-y-0.5 mt-1 text-xs font-bold text-[var(--text-dim)] leading-tight ${legendInvisible ? 'invisible' : ''}`}>
           {stackedLegend.map(segment => (
             <LegendItem key={segment.label} color={segment.color}>{segment.label}</LegendItem>
           ))}
@@ -409,6 +423,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               onHourHover={onHourHover}
               title={title}
               expanded
+              scaleMaxFreq={scaleMaxFreq}
               tripTime={directionOptions?.find(option => option.key === expandedDirection)?.tripTime}
             />
           </div>

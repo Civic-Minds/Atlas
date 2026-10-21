@@ -269,6 +269,30 @@ describe('HeadwaySparkline', () => {
   });
 });
 
+describe('HeadwaySparkline fixed scale (CIV-512)', () => {
+  it('draws every full-day direction pill on the route\'s one y axis, not each on its own', () => {
+    render(
+      <HeadwaySparkline
+        byHour={{ 7: 10, 8: 10 }}
+        onPeriodChange={() => {}}
+        allowExpand
+        scaleMaxFreq={1 / 5}
+        directionOptions={[
+          { key: 'east', label: 'Eastbound', byHour: { 7: 10, 8: 10 } },
+          { key: 'west', label: 'Westbound', byHour: { 7: 5, 8: 5 } },
+        ]}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
+    const dialog = screen.getByRole('dialog');
+    const tallest = () => Math.max(...[...dialog.querySelectorAll<HTMLElement>('.relative.z-10.flex .rounded-full')].map(el => parseFloat(el.style.height) || 0));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Eastbound' }));
+    expect(tallest()).toBe(75); // every 10 on an every-5 axis: half of 150
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Westbound' }));
+    expect(tallest()).toBe(150);
+  });
+});
+
 describe('HeadwaySparkline full-day link', () => {
   const directions = [
     { key: 'southbound', label: 'Southbound', byHour: { 6: 30, 12: 20, 18: 25, 24: 45 } },
