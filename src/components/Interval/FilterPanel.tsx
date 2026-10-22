@@ -612,12 +612,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
               {contextLayerAvailable() && setContextMetric && (
                 <div className="px-5 pb-3">
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">{CONTEXT_CONTROL_TITLE}</p>
+                      <p className="text-xs font-bold text-[var(--text-primary)] leading-tight whitespace-nowrap">{CONTEXT_CONTROL_TITLE}</p>
                     </div>
                     <MenuButton
-                      className="text-xs shrink-0"
+                      className="text-xs shrink-0 ml-auto"
                       align="right"
                       label={CONTEXT_OPTIONS.find(o => o.key === (contextMetric ?? 'off'))!.label}
                       value={contextMetric ?? 'off'}

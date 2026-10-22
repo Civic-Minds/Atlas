@@ -68,7 +68,7 @@ export function useContextLayer(
       map.addSource(CONTEXT_SOURCE_ID, { type: 'vector', url: `pmtiles://${CONTEXT_LAYER_URL}` });
       if (!map.hasImage(HATCH_IMAGE)) map.addImage(HATCH_IMAGE, hatchImage(), { pixelRatio: 2 });
       const before = map.getLayer(BEFORE_LAYER) ? BEFORE_LAYER : undefined;
-      map.addLayer({ id: CONTEXT_FILL_LAYER, type: 'fill', source: CONTEXT_SOURCE_ID, 'source-layer': 'context', paint: { 'fill-opacity': CONTEXT_FILL_OPACITY, 'fill-color': '#000' } }, before);
+      map.addLayer({ id: CONTEXT_FILL_LAYER, type: 'fill', source: CONTEXT_SOURCE_ID, 'source-layer': 'context', paint: { 'fill-opacity': CONTEXT_FILL_OPACITY, 'fill-color': '#000', 'fill-antialias': ['step', ['zoom'], false, 10, true] } }, before);
       map.addLayer({ id: CONTEXT_NODATA_LAYER, type: 'fill', source: CONTEXT_SOURCE_ID, 'source-layer': 'context', paint: { 'fill-color': CONTEXT_NO_DATA_COLOUR, 'fill-opacity': 0.18 } }, before);
       map.addLayer({ id: CONTEXT_HATCH_LAYER, type: 'fill', source: CONTEXT_SOURCE_ID, 'source-layer': 'context', paint: { 'fill-pattern': HATCH_IMAGE, 'fill-opacity': 0.9 } }, before);
     }
