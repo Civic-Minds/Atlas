@@ -5,7 +5,10 @@ import AtlasBrand from './AtlasBrand';
 // Every surface uses this component so the logo looks the same on every device (#1058, CIV-508).
 // Props only choose the link target, the label, and which parts show; never add per-width
 // (sm:/max-sm:) classes that change how the logo looks.
-const LINK_CLASS = 'group flex items-center gap-2 shrink-0 rounded-full focus:outline-none focus-visible:!outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]';
+const RING = 'rounded-full focus:outline-none focus-visible:!outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]';
+// With the disc the link is an inline row. Wordmark-only (content pages, Live header) stays a plain inline link, so its box matches the text and not the whole column.
+const LINK_CLASS = `group inline-flex items-center gap-2 shrink-0 ${RING}`;
+const WORD_LINK_CLASS = `group ${RING}`;
 
 type Props = {
   ariaLabel: string;
@@ -30,6 +33,7 @@ export default function AtlasLogo({ ariaLabel, href, onClick, showMark = true, s
       {!hideWordmark && <AtlasBrand size={size} hideByline={hideByline} />}
     </>
   );
-  if (href) return <a href={href} aria-label={ariaLabel} className={LINK_CLASS}>{content}</a>;
-  return <button type="button" onClick={onClick} aria-label={ariaLabel} className={LINK_CLASS}>{content}</button>;
+  const cls = showMark ? LINK_CLASS : WORD_LINK_CLASS;
+  if (href) return <a href={href} aria-label={ariaLabel} className={cls}>{content}</a>;
+  return <button type="button" onClick={onClick} aria-label={ariaLabel} className={cls}>{content}</button>;
 }
