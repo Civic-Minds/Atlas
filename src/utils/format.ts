@@ -14,6 +14,18 @@ export function searchOverlayHidesPanel(searchFocused: boolean, query: string): 
   return searchFocused || query.trim() !== '';
 }
 
+/**
+ * Compare pushes the sidebar's cards (route, stop, agency) down to this top so they clear the A map's
+ * label and chips. The search suggestions and results are not cards: they hang straight under the
+ * search bar, like outside Compare.
+ */
+export const COMPARE_PANEL_TOP = 160;
+
+/** Top offset in px for the floating sidebar panel in Compare, or null to keep the normal slot under the search bar. */
+export function comparePanelTop(compareActive: boolean, searchFocused: boolean, query: string): number | null {
+  return compareActive && !searchOverlayHidesPanel(searchFocused, query) ? COMPARE_PANEL_TOP : null;
+}
+
 const TRANSIT_ACRONYMS: Record<string, string> = {
   Go: 'GO',
   Dc: 'DC',

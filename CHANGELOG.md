@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **In Compare, search suggestions and results open right under the search bar**: they had been pushed down about 90px more than in the normal map, leaving a big empty gap; route, stop and agency cards still clear the map labels ([#1066](https://github.com/Civic-Minds/Atlas/issues/1066))
 - **Long rural and highway routes are drawn in full, and their frequency is read at the real end of the line**: sparse shape points on a long straight road were mistaken for bad data and the rest of the line was dropped, as on Prince George routes ([#1057](https://github.com/Civic-Minds/Atlas/issues/1057))
 - **The Atlas logo is a light circle with a dark map icon on desktop too, in both themes**: it was still a solid dark circle (and a washed-out one in the dark theme) above phone width ([#1058](https://github.com/Civic-Minds/Atlas/issues/1058))
 - **The route card's hour chart colours every hour with trips**: hours outside the chosen period are faded instead of some going grey ([#1055](https://github.com/Civic-Minds/Atlas/issues/1055))
