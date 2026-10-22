@@ -734,9 +734,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         ? headwayAboutRange(contract.range[0], directionFallback)
                         : undefined;
                       const displayH = variantH !== undefined ? variantH : directionFallback ?? ownH;
-                      // CIV-513: a row busier than its direction (branches pooled under one name) reads as the range.
+                      // CIV-513: a row pooling branches under one name reads as the published rule-3 range.
                       const pooledRange = hoveredHour == null && variantH === undefined && directionFallback == null
-                        ? pooledRowRange(d, period, ownH, group.realTier.length)
+                        ? pooledRowRange(d, period, group.realTier.length, ownH)
                         : null;
                       // #934 and D6: the main stretch's row names a late start, an early end or one gap inside
                       // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.

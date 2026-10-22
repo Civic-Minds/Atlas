@@ -154,15 +154,22 @@ export function routeValueIsOneGap(features: readonly ShapeProperties[], period:
 }
 
 /**
- * CIV-513: a row whose own cadence is busier than its direction's value (a row pooling branches that share a
- * name, like MARTA 20 Westbound to Five Points: every 15 pooled, the direction every 30) shows the range from its
- * own number to the direction's, rule 3's "every 15-30 min", so the two directions read the same way. Null for
- * every other row (its own number already is its direction's, or there is nothing to compare).
+ * CIV-513: the direction's one row, which the stretch data reads as a branch (tail), stands for several patterns
+ * pooled under one name (MARTA 20 Westbound to Five Points: every 15 pooled, every 30 per branch). It shows the range
+ * the data publishes for rule 3 (main stretch to slowest branch, "every 15-30 min"), so the two directions read the
+ * same way. Only when the row's own number is the range's low end (within a minute): the row is the pooled figure.
+ * Null when the data has no range, when its slow end is not the route's value, when it is under 2 minutes wide (noise), or when either end would be rounded in
+ * the text (over 60 and not a multiple of 30), so the card never shows an end the data does not have.
  */
-export function pooledRowRange(f: ShapeProperties, period: TimePeriod, ownHeadway: number | null | undefined, rowsInDirection: number): [number, number] | null {
-  // The pooled-name shape only: the direction's one row, which the stretch data reads as a branch (tail), so it
-  // stands for several patterns. A main-stretch row, or a branch with rows of its own, keeps its single number.
-  if (period === 'all' || ownHeadway == null || rowsInDirection !== 1 || f.stretchRole !== 'tail') return null;
-  const direction = f.directionFilterHeadwayByPeriod?.[period as PeriodKey];
-  return typeof direction === 'number' && ownHeadway < direction ? [ownHeadway, direction] : null;
+export function pooledRowRange(f: ShapeProperties, period: TimePeriod, rowsInDirection: number, ownHeadway: number | null | undefined): [number, number] | null {
+  if (period === 'all' || rowsInDirection !== 1 || f.stretchRole !== 'tail' || ownHeadway == null) return null;
+  const contract = routeContract([f], period);
+  const range = contract?.range;
+  if (!range) return null;
+  const [low, high] = range;
+  if (Math.abs(ownHeadway - low) > 1) return null;
+  // The slow end must be the route's own value, the number the filter uses (MBTA 40 Saturday: range 58-60, value 162).
+  if (high !== contract.filterValue) return null;
+  const exact = (m: number) => m <= 60 || m % 30 === 0;
+  return high - low >= 2 && exact(low) && exact(high) ? [low, high] : null;
 }
