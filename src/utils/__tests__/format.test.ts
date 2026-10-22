@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
+import { COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -199,5 +199,20 @@ describe('fmtHeadway', () => {
   it('uses cautious wording for scheduled cadence', () => {
     expect(fmtHeadway(10)).toBe('every 10 min');
     expect(fmtHeadway(90)).toBe('every 90 min');
+  });
+});
+
+describe('comparePanelTop', () => {
+  it('keeps cards below the Compare labels and chips', () => {
+    expect(comparePanelTop(true, false, '')).toBe(COMPARE_PANEL_TOP);
+  });
+  it('puts search suggestions and results straight under the search bar', () => {
+    expect(comparePanelTop(true, true, '')).toBeNull();
+    expect(comparePanelTop(true, true, 'Bloor')).toBeNull();
+    expect(comparePanelTop(true, false, 'Bloor')).toBeNull();
+  });
+  it('leaves the normal slot alone outside Compare', () => {
+    expect(comparePanelTop(false, false, '')).toBeNull();
+    expect(comparePanelTop(false, true, 'Bloor')).toBeNull();
   });
 });

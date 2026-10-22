@@ -5,7 +5,7 @@ import { useColorVision } from '../../context/ColorVisionContext';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { routeLabels, shortenAgencyName, searchOverlayHidesPanel } from '../../utils/format';
+import { routeLabels, shortenAgencyName, searchOverlayHidesPanel, comparePanelTop } from '../../utils/format';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { hasDirectionPeriodService, partPeriodText, routeCardDisplayHeadway, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -23,7 +23,7 @@ import {
   type RouteSearchResult,
   type StopSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, TRANSITION_BASE, PANEL_SIDEBAR, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, TRANSITION_BASE, PANEL_SIDEBAR_SLOT, Z_PANEL, Z_DROPDOWN, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
 import type { StopRoute, NearbyConnection } from './panels/StopCard';
@@ -89,9 +89,6 @@ interface SidebarControlsProps {
   analyticsApp?: string;
   onSearchRouteHover?: (key: string | null) => void;
 }
-
-/** Below map A's compare label and controls row (label, then a row of chips, from 68px). */
-const COMPARE_PANEL_TOP = 160;
 
 /**
  * Phone bottom sheet while comparing: map B is the lower half, with its label and Frequency, Day and
@@ -963,14 +960,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   if (!panelShouldRender) return null;
 
+  const compareTop = comparePanelTop(compareActive, searchFocused, query);
+
   return (
     <div
       className={sheetMode
         ? `${BOTTOM_SHEET_FRAME} ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`
-        : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+        : `${PANEL_SIDEBAR_SLOT} ${searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-        ...(compareActive ? { top: `${COMPARE_PANEL_TOP}px`, maxHeight: `calc(100vh - ${COMPARE_PANEL_TOP + 64}px)` } : {}),
+        ...(compareTop != null ? { top: `${compareTop}px`, maxHeight: `calc(100vh - ${compareTop + 64}px)` } : {}),
         ...(matchSearchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}
     >
