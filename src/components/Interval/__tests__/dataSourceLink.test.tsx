@@ -86,11 +86,17 @@ describe('Data source link', () => {
       expect(chip.querySelector('span')?.className).toContain('truncate');
     });
 
-    it('public mode keeps About and the area chip, drops only Data source', () => {
+    it('public mode keeps the old header: About, then the area name as a text link, no chip', () => {
       flags.on = false;
       card(ttc);
-      expect(screen.getByRole('link', { name: 'About this agency' })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /^All Greater Toronto/ })).toBeInTheDocument();
+      const about = screen.getByRole('link', { name: 'About this agency' });
+      const area = screen.getByRole('link', { name: /^All Greater Toronto and Hamilton Area agencies/ });
+      expect(area).toHaveAttribute('href', '/area/toronto');
+      expect(area.className).toContain('text-[var(--accent)]');
+      expect(area.className).not.toContain('rounded-full');
+      expect(area).not.toHaveAttribute('title');
+      expect(about.parentElement).toBe(area.parentElement);
+      expect(about.compareDocumentPosition(area) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       expect(screen.queryByText('Data source')).toBeNull();
     });
   });
