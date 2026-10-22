@@ -158,7 +158,7 @@ export function routeValueIsOneGap(features: readonly ShapeProperties[], period:
  * pooled under one name (MARTA 20 Westbound to Five Points: every 15 pooled, every 30 per branch). It shows the range
  * the data publishes for rule 3 (main stretch to slowest branch, "every 15-30 min"), so the two directions read the
  * same way. Only when the row's own number is the range's low end (within a minute): the row is the pooled figure.
- * Null when the data has no range, when its slow end is not the route's value, when it is under 2 minutes wide (noise), or when either end would be rounded in
+ * Null when the data has no range, when its slow end is not the route's value or not this direction's own value, when it is under 2 minutes wide (noise), or when either end would be rounded in
  * the text (over 60 and not a multiple of 30), so the card never shows an end the data does not have.
  */
 export function pooledRowRange(f: ShapeProperties, period: TimePeriod, rowsInDirection: number, ownHeadway: number | null | undefined): [number, number] | null {
@@ -170,6 +170,10 @@ export function pooledRowRange(f: ShapeProperties, period: TimePeriod, rowsInDir
   if (Math.abs(ownHeadway - low) > 1) return null;
   // The slow end must be the route's own value, the number the filter uses (MBTA 40 Saturday: range 58-60, value 162).
   if (high !== contract.filterValue) return null;
+  // ...and it must be THIS direction's own value (within a minute): the route's value can belong to the opposite
+  // direction (TTC 507 Eastbound runs every 7, the range's 15 is Westbound's).
+  const own = f.directionFilterHeadwayByPeriod?.[period as PeriodKey];
+  if (typeof own !== 'number' || Math.abs(own - high) > 1) return null;
   const exact = (m: number) => m <= 60 || m % 30 === 0;
   return high - low >= 2 && exact(low) && exact(high) ? [low, high] : null;
 }
