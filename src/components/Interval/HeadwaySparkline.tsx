@@ -309,9 +309,10 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   {hasValue && (
                     segments.length > 0 && segmentTotalFreq > 0 ? (
                       <div className={`${barShape} flex flex-col-reverse overflow-hidden transition-opacity duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}>
-                        {segments.map(segment => (
+                        {/* Keyed by position too: two branches can share a name (TTC 51's "Donlands via Laird"). */}
+                        {segments.map((segment, i) => (
                           <div
-                            key={segment.label}
+                            key={`${segment.label}-${i}`}
                             className={segment.faded ? 'opacity-40' : undefined}
                             style={{ height: Math.max(2, barH * ((1 / segment.headway) / segmentTotalFreq)), background: segment.color }}
                           />
@@ -333,8 +334,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
       </div>
       {(stackedLegend.length > 0 || reserveStackedLegendSpace) && (
         <div className={`flex min-h-[10px] flex-col items-start gap-y-0.5 mt-1 text-xs font-bold text-[var(--text-dim)] leading-tight ${legendInvisible ? 'invisible' : ''}`}>
-          {stackedLegend.map(segment => (
-            <LegendItem key={segment.label} color={segment.color}>{segment.label}</LegendItem>
+          {stackedLegend.map((segment, i) => (
+            <LegendItem key={`${segment.label}-${i}`} color={segment.color}>{segment.label}</LegendItem>
           ))}
         </div>
       )}

@@ -269,6 +269,28 @@ describe('HeadwaySparkline', () => {
   });
 });
 
+describe('HeadwaySparkline branch pieces with one name (CIV-512)', () => {
+  it('two branches sharing a name keep two pieces through re-renders, never piling up', () => {
+    const twin = (faded?: boolean) => ({ 8: [
+      { label: 'Donlands via Laird', headway: 30, color: '#00f', faded },
+      { label: 'Donlands via Laird', headway: 30, color: '#f0f' },
+    ] });
+    const { container, rerender } = render(<HeadwaySparkline byHour={{ 8: 15 }} stackedByHour={twin()} />);
+    const pieces = () => container.querySelectorAll('.relative.z-10.flex .rounded-full > div').length;
+    expect(pieces()).toBe(2);
+    // Like hovering TTC 51's Northbound rows and leaving: another direction's two branches, then back.
+    const other = { 8: [
+      { label: 'Leslie Station via Laird', headway: 30, color: '#00f' },
+      { label: 'Don Mills via Laird', headway: 30, color: '#f0f', faded: true },
+    ] };
+    for (let i = 0; i < 5; i++) {
+      rerender(<HeadwaySparkline byHour={{ 8: 15 }} stackedByHour={other} />);
+      rerender(<HeadwaySparkline byHour={{ 8: 15 }} stackedByHour={twin()} />);
+    }
+    expect(pieces()).toBe(2);
+  });
+});
+
 describe('HeadwaySparkline fixed scale (CIV-512)', () => {
   it('draws every full-day direction pill on the route\'s one y axis, not each on its own', () => {
     render(
