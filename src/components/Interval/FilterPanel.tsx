@@ -618,6 +618,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </div>
                     <MenuButton
                       className="text-xs shrink-0"
+                      align="right"
                       label={CONTEXT_OPTIONS.find(o => o.key === (contextMetric ?? 'off'))!.label}
                       value={contextMetric ?? 'off'}
                       options={CONTEXT_OPTIONS}

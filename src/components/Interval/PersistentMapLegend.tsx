@@ -10,7 +10,7 @@ export function PersistentMapLegend({ contextMetric = null }: { /** The populati
   return (
     <aside
       aria-label="Map legend"
-      className={`${FLOATING_CARD} absolute bottom-16 ${contextMetric ? 'max-sm:bottom-[6.5rem]' : ''} left-5 z-[500] w-72 max-w-[calc(100vw-2.5rem)] p-3 pointer-events-auto`}
+      className={`${FLOATING_CARD} absolute bottom-16 ${contextMetric ? 'max-sm:bottom-[calc(6.5rem+2px)]' : ''} left-5 z-[500] w-72 max-w-[calc(100vw-2.5rem)] p-3 pointer-events-auto`}
     >
       <div className="space-y-1">
         <p className="text-xs font-bold text-[var(--text-muted)]">Frequency</p>
