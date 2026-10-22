@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
+import { Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN, SEARCH_ICON } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
-import AtlasBrand from './components/AtlasBrand';
+import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 const Interval = React.lazy(() => import('./apps/Interval'));
@@ -618,8 +618,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6 h-[28px]'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
       <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 min-w-0 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
-        <button
-          type="button"
+        <AtlasLogo
+          hideByline
+          hideWordmark={phoneSearchExpanded}
           onClick={() => {
             if (inFrequentServiceStory) {
               navigate(FEATURE_ROUTES.frequentService.map);
@@ -632,14 +633,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               navigate('/');
             }
           }}
-          aria-label={inFrequentServiceStory ? 'Back to frequency map' : 'Atlas home'}
-          className="group flex items-center gap-2 shrink-0 rounded-full focus:outline-none focus-visible:!outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
-        >
-          <span className="w-8 h-8 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] shadow-lg rounded-full flex items-center justify-center shrink-0 group-hover:opacity-80 transition-opacity">
-            <MapIcon className="w-3.5 h-3.5 text-[var(--accent)]" />
-          </span>
-          {!phoneSearchExpanded && <AtlasBrand hideByline />}
-        </button>
+          ariaLabel={inFrequentServiceStory ? 'Back to frequency map' : 'Atlas home'}
+        />
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
         <div className="flex-1 min-w-0 sm:flex">
