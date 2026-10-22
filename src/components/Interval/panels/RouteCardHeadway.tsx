@@ -547,7 +547,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // draw (the default chart, each direction, each direction's branches together).
         const freqsOf = (series: Record<number, number | null>) => HOURS.map(h => series[h]).filter((v): v is number => v != null && v > 0).map(v => 1 / v);
         const scaleMaxFreq = Math.max(0, ...freqsOf(defaultMerged), ...perDirection.flatMap(entry => freqsOf(entry.byHour)),
-          ...displayGroups.flatMap(group => HOURS.map(h => tripsEvery(stackOf(group, h))).filter((v): v is number => v != null).map(v => 1 / v)));
+          // Only directions that can draw a branch stack (two or more branches): a one-branch direction's raw
+          // hourly reading is never drawn, so it must not set the top (Milton 4: a 6 a.m. reading of 18 vs 30 shown).
+          ...displayGroups.filter(group => branchesOf(group).length >= 2)
+            .flatMap(group => HOURS.map(h => tripsEvery(stackOf(group, h))).filter((v): v is number => v != null).map(v => 1 / v)));
         // Full-day view: one pill per direction, opening on the slower one.
         // Single-direction routes get no pills.
         const pillLabels = directionPillLabels(
