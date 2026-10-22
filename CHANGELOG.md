@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Hovering a branch row on a route card makes that branch stand out on the map**: the selected route's top layer covered the highlight, so every branch stayed equally bright ([#1064](https://github.com/Civic-Minds/Atlas/issues/1064))
+- **Hovering one of two route card rows that share a destination highlights only that row**: rows split by where trips start (TTC 51 Southbound) lit up together, and the hour chart showed both ([#1064](https://github.com/Civic-Minds/Atlas/issues/1064))
+- **The route card's hour chart keeps one scale**: picking a branch row shows that branch's share of its direction's trips instead of redrawing the chart on a new scale, part-day branches included, and the full-day view's directions share that scale ([#1063](https://github.com/Civic-Minds/Atlas/issues/1063))
+- **The full-day view reads as one chart (beta)**: trip time sits directly under the frequency bars at the same height with one row of times under both, the bars are slimmer, the panel is narrower, and the trip-time label is just "Trip time"
 - **Long rural and highway routes are drawn in full, and their frequency is read at the real end of the line**: sparse shape points on a long straight road were mistaken for bad data and the rest of the line was dropped, as on Prince George routes ([#1057](https://github.com/Civic-Minds/Atlas/issues/1057))
 - **The Atlas logo is a light circle with a dark map icon on desktop too, in both themes**: it was still a solid dark circle (and a washed-out one in the dark theme) above phone width ([#1058](https://github.com/Civic-Minds/Atlas/issues/1058))
 - **The route card's hour chart colours every hour with trips**: hours outside the chosen period are faded instead of some going grey ([#1055](https://github.com/Civic-Minds/Atlas/issues/1055))

@@ -229,7 +229,16 @@ describe('HeadwaySparkline', () => {
     // Opens on the slower direction, which has no trip time data.
     expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
     fireEvent.click(within(dialog).getByRole('button', { name: 'Eastbound' }));
-    expect(within(dialog).getByText('Trip time: 38\u201352 min')).toBeInTheDocument();
+    expect(within(dialog).getByText('Trip time')).toBeInTheDocument();
+    // CIV-510: the strip sits directly under the frequency chart, the same height, with one row of
+    // clock labels under both (none between the charts).
+    const tripStrip = within(dialog).getByTestId('trip-time-strip');
+    const chartColumn = dialog.querySelector<HTMLElement>('.relative.z-10.flex > div > div')!;
+    expect((tripStrip.children[1].children[0] as HTMLElement).style.height).toBe(chartColumn.style.height);
+    expect(chartColumn.style.height).toBe('150px');
+    const clock = within(dialog).getByText('6:00a');
+    expect(tripStrip.compareDocumentPosition(clock) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(dialog).getAllByText('6:00a')).toHaveLength(1);
     const bars = within(dialog).getAllByTestId('trip-time-bar');
     expect(bars).toHaveLength(3);
     // 9 p.m. has trips but no trip time: a faint tick, not a gap that reads as no service.
@@ -257,6 +266,52 @@ describe('HeadwaySparkline', () => {
     expect(bars[0].className).toContain('opacity-50');
     fireEvent.click(within(dialog).getByRole('button', { name: 'Westbound' }));
     expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
+  });
+});
+
+describe('HeadwaySparkline branch pieces with one name (CIV-512)', () => {
+  it('two branches sharing a name keep two pieces through re-renders, never piling up', () => {
+    const twin = (faded?: boolean) => ({ 8: [
+      { label: 'Donlands via Laird', headway: 30, color: '#00f', faded },
+      { label: 'Donlands via Laird', headway: 30, color: '#f0f' },
+    ] });
+    const { container, rerender } = render(<HeadwaySparkline byHour={{ 8: 15 }} stackedByHour={twin()} />);
+    const pieces = () => container.querySelectorAll('.relative.z-10.flex .rounded-full > div').length;
+    expect(pieces()).toBe(2);
+    // Like hovering TTC 51's Northbound rows and leaving: another direction's two branches, then back.
+    const other = { 8: [
+      { label: 'Leslie Station via Laird', headway: 30, color: '#00f' },
+      { label: 'Don Mills via Laird', headway: 30, color: '#f0f', faded: true },
+    ] };
+    for (let i = 0; i < 5; i++) {
+      rerender(<HeadwaySparkline byHour={{ 8: 15 }} stackedByHour={other} />);
+      rerender(<HeadwaySparkline byHour={{ 8: 15 }} stackedByHour={twin()} />);
+    }
+    expect(pieces()).toBe(2);
+  });
+});
+
+describe('HeadwaySparkline fixed scale (CIV-512)', () => {
+  it('draws every full-day direction pill on the route\'s one y axis, not each on its own', () => {
+    render(
+      <HeadwaySparkline
+        byHour={{ 7: 10, 8: 10 }}
+        onPeriodChange={() => {}}
+        allowExpand
+        scaleMaxFreq={1 / 5}
+        directionOptions={[
+          { key: 'east', label: 'Eastbound', byHour: { 7: 10, 8: 10 } },
+          { key: 'west', label: 'Westbound', byHour: { 7: 5, 8: 5 } },
+        ]}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
+    const dialog = screen.getByRole('dialog');
+    const tallest = () => Math.max(...[...dialog.querySelectorAll<HTMLElement>('.relative.z-10.flex .rounded-full')].map(el => parseFloat(el.style.height) || 0));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Eastbound' }));
+    expect(tallest()).toBe(75); // every 10 on an every-5 axis: half of 150
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Westbound' }));
+    expect(tallest()).toBe(150);
   });
 });
 

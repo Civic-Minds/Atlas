@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatHourPlain, slowerOfSeries, tripTimeSeriesFor, tripTimeSummary } from '../tripTime';
+import { formatHourPlain, slowerOfSeries, tripTimeSeriesFor } from '../tripTime';
 import { tripTimeBarHeight } from '../tripTime';
 
 const published = {
@@ -19,17 +19,6 @@ describe('tripTime', () => {
     expect(tripTimeSeriesFor(published, ['14'], 0, 'Sunday')).toBeNull();
     expect(tripTimeSeriesFor(published, ['9'], 0, 'Weekday')).toBeNull();
     expect(tripTimeSeriesFor(published, ['77', '14'], 0, 'Weekday')).not.toBeNull();
-  });
-
-  it('says the range in plain words; the longest hours are left to the chart (CIV-493)', () => {
-    const series = tripTimeSeriesFor(published, ['14'], 0, 'Weekday');
-    expect(tripTimeSummary(series)).toBe('Trip time: 38–52 min');
-  });
-
-  it('says "about N min all day" when every hour is the same, and hides with no data', () => {
-    expect(tripTimeSummary({ byHour: { 8: 30, 9: 30 } })).toBe('Trip time: about 30 min all day');
-    expect(tripTimeSummary(null)).toBeNull();
-    expect(tripTimeSummary({ byHour: {} })).toBeNull();
   });
 
   it('takes the slower direction per hour for all directions', () => {

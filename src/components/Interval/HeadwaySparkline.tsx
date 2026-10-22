@@ -15,13 +15,16 @@ import { delayAmount, headwayEvery } from '../../utils/headwayText';
 import { TripTimeStrip, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
 import { tripTimeHourTitle, type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
+import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
 import { HOUR_TO_PERIOD, PERIOD_BANDS, PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
 export const SPARKLINE_CARD_HEIGHT = 32;
-/** Bar area height of the expanded full-day sparkline, in px. */
+/** Bar area height of each full-day chart (frequency and trip time, the same so they compare), in px. */
 export const SPARKLINE_EXPANDED_HEIGHT = 150;
+/** The same on phones, where the two charts stack in a short screen. */
+export const SPARKLINE_EXPANDED_HEIGHT_PHONE = 100;
 
 const HOURS = SPARKLINE_HOURS;
 
@@ -80,7 +83,17 @@ export function slowerDirectionKey(options: { key: string; byHour: HeadwayByHour
 interface HourlySparklineProps {
   byHour: HeadwayByHour;
   maxGapByHour?: HeadwayByHourMaxGap;
-  stackedByHour?: Record<number, { label: string; headway: number; color: string }[]>;
+  /** Branch segments per hour; a `faded` segment is drawn at the out-of-period fade (a selected branch's others). */
+  stackedByHour?: Record<number, { label: string; headway: number; color: string; faded?: boolean }[]>;
+  /** The legend's branches, when they differ from the stack's (default: the stack's own). */
+  legendStackedByHour?: Record<number, { label: string; headway: number; color: string; faded?: boolean }[]>;
+  /** Keep the legend's space but hide it, so a selection doesn't shift the card under the pointer. */
+  legendInvisible?: boolean;
+  /**
+   * The route's one y-axis top, as trips per minute (1 / shortest headway across every direction and
+   * branch), so selecting a branch or a full-day direction never rescales the bars (CIV-512).
+   */
+  scaleMaxFreq?: number;
   directionOptions?: { key: string; label: string; byHour: HeadwayByHour; tripTime?: TripTimeSeries | null }[];
   period?: string;
   onPeriodChange?: (period: string) => void;
@@ -99,11 +112,12 @@ interface HourlySparklineProps {
   tripTime?: TripTimeSeries | null;
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq }: HourlySparklineProps) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
+  const phone = useMediaQuery(PHONE_MEDIA_QUERY);
   // Hovering the trip-time strip reports that hour's trip time in the hover line instead.
   const [hoveredTripHour, setHoveredTripHour] = useState<number | null>(null);
   // Only the route card's chart (not the copy inside the full-day view) is linkable.
@@ -139,7 +153,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     return () => syncUrlParams({ fullday: null, fdir: null });
   }, [ownsUrl]);
 
-  const H = expanded ? SPARKLINE_EXPANDED_HEIGHT : SPARKLINE_CARD_HEIGHT;
+  const H = expanded ? (phone ? SPARKLINE_EXPANDED_HEIGHT_PHONE : SPARKLINE_EXPANDED_HEIGHT) : SPARKLINE_CARD_HEIGHT;
   const displayedByHour = byHour;
   // The full-day view shows the direction picked with the pills above it;
   // the inline chart always shows the route's merged schedule.
@@ -150,7 +164,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const valids = HOURS.map(h => displayedByHour[h]).filter((v): v is number => v != null);
   if (valids.length === 0) return null;
 
-  const maxFreq = Math.max(...valids.map(v => 1 / v));
+  // The route's fixed top when given (never below the tallest bar shown), else this series' busiest hour.
+  const ownMaxFreq = Math.max(...valids.map(v => 1 / v));
+  const maxFreq = scaleMaxFreq != null && scaleMaxFreq > 0 ? Math.max(scaleMaxFreq, ownMaxFreq) : ownMaxFreq;
 
   const activePeriodKey = expanded ? null : period && period !== 'all' ? period : null;
 
@@ -193,9 +209,10 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const bands = hoveredPeriod ? PERIOD_BANDS[hoveredPeriod] : null;
   // The full-day chart already labels every period along its top, so only the route card's chart names the hovered one.
   const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
-  const stackedLegend = stackedByHour
+  const legendSource = legendStackedByHour ?? stackedByHour;
+  const stackedLegend = legendSource
     ? Array.from(new Map(
-      Object.values(stackedByHour).flat().map(segment => [segment.label, segment]),
+      Object.values(legendSource).flat().map(segment => [segment.label, segment]),
     ).values())
     : [];
 
@@ -292,9 +309,11 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   {hasValue && (
                     segments.length > 0 && segmentTotalFreq > 0 ? (
                       <div className={`${barShape} flex flex-col-reverse overflow-hidden transition-opacity duration-75 ${isTooltipHover ? 'opacity-100' : opacity}`}>
-                        {segments.map(segment => (
+                        {/* Keyed by position too: two branches can share a name (TTC 51's "Donlands via Laird"). */}
+                        {segments.map((segment, i) => (
                           <div
-                            key={segment.label}
+                            key={`${segment.label}-${i}`}
+                            className={segment.faded ? 'opacity-40' : undefined}
                             style={{ height: Math.max(2, barH * ((1 / segment.headway) / segmentTotalFreq)), background: segment.color }}
                           />
                         ))}
@@ -314,11 +333,23 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 
       </div>
       {(stackedLegend.length > 0 || reserveStackedLegendSpace) && (
-        <div className={`flex min-h-[10px] flex-col items-start gap-y-0.5 mt-1 text-xs font-bold text-[var(--text-dim)] leading-tight`}>
-          {stackedLegend.map(segment => (
-            <LegendItem key={segment.label} color={segment.color}>{segment.label}</LegendItem>
+        <div className={`flex min-h-[10px] flex-col items-start gap-y-0.5 mt-1 text-xs font-bold text-[var(--text-dim)] leading-tight ${legendInvisible ? 'invisible' : ''}`}>
+          {stackedLegend.map((segment, i) => (
+            <LegendItem key={`${segment.label}-${i}`} color={segment.color}>{segment.label}</LegendItem>
           ))}
         </div>
+      )}
+      {expanded && (
+        // Directly under the frequency chart, the same height, on the same hour columns; one row of
+        // clock labels under both (CIV-510).
+        <TripTimeStrip
+          series={tripTime}
+          height={H}
+          serviceHours={new Set(HOURS.filter(h => displayedByHour[h] != null))}
+          // Two-way hover (CIV-505): an hour hovered in either chart lights the same column in both.
+          hoveredHour={hoveredTripHour ?? hoveredHour}
+          onHourHover={setHoveredTripHour}
+        />
       )}
       <div className="flex gap-px mt-1">
         {HOURS.map(h => (
@@ -337,16 +368,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         ))}
       </div>
       {expanded && (
-        <TripTimeStrip
-          series={tripTime}
-          label="Trip time"
-          serviceHours={new Set(HOURS.filter(h => displayedByHour[h] != null))}
-          // Two-way hover (CIV-505): an hour hovered in either chart lights the same column in both.
-          hoveredHour={hoveredTripHour ?? hoveredHour}
-          onHourHover={setHoveredTripHour}
-        />
-      )}
-      {expanded && (
         <div className="mt-3 min-h-5 text-center text-xs font-bold text-[var(--text-muted)]" aria-live="polite">
           {hoveredTripHour != null && tripTime?.byHour[hoveredTripHour] != null
             ? tripTimeHourTitle(hoveredTripHour, tripTime.byHour[hoveredTripHour]!)
@@ -363,7 +384,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           className="fixed inset-0 z-[1700] flex items-center justify-center bg-[var(--bg-app)]/60 p-4 backdrop-blur-sm"
           onMouseDown={event => { if (event.target === event.currentTarget) setIsExpanded(false); }}
         >
-          <div className="w-full max-w-6xl max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 shadow-2xl">
+          <div className="w-full max-w-[900px] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-base font-black text-[var(--text-primary)]">{title}</h2>
@@ -403,6 +424,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               onHourHover={onHourHover}
               title={title}
               expanded
+              scaleMaxFreq={scaleMaxFreq}
               tripTime={directionOptions?.find(option => option.key === expandedDirection)?.tripTime}
             />
           </div>
