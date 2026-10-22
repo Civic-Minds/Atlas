@@ -152,3 +152,17 @@ export function routeValueIsOneGap(features: readonly ShapeProperties[], period:
   const key = period as PeriodKey;
   return features.some(f => f.stretchPeriodOneGap?.[key] === true && f.directionFilterHeadwayByPeriod?.[key] === contract.filterValue);
 }
+
+/**
+ * CIV-513: a row whose own cadence is busier than its direction's value (a row pooling branches that share a
+ * name, like MARTA 20 Westbound to Five Points: every 15 pooled, the direction every 30) shows the range from its
+ * own number to the direction's, rule 3's "every 15-30 min", so the two directions read the same way. Null for
+ * every other row (its own number already is its direction's, or there is nothing to compare).
+ */
+export function pooledRowRange(f: ShapeProperties, period: TimePeriod, ownHeadway: number | null | undefined, rowsInDirection: number): [number, number] | null {
+  // The pooled-name shape only: the direction's one row, which the stretch data reads as a branch (tail), so it
+  // stands for several patterns. A main-stretch row, or a branch with rows of its own, keeps its single number.
+  if (period === 'all' || ownHeadway == null || rowsInDirection !== 1 || f.stretchRole !== 'tail') return null;
+  const direction = f.directionFilterHeadwayByPeriod?.[period as PeriodKey];
+  return typeof direction === 'number' && ownHeadway < direction ? [ownHeadway, direction] : null;
+}

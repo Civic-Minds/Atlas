@@ -41,7 +41,7 @@ import {
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import { activeHourRanges, partPeriodNoticeApplies } from '../../../utils/periodActiveRanges';
 import { rowLabelWithOrigin } from '../../../utils/rowOriginLabel';
-import { hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, routeAllDayContract, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
+import { hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, pooledRowRange, routeAllDayContract, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
@@ -734,6 +734,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         ? headwayAboutRange(contract.range[0], directionFallback)
                         : undefined;
                       const displayH = variantH !== undefined ? variantH : directionFallback ?? ownH;
+                      // CIV-513: a row busier than its direction (branches pooled under one name) reads as the range.
+                      const pooledRange = hoveredHour == null && variantH === undefined && directionFallback == null
+                        ? pooledRowRange(d, period, ownH, group.realTier.length)
+                        : null;
                       // #934 and D6: the main stretch's row names a late start, an early end or one gap inside
                       // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.
                       // A period that is one gap between a few departures (#955) has no cadence to word.
@@ -764,7 +768,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             headway={rowNoRegular ? undefined : displayH ?? undefined}
                             limitedLabel={isLimited && edgeText ? edgeText : rowNoRegular ? noRegularLabel : undefined}
                             colorHeadway={hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined}
-                            headwayLabel={hoveredHour == null && variantH === undefined ? (edgeText ?? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period))) : undefined}
+                            headwayLabel={hoveredHour == null && variantH === undefined ? (edgeText ?? (directionFallback != null ? fallbackRange : (routeCardCoverageText(d, period) ?? (pooledRange && !rowNoRegular && !isLimited ? headwayAboutRange(pooledRange[0], pooledRange[1]) : undefined)))) : undefined}
                             trunkHeadway={trunkHw}
                             edgeGapAllowance={d.edgeGapAllowance}
                             onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}
