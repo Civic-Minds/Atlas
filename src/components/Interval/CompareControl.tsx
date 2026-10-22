@@ -1,3 +1,4 @@
+import type { WheelEvent as ReactWheelEvent } from 'react';
 import ModeTab from '../ModeTab';
 import { Columns2, Lock, LockOpen } from 'lucide-react';
 import { MAP_BADGE } from '../../styles';
@@ -99,6 +100,16 @@ interface CompareSideBarProps {
 }
 
 /**
+ * The label pill catches pointer and touch events so dragging on it does not pan the map beneath it.
+ * That also stops the wheel reaching the map, so hand it on: the same wheel event, replayed on the
+ * map's canvas, zooms around the pointer as it would anywhere else on the map (#1070).
+ */
+function forwardWheelToMap(e: ReactWheelEvent<HTMLElement>) {
+  const canvas = e.currentTarget.closest('[data-compare-side]')?.parentElement?.parentElement?.querySelector('canvas.maplibregl-canvas');
+  canvas?.dispatchEvent(new WheelEvent('wheel', e.nativeEvent));
+}
+
+/**
  * Sits on each compare map: the side's label (its settings and route counts) and its own
  * Frequency, Day and Time menus (the same chips and menus as the main filter bar), so it is
  * clear which map each control changes.
@@ -106,7 +117,7 @@ interface CompareSideBarProps {
 export function CompareSideBar({ side, settings, onChange, counts, otherPhrase }: CompareSideBarProps) {
   return (
     <div className="flex flex-col items-center sm:items-end gap-1.5 min-w-0 max-w-full" data-compare-side={side}>
-      <div className={`${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-full sm:min-w-0`}>
+      <div onWheel={forwardWheelToMap} className={`pointer-events-auto ${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-full sm:min-w-0`}>
         <SideBadge side={side} />
         <span className="text-xs font-black text-[var(--text-primary)] whitespace-nowrap sm:shrink-0" data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
         {counts && (

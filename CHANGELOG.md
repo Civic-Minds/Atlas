@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Dragging on a Compare map's label pill no longer moves the map**: the pill let the drag through to the map underneath; the scroll wheel still zooms there ([#1070](https://github.com/Civic-Minds/Atlas/issues/1070))
 - **Leaving Compare or History opens the other tabs' names with the same smooth slide they close with (beta)**: the open had snapped almost at once while the close eased ([#1069](https://github.com/Civic-Minds/Atlas/issues/1069))
 - **Hovering a branch row on a route card makes that branch stand out on the map**: the selected route's top layer covered the highlight, so every branch stayed equally bright ([#1064](https://github.com/Civic-Minds/Atlas/issues/1064))
 - **Hovering one of two route card rows that share a destination highlights only that row**: rows split by where trips start (TTC 51 Southbound) lit up together, and the hour chart showed both ([#1064](https://github.com/Civic-Minds/Atlas/issues/1064))
