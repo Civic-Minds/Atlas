@@ -104,6 +104,8 @@ interface Agency {
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
+  /** #1061: stops the feed names drop-off only but still allows pickup on; see ProcessOptions.dropOffOnlyStopIds. */
+  dropOffOnlyStopIds?: string[];
   referenceDateFromRunDate?: boolean;
   nextServiceDatesFeedUrls?: string[];
   nextServiceDatesSkipWeekendEvents?: boolean;

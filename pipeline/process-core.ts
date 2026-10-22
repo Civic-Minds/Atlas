@@ -488,6 +488,14 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * everywhere else, so the picker below is unchanged.
    */
   referenceDate?: string;
+  /**
+   * Stops (GTFS stop_id) the feed itself declares as drop-off only by name, while its stop times
+   * still allow pickup (LANTA 5987 "MacArthur WB (Drop-off only)", #1061). Treated like a stop
+   * with pickup_type 1 everywhere, and a drawn terminal in this list is not read for the line's
+   * headline or period values: the nearest earlier stop that boards is. Unset for every agency
+   * without the config field `dropOffOnlyStopIds`.
+   */
+  dropOffOnlyStopIds?: string[];
   /** Read-only view of the phase 2 results, for tests and audits. Does not change the output. */
   onAnalysisResults?: (results: readonly AnalysisResult[]) => void;
   /** Tests only (frequency focus step 3): the stretch selector's output beside stopDepsByGroup, for the trip-membership check. */
@@ -724,6 +732,8 @@ export async function processGtfsBuffer(
 
   const routeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, r]));
 
+  // #1061: stops the agency config declares drop-off only (see ProcessOptions.dropOffOnlyStopIds).
+  const declaredDropOffOnlyStops: ReadonlySet<string> = new Set(options?.dropOffOnlyStopIds ?? []);
   const stopsById = new Map<string, { lat: number; lon: number }>();
   for (const stop of gtfs.stops ?? []) {
     const lat = parseFloat(stop.stop_lat);
@@ -2048,8 +2058,9 @@ export async function processGtfsBuffer(
     const stopMetricMap: Map<string, number[]> = pooled?.map ?? metricStopMap;
     // Drop-off-only stops of the drawn shape (#879): own stop times all pickup_type 1. Only
     // when the feature reads its own shape map; a headsign or group fallback already pools.
+    // #1061: plus the stops the agency config lists (declaredDropOffOnlyStops), which the feed does not mark.
     const dropOffOnlyStops: ReadonlySet<string> = !railFeature && featureShape && shapeMap != null && metricStopMap === shapeMap
-      ? new Set([...shapeMap.keys()].filter(stopId => !(boardableStopsByShape.get(`${featureShape}::${day}`)?.has(stopId))))
+      ? new Set([...shapeMap.keys()].filter(stopId => declaredDropOffOnlyStops.has(stopId) || !(boardableStopsByShape.get(`${featureShape}::${day}`)?.has(stopId))))
       : new Set();
 
     // Night Service must be evaluated before the daytime stop-headway bail-outs below: a
@@ -2710,6 +2721,15 @@ export async function processGtfsBuffer(
     const published = publishStopData();
     if (!published) continue;
     const { onShape, stopHeadways } = published;
+    // #1061: the stop the line's headline and period values read. The drawn terminal, unless the
+    // agency config declares it drop-off only (it has arrivals, not departures): then the nearest
+    // earlier drawn stop that boards. The terminal stays when no earlier stop boards.
+    const terminalReadStopId = (): string | undefined => {
+      const last = onShape[onShape.length - 1]?.stopId;
+      if (!last || !declaredDropOffOnlyStops.has(last)) return last;
+      for (let i = onShape.length - 2; i >= 0; i--) if (!dropOffOnlyStops.has(onShape[i].stopId)) return onShape[i].stopId;
+      return last;
+    };
 
 
     // Step 4: override feature headway + tier using the terminal stop's headway.
@@ -2720,7 +2740,7 @@ export async function processGtfsBuffer(
     // Headline period uses trip-dispatch midday when that's denser than times-at-terminus-in-window:
     // long trip runtimes drop late-midday departures from the terminal clock window (GO 94).
     if (feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
-      const terminalId = onShape[onShape.length - 1]?.stopId;
+      const terminalId = terminalReadStopId();
       // The headline reads the own pattern at the terminal (allStopHw may hold a pooled value
       // there, #690) or the qualifying destination pool.
       const ownTerminalTimes = (terminalId ? metricStopMap.get(terminalId) : undefined) ?? [];
@@ -2770,7 +2790,7 @@ export async function processGtfsBuffer(
         : plainStopHws.length % 2 === 0 ? Math.round((plainStopHws[plainMid - 1] + plainStopHws[plainMid]) / 2) : plainStopHws[plainMid];
       const plainTerminalComputedHw = (terminalId ? allStopMiddayHwPlain[terminalId] ?? allStopHwPlain[terminalId] : undefined)
         ?? plainAllStopMedian;
-      const plainNonTerminalStopHws = onShape.slice(0, -1)
+      const plainNonTerminalStopHws = (terminalId === onShape[onShape.length - 1]?.stopId ? onShape.slice(0, -1) : onShape.slice(0, onShape.findLastIndex(p => p.stopId === terminalId)))
         .map(({ stopId }) => allStopHwPlain[stopId])
         .filter((v): v is number => v != null);
       // #771: the drawn stops some pooled variants skip (MTA Silver to Curtis Bay: the Morgan
@@ -2933,7 +2953,7 @@ export async function processGtfsBuffer(
     // when ANY part of it meets the active threshold (pairs with AI-97 shape clipping).
     // #865: the period values read the last pooled stop where the drawn terminal alone does not
     // pool and a sibling pattern ends at another terminal nearby (terminalReadsSibling).
-    const terminalStopId = terminalReadsSibling().reads ? terminalReadsSibling().lastPooled ?? onShape[onShape.length - 1]?.stopId : onShape[onShape.length - 1]?.stopId;
+    const terminalStopId = terminalReadsSibling().reads ? terminalReadsSibling().lastPooled ?? onShape[onShape.length - 1]?.stopId : terminalReadStopId();
     const terminalPeriodHw = terminalStopId ? allStopPeriodHw[terminalStopId] : undefined;
     const featHeadsign = feature.properties.headsign as string | null;
     const hsStopMap = featHeadsign

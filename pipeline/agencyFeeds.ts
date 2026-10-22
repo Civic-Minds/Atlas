@@ -30,6 +30,8 @@ export interface AgencyFeedConfig {
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
+  /** #1061: stops the feed names drop-off only but still allows pickup on; see ProcessOptions.dropOffOnlyStopIds. */
+  dropOffOnlyStopIds?: string[];
   referenceDateFromRunDate?: boolean;
   fare?: number;
   supplementalFeedUrls?: string[];
@@ -91,6 +93,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     keepLongShapeJumps: agency.keepLongShapeJumps,
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,
+    dropOffOnlyStopIds: agency.dropOffOnlyStopIds,
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,
     force: overrides.force ?? false,
