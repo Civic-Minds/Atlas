@@ -60,11 +60,11 @@ describe('feedQualityListItems', () => {
     ])).toEqual(['1 shape adjusted', '1 route with frequency mismatches']);
   });
 
-  it('shows only the parts that apply and keeps other reasons in their existing wording', () => {
+  it('shows only the parts that apply and keeps other reasons in their existing wording without the closing full stop', () => {
     expect(feedQualityListItems([
       '3 minor schedule issues found while reading the feed.',
       '4 route shapes needed adjustment before display.',
-    ])).toEqual(['4 shapes adjusted', '3 minor schedule issues found while reading the feed.']);
-    expect(feedQualityListItems(['The schedule dates in this feed have passed.'])).toEqual(['The schedule dates in this feed have passed.']);
+    ])).toEqual(['4 shapes adjusted', '3 minor schedule issues found while reading the feed']);
+    expect(feedQualityListItems(['The schedule dates in this feed have passed.'])).toEqual(['The schedule dates in this feed have passed']);
   });
 });

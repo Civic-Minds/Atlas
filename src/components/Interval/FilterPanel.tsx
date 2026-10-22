@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
@@ -516,7 +516,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             </p>
                             {quality.reasons.length > 0 && (
                               <p className="mt-1.5 text-xs text-[var(--text-muted)] leading-relaxed">
-                                {feedQualityListItems(quality.reasons).join(' · ')}
+                                {feedQualityListItems(quality.reasons).map((item, index, items) => (
+                                  <Fragment key={item}>
+                                    {index > 0 && ' '}
+                                    <span className={item.length <= 40 ? 'whitespace-nowrap' : undefined}>{item}{index < items.length - 1 ? ' ·' : ''}</span>
+                                  </Fragment>
+                                ))}
                               </p>
                             )}
                             <p className="mt-1 text-xs text-[var(--text-dim)]">Checked {checkedDate}</p>

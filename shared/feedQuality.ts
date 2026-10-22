@@ -139,7 +139,7 @@ export function presentFeedQualityReason(reason: string): string {
 /**
  * Short pieces for one agency's line in the Settings list of hidden feeds:
  * "26 shapes adjusted", "2 routes with frequency mismatches", then any other
- * reason in its usual wording. The counts come from the same reasons the cards use.
+ * reason in its usual wording minus the closing full stop (they sit in a joined line). The counts come from the same reasons the cards use.
  */
 export function feedQualityListItems(reasons: readonly string[]): string[] {
   let shapes = 0;
@@ -150,7 +150,7 @@ export function feedQualityListItems(reasons: readonly string[]): string[] {
     const count = Number(presented.match(/^(\d+)/)?.[1] ?? 0);
     if (count > 0 && /\bshapes?\b|map lines?/.test(presented)) shapes += count;
     else if (count > 0 && /frequenc/.test(presented)) frequencies += count;
-    else others.push(presented);
+    else others.push(presented.replace(/\.$/, ''));
   }
   const items: string[] = [];
   if (shapes > 0) items.push(`${shapes} ${plural(shapes, 'shape')} adjusted`);
