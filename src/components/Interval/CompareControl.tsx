@@ -1,5 +1,5 @@
 import ModeTab from '../ModeTab';
-import { Columns2, Link2, Link2Off } from 'lucide-react';
+import { Columns2, Lock, LockOpen } from 'lucide-react';
 import { MAP_BADGE } from '../../styles';
 import Pill from '../ui/Pill';
 import RoundIconButton from '../ui/RoundIconButton';
@@ -60,13 +60,16 @@ export function CompareMenuItem({ active, onStart, onExit, onDone }: { active: b
 /** Text for the link button (title and screen-reader name); the pressed state says whether the maps are linked. */
 export const COMPARE_LINK_LABEL = 'Link map views';
 
+/** The icon for each state: one place to change it. The two shapes differ, so the state never rests on colour alone. */
+const COMPARE_LINK_ICONS = { linked: Lock, unlinked: LockOpen };
+
 /**
  * Sits on the divider between the two compare maps. Pressed (the default) means the maps are linked and
  * move together; not pressed, each map moves on its own. Same round icon button and selected look as
  * the other map toggles.
  */
 export function CompareLinkToggle({ linked, onChange }: { linked: boolean; onChange: (linked: boolean) => void }) {
-  const Icon = linked ? Link2 : Link2Off;
+  const Icon = linked ? COMPARE_LINK_ICONS.linked : COMPARE_LINK_ICONS.unlinked;
   return (
     <RoundIconButton
       pressed={linked}
@@ -74,9 +77,9 @@ export function CompareLinkToggle({ linked, onChange }: { linked: boolean; onCha
       aria-label={COMPARE_LINK_LABEL}
       title={COMPARE_LINK_LABEL}
       data-testid="compare-link-toggle"
-      className={`h-8! w-8! shadow-lg backdrop-blur-md ${linked ? '' : 'bg-[var(--bg-panel)]! border-[var(--border-primary)]!'}`}
+      className={`h-10! w-10! border-2! shadow-xl ring-4 ring-[var(--bg-panel)] backdrop-blur-md ${linked ? '' : 'bg-[var(--bg-panel)]! border-[var(--border-primary)]!'}`}
     >
-      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+      <Icon className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
     </RoundIconButton>
   );
 }
