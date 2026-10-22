@@ -6,16 +6,21 @@ import React from 'react';
  * width change is a short transition, turned off for people who prefer reduced motion.
  */
 export function ModeTabLabel({ collapsed, children }: { collapsed: boolean; children: React.ReactNode }) {
+  // The width animates as a grid column going between 0fr and 1fr, so it runs over the text's real
+  // width both ways. A max-width transition to a guessed ceiling (the old 10rem) spends most of its
+  // time above the text's width when opening, so opening looked like a jump while closing looked smooth.
   return (
     <span
-      className={`inline-flex items-center gap-1.5 overflow-hidden whitespace-nowrap transition-[max-width,opacity] duration-200 ease-out motion-reduce:transition-none ${
+      className={`grid transition-[grid-template-columns,opacity] duration-200 ease-out motion-reduce:transition-none ${
         collapsed
-          ? 'max-w-0 opacity-0 group-hover/tab:max-w-[10rem] group-hover/tab:opacity-100 group-focus-visible/tab:max-w-[10rem] group-focus-visible/tab:opacity-100'
-          : 'max-w-[10rem] opacity-100'
+          ? 'grid-cols-[0fr] opacity-0 group-hover/tab:grid-cols-[1fr] group-hover/tab:opacity-100 group-focus-visible/tab:grid-cols-[1fr] group-focus-visible/tab:opacity-100'
+          : 'grid-cols-[1fr] opacity-100'
       }`}
       aria-hidden={collapsed || undefined}
     >
-      {children}
+      <span className="inline-flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap">
+        {children}
+      </span>
     </span>
   );
 }

@@ -37,9 +37,16 @@ describe('a collapsed tab opens its name on hover or focus', () => {
 
   it('opens in normal layout flow (width, not an overlay), so neighbours move over', () => {
     const collapsed = html(true);
-    expect(collapsed).toContain('group-hover/tab:max-w-[10rem]');
-    expect(collapsed).toContain('group-focus-visible/tab:max-w-[10rem]');
+    expect(collapsed).toContain('group-hover/tab:grid-cols-[1fr]');
+    expect(collapsed).toContain('group-focus-visible/tab:grid-cols-[1fr]');
     expect(collapsed).not.toMatch(/absolute|z-10/);
+  });
+
+  it('animates the real text width both ways, not a max-width ceiling (#1069)', () => {
+    expect(html(true)).toContain('grid-cols-[0fr]');
+    expect(html(false)).toContain('grid-cols-[1fr]');
+    expect(html(true)).not.toContain('max-w');
+    expect(html(false)).not.toContain('max-w');
   });
 
   it('leaves an expanded tab alone', () => {
