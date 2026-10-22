@@ -96,6 +96,18 @@ History UI also uses schedule-period headway diffs from `atlas-archive` (pipelin
 meaning of “history” than RT delay archives.
 
 
+## Downstream tools
+
+Atlas is the provider; the other transit tools are consumers. The rule (additive, versioned changes only; consumer-specific needs go in an adapter outside Atlas) is in [Product decisions](product/DECISIONS.md). What each tool takes from Atlas, as intended use:
+
+- **Bridge** (dispatch): stop and route geometry and spacing in place of its own GTFS loader, corridors in place of hardcoded route pairs, and headways plus history as the baseline for bunching and gap detection. Live and replay access is in "Future provider consumers" above.
+- **Reroute** (rider routing, product name Headway): the agency index for feed discovery, stops and headways for wait estimates (wait is about half the headway) and frequency bias, corridors for direct options, history for reliability, and route geometry for maps.
+- **Transit Stats** (trip logging): corridors and route geometry as the base for route heatmaps, weighted by headway tier and the user's own trips; GTFS frequency and availability as plausibility checks on predictions; stops for enrichment.
+
+All of them should read the same published artifacts and APIs rather than parse raw GTFS themselves, so cleaning (such as headsign handling), headways and corridors stay consistent across tools.
+
+Data can also flow back. Observed trips, transfers, dwell times and anomalies from the consumers are candidate inputs for Atlas history and reliability work. Nothing is wired up; any such input would enter as a new additive artifact, not by changing existing semantics. "Atlas" inside Transit Stats code and docs often means its own stop-sequence graph, not this project.
+
 ## Data flow: feed refresh and release
 
 ```
