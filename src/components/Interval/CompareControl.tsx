@@ -1,7 +1,8 @@
 import ModeTab from '../ModeTab';
-import { Columns2 } from 'lucide-react';
+import { Columns2, Link2, Link2Off } from 'lucide-react';
 import { MAP_BADGE } from '../../styles';
 import Pill from '../ui/Pill';
+import RoundIconButton from '../ui/RoundIconButton';
 import { FilterChips } from './FilterChips';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
@@ -53,6 +54,30 @@ export function CompareMenuItem({ active, onStart, onExit, onDone }: { active: b
       label="Compare" ariaLabel="Compare two maps" active={active}
       onClick={() => { (active ? onExit : onStart)(); onDone(); }}
     />
+  );
+}
+
+/** Text for the link button (title and screen-reader name); the pressed state says whether the maps are linked. */
+export const COMPARE_LINK_LABEL = 'Link map views';
+
+/**
+ * Sits on the divider between the two compare maps. Pressed (the default) means the maps are linked and
+ * move together; not pressed, each map moves on its own. Same round icon button and selected look as
+ * the other map toggles.
+ */
+export function CompareLinkToggle({ linked, onChange }: { linked: boolean; onChange: (linked: boolean) => void }) {
+  const Icon = linked ? Link2 : Link2Off;
+  return (
+    <RoundIconButton
+      pressed={linked}
+      onClick={() => onChange(!linked)}
+      aria-label={COMPARE_LINK_LABEL}
+      title={COMPARE_LINK_LABEL}
+      data-testid="compare-link-toggle"
+      className={`h-8! w-8! shadow-lg backdrop-blur-md ${linked ? '' : 'bg-[var(--bg-panel)]! border-[var(--border-primary)]!'}`}
+    >
+      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+    </RoundIconButton>
   );
 }
 

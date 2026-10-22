@@ -24,8 +24,9 @@ import { ON_DEMAND_MODE } from '../../shared/modes';
 import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
-import { CompareSideBar, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
+import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareOtherPhrase } from '../utils/compareSides';
+import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
 import { buildCompareRow } from '../utils/compareRows';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
@@ -145,7 +146,6 @@ function readSavedAgenciesOff(): Set<string> {
 }
 
 const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
-const IGNORE_BOUNDS = () => {};
 
 /**
  * Where a compare side's label and controls sit on its map: top right of each half on desktop (never wider than its half),
@@ -404,6 +404,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     });
   });
   const compareActive = compareAvailable && compareSide != null;
+  const [compareLinked, setCompareLinked] = useState(true);
   // Switching to another app (History, Live, Fares...) leaves compare in the same step, so coming
   // back lands on the normal single map rather than reopening the split. Done during render (the
   // React "adjust state when a prop changes" pattern) so no frame shows a stale split.
@@ -411,6 +412,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   if (compareWasAvailable !== compareAvailable) {
     setCompareWasAvailable(compareAvailable);
     if (!compareAvailable && compareSide != null) setCompareSide(null);
+    if (!compareAvailable) setCompareLinked(true);
   }
 
   const previousAnalyticsFilters = useRef<{
@@ -493,6 +495,14 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setBounds(b);
     if (z !== undefined) setMapZoom(z);
   }, []);
+  // Compare side B reports its own view. It is read only while the maps are unlinked (then B loads its
+  // own agencies); it never replaces A's bounds, which drive A's agency loading, stats and "In view".
+  const [boundsB, setBoundsB] = useState<ViewportBounds | null>(null);
+  const [zoomB, setZoomB] = useState<number | undefined>(undefined);
+  const onBoundsChangeB = useCallback((b: ViewportBounds, z?: number) => {
+    setBoundsB(b);
+    setZoomB(z);
+  }, []);
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
   const nearbyPanelRef = useRef<HTMLDivElement>(null);
   const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
@@ -504,11 +514,18 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // pending, and for the rest of the viewport only after the tiles settle (or at once for modes that
   // draw from it, and when the search box is open for its suggestions).
   const viewportLoadOpen = useViewportLoadGate(isTilesLoading);
+  const compareViewB = compareSideBView(compareLinked, { bounds, zoom: mapZoom }, { bounds: boundsB, zoom: zoomB });
+  // Unlinked, map B may sit over agencies map A is not near: they load first, like a selected route's.
+  const compareBSlugKey = useMemo(
+    () => (compareActive && !compareLinked ? viewportAgencySlugs(agencies, compareViewB.bounds, compareViewB.zoom).sort().join('|') : ''),
+    [compareActive, compareLinked, agencies, compareViewB.bounds, compareViewB.zoom],
+  );
   const priorityAgencySlugs = useMemo(() => {
     const slugOf = (key: string | null | undefined) => (key ? key.split('::')[0] : null);
     return [slugOf(selectedRoute), slugOf(selectedStop), pendingLiveRoute?.slug, pendingNightRoute?.slug]
-      .filter((slug): slug is string => !!slug);
-  }, [selectedRoute, selectedStop, pendingLiveRoute?.slug, pendingNightRoute?.slug]);
+      .filter((slug): slug is string => !!slug)
+      .concat(compareBSlugKey ? compareBSlugKey.split('|') : []);
+  }, [selectedRoute, selectedStop, pendingLiveRoute?.slug, pendingNightRoute?.slug, compareBSlugKey]);
   const { layers, loadedCount, requestedCount, isLoading, failedSlugs } = useAgencyData(agencies, bounds, {
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
@@ -574,7 +591,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     period: compareB.period,
     selectedStop,
     selectedRoute,
-    bounds,
+    bounds: compareViewB.bounds,
     hideSpan,
     hideLimitedService,
     livePollingOnly,
@@ -587,33 +604,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     syncUrlParams(encodeCompareSideParams(compareActive ? compareSide : null));
   }, [compareActive, compareSide]);
 
-  // Keep the two maps on the same view: whichever one the user moves leads.
+  // Linked (the default), the two maps share one view: whichever one the user moves leads. Unlinked,
+  // each map moves on its own. Linking again snaps B to A's view. Resets to linked whenever compare opens.
   const [mapA, setMapA] = useState<maplibregl.Map | null>(null);
   const [mapB, setMapB] = useState<maplibregl.Map | null>(null);
   useEffect(() => {
-    if (!compareActive || !mapA || !mapB) return;
-    let syncing = false;
-    const follow = (from: maplibregl.Map, to: maplibregl.Map) => () => {
-      if (syncing) return;
-      syncing = true;
-      to.jumpTo({ center: from.getCenter(), zoom: from.getZoom(), bearing: from.getBearing(), pitch: from.getPitch() });
-      syncing = false;
-    };
-    const aToB = follow(mapA, mapB);
-    const bToA = follow(mapB, mapA);
-    aToB();
-    mapA.on('move', aToB);
-    mapB.on('move', bToA);
-    return () => {
-      mapA.off('move', aToB);
-      mapB.off('move', bToA);
-    };
-  }, [compareActive, mapA, mapB]);
+    if (!compareActive || !compareLinked || !mapA || !mapB) return;
+    return linkCompareMaps(mapA, mapB);
+  }, [compareActive, compareLinked, mapA, mapB]);
 
   useEffect(() => { onCompareActiveChange?.(compareActive); }, [compareActive, onCompareActiveChange]);
 
-  const startCompare = useCallback(() => setCompareSide(defaultCompareSide(compareA)), [compareA]);
-  const exitCompare = useCallback(() => setCompareSide(null), []);
+  const startCompare = useCallback(() => { setCompareLinked(true); setCompareSide(defaultCompareSide(compareA)); }, [compareA]);
+  const exitCompare = useCallback(() => { setCompareLinked(true); setCompareSide(null); }, []);
   const handledCompareStart = useRef<number | null>(null);
   useEffect(() => {
     if (!compareStartRequest || !compareAvailable || handledCompareStart.current === compareStartRequest) return;
@@ -1006,7 +1009,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 lightMode={lightMode}
                 matchesQuery={compareStats.matchesQuery}
                 routesForStop={compareStats.routesForStop}
-                onBoundsChange={IGNORE_BOUNDS}
+                onBoundsChange={onBoundsChangeB}
                 resetViewKey={resetViewKey}
                 areaFocus={areaFocus}
                 onLocate={onLocate}
@@ -1061,6 +1064,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 otherPhrase={compareOtherPhrase(compareSide!, compareA, 'A')}
               />
             </CompareSideSlot>
+          </div>
+        )}
+        {compareActive && (
+          <div className="absolute left-1/2 top-1/2 z-[1001] -translate-x-1/2 -translate-y-1/2 max-sm:hidden">
+            <CompareLinkToggle linked={compareLinked} onChange={setCompareLinked} />
           </div>
         )}
       </div>
