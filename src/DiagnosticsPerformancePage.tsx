@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Map as MapIcon } from 'lucide-react';
+import AtlasLogo from './components/AtlasLogo';
 import { useAgencies } from './hooks/useAgencies';
 import { ATLAS_MODE } from '../shared/config';
 import { getAtlasMark, markAtlasOnce } from './lib/performance';
@@ -80,15 +80,7 @@ export default function DiagnosticsPerformancePage() {
   return (
     <div className="min-h-screen w-full bg-[var(--bg-app)] text-[var(--text-primary)] font-sans">
       <div className="sticky top-0 z-10 bg-[var(--bg-app)]/95 backdrop-blur-md border-b border-[var(--border-primary)] px-6 py-4 flex items-center gap-2">
-        <a href="/" aria-label="Back to the frequency map" className="flex items-center gap-2 rounded-full focus:outline-none focus-visible:!outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">
-          <div className="w-8 h-8 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] shadow-lg rounded-full flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity">
-            <MapIcon className="w-3.5 h-3.5 text-[var(--accent)]" />
-          </div>
-          <div className="flex flex-col gap-px">
-            <span className="text-xs sm:text-sm leading-none font-black text-[var(--text-primary)]">Atlas</span>
-            <span className="text-2xs leading-none text-[var(--text-dim)]">by Civic Minds</span>
-          </div>
-        </a>
+        <AtlasLogo href="/" ariaLabel="Back to the frequency map" />
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
         <span className="text-xl sm:text-2xl font-black text-[var(--text-primary)] leading-none">Performance</span>
         <Pill tone="outline" size="segment" className="ml-auto" onClick={() => window.location.reload()}>
