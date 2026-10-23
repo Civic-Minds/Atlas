@@ -78,6 +78,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The planner's notes and map stay out of the way, and routes open faster**: notes show only where they apply, routes frame above the map note, a picked route downloads first with placeholders, switching no longer flashes the panel, and all nine TTC routes fit the list
 - **Live page headers and switchers fit one line**: every switcher is the same pill group, View and Direction pills share a line, the header shows week, trips, source and "data up to" beside "View on Live map", and stops tables drop minor columns on phones (CIV-307, CIV-310)
 - **Live review fixes**: run time in minutes, one rounding rule, stale dates coloured, rebuild hints for developers only, the 504's Broadview stops on the phone bunching chart, and wrapped branch names, chart labels and hover hints no longer collide
+- **Live's delay and bunching sections draw the route strip on phones too (local only, CIV-502)**: phones got a bar chart instead, so the same section looked different by device; the strip's track name is no longer cut off on phones, and a branching route's phone strip packs its unnamed stops as tightly as a straight route's, brackets where delays start or bunching forms as on desktop (only over the stops where it starts, with its name beside it), and names each branch end once
 
 ### Agency, area and research pages
 

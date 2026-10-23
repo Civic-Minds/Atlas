@@ -48,6 +48,18 @@ describe('Live route dashboard', () => {
   });
   afterEach(() => vi.unstubAllGlobals());
 
+  it('draws the route strip, not a bar chart, for delay and bunching on phones too (CIV-502)', async () => {
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches: /max-width: (479|639)px/.test(q), media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
+    renderPage(ready);
+    expect(await screen.findByRole('heading', { level: 1, name: 'TTC 505' })).toBeTruthy();
+    for (const name of [/Where delays build up/, /Where bunching forms/]) {
+      const section = screen.getByRole('region', { name });
+      expect(section.querySelectorAll('[aria-roledescription="route strip"]').length).toBe(2);
+      expect(within(section).queryByRole('img', { name: /typical delay at each stop|share of gaps that are too close/ })).toBeNull();
+      expect(section.querySelector('[aria-label*="typical delay at each stop"], [aria-label*="share of gaps that are too close"]')).toBeNull();
+    }
+  });
+
   it('shows B1 to B4 and the method, each figure with its sample size', async () => {
     renderPage(ready);
     expect(await screen.findByRole('heading', { level: 1, name: 'TTC 505' })).toBeTruthy();
