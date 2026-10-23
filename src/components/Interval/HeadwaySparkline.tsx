@@ -457,7 +457,24 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             )}
             {bothDirections ? (
               <>
-                {directionOptions!.map((option, i) => (
+                {/* The period names sit once above both directions, so they read as shared. */}
+                <div className="relative mt-2 h-4" data-testid="full-day-period-labels">
+                  {PERIOD_OVERVIEW_BANDS.map(band => (
+                    <span
+                      key={band.key}
+                      className="absolute top-0 left-0.5 sm:left-1 text-xs font-black text-[var(--text-muted)] whitespace-nowrap"
+                      style={{ left: `${band.left * 100}%` }}
+                    >
+                      {band.label.endsWith(' Peak') ? (
+                        <>
+                          <span className="sm:hidden" aria-hidden="true">{band.label.replace(' Peak', '')}</span>
+                          <span className="hidden sm:inline">{band.label}</span>
+                        </>
+                      ) : band.label}
+                    </span>
+                  ))}
+                </div>
+                {directionOptions!.map(option => (
                   <div key={option.key} className="mt-3" data-testid="full-day-direction">
                     <div className="text-sm font-black text-[var(--text-primary)]">{option.label}</div>
                     <HeadwaySparkline
@@ -472,7 +489,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                       tripTime={option.tripTime}
                       sharedHour={modalHour}
                       onSharedHour={setModalHour}
-                      showPeriodLabels={i === 0}
+                      showPeriodLabels={false}
                     />
                   </div>
                 ))}
