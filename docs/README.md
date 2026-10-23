@@ -69,7 +69,7 @@ Read first: [Decisions](product/DECISIONS.md), then [Adding agencies](data/ADDIN
 | [Coverage gap discovery](data/COVERAGE_GAP_DISCOVERY.md) | Open when you look for agencies Atlas does not cover yet. |
 | [Agency config](../config/agencies/README.md) | Open when you edit an agency config file or a `modeOverrides` entry. |
 | [Agencies](data/AGENCIES.md) | Open when you need the static list of which agencies Atlas covers. |
-| [History coverage](data/DATA_HISTORY.md) | Open when you work on History or check why an agency is or is not eligible. |
+| [History coverage](data/DATA_HISTORY.md) | Open when you work on History, check why an agency is or is not eligible, or need the archive policy for past schedule periods. |
 | [Agency backlog](data/AGENCY_BACKLOG.md) | Open when you pick the next agencies to add or check what was already batched. |
 | [Feed status snapshot](operations/GTFS_FEED_STATUS.md) | Open only for the 2026-08-10 refresh results; it is a historical snapshot. |
 | [Places data](../shared/data/README.md) | Open when you change or rely on `na-places.json`. |
@@ -105,7 +105,7 @@ Read first: [Architecture](ARCHITECTURE.md) for where data lives, then the [Rese
 | Doc | Job |
 |---|---|
 | [Architecture](ARCHITECTURE.md) | Open when you need to know where data lives, how a release flows, or which env var does what. |
-| [Data](DATA.md) | Open for an overview of the data docs or the History archive policy. |
+| [How Atlas data flows](DATA.md) | Open for a short overview of how data moves from feeds to the published map, with a link to the doc for each step. |
 | [Pipeline stages](../pipeline/README.md) | Open when you need to find which module runs a pipeline stage. |
 | [Stretch fixtures](../pipeline/__tests__/fixtures/STRETCH-FIXTURES.md) | Open when you edit the trip-set selector tests and need to know what the fixtures are. |
 | [Research index](research/INDEX.md) | Open when you look for any study under `docs/research/`. |

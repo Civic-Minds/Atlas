@@ -11,11 +11,12 @@ import { readFileSync, readdirSync } from 'node:fs';
 import JSZip from 'jszip';
 import Papa from 'papaparse';
 import { computeRawDepartures } from '../pipeline/transit-phase1';
+import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 import { determineTier } from '../pipeline/transit-phase2';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from '../pipeline/defaults';
 import { DAY_TO_TYPE, type GtfsData, type RawRouteDepartures } from '../types/gtfs';
 
-const DATA_DIR = '/Users/ryan/Desktop/Data/GTFS/Files';
+const DATA_DIR = GTFS_FILES_DIR;
 const limitArg = process.argv.find(arg => arg.startsWith('--limit='));
 const pauseArg = process.argv.find(arg => arg.startsWith('--pause-ms='));
 const outArg = process.argv.find(arg => arg.startsWith('--out='));

@@ -153,7 +153,7 @@ async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ ag
   ]);
 
   // Same rule as refresh: the later of feed_info's end and the capped calendar end (#687).
-  const lastFeedExpiry = recordedFeedExpiry(result.feedExpiry, result.calendarExpiry, today);
+  const lastFeedExpiry = recordedFeedExpiry(result.feedExpiry, result.calendarExpiry, today, result.calendarOnlyEnd);
   const updated: Agency = {
     ...agency,
     center: result.center ?? agency.center,

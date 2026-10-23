@@ -26,7 +26,7 @@ FEED_MAP = {
 }
 
 # If GTFS_DIR is empty, fall back to the pre-existing data folder
-_EXISTING_GTFS = Path("/Users/ryan/Desktop/Data/GTFS/Canada/Ontario")
+_EXISTING_GTFS = Path.home() / "Developer" / "Data" / "GTFS" / "Files" / "Canada" / "Ontario"
 OUTPUT = Path(__file__).parent.parent / "data" / "frequent_stops.csv"
 
 # Time window for headway calculation (HH:MM:SS, 24h)

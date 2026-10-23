@@ -1,5 +1,6 @@
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { basename, join, resolve } from 'path';
+import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 import { processGtfsBuffer, type ProcessResult } from '../pipeline/process-core';
 import { parseGtfsZip } from '../pipeline/parseGtfs';
 import { normalizeGtfs } from '../pipeline/preprocess/run';
@@ -26,7 +27,7 @@ type ArchiveReport = {
   invariantFailures: string[];
 };
 
-const root = '/Users/ryan/Desktop/Data/GTFS/Files';
+const root = GTFS_FILES_DIR;
 const archives = readdirSync(root, { recursive: true })
   .filter((path): path is string => typeof path === 'string' && path.endsWith('.zip'))
   .map(path => join(root, path));

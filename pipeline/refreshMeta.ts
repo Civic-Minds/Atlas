@@ -97,10 +97,21 @@ export function addYearsYmd(ymd: string, years: number): string {
  * about when service ends, so feed_info end wins outright when there is one
  * (#875: Simi Valley's 20230601 zip, feed_info 20250601 and a 20301231
  * calendar, read as current to 20270601).
+ * The calendar's own last real service date (calendarOnlyEnd: calendar.txt and added
+ * calendar_dates, without feed_info) can only lower the result, never raise it, so a
+ * feed_info end claiming 20350201 cannot keep a calendar that ended 20250531 current
+ * (#1039, MAX). It is ignored when it is itself a placeholder (past today + 2 years).
  * Every expiry check reads this: refresh and reprocess record it in index.json,
  * the reprocess date check and the release gate compare it with today.
  */
-export function recordedFeedExpiry(feedExpiry: string | null, peekedExpiry: string | null, todayYmd: string): string | null {
+export function recordedFeedExpiry(feedExpiry: string | null, peekedExpiry: string | null, todayYmd: string, calendarOnlyEnd?: string | null): string | null {
+  const recorded = laterOfFeedInfoAndCappedCalendar(feedExpiry, peekedExpiry, todayYmd);
+  const calendarCap = addYearsYmd(todayYmd.replace(/-/g, ''), PLACEHOLDER_EXPIRY_YEARS);
+  if (validYmd(recorded) && validYmd(calendarOnlyEnd) && calendarOnlyEnd <= calendarCap && calendarOnlyEnd < recorded) return calendarOnlyEnd;
+  return recorded;
+}
+
+function laterOfFeedInfoAndCappedCalendar(feedExpiry: string | null, peekedExpiry: string | null, todayYmd: string): string | null {
   const today = todayYmd.replace(/-/g, '');
   if (validYmd(feedExpiry) && validYmd(peekedExpiry) && peekedExpiry > addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)) return feedExpiry;
   const limits = [addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)];
@@ -120,9 +131,11 @@ export function stampFeedMeta(
     peekedExpiry: string | null;
     peekedVersion: string | null;
     todayYmd: string;
+    /** Last real service date from the calendar alone (no feed_info); can only lower the expiry. */
+    calendarOnlyEnd?: string | null;
   },
 ): void {
-  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.peekedExpiry, opts.todayYmd);
+  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
   agency.lastPeekedExpiry = opts.peekedExpiry;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
@@ -142,9 +155,9 @@ export function stampFeedMeta(
  */
 export function stampReprocessedFeedExpiry(
   agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry'>,
-  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string },
+  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null },
 ): boolean {
-  const lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry, opts.todayYmd);
+  const lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry, opts.todayYmd, opts.calendarOnlyEnd);
   if (lastFeedExpiry == null) return false;
   const lastPeekedExpiry = opts.calendarExpiry ?? agency.lastPeekedExpiry ?? null;
   if (agency.lastFeedExpiry === lastFeedExpiry && (agency.lastPeekedExpiry ?? null) === lastPeekedExpiry) return false;

@@ -3,6 +3,7 @@ import { basename, join } from 'path';
 import JSZip from 'jszip';
 import Papa from 'papaparse';
 import { computeRawDepartures } from '../pipeline/transit-phase1';
+import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from '../pipeline/defaults';
 import { DAY_TO_TYPE, GtfsData, RawRouteDepartures } from '../types/gtfs';
 
@@ -12,9 +13,9 @@ const parse = (text: string) => Papa.parse(text, {
   transform: (value: string) => value.trim(),
 }).data as any[];
 
-const archives = readdirSync('/Users/ryan/Desktop/Data/GTFS/Files', { recursive: true })
+const archives = readdirSync(GTFS_FILES_DIR, { recursive: true })
   .filter((path): path is string => typeof path === 'string' && path.endsWith('.zip'))
-  .map(path => join('/Users/ryan/Desktop/Data/GTFS/Files', path));
+  .map(path => join(GTFS_FILES_DIR, path));
 
 const amountRules: Record<string, (tier: number) => number> = {
   '+5 minutes': tier => tier + 5,

@@ -7,9 +7,7 @@ from collections import defaultdict
 from pathlib import Path
 
 
-GTFS_ZIP = Path(
-    "/Users/ryan/Desktop/Data/GTFS/Files/Canada/Ontario/Toronto Transit Commission (TTC).zip"
-)
+GTFS_ZIP = Path.home() / "Developer" / "Data" / "GTFS" / "Files" / "Canada" / "Ontario" / "Toronto Transit Commission (TTC).zip"
 OUTPUT_CSV = GTFS_ZIP.with_name("Toronto Transit Commission (TTC) streetcar stop spacing.csv")
 CLEANED_OUTPUT_CSV = GTFS_ZIP.with_name(
     "Toronto Transit Commission (TTC) streetcar stop spacing cleaned.csv"
