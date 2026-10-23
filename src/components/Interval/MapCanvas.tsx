@@ -37,6 +37,7 @@ import MapExportDialog from '../MapExportDialog';
 import { waitForMapExportReady } from '../../utils/mapExport';
 import { describeMapExport, type MapExportBox, type MapExportDetails, type MapExportView, type RenderedRouteSample } from '../../utils/mapExportDetails';
 import { routeLabels } from '../../utils/format';
+import { canCountRenderedRoutes } from '../../utils/compareSides';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
 import { mapViewKind, viewAllowsOnDemand } from '../../../shared/viewLayers';
@@ -532,6 +533,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
     // The panel and its counts show distinct rider-visible lines; compare mode below keeps raw keys.
     if (showMapContext) setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies));
+    // Compare's route counts wait for the map to finish loading rather than report a partial count (#1075).
+    if (!canCountRenderedRoutes(map, layers.length)) return;
     renderedRouteKeysRef.current?.(new Set(contextAgencies.flatMap(agency => agency.routes.map(route => route.key))));
   }, [agencies, mapLoaded, showMapContext, reportsRenderedRoutes]);
 

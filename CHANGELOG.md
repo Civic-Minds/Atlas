@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Compare's map captions no longer show "0 routes" while a map is still loading**: they show no count until the map has finished, so a zero always means the map really has no routes ([#1075](https://github.com/Civic-Minds/Atlas/issues/1075))
 - **[Clicking an agency name on a route card opens that agency's card](https://github.com/Civic-Minds/Atlas/issues/1073)**: for agencies with an on-demand area, like HSR, it opened the on-demand card instead
 - **Compare's A and B captions show only their own settings and route count**: the "11 not on Saturday" part read as confusing when the other map was on a different day (CIV-530)
 - **The full-day view shows both directions at once (beta)**: a 2x2 grid with a minutes axis and times under every chart and the hovered hour's number above each, so two directions compare without a toggle, and the browser tooltips that covered the bars are gone (CIV-704, CIV-702)

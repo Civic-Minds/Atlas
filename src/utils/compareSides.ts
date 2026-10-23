@@ -80,3 +80,12 @@ export function compareCardSummary(rows: readonly CompareRowFacts[]): { headline
   });
   return { headline: null, lines };
 }
+
+/**
+ * Whether a map's drawn routes can be counted yet (#1075). Until its route layers exist and every
+ * tile has arrived the map draws nothing or only some routes, so a count then would read "0 routes"
+ * for a map that is only loading. A loaded map with nothing on it still counts as 0.
+ */
+export function canCountRenderedRoutes(map: { loaded(): boolean }, routeLayerCount: number): boolean {
+  return routeLayerCount > 0 && map.loaded();
+}
