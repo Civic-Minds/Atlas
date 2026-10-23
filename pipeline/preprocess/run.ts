@@ -8,6 +8,7 @@ import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels.js';
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
+import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 import { mergeTerminalBays } from './merge-terminal-bays.js';
@@ -15,7 +16,7 @@ import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -129,6 +130,11 @@ export function normalizeGtfs(
     const result = fixMountainLineFrequencyWindow(gtfs);
     gtfs = result.gtfs;
     if (result.fixed) onStatus?.('Mountain Line RT 46: afternoon frequency window starts at 14:15 like its trip (#727)');
+  }
+  if (options?.preprocess === 'santafe-pickup-schedule') {
+    const result = addSantaFePickUpWeekendFrequency(gtfs);
+    gtfs = result.gtfs;
+    if (result.added > 0) onStatus?.(`Santa Fe Pick-Up: added ${result.added} Saturday-Sunday trips for its published every-15 daytime service (#1076)`);
   }
   if (options?.preprocess === 'interpolate-untimed-stops') {
     const result = interpolateUntimedStops(gtfs);
