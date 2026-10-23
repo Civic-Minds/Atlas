@@ -45,6 +45,7 @@ import { selectFrequentServiceFeatures, selectNightServiceFeatures } from '../co
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
+import { resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
 import { loadingText } from '../content/stateCopy';
 
 // Versioned because the original preference could accidentally persist only
@@ -242,8 +243,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   }, [setSelectedAgencySlug]);
 
   const selectedOnDemandSelection = onDemandStopAgencySlug;
-  const selectedOnDemandSlug = onDemandStopAgencySlug?.split('::', 1)[0]
-    ?? (selectedAgencySlug && agencies.some(a => a.slug === selectedAgencySlug && a.onDemandServiceArea) ? selectedAgencySlug : null);
+  const selectedOnDemandSlug = resolveSelectedOnDemandSlug(onDemandStopAgencySlug, selectedAgencySlug, agencies);
   const selectedOnDemandZoneId = selectedOnDemandSelection?.includes('::')
     ? selectedOnDemandSelection.slice(selectedOnDemandSelection.indexOf('::') + 2)
     : null;

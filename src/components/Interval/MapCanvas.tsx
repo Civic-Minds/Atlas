@@ -825,6 +825,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         } else {
           const zoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
           if (zoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId });
+          // A whole-service click opens the on-demand card itself, not the agency card (#1073).
+          else if (onOnDemandStopClickRef.current) onOnDemandStopClickRef.current(serviceAreaSlug);
           else setSelectedAgencySlugRef.current?.(serviceAreaSlug);
         }
         return;
