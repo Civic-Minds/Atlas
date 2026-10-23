@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatHourPlain, slowerOfSeries, tripTimeSeriesFor } from '../tripTime';
+import { slowerOfSeries, tripTimeSeriesFor } from '../tripTime';
 import { tripTimeBarHeight } from '../tripTime';
 
 const published = {
@@ -26,12 +26,6 @@ describe('tripTime', () => {
     const b = tripTimeSeriesFor(published, ['14'], 1, 'Weekday')!;
     expect(slowerOfSeries([a, b])?.byHour).toEqual({ 7: 40, 12: 41, 17: 52 });
     expect(slowerOfSeries([])).toBeNull();
-  });
-
-  it('formats hours past midnight', () => {
-    expect(formatHourPlain(24)).toBe('12 a.m.');
-    expect(formatHourPlain(12)).toBe('12 p.m.');
-    expect(formatHourPlain(17)).toBe('5 p.m.');
   });
 });
 

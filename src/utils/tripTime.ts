@@ -52,14 +52,6 @@ export function slowerOfSeries(series: readonly TripTimeSeries[]): TripTimeSerie
   return Object.keys(byHour).length > 0 ? { byHour, loop: series.some(s => s.loop) || undefined } : null;
 }
 
-/** "5 p.m." for a GTFS hour (24 and up wrap past midnight). */
-export function formatHourPlain(hour: number): string {
-  const h24 = hour % 24;
-  const suffix = h24 < 12 ? 'a.m.' : 'p.m.';
-  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
-  return `${h12} ${suffix}`;
-}
-
 /**
  * A trip-time bar's height in the strip: proportional to the trip time itself, from zero, with the
  * longest trip time at full height (CIV-493). A range-stretched scale made 45 vs 60 min look like 4x.
