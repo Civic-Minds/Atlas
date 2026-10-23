@@ -15,7 +15,7 @@ Atlas does not use this script or any figure from it, and no Atlas product decis
 The four numbered scripts run in order (`01_download_feeds.py` to `04_coverage.py`); the source README (`source-README.md`) has the steps. Notes from reading the code, not from running it:
 
 - Scripts compile (syntax check only). They were not run.
-- `scripts/02_find_frequent.py` has one hard-coded absolute path to the author's machine, `/Users/ryan/Desktop/Data/GTFS/Canada/Ontario`, used as a fallback feed folder. It will not exist elsewhere.
+- `scripts/02_find_frequent.py` has one hard-coded absolute path to a local copy of the GTFS archive on the author's machine, used as a fallback feed folder. It will not exist elsewhere.
 - The feed download URLs in `01_download_feeds.py` are from March 2026 and may have changed; the source README says some need a manual download.
 - Step 4 needs Statistics Canada 2021 census files that were never copied into the source folder.
 - Python dependencies are in `requirements.txt`.

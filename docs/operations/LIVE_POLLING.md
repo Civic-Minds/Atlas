@@ -127,7 +127,3 @@ about the final hosted architecture.
 - **511 SF Bay API key**: one key covers SF Muni (`SF`), AC Transit (`AC`), and VTA (`SC`). Atlas uses `MUNI_511_API_KEY` and the provider's `api_key` query parameter.
 - **TTC trip IDs**: Clever Devices RT trip IDs don't match Toronto Open Data static IDs — time-based spatial fallback required. ~20% direct match rate.
 - **Halifax trip IDs**: RT trip IDs differ from static — spatial fallback handles matching.
-
----
-
-[Back to Data](../DATA.md)

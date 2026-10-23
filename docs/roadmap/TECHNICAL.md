@@ -58,7 +58,3 @@ Why Postgres and not just R2: R2 is a file store, not a query engine. Pattern qu
 
 - [ ] **Transit isochrones**: "how far can you reach in 30 min by transit?" Compute travel-time matrices from GTFS using OpenTripPlanner or Valhalla (self-hosted or managed). Render as a filled polygon overlay on the map. Shows algorithmic depth beyond visualization.
 - [ ] **Census / equity overlay**: join frequency scores to US Census tract data (income, car-ownership, density) via the Census API. Color tracts by transit access vs. need, surface which communities are under-served. Turns Atlas from a visualization into a planning analysis tool — directly relevant to urban planning work.
-
----
-
-[Back to Roadmap](./ROADMAP.md)

@@ -10,7 +10,7 @@ Transit data is published agency by agency as GTFS feeds, so planners can't easi
 
 On the public site:
 
-- **Frequency map**: Every route is coloured by a frequency tier worked out per direction from the feed's departure times. A route only earns a tier when every direction passes. Predictable time-limited service stays separate from genuinely irregular routes.
+- **Frequency map**: Every route is coloured by a frequency tier worked out per direction from the feed's departure times. A route only earns a tier when every direction passes. Predictable part-time service stays separate from genuinely irregular routes.
 - **Filters**: By agency, mode (bus, rail, ferry and so on), frequency, day (weekday, Saturday, Sunday) and time of day. One setting hides one-off routes such as school runs.
 - **Search**: Find a route across all agencies by number or name.
 - **Route cards**: Click a route to see its headway through the day, direction by direction, with the periods it does not run regularly.
@@ -29,7 +29,7 @@ Beta only (not on the public site):
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, React Router, IndexedDB caching
 - **Mapping**: MapLibre GL JS, deck.gl, PMTiles
 - **Pipeline**: Node.js / tsx, JSZip, PapaParse, GTFS-Realtime protobuf bindings, Tippecanoe
-- **Infrastructure**: Vercel (hosting), Cloudflare R2 (public map artifacts, private GTFS and history archives, retained GTFS-RT snapshots), Cloudflare Workers (legacy background GTFS-RT archiver), GitHub Actions (weekly refresh, temporarily paused)
+- **Infrastructure**: Vercel (hosting), Cloudflare R2 (public map artifacts, private GTFS and history archives, retained GTFS-RT snapshots), Cloudflare Workers (legacy background GTFS-RT archiver), GitHub Actions (weekly feed refresh, Mondays)
 - **Analytics**: Google Analytics 4 for privacy-conscious feature usage measurement, Vercel Web Analytics and Speed Insights for page views and real-user performance
 - **Testing**: Vitest
 
@@ -37,7 +37,6 @@ Beta only (not on the public site):
 
 - [Roadmap](./docs/roadmap/ROADMAP.md)
 - [Documentation](./docs/README.md)
-- [Data](./docs/DATA.md)
 - [Changelog](./CHANGELOG.md)
 
 Created by Civic Minds

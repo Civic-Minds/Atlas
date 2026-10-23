@@ -7,7 +7,3 @@ The next layer is live performance. Agencies publish GTFS-RT feeds that tell you
 That distinction matters because scheduled and actual service are often meaningfully different — and the gap is almost never visible to the people who plan the network. Timetables show what's supposed to happen. Atlas shows what's happening.
 
 Long-term, the value is in accumulation. A week of GTFS-RT data is a snapshot. A year of it is a record of how a transit network actually performs — which routes are reliable, which stops are where service consistently breaks down, which schedule changes made things better or worse. That's the kind of evidence that currently doesn't exist in a form most agencies can access.
-
----
-
-[Back to Roadmap](../roadmap/ROADMAP.md)

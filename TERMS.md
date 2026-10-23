@@ -1,5 +1,7 @@
 # Terms of Service
 
+The current version of these terms and the privacy policy is published on the site at [transitatlas.fyi/terms](https://www.transitatlas.fyi/terms) and [transitatlas.fyi/privacy](https://www.transitatlas.fyi/privacy).
+
 Last updated: September 2026.
 
 ## What this is

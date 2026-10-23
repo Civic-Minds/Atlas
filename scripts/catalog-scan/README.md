@@ -23,8 +23,8 @@ zips, then list every line whose headline, tier or other output moved.
 SCAN=scripts/catalog-scan            # from this checkout; the scanned trees can be older
 OUT=/path/to/scan-output             # outside the repo
 ZIPS=/path/to/zips
-$SCAN/drive.sh ../Atlas-worktrees/base   $OUT/base   $OUT/slugs.txt $ZIPS
-$SCAN/drive.sh ../Atlas-worktrees/branch $OUT/branch $OUT/slugs.txt $ZIPS
+$SCAN/drive.sh /path/to/base-checkout   $OUT/base   $OUT/slugs.txt $ZIPS
+$SCAN/drive.sh /path/to/branch-checkout $OUT/branch $OUT/slugs.txt $ZIPS
 python3 $SCAN/diff.py   $OUT/base $OUT/branch            # optional slugs after the dirs limit it
 python3 $SCAN/report.py $OUT/base $OUT/branch $OUT/report.json > $OUT/report.txt
 ```
@@ -52,10 +52,10 @@ use the route-level report for filter and Night changes (frequency-focus-plan st
 not scan.mts output.
 
 ```zsh
-RV=scripts/catalog-scan
+RV=$PWD/scripts/catalog-scan       # this checkout's copy, run inside each scanned checkout
 # one run per checkout: the filter rule comes from that checkout's shared/routeHeadwayFilter.ts
-(cd ../Atlas-worktrees/base   && npx tsx $PWD/../focus-step0-tooling/$RV/route-values.mts $PWD /path/to/base-derived   $OUT/rv-base   ttc cta)
-(cd ../Atlas-worktrees/branch && npx tsx $PWD/../focus-step0-tooling/$RV/route-values.mts $PWD /path/to/branch-derived $OUT/rv-branch ttc cta)
+(cd /path/to/base-checkout   && npx tsx $RV/route-values.mts $PWD /path/to/base-derived   $OUT/rv-base   ttc cta)
+(cd /path/to/branch-checkout && npx tsx $RV/route-values.mts $PWD /path/to/branch-derived $OUT/rv-branch ttc cta)
 python3 $RV/report.py route-values $OUT/rv-base $OUT/rv-branch [--json rows.json] [--limit 40] [--slugs ttc,cta]
 ```
 
@@ -70,7 +70,7 @@ python3 $RV/report.py route-values $OUT/rv-base $OUT/rv-branch [--json rows.json
 
 `scripts/handcheck/stretch-departures.py <slug> <route> <day> <start> <end> [--stop ID] [--date YYYY-MM-DD] [--zip PATH]` reads the
 feed zip directly (no pipeline code) and prints, per direction, the patterns, the main stretch, and the departures in the window at the
-stretch's dispatch end (or `--stop`): count, max gap, and the gap at each edge. Feed lookup: `--zip`, `Atlas-worktrees/_feeds/<slug>.zip`,
+stretch's dispatch end (or `--stop`): count, max gap, and the gap at each edge. Feed lookup: `--zip`, then, in the folder that contains the checkout, `_feeds/<slug>.zip`,
 `_feeds/<slug>/*.zip`, then `_live-data/gtfs/<slug>.zip`. Example (the Night hand-check): `stretch-departures.py ttc 320 Weekday 2 6 --stop 8981`
 gives 29 departures, max gap 15, edges 4 and 20 in direction 0.
 
@@ -82,4 +82,4 @@ Without slugs it audits every agency in the folder; expect zero mismatches of ev
 
 ## Feed zips
 
-`Atlas-worktrees/_feeds/` holds a stable copy of the scan zips (`<slug>/*.zip`, outside git); see its README. Use it as `<zips>` for `drive.sh`.
+A `_feeds/` folder next to the checkout (outside git) can hold a stable copy of the scan zips (`<slug>/*.zip`). Use it as `<zips>` for `drive.sh`.
