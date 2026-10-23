@@ -25,7 +25,6 @@ import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
-import { compareOtherPhrase } from '../utils/compareSides';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
 import { buildCompareRow } from '../utils/compareRows';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
@@ -624,14 +623,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     startCompare();
   }, [compareStartRequest, compareAvailable, startCompare]);
 
-  // Side labels: how many routes each map draws in view, and how many of those the other map does
-  // not draw. Counted from what is on screen, the same way as the route-count badge.
+  // Side labels: how many routes each map draws in view. Counted from what is on screen, the same
+  // way as the route-count badge.
   const [renderedA, setRenderedA] = useState<Set<string> | null>(null);
   const [renderedB, setRenderedB] = useState<Set<string> | null>(null);
   const compareCounts = useMemo(() => {
     if (!compareActive || !renderedA || !renderedB) return null;
-    const only = (x: Set<string>, y: Set<string>) => [...x].filter(key => !y.has(key)).length;
-    return { a: { total: renderedA.size, only: only(renderedA, renderedB) }, b: { total: renderedB.size, only: only(renderedB, renderedA) } };
+    return { a: { total: renderedA.size }, b: { total: renderedB.size } };
   }, [compareActive, renderedA, renderedB]);
 
   // Route card rows: each side's frequency and whether it passes, from the same helpers the map
@@ -983,7 +981,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 settings={compareA}
                 onChange={next => { setDay(next.day); setPeriod(next.period); setMaxHeadway(next.maxHeadway); }}
                 counts={compareCounts?.a ?? null}
-                otherPhrase={compareOtherPhrase(compareA, compareSide!, 'B')}
               />
             </CompareSideSlot>
           )}
@@ -1061,7 +1058,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 settings={compareSide!}
                 onChange={setCompareSide}
                 counts={compareCounts?.b ?? null}
-                otherPhrase={compareOtherPhrase(compareSide!, compareA, 'A')}
               />
             </CompareSideSlot>
           </div>

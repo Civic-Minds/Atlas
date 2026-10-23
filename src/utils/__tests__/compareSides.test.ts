@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { compareCardSummary, compareOtherPhrase, compareSideHeading, defaultCompareSide, frequencyWords, type CompareSide } from '../compareSides';
+import { compareCardSummary, compareSideHeading, defaultCompareSide, frequencyWords, type CompareSide } from '../compareSides';
 
 const side = (over: Partial<CompareSide> = {}): CompareSide => ({ day: 'Weekday', period: 'late', maxHeadway: 10, ...over });
 
@@ -8,19 +8,6 @@ describe('compare side labels', () => {
     expect(compareSideHeading(side())).toBe('Weekday night · ≤10 min');
     expect(compareSideHeading(side({ maxHeadway: Infinity, period: 'all' }))).toBe('Weekday, all day · All');
     expect(frequencyWords(15)).toBe('≤15 min');
-  });
-
-  it('names the one setting that differs in the "not on" text', () => {
-    expect(compareOtherPhrase(side(), side({ day: 'Saturday' }), 'B')).toBe('on Saturday');
-    expect(compareOtherPhrase(side(), side({ period: 'midday' }), 'B')).toBe('during midday');
-    expect(compareOtherPhrase(side(), side({ maxHeadway: 15 }), 'B')).toBe('at every 15 min or better');
-    expect(compareOtherPhrase(side({ maxHeadway: 15 }), side(), 'A')).toBe('at every 10 min or better');
-  });
-
-  it('names the other map when more than one setting differs, or nothing does', () => {
-    expect(compareOtherPhrase(side(), side({ day: 'Sunday', maxHeadway: 15 }), 'B')).toBe('on map B');
-    expect(compareOtherPhrase(side(), side(), 'A')).toBe('on map A');
-    expect(compareOtherPhrase(side(), side({ maxHeadway: Infinity }), 'B')).toBe('on map B');
   });
 
   const row = (label: 'A' | 'B', settings: CompareSide, passes: boolean, headway: number | null = 16, runs = true) =>

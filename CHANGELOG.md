@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Compare's A and B captions show only their own settings and route count**: the "11 not on Saturday" part read as confusing when the other map was on a different day (CIV-530)
 - **The full-day view shows both directions at once (beta)**: a 2x2 grid with a minutes axis and times under every chart and the hovered hour's number above each, so two directions compare without a toggle, and the browser tooltips that covered the bars are gone (CIV-704, CIV-702)
 - **Clicking a Trans-Cab transfer point that sits on a bus stop opens that stop's card**: at Bell Manor Loop the transfer point is the only dot on the stop, so a click meant for the stop opened the Trans-Cab zone ([#1071](https://github.com/Civic-Minds/Atlas/issues/1071))
 - **The route card's hour chart is about 20% taller**: the bars were small enough to make busy and quiet hours hard to tell apart at a glance

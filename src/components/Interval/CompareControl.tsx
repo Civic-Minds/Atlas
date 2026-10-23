@@ -93,10 +93,8 @@ interface CompareSideBarProps {
   side: 'A' | 'B';
   settings: CompareSide;
   onChange: (settings: CompareSide) => void;
-  /** Routes this map draws in view, and how many of those the other map does not. */
-  counts: { total: number; only: number } | null;
-  /** "on Saturday", "at every 15 min" or "on map B": where the other side is. */
-  otherPhrase: string;
+  /** Routes this map draws in view. */
+  counts: { total: number } | null;
 }
 
 /**
@@ -114,7 +112,7 @@ function forwardWheelToMap(e: ReactWheelEvent<HTMLElement>) {
  * Frequency, Day and Time menus (the same chips and menus as the main filter bar), so it is
  * clear which map each control changes.
  */
-export function CompareSideBar({ side, settings, onChange, counts, otherPhrase }: CompareSideBarProps) {
+export function CompareSideBar({ side, settings, onChange, counts }: CompareSideBarProps) {
   return (
     <div className="flex flex-col items-center sm:items-end gap-1.5 min-w-0 max-w-full" data-compare-side={side}>
       <div onWheel={forwardWheelToMap} className={`pointer-events-auto ${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-full sm:min-w-0`}>
@@ -122,7 +120,7 @@ export function CompareSideBar({ side, settings, onChange, counts, otherPhrase }
         <span className="text-xs font-black text-[var(--text-primary)] whitespace-nowrap sm:shrink-0" data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
         {counts && (
           <span className="text-xs font-semibold text-[var(--text-dim)] whitespace-nowrap sm:min-w-0 sm:truncate" data-testid={`compare-counts-${side}`}>
-            <span className="hidden sm:inline">· </span>{counts.total} {plural(counts.total, 'route')}, {counts.only} not {otherPhrase}
+            <span className="hidden sm:inline">· </span>{counts.total} {plural(counts.total, 'route')}
           </span>
         )}
       </div>
