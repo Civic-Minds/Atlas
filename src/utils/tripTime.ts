@@ -60,11 +60,6 @@ export function formatHourPlain(hour: number): string {
   return `${h12} ${suffix}`;
 }
 
-/** Hover text for one hour. */
-export function tripTimeHourTitle(hour: number, minutes: number): string {
-  return `${formatHourPlain(hour)}: about ${minutes} min`;
-}
-
 /**
  * A trip-time bar's height in the strip: proportional to the trip time itself, from zero, with the
  * longest trip time at full height (CIV-493). A range-stretched scale made 45 vs 60 min look like 4x.

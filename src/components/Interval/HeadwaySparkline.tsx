@@ -13,7 +13,7 @@ import Pill from '../ui/Pill';
 import LegendItem from '../ui/LegendItem';
 import { delayAmount, headwayEvery } from '../../utils/headwayText';
 import { TripTimeStrip, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
-import { tripTimeHourTitle, type TripTimeSeries } from '../../utils/tripTime';
+import { type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
@@ -41,6 +41,10 @@ function formatClock(totalMinutes: number): string {
 
 function formatHourTitle(h: number, headway: number): string {
   return `${formatClock(h * 60)}: ${headwayEvery(headway)}`;
+}
+
+function formatTripTimeTitle(h: number, minutes: number): string {
+  return `${formatClock(h * 60)}: about ${minutes} min`;
 }
 
 /**
@@ -376,7 +380,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             <div>{formatHourTitle(readoutHour, displayedByHour[readoutHour]!)}</div>
           )}
           {readoutHour != null && tripTime?.byHour[readoutHour] != null && (
-            <div>{tripTimeHourTitle(readoutHour, tripTime.byHour[readoutHour]!)}</div>
+            <div>{formatTripTimeTitle(readoutHour, tripTime.byHour[readoutHour]!)}</div>
           )}
         </div>
       )}

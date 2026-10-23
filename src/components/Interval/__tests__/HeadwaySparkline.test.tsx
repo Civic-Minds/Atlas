@@ -263,7 +263,7 @@ describe('HeadwaySparkline', () => {
     fireEvent.mouseEnter(slowestColumn);
     // One readout under both charts: the hour's frequency line, then its trip time line.
     const readout = dialog.querySelector('[aria-live="polite"]')!;
-    expect(Array.from(readout.children).map(line => line.textContent)).toEqual(['5:00p: every 25 min', '5 p.m.: about 52 min']);
+    expect(Array.from(readout.children).map(line => line.textContent)).toEqual(['5:00p: every 25 min', '5:00p: about 52 min']);
     fireEvent.mouseLeave(strip.children[1]);
     expect(dialog.querySelector('[aria-live="polite"]')!.textContent).toBe('');
     // Hovering an hour in the frequency chart lights the matching trip-time bar a step darker (CIV-505).
