@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { HeadwaySparkline, sparklineBarHeight, slowerDirectionKey } from '../HeadwaySparkline';
+import { HeadwaySparkline, sparklineBarHeight, slowerDirectionKey, headwayAxisTicks } from '../HeadwaySparkline';
 import { SPARKLINE_HOURS } from '../../../../shared/config';
 
 describe('HeadwaySparkline', () => {
@@ -76,7 +76,8 @@ describe('HeadwaySparkline', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'Route 14 — Lakeshore full-day schedule' });
     expect(dialog).toBeInTheDocument();
-    expect(within(dialog).getByText('AM Peak')).toBeInTheDocument();
+    // The frequency column is half the dialog wide, so the peaks use the short form.
+    expect(within(dialog).getByText('AM')).toBeInTheDocument();
     expect(within(dialog).getByText('Midday')).toBeInTheDocument();
     expect(within(dialog).getByText('Overnight')).toBeInTheDocument();
     expect(within(dialog).queryByRole('button', { name: 'All directions' })).not.toBeInTheDocument();
@@ -267,7 +268,7 @@ describe('HeadwaySparkline', () => {
     const columns = dialog.querySelectorAll<HTMLElement>('.relative.z-10.flex > div > div');
     expect(columns.length).toBeGreaterThan(0);
     for (const column of columns) expect(column.style.height).toBe('96px');
-    for (const strip of strips) expect((strip.children[1].children[0] as HTMLElement).style.height).toBe('96px');
+    for (const strip of strips) expect((strip.querySelector('[data-testid="trip-time-bar"]')!.parentElement as HTMLElement).style.height).toBe('96px');
     // Eastbound 9 p.m. and Westbound noon have trips but no trip time: a faint tick, not a gap that reads as no service.
     expect(within(dialog).getAllByTestId('trip-time-missing')).toHaveLength(2);
     // No native title tooltips in the full-day view.
@@ -286,12 +287,16 @@ describe('HeadwaySparkline', () => {
       'Eastbound: every 25 min; about 52 min',
       'Westbound: every 35 min; about 50 min',
     ]);
+    // Each chart shows its own number for that hour above it; a chart with no value there shows nothing.
+    const values = within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent);
+    expect(values).toEqual(['every 25 min', 'about 52 min', 'every 35 min', 'about 50 min']);
     // The same hour is lit in all four charts.
     expect(dialog.querySelectorAll('[data-testid="sparkline-hover-column"]')).toHaveLength(2);
     const lit = (strip: HTMLElement) => within(strip).getAllByTestId('trip-time-bar').filter(bar => bar.className.includes('opacity-75') || bar.className.includes('opacity-100'));
     expect(lit(strips[1])).toHaveLength(1);
-    fireEvent.mouseLeave(strips[0].children[1]);
+    fireEvent.mouseLeave(strips[0].querySelector(".items-end")!);
     expect(readout.textContent).toBe('');
+    expect(within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent)).toEqual(['', '', '', '']);
     expect(dialog.querySelectorAll('[data-testid="sparkline-hover-column"]')).toHaveLength(0);
 
     // Hovering the second direction's frequency chart shows its period's band in both directions.
@@ -326,6 +331,40 @@ describe('HeadwaySparkline', () => {
     expect(dialog.querySelector<HTMLElement>('.relative.z-10.flex > div > div')!.style.height).toBe('150px');
     fireEvent.mouseEnter(within(dialog).getAllByTestId('trip-time-bar')[1].parentElement!);
     expect(Array.from(dialog.querySelector('[aria-live="polite"]')!.children).map(line => line.textContent)).toEqual(['5:00p: every 25 min', '5:00p: about 52 min']);
+  });
+});
+
+describe('full-day y axis', () => {
+  it('places a headway tick at the top of a bar of that headway on the fixed scale', () => {
+    // Shortest headway 5 min: an every-5 bar is full height, every-10 is half, every-20 a quarter.
+    const ticks = headwayAxisTicks(1 / 5, 96);
+    expect(ticks.map(t => t.label)).toEqual(['5 min', '10 min', '20 min']);
+    expect(ticks.map(t => t.fraction)).toEqual([1, 0.5, 0.25]);
+    expect(sparklineBarHeight(10, 1 / 5, 96)).toBe(96 * 0.5);
+    expect(headwayAxisTicks(0, 96)).toEqual([]);
+    expect(headwayAxisTicks(1 / 5, 44).length).toBeLessThanOrEqual(2);
+  });
+
+  it('draws one axis per chart, shared scales across both directions', () => {
+    render(
+      <HeadwaySparkline
+        byHour={{ 7: 10, 8: 20 }}
+        onPeriodChange={() => {}}
+        allowExpand
+        directionOptions={[
+          { key: 'east', label: 'Eastbound', byHour: { 7: 10, 8: 20 }, tripTime: { byHour: { 7: 30, 8: 60 } } },
+          { key: 'west', label: 'Westbound', byHour: { 7: 20, 8: 30 }, tripTime: { byHour: { 7: 15, 8: 30 } } },
+        ]}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
+    const dialog = screen.getByRole('dialog');
+    const axes = within(dialog).getAllByTestId('full-day-axis');
+    expect(axes).toHaveLength(4);
+    expect(axes[0].textContent).toBe(axes[2].textContent);
+    // Trip time: Westbound's 30-minute bar is half the shared 60-minute top, not full height.
+    const westBars = within(within(dialog).getAllByTestId('trip-time-strip')[1]).getAllByTestId('trip-time-bar');
+    expect(westBars.map(b => b.style.height)).toEqual(['24px', '48px']);
   });
 });
 

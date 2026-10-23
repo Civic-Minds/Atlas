@@ -11,8 +11,8 @@ import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
 import LegendItem from '../ui/LegendItem';
-import { delayAmount, headwayEvery } from '../../utils/headwayText';
-import { TripTimeStrip, TRIP_TIME_LABEL, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
+import { delayAmount, headwayAmount, headwayEvery } from '../../utils/headwayText';
+import { TripTimeStrip, AxisOverlay, tripTimeAxisTicks, type AxisTick, TRIP_TIME_LABEL, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
 import { type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
@@ -51,13 +51,32 @@ function ClockLabels({ className = '' }: { className?: string }) {
     <div className={`flex gap-px mt-1 ${className}`} data-testid="full-day-clock-labels">
       {HOURS.map(h => (
         <div key={h} className="flex-1 min-w-0 text-center">
-          <span className={`text-xs text-[var(--text-dim)] whitespace-nowrap ${(h - HOURS[0]) % 3 === 0 ? '' : 'hidden'}`}>
+          <span className={`text-xs text-[var(--text-dim)] whitespace-nowrap ${(h - HOURS[0]) % 6 === 0 ? '' : (h - HOURS[0]) % 3 === 0 ? 'hidden sm:inline' : 'hidden'}`}>
             {formatClock(h * 60)}
           </span>
         </div>
       ))}
     </div>
   );
+}
+
+/**
+ * Headway axis for the full-day charts: round headways ("10 min") placed where a bar of that headway
+ * tops out. Bars are as tall as 1/headway on the chart's fixed scale (sparklineBarHeight), so a tick's
+ * height is (1/minutes) / maxFreq, and more frequent service sits higher.
+ */
+export function headwayAxisTicks(maxFreq: number, height: number): AxisTick[] {
+  if (!(maxFreq > 0)) return [];
+  const ticks: AxisTick[] = [];
+  let lastPx = Infinity;
+  for (const minutes of [2, 3, 5, 10, 15, 20, 30, 60, 120]) {
+    const fraction = (1 / minutes) / maxFreq;
+    const px = fraction * height;
+    if (fraction > 1.0001 || px < 14 || lastPx - px < 24 || ticks.length >= 3) continue;
+    ticks.push({ label: headwayAmount(minutes), fraction: Math.min(1, fraction) });
+    lastPx = px;
+  }
+  return ticks;
 }
 
 function formatHourTitle(h: number, headway: number): string {
@@ -148,9 +167,11 @@ interface HourlySparklineProps {
   onSharedHour?: (hour: number | null) => void;
   /** Name the periods along the top (default). Off for the second block, so the names show once. */
   showPeriodLabels?: boolean;
+  /** Y-axis ticks (full-day, both directions): drawn over the bars, labels in a gutter the parent leaves. */
+  yAxis?: AxisTick[];
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, showPeriodLabels = true }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, showPeriodLabels = true, yAxis }: HourlySparklineProps) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
@@ -268,6 +289,17 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     ).values())
     : [];
 
+  // Both directions at once share one frequency scale and one trip time scale, so bars and axes compare.
+  const pairH = phone ? SPARKLINE_PAIRED_HEIGHT_PHONE : SPARKLINE_PAIRED_HEIGHT;
+  const pairMaxFreq = bothDirections
+    ? Math.max(scaleMaxFreq ?? 0, ...directionOptions!.flatMap(option => HOURS.map(h => option.byHour[h]).filter((v): v is number => v != null && v > 0).map(v => 1 / v)))
+    : 0;
+  const pairTripMax = bothDirections
+    ? Math.max(0, ...directionOptions!.flatMap(option => HOURS.map(h => option.tripTime?.byHour[h]).filter((v): v is number => v != null)))
+    : 0;
+  const pairFreqTicks = headwayAxisTicks(pairMaxFreq, pairH);
+  const pairTripTicks = tripTimeAxisTicks(pairTripMax, pairH);
+
   return (
     <div className={`relative ${sharedMode ? '' : expanded ? 'mt-2 mb-4' : 'mt-6 mb-4'}`}>
       {allowExpand && !expanded && (
@@ -307,6 +339,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             )}
           </div>
         ))}
+        {yAxis && <AxisOverlay ticks={yAxis} height={H} className={labelRow ? 'top-12' : 'top-2'} />}
         {activeLabelKey && (
           <span className={`absolute top-0 text-xs font-bold text-[var(--text-dim)] pointer-events-none ${allowExpand && !expanded ? 'right-7' : 'right-0'}`}>
             {PERIOD_LABELS[activeLabelKey]}
@@ -479,59 +512,73 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     charts on the right, Westbound over Eastbound, the direction named once per row. On a
                     phone the same cells stack, one direction after the other. */}
                 <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-4" data-testid="full-day-grid">
-                {/* The period names sit once above both directions, so they read as shared. */}
-                <div className="relative h-4 sm:col-start-1 sm:row-start-1" data-testid="full-day-period-labels">
-                  {PERIOD_OVERVIEW_BANDS.map(band => (
-                    <span
-                      key={band.key}
-                      className="absolute top-0 left-0.5 sm:left-1 text-xs font-black text-[var(--text-muted)] whitespace-nowrap"
-                      style={{ left: `${band.left * 100}%` }}
-                    >
-                      {band.label.endsWith(' Peak') ? (
-                        <>
-                          <span className="sm:hidden" aria-hidden="true">{band.label.replace(' Peak', '')}</span>
-                          <span className="hidden sm:inline">{band.label}</span>
-                        </>
-                      ) : band.label}
-                    </span>
-                  ))}
-                </div>
-                  <div className="hidden sm:block text-xs font-bold text-[var(--text-muted)] sm:col-start-2 sm:row-start-1">{TRIP_TIME_LABEL}</div>
-                  {directionOptions!.map(option => (
-                    <div key={option.key} className="contents" data-testid="full-day-direction">
-                      <div className="mt-3 sm:col-span-2 text-sm font-black text-[var(--text-primary)]">{option.label}</div>
-                      <div>
-                        <HeadwaySparkline
-                          byHour={option.byHour}
-                          period="all"
-                          onPeriodChange={() => {}}
-                          onPeriodHover={onPeriodHover}
-                          onHourHover={onHourHover}
-                          title={title}
-                          expanded
-                          scaleMaxFreq={scaleMaxFreq}
-                          sharedHour={modalHour}
-                          onSharedHour={setModalHour}
-                          showPeriodLabels={false}
-                        />
-                        <ClockLabels />
-                      </div>
-                      <div>
-                        <TripTimeStrip
-                          series={option.tripTime}
-                          height={phone ? SPARKLINE_PAIRED_HEIGHT_PHONE : SPARKLINE_PAIRED_HEIGHT}
-                          serviceHours={new Set(HOURS.filter(h => option.byHour[h] != null))}
-                          hoveredHour={modalHour}
-                          onHourHover={setModalHour}
-                          className="mt-3 sm:mt-0"
-                          labelClassName="sm:hidden"
-                          barsClassName="mt-1 sm:mt-2"
-                        />
-                        {/* Every chart has its own clock row directly under it. */}
-                        <ClockLabels />
-                      </div>
+                  {/* The period names sit once above the frequency column (the bands matter only there). */}
+                  <div className="pl-11 sm:col-start-1 sm:row-start-1" data-testid="full-day-period-labels">
+                    <div className="relative h-4">
+                      {PERIOD_OVERVIEW_BANDS.map(band => (
+                        <span
+                          key={band.key}
+                          className={`absolute top-0 text-xs font-black text-[var(--text-muted)] whitespace-nowrap ${band.key === 'late' ? 'hidden sm:inline' : ''}`}
+                          style={{ left: `${band.left * 100}%` }}
+                        >
+                          {/* The frequency column is half the dialog wide, so the peaks use the short form ("AM", "PM"). */}
+                          {band.label.replace(' Peak', '')}
+                        </span>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                  <div className="hidden sm:block pl-11 text-xs font-bold text-[var(--text-muted)] sm:col-start-2 sm:row-start-1">{TRIP_TIME_LABEL}</div>
+                  {directionOptions!.map(option => {
+                    const hw = modalHour != null ? option.byHour[modalHour] : null;
+                    const tt = modalHour != null ? option.tripTime?.byHour[modalHour] : null;
+                    return (
+                      <div key={option.key} className="contents" data-testid="full-day-direction">
+                        <div className="mt-3 sm:col-span-2 text-sm font-black text-[var(--text-primary)]">{option.label}</div>
+                        <div className="relative pl-11">
+                          {/* This chart's own number for the hovered hour, in a fixed spot so nothing jumps. */}
+                          <div className="h-4 text-xs font-bold leading-4 text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">
+                            {hw != null ? headwayEvery(hw) : ''}
+                          </div>
+                          <HeadwaySparkline
+                            byHour={option.byHour}
+                            period="all"
+                            onPeriodChange={() => {}}
+                            onPeriodHover={onPeriodHover}
+                            onHourHover={onHourHover}
+                            title={title}
+                            expanded
+                            scaleMaxFreq={pairMaxFreq}
+                            sharedHour={modalHour}
+                            onSharedHour={setModalHour}
+                            showPeriodLabels={false}
+                            yAxis={pairFreqTicks}
+                          />
+                          <ClockLabels />
+                        </div>
+                        <div className="relative pl-11">
+                          <TripTimeStrip
+                            above={(
+                              <div className="h-4 text-xs font-bold leading-4 text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">
+                                {tt != null ? tripTimeAbout(tt) : ''}
+                              </div>
+                            )}
+                            series={option.tripTime}
+                            height={pairH}
+                            serviceHours={new Set(HOURS.filter(h => option.byHour[h] != null))}
+                            hoveredHour={modalHour}
+                            onHourHover={setModalHour}
+                            className="mt-3 sm:mt-0"
+                            labelClassName="sm:hidden"
+                            barsClassName="mt-1 sm:mt-2"
+                            scaleMax={pairTripMax}
+                            axis={pairTripTicks}
+                          />
+                          {/* Every chart has its own clock row directly under it. */}
+                          <ClockLabels />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
                 {/* Screen-reader text only: the hovered hour once, then each direction's frequency and
                     trip time in their existing wording. Nothing visible, so the dialog reserves no space. */}
