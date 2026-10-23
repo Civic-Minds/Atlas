@@ -103,6 +103,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Platform and other
 
+- **The browser tab icon, iPhone home screen icon and link-preview image use the new Atlas logo**: the tab showed a subway emoji and the preview showed only a city illustration
 - **Maps load faster and cost less to serve**: routes draw from tiles about 90% smaller, [route tiles](https://github.com/Civic-Minds/Atlas/issues/854) load straight from storage, [map tiles](https://github.com/Civic-Minds/Atlas/issues/840) and [basemap images](https://github.com/Civic-Minds/Atlas/issues/856) stay cached, and History's large file loads only when needed (CIV-151, CIV-218)
 - **Moving around Atlas no longer reloads or logs errors**: switching views no longer [reloads the app](https://github.com/Civic-Minds/Atlas/issues/888), the route list stops rebuilding, History no longer logs a [render-loop error](https://github.com/Civic-Minds/Atlas/issues/822), and no failed [live requests](https://github.com/Civic-Minds/Atlas/issues/848) fire when Live is off
 - **Live [realtime endpoints](https://github.com/Civic-Minds/Atlas/issues/901) run [only locally](https://github.com/Civic-Minds/Atlas/issues/895), and [Atlas's server](https://github.com/Civic-Minds/Atlas/issues/867) refuses abuse**: junk requests are refused, live data is shared between viewers and framing is blocked, protecting hosting limits and agency keys
