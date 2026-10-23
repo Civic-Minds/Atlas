@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **A route whose branches take turns at the same frequency reads its real frequency**: each branch's half-day gap read as every 175 min, though a bus comes every 30 (HSR 16 Ancaster) ([#1072](https://github.com/Civic-Minds/Atlas/issues/1072))
 - **Compare mode is on the public map**: put two maps side by side, each with its own day, time and frequency (CIV-75)
 - **Each Compare map has its own Frequency, Day and Time controls (beta)**: so two frequency limits can be compared as well as two times, and shared links keep both sides (CIV-19)
 - **[Compare maps can be unlinked, so each map can look at a different city](https://github.com/Civic-Minds/Atlas/issues/1067)**: a lock button on the divider keeps them moving together by default
