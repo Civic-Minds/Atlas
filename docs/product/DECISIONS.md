@@ -77,7 +77,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 - **History is curated, not backfilled**
   - What: History is on for selected agencies where archived feeds show real service change; snapshots stay immutable and missing periods stay unavailable.
   - Why: a duplicated or inferred period would show service that is not documented.
-  - Source: [decision log](#decision-log) (2026-07-29), [DATA.md](../DATA.md), [DATA_HISTORY.md](../data/DATA_HISTORY.md)
+  - Source: [decision log](#decision-log) (2026-07-29), [History coverage](../data/DATA_HISTORY.md#archive-policy)
 - **Fares V2 first, V1 as fallback, base fare only**
   - What: a route's base fare is the lowest adult Fares V2 product, then V1, then a manual override; Atlas does not claim a rider's full fare.
   - Why: base fares are what the feeds support reliably.
