@@ -7,13 +7,14 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 ### Map and route behavior
+
 - **Compare mode is on the public map**: put two maps side by side, each with its own day, time and frequency (CIV-75)
 - **Each Compare map has its own Frequency, Day and Time controls (beta)**: so two frequency limits can be compared as well as two times, and shared links keep both sides (CIV-19)
 - **[Compare maps can be unlinked, so each map can look at a different city](https://github.com/Civic-Minds/Atlas/issues/1067)**: a lock button on the divider keeps them moving together by default
 - **[In Compare, search suggestions and results open right under the search bar](https://github.com/Civic-Minds/Atlas/issues/1066)**: they sat lower than on the normal map, leaving a big gap
 - **[Dragging on a Compare map's label pill no longer moves the map](https://github.com/Civic-Minds/Atlas/issues/1070)**: the pill let the drag through to the map underneath
 - **[Two clear route filters, both on the public map](https://github.com/Civic-Minds/Atlas/issues/720)**: one-off hides school runs and routes with one or two trips a day; part-time (on by default) hides rush-hour-only, evening or some-days routes like SF Muni 8BX
-- **[Routes that run once a day are drawn as one-off service](https://github.com/Civic-Minds/Atlas/issues/720)**: TARC 99 and 19 Coast RTA trippers were missing; the one-off switch hides them by default ([#862](https://github.com/Civic-Minds/Atlas/issues/862))
+- **[Routes that run once a day are drawn as one-off service](https://github.com/Civic-Minds/Atlas/issues/720)**: [TARC 99 and 19 Coast RTA trippers were missing](https://github.com/Civic-Minds/Atlas/issues/862); the one-off switch hides them by default
 - **[Frequency pickers use the same short labels everywhere](https://github.com/Civic-Minds/Atlas/issues/1041)**: "≤10 min" … "All" in every dropdown, panel, Settings, Compare and the map export, after an unapproved switch to longer wording
 - **[Frequency limits are worded one way everywhere](https://github.com/Civic-Minds/Atlas/issues/1011)**: Compare captions and the map export read "Weekday evening · ≤15 min" like the pickers, where the same frequency had been worded eight ways
 - **[Route lines are coloured section by section in each time period (beta)](https://github.com/Civic-Minds/Atlas/issues/690)**: each stretch is graded on every trip through it, so where TTC 96's branches run together the line reads every 10 ([#810](https://github.com/Civic-Minds/Atlas/issues/810)) (CIV-152, CIV-321)
@@ -65,6 +66,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The limited-service route count links to the routes behind it**: it was plain text
 
 ### Route cards and frequency
+
 - **[Hovering a route card row highlights only that row and its branch](https://github.com/Civic-Minds/Atlas/issues/1064)**: the selected route's top layer hid the map highlight, and rows split by where trips start (TTC 51 Southbound) lit up together
 - **[Selecting a route that only shows its shared stretch draws the route](https://github.com/Civic-Minds/Atlas/issues/850)**: with a frequency filter on, TTC 52 drew nothing
 - **The route card says when only the shared section meets the filter**: branches failing it no longer look like a mix-up (CIV-82)
@@ -72,7 +74,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **[Route cards describe part-period and uneven service instead of a long average](https://github.com/Civic-Minds/Atlas/issues/934)**: "from 7:17am, every 9 min" or "every 10 min, with a 45 min gap" instead of "every 77"; the map and filters are unchanged
 - **[The uneven-service notice is a muted footer line on the route card](https://github.com/Civic-Minds/Atlas/issues/1042)**: like the other card notices, instead of a boxed bold block mid-card
 - **[A single long gap reads as "no regular service during this period", not "every N"](https://github.com/Civic-Minds/Atlas/issues/955)**: TTC 10 showed "every 315" for two buses five hours apart, while slow routes that really run every 84 keep their number
-- **[Overnight rows no longer show a made-up wait for three buses around a long gap](https://github.com/Civic-Minds/Atlas/issues/961)**: cards averaged them into a number like every 196 that no rider waits ([#897](https://github.com/Civic-Minds/Atlas/issues/897))
+- **[Overnight rows no longer show a made-up wait for three buses around a long gap](https://github.com/Civic-Minds/Atlas/issues/897)**: cards averaged them into [a number like every 196](https://github.com/Civic-Minds/Atlas/issues/961) that no rider waits
 - **[Night routes show their real overnight frequency](https://github.com/Civic-Minds/Atlas/issues/896)**: TTC 337 and 373, every 30 all night, showed gaps of up to 217 minutes
 - **[A branch that runs keeps its row when the rest of the route does not](https://github.com/Civic-Minds/Atlas/issues/954)**: SF Muni 8's Fisherman's Wharf branch, every 8 in the PM peak, was hidden
 - **[Stop cards match the route card](https://github.com/Civic-Minds/Atlas/issues/750)**: a stop card showed a route "about every 8 min" in a period the route card says has no regular service
@@ -139,12 +141,13 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **[Trip time by hour covers the whole day for TTC subway lines](https://github.com/Civic-Minds/Atlas/issues/852)**: only one time band's trips were counted
 
 ### History (beta)
+
 - **[History draws each year's routes on that year's own lines and colours](https://github.com/Civic-Minds/Atlas/issues/1028)**: sliding back shows the network as it ran, including routes that no longer exist, and an agency whose history fails to load shows an error
 - **History has the map's Frequency and Time filters**: pick "≤15 min" and a time of day, then slide through the years to see how that network changed
 - **History's route list follows the year slider**: it lists only that year's routes, with that year's frequency and the change from the previous snapshot
 - **[History opens on the city you're looking at](https://github.com/Civic-Minds/Atlas/issues/1012)**: with one History city in view, or an agency picked, the tab opens that agency instead of the list
 - **[A map route link opens the same route in History](https://github.com/Civic-Minds/Atlas/issues/1028)**: so does the route open on the map when you switch to History
-- **[History's panels, lists and cards look and work like the regular ones](https://github.com/Civic-Minds/Atlas/issues/1028)**: agency names, panel positions and sizes, route rows, mode pills, the report flag and the loading panel all match the map's cards ([#1015](https://github.com/Civic-Minds/Atlas/issues/1015), [#1014](https://github.com/Civic-Minds/Atlas/issues/1014))
+- **[History's panels, lists and cards look and work like the regular ones](https://github.com/Civic-Minds/Atlas/issues/1028)**: agency names, panel positions and sizes, [route rows](https://github.com/Civic-Minds/Atlas/issues/1015), [mode pills](https://github.com/Civic-Minds/Atlas/issues/1014), the report flag and the loading panel all match the map's cards
 - **[In History the top search bar finds routes in the open agency](https://github.com/Civic-Minds/Atlas/issues/1015)**: the card had its own filter field, unlike the regular agency card
 - **[Clicking the map or pressing Escape closes History's panel](https://github.com/Civic-Minds/Atlas/issues/1031)**: as on the regular map
 - **[The History map stays put while you move the year slider](https://github.com/Civic-Minds/Atlas/issues/1016)**: it re-frames only when you open an agency or route
@@ -152,6 +155,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **[History's route chart no longer stacks labels on top of each other](https://github.com/Civic-Minds/Atlas/issues/1037)**: when two snapshots fall close together only one label shows
 
 ### Live
+
 - **Live is one mode that opens on the vehicles**: a route's card shows gaps between cars, scheduled against real gaps, where cars stood still and run time for the TTC 503-511, and the map's route card links to it
 - **The Live route card's lateness and the stop card's arrivals load again**: they were failing
 - **The Live route card looks like the regular route card**: same header, spacing and dividers, with a plain text back link like "Muni routes" (CIV-325, CIV-331)
@@ -230,6 +234,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The late-by-hour hover hint is gone where the time-of-day band already explains it**: and hovering the days figure explains a dropped day
 
 ### Agency, area and research pages
+
 - **Every agency has its own frequency page**: a frequency-band bar, a route table by mode and period, connecting and nearby agencies, and a link into the map
 - **Metro area pages compare every agency in a city region**: "Toronto area" shows the TTC, MiWay, GO and the rest together, with Open in the map framing the area
 - **An index page lists every agency and area page**: areas first, then agencies by country and state with a filter box, built from the same data as the pages
@@ -257,10 +262,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **[The Atlas logo no longer blanks the map from Night, Live or History](https://github.com/Civic-Minds/Atlas/issues/904)**: it switches back to the map in place instead of rebuilding it
 
 ### Data pipeline
-- **[Long rural and highway routes are drawn in full and read at the real end of the line](https://github.com/Civic-Minds/Atlas/issues/1057)**: sparse points on long straight roads were taken for bad data, as on Prince George routes and Redwood Coast Transit 20 ([#776](https://github.com/Civic-Minds/Atlas/issues/776))
-- **[Feeds that give each trip its own copy of a shape draw their routes again](https://github.com/Civic-Minds/Atlas/issues/616)**: NJ Transit's 14 rail lines and SamTrans 120 are back, and Siskiyou County's routes draw once republished ([#775](https://github.com/Civic-Minds/Atlas/issues/775), [#492](https://github.com/Civic-Minds/Atlas/issues/492))
-- **[A few pre-dawn trips on their own shape no longer speak for a route](https://github.com/Civic-Minds/Atlas/issues/740)**: TTC 100 via Linkwood was drawn without daytime values and Viva Blue read "limited" at midday ([#746](https://github.com/Civic-Minds/Atlas/issues/746))
-- **[Routes whose midday trips run on their own shape no longer show a fake midday gap](https://github.com/Civic-Minds/Atlas/issues/844)**: like Lethbridge 4 on Saturdays and REM A3 ([#842](https://github.com/Civic-Minds/Atlas/issues/842))
+
+- **[Long rural and highway routes are drawn in full and read at the real end of the line](https://github.com/Civic-Minds/Atlas/issues/1057)**: sparse points on long straight roads were taken for bad data, as on Prince George routes and [Redwood Coast Transit 20](https://github.com/Civic-Minds/Atlas/issues/776)
+- **[Feeds that give each trip its own copy of a shape draw their routes again](https://github.com/Civic-Minds/Atlas/issues/616)**: NJ Transit's 14 rail lines and [SamTrans 120 are back](https://github.com/Civic-Minds/Atlas/issues/775), and [Siskiyou County's routes draw once republished](https://github.com/Civic-Minds/Atlas/issues/492)
+- **[A few pre-dawn trips on their own shape no longer speak for a route](https://github.com/Civic-Minds/Atlas/issues/740)**: TTC 100 via Linkwood was drawn without daytime values and [Viva Blue read "limited" at midday](https://github.com/Civic-Minds/Atlas/issues/746)
+- **[Routes whose midday trips run on their own shape no longer show a fake midday gap](https://github.com/Civic-Minds/Atlas/issues/844)**: like Lethbridge 4 on Saturdays and [REM A3](https://github.com/Civic-Minds/Atlas/issues/842)
 - **[Routes whose feed labels only some trips' direction keep both directions](https://github.com/Civic-Minds/Atlas/issues/730)**: Coast NH's Saturday inbound line was missing
 - **[Streamline Goldline in Bozeman follows its streets again](https://github.com/Civic-Minds/Atlas/issues/433)**: a shape-repair step cut its out-and-back stretch
 - **[Amarillo shows all its stops](https://github.com/Civic-Minds/Atlas/issues/753)**: its feed leaves times blank between timed stops, so only 41 of 293 appeared
@@ -278,7 +284,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **[Processing gives the same frequencies on any machine](https://github.com/Civic-Minds/Atlas/issues/923)**: date math ran in the machine's time zone, so a build on a server in another zone read MBTA routes differently
 - **A corrected agency time zone survives the next feed refresh**: each refresh copied the feed's cross-border zone back over the fix (Gold Coast, Spokane, Washington County)
 - **[A feed whose calendar runs to a far-off placeholder date expires on its stated end date](https://github.com/Civic-Minds/Atlas/issues/875)**: Simi Valley's 2023 feed passed one step as current while another blocked it
-- **[Feeds whose calendar runs past a stale end date are no longer marked expired](https://github.com/Civic-Minds/Atlas/issues/687)**: manual processing and restores use the weekly refresh's end date, and unchanged feeds are skipped ([#688](https://github.com/Civic-Minds/Atlas/issues/688))
+- **[Feeds whose calendar runs past a stale end date are no longer marked expired](https://github.com/Civic-Minds/Atlas/issues/687)**: manual processing and restores use the weekly refresh's end date, and [unchanged feeds are skipped](https://github.com/Civic-Minds/Atlas/issues/688)
 - **[A data rebuild keeps each agency's feed end date current](https://github.com/Civic-Minds/Atlas/issues/837)**: an old end date caused false "service ended" notices
 - **[Rebuilds no longer get stuck on, or pick, an old archived feed](https://github.com/Civic-Minds/Atlas/issues/859)**: they pick by the service dates inside each file, not file order or names
 - **[A stray blank line in a feed file no longer fails the whole feed](https://github.com/Civic-Minds/Atlas/issues/835)**: Caltrain's refresh was rejected over one empty row
@@ -289,6 +295,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Agency pages stay in sync with the weekly data**: the weekly refresh regenerates their numbers instead of going stale
 
 ### Platform and other
+
 - **Routes appear much sooner on first load**: the map draws from route tiles about 90% smaller, starts fetching them earlier, and downloads each agency's full data afterwards (CIV-151)
 - **[The map loads route tiles directly from storage](https://github.com/Civic-Minds/Atlas/issues/854)**: passing them through a hosting function used up the plan's transfer allowance
 - **[Map tiles stay cached in the browser](https://github.com/Civic-Minds/Atlas/issues/840)**: zooming back or revisiting no longer re-downloads them
@@ -298,14 +305,14 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The route list no longer rebuilds every route's details each time the side panel reappears**: that took several seconds on a busy map
 - **[History no longer logs a render-loop error on load](https://github.com/Civic-Minds/Atlas/issues/822)**: its agency list was rebuilt on every render
 - **[No failed live requests when Live is off](https://github.com/Civic-Minds/Atlas/issues/848)**: selecting a route or stop logged an error each time
-- **[Live realtime endpoints are no longer deployed publicly](https://github.com/Civic-Minds/Atlas/issues/901)**: they still shipped as public functions; they now run only locally ([#895](https://github.com/Civic-Minds/Atlas/issues/895))
+- **[Live realtime endpoints are no longer deployed publicly](https://github.com/Civic-Minds/Atlas/issues/901)**: they still shipped as public functions; [they now run only locally](https://github.com/Civic-Minds/Atlas/issues/895)
 - **[Atlas's server can no longer be made to re-fetch tiles or live data on demand](https://github.com/Civic-Minds/Atlas/issues/867)**: junk requests are refused, live data is shared between viewers and framing is blocked, protecting hosting limits and agency keys
 - **[Atlas is easier to find in search](https://github.com/Civic-Minds/Atlas/issues/823)**: every page has its own title and description, a sitemap is published, and made-up addresses show a not-found page instead of the map
 - **Analytics count more of what people use**: map exports, outbound links, report and feedback opens and content page views were missing
 - **Copied and shared links no longer exclude the people who open them from analytics**: they carried the internal-testing marker
 - **Shared map images and copied links are tagged (beta)**: so shared visits can be counted and images link back to the map
 - **Text is bigger and easier to read**: nothing you have to read is below 12px, and greys, status colours and pills meet WCAG AA contrast in every theme
-- **[The Atlas logo looks the same on every device, page and theme](https://github.com/Civic-Minds/Atlas/issues/1068)**: a light circle with a dark map icon; phones drew a smaller wordmark and desktop a solid dark circle ([#1058](https://github.com/Civic-Minds/Atlas/issues/1058))
+- **[The Atlas logo looks the same on every device, page and theme](https://github.com/Civic-Minds/Atlas/issues/1068)**: a light circle with a dark map icon; phones drew a smaller wordmark and [desktop a solid dark circle](https://github.com/Civic-Minds/Atlas/issues/1058)
 - **The "Atlas / by Civic Minds" wordmark is tighter**: the two lines read as one unit
 - **The page footer is regrouped into Explore, Learn and About, beside the Atlas name and a one-line description**: it sits at the bottom of short pages and spans the full width, instead of a loose, crowded list
 - **Docs, Terms, Privacy and Changelog keep the top bar and "On this page" in view**: the list highlights the section you're reading and shows the page title once you scroll
