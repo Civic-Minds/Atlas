@@ -4,7 +4,6 @@ import type { LiveGaps, StopGaps } from '../../../hooks/useLiveGaps';
 import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import GapsChart from '../../charts/GapsChart';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
-import { useMediaQuery } from '../../../hooks/useMediaQuery';
 import DirectionStrip from '../DirectionStrip';
 import { branchNamesWrap } from '../BranchStrip';
 import { allBranchStops, branchStripFromV3, columnsOf } from '../branchStripModel';
@@ -54,10 +53,9 @@ function GapsBlock({ data, gaps, label }: { data: DashboardBunchingBand; gaps: R
  */
 export default function BunchingSection({ v3, dir, band, gaps, detail, boundary, uncertain = [] }: { v3: LiveV3; dir: number | null; band: DashboardBand; gaps?: LiveGaps | null; detail: 'full' | 'compact'; boundary?: string; uncertain?: UncertainStart[] }): ReactNode {
   const full = detail === 'full';
-  // On a phone the strip would be a long vertical list of every stop: the bar chart stays there.
-  const phone = useMediaQuery('(max-width: 479px)');
+  // Full analysis draws the route strip at every width; on phones it is the strip's own compact vertical line (CIV-502).
   const { rows, pointsOf } = bunchingModel(v3, dir, band);
-  // The bar chart (phones, Explore) draws the SAME stops as the strip, in its column order: the main pattern plus the stops only a branch serves.
+  // The bar chart (Explore) draws the SAME stops as the strip, in its column order: the main pattern plus the stops only a branch serves.
   const chartOf = (directionId: number, data: DashboardBunchingBand): { points: ProfilePoint[]; ids: string[] } => {
     const model = branchStripFromV3(v3, directionId, band, uncertain);
     if (!model) return { points: pointsOf(data), ids: data.stops.filter(x => x.n >= 10).map(x => x.stopId) };
@@ -81,15 +79,15 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
           const data: DashboardBunchingBand | undefined = b.bands[band];
           if (!data) return null;
           const { points, ids } = chartOf(b.directionId, data);
-          // The marked stretch: where bunching forms. Full analysis marks nothing when no single stretch steps up (the strip, the phone chart and the sentence all follow `kind`); Explore also shows the biggest rise.
+          // The marked stretch: where bunching forms. Full analysis marks nothing when no single stretch steps up (the strip and the sentence follow `kind`); Explore also shows the biggest rise.
           const stretch = full ? (data.kind === 'forms' ? data.forms : null) : data.forms ?? data.biggestRise;
           const markIdx = stretch ? ids.indexOf(stretch.toStopId) : -1;
           const linked = stretch?.links.filter(l => l.linked) ?? [];
           return (
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
-              {full && !phone && <DirectionStrip className="mt-2" v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['bunching']} reserveBracket={reserveBracket} twoLineNames={twoLineNames} />}
-              {(!full || phone) && points.length > 1 && (
+              {full && <DirectionStrip className="mt-2" v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['bunching']} reserveBracket={reserveBracket} twoLineNames={twoLineNames} />}
+              {!full && points.length > 1 && (
                 <ProfileBars
                   ariaLabel={`${label}: share of gaps that are too close together or too far apart, stop by stop.`}
                   points={points}
