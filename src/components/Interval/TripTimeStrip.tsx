@@ -9,6 +9,10 @@ import { tripTimeBarHeight, type TripTimeSeries } from '../../utils/tripTime';
  * 7px, so phones keep the card's bar width.
  */
 export const TRIP_TIME_LABEL = 'Trip time';
+/** The header text for a trip time chart: the label, plus the loop note when each value is one full loop. */
+export function tripTimeHeading(loop?: boolean, label: string = TRIP_TIME_LABEL): string {
+  return `${label}${loop ? ' (one full loop)' : ''}`;
+}
 export const FULL_DAY_COLUMN_ROW = 'flex gap-px';
 export const FULL_DAY_BAR_SHAPE = 'w-[40%] min-w-[7px] max-w-[24px] rounded-full';
 
@@ -98,8 +102,7 @@ export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, service
   return (
     <div className={className} data-testid="trip-time-strip">
       <div className={`text-left text-xs font-bold text-[var(--text-muted)] ${labelClassName}`}>
-        {label}
-        {series.loop ? ' (one full loop)' : ''}
+        {tripTimeHeading(series.loop, label)}
       </div>
       {above}
       <div className={`relative ${barsClassName} ${FULL_DAY_COLUMN_ROW} items-end`} onMouseLeave={() => onHourHover?.(null)}>

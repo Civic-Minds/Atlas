@@ -12,7 +12,7 @@ import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
 import LegendItem from '../ui/LegendItem';
 import { delayAmount, headwayAmount, headwayEvery } from '../../utils/headwayText';
-import { TripTimeStrip, AxisOverlay, tripTimeAxisTicks, type AxisTick, TRIP_TIME_LABEL, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
+import { TripTimeStrip, AxisOverlay, tripTimeAxisTicks, type AxisTick, tripTimeHeading, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
 import { type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
@@ -516,7 +516,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                 <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-4" data-testid="full-day-grid">
                   {/* The period names sit once above the frequency column (the bands matter only there). */}
                   <div className="pl-11 sm:col-start-1 sm:row-start-1" data-testid="full-day-period-labels">
-                    <div className="relative h-4">
+                    <div className="relative h-4 mb-1">
                       {PERIOD_OVERVIEW_BANDS.map(band => (
                         <span
                           key={band.key}
@@ -531,13 +531,13 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                       ))}
                     </div>
                   </div>
-                  <div className="hidden sm:block pl-11 text-xs font-bold text-[var(--text-muted)] sm:col-start-2 sm:row-start-1">{TRIP_TIME_LABEL}</div>
+                  <div className="hidden sm:block pl-11 text-xs font-bold text-[var(--text-muted)] sm:col-start-2 sm:row-start-1 sm:mb-1">{tripTimeHeading(gridBlocks.some(option => option.tripTime?.loop))}</div>
                   {gridBlocks.map(option => {
                     const hw = modalHour != null ? option.byHour[modalHour] : null;
                     const tt = modalHour != null ? option.tripTime?.byHour[modalHour] : null;
                     return (
                       <div key={option.key} className="contents" data-testid="full-day-direction">
-                        {bothDirections && <div className="mt-3 sm:col-span-2 text-sm font-black text-[var(--text-primary)]">{option.label}</div>}
+                        {bothDirections && <div className="mt-3 mb-1 sm:col-span-2 text-sm font-black text-[var(--text-primary)]">{option.label}</div>}
                         <div className="relative pl-11">
                           {/* This chart's own number for the hovered hour, in a fixed spot so nothing jumps. */}
                           <div className="h-4 text-xs font-bold leading-4 text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">

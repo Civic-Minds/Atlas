@@ -349,6 +349,26 @@ describe('HeadwaySparkline', () => {
     expect(within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent)).toEqual(['', '']);
   });
 
+  it('adds the loop note to the desktop trip time header for a loop route only (CIV-704)', () => {
+    const open = (loop: boolean) => {
+      const { unmount } = render(
+        <HeadwaySparkline
+          byHour={{ 7: 30, 17: 25 }}
+          onPeriodChange={() => {}}
+          allowExpand
+          directionOptions={[{ key: 'only', label: 'Loop', byHour: { 7: 30, 17: 25 }, tripTime: { byHour: { 7: 38, 17: 52 }, ...(loop ? { loop: true as const } : {}) } }]}
+        />,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
+      const header = within(screen.getByRole('dialog')).getByTestId('full-day-grid').querySelector('.hidden.sm\\:block.pl-11')!;
+      const text = header.textContent;
+      unmount();
+      return text;
+    };
+    expect(open(true)).toBe('Trip time (one full loop)');
+    expect(open(false)).toBe('Trip time');
+  });
+
   it('keeps the toggle and one grid block for a route with more than two directions', () => {
     render(
       <HeadwaySparkline
