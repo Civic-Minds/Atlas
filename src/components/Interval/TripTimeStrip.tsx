@@ -7,6 +7,7 @@ import { tripTimeBarHeight, type TripTimeSeries } from '../../utils/tripTime';
  * The bar takes 40% of its hour column (CIV-510; was 55%), but never less than the card chart's
  * 7px, so phones keep the card's bar width.
  */
+export const TRIP_TIME_LABEL = 'Trip time';
 export const FULL_DAY_COLUMN_ROW = 'flex gap-px';
 export const FULL_DAY_BAR_SHAPE = 'w-[40%] min-w-[7px] max-w-[24px] rounded-full';
 
@@ -18,7 +19,7 @@ export const FULL_DAY_BAR_SHAPE = 'w-[40%] min-w-[7px] max-w-[24px] rounded-full
  * reports that hour through the chart's hover line; the hours with the longest trip time are drawn
  * darker. Renders nothing without data.
  */
-export function TripTimeStrip({ series, label = 'Trip time', height, serviceHours, hoveredHour, onHourHover }: {
+export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, serviceHours, hoveredHour, onHourHover, className = 'mt-3', labelClassName = '', barsClassName = 'mt-1' }: {
   series: TripTimeSeries | null | undefined;
   label?: string;
   /** The bar area height: the frequency chart's own, so the two charts match. */
@@ -27,18 +28,22 @@ export function TripTimeStrip({ series, label = 'Trip time', height, serviceHour
   serviceHours?: ReadonlySet<number>;
   hoveredHour?: number | null;
   onHourHover?: (hour: number | null) => void;
+  /** Spacing overrides: the 2x2 grid names the column once and aligns the strip with the chart beside it. */
+  className?: string;
+  labelClassName?: string;
+  barsClassName?: string;
 }) {
   const values = series ? SPARKLINE_HOURS.map(h => series.byHour[h]).filter((v): v is number => v != null) : [];
   if (!series || values.length === 0) return null;
   const min = Math.min(...values);
   const max = Math.max(...values);
   return (
-    <div className="mt-3" data-testid="trip-time-strip">
-      <div className="text-left text-xs font-bold text-[var(--text-muted)]">
+    <div className={className} data-testid="trip-time-strip">
+      <div className={`text-left text-xs font-bold text-[var(--text-muted)] ${labelClassName}`}>
         {label}
         {series.loop ? ' (one full loop)' : ''}
       </div>
-      <div className={`mt-1 ${FULL_DAY_COLUMN_ROW} items-end`} onMouseLeave={() => onHourHover?.(null)}>
+      <div className={`${barsClassName} ${FULL_DAY_COLUMN_ROW} items-end`} onMouseLeave={() => onHourHover?.(null)}>
         {SPARKLINE_HOURS.map(h => {
           const minutes = series.byHour[h];
           const hovered = hoveredHour === h && minutes != null;

@@ -224,7 +224,7 @@ describe('HeadwaySparkline', () => {
     });
   });
 
-  it('shows both directions at once: four charts, one shared hour, one readout (CIV-704)', () => {
+  it('shows both directions at once: 2x2 grid, one shared hour, one readout (CIV-704)', () => {
     render(
       <HeadwaySparkline
         byHour={{ 7: 30, 12: 20, 17: 25 }}
@@ -245,12 +245,25 @@ describe('HeadwaySparkline', () => {
     expect(blocks).toHaveLength(2);
     const strips = within(dialog).getAllByTestId('trip-time-strip');
     expect(strips).toHaveLength(2);
-    expect(within(dialog).getAllByText('Trip time')).toHaveLength(2);
-    // Four charts at the paired height (60px on desktop).
+    // The column is named once (desktop); each strip keeps its own label for the stacked phone layout, hidden from sm up.
+    expect(within(dialog).getAllByText('Trip time')).toHaveLength(3);
+    // 2x2: frequency charts in the left column, trip time in the right, a direction heading once per row, Westbound over Eastbound.
+    const grid = within(dialog).getByTestId('full-day-grid');
+    expect(grid).toHaveClass('sm:grid-cols-2');
+    expect(within(grid).getAllByText(/^(Eastbound|Westbound)$/)).toHaveLength(2);
+    for (const block of blocks) {
+      expect(block.className).toContain('contents');
+      expect(block.children[0]).toHaveClass('sm:col-span-2');
+      expect(block.children[1].querySelector('.relative.z-10.flex')).not.toBeNull();
+      expect(block.children[2].querySelector('[data-testid="trip-time-strip"]')).not.toBeNull();
+    }
+    // One row of clock labels under each column on desktop.
+    expect(within(dialog).getAllByTestId('full-day-clock-labels').filter(el => el.className.includes('sm:flex'))).toHaveLength(2);
+    // Four charts at the paired height (96px on desktop).
     const columns = dialog.querySelectorAll<HTMLElement>('.relative.z-10.flex > div > div');
     expect(columns.length).toBeGreaterThan(0);
-    for (const column of columns) expect(column.style.height).toBe('60px');
-    for (const strip of strips) expect((strip.children[1].children[0] as HTMLElement).style.height).toBe('60px');
+    for (const column of columns) expect(column.style.height).toBe('96px');
+    for (const strip of strips) expect((strip.children[1].children[0] as HTMLElement).style.height).toBe('96px');
     // Eastbound 9 p.m. and Westbound noon have trips but no trip time: a faint tick, not a gap that reads as no service.
     expect(within(dialog).getAllByTestId('trip-time-missing')).toHaveLength(2);
     // No native title tooltips in the full-day view.
@@ -349,8 +362,8 @@ describe('HeadwaySparkline fixed scale (CIV-512)', () => {
     const dialog = screen.getByRole('dialog');
     const tallestIn = (block: Element) => Math.max(...[...block.querySelectorAll<HTMLElement>('.relative.z-10.flex .rounded-full')].map(el => parseFloat(el.style.height) || 0));
     const [east, west] = within(dialog).getAllByTestId('full-day-direction');
-    expect(tallestIn(east)).toBe(30); // every 10 on an every-5 axis: half of the 60px chart
-    expect(tallestIn(west)).toBe(60);
+    expect(tallestIn(east)).toBe(48); // every 10 on an every-5 axis: half of the 96px chart
+    expect(tallestIn(west)).toBe(96);
   });
 });
 
