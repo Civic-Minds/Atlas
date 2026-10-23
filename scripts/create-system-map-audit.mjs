@@ -1,8 +1,12 @@
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 const catalogPath = 'docs/research/frequent-service-research-2026-09/catalog.json';
 const outputPath = 'docs/research/system-map-audit-2026-09/data.json';
-const preservedMapDirectory = '/Users/ryan/Desktop/Data/System Maps/Atlas Frequent Service';
+// Local archive of agency system maps. Override with SYSTEM_MAPS_DIR.
+const preservedMapDirectory = process.env.SYSTEM_MAPS_DIR
+  ?? path.join(os.homedir(), 'Developer', 'Data', 'System Maps', 'Atlas Frequent Service');
 const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
 
 const records = catalog.agencies.slice(0, 50).map((agency, index) => ({
