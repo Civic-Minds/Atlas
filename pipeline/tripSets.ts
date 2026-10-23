@@ -33,6 +33,7 @@ import {
   nightServiceDepartureTimes,
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
+import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
 export const SHORT_TURN_MIN_SHARE = 0.2;
@@ -112,6 +113,13 @@ export interface DirectionStretches {
    * skip a stop). A trip that skips a stop between two it serves passes it at a time interpolated between them.
    */
   throughTimesAlong?: (stops: readonly string[]) => Array<{ times: readonly number[]; nightTimes: readonly number[]; tripCount: number }>;
+  /**
+   * #1072: for tail `i`, departures at the main stretch's reference stop of the trips that serve the
+   * tail (`on`) and of the sibling trips (`off`: they serve none of the tail's stops but leave the
+   * main stretch elsewhere), both on regular patterns only. Read by the handover test in
+   * rollupDirection. Not serialized.
+   */
+  tailHandoverTimes?: (tailIndex: number) => { on: readonly number[]; off: readonly number[] };
 }
 
 type Coord = [lat: number, lon: number];
@@ -349,7 +357,37 @@ export function directionStretches(
       return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight[i]), tripCount: counts[i] };
     });
   };
-  return { key, main, tails, regularPatternCount: regular.length, variantTripCount, disconnected: disconnected || undefined, timesAtStop, throughTimesAlong };
+  const regularIds = new Set(regular.map(p => p.stops.join('>')));
+  const sameTerminal = (a: string, b: string) => {
+    if (a === b) return true;
+    const p = stopCoord(a), q = stopCoord(b);
+    return p != null && q != null && km(p, q) * 1000 <= SAME_TERMINAL_METERS;
+  };
+  const tailHandoverTimes = (tailIndex: number) => {
+    const tail = tails[tailIndex];
+    const on = new Set<number>();
+    const off = new Set<number>();
+    if (!main || !tail) return { on: [], off: [] };
+    const tailStops = new Set(tail.stops);
+    // Siblings take the same trip between the same two terminals by another road (HSR 16: Meadowlands
+    // to Garner at Wilson, via Wilson or via Fiddler's Green), on a regular pattern. A peak extension
+    // or an evening cut-back to another terminal (CTA 28 to Union Station, TransLink 9 late to
+    // Granville), and a few variant trips (AC Transit 22's late Grand Lake runs), leave the cut
+    // stretch without service and are not a handover.
+    const onPatterns = regular.filter(p => p.stops.some(stop => tailStops.has(stop)));
+    const siblingOf = (stops: readonly string[]) => onPatterns.some(p =>
+      sameTerminal(p.stops[0], stops[0]) && sameTerminal(p.stops[p.stops.length - 1], stops[stops.length - 1]));
+    for (const trip of measureTrips) {
+      const stops = trip.visits.map(v => v.stopId);
+      if (!regularIds.has(stops.join('>'))) continue;
+      const atRef = trip.visits.find(v => v.stopId === main.refStop);
+      if (!atRef || atRef.counted === false) continue;
+      if (stops.some(stop => tailStops.has(stop))) on.add(atRef.minutes);
+      else if (stops.some(stop => !common.has(stop)) && siblingOf(stops)) off.add(atRef.minutes);
+    }
+    return { on: [...on].sort((a, b) => a - b), off: [...off].sort((a, b) => a - b) };
+  };
+  return { key, main, tails, regularPatternCount: regular.length, variantTripCount, disconnected: disconnected || undefined, timesAtStop, throughTimesAlong, tailHandoverTimes };
 }
 
 export interface StretchPeriod {
@@ -686,9 +724,39 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   if (!d.main) return null;
   const main = stretchPeriods(d.main);
   const tails = d.tails.map(stretchPeriods);
+  // #1072, rule 3: a tail that runs only part of a period because a sibling branch takes over the
+  // same cadence from it at the main stretch (HSR 16: every 30 via Wilson until 12:10, then every 30
+  // via Fiddler's Green) is read at its own spacing in that period, not at its full-window wait
+  // (170), which would fail the direction though a bus comes every 30. Only when the main stretch is steady with
+  // every wait within the coverage cap; the tail's trips and the siblings' are apart in time there
+  // (one before the other), each has the 3 departures a value needs, and their spacing and the gap
+  // at the handover pass the settled steadiness test against each other. A branch that just stops
+  // (no sibling, short turns only, overlapping or slower siblings) keeps its wait. The all-day
+  // value and Frequent Service are untouched.
+  const handsOver = (i: number, key: PeriodKey, start: number, end: number): boolean => {
+    const t = tails[i][key];
+    const m = main[key];
+    if (!d.tailHandoverTimes || d.disconnected || !t.counts || t.coverage == null || t.coverage <= PERIOD_COVERAGE_MAX_HEADWAY) return false;
+    if (m.sustained !== true || m.sustainedMid !== true || m.coverage == null || m.coverage > PERIOD_COVERAGE_MAX_HEADWAY) return false;
+    const { on, off } = d.tailHandoverTimes(i);
+    const inWindow = (times: readonly number[]) => [...new Set(forCrossMidnightWindow([...times], end))].filter(x => x >= start && x <= end).sort((a, b) => a - b);
+    const a = inWindow(on), b = inWindow(off);
+    if (a.length < MIN_SCHEDULE_DEPARTURES || b.length < MIN_SCHEDULE_DEPARTURES) return false;
+    const [first, second] = a[a.length - 1] < b[0] ? [a, b] : b[b.length - 1] < a[0] ? [b, a] : [null, null];
+    if (!first || !second) return false;
+    const everyA = medianHeadwayInWindow(a, start, end, MIN_SCHEDULE_DEPARTURES, true);
+    const everyB = medianHeadwayInWindow(b, start, end, MIN_SCHEDULE_DEPARTURES, true);
+    if (everyA == null || everyB == null || everyA <= 0 || everyB <= 0) return false;
+    const near = (x: number, y: number) => isSustainedHeadway([x], y) && isSustainedHeadway([y], x);
+    return near(everyA, everyB) && near(second[0] - first[first.length - 1], everyA) && near(second[0] - first[first.length - 1], everyB);
+  };
+  // A tail that hands over is read at its own steady spacing, not left out: the slower branch
+  // still decides (D1), so the main stretch's cadence never stands in for a slower branch.
+  const turnTaking = (p: StretchPeriod): StretchPeriod => ({ ...p, coverage: p.headway });
+  const handover = Object.fromEntries(PERIOD_WINDOWS.map(({ key, start, end }) => [key, d.tails.map((_, i) => handsOver(i, key, start, end))])) as Record<PeriodKey, boolean[]>;
   const period = {} as DirectionRollup['period'];
   for (const { key } of PERIOD_WINDOWS) {
-    const counting = [main[key], ...tails.map(t => t[key])].filter(p => p.counts && p.value != null);
+    const counting = [main[key], ...tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key]))].filter(p => p.counts && p.value != null);
     period[key] = {
       value: counting.length > 0 ? Math.max(...counting.map(p => p.value!)) : null,
       coverage: counting.length > 0 ? Math.max(...counting.map(p => p.coverage ?? 0)) : null,
@@ -733,7 +801,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // window wait as "every N" (MBTA 23 Sunday overnight to Ashmont: every 196). A sparse main
     // stretch leaves the direction without a value, a sparse tail drops out.
     const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
-    const counting = [main[key], ...tails.map(t => t[key])]
+    const counting = [main[key], ...tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key]))]
       .filter((p, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(d.tails[i - 1])));
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     period[key].runs = runs;

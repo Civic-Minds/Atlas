@@ -50,7 +50,7 @@ export interface DedupePattern {
 /** Two drawn patterns are the same line when their lengths differ by under 2% (#844). */
 const SAME_LINE_LENGTH_RATIO = 0.98;
 /** Ends further apart than this are different terminals, not two platforms of one (#844). */
-const SAME_TERMINAL_METERS = 100;
+export const SAME_TERMINAL_METERS = 100;
 /**
  * A midday pattern stands for the same service as a no-midday sibling only when its midday reads
  * within 20% of the sibling's own headway (Lethbridge 4: 35 vs 33; REM A3: 15 vs 14). CapMetro
