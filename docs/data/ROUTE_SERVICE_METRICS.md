@@ -99,7 +99,3 @@ Any route with multiple branches/destinations works for this check — for examp
 3. Stop panels show the named stop-specific cadence, not the route-wide display cadence.
 4. Shared-section/branch ranges and sparklines use their shared and branch projections respectively.
 5. Live Vehicles' scheduled comparison matches the route-card scheduled branch metric.
-
----
-
-[Back to Data](../DATA.md)

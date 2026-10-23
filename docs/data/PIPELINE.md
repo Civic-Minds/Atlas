@@ -40,7 +40,7 @@ Instead of trusting the optional headway fields in GTFS feeds (which agencies of
 A route's frequency is calculated as the median gap (headway) between consecutive departures.
 
 - **Why the Median:** We use the median instead of the mean (average) because it is much more resistant to outliers. For example, if a bus runs every 10 minutes all day but has one 60-minute gap for a driver shift change, the median headway remains 10 minutes, representing the typical rider experience.
-- **Stop-Level Headways:** Gaps are computed at every individual stop along a route. This powers the Corridors app, which displays frequency at the passenger's boarding stop rather than a generic route average.
+- **Stop-Level Headways:** Gaps are computed at every individual stop along a route. They feed the stop view, which shows each route's frequency at the clicked stop rather than a generic route average. The Corridors app, retired on 2026-10-13, also used them.
 
 For a Weekday summary, Atlas keeps Monday through Friday as separate schedules while
 it calculates the daily results. The frequency tier uses the worst actual weekday.
@@ -81,7 +81,7 @@ The default 07:00–22:00 weekday/Saturday and 09:00–21:00 Sunday windows are 
 To maintain a serverless architecture, the pipeline converts the processed data into static files:
 
 - **Route GeoJSON:** Contains route geometries populated with headways and frequency tiers.
-- **Stops Index:** A lightweight JSON lookup of stop coordinates and names, used by the Corridors app for search.
+- **Stops Index:** A lightweight JSON lookup of stop coordinates and names, published with each agency's route data. It was used for search in the Corridors app, retired on 2026-10-13.
 - **Vector Tiles:** Route shapes and stops are compiled into an `atlas.pmtiles` archive (plus a low-zoom `atlas-overview.pmtiles`) for fast rendering.
 - **Data releases:** The tiles and the agency route data used to build them are uploaded together as an immutable release under `atlas/releases/{id}/`; `atlas/release.json` points the client at the active release, so the map and route cards always come from the same build.
 - **Storage:** All generated files are uploaded to Cloudflare R2, which serves them directly to the client.
@@ -103,7 +103,3 @@ Feed-specific quirks and current data limitations are documented in [`KNOWN_ISSU
 ## Maintainer workflows
 
 The command-by-command runbooks live in [`ADDING_AGENCIES.md`](./ADDING_AGENCIES.md) (onboarding), [`MAP_UPDATES.md`](./MAP_UPDATES.md) (refreshing/publishing), [`COVERAGE_GAP_DISCOVERY.md`](./COVERAGE_GAP_DISCOVERY.md) (finding candidates), and [`FIXING_PIPELINE_ISSUES.md`](../engineering/FIXING_PIPELINE_ISSUES.md) (validating a pipeline/data fix once a bug is found). This page stays focused on the methodology behind the public map.
-
----
-
-[Back to Data](../DATA.md)

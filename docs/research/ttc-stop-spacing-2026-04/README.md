@@ -24,7 +24,7 @@ Steps after that:
 
 ## Input data
 
-GTFS zip: `Toronto Transit Commission (TTC).zip`, hard-coded in the script as `/Users/ryan/Desktop/Data/GTFS/Files/Canada/Ontario/Toronto Transit Commission (TTC).zip`. That file is not in this folder, and the path does not exist on the machine this was archived from at the time of copying. The script also writes all five output CSVs next to that zip (also hard-coded).
+GTFS zip: `Toronto Transit Commission (TTC).zip`, hard-coded in the script as an absolute path into a local copy of the GTFS archive. That file is not in this folder, and the path does not exist on the machine this was archived from at the time of copying. The script also writes all five output CSVs next to that zip (also hard-coded).
 
 ## How to run
 

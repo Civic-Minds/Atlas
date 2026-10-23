@@ -2,7 +2,7 @@
 
 Index of Atlas experiments that need explicit validation before they become part of the product or publishing workflow.
 
-This is for implementation and QA work. Product ideas that are not committed roadmap items live in the [experiment ideas list](docs/roadmap/EXPERIMENT_IDEAS.md).
+This is for implementation and QA work. Product ideas that are not committed roadmap items live in the [experiment ideas list](docs/roadmap/EXPERIMENT_IDEAS.md). Internal pipeline method studies live in the [pipeline studies index](docs/engineering/pipeline-studies/INDEX.md).
 
 ## Active experiments
 
@@ -18,7 +18,7 @@ This is for implementation and QA work. Product ideas that are not committed roa
 
 ## Completed or archived
 
-Completed experiments remain linked here with their final decision and evidence. Move the detailed record to `docs/experiments/archive/` only when the active list becomes difficult to scan.
+Completed experiments remain linked here with their final decision and evidence. If the active list becomes difficult to scan, create `docs/experiments/archive/` and move the detailed records there.
 
 No completed experiments are archived yet.
 

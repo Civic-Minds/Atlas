@@ -120,7 +120,3 @@ Sources: [McKinsey — Finding a Route to Fiscal Stability for US Transit Agenci
 | No board-ready performance dashboards | Public performance reporting layer (future) |
 | Can't hire data analysts | Planner-first UI — no code required (Phase 3 constraint) |
 | Bus bunching is invisible until it's visible | Bunching detection + headway collapse alerts |
-
----
-
-[Back to Roadmap](../roadmap/ROADMAP.md)

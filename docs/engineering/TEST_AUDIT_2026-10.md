@@ -1,6 +1,6 @@
 # Test Suite Audit, October 2026
 
-Linear CIV-38. Audited on `origin/main` at `58d4ae69` (2026-10-10).
+Linear CIV-38. Audited on `origin/main` at `58d4ae69` (2026-10-10). File paths are as of that commit; some tests named here have since been removed, for example `pipeline/__tests__/artifactSchema.test.ts` (84103cb2) and `api/__tests__/concurrency.test.ts` (3520274c).
 
 Why: on 2026-10-10 the whole suite was green while rail lines were dropped (#623), stop data was wiped (#614), reprocess picked the wrong archive zip (#613), and holiday trips inflated weekday headways (#658). Most of those now have a regression test. This audit looks for the next holes of the same kind.
 

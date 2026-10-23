@@ -29,5 +29,3 @@
 - Verify the grouped result on the map and in stop search.
 - Check that nearby but distinct transfers remain separate.
 - Record the final decision, commit, and any follow-up issue in the experiment index.
-
-[Back to Experiments](../../EXPERIMENTS.md)
