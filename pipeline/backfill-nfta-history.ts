@@ -15,15 +15,17 @@ import { processGtfsBuffer } from './process-core.js';
 import { r2GetArchive, r2PutArchive, r2PutArchiveJson } from './r2.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
+import { join } from 'path';
+import { GTFS_FILES_DIR } from './gtfsArchivePath.js';
 
 const SLUG = 'nfta';
 const FEEDS = [
   {
-    path: '/Users/ryan/Desktop/Data/GTFS/Files/United States/New York/NFTA Metro Rail/2010-12-26_to_2011-06-25.zip',
+    path: join(GTFS_FILES_DIR, 'United States/New York/NFTA Metro Rail/2010-12-26_to_2011-06-25.zip'),
     periodKey: '20110625',
   },
   {
-    path: '/Users/ryan/Desktop/Data/GTFS/Files/United States/New York/NFTA Metro Rail/2015-05-14_to_2015-06-20.zip',
+    path: join(GTFS_FILES_DIR, 'United States/New York/NFTA Metro Rail/2015-05-14_to_2015-06-20.zip'),
     periodKey: '20150620',
   },
 ];

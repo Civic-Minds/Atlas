@@ -18,10 +18,11 @@ import { resolve, join, basename, extname } from 'path';
 import { config } from 'dotenv';
 import JSZip from 'jszip';
 import { r2PutArchive } from './r2.js';
+import { GTFS_ARCHIVE_DIR } from './gtfsArchivePath.js';
 
 config({ path: resolve('.env.local') });
 
-const DEFAULT_GTFS_DIR = '/Users/ryan/Desktop/Data/GTFS';
+const DEFAULT_GTFS_DIR = GTFS_ARCHIVE_DIR;
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
