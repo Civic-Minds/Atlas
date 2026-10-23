@@ -140,7 +140,8 @@ describe('HeadwaySparkline', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
     const dialog = screen.getByRole('dialog');
     expect(within(dialog).queryAllByTestId('sparkline-headway-label')).toHaveLength(0);
-    expect(within(dialog).getAllByTitle(/every/)).toHaveLength(3);
+    // No floating browser tooltips in the full-day view; the fixed readout under the charts replaces them.
+    expect(dialog.querySelectorAll('[title]:not([aria-label])')).toHaveLength(0);
     expect(within(dialog).queryByTestId('sparkline-legend')).toBeNull();
   });
 
@@ -158,7 +159,14 @@ describe('HeadwaySparkline', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
     const dialog = screen.getByRole('dialog');
-    const labels = () => within(dialog).getAllByTitle(/every/).map(el => el.getAttribute('title'));
+    const labels = () => {
+      const chart = dialog.querySelector('.relative.z-10.flex')!.parentElement!;
+      chart.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 100, right: 240, bottom: 100, x: 0, y: 0, toJSON: () => ({}) });
+      return [6, 9].map(hour => {
+        fireEvent.mouseMove(chart, { clientX: ((SPARKLINE_HOURS.indexOf(hour) + 0.5) / SPARKLINE_HOURS.length) * 240 });
+        return dialog.querySelector('[aria-live="polite"]')!.textContent;
+      });
+    };
     // Opens on the slower direction.
     expect(within(dialog).getByRole('button', { name: 'Westbound' })).toHaveAttribute('aria-pressed', 'true');
     expect(labels()).toEqual([expect.stringContaining('every 40 min'), expect.stringContaining('every 30 min')]);
@@ -245,14 +253,17 @@ describe('HeadwaySparkline', () => {
     expect(within(dialog).getAllByTestId('trip-time-missing')).toHaveLength(1);
     // The hour with the longest trip time (5 p.m.) is the darker bar; the others are lighter.
     expect(bars.map(bar => bar.className.includes('opacity-100'))).toEqual([false, false, true]);
-    const slowestColumn = dialog.querySelector('[title="5 p.m.: about 52 min"]')!;
-    expect(slowestColumn).not.toBeNull();
+    // Neither chart carries a native title tooltip in the full-day view.
+    expect(dialog.querySelectorAll('[title]:not([aria-label])')).toHaveLength(0);
+    const slowestColumn = within(dialog).getAllByTestId('trip-time-bar')[2].parentElement!;
     // The strip sits on the chart's own hour columns: one column per chart hour, same row layout.
     const strip = within(dialog).getByTestId('trip-time-strip');
     expect(strip.children[1].children).toHaveLength(dialog.querySelector('.relative.z-10.flex')!.children.length);
     // Hovering a strip bar reports that hour's trip time in the chart's hover line.
     fireEvent.mouseEnter(slowestColumn);
-    expect(dialog.querySelector('[aria-live="polite"]')!.textContent).toBe('5 p.m.: about 52 min');
+    // One readout under both charts: the hour's frequency line, then its trip time line.
+    const readout = dialog.querySelector('[aria-live="polite"]')!;
+    expect(Array.from(readout.children).map(line => line.textContent)).toEqual(['5:00p: every 25 min', '5 p.m.: about 52 min']);
     fireEvent.mouseLeave(strip.children[1]);
     expect(dialog.querySelector('[aria-live="polite"]')!.textContent).toBe('');
     // Hovering an hour in the frequency chart lights the matching trip-time bar a step darker (CIV-505).

@@ -1,5 +1,5 @@
 import { SPARKLINE_HOURS } from '../../../shared/config';
-import { tripTimeBarHeight, tripTimeHourTitle, type TripTimeSeries } from '../../utils/tripTime';
+import { tripTimeBarHeight, type TripTimeSeries } from '../../utils/tripTime';
 
 /**
  * The full-day chart's hour column row and bar shape (width and round ends); the trip-time strip
@@ -49,7 +49,6 @@ export function TripTimeStrip({ series, label = 'Trip time', height, serviceHour
               key={h}
               className="relative flex min-w-0 flex-1 items-end justify-center"
               style={{ height }}
-              title={minutes != null ? tripTimeHourTitle(h, minutes) : undefined}
               onMouseEnter={() => onHourHover?.(minutes != null ? h : null)}
               onClick={() => onHourHover?.(minutes != null ? h : null)}
             >

@@ -206,6 +206,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     onHourHover?.(null);
   } : undefined;
 
+  const readoutHour = hoveredTripHour ?? hoveredHour;
   const bands = hoveredPeriod ? PERIOD_BANDS[hoveredPeriod] : null;
   // The full-day chart already labels every period along its top, so only the route card's chart names the hovered one.
   const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
@@ -298,7 +299,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               <div
                 key={h}
                 className="flex-1 min-w-0 flex flex-col items-center"
-                title={hasValue
+                title={hasValue && !expanded
                   ? `${formatHourTitle(h, hw)}${seriesLabel ? ` (${seriesLabel})` : ''}${maxGap != null && maxGap > hw ? `; longest gap ${delayAmount(maxGap)}` : ''}`
                   : undefined}
               >
@@ -368,12 +369,15 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         ))}
       </div>
       {expanded && (
-        <div className="mt-3 min-h-5 text-center text-xs font-bold text-[var(--text-muted)]" aria-live="polite">
-          {hoveredTripHour != null && tripTime?.byHour[hoveredTripHour] != null
-            ? tripTimeHourTitle(hoveredTripHour, tripTime.byHour[hoveredTripHour]!)
-            : hoveredHour != null && displayedByHour[hoveredHour] != null
-              ? formatHourTitle(hoveredHour, displayedByHour[hoveredHour]!)
-              : null}
+        // One readout in a fixed spot under both charts (no browser tooltip in the full-day view): the
+        // hovered hour's frequency and trip time, each in its existing wording.
+        <div className="mt-3 min-h-10 text-center text-xs font-bold text-[var(--text-muted)]" aria-live="polite">
+          {readoutHour != null && displayedByHour[readoutHour] != null && (
+            <div>{formatHourTitle(readoutHour, displayedByHour[readoutHour]!)}</div>
+          )}
+          {readoutHour != null && tripTime?.byHour[readoutHour] != null && (
+            <div>{tripTimeHourTitle(readoutHour, tripTime.byHour[readoutHour]!)}</div>
+          )}
         </div>
       )}
       {allowExpand && !expanded && isExpanded && createPortal(
