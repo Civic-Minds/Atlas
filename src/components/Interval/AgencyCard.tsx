@@ -20,7 +20,7 @@ import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardHelpNotice, CardReportButton } from './cardUi';
+import { AgencyAreaChip, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardHelpNotice, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
@@ -389,6 +389,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   // Zone not on the map yet: an "On-Demand" pill beside the mode pills instead of a notice block.
   const hasOnDemandPill = !agency.onDemandOnly && coverageNote?.kind === 'not-mapped';
   const onDemandOn = onDemandPillSelected({ hasPill: hasOnDemandPill, choice: onDemandChoice, routeCount: routes.length });
+  const grouped = FEATURES.dataSourceLink;
+  const reportButton = (
+    <CardReportButton
+      title={`Agency issue: ${agency.name}`}
+      details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+      excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
+    />
+  );
 
   if (onDemandFocus && agency.onDemandServiceArea) {
     const service = agency.onDemandServiceArea;
@@ -497,24 +505,47 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       } as React.CSSProperties}
     >
       <div className={CARD_HEADER_BLOCK}>
-        <div className="flex items-start gap-2 min-w-0">
-          <div className="min-w-0 flex-1">
-            <p className={`${CARD_TITLE} mb-0`}>{agencyNamePrimary}</p>
-          <p className={CARD_SUMMARY}>
-            {agency.onDemandOnly
-              ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
-              : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
-          </p>
+        {/* grouped (beta, with the Data source link): the area link is a chip, About + Data source share a row, and the report flag
+            floats in the corner so the chip can use the full header width. Otherwise the header is exactly as it was. */}
+        <div className={grouped ? 'relative min-w-0' : 'flex items-start gap-2 min-w-0'}>
+          <div className={grouped ? 'min-w-0' : 'min-w-0 flex-1'}>
+            <p className={`${CARD_TITLE} mb-0${grouped ? ' pr-7' : ''}`}>{agencyNamePrimary}</p>
           {(() => {
             const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
-            const dataSourceUrl = FEATURES.dataSourceLink ? agency.websiteUrl : undefined; // same condition as AgencyDataSourceLink
-            if (!hasAboutPage && !dataSourceUrl) return null;
-            return (
-              <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-                {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>}
-                {hasAboutPage && (() => { const area = areaLinkFor(agency.slug, FEATURES.agencyPages); return area && <ArrowLink size="xs" tone="inline" wrap href={area.href}>{area.label}</ArrowLink>; })()}
-                <AgencyDataSourceLink agency={agency} />
+            const area = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
+            const summary = (
+              <p className={`${CARD_SUMMARY}${grouped ? ' pr-7' : ''}`}>
+                {agency.onDemandOnly
+                  ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
+                  : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
               </p>
+            );
+            if (!grouped) {
+              return (
+                <>
+                  {summary}
+                  {hasAboutPage && (
+                    <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
+                      <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>
+                      {area && <ArrowLink size="xs" tone="inline" wrap href={area.href}>{area.label}</ArrowLink>}
+                    </p>
+                  )}
+                </>
+              );
+            }
+            return (
+              <>
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  {summary}
+                  {area && <AgencyAreaChip href={area.href} label={area.label} />}
+                </div>
+                {(hasAboutPage || agency.websiteUrl) && (
+                  <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
+                    {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>}
+                    <AgencyDataSourceLink agency={agency} />
+                  </p>
+                )}
+              </>
             );
           })()}
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
@@ -622,11 +653,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             </div>
           )}
           </div>
-          <CardReportButton
-            title={`Agency issue: ${agency.name}`}
-            details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
-          />
+          {grouped ? <div className="absolute right-0 top-0">{reportButton}</div> : reportButton}
         </div>
       </div>
 

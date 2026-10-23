@@ -1,7 +1,9 @@
+import type { WheelEvent as ReactWheelEvent } from 'react';
 import ModeTab from '../ModeTab';
-import { Columns2 } from 'lucide-react';
+import { Columns2, Lock, LockOpen } from 'lucide-react';
 import { MAP_BADGE } from '../../styles';
 import Pill from '../ui/Pill';
+import RoundIconButton from '../ui/RoundIconButton';
 import { FilterChips } from './FilterChips';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
@@ -56,6 +58,33 @@ export function CompareMenuItem({ active, onStart, onExit, onDone }: { active: b
   );
 }
 
+/** Text for the link button (title and screen-reader name); the pressed state says whether the maps are linked. */
+export const COMPARE_LINK_LABEL = 'Link map views';
+
+/** The icon for each state: one place to change it. The two shapes differ, so the state never rests on colour alone. */
+const COMPARE_LINK_ICONS = { linked: Lock, unlinked: LockOpen };
+
+/**
+ * Sits on the divider between the two compare maps. Pressed (the default) means the maps are linked and
+ * move together; not pressed, each map moves on its own. Same round icon button and selected look as
+ * the other map toggles.
+ */
+export function CompareLinkToggle({ linked, onChange }: { linked: boolean; onChange: (linked: boolean) => void }) {
+  const Icon = linked ? COMPARE_LINK_ICONS.linked : COMPARE_LINK_ICONS.unlinked;
+  return (
+    <RoundIconButton
+      pressed={linked}
+      onClick={() => onChange(!linked)}
+      aria-label={COMPARE_LINK_LABEL}
+      title={COMPARE_LINK_LABEL}
+      data-testid="compare-link-toggle"
+      className={`h-10! w-10! border-2! shadow-xl ring-4 ring-[var(--bg-panel)] backdrop-blur-md ${linked ? '' : 'bg-[var(--bg-panel)]! border-[var(--border-primary)]!'}`}
+    >
+      <Icon className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+    </RoundIconButton>
+  );
+}
+
 const NO_MODES = new Set<number>();
 const NO_AGENCIES = new Set<string>();
 const noop = () => {};
@@ -64,10 +93,18 @@ interface CompareSideBarProps {
   side: 'A' | 'B';
   settings: CompareSide;
   onChange: (settings: CompareSide) => void;
-  /** Routes this map draws in view, and how many of those the other map does not. */
-  counts: { total: number; only: number } | null;
-  /** "on Saturday", "at every 15 min" or "on map B": where the other side is. */
-  otherPhrase: string;
+  /** Routes this map draws in view. */
+  counts: { total: number } | null;
+}
+
+/**
+ * The label pill catches pointer and touch events so dragging on it does not pan the map beneath it.
+ * That also stops the wheel reaching the map, so hand it on: the same wheel event, replayed on the
+ * map's canvas, zooms around the pointer as it would anywhere else on the map (#1070).
+ */
+function forwardWheelToMap(e: ReactWheelEvent<HTMLElement>) {
+  const canvas = e.currentTarget.closest('[data-compare-side]')?.parentElement?.parentElement?.querySelector('canvas.maplibregl-canvas');
+  canvas?.dispatchEvent(new WheelEvent('wheel', e.nativeEvent));
 }
 
 /**
@@ -75,15 +112,15 @@ interface CompareSideBarProps {
  * Frequency, Day and Time menus (the same chips and menus as the main filter bar), so it is
  * clear which map each control changes.
  */
-export function CompareSideBar({ side, settings, onChange, counts, otherPhrase }: CompareSideBarProps) {
+export function CompareSideBar({ side, settings, onChange, counts }: CompareSideBarProps) {
   return (
     <div className="flex flex-col items-center sm:items-end gap-1.5 min-w-0 max-w-full" data-compare-side={side}>
-      <div className={`${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-full sm:min-w-0`}>
+      <div onWheel={forwardWheelToMap} className={`pointer-events-auto ${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-full sm:min-w-0`}>
         <SideBadge side={side} />
         <span className="text-xs font-black text-[var(--text-primary)] whitespace-nowrap sm:shrink-0" data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
         {counts && (
           <span className="text-xs font-semibold text-[var(--text-dim)] whitespace-nowrap sm:min-w-0 sm:truncate" data-testid={`compare-counts-${side}`}>
-            <span className="hidden sm:inline">· </span>{counts.total} {plural(counts.total, 'route')}, {counts.only} not {otherPhrase}
+            <span className="hidden sm:inline">· </span>{counts.total} {plural(counts.total, 'route')}
           </span>
         )}
       </div>

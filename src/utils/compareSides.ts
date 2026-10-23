@@ -1,7 +1,7 @@
 import type { DayType } from '../../shared/dayTypes';
-import { PERIOD_LABELS, type TimePeriod } from '../hooks/useIntervalStats';
+import type { TimePeriod } from '../hooks/useIntervalStats';
 import { describeDayAndPeriod } from './mapExportDetails';
-import { headwayAbout, headwayFilterLabel, headwayOrBetter } from './headwayText';
+import { headwayAbout, headwayFilterLabel } from './headwayText';
 import { NO_REGULAR_SERVICE_LABEL } from './effectiveHeadway';
 
 /** One side of compare mode: its own day, time and frequency threshold (CIV-19). */
@@ -35,26 +35,6 @@ export function frequencyWords(maxHeadway: number): string {
 export function compareSideHeading(side: CompareSide): string {
   const title = compareSideLabel(side);
   return `${title.charAt(0).toUpperCase()}${title.slice(1)} · ${frequencyWords(side.maxHeadway)}`;
-}
-
-/**
- * Where the routes this side draws are missing on the other side, for "2 not on Saturday",
- * "2 not during midday" or "2 not at every 15 min". When more than one setting differs, naming
- * one of them would be misleading, so it names the other map instead.
- */
-export function compareOtherPhrase(self: CompareSide, other: CompareSide, otherLabel: 'A' | 'B'): string {
-  const dayDiffers = self.day !== other.day;
-  const periodDiffers = self.period !== other.period;
-  const headwayDiffers = self.maxHeadway !== other.maxHeadway;
-  const differing = Number(dayDiffers) + Number(periodDiffers) + Number(headwayDiffers);
-  if (differing !== 1) return `on map ${otherLabel}`;
-  if (dayDiffers) return `on ${other.day}`;
-  if (periodDiffers) {
-    return other.period === 'all'
-      ? 'all day'
-      : `during ${PERIOD_LABELS[other.period].replace(/\b(Peak|Midday|Evening|Night|Overnight)\b/g, w => w.toLowerCase())}`;
-  }
-  return other.maxHeadway === Infinity ? `on map ${otherLabel}` : `at ${headwayOrBetter(other.maxHeadway)}`;
 }
 
 /** One compare side of a route, as the route card needs it. */
@@ -99,4 +79,13 @@ export function compareCardSummary(rows: readonly CompareRowFacts[]): { headline
     return `${row.label} · ${title}: ${routeFrequencyWords(row)}, ${row.passes ? 'on map' : 'not on map'}`;
   });
   return { headline: null, lines };
+}
+
+/**
+ * Whether a map's drawn routes can be counted yet (#1075). Until its route layers exist and every
+ * tile has arrived the map draws nothing or only some routes, so a count then would read "0 routes"
+ * for a map that is only loading. A loaded map with nothing on it still counts as 0.
+ */
+export function canCountRenderedRoutes(map: { loaded(): boolean }, routeLayerCount: number): boolean {
+  return routeLayerCount > 0 && map.loaded();
 }

@@ -63,7 +63,7 @@ export default function ModeTab({
       aria-pressed={active}
       aria-label={ariaLabel}
       title={collapsed ? label : undefined}
-      className={`group/tab hidden sm:flex h-8 ${modeTabSpacing(collapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border ${FOCUS} ${state} ${collapsed ? MODE_TAB_PEEK : ''}`}
+      className={`group/tab hidden sm:flex h-8 ${modeTabSpacing(collapsed)} items-center rounded-full shrink-0 transition-[color,background-color,border-color,padding,gap] duration-200 ease-out motion-reduce:transition-none text-xs font-bold border ${FOCUS} ${state} ${collapsed ? MODE_TAB_PEEK : ''}`}
     >
       {icon}
       <ModeTabLabel collapsed={collapsed}>

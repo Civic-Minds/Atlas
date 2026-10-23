@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
@@ -12,7 +12,7 @@ import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate, routeLabels } from '../../utils/format';
-import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
+import { feedQualityListItems, presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
@@ -148,7 +148,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const [hiddenRegionFilter, setHiddenRegionFilter] = useState<Set<string>>(new Set());
   const [degradedFeedsQuery, setDegradedFeedsQuery] = useState('');
   const [degradedFeedsStatus, setDegradedFeedsStatus] = useState<'all' | 'degraded' | 'unusable'>('all');
-  const [degradedFeedsSort, setDegradedFeedsSort] = useState<'name' | 'status'>('name');
 
   useEffect(() => {
     if (open) {
@@ -199,7 +198,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     setHiddenRegionFilter(new Set());
     setDegradedFeedsQuery('');
     setDegradedFeedsStatus('all');
-    setDegradedFeedsSort('name');
   };
 
   const selectHiddenRouteRegion = (region: string) => {
@@ -277,17 +275,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       .filter(agency => {
         if (!q) return true;
         const quality = agency.feedQuality!;
-        return [agency.name, ...(agency.cities ?? []), agency.displayArea ?? '', quality.status, ...quality.reasons.map(presentFeedQualityReason)]
+        return [agency.name, ...(agency.cities ?? []), agency.displayArea ?? '', quality.status, ...quality.reasons.map(presentFeedQualityReason), ...feedQualityListItems(quality.reasons)]
           .some(value => value.toLowerCase().includes(q));
       })
-      .sort((a, b) => {
-        if (degradedFeedsSort === 'status') {
-          const byStatus = (a.feedQuality?.status ?? '').localeCompare(b.feedQuality?.status ?? '');
-          if (byStatus !== 0) return byStatus;
-        }
-        return compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug);
-      });
-  }, [degradedFeedsQuery, degradedFeedsSort, degradedFeedsStatus, hiddenFeedAgencies]);
+      .sort((a, b) => compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
+  }, [degradedFeedsQuery, degradedFeedsStatus, hiddenFeedAgencies]);
 
   const agencyCitiesBySlug = useMemo(
     () => new Map(agencyCatalog.map(agency => [agency.slug, agency.cities] as const)),
@@ -478,9 +470,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </>
               ) : view === 'degraded-feeds' ? (
                 <div className="px-5 py-3">
-                  <p className="text-xs text-[var(--text-muted)] leading-relaxed pb-2">
-                    Atlas found serious data problems or an expired schedule in these agencies.
-                  </p>
                   {hiddenFeedAgencies.length > 0 && (
                     <>
                       <label className={SEARCH_PILL}>
@@ -503,15 +492,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             {status === 'all' ? 'All' : qualityStatusLabel(status)}
                           </Pill>
                         ))}
-                        <select
-                          value={degradedFeedsSort}
-                          onChange={event => setDegradedFeedsSort(event.target.value as 'name' | 'status')}
-                          aria-label="Sort degraded feeds"
-                          className="ml-auto h-6 rounded-md bg-[var(--bg-app)] border border-[var(--border-primary)] px-1.5 text-xs text-[var(--text-muted)] outline-none"
-                        >
-                          <option value="name">Name</option>
-                          <option value="status">Status</option>
-                        </select>
                       </div>
                     </>
                   )}
@@ -535,9 +515,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               <AgencyName primary={primary} secondary={secondary} />
                             </p>
                             {quality.reasons.length > 0 && (
-                              <ul className="mt-1.5 space-y-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
-                                {quality.reasons.map(reason => <li key={reason}>{presentFeedQualityReason(reason)}</li>)}
-                              </ul>
+                              <p className="mt-1.5 text-xs text-[var(--text-muted)] leading-relaxed">
+                                {feedQualityListItems(quality.reasons).map((item, index, items) => (
+                                  <Fragment key={item}>
+                                    {index > 0 && ' '}
+                                    <span className={item.length <= 40 ? 'whitespace-nowrap' : undefined}>{item}{index < items.length - 1 ? ' ·' : ''}</span>
+                                  </Fragment>
+                                ))}
+                              </p>
                             )}
                             <p className="mt-1 text-xs text-[var(--text-dim)]">Checked {checkedDate}</p>
                           </div>

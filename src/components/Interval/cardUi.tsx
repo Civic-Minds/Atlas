@@ -9,6 +9,7 @@ import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
+import LinkPill from '../ui/LinkPill';
 import RoundIconButton from '../ui/RoundIconButton';
 import { OutboundLink } from '../OutboundLink';
 
@@ -702,8 +703,13 @@ export function CardSublineButton({
 export function AgencyDataSourceLink({ agency }: { agency: { slug: string; websiteUrl?: string } }) {
   if (!FEATURES.dataSourceLink || !agency.websiteUrl) return null;
   return (
-    <ArrowLink as={OutboundLink} size="xs" tone="inline" external href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug}>
+    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug} aria-label="Data source (opens in a new tab)" title="Opens in a new tab">
       Data source
     </ArrowLink>
   );
+}
+
+/** "All <place> area agencies": a small chip beside the card's summary line. */
+export function AgencyAreaChip({ href, label }: { href: string; label: string }) {
+  return <LinkPill href={href} className="mt-1">{label}</LinkPill>;
 }

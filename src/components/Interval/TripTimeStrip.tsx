@@ -1,45 +1,112 @@
+import type React from 'react';
 import { SPARKLINE_HOURS } from '../../../shared/config';
-import { tripTimeBarHeight, tripTimeHourTitle, tripTimeSummary, type TripTimeSeries } from '../../utils/tripTime';
-
-/** The strip's bar area height: tall enough to read as a second chart under the 150px one (CIV-493). */
-export const TRIP_TIME_STRIP_HEIGHT = 80;
+import { tripTimeBarHeight, type TripTimeSeries } from '../../utils/tripTime';
 
 /**
  * The full-day chart's hour column row and bar shape (width and round ends); the trip-time strip
  * uses the same, so each of its bars sits under, and is as wide and round as, the bar above.
- * The bar takes 55% of its hour column, about the card sparkline's share (CIV-496).
+ * The bar takes 40% of its hour column (CIV-510; was 55%), but never less than the card chart's
+ * 7px, so phones keep the card's bar width.
  */
+export const TRIP_TIME_LABEL = 'Trip time';
+/** The header text for a trip time chart: the label, plus the loop note when each value is one full loop. */
+export function tripTimeHeading(loop?: boolean, label: string = TRIP_TIME_LABEL): string {
+  return `${label}${loop ? ' (one full loop)' : ''}`;
+}
 export const FULL_DAY_COLUMN_ROW = 'flex gap-px';
-export const FULL_DAY_BAR_SHAPE = 'w-[55%] max-w-[24px] rounded-full';
+export const FULL_DAY_BAR_SHAPE = 'w-[40%] min-w-[7px] max-w-[24px] rounded-full';
+
+export interface AxisTick { label: string; /** 0-1 of the chart height, measured up from zero. */ fraction: number }
 
 /**
- * A line and an hourly strip under the full-day frequency chart. The strip uses the chart's own
+ * Picks up to three round values (two on a chart under 60px, with tighter spacing) whose bar would stand between minFraction and full height, spaced at
+ * least minGapPx apart, tallest first. `fractionOf` maps a value to its bar height as a share of the chart.
+ */
+function pickTicks(candidates: number[], fractionOf: (value: number) => number, labelOf: (value: number) => string, height: number, minGapPx = height < 60 ? 16 : 24): AxisTick[] {
+  const maxTicks = height < 60 ? 2 : 3;
+  const ticks: AxisTick[] = [];
+  let lastPx = Infinity;
+  const ordered = candidates
+    .map(value => ({ value, fraction: fractionOf(value) }))
+    .filter(t => t.fraction <= 1.0001 && t.fraction * height >= minGapPx * 0.6)
+    .sort((a, b) => b.fraction - a.fraction);
+  for (const t of ordered) {
+    const px = t.fraction * height;
+    if (lastPx - px < minGapPx || ticks.length >= maxTicks) continue;
+    ticks.push({ label: labelOf(t.value), fraction: Math.min(1, t.fraction) });
+    lastPx = px;
+  }
+  return ticks;
+}
+
+/**
+ * Trip time axis: round minute marks on the same from-zero scale the bars use (tripTimeBarHeight), so a
+ * tick sits exactly at the top of a bar of that many minutes. `scaleMax` is the chart's full-height value.
+ */
+export function tripTimeAxisTicks(scaleMax: number, height: number): AxisTick[] {
+  if (!(scaleMax > 0)) return [];
+  return pickTicks([10, 15, 20, 30, 45, 60, 90, 120], m => m / scaleMax, m => `${m} min`, height);
+}
+
+/**
+ * Light y axis for a full-day chart: faint guide lines with a label to the left of the plot (the parent
+ * leaves a gutter). A tick sits at the top of a bar whose value equals the tick. Place it over the bar
+ * area; bars draw above it.
+ */
+export function AxisOverlay({ ticks, height, className = '' }: { ticks: AxisTick[]; height: number; className?: string }) {
+  if (ticks.length === 0) return null;
+  return (
+    <div className={`absolute left-0 right-0 pointer-events-none ${className}`} style={{ height }} data-testid="full-day-axis">
+      {ticks.map(tick => (
+        <div key={tick.label} className="absolute left-0 right-0 border-t border-[var(--border-primary)] opacity-60" style={{ top: Math.round((1 - tick.fraction) * height) }}>
+          <span className="absolute right-full top-0 -translate-y-1/2 pr-1 text-xs font-bold leading-none text-[var(--text-dim)] whitespace-nowrap">{tick.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * A small label and an hourly chart directly under the full-day frequency chart, the same height,
+ * sharing its clock labels below both (CIV-510). The strip uses the chart's own
  * hour columns (same row, gap and bar shape), so each bar sits under its hour, and is scaled
  * from zero with the longest trip time at full height (tripTimeBarHeight). Hovering or tapping a bar
  * reports that hour through the chart's hover line; the hours with the longest trip time are drawn
  * darker. Renders nothing without data.
  */
-export function TripTimeStrip({ series, label, height = TRIP_TIME_STRIP_HEIGHT, serviceHours, hoveredHour, onHourHover }: {
+export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, serviceHours, hoveredHour, onHourHover, className = 'mt-3', labelClassName = '', barsClassName = 'mt-1', scaleMax, axis, above }: {
   series: TripTimeSeries | null | undefined;
   label?: string;
-  height?: number;
+  /** The bar area height: the frequency chart's own, so the two charts match. */
+  height: number;
   /** Hours the chart above has trips in; one with no trip time gets a faint tick, so the gap doesn't read as no service. */
   serviceHours?: ReadonlySet<number>;
   hoveredHour?: number | null;
   onHourHover?: (hour: number | null) => void;
+  /** Spacing overrides: the 2x2 grid names the column once and aligns the strip with the chart beside it. */
+  className?: string;
+  labelClassName?: string;
+  barsClassName?: string;
+  /** The full-height trip time when two strips share one scale (CIV-512); default this strip's own longest. */
+  scaleMax?: number;
+  /** Y-axis ticks drawn over the bars. */
+  axis?: AxisTick[];
+  /** Drawn between the label and the bars (the full-day grid's per-chart hover number). */
+  above?: React.ReactNode;
 }) {
-  const summary = tripTimeSummary(series, label);
-  if (!series || !summary) return null;
-  const values = SPARKLINE_HOURS.map(h => series.byHour[h]).filter((v): v is number => v != null);
+  const values = series ? SPARKLINE_HOURS.map(h => series.byHour[h]).filter((v): v is number => v != null) : [];
+  if (!series || values.length === 0) return null;
   const min = Math.min(...values);
   const max = Math.max(...values);
+  const top = scaleMax != null && scaleMax > 0 ? Math.max(scaleMax, max) : max;
   return (
-    <div className="mt-3" data-testid="trip-time-strip">
-      <div className="text-left text-xs font-bold text-[var(--text-muted)]">
-        {summary}
-        {series.loop ? ' (one full loop)' : ''}
+    <div className={className} data-testid="trip-time-strip">
+      <div className={`text-left text-xs font-bold text-[var(--text-muted)] ${labelClassName}`}>
+        {tripTimeHeading(series.loop, label)}
       </div>
-      <div className={`mt-1 ${FULL_DAY_COLUMN_ROW} items-end`} onMouseLeave={() => onHourHover?.(null)}>
+      {above}
+      <div className={`relative ${barsClassName} ${FULL_DAY_COLUMN_ROW} items-end`} onMouseLeave={() => onHourHover?.(null)}>
+        {axis && <AxisOverlay ticks={axis} height={height} />}
         {SPARKLINE_HOURS.map(h => {
           const minutes = series.byHour[h];
           const hovered = hoveredHour === h && minutes != null;
@@ -50,7 +117,6 @@ export function TripTimeStrip({ series, label, height = TRIP_TIME_STRIP_HEIGHT, 
               key={h}
               className="relative flex min-w-0 flex-1 items-end justify-center"
               style={{ height }}
-              title={minutes != null ? tripTimeHourTitle(h, minutes) : undefined}
               onMouseEnter={() => onHourHover?.(minutes != null ? h : null)}
               onClick={() => onHourHover?.(minutes != null ? h : null)}
             >
@@ -59,7 +125,7 @@ export function TripTimeStrip({ series, label, height = TRIP_TIME_STRIP_HEIGHT, 
                 <div
                   data-testid="trip-time-bar"
                   className={`relative ${FULL_DAY_BAR_SHAPE} bg-[var(--text-dim)] ${slowest ? 'opacity-100' : hovered ? 'opacity-75' : 'opacity-50'}`}
-                  style={{ height: tripTimeBarHeight(minutes, max, height) }}
+                  style={{ height: tripTimeBarHeight(minutes, top, height) }}
                 />
               ) : serviceHours?.has(h) ? (
                 // An empty slot, not a value: a dashed outline at a neutral height.

@@ -27,6 +27,7 @@ import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
+import { TRANSFER_POINT_SERVICE_TYPE, transferPointStop } from './map/transferPointStop';
 import { dedupeRouteKeysByDisplay } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
@@ -36,6 +37,7 @@ import MapExportDialog from '../MapExportDialog';
 import { waitForMapExportReady } from '../../utils/mapExport';
 import { describeMapExport, type MapExportBox, type MapExportDetails, type MapExportView, type RenderedRouteSample } from '../../utils/mapExportDetails';
 import { routeLabels } from '../../utils/format';
+import { canCountRenderedRoutes } from '../../utils/compareSides';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
 import { mapViewKind, viewAllowsOnDemand } from '../../../shared/viewLayers';
@@ -531,6 +533,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
     // The panel and its counts show distinct rider-visible lines; compare mode below keeps raw keys.
     if (showMapContext) setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies));
+    // Compare's route counts wait for the map to finish loading rather than report a partial count (#1075).
+    if (!canCountRenderedRoutes(map, layers.length)) return;
     renderedRouteKeysRef.current?.(new Set(contextAgencies.flatMap(agency => agency.routes.map(route => route.key))));
   }, [agencies, mapLoaded, showMapContext, reportsRenderedRoutes]);
 
@@ -801,12 +805,31 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         setDisambiguationRoutesRef.current(null);
         setQueryRef.current?.('');
         if (serviceAreaHits[0]?.layer?.id === 'on-demand-stop-points') {
+          // #1071: a transfer point drawn on a fixed stop is that stop: open the stop's card.
+          const pointProps = serviceAreaHits[0].properties ?? {};
+          const fixedStop = pointProps.serviceType === TRANSFER_POINT_SERVICE_TYPE
+            ? transferPointStop(
+              { serviceType: pointProps.serviceType, agencySlug: serviceAreaSlug, coordinates: (serviceAreaHits[0].geometry as GeoJSON.Point).coordinates as [number, number] },
+              map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'stops' }).flatMap(f => {
+                const c = (f.geometry as GeoJSON.Point).coordinates;
+                return f.properties?.stopId != null && f.geometry.type === 'Point'
+                  ? [{ agencySlug: String(f.properties.agencySlug), stopId: String(f.properties.stopId), lon: c[0], lat: c[1] }]
+                  : [];
+              }),
+            )
+            : null;
+          if (fixedStop) {
+            setSelectedStopRef.current(`${fixedStop.agencySlug}::${fixedStop.stopId}`);
+            return;
+          }
           const stopZoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
           if (stopZoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId: stopZoneId });
           else onOnDemandStopClickRef.current?.(serviceAreaSlug);
         } else {
           const zoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
           if (zoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId });
+          // A whole-service click opens the on-demand card itself, not the agency card (#1073).
+          else if (onOnDemandStopClickRef.current) onOnDemandStopClickRef.current(serviceAreaSlug);
           else setSelectedAgencySlugRef.current?.(serviceAreaSlug);
         }
         return;

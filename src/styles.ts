@@ -149,7 +149,8 @@ export const Z_MODAL_TOP = 'z-[1500]';    // FilterPanel backdrop (above InfoPan
 export const PANEL_Z_INDEX = 1000;         // Numeric for inline styles (e.g. NearbyRoutesPanel)
 
 /** Shared sidebar placement below the top search controls. */
-export const PANEL_SIDEBAR = `absolute top-[68px] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL}`;
+export const PANEL_SIDEBAR_SLOT = 'absolute top-[68px] left-6 sm:left-[var(--sidebar-left)]';
+export const PANEL_SIDEBAR = `${PANEL_SIDEBAR_SLOT} ${Z_PANEL}`;
 
 /** Fallback sidebar left offset (px) — used until ResizeObserver measures the real position */
 export const SIDEBAR_LEFT_FALLBACK = 182;

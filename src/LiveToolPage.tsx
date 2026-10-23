@@ -18,7 +18,7 @@ import { titleCase } from './utils/format';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { kpiTiles, leftOutDates, type Kpi } from './utils/liveKpi';
 import LiveOffNotice from './components/LiveOffNotice';
-import AtlasBrand from './components/AtlasBrand';
+import AtlasLogo from './components/AtlasLogo';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
@@ -334,7 +334,7 @@ export default function LiveToolPage() {
   return shell(
     <>
       <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2`}>
-        <a href="/" aria-label="Atlas by Civic Minds"><AtlasBrand /></a>
+        <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} />
         <button type="button" onClick={() => { setRoute(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
         <div ref={setRouteSlot} className="contents" />
         <div ref={setDirSlot} className="contents" />
