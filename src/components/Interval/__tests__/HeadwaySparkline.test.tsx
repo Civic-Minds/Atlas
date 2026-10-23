@@ -224,7 +224,7 @@ describe('HeadwaySparkline', () => {
     });
   });
 
-  it('shows both directions at once: 2x2 grid, one shared hour, one readout (CIV-704)', () => {
+  it('shows both directions at once: 2x2 grid, one shared hour, a screen-reader-only readout (CIV-704)', () => {
     render(
       <HeadwaySparkline
         byHour={{ 7: 30, 12: 20, 17: 25 }}
@@ -257,8 +257,12 @@ describe('HeadwaySparkline', () => {
       expect(block.children[1].querySelector('.relative.z-10.flex')).not.toBeNull();
       expect(block.children[2].querySelector('[data-testid="trip-time-strip"]')).not.toBeNull();
     }
-    // One row of clock labels under each column on desktop.
-    expect(within(dialog).getAllByTestId('full-day-clock-labels').filter(el => el.className.includes('sm:flex'))).toHaveLength(2);
+    // Every one of the four charts has its own clock row directly under it.
+    expect(within(dialog).getAllByTestId('full-day-clock-labels')).toHaveLength(4);
+    for (const block of blocks) {
+      expect(block.children[1].lastElementChild).toHaveAttribute('data-testid', 'full-day-clock-labels');
+      expect(block.children[2].lastElementChild).toHaveAttribute('data-testid', 'full-day-clock-labels');
+    }
     // Four charts at the paired height (96px on desktop).
     const columns = dialog.querySelectorAll<HTMLElement>('.relative.z-10.flex > div > div');
     expect(columns.length).toBeGreaterThan(0);
@@ -270,6 +274,9 @@ describe('HeadwaySparkline', () => {
     expect(dialog.querySelectorAll('[title]:not([aria-label])')).toHaveLength(0);
 
     const readout = within(dialog).getByTestId('full-day-readout');
+    // The readout is screen-reader text only: nothing visible, no space reserved.
+    expect(readout).toHaveClass('sr-only');
+    expect(readout.className).not.toMatch(/min-h|mt-/);
     expect(readout.textContent).toBe('');
     // Hovering a trip-time bar reports the hour once, then each direction's line.
     const eastBars = within(strips[0]).getAllByTestId('trip-time-bar');

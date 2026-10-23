@@ -422,9 +422,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         ))}
       </div>}
       {expanded && !sharedMode && (
-        // One readout in a fixed spot under both charts (no browser tooltip in the full-day view): the
+        // Screen-reader text only (no visible readout, no browser tooltip in the full-day view): the
         // hovered hour's frequency and trip time, each in its existing wording.
-        <div className="mt-3 min-h-10 text-center text-xs font-bold text-[var(--text-muted)]" aria-live="polite">
+        <div className="sr-only" aria-live="polite">
           {readoutHour != null && displayedByHour[readoutHour] != null && (
             <div>{formatHourTitle(readoutHour, displayedByHour[readoutHour]!)}</div>
           )}
@@ -497,22 +497,25 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   ))}
                 </div>
                   <div className="hidden sm:block text-xs font-bold text-[var(--text-muted)] sm:col-start-2 sm:row-start-1">{TRIP_TIME_LABEL}</div>
-                  {directionOptions!.map((option, i) => (
+                  {directionOptions!.map(option => (
                     <div key={option.key} className="contents" data-testid="full-day-direction">
                       <div className="mt-3 sm:col-span-2 text-sm font-black text-[var(--text-primary)]">{option.label}</div>
-                      <HeadwaySparkline
-                        byHour={option.byHour}
-                        period="all"
-                        onPeriodChange={() => {}}
-                        onPeriodHover={onPeriodHover}
-                        onHourHover={onHourHover}
-                        title={title}
-                        expanded
-                        scaleMaxFreq={scaleMaxFreq}
-                        sharedHour={modalHour}
-                        onSharedHour={setModalHour}
-                        showPeriodLabels={false}
-                      />
+                      <div>
+                        <HeadwaySparkline
+                          byHour={option.byHour}
+                          period="all"
+                          onPeriodChange={() => {}}
+                          onPeriodHover={onPeriodHover}
+                          onHourHover={onHourHover}
+                          title={title}
+                          expanded
+                          scaleMaxFreq={scaleMaxFreq}
+                          sharedHour={modalHour}
+                          onSharedHour={setModalHour}
+                          showPeriodLabels={false}
+                        />
+                        <ClockLabels />
+                      </div>
                       <div>
                         <TripTimeStrip
                           series={option.tripTime}
@@ -524,22 +527,15 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                           labelClassName="sm:hidden"
                           barsClassName="mt-1 sm:mt-2"
                         />
-                        {/* Phone: clock labels under each direction's pair. */}
-                        <ClockLabels className="sm:hidden" />
+                        {/* Every chart has its own clock row directly under it. */}
+                        <ClockLabels />
                       </div>
-                      {i === directionOptions!.length - 1 && (
-                        // Desktop: one row of clock labels under each column, under the last direction.
-                        <>
-                          <ClockLabels className="hidden sm:flex" />
-                          <ClockLabels className="hidden sm:flex" />
-                        </>
-                      )}
                     </div>
                   ))}
                 </div>
-                {/* One readout in a fixed spot for all four charts: the hovered hour once, then each
-                    direction's frequency and trip time in their existing wording. */}
-                <div className="min-h-[48px] text-center text-xs font-bold text-[var(--text-muted)]" aria-live="polite" data-testid="full-day-readout">
+                {/* Screen-reader text only: the hovered hour once, then each direction's frequency and
+                    trip time in their existing wording. Nothing visible, so the dialog reserves no space. */}
+                <div className="sr-only" aria-live="polite" data-testid="full-day-readout">
                   {modalHour != null && directionOptions!.some(option => option.byHour[modalHour] != null || option.tripTime?.byHour[modalHour] != null) && (
                     <>
                       <div>{formatClock(modalHour * 60)}</div>
