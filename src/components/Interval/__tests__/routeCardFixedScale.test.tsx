@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { ShapeProperties } from '../../../hooks/useIntervalStats';
 import type { HoveredBranch } from '../../../hooks/useIntervalStats';
 import { RouteCardHeadway } from '../panels/RouteCardHeadway';
+import { SPARKLINE_CARD_HEIGHT } from '../HeadwaySparkline';
 
 // CIV-512, shaped like MARTA 20: one direction runs every 15 all day; the other has a main
 // branch every 30 and a part-day ("infrequent") branch every 30 at midday only.
@@ -49,11 +50,11 @@ describe('route card hour chart: one fixed scale, a selected branch shows its sh
     const i7 = 1, i12 = 6; // chart hours start at 6 a.m.
     // The axis top is the route's busiest hour (every 15, the other direction), not the shown
     // series' own: with nothing selected the every-30 bars are half height, not full.
-    expect(before[i7].height).toBe(16);
+    expect(before[i7].height).toBe(SPARKLINE_CARD_HEIGHT / 2);
     // Selecting the part-day branch keeps that axis: at noon both branches run, every 15 together,
     // drawn at full height; at 7 a.m. only the main branch runs (every 30), still half height.
-    expect(after[i12].height).toBe(32);
-    expect(after[i7].height).toBe(16);
+    expect(after[i12].height).toBe(SPARKLINE_CARD_HEIGHT);
+    expect(after[i7].height).toBe(SPARKLINE_CARD_HEIGHT / 2);
     // The part-day branch is a segment: the selected one in full colour, the other faded.
     expect(after[i12].segments).toHaveLength(2);
     expect(after[i12].segments.map(s => s.className.includes('opacity-40'))).toEqual([true, false]);

@@ -20,7 +20,7 @@ import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUr
 import { HOUR_TO_PERIOD, PERIOD_BANDS, PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
-export const SPARKLINE_CARD_HEIGHT = 32;
+export const SPARKLINE_CARD_HEIGHT = 38;
 /** Bar area height of each full-day chart (frequency and trip time, the same so they compare), in px. */
 export const SPARKLINE_EXPANDED_HEIGHT = 150;
 /** The same on phones, where the two charts stack in a short screen. */
