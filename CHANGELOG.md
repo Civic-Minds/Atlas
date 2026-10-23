@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The full-day view shows both directions at once (beta)**: four charts (frequency and trip time for each direction) instead of a direction toggle, so one hover compares them; the toggle stays only for routes with a single direction or more than two (CIV-704)
 - **The full-day view shows one readout under both charts instead of pop-up tooltips (beta)**: hovering an hour in either chart prints that hour's frequency and trip time in a fixed spot, both with the same clock style as the chart's time labels, so no floating box covers the bars or shifts the layout (CIV-702)
 - **The route card's hour chart is about 20% taller**: the bars were small enough to make busy and quiet hours hard to tell apart at a glance
 - **The degraded-feeds list in Settings is shorter and always sorted by name (beta)**: the Name/Status drop-down and the intro sentence are gone, and each agency shows two lines, such as "26 shapes adjusted · 2 routes with frequency mismatches" and "Checked Oct 12, 2026"
