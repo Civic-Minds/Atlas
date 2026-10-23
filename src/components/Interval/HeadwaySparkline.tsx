@@ -67,12 +67,14 @@ function ClockLabels({ className = '' }: { className?: string }) {
  */
 export function headwayAxisTicks(maxFreq: number, height: number): AxisTick[] {
   if (!(maxFreq > 0)) return [];
+  const minGap = height < 60 ? 16 : 24;
+  const maxTicks = height < 60 ? 2 : 3;
   const ticks: AxisTick[] = [];
   let lastPx = Infinity;
   for (const minutes of [2, 3, 5, 10, 15, 20, 30, 60, 120]) {
     const fraction = (1 / minutes) / maxFreq;
     const px = fraction * height;
-    if (fraction > 1.0001 || px < 14 || lastPx - px < 24 || ticks.length >= 3) continue;
+    if (fraction > 1.0001 || px < 14 || lastPx - px < minGap || ticks.length >= maxTicks) continue;
     ticks.push({ label: headwayAmount(minutes), fraction: Math.min(1, fraction) });
     lastPx = px;
   }
@@ -289,14 +291,16 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     ).values())
     : [];
 
-  // Both directions at once share one frequency scale and one trip time scale, so bars and axes compare.
+  // The full-day grid shows both directions at once, or the one picked (or only) direction. Every chart
+  // shares one frequency scale and one trip time scale across the route's directions, so bars and axes compare.
   const pairH = phone ? SPARKLINE_PAIRED_HEIGHT_PHONE : SPARKLINE_PAIRED_HEIGHT;
-  const pairMaxFreq = bothDirections
-    ? Math.max(scaleMaxFreq ?? 0, ...directionOptions!.flatMap(option => HOURS.map(h => option.byHour[h]).filter((v): v is number => v != null && v > 0).map(v => 1 / v)))
-    : 0;
-  const pairTripMax = bothDirections
-    ? Math.max(0, ...directionOptions!.flatMap(option => HOURS.map(h => option.tripTime?.byHour[h]).filter((v): v is number => v != null)))
-    : 0;
+  const pickedOption = directionOptions?.find(option => option.key === expandedDirection);
+  const gridBlocks: { key: string; label: string; byHour: HeadwayByHour; tripTime?: TripTimeSeries | null }[] = bothDirections
+    ? directionOptions!
+    : [{ key: expandedDirection ?? 'all', label: '', byHour: modalByHour, tripTime: pickedOption ? pickedOption.tripTime : tripTime }];
+  const scaleSources = directionOptions && directionOptions.length > 0 ? directionOptions : gridBlocks;
+  const pairMaxFreq = Math.max(scaleMaxFreq ?? 0, ...scaleSources.flatMap(option => HOURS.map(h => option.byHour[h]).filter((v): v is number => v != null && v > 0).map(v => 1 / v)));
+  const pairTripMax = Math.max(0, ...scaleSources.flatMap(option => HOURS.map(h => option.tripTime?.byHour[h]).filter((v): v is number => v != null)));
   const pairFreqTicks = headwayAxisTicks(pairMaxFreq, pairH);
   const pairTripTicks = tripTimeAxisTicks(pairTripMax, pairH);
 
@@ -506,11 +510,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                 ))}
               </div>
             )}
-            {bothDirections ? (
-              <>
-                {/* Two columns on desktop: both directions' frequency charts on the left, both trip time
-                    charts on the right, Westbound over Eastbound, the direction named once per row. On a
-                    phone the same cells stack, one direction after the other. */}
+            <>
+                {/* Two columns on desktop: the frequency charts on the left, the trip time charts on the right
+                    (Westbound over Eastbound when both directions show). On a phone the same cells stack. */}
                 <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-4" data-testid="full-day-grid">
                   {/* The period names sit once above the frequency column (the bands matter only there). */}
                   <div className="pl-11 sm:col-start-1 sm:row-start-1" data-testid="full-day-period-labels">
@@ -518,8 +520,10 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                       {PERIOD_OVERVIEW_BANDS.map(band => (
                         <span
                           key={band.key}
-                          className={`absolute top-0 text-xs font-black text-[var(--text-muted)] whitespace-nowrap ${band.key === 'late' ? 'hidden sm:inline' : ''}`}
-                          style={{ left: `${band.left * 100}%` }}
+                          // On a phone the last name ends at the chart's right edge (its start would run past it) and Night is
+                          // dropped: it would overlap both its neighbours.
+                          className={`absolute top-0 text-xs font-black text-[var(--text-muted)] whitespace-nowrap ${band.key === 'late' ? 'hidden sm:inline' : ''} ${phone && band.key === 'overnight' ? 'right-0' : ''}`}
+                          style={phone && band.key === 'overnight' ? undefined : { left: `${band.left * 100}%` }}
                         >
                           {/* The frequency column is half the dialog wide, so the peaks use the short form ("AM", "PM"). */}
                           {band.label.replace(' Peak', '')}
@@ -528,12 +532,12 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     </div>
                   </div>
                   <div className="hidden sm:block pl-11 text-xs font-bold text-[var(--text-muted)] sm:col-start-2 sm:row-start-1">{TRIP_TIME_LABEL}</div>
-                  {directionOptions!.map(option => {
+                  {gridBlocks.map(option => {
                     const hw = modalHour != null ? option.byHour[modalHour] : null;
                     const tt = modalHour != null ? option.tripTime?.byHour[modalHour] : null;
                     return (
                       <div key={option.key} className="contents" data-testid="full-day-direction">
-                        <div className="mt-3 sm:col-span-2 text-sm font-black text-[var(--text-primary)]">{option.label}</div>
+                        {bothDirections && <div className="mt-3 sm:col-span-2 text-sm font-black text-[var(--text-primary)]">{option.label}</div>}
                         <div className="relative pl-11">
                           {/* This chart's own number for the hovered hour, in a fixed spot so nothing jumps. */}
                           <div className="h-4 text-xs font-bold leading-4 text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">
@@ -555,7 +559,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                           />
                           <ClockLabels />
                         </div>
-                        <div className="relative pl-11">
+                        {HOURS.some(h => option.tripTime?.byHour[h] != null) && <div className="relative pl-11">
                           <TripTimeStrip
                             above={(
                               <div className="h-4 text-xs font-bold leading-4 text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">
@@ -575,7 +579,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                           />
                           {/* Every chart has its own clock row directly under it. */}
                           <ClockLabels />
-                        </div>
+                        </div>}
                       </div>
                     );
                   })}
@@ -583,16 +587,16 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                 {/* Screen-reader text only: the hovered hour once, then each direction's frequency and
                     trip time in their existing wording. Nothing visible, so the dialog reserves no space. */}
                 <div className="sr-only" aria-live="polite" data-testid="full-day-readout">
-                  {modalHour != null && directionOptions!.some(option => option.byHour[modalHour] != null || option.tripTime?.byHour[modalHour] != null) && (
+                  {modalHour != null && gridBlocks.some(option => option.byHour[modalHour] != null || option.tripTime?.byHour[modalHour] != null) && (
                     <>
                       <div>{formatClock(modalHour * 60)}</div>
-                      {directionOptions!.map(option => {
+                      {gridBlocks.map(option => {
                         const hw = option.byHour[modalHour];
                         const tt = option.tripTime?.byHour[modalHour];
                         if (hw == null && tt == null) return null;
                         return (
                           <div key={option.key}>
-                            {option.label}: {[hw != null ? headwayEvery(hw) : null, tt != null ? tripTimeAbout(tt) : null].filter(Boolean).join('; ')}
+                            {option.label ? `${option.label}: ` : ''}{[hw != null ? headwayEvery(hw) : null, tt != null ? tripTimeAbout(tt) : null].filter(Boolean).join('; ')}
                           </div>
                         );
                       })}
@@ -600,19 +604,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   )}
                 </div>
               </>
-            ) : (
-              <HeadwaySparkline
-                byHour={modalByHour}
-                period="all"
-                onPeriodChange={() => {}}
-                onPeriodHover={onPeriodHover}
-                onHourHover={onHourHover}
-                title={title}
-                expanded
-                scaleMaxFreq={scaleMaxFreq}
-                tripTime={directionOptions?.find(option => option.key === expandedDirection)?.tripTime}
-              />
-            )}
           </div>
         </div>,
         document.body,

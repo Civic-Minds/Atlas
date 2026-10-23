@@ -15,10 +15,11 @@ export const FULL_DAY_BAR_SHAPE = 'w-[40%] min-w-[7px] max-w-[24px] rounded-full
 export interface AxisTick { label: string; /** 0-1 of the chart height, measured up from zero. */ fraction: number }
 
 /**
- * Picks up to three round values whose bar would stand between minFraction and full height, spaced at
+ * Picks up to three round values (two on a chart under 60px, with tighter spacing) whose bar would stand between minFraction and full height, spaced at
  * least minGapPx apart, tallest first. `fractionOf` maps a value to its bar height as a share of the chart.
  */
-function pickTicks(candidates: number[], fractionOf: (value: number) => number, labelOf: (value: number) => string, height: number, minGapPx = 24): AxisTick[] {
+function pickTicks(candidates: number[], fractionOf: (value: number) => number, labelOf: (value: number) => string, height: number, minGapPx = height < 60 ? 16 : 24): AxisTick[] {
+  const maxTicks = height < 60 ? 2 : 3;
   const ticks: AxisTick[] = [];
   let lastPx = Infinity;
   const ordered = candidates
@@ -27,7 +28,7 @@ function pickTicks(candidates: number[], fractionOf: (value: number) => number, 
     .sort((a, b) => b.fraction - a.fraction);
   for (const t of ordered) {
     const px = t.fraction * height;
-    if (lastPx - px < minGapPx || ticks.length >= 3) continue;
+    if (lastPx - px < minGapPx || ticks.length >= maxTicks) continue;
     ticks.push({ label: labelOf(t.value), fraction: Math.min(1, t.fraction) });
     lastPx = px;
   }
