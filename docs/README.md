@@ -15,7 +15,9 @@ Read first: [Decisions](product/DECISIONS.md) for what is settled, then the [Glo
 | [Data principles](data/DATA_PRINCIPLES.md) | Open when you decide how fresh data must be, or whether a number is static or live. |
 | [Display naming](data/DISPLAY_NAMING.md) | Open when an agency name renders oddly or you add a new name. |
 | [Security policy](../SECURITY.md) | Open when someone reports a security problem. |
-| [Terms of service](../TERMS.md) | Open when a question touches the public site's legal terms; the live terms and privacy policy shown at `/terms` and `/privacy` come from `src/LegalPage.tsx`. |
+| [Terms of service](legal/TERMS.md) | Open when a question touches the public site's legal terms; the /terms page is built from this file, so edit it here. |
+| [Privacy policy](legal/PRIVACY.md) | Open when a question touches privacy, analytics or stored data; the /privacy page is built from this file, so edit it here. |
+| [Terms of service (root pointer)](../TERMS.md) | Open only if you landed here from the repo root; it points to the legal docs. |
 
 ## Frequency numbers and filter questions
 
@@ -33,7 +35,7 @@ Read first: [Decisions](product/DECISIONS.md), then [Frequency filter rules](pro
 
 ## Live work
 
-Read first: [Decisions](product/DECISIONS.md), then [How Live measures a route](product/LIVE_METHOD.md) for the measures, then [Feature flags](FEATURE_FLAGS.md) for Live's status.
+Read first: [Decisions](product/DECISIONS.md), then [How Live measures a route](product/LIVE_METHOD.md) for the measures, then [Feature flags](FEATURE_FLAGS.md) for Live's status. For review, critic checklist: Atlas-worktrees/_reports/live-critic-brief.md (local, not in git).
 
 | Doc | Job |
 |---|---|
@@ -103,7 +105,7 @@ Read first: [Architecture](ARCHITECTURE.md) for where data lives, then the [Rese
 | Doc | Job |
 |---|---|
 | [Architecture](ARCHITECTURE.md) | Open when you need to know where data lives, how a release flows, or which env var does what. |
-| [History archive policy](DATA.md) | Open when you decide which past schedule periods History keeps or shows. |
+| [Data](DATA.md) | Open for an overview of the data docs or the History archive policy. |
 | [Pipeline stages](../pipeline/README.md) | Open when you need to find which module runs a pipeline stage. |
 | [Stretch fixtures](../pipeline/__tests__/fixtures/STRETCH-FIXTURES.md) | Open when you edit the trip-set selector tests and need to know what the fixtures are. |
 | [Research index](research/INDEX.md) | Open when you look for any study under `docs/research/`. |
