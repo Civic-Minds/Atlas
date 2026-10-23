@@ -28,5 +28,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.remix.com/arvin.zip"
+  "lastFeedSourceUrl": "https://gtfs.remix.com/arvin.zip",
+  "lastPeekedExpiry": "20270228"
 }

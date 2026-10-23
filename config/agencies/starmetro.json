@@ -27,5 +27,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.talgov.com/Uploads/Public/documents/starmetro/GTFS.zip"
+  "lastFeedSourceUrl": "https://www.talgov.com/Uploads/Public/documents/starmetro/GTFS.zip",
+  "lastPeekedExpiry": "20270101"
 }

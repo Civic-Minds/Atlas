@@ -22,5 +22,6 @@
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://mcallen.net/metro/assets/resources/GTFS%20-%20TransLoc.zip"
+  "lastFeedSourceUrl": "https://mcallen.net/metro/assets/resources/GTFS%20-%20TransLoc.zip",
+  "lastPeekedExpiry": "20261231"
 }

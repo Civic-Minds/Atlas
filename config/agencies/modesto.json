@@ -23,5 +23,6 @@
   "expiredFeedCheckExpiry": "20270630",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://stanrta.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+  "lastFeedSourceUrl": "https://stanrta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "lastPeekedExpiry": "20270630"
 }

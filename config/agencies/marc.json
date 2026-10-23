@@ -36,5 +36,6 @@
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://feeds.mta.maryland.gov/gtfs/marc"
+  "lastFeedSourceUrl": "https://feeds.mta.maryland.gov/gtfs/marc",
+  "lastPeekedExpiry": "20261231"
 }

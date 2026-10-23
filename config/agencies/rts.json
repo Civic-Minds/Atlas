@@ -28,5 +28,6 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270502",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip"
+  "lastFeedSourceUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip",
+  "lastPeekedExpiry": "20270502"
 }

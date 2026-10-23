@@ -24,5 +24,6 @@
   "expiredFeedCheckExpiry": "20270201",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/radford-va-us/radford-va-us.zip"
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/radford-va-us/radford-va-us.zip",
+  "lastPeekedExpiry": "20270201"
 }
