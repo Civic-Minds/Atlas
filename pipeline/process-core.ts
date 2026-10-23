@@ -517,6 +517,8 @@ export interface ProcessResult {
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
   /** Latest service date across feed_info, calendar.txt and added calendar_dates; uncapped. Feed with `feedExpiry` through recordedFeedExpiry() to get the value to store. */
   calendarExpiry: string | null;
+  /** Latest service date from calendar.txt and added calendar_dates alone (no feed_info); can only lower the recorded expiry (#1039). */
+  calendarOnlyEnd: string | null;
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
@@ -3430,6 +3432,10 @@ export async function processGtfsBuffer(
     calendarEnds: feedCalendar?.map(calendar => calendar.end_date) ?? [],
     calendarDates: feedCalendarDates,
   });
+  const calendarOnlyEnd = effectiveFeedExpiry({
+    calendarEnds: feedCalendar?.map(calendar => calendar.end_date) ?? [],
+    calendarDates: feedCalendarDates,
+  });
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   // Scheduled running time (CIV-84): card data in its own top-level block of the agency JSON,
   // beside the features, so route features and map tiles are untouched.
@@ -3452,7 +3458,7 @@ export async function processGtfsBuffer(
     featureCount: routeFeatures.length,
     // Same rule as the registry's lastFeedExpiry, so a stale feed_info end date
     // does not mark a feed whose calendar runs on as expired (#687).
-    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, new Date().toISOString().slice(0, 10)),
+    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, new Date().toISOString().slice(0, 10), calendarOnlyEnd),
   });
 
   let livePollingSidecar: Record<string, any> | undefined;
@@ -3507,6 +3513,7 @@ export async function processGtfsBuffer(
     timezone,
     feedExpiry: feedInfo?.feed_end_date ?? null,
     calendarExpiry,
+    calendarOnlyEnd,
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,

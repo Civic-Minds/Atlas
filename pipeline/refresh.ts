@@ -589,7 +589,7 @@ async function refreshAgency(
   // anything is written, so a refused agency keeps its live artifacts, archive
   // and metadata unchanged.
   const next = summarizeArtifact(geojson, stopsJson, agency.slug);
-  const { feedStart } = await peekFeedDates(buf);
+  const { feedStart, calendarOnlyEnd } = await peekFeedDates(buf);
   const agencyFlags = await evaluateRun({
     candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? peekedExpiry, calendarEnd: peekedExpiry } }],
     getLive: readRefreshLive,
@@ -658,6 +658,7 @@ async function refreshAgency(
       peekedExpiry,
       peekedVersion,
       todayYmd: todayUtcYmd(),
+      calendarOnlyEnd,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }

@@ -116,6 +116,56 @@ describe('stampFeedMeta', () => {
     expect(recordedFeedExpiry('20260930', '20261231', '2026-10-07')).toBe('20261231');
   });
 
+  describe('calendar-only end can only lower the expiry (#1039)', () => {
+    const today = '20261023';
+
+    it('lowers a feed_info end the calendar outlived, as MAX needed', () => {
+      // MAX: feed_info claims 20350201, but the calendar ends 20250531 (zip unchanged since Nov 2024).
+      expect(recordedFeedExpiry('20350201', '20350201', today, '20250531')).toBe('20250531');
+      expect(recordedFeedExpiry('20350201', '20350201', today)).toBe('20350201');
+    });
+
+    it('lowers a feed_info end that is later than a real calendar end', () => {
+      expect(recordedFeedExpiry('20270601', '20270601', today, '20261231')).toBe('20261231');
+    });
+
+    it('never raises: a calendar end past the recorded value changes nothing', () => {
+      // feed_info earlier than the calendar stays at the #687 later-of-two result, not past it.
+      expect(recordedFeedExpiry('20261101', '20261231', today, '20261231')).toBe('20261231');
+      expect(recordedFeedExpiry('20261231', '20261231', today, '20270301')).toBe('20261231');
+      expect(recordedFeedExpiry('20251001', '20281001', today, '20281001')).toBe(recordedFeedExpiry('20251001', '20281001', today));
+    });
+
+    it('ignores a placeholder calendar end (#875)', () => {
+      expect(recordedFeedExpiry('20350201', '20350201', today, '20301231')).toBe('20350201');
+      expect(recordedFeedExpiry('20270331', '20500101', today, '20500101')).toBe('20270331');
+      expect(recordedFeedExpiry('20250601', '20301231', today, '20301231')).toBe('20250601');
+    });
+
+    it('keeps stale feed_info with an extended calendar current (#687)', () => {
+      // coast-transit-ms: feed_info ends 20260930, calendar runs to 20261231.
+      expect(recordedFeedExpiry('20260930', '20261231', today, '20261231')).toBe('20261231');
+      expect(recordedFeedExpiry('20260101', '20271231', today, '20271231')).toBe('20271231');
+    });
+
+    it('does nothing without a calendar-only end or a recorded value', () => {
+      expect(recordedFeedExpiry('20270101', '20270101', today, null)).toBe('20270101');
+      expect(recordedFeedExpiry(null, null, today, '20261231')).toBeNull();
+    });
+
+    it('reprocess records the lowered expiry too', () => {
+      const agency = { lastFeedExpiry: '20350201', lastPeekedExpiry: '20350201' };
+      expect(stampReprocessedFeedExpiry(agency, { feedExpiry: '20350201', calendarExpiry: '20350201', calendarOnlyEnd: '20250531', todayYmd: today })).toBe(true);
+      expect(agency.lastFeedExpiry).toBe('20250531');
+    });
+
+    it('a refresh stamps the lowered expiry', () => {
+      const agency: { lastFeedExpiry?: string | null } = {};
+      stampFeedMeta(agency, { feedExpiry: '20350201', feedVersion: null, peekedExpiry: '20350201', peekedVersion: null, todayYmd: today, calendarOnlyEnd: '20250531' });
+      expect(agency.lastFeedExpiry).toBe('20250531');
+    });
+  });
+
   it('without feed_info, caps the calendar end at today + 2 years only', () => {
     expect(recordedFeedExpiry(null, '20500101', '2026-10-07')).toBe('20281007');
     expect(recordedFeedExpiry(null, '20261231', '2026-10-07')).toBe('20261231');

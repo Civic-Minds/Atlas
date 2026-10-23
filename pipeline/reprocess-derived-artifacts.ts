@@ -136,7 +136,7 @@ class Refusal extends Error {}
 /** Gate inputs per processed agency, kept out of the JSON report. */
 const gateInputs = new Map<string, { candidate: GateCandidate; live: ArtifactSummary | null }>();
 /** The processed feed's raw expiry dates per agency, recorded in index.json once its artifacts are published (#837). */
-const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null }>();
+const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null }>();
 const expiryUpdates: string[] = [];
 const AGENCY_ARTIFACTS = ['', '-stops', '-corridors', '-trips', '-stops-meta', '-sections'] as const;
 
@@ -209,8 +209,8 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     console.log(`\n${agency.slug}: ${row.sourceKey} (${row.selection})`);
     // The same expiry the publish step reads from index.json (#875): a placeholder calendar
     // never keeps an expired feed_info in service here while the release gate calls it expired.
-    const { feedStart, feedExpiry: calendarEnd, feedInfoEnd } = await peekFeedDates(body);
-    const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd);
+    const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = await peekFeedDates(body);
+    const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd, calendarOnlyEnd);
     row.feedExpiry = feedExpiry;
     const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, todayYmd);
     if (dateRefusal) throw new Refusal(dateRefusal);
@@ -226,7 +226,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
     gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd } }, live });
-    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry });
+    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd });
 
     const agencyDir = resolve(outputDir, agency.slug);
     mkdirSync(agencyDir, { recursive: true });

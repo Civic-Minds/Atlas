@@ -221,7 +221,7 @@ describe('peekFeedDates', () => {
     zip.file('calendar.txt', 'service_id,start_date,end_date\nwk,20260101,20261128\n');
     zip.file('calendar_dates.txt', 'service_id,date,exception_type\nwk,20261231,2\n');
     const buf = await zip.generateAsync({ type: 'nodebuffer' });
-    expect(await peekFeedDates(buf)).toEqual({ feedStart: '20260101', feedExpiry: '20261128', feedVersion: 'v7', feedInfoEnd: '20261001' });
+    expect(await peekFeedDates(buf)).toEqual({ feedStart: '20260101', feedExpiry: '20261128', feedVersion: 'v7', feedInfoEnd: '20261001', calendarOnlyEnd: '20261128' });
   });
 
   it('reads a future start from calendar.txt (Breeze/scat starts Oct 19)', async () => {
