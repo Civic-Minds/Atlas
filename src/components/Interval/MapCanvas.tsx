@@ -27,6 +27,7 @@ import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
+import { TRANSFER_POINT_SERVICE_TYPE, transferPointStop } from './map/transferPointStop';
 import { dedupeRouteKeysByDisplay } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
@@ -801,6 +802,23 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         setDisambiguationRoutesRef.current(null);
         setQueryRef.current?.('');
         if (serviceAreaHits[0]?.layer?.id === 'on-demand-stop-points') {
+          // #1071: a transfer point drawn on a fixed stop is that stop: open the stop's card.
+          const pointProps = serviceAreaHits[0].properties ?? {};
+          const fixedStop = pointProps.serviceType === TRANSFER_POINT_SERVICE_TYPE
+            ? transferPointStop(
+              { serviceType: pointProps.serviceType, agencySlug: serviceAreaSlug, coordinates: (serviceAreaHits[0].geometry as GeoJSON.Point).coordinates as [number, number] },
+              map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'stops' }).flatMap(f => {
+                const c = (f.geometry as GeoJSON.Point).coordinates;
+                return f.properties?.stopId != null && f.geometry.type === 'Point'
+                  ? [{ agencySlug: String(f.properties.agencySlug), stopId: String(f.properties.stopId), lon: c[0], lat: c[1] }]
+                  : [];
+              }),
+            )
+            : null;
+          if (fixedStop) {
+            setSelectedStopRef.current(`${fixedStop.agencySlug}::${fixedStop.stopId}`);
+            return;
+          }
           const stopZoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
           if (stopZoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId: stopZoneId });
           else onOnDemandStopClickRef.current?.(serviceAreaSlug);
