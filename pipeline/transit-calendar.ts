@@ -403,10 +403,19 @@ export function detectReferenceDate(
             set.add(t.route_id);
             routesByService.set(t.service_id, set);
         }
+        // When the ended period is a one-day holiday group (CDTA, MBTA on Oct 12, #742), its
+        // services are not a timetable: with the weekend rows no longer counted they alone
+        // outweighed the weekday timetable and kept the reference on the holiday.
+        const skipOneDay = oneDayPeriodStarts.has(previousStart);
         const routesOn = (date: string): number => {
             const routes = new Set<string>();
             for (const c of effectiveCalendar) {
                 if (date < c.start_date || date > c.end_date) continue;
+                if (skipOneDay && c.start_date === c.end_date) continue;
+                // A weekend-only row is not weekday service: VTA's Saturday and Sunday blocks run a
+                // day or two past the weekday block (Oct 24-25 vs Oct 23), carried 37 of 70 routes
+                // and let a switch to a period with no weekday service through (CIV-791).
+                if (c.monday !== '1' && c.tuesday !== '1' && c.wednesday !== '1' && c.thursday !== '1' && c.friday !== '1') continue;
                 for (const r of routesByService.get(c.service_id) ?? []) routes.add(r);
             }
             return routes.size;

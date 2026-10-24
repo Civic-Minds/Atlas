@@ -662,3 +662,80 @@ describe('detectReferenceDate leaves a holiday midpoint week (#686)', () => {
     expect(ref >= '20261016' && ref < '20261221').toBe(true);
   });
 });
+
+describe('detectReferenceDate does not switch to a weekend-only running period (CIV-791)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+  const runOn = (d: string) => vi.useFakeTimers({ toFake: ['Date'], now: new Date(`${d}T12:00:00`) });
+  const routeIds = (n: number) => Array.from({ length: n }, (_, i) => `R${i + 1}`);
+  const tripsFor = (service_id: string, routes: string[]) => routes.map(route_id => ({ service_id, route_id }));
+
+  // VTA's shape in October 2026: the newest weekday block (started Aug 19, after the weekend blocks) ends Friday Oct 23 and the next one starts
+  // Monday Oct 26, while the Saturday and Sunday blocks run a day or two longer (Oct 24, Oct 25).
+  // Weekend service carries 6 of the 10 routes, enough to pass the route-share check.
+  const calendar = [
+    cal('WD-old', 'motuwethfr', '20260819', '20261023'),
+    cal('WD-old-b', 'motuwefr', '20260819', '20261023'),
+    cal('Sat-old', 'sa', '20260815', '20261024'),
+    cal('Sat-old-b', 'sa', '20260815', '20261024'),
+    cal('Sun-old', 'su', '20260816', '20261025'),
+    cal('Sun-old-b', 'su', '20260816', '20261025'),
+    cal('WD-new', 'motuwethfr', '20261026', '20261231'),
+    cal('WD-new-b', 'motuwefr', '20261026', '20261231'),
+    cal('Sat-new', 'sa', '20261031', '20261231'),
+    cal('Sun-new', 'su', '20261101', '20261231'),
+  ];
+  const all = routeIds(10);
+  const weekend = routeIds(6);
+  const trips = [
+    ...tripsFor('WD-old', all), ...tripsFor('WD-new', all),
+    ...tripsFor('WD-old-b', routeIds(3)), ...tripsFor('WD-new-b', routeIds(3)),
+    ...tripsFor('Sat-old', weekend), ...tripsFor('Sun-old', weekend),
+    ...tripsFor('Sat-old-b', weekend), ...tripsFor('Sun-old-b', weekend),
+    ...tripsFor('Sat-new', weekend), ...tripsFor('Sun-new', weekend),
+  ];
+
+  it('keeps the weekday reference on run dates before the new weekday block starts', () => {
+    for (const run of ['2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24']) {
+      runOn(run);
+      const ref = detectReferenceDate(calendar, [], trips);
+      // A weekday reference inside the old weekday block, so every route still has Weekday service.
+      expect(ref >= '20260819' && ref <= '20261023', `run ${run} gave ${ref}`).toBe(true);
+      expect([...getActiveServiceIds(calendar, [], 'Monday', ref)]).toEqual(['WD-old', 'WD-old-b']);
+      vi.useRealTimers();
+    }
+  });
+
+  it('moves to the new weekday block once it is running', () => {
+    runOn('2026-10-26');
+    const ref = detectReferenceDate(calendar, [], trips);
+    expect([...getActiveServiceIds(calendar, [], 'Monday', ref)]).toEqual(['WD-new', 'WD-new-b']);
+  });
+
+  it('still switches from a weekend-only period when the agency has no weekday service before (before = 0)', () => {
+    // Weekend-only agency: its ended block is replaced by a running one; nothing to protect.
+    const weekendCal = [
+      cal('Sat-old', 'sa', '20260301', '20260930'),
+      cal('Sat-new', 'sa', '20261001', '20261231'),
+    ];
+    const weekendTrips = [...tripsFor('Sat-old', weekend), ...tripsFor('Sat-new', weekend)];
+    runOn('2026-10-10');
+    const ref = detectReferenceDate(weekendCal, [], weekendTrips);
+    expect([...getActiveServiceIds(weekendCal, [], 'Saturday', ref)]).toEqual(['Sat-new']);
+  });
+
+  it('still switches when the new period has weekday service (legitimate period change)', () => {
+    const swapCal = [
+      cal('WD-old', 'motuwethfr', '20260810', '20261009'),
+      cal('Sat-old', 'sa', '20260815', '20261010'),
+      cal('WD-new', 'motuwethfr', '20261012', '20261231'),
+      cal('Sat-new', 'sa', '20261017', '20261231'),
+    ];
+    const swapTrips = [
+      ...tripsFor('WD-old', all), ...tripsFor('WD-new', all),
+      ...tripsFor('Sat-old', weekend), ...tripsFor('Sat-new', weekend),
+    ];
+    runOn('2026-10-14');
+    const ref = detectReferenceDate(swapCal, [], swapTrips);
+    expect([...getActiveServiceIds(swapCal, [], 'Monday', ref)]).toEqual(['WD-new']);
+  });
+});
