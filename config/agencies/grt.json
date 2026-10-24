@@ -19,6 +19,9 @@
     -79.99
   ],
   "feedUrl": "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/1",
+  "supplementalFeedUrls": [
+    "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/2"
+  ],
   "lastFeedExpiry": "20260426",
   "lastFeedVersion": null,
   "lastRefreshedAt": "20260811",
