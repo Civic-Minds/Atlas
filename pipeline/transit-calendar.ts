@@ -407,6 +407,10 @@ export function detectReferenceDate(
             const routes = new Set<string>();
             for (const c of effectiveCalendar) {
                 if (date < c.start_date || date > c.end_date) continue;
+                // A weekend-only row is not weekday service: VTA's Saturday and Sunday blocks run a
+                // day or two past the weekday block (Oct 24-25 vs Oct 23), carried 37 of 70 routes
+                // and let a switch to a period with no weekday service through (CIV-791).
+                if (c.monday !== '1' && c.tuesday !== '1' && c.wednesday !== '1' && c.thursday !== '1' && c.friday !== '1') continue;
                 for (const r of routesByService.get(c.service_id) ?? []) routes.add(r);
             }
             return routes.size;
