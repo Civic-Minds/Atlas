@@ -85,7 +85,7 @@ export const AGENCY_LIST_PRIMARY = 'text-xs text-[var(--text-primary)] min-w-0 l
 export const PANEL_TITLE_BAR = 'flex items-center gap-1.5 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
 
 /** Title text inside PANEL_TITLE_BAR */
-export const PANEL_TITLE = 'text-xs font-black text-[var(--text-dim)] tracking-wide';
+export const PANEL_TITLE = 'text-xs font-black text-[var(--text-dim)]';
 
 /** Compact explanatory line beneath a research panel title. */
 export const PANEL_HELPER = 'px-4 pt-2 pb-2 text-xs text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]';
