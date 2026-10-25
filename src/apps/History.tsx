@@ -337,7 +337,6 @@ function RouteHistoryCard({
           <div className={`mt-3 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-[var(--status-negative-bg)]' : 'bg-[var(--status-positive-bg)]'}`}>
             <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>{summary.text}</p>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
-            <p className="text-xs text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
           </div>
         )}
 
