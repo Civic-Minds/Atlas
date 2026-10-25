@@ -26,6 +26,8 @@
 import { qualifyingSharedRuns } from './sharedStretch.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { forCrossMidnightWindow, headwayToTier, medianHeadwayInWindow, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import { sustainedWithMidpoint } from './tripSets.js';
 
 /** A same-headsign pattern pools at every common stop when it serves this share of the other's stops. */
 export const SAME_HEADSIGN_COVERAGE = 2 / 3;
@@ -127,14 +129,22 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
  * IndyGo point), the same minimum departures (a thinner list publishes nothing and the stop
  * keeps its own pattern's value, as today) and never worse than the own pattern's own reading
  * of the window. Display only: route-level values keep reading pooledHeadwayInWindow (rule 11).
+ *
+ * Refused (null: the stop falls back exactly as main does) when a gap in that list is over
+ * PERIOD_COVERAGE_MAX_HEADWAY (a peak express's midday list with a five-hour hole is not "every
+ * 335") or the list misses the rule 5 midpoint test (departures on both sides of the window's
+ * midpoint, sustainedWithMidpoint with the steadiness flag left out: the steadiness cutoff is
+ * the knife-edge this rule removes). With every gap at most 60 the value is at most 60.
  */
 export function pooledWaitInWindow(times: readonly number[], start: number, end: number, minDeps = 3, own?: readonly number[]): number | null {
   const inWindow = collapseBunched([...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b));
   if (inWindow.length < minDeps || inWindow.length < 2) return null;
+  if (!sustainedWithMidpoint(inWindow, true, start, end)) return null;
   let sum = 0;
   let sumSq = 0;
   for (let i = 1; i < inWindow.length; i++) {
     const gap = inWindow[i] - inWindow[i - 1];
+    if (gap > PERIOD_COVERAGE_MAX_HEADWAY) return null;
     sum += gap;
     sumSq += gap * gap;
   }

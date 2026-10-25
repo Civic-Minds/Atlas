@@ -39,8 +39,22 @@ describe('pooledWaitInWindow (CIV-845)', () => {
   });
 
   it('departures one minute apart are one bus (IndyGo), identical minutes count once', () => {
-    expect(pooledWaitInWindow(fromGaps(900, repeat([1, 9], 12)), 900, 1140)).toBe(10);
-    expect(pooledWaitInWindow([900, 900, 910, 910, 920, 920, 930], 900, 1140)).toBe(10);
+    expect(pooledWaitInWindow(fromGaps(900, repeat([1, 9], 24)), 900, 1140)).toBe(10);
+    expect(pooledWaitInWindow([900, 900, 910, 910, 920, 920, 930, 930], 900, 940)).toBe(10);
+  });
+
+  it('refuses a list with a gap over 60 minutes (the stop falls back as before)', () => {
+    // A peak express read at midday: 9:05, 9:20, then nothing until 14:40, 14:55.
+    expect(pooledWaitInWindow([545, 560, 880, 895], 540, 900)).toBeNull();
+    // A 60-minute gap is still read.
+    expect(pooledWaitInWindow([540, 570, 630, 660, 690, 720, 750, 780, 810, 840, 870, 900], 540, 900)).toBe(35);
+  });
+
+  it('refuses a list that misses the period midpoint (rule 5)', () => {
+    // PM peak 15:00-19:00, midpoint 17:00: every departure before it.
+    expect(pooledWaitInWindow(fromGaps(900, repeat([10], 10)), 900, 1140)).toBeNull();
+    // Every departure after it.
+    expect(pooledWaitInWindow(fromGaps(1030, repeat([10], 10)), 900, 1140)).toBeNull();
   });
 
   it('never reads worse than the own pattern reading the same window', () => {

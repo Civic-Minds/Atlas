@@ -2197,17 +2197,6 @@ export async function processGtfsBuffer(
               ?? windowHw(HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end)   // PM peak 15–19h
               ?? windowHw(HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, true);   // last resort: raw all-day 6–22h
       if (hw != null) allStopHw[stopId] = hw;
-      // CIV-845: the stop's shown all-day value, the same window chain with the rider's wait in
-      // place of the guarded pooled value (the 6-22h last resort keeps the guarded reading).
-      if (isPooled) {
-        const waitHw = (start: number, end: number): number | null =>
-          pooledWaitInWindow(times, start, end, 3, own) ?? medianHeadwayInWindow(own, start, end, 3, true);
-        const shown = waitHw(HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end)
-          ?? waitHw(HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end)
-          ?? windowHw(HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, true);
-        if (shown != null) displayStopHw[stopId] = shown;
-      } else if (hw != null) displayStopHw[stopId] = hw;
-
       // The plain values feed the #772 branch decision, which compares the own pattern's stops
       // with a shared terminal: they read the own list at a pooled stop too (ttc 38 weekday: the
       // pooled terminal's plain 7 would have beaten the branch's 15).
@@ -2216,6 +2205,18 @@ export async function processGtfsBuffer(
       const middayPlain = medianHeadwayInWindow(forCrossMidnightWindow(own, PERIODS.midday.end), PERIODS.midday.start, PERIODS.midday.end, 3);
       if (middayPlain != null) allStopMiddayHwPlain[stopId] = middayPlain;
       if (hw != null && usedOwnFallback) ownFallbackHw.add(stopId);
+      // CIV-845: the stop's shown all-day value, the same window chain with the rider's wait in
+      // place of the guarded pooled value; where the wait is refused, the window reads exactly
+      // as above (the 6-22h last resort keeps the guarded reading). After ownFallbackHw is
+      // set: windowHw resets the fallback flag.
+      if (isPooled) {
+        const waitHw = (start: number, end: number): number | null =>
+          pooledWaitInWindow(times, start, end, 3, own) ?? windowHw(start, end);
+        const shown = waitHw(HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end)
+          ?? waitHw(HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end)
+          ?? windowHw(HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, true);
+        if (shown != null) displayStopHw[stopId] = shown;
+      } else if (hw != null) displayStopHw[stopId] = hw;
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       /** Departures of the other patterns in the window: the merged list less the own list. */
       const othersInWindow = (start: number, end: number): number => {
