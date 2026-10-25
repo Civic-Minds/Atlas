@@ -120,6 +120,8 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { 
   if (snaps.length < 2) return null;
   const first = snaps[snaps.length - 1];
   const last = snaps[0];
+  // Only a change across calendar years gets the box; schedules from the same year show just the rows.
+  if (first.year === last.year) return null;
   const fHw = periodMinutes(first, period)!;
   const lHw = periodMinutes(last, period)!;
   if (Math.abs(fHw - lHw) < 2) return null;
