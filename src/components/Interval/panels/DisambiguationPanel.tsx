@@ -38,7 +38,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
           <div key={g.agencyName}>
             {g.agencyName && (
               <div className="px-4 pt-2.5 pb-1">
-                <span className="text-xs font-black tracking-wide text-[var(--text-dim)]">{g.agencyName}</span>
+                <span className="text-xs font-black text-[var(--text-dim)]">{g.agencyName}</span>
               </div>
             )}
             {g.routes.map(r => (
