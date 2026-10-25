@@ -486,7 +486,7 @@ function HistoryAgencyPanel({
           {[countOf(agencyHistory.routes.length, 'route'), minYear === maxYear ? String(minYear) : `${minYear}–${maxYear}`].join(' · ')}
         </p>
         {!routeQuery && !activeFilter && (
-          <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
+          <p className="text-xs text-[var(--text-dim)] mt-1">Biggest changes first</p>
         )}
         </div>
         <CardReportButton
