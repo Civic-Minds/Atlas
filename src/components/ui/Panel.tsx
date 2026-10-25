@@ -1,5 +1,5 @@
 import type { ComponentProps, HTMLAttributes } from 'react';
-import { FLOATING_CARD, PANEL_BODY, PANEL_ENTER, PANEL_TITLE_BAR, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, PANEL_BODY, SIDEBAR_CARD_SURFACE, PANEL_ENTER, PANEL_TITLE_BAR, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDTH } from '../../styles';
 
 interface PanelProps extends ComponentProps<'div'> {
   /** Anchor below the search bar on the left, at the shared sidebar card width and height (needs --sidebar-left). */
@@ -12,7 +12,7 @@ interface PanelProps extends ComponentProps<'div'> {
 export default function Panel({ sidebar = false, enter = false, className = '', ...rest }: PanelProps) {
   const classes = [
     sidebar ? `${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H}` : '',
-    FLOATING_CARD,
+    sidebar ? SIDEBAR_CARD_SURFACE : FLOATING_CARD,
     'flex flex-col overflow-hidden',
     enter ? PANEL_ENTER : '',
     className,
