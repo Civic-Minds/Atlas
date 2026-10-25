@@ -26,6 +26,7 @@
 import { qualifyingSharedRuns } from './sharedStretch.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { forCrossMidnightWindow, headwayToTier, medianHeadwayInWindow, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { DEFAULT_CRITERIA } from './defaults.js';
 
 /** A same-headsign pattern pools at every common stop when it serves this share of the other's stops. */
 export const SAME_HEADSIGN_COVERAGE = 2 / 3;
@@ -90,6 +91,19 @@ export function collapseBunched(sorted: readonly number[]): number[] {
   return out;
 }
 
+/**
+ * #813: how much of the window's time over-long gaps may fill before a merged list is refused:
+ * the settled near-miss share of the value's tier (#567-#571, PR #584: 10% up to the 15-minute
+ * tier, 5% from 20 on). One held bus in a dense list fills little of the window (ttc 52
+ * westbound evening: one 12-minute gap over an every-6, 5%), while two branches bunched a few
+ * minutes apart fill most of it (gaps 3, 27: 90%).
+ */
+export function pooledOverLongShareLimit(value: number): number {
+  const byTier = DEFAULT_CRITERIA.violationPercentByTier ?? {};
+  const tier = Object.keys(byTier).map(Number).sort((a, b) => a - b).find(t => value <= t);
+  return tier != null ? byTier[tier] : DEFAULT_CRITERIA.violationPercent;
+}
+
 export function pooledHeadwayInWindow(times: readonly number[], start: number, end: number, minDeps = 3, allDay = false, own?: readonly number[]): number | null {
   const inWindow = collapseBunched([...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b));
   if (inWindow.length < minDeps) return null;
@@ -98,8 +112,6 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
     : medianHeadwayInWindow(inWindow, start, end, minDeps, true);
   if (typical == null || inWindow.length < 2) return typical;
   const mean = (inWindow[inWindow.length - 1] - inWindow[0]) / (inWindow.length - 1);
-  let longest = 0;
-  for (let i = 1; i < inWindow.length; i++) longest = Math.max(longest, inWindow[i] - inWindow[i - 1]);
   // Never worse than the own pattern's reading of the same window.
   const ownSorted = own ? [...new Set(forCrossMidnightWindow([...own], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b) : [];
   const ownValue = ownSorted.length >= minDeps
@@ -107,12 +119,20 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
     : null;
   const floored = Math.max(typical, Math.round(mean));
   const value = ownValue != null ? Math.min(floored, ownValue) : floored;
-  // Even enough: no gap over POOLED_MAX_GAP_RATIO times the mean (two 30s three minutes apart
-  // are not a 15) and, #813, none over POOLED_MAX_GAP_TYPICAL_RATIO times the value itself.
-  // Each ratio allows at least the grace over its base: one held bus on a dense service is
-  // not an alternation, while two 30s three minutes apart (27 against a mean of 15) stay out.
-  if (longest > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES)
-    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES)) return null;
+  // Even enough: a gap over POOLED_MAX_GAP_RATIO times the mean (two 30s three minutes apart
+  // are not a 15) or, #813, over POOLED_MAX_GAP_TYPICAL_RATIO times the value itself is
+  // over-long. Each ratio allows at least the grace over its base. #813: the merged list is
+  // refused only when its over-long gaps fill more of the window's time than the value's tier
+  // allows near misses (pooledOverLongShareLimit), so a single long gap in a dense list no
+  // longer sends a stop back to one pattern's own value.
+  const meanLimit = Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES);
+  const valueLimit = Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES);
+  let overLong = 0;
+  for (let i = 1; i < inWindow.length; i++) {
+    const gap = inWindow[i] - inWindow[i - 1];
+    if (gap > meanLimit || gap > valueLimit) overLong += gap;
+  }
+  if (overLong > pooledOverLongShareLimit(value) * (end - start)) return null;
   return value;
 }
 
