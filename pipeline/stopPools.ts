@@ -27,6 +27,7 @@ import { qualifyingSharedRuns } from './sharedStretch.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { forCrossMidnightWindow, headwayToTier, medianHeadwayInWindow, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
+import { GRACE_FLOOR_MIN_GAPS } from './transit-phase2.js';
 
 /** A same-headsign pattern pools at every common stop when it serves this share of the other's stops. */
 export const SAME_HEADSIGN_COVERAGE = 2 / 3;
@@ -132,7 +133,12 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
     const gap = inWindow[i] - inWindow[i - 1];
     if (gap > meanLimit || gap > valueLimit) overLong += gap;
   }
-  if (overLong > pooledOverLongShareLimit(value) * (end - start)) return null;
+  // A short list keeps the strict guard: the tier grader allows a near miss only once there are
+  // GRACE_FLOOR_MIN_GAPS gaps (#567-#571), so a list of a few departures with one over-long gap
+  // (durham 900 weekday overnight: 21 and 5) is still refused.
+  const gaps = inWindow.length - 1;
+  const allowed = gaps >= GRACE_FLOOR_MIN_GAPS ? pooledOverLongShareLimit(value) * (end - start) : 0;
+  if (overLong > allowed) return null;
   return value;
 }
 

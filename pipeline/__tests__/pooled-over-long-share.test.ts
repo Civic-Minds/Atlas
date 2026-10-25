@@ -58,4 +58,14 @@ describe('pooledHeadwayInWindow over-long share (#813)', () => {
     expect(pooledHeadwayInWindow(stop33, ...EVENING, 3)).toBeNull();
     expect(pooledHeadwayInWindow(chapman, ...EVENING, 3)).toBe(16);
   });
+
+  it('keeps the strict guard on a short list (fewer than 8 gaps)', () => {
+    // durham 900 weekday overnight: three departures 21 and 5 minutes apart stay refused.
+    expect(pooledHeadwayInWindow([1400, 1421, 1426], 1380, 1620, 3)).toBeNull();
+    // Seven gaps, one of them over-long: refused as before; eight gaps: allowed (never better than the mean, 12).
+    const seven = fromGaps(1150, [10, 10, 10, 10, 10, 10, 22]);
+    expect(pooledHeadwayInWindow(seven, ...EVENING, 3)).toBeNull();
+    const eight = fromGaps(1150, [10, 10, 10, 10, 10, 10, 10, 22]);
+    expect(pooledHeadwayInWindow(eight, ...EVENING, 3)).toBe(12);
+  });
 });
