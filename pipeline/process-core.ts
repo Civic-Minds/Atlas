@@ -2258,14 +2258,15 @@ export async function processGtfsBuffer(
       }
       // CIV-845: the shown period values. A pooled stop shows the rider's wait on the merged list
       // where it has the minimum departures (its coverage then describes that list too);
-      // otherwise the value and coverage above. #897's sparse overnight window stays withheld.
+      // otherwise the value and coverage above. A sparse overnight merged window (#897) keeps
+      // the value above (withheld or the own pattern's, as before).
       const shownByPeriod: Partial<Record<PeriodKey, number>> = { ...byPeriod };
       const shownFromMerged = new Set<PeriodKey>();
       if (isPooled) {
         for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
           const wait = pooledWaitInWindow(times, start, end, 3, own);
           if (wait == null) continue;
-          if (pk === 'overnight' && isSparseOvernightWindow(times)) { delete shownByPeriod[pk]; continue; }
+          if (pk === 'overnight' && isSparseOvernightWindow(times)) continue;
           shownByPeriod[pk] = wait;
           shownFromMerged.add(pk);
         }
