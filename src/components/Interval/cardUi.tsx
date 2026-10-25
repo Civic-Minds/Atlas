@@ -12,6 +12,7 @@ import ArrowLink from '../ui/ArrowLink';
 import LinkPill from '../ui/LinkPill';
 import RoundIconButton from '../ui/RoundIconButton';
 import { OutboundLink } from '../OutboundLink';
+import { CardBackLink } from '../CardBack';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -419,6 +420,32 @@ export function FlaggableValue({ reason, reportRef, children, className = 'inlin
       {children}
       <Flag className="w-2.5 h-2.5 text-[var(--text-dim)] opacity-0 group-hover/flag:opacity-100 group-hover/flag:text-[var(--accent)] transition-opacity shrink-0" />
     </button>
+  );
+}
+
+/** The agency card's heading, shared by the map and History: an optional back link, then the agency name
+ *  in bold with its place beside it in lighter text on the same line. */
+export function AgencyCardHeading({
+  name,
+  place,
+  back,
+  as: Tag = 'p',
+  className = '',
+}: {
+  name: string;
+  place?: string | null;
+  back?: { to: string; onClick: () => void };
+  as?: 'p' | 'h2';
+  className?: string;
+}) {
+  return (
+    <>
+      {back && <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>}
+      <Tag className={`${CARD_TITLE} ${className}`}>
+        {name}
+        {place && <span className="font-medium text-[var(--text-muted)]"> {place}</span>}
+      </Tag>
+    </>
   );
 }
 

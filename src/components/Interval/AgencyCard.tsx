@@ -20,7 +20,7 @@ import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyAreaChip, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardHelpNotice, CardReportButton } from './cardUi';
+import { AgencyAreaChip, AgencyCardHeading, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardHelpNotice, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
@@ -509,15 +509,15 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             floats in the corner so the chip can use the full header width. Otherwise the header is exactly as it was. */}
         <div className={grouped ? 'relative min-w-0' : 'flex items-start gap-2 min-w-0'}>
           <div className={grouped ? 'min-w-0' : 'min-w-0 flex-1'}>
-            <p className={`${CARD_TITLE} mb-0${grouped ? ' pr-7' : ''}`}>{agencyNamePrimary}</p>
+            <AgencyCardHeading name={agencyNamePrimary} place={agencyNameSecondary} className={`mb-0${grouped ? ' pr-7' : ''}`} />
           {(() => {
             const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
             const area = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
             const summary = (
               <p className={`${CARD_SUMMARY}${grouped ? ' pr-7' : ''}`}>
                 {agency.onDemandOnly
-                  ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
-                  : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
+                  ? 'On-demand service'
+                  : buildHeaderSummary(visibleRoutes, maxHeadway)}
               </p>
             );
             if (!grouped) {

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
-import { CardBackLink } from '../components/CardBack';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
@@ -10,7 +9,7 @@ import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_SIDEBAR, PANEL_TITLE, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
 import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardHeading, CARD_HEADER_BLOCK, CARD_SUMMARY, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -476,11 +475,15 @@ function HistoryAgencyPanel({
       <div className={CARD_HEADER_BLOCK}>
         <div className="flex items-start gap-2 min-w-0">
         <div className="min-w-0 flex-1">
-        <CardBackLink onClick={onBack}>Historical service</CardBackLink>
-        <h2 className={`${CARD_TITLE} truncate`}>{nameParts.primary}</h2>
-        {/* The agency card's summary: the agency's place (not the state), then the counts. */}
+        <AgencyCardHeading
+          as="h2"
+          name={nameParts.primary}
+          place={nameParts.secondary}
+          back={{ to: 'All agencies', onClick: onBack }}
+        />
+        {/* The agency card's summary: just the counts (the place sits beside the name). */}
         <p className={CARD_SUMMARY}>
-          {[nameParts.secondary, countOf(agencyHistory.routes.length, 'route'), minYear === maxYear ? String(minYear) : `${minYear}–${maxYear}`].filter(Boolean).join(' · ')}
+          {[countOf(agencyHistory.routes.length, 'route'), minYear === maxYear ? String(minYear) : `${minYear}–${maxYear}`].join(' · ')}
         </p>
         {!routeQuery && !activeFilter && (
           <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
