@@ -1,7 +1,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { Flag, Radio, X } from 'lucide-react';
-import { fmtHeadway } from '../../utils/format';
+import { cleanRouteShortName, fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_CARD_SURFACE, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
 import { openAtlasProblemEmail } from '../../utils/reportIssue';
@@ -434,6 +434,11 @@ export function CardBackLink({ onClick, children }: { onClick: () => void; child
       {'← '}{children}
     </button>
   );
+}
+
+/** A route as a back link's destination: "Route 5", so the link reads "← Route 5". */
+export function routeBackDestination(routeShortName: string | null | undefined): string {
+  return `Route ${cleanRouteShortName(routeShortName)}`;
 }
 
 /** The agency card's heading, shared by the map and History: an optional back link, then the agency name

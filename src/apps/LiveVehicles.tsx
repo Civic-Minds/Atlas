@@ -18,7 +18,7 @@ import { periodKeyForHour } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../utils/liveGrouping';
-import { CardDirectionRow, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
+import { CardDirectionRow, routeBackDestination, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
 import { delayLabel, vehicleCardName, vehicleCardRows } from '../components/Live/vehicleCardModel';
@@ -663,7 +663,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               <SidebarCardShell className="px-4 pt-4">
                 <SidebarCardHeaderBlock>
                   <RouteCardTitle
-                    back={{ to: `${cleanRouteShortName(selectedGroup.routeShortName)} route`, onClick: () => setVehicleCard(null) }}
+                    back={{ to: routeBackDestination(selectedGroup.routeShortName), onClick: () => setVehicleCard(null) }}
                     routeShortName={selectedGroup.routeShortName}
                     routeLongName={selectedRouteLongName}
                     routeType={selectedRouteType}
@@ -691,7 +691,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <SidebarCardHeaderBlock>
                   <RouteCardTitle
                     back={{
-                      to: selectedDirection ? `${cleanRouteShortName(selectedGroup.routeShortName)} route` : `${agencyDisplayName(agencies, selectedGroup.agencySlug)} routes`,
+                      to: selectedDirection ? routeBackDestination(selectedGroup.routeShortName) : `${agencyDisplayName(agencies, selectedGroup.agencySlug)} routes`,
                       onClick: selectedDirection
                         ? () => setSelectedDirection(null)
                         : () => { setSelectedRoute(null); setFocusedVehicle(null); },
