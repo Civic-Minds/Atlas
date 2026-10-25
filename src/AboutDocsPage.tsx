@@ -157,7 +157,7 @@ export default function AboutDocsPage() {
             </Subsection>
             <Subsection title="Schedule selection">
               <p>Feeds commonly contain past, current, and future service at the same time. Atlas evaluates the feed’s calendar dates around the refresh date and selects the schedule period that is active for the map.</p>
-              <p>It then separates departures by day type—weekday, Saturday, and Sunday—and by named time period. This prevents an expired schedule or a future seasonal timetable from being treated as today’s service.</p>
+              <p>It then separates departures by day type—weekday, Saturday, and Sunday—and by named time period. This prevents an expired schedule or a future seasonal timetable from being treated as today’s service. For some agencies, trains that run only on a few special dates, such as game-day trains, are left out of the typical day.</p>
               <p>After publication, the agency’s source date and freshness state remain visible in Atlas so users can see when the underlying schedule was last checked.</p>
             </Subsection>
             <Subsection title="Routes, branches, and shapes">
