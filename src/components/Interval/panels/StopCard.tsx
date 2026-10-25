@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { CardBackButton } from '../../CardBack';
+import { CardBackLink } from '../../CardBack';
 import { titleCase, routeLabels } from '../../../utils/format';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import {
@@ -101,8 +101,8 @@ export const StopCard: React.FC<StopCardProps> = ({
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
         <div className="flex items-start gap-2">
-          <CardBackButton onClick={() => setSelectedStop(null)} label="Back to map" />
           <div className="flex-1 min-w-0">
+            <CardBackLink onClick={() => setSelectedStop(null)}>Map</CardBackLink>
             {stopAgencies.length === 1 ? (
               <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader
