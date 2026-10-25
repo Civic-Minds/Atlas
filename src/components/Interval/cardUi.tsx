@@ -435,16 +435,43 @@ export function CardBackButton({ onClick, label = 'Back' }: { onClick: () => voi
   );
 }
 
-/** Plain text link above a card title that goes back one level (no arrow). */
+/** The one back link for every card: plain small text above the card title that goes back one level.
+ *  Callers pass only the destination; the link always reads "← " plus it ("← All agencies", "← Map"), never "Back to". */
 export function CardBackLink({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="block max-w-full truncate text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors leading-snug mb-0.5"
+      className="block max-w-full truncate text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors leading-snug mb-0.5"
     >
-      {children}
+      {'← '}{children}
     </button>
+  );
+}
+
+/** The agency card's heading, shared by the map and History: an optional back link, then the agency name
+ *  in bold with its place beside it in lighter text on the same line. */
+export function AgencyCardHeading({
+  name,
+  place,
+  back,
+  as: Tag = 'p',
+  className = '',
+}: {
+  name: string;
+  place?: string | null;
+  back?: { to: string; onClick: () => void };
+  as?: 'p' | 'h2';
+  className?: string;
+}) {
+  return (
+    <>
+      {back && <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>}
+      <Tag className={`${CARD_TITLE} ${className}`}>
+        {name}
+        {place && <span className="font-medium text-[var(--text-muted)]"> {place}</span>}
+      </Tag>
+    </>
   );
 }
 
