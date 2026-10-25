@@ -91,6 +91,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Data pipeline
 
+- **Clemson's Red route no longer shows a [made-up frequency](https://github.com/Civic-Minds/Atlas/issues/1040)**: its feed lists one trip per bus shift with only the first and last stop timed, so shift start times read as "every 21 min" on weekdays and "every 441 min" on Saturdays; Clemson also reads the timetable running now
 - **A feed whose calendar ended earlier than it claims now shows the [expired notice](https://github.com/Civic-Minds/Atlas/issues/1039)**: MAX said it ran to 2035 while its schedule stopped in May 2025, so it looked current; a calendar can only shorten the end date, never extend it
 - **Long rural and [highway routes](https://github.com/Civic-Minds/Atlas/issues/1057) are drawn in full**: Prince George routes and [Redwood Coast](https://github.com/Civic-Minds/Atlas/issues/776) Transit 20 reach the real end of the line, [Streamline Goldline](https://github.com/Civic-Minds/Atlas/issues/433) follows its streets again, and [Amarillo](https://github.com/Civic-Minds/Atlas/issues/753) shows all 293 stops, not 41
 - **Feeds that give each trip its [own copy](https://github.com/Civic-Minds/Atlas/issues/616) of a shape draw their routes again**: NJ Transit's 14 rail lines and [SamTrans 120](https://github.com/Civic-Minds/Atlas/issues/775) are back, [Siskiyou County's](https://github.com/Civic-Minds/Atlas/issues/492) routes draw once republished, and Coast NH keeps [both directions](https://github.com/Civic-Minds/Atlas/issues/730)

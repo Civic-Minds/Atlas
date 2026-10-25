@@ -31,6 +31,8 @@ export interface AgencyFeedConfig {
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
+  /** Ignore block trips (only first and last stop timed) when counting departures (Clemson, #1040). */
+  skipBlockTripHeadways?: boolean;
   fare?: number;
   supplementalFeedUrls?: string[];
   /** The main feed's configured URL; matched against nextServiceDatesFeedUrls. */
@@ -92,6 +94,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
+    skipBlockTripHeadways: agency.skipBlockTripHeadways,
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,
     force: overrides.force ?? false,
     ...(overrides.referenceDate ? { referenceDate: overrides.referenceDate } : {}),
