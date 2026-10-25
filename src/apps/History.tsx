@@ -877,7 +877,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           if (!agencyHistory) {
             return (
               <Panel sidebar style={frameStyle} className={frameClassName}>
-                <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+                <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
               </Panel>
             );
           }
@@ -951,7 +951,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                 </div>
               )}
               {historyData === null && (
-                <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+                <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
               )}
               {historyData !== null && historyLoadFailed && (
                 <PanelEmpty

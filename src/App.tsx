@@ -785,7 +785,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
       <main className="absolute inset-0 overflow-hidden">
         <ErrorBoundary label="The map encountered an error.">
-          <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">Loading map…</div>}>
+          <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">{loadingText('map')}</div>}>
           {inResearch ? (
             <ResearchPage />
           ) : inFrequentServiceStory ? (
@@ -863,7 +863,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               <React.Suspense fallback={inHistory ? (
                 // The shared loading panel, where History's panels open (#1028 item 20).
                 <Panel sidebar style={{ '--sidebar-left': `${sidebarLeft}px`, ...(searchBarWidth && !isPhone ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}) } as React.CSSProperties}>
-                  <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+                  <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
                 </Panel>
               ) : null}>
                 <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
@@ -903,7 +903,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </ErrorBoundary>
         {(agenciesLoadState === 'loading' || modeCatchingUp) && (
           <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">
-            Loading map…
+            {loadingText('map')}
           </div>
         )}
         {agenciesLoadState === 'error' && (

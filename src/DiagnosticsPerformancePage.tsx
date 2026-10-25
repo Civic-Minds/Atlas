@@ -4,6 +4,7 @@ import { useAgencies } from './hooks/useAgencies';
 import { ATLAS_MODE } from '../shared/config';
 import { getAtlasMark, markAtlasOnce } from './lib/performance';
 import { FLOATING_CARD } from './styles';
+import { LOADING_TEXT } from './content/stateCopy';
 import Panel from './components/ui/Panel';
 import ListRow from './components/ui/ListRow';
 import Pill from './components/ui/Pill';
@@ -91,7 +92,7 @@ export default function DiagnosticsPerformancePage() {
       <main className="p-6 max-w-4xl mx-auto space-y-5">
         <div className={`${FLOATING_CARD} p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm`}>
           <div><div className="text-xs text-[var(--text-dim)]">Mode</div><div className="font-black">{ATLAS_MODE}</div></div>
-          <div><div className="text-xs text-[var(--text-dim)]">Visible agencies</div><div className="font-black">{agenciesLoadState === 'ready' ? agencies.length : 'Loading…'}</div></div>
+          <div><div className="text-xs text-[var(--text-dim)]">Visible agencies</div><div className="font-black">{agenciesLoadState === 'ready' ? agencies.length : LOADING_TEXT}</div></div>
           <div><div className="text-xs text-[var(--text-dim)]">URL</div><div className="font-black">{window.location.pathname}</div></div>
           <div><div className="text-xs text-[var(--text-dim)]">Captured</div><div className="font-black">{new Date().toLocaleTimeString()}</div></div>
         </div>

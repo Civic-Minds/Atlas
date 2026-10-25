@@ -1,7 +1,11 @@
 /** Wording for loading and error states in panels and badges, so every screen says it the same way. */
 
-/** "Loading night service…": the noun after the verb, then an ellipsis character (not three dots). */
+/** "Loading night service…": the noun after the verb, then an ellipsis character (not three dots).
+ *  Every loading message uses it, or LOADING_TEXT where nothing names the thing. */
 export const loadingText = (noun: string) => `Loading ${noun}…`;
+
+/** "Loading…", for the few places that don't name what is loading. */
+export const LOADING_TEXT = 'Loading…';
 
 /** "Couldn't load history data." */
 export const loadErrorText = (noun: string) => `Couldn't load ${noun}.`;

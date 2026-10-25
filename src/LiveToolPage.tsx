@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
+import { loadingText, LOADING_TEXT } from './content/stateCopy';
 import { FEATURES } from '../shared/config';
 
 import { minutesText } from '../shared/liveFormat';
@@ -167,7 +168,7 @@ function routeWidgets({ data, v3, dir, band, setPick, legend }: {
 /** The right panel while a picked route's figures are on their way: the page's own word and soft grey blocks where the figures will be. */
 function LoadingWidget() {
   return (
-    <Widget title="Loading…" size="medium">
+    <Widget title={LOADING_TEXT} size="medium">
       <div aria-busy="true" className="flex flex-col gap-3">
         {[40, 72, 56].map(h => <div key={h} className="rounded-lg bg-[var(--bg-btn-hover)]" style={{ height: h }} />)}
       </div>
@@ -327,7 +328,7 @@ export default function LiveToolPage() {
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agency]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const shell = (body: ReactNode) => <main className="relative flex h-screen min-h-0 flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">{body}</main>;
-  if (state.kind === 'loading') return shell(<p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {agency.toUpperCase()}…</p>);
+  if (state.kind === 'loading') return shell(<p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(agency.toUpperCase())}</p>);
   if (state.kind === 'error') return shell(<p className="p-6 text-sm text-[var(--text-muted)]">{state.reason}</p>);
   if (state.data.status !== 'ready') return shell(<p className="p-6 text-sm text-[var(--text-muted)]">{state.data.status === 'no_analysis' ? devOnly(state.data.reason) : state.data.reason}</p>);
   const s = state.data.summary;

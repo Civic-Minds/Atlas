@@ -7,6 +7,7 @@ import { isRiderMeaningfulGap } from './utils/routeCardUneven';
 import { TIME_PERIODS, type PeriodKey } from '../shared/config';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { FLOATING_CARD } from './styles';
+import { LOADING_TEXT } from './content/stateCopy';
 import Pill from './components/ui/Pill';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import type { Agency } from './App';
@@ -207,7 +208,7 @@ export default function DiagnosticsUnevenPage() {
 
       <div className="p-6">
         {agenciesLoadState === 'loading' || isLoading ? (
-          <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">Loading…</div>
+          <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">{LOADING_TEXT}</div>
         ) : agenciesLoadState === 'error' ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-sm text-[var(--text-dim)]">
             <p>Could not load agency data.</p>

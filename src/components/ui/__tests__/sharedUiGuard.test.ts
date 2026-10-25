@@ -39,6 +39,8 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled legend swatch', pattern: /shrink-0 rounded(-full|-sm)?" style=\{\{ background/, use: 'LegendItem' },
   // Sidebar cards share one top and one tallest size (SIDEBAR_CARD, SIDEBAR_CARD_MAX_H in styles.ts).
   { name: 'hand-rolled sidebar card top or height', pattern: /\btop: 80\b|max-h-\[calc\(100vh-(104|132)px\)\]/, use: 'Panel sidebar, or SIDEBAR_CARD and SIDEBAR_CARD_MAX_H' },
+  // Every loading message comes from content/stateCopy ("Loading map…").
+  { name: 'loading message written by hand', pattern: />\s*Loading[\s.…{]|['"`]Loading[\s.…$]/, use: 'loadingText or LOADING_TEXT (content/stateCopy.ts)' },
   { name: 'legend reading the default palette', pattern: /import \{[^}]*\bHEADWAY_TIERS\b[^}]*\} from '[^']*shared\/config'/, use: 'useHeadwayTiers (colour-vision aware)' },
   { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
   { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP|CARD_NOTICE_ACTION)\b/, use: 'ArrowLink, Tag' },

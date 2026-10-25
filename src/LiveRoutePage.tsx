@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { loadingText } from './content/stateCopy';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
   dateRangeText, freshness,
@@ -139,7 +140,7 @@ function AnalysisPage() {
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agency.toUpperCase()} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
-  if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p></PageShell>;
+  if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></PageShell>;
   if (state.kind === 'error') return <PageShell variant="wide"><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{state.reason}</p>{back}</PageShell>;
   const data = state.data;
   if (data.status !== 'ready') {

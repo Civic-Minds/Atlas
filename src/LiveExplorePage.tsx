@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router';
+import { loadingText } from './content/stateCopy';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
   LINK_LABELS, linkValueText,
@@ -201,7 +202,7 @@ export default function LiveExplorePage() {
   const title = `${agency.toUpperCase()} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;
-  if (state.kind === 'loading') return shell(<p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p>);
+  if (state.kind === 'loading') return shell(<p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p>);
   if (state.kind === 'error') return shell(<><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{state.reason}</p>{back}</>);
   const data = state.data;
   if (data.status !== 'ready') {
