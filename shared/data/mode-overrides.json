@@ -1,6 +1,13 @@
 {
   "overrides": [
     {
+      "agencySlug": "grt",
+      "routeType": 0,
+      "routeShortName": "301",
+      "mode": 100,
+      "reason": "ION is light rail; the Region's feed publishes it as route_type 0 (tram) while the earlier GRT feed had it as 2"
+    },
+    {
       "agencySlug": "nfta",
       "routeType": 0,
       "routeLongName": "Metro Rail",
