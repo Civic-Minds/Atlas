@@ -489,7 +489,12 @@ async function main() {
       // a documented schedule even when the route's headway is unchanged.
       // v2: a sidecar-backed snapshot is never dropped for being unchanged (every year the route ran
       // is listed); old change-file snapshots still follow the change-only rule.
-      const deduped: any[] = filterSnapshotsForPublish(snapshots, { materializeAllPeriods, keepEveryV2Year: v2 });
+      let deduped: any[] = filterSnapshotsForPublish(snapshots, { materializeAllPeriods, keepEveryV2Year: v2 });
+      // Default: whether the live endpoint is appended is decided from the archive as origin/main saw it
+      // (including any future-dated last point), then future-dated points are dropped: a period after the
+      // build year is a feed that has not started, not a past year.
+      const lastArchivedYear: number | undefined = deduped[deduped.length - 1]?.year;
+      if (!v2) deduped = deduped.filter(s => s.year <= buildYear);
 
       // Add current Atlas data as the final point whenever it is newer than
       // the archive. Even an unchanged headway gets a current endpoint when
@@ -504,8 +509,7 @@ async function main() {
       // v2: a route with no all-day value now (limited, or no stamp) gets no current endpoint:
       // the old fastest-pattern value is never used in its place. Default: origin/main's rule.
       if (currentRoute && (!v2 || currentRoute.headway != null)) {
-        const lastSnap = deduped[deduped.length - 1];
-        const alreadyCurrentYear = v2 ? snapshots.some(s => s.year === currentYear) : lastSnap && lastSnap.year === currentYear;
+        const alreadyCurrentYear = v2 ? snapshots.some(s => s.year === currentYear) : lastArchivedYear === currentYear;
         if (!alreadyCurrentYear) {
           deduped.push({
             label: String(currentYear),
@@ -612,7 +616,7 @@ async function main() {
       name,
       region,
       center,
-      coverageYears: coverageBySlug[slug]?.coverageYears,
+      coverageYears: coverageBySlug[slug]?.coverageYears?.filter(y => y <= buildYear),
       routes: agencyRoutes,
     });
     console.log(`  ${name}: ${agencyRoutes.length} routes with changes`);
