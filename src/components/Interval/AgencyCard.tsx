@@ -20,7 +20,7 @@ import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyAreaChip, AgencyCardHeading, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardHelpNotice, CardReportButton } from './cardUi';
+import { AgencyAreaChip, AgencyCardHeading, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CardHelpNotice, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
@@ -427,10 +427,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         } as React.CSSProperties}
       >
         <div className={CARD_HEADER_BLOCK}>
-          <p className={`${CARD_TITLE} mb-0`}>{[serviceName, zoneDisplayName].filter(Boolean).join(' — ')}</p>
-          <p className={CARD_SUMMARY}>
-            {[agencyNamePrimary, agencyNameSecondary].filter(Boolean).join(' · ')}
-          </p>
+          {/* The shared heading: the service in bold with the agency's place beside it; the agency below. */}
+          <AgencyCardHeading name={[serviceName, zoneDisplayName].filter(Boolean).join(' — ')} place={agencyNameSecondary} className="mb-0" />
+          {serviceName !== agencyNamePrimary && <p className={CARD_SUMMARY}>{agencyNamePrimary}</p>}
           {FEATURES.dataSourceLink && agency.websiteUrl && (
             <p className="mt-1 text-xs"><AgencyDataSourceLink agency={agency} /></p>
           )}
