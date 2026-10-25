@@ -862,7 +862,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             {historyOn && (historyOpened || inHistory) && (
               <React.Suspense fallback={inHistory ? (
                 // The shared loading panel, where History's panels open (#1028 item 20).
-                <Panel sidebar style={{ top: 80, '--sidebar-left': `${sidebarLeft}px`, ...(searchBarWidth && !isPhone ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}) } as React.CSSProperties}>
+                <Panel sidebar style={{ '--sidebar-left': `${sidebarLeft}px`, ...(searchBarWidth && !isPhone ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}) } as React.CSSProperties}>
                   <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
                 </Panel>
               ) : null}>

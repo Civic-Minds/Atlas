@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 import Panel from './ui/Panel';
-import { LIST_ROW_PRIMARY, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { LIST_ROW_PRIMARY, SIDEBAR_CARD, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
 
 /**
  * The one info card every research view (Night, Frequent Service, future ones) shows in the same place
@@ -18,7 +18,7 @@ export default function ResearchInfo({ heading, children, sidebarLeft, hidden = 
 }) {
   return (
     <div
-      className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} flex flex-col gap-2 max-h-[calc(100vh-136px)] ${hidden ? 'invisible pointer-events-none' : 'pointer-events-auto'}`}
+      className={`${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} flex flex-col gap-2 max-h-[calc(100vh-136px)] ${hidden ? 'invisible pointer-events-none' : 'pointer-events-auto'}`}
       style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as CSSProperties}
     >
       <Panel enter className="shrink-0">
