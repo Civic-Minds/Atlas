@@ -248,6 +248,7 @@ function RouteHistoryCard({
               agencySlug={agencySlug}
               agencyName={agencyName}
               onAgencyClick={onBack}
+              agencyBackLink
             />
           </div>
           <CardReportButton

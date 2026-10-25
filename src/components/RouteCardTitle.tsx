@@ -11,16 +11,21 @@ interface Props {
   onAgencyClick?: () => void;
   /** False when a back link above the title already names the agency. */
   showAgency?: boolean;
+  /** The agency name above the title is the card's back link to the agency card ("← TTC") instead of a plain eyebrow.
+   *  The map's and History's route cards; Live's cards have their own back link. */
+  agencyBackLink?: boolean;
 }
 
-export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true }: Props) {
+export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true, agencyBackLink = false }: Props) {
   const title = routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text;
   const displayAgency = showAgency && agencyName ? shortenAgencyName(agencyName) : null;
+  const back = agencyBackLink && onAgencyClick && displayAgency ? { to: displayAgency, onClick: onAgencyClick } : undefined;
   return (
     <SidebarCardHeader
-      eyebrow={displayAgency}
+      back={back}
+      eyebrow={back ? null : displayAgency}
       title={title}
-      onEyebrowClick={onAgencyClick}
+      onEyebrowClick={back ? undefined : onAgencyClick}
       titleClamp
     />
   );

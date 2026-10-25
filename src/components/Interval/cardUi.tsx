@@ -535,16 +535,20 @@ export function SidebarCardHeader({
   title,
   onEyebrowClick,
   titleClamp = false,
+  back,
 }: {
   eyebrow?: string | null;
   title: string;
   onEyebrowClick?: () => void;
   titleClamp?: boolean;
+  /** The card's back link, above the eyebrow. */
+  back?: { to: string; onClick: () => void };
 }) {
   return (
     <div className="flex-1 min-w-0">
+      {back && <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>}
       {eyebrow && <CardEyebrow onClick={onEyebrowClick}>{eyebrow}</CardEyebrow>}
-      <CardTitle clamp={titleClamp} className={eyebrow ? 'mb-0' : 'mb-2'}>{title}</CardTitle>
+      <CardTitle clamp={titleClamp} className={eyebrow || back ? 'mb-0' : 'mb-2'}>{title}</CardTitle>
     </div>
   );
 }
