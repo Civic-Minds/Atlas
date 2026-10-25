@@ -1,6 +1,6 @@
 import React from 'react';
 import { routeLabels } from '../../../utils/format';
-import { FLOATING_CARD, PANEL_ENTER, LIST_ROW_PRIMARY } from '../../../styles';
+import { PANEL_ENTER, LIST_ROW_PRIMARY, SIDEBAR_CARD_SURFACE } from '../../../styles';
 import ListRow from '../../ui/ListRow';
 
 export interface DisambigRoute {
@@ -32,7 +32,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
   }
 
   return (
-    <div className={`${FLOATING_CARD} ${PANEL_ENTER} max-h-[380px] overflow-y-auto custom-scrollbar`}>
+    <div className={`${SIDEBAR_CARD_SURFACE} ${PANEL_ENTER} max-h-[380px] overflow-y-auto custom-scrollbar`}>
       <div>
         {groups.map(g => (
           <div key={g.agencyName}>

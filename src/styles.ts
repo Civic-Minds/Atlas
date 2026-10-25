@@ -28,6 +28,9 @@ export const dropdownAnim = (visible: boolean) =>
 
 /** Generic floating card (dropdown menus, small overlays) */
 export const FLOATING_CARD = `${SURFACE} rounded-2xl shadow-2xl`;
+/** Every sidebar card's surface: a smaller shadow than FLOATING_CARD, so the 7px gap above the bottom pills
+ *  stays a clear strip of map and the pills aren't greyed. */
+export const SIDEBAR_CARD_SURFACE = `${SURFACE} rounded-2xl shadow-lg`;
 
 /** Shared shell for a scrollable sidebar card. */
 export const PANEL_SHELL = `${FLOATING_CARD} flex flex-col overflow-hidden`;
