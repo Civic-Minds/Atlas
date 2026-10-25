@@ -419,9 +419,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         data-report-anchor="true"
         sidebar
         enter
-        className="max-h-[calc(100vh-104px)]"
         style={{
-          top: 80, // main's offset (the shared sidebar anchor sits 12px higher)
           '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
           ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
         } as React.CSSProperties}
@@ -496,9 +494,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       data-report-anchor="true"
       sidebar
       enter
-      className="max-h-[calc(100vh-104px)]"
       style={{
-        top: 80, // main's offset (the shared sidebar anchor sits 12px higher)
           '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
         ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}

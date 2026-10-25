@@ -6,7 +6,7 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_SIDEBAR, PANEL_TITLE, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
+import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
 import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardHeading, CARD_HEADER_BLOCK, CARD_SUMMARY, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
@@ -236,7 +236,7 @@ function RouteHistoryCard({
     // The regular route card's frame, title and rows (RouteCardTitle, direction rows): the agency name
     // above the title goes back to the agency, as on the map's route card.
     // On phones it opens in the map route card's bottom sheet (#1028 item 23).
-    <div className={sheetMode ? `${BOTTOM_SHEET_FRAME} ${frameClassName}` : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-132px)] flex flex-col ${frameClassName}`} style={sheetMode ? undefined : frameStyle}>
+    <div className={sheetMode ? `${BOTTOM_SHEET_FRAME} ${frameClassName}` : `${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H} flex flex-col ${frameClassName}`} style={sheetMode ? undefined : frameStyle}>
     <div className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
     {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
     <SidebarCardShell>
@@ -360,9 +360,6 @@ function RouteHistoryCard({
   );
 }
 
-/** The agency card's top (AgencyCard sets the same 80px over the sidebar default). */
-const AGENCY_PANEL_TOP = 80;
-
 /** History's suggestions are recent searches only: its routes have no map keys to suggest. */
 const NO_RECENT_ROUTES: RecentRoute[] = [];
 const NO_SUGGESTED_ROUTES: SuggestedRoute[] = [];
@@ -473,7 +470,7 @@ function HistoryAgencyPanel({
 
   return (
     // The agency card's placement: sidebar Panel, 80px from the top, the search bar's width.
-    <Panel sidebar enter className={`max-h-[calc(100vh-104px)] ${frameClassName}`} style={{ ...frameStyle, top: AGENCY_PANEL_TOP }}>
+    <Panel sidebar enter className={frameClassName} style={frameStyle}>
       {/* Header: the agency card's header block, with the route filter and mode pills inside it. */}
       <div className={CARD_HEADER_BLOCK}>
         <div className="flex items-start gap-2 min-w-0">
@@ -873,7 +870,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
         (() => {
           if (openAgencyFailed) {
             return (
-              <Panel sidebar style={{ ...frameStyle, top: AGENCY_PANEL_TOP }} className={frameClassName}>
+              <Panel sidebar style={frameStyle} className={frameClassName}>
                 <PanelEmpty kind="error">{loadErrorText('history data')}</PanelEmpty>
               </Panel>
             );
@@ -881,7 +878,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           const agencyHistory = openAgencyHistory;
           if (!agencyHistory) {
             return (
-              <Panel sidebar style={{ ...frameStyle, top: AGENCY_PANEL_TOP }} className={frameClassName}>
+              <Panel sidebar style={frameStyle} className={frameClassName}>
                 <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
               </Panel>
             );
@@ -920,7 +917,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
         })()
         ) : showRecentSearches ? (
         // Recent searches: the map's shared suggestions panel, where the map shows it (#1028 item 22).
-        <div className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-132px)] flex flex-col ${frameClassName}`} style={frameStyle} onMouseDown={e => e.preventDefault()}>
+        <div className={`${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H} flex flex-col ${frameClassName}`} style={frameStyle} onMouseDown={e => e.preventDefault()}>
           <SearchSuggestionsPanel
             recentSearches={recentSearches}
             clearRecentSearches={clearRecentSearches}
@@ -934,8 +931,8 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
         ) : (
         <Panel
           sidebar
-          className={`max-h-[calc(100vh-104px)] overflow-y-auto custom-scrollbar ${frameClassName} ${showAgencyChooser || searchFocused ? '' : 'opacity-0 pointer-events-none'}`}
-          style={{ ...frameStyle, top: AGENCY_PANEL_TOP }}
+          className={`overflow-y-auto custom-scrollbar ${frameClassName} ${showAgencyChooser || searchFocused ? '' : 'opacity-0 pointer-events-none'}`}
+          style={frameStyle}
           onMouseDown={e => e.preventDefault()}
         >
           <PanelTitleBar>

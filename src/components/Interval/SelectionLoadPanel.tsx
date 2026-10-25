@@ -25,7 +25,6 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
       sidebar
       enter
       style={{
-        top: 80,
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
         ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}

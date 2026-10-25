@@ -58,7 +58,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
   return (
     <Panel
       sidebar
-      className="max-h-[calc(100vh-132px)] pointer-events-auto"
+      className="pointer-events-auto"
       style={{
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
         ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),

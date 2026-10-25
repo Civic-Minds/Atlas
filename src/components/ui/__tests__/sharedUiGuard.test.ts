@@ -37,6 +37,8 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled frequency picker', pattern: /HEADWAY_TIERS\.map\(\(\{ max/, use: 'FrequencyPicker or useFrequencyOptions (Interval/pickers.tsx)' },
   { name: 'hand-rolled day buttons', pattern: /flex-1 h-7 flex items-center justify-center/, use: 'DayPicker' },
   { name: 'hand-rolled legend swatch', pattern: /shrink-0 rounded(-full|-sm)?" style=\{\{ background/, use: 'LegendItem' },
+  // Sidebar cards share one top and one tallest size (SIDEBAR_CARD, SIDEBAR_CARD_MAX_H in styles.ts).
+  { name: 'hand-rolled sidebar card top or height', pattern: /\btop: 80\b|max-h-\[calc\(100vh-(104|132)px\)\]/, use: 'Panel sidebar, or SIDEBAR_CARD and SIDEBAR_CARD_MAX_H' },
   { name: 'legend reading the default palette', pattern: /import \{[^}]*\bHEADWAY_TIERS\b[^}]*\} from '[^']*shared\/config'/, use: 'useHeadwayTiers (colour-vision aware)' },
   { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
   { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP|CARD_NOTICE_ACTION)\b/, use: 'ArrowLink, Tag' },

@@ -1,8 +1,8 @@
 import type { ComponentProps, HTMLAttributes } from 'react';
-import { FLOATING_CARD, PANEL_BODY, PANEL_ENTER, PANEL_SIDEBAR, PANEL_TITLE_BAR, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, PANEL_BODY, PANEL_ENTER, PANEL_TITLE_BAR, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDTH } from '../../styles';
 
 interface PanelProps extends ComponentProps<'div'> {
-  /** Anchor below the search bar on the left, at the shared sidebar width (needs --sidebar-left). */
+  /** Anchor below the search bar on the left, at the shared sidebar card width and height (needs --sidebar-left). */
   sidebar?: boolean;
   /** Play the shared entrance animation. */
   enter?: boolean;
@@ -11,7 +11,7 @@ interface PanelProps extends ComponentProps<'div'> {
 /** Floating glass card that clips its children and stacks them in a column. Title bar and body are the shared sections. */
 export default function Panel({ sidebar = false, enter = false, className = '', ...rest }: PanelProps) {
   const classes = [
-    sidebar ? `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH}` : '',
+    sidebar ? `${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H}` : '',
     FLOATING_CARD,
     'flex flex-col overflow-hidden',
     enter ? PANEL_ENTER : '',
