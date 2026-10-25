@@ -25,8 +25,9 @@ describe('thin-pool fallback stops floor the period values', () => {
     const sat = rows.find((p: any) => p.day === 'Saturday');
     // The first stop's own reading is 51 (three own departures); the merged list with the two
     // same-stop-list departures reads 33, and the row floors there rather than at the pool's 32
-    // or the own list's 51.
-    expect(sat.stopPeriodHeadways[sat.stopOrder[0]].amPeak).toBe(51);
+    // or the own list's 51. CIV-845 (pending Ryan's approval): the stop itself now shows the
+    // rider's wait on the merged list (42); the row's floor is unchanged.
+    expect(sat.stopPeriodHeadways[sat.stopOrder[0]].amPeak).toBe(42);
     expect(sat.headwayByPeriod.amPeak).toBe(33);
     expect(sat.headwayByPeriod.midday).toBe(24);
   });

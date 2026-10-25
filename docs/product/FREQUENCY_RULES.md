@@ -28,6 +28,10 @@ Route-days without stretch data (no direction_id in the feed, partial-weekday ro
 - `shared/worstDirection.ts` keeps the worst-direction values for route-days without stretch data.
 - `shared/sharedStops.ts` reads the pooled values at shared stops (processing: `pipeline/sharedStretch.ts`). A shared stretch is judged stop by stop with the same `featurePassesHeadwayFilter` (`src/utils/frequencySegments.ts`).
 
+## Stop values where patterns share a stop
+
+**Pending Ryan's approval (CIV-845, branch proto/civ845-avg-wait; not on main).** Where several patterns of a route direction share a stop, the stop shows the wait a rider sees on all their departures, written as an even headway: the sum of each gap squared over the sum of the gaps, over the period's departures (one entry per minute; departures one minute apart are one bus). Even service every 8 reads 8; pairs 2 and 14 minutes apart read 13; one 16-minute gap in service every 7 reads 8 instead of the stop falling back to one pattern's own 30 (HSR 05). There is no evenness cutoff. A list with fewer than 3 departures in the period shows the stop's own pattern, as before, and the value is never worse than the own pattern's reading. This is the stop's shown value only (stop card, stop values on the line, the line's section colours as a cap on the stop grade): route values, the filter, the route tier and the stop grade itself (section A tolerances) keep the earlier guarded pooled reading (`pooledHeadwayInWindow`), per rule 11. Code: `pooledWaitInWindow` in `pipeline/stopPools.ts`.
+
 ## Reaching the map
 
 The map reads PMTiles. A change to these rules reaches the live map only after a PMTiles rebuild. Changes to how processing measures headways also need a reprocess of every agency first.

@@ -117,6 +117,34 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
 }
 
 /**
+ * CIV-845 (pending Ryan's approval): the published stop value at a pooled stop, as the wait a
+ * rider arriving at a random time sees, expressed as an even headway: sum(gap^2) / sum(gap)
+ * over the merged departures in [start, end]. Even service every 8 reads 8; pairs 2 and 14
+ * minutes apart read 13 (a rider mostly lands in the 14); one 16-minute gap in a list every 7
+ * reads about 8 instead of refusing the whole period (HSR 05 weekday PM read its own 30). No
+ * evenness guard: bunched pairs already read long because the long gaps dominate. Same list as
+ * pooledHeadwayInWindow (one entry per minute, departures one minute apart are one bus, Ryan's
+ * IndyGo point), the same minimum departures (a thinner list publishes nothing and the stop
+ * keeps its own pattern's value, as today) and never worse than the own pattern's own reading
+ * of the window. Display only: route-level values keep reading pooledHeadwayInWindow (rule 11).
+ */
+export function pooledWaitInWindow(times: readonly number[], start: number, end: number, minDeps = 3, own?: readonly number[]): number | null {
+  const inWindow = collapseBunched([...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b));
+  if (inWindow.length < minDeps || inWindow.length < 2) return null;
+  let sum = 0;
+  let sumSq = 0;
+  for (let i = 1; i < inWindow.length; i++) {
+    const gap = inWindow[i] - inWindow[i - 1];
+    sum += gap;
+    sumSq += gap * gap;
+  }
+  const wait = Math.round(sumSq / sum);
+  const ownSorted = own ? [...new Set(forCrossMidnightWindow([...own], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b) : [];
+  const ownValue = ownSorted.length >= minDeps ? medianHeadwayInWindow(ownSorted, start, end, minDeps, true) : null;
+  return ownValue != null ? Math.min(wait, ownValue) : wait;
+}
+
+/**
  * For every pattern of one route direction and day: station key -> the other patterns that
  * pool with it at that station. Symmetric for the aligned-run rule; the same-headsign waiver
  * is directional (the variant must cover this pattern's stops), so a long pattern and its short

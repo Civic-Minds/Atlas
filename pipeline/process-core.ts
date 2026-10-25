@@ -47,7 +47,7 @@ import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js'
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { directionStretches, nightOnlyTrips, periodSustainedMid, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
-import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
+import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, pooledWaitInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -2147,6 +2147,15 @@ export async function processGtfsBuffer(
     // Channel: 3 own and 2 from a same-stop-list shape are every 33, not every 51). The stop's
     // published value and companions still follow the own list, as for any fallback.
     const thinPoolFallbackPeriodHw = new Map<string, Map<PeriodKey, PeriodValue>>();
+    // CIV-845 (pending Ryan's approval): the values published on the stop (stopHeadways,
+    // stopPeriodHeadways, stopPeriodCoverageHeadways and the stop colour's headway cap). A pooled
+    // stop shows the rider's wait on the merged list (pooledWaitInWindow) wherever that list
+    // has the minimum departures, with no evenness guard. Everything else keeps the guarded
+    // values, so route-level values, the #771/CIV-221 fallbacks, #897 and the route tier read
+    // exactly what they read before (rule 11). Non-pooled stops publish the same values.
+    const displayStopHw: Record<string, number> = {};
+    const displayStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
+    const displayStopPeriodCoverageHw: Record<string, HeadwayByPeriod> = {};
     for (const [stopId, times] of stopMetricMap) {
       times.sort((a, b) => a - b);
       // Prefer midday (9–15h) then PM peak (15–19h) rather than a raw all-day window.
@@ -2188,6 +2197,16 @@ export async function processGtfsBuffer(
               ?? windowHw(HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end)   // PM peak 15–19h
               ?? windowHw(HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, true);   // last resort: raw all-day 6–22h
       if (hw != null) allStopHw[stopId] = hw;
+      // CIV-845: the stop's shown all-day value, the same window chain with the rider's wait in
+      // place of the guarded pooled value (the 6-22h last resort keeps the guarded reading).
+      if (isPooled) {
+        const waitHw = (start: number, end: number): number | null =>
+          pooledWaitInWindow(times, start, end, 3, own) ?? medianHeadwayInWindow(own, start, end, 3, true);
+        const shown = waitHw(HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end)
+          ?? waitHw(HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end)
+          ?? windowHw(HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, true);
+        if (shown != null) displayStopHw[stopId] = shown;
+      } else if (hw != null) displayStopHw[stopId] = hw;
 
       // The plain values feed the #772 branch decision, which compares the own pattern's stops
       // with a shared terminal: they read the own list at a pooled stop too (ttc 38 weekday: the
@@ -2237,6 +2256,21 @@ export async function processGtfsBuffer(
         }
         if (ph != null) byPeriod[pk] = ph;
       }
+      // CIV-845: the shown period values. A pooled stop shows the rider's wait on the merged list
+      // where it has the minimum departures (its coverage then describes that list too);
+      // otherwise the value and coverage above. #897's sparse overnight window stays withheld.
+      const shownByPeriod: Partial<Record<PeriodKey, number>> = { ...byPeriod };
+      const shownFromMerged = new Set<PeriodKey>();
+      if (isPooled) {
+        for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+          const wait = pooledWaitInWindow(times, start, end, 3, own);
+          if (wait == null) continue;
+          if (pk === 'overnight' && isSparseOvernightWindow(times)) { delete shownByPeriod[pk]; continue; }
+          shownByPeriod[pk] = wait;
+          shownFromMerged.add(pk);
+        }
+      }
+      if (Object.keys(shownByPeriod).length > 0) displayStopPeriodHw[stopId] = shownByPeriod;
       // The max gap, coverage and sustained flag describe the list the shown value came from:
       // the merged list where the pool published, the own pattern where it fell back.
       const fellBack = ownFallbackPeriodHw.get(stopId);
@@ -2248,6 +2282,14 @@ export async function processGtfsBuffer(
       };
       allStopPeriodMaxGaps[stopId] = isPooled ? pickByPeriod(computePeriodMaxGaps(times), computePeriodMaxGaps(own)) : computePeriodMaxGaps(times);
       allStopPeriodCoverageHw[stopId] = isPooled ? pickByPeriod(computePeriodCoverageHeadways(times), computePeriodCoverageHeadways(own)) : computePeriodCoverageHeadways(times);
+      if (isPooled && shownFromMerged.size > 0) {
+        const mergedCoverage = computePeriodCoverageHeadways(times) as Record<string, number | null | undefined>;
+        const shownCoverage = { ...allStopPeriodCoverageHw[stopId] } as Record<string, number | null | undefined>;
+        for (const pk of shownFromMerged) shownCoverage[pk] = mergedCoverage[pk];
+        displayStopPeriodCoverageHw[stopId] = shownCoverage as HeadwayByPeriod;
+      } else {
+        displayStopPeriodCoverageHw[stopId] = allStopPeriodCoverageHw[stopId];
+      }
       if (Object.keys(byPeriod).length > 0) {
         allStopPeriodHw[stopId] = byPeriod;
         allStopPeriodSustained[stopId] = isPooled ? pickByPeriod(computePeriodSustained(times), computePeriodSustained(own)) : computePeriodSustained(times);
@@ -2283,7 +2325,7 @@ export async function processGtfsBuffer(
       ? maplessStopProjection
       : projectStopsOntoShape([...metricStopMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
     feature.properties.stopPeriodCoverageHeadways = Object.fromEntries(
-      coverageStops.map(({ stopId }) => [stopId, allStopPeriodCoverageHw[stopId]]),
+      coverageStops.map(({ stopId }) => [stopId, displayStopPeriodCoverageHw[stopId]]),
     );
     // #690: the line's destination pool at its terminal, the same branch-scoped sample #728
     // grades the tier on (the headsign's trips serving at least two thirds of the drawn stops
@@ -2502,13 +2544,20 @@ export async function processGtfsBuffer(
         if (allStopHw[stopId] != null) stopHeadways[stopId] = allStopHw[stopId];
       }
       if (Object.keys(stopHeadways).length === 0) return null;
-      feature.properties.stopHeadways = stopHeadways;
+      // CIV-845: the published values are the shown ones; the returned map stays the guarded one
+      // (route-level reads below).
+      const shownStopHeadways: Record<string, number> = {};
+      for (const { stopId } of onShape) {
+        const v = displayStopHw[stopId] ?? allStopHw[stopId];
+        if (v != null) shownStopHeadways[stopId] = v;
+      }
+      feature.properties.stopHeadways = shownStopHeadways;
 
       // Per-stop period headways for on-shape stops — used by Corridors to show
       // frequency at the user's chosen TO stop, not just the route terminal.
       const stopPeriodHeadways: Record<string, Partial<Record<PeriodKey, number>>> = {};
       for (const { stopId } of onShape) {
-        const periods = allStopPeriodHw[stopId];
+        const periods = displayStopPeriodHw[stopId];
         if (periods && Object.keys(periods).length > 0) stopPeriodHeadways[stopId] = periods;
       }
       if (Object.keys(stopPeriodHeadways).length > 0) {
@@ -2523,6 +2572,10 @@ export async function processGtfsBuffer(
         // Wintermute: a tail its own trips reach once at midday graded 30 on that departure).
         const stopTiers: Record<string, string> = {};
         publishedStopTiers = stopTiers;
+        // CIV-845: the published colours cap the same grade at the shown stop value instead of
+        // the guarded one; the route tier (settleTierOnStops) keeps reading stopTiers above.
+        const shownStopTiers: Record<string, string> = {};
+        const worseTier = (a: string, b: string) => (TIER_RANK[a] ?? 99) > (TIER_RANK[b] ?? 99) ? a : b;
         for (const { stopId } of drawnPatternStops()) {
           // A drop-off-only stop has arrivals, not departures: its value stays on the stop
           // card, but it is not graded (#879: RFTA L's terminal read the drawn shape's hourly
@@ -2547,6 +2600,7 @@ export async function processGtfsBuffer(
             if (railGraded == null) continue;
             const byHeadway = headwayToTierOn(headway, routeTierScale());
             stopTiers[stopId] = (TIER_RANK[railGraded] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? railGraded : byHeadway;
+            shownStopTiers[stopId] = worseTier(railGraded, headwayToTierOn(displayStopHw[stopId] ?? headway, routeTierScale()));
             continue;
           }
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
@@ -2567,8 +2621,9 @@ export async function processGtfsBuffer(
           // 10 and the worst-stop rule took the line from 5 to 10.
           const byHeadway = headwayToTierOn(headway, routeTierScale());
           stopTiers[stopId] = (TIER_RANK[best] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? best : byHeadway;
+          shownStopTiers[stopId] = worseTier(best, headwayToTierOn(displayStopHw[stopId] ?? headway, routeTierScale()));
         }
-        if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
+        if (Object.keys(shownStopTiers).length > 0) feature.properties.stopTiers = shownStopTiers;
         // The drawn stops with no boardable stop time (#879): the client colours them from
         // their neighbours instead of reading their missing grade as limited service.
         const dropOffOnlyDrawn = drawnPatternStops().map(p => p.stopId).filter(stopId => dropOffOnlyStops.has(stopId));

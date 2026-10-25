@@ -184,13 +184,16 @@ describe('shared stretch pooling (synthetic)', () => {
 
   it('reads the long gap for a bunched shared stretch (two 30s three minutes apart)', async () => {
     // Gaps 3, 27, 3, 27: not a 15-minute service. The 27-minute gap is over 1.75 times the mean,
-    // so no pooled value is published (pooledHeadwayInWindow) and every stop keeps its own 30.
-    // The stretch is still recorded.
+    // so no guarded pooled value is published (pooledHeadwayInWindow) and the route keeps its own
+    // 30. CIV-845 (pending Ryan's approval): the shared stops show the rider's wait, (9 + 729) /
+    // 30 = 24.6, read 24 or 25 where the window clips the list, never 15. The stretch is still
+    // recorded.
     const routes = await weekdayRoutes(await twoBranchFeed({ shared: 8, every: 30, offset: 3 }), 'synthetic');
     expect(routes).toHaveLength(2);
     for (const p of routes) {
       expect(p.sharedStretches).toHaveLength(1);
-      expect(stopHwAt(p)).toEqual([30, 30, 30, 30, 30, 30, 30, 30, 30]);
+      for (const v of stopHwAt(p)) expect([24, 25, 30]).toContain(v);
+      expect(stopHwAt(p).filter(v => v < 30).length).toBeGreaterThanOrEqual(7);
       expect(p.headway).toBe(30);
     }
     expectStretchesSound(routes);
@@ -272,11 +275,13 @@ describe('shared stretch pooling (patterns)', () => {
     ]);
     // One destination: dedupe keeps one line and every stop reads the whole destination: gaps
     // 15, 15, 30, mean 20 (19 where the 9-15h window cuts the terminal's list to 17 gaps), and
-    // the headline is the worst stop on the drawn line (#771).
+    // the headline is the worst stop on the drawn line (#771). CIV-845 (pending Ryan's approval):
+    // the stops show the rider's wait on those gaps, (225 + 225 + 900) / 60 = 22.5, while the
+    // headline keeps the guarded reading.
     expect(routes).toHaveLength(1);
     const line = routes[0];
     expect([19, 20]).toContain(line.headway);
-    for (const stopId of line.stopOrder.slice(0, 10)) expect([19, 20]).toContain(line.stopHeadways[stopId]);
+    for (const stopId of line.stopOrder.slice(0, 10)) expect([22, 23]).toContain(line.stopHeadways[stopId]);
     expectStretchesSound(routes);
   });
 
