@@ -10,7 +10,7 @@ import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, sidebarFrameStyle } from '../../styles';
-import Panel from '../ui/Panel';
+import Panel, { PanelBody } from '../ui/Panel';
 import Pill from '../ui/Pill';
 import ModeFilterPill from '../ui/ModeFilterPill';
 import { HEADWAY_TIERS } from '../../utils/colors';
@@ -20,7 +20,7 @@ import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyAreaChip, AgencyCardHeading, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardReportButton } from './cardUi';
+import { AgencyAreaChip, AgencyCardHeading, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
@@ -429,9 +429,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             <p className="mt-1 text-xs"><AgencyDataSourceLink agency={agency} /></p>
           )}
         </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-4">
+        {/* Every section sits at the body padding, the same left edge as the header. */}
+        <PanelBody className="px-4 py-4 space-y-4">
           <div>
-            <p className="text-xs font-black text-[var(--text-dim)]">On-demand service</p>
+            <CardSectionLabel>On-demand service</CardSectionLabel>
             {showsShadedArea && (
               <CardBodyText>
                 The shaded map area shows where this on-demand service operates.
@@ -445,19 +446,19 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             )}
           </div>
           {zone.eligibility && (
-            <div className="px-1">
-              <p className="text-xs font-black text-[var(--text-dim)]">Who can ride</p>
+            <div>
+              <CardSectionLabel>Who can ride</CardSectionLabel>
               <CardBodyText>{zone.eligibility}</CardBodyText>
             </div>
           )}
           {zone.tripRules && (
-            <div className="px-1">
-              <p className="text-xs font-black text-[var(--text-dim)]">Trip rules</p>
+            <div>
+              <CardSectionLabel>Trip rules</CardSectionLabel>
               <CardBodyText>{zone.tripRules}</CardBodyText>
             </div>
           )}
-          <div className="px-1">
-            <p className="text-xs font-black text-[var(--text-dim)]">Service hours</p>
+          <div>
+            <CardSectionLabel>Service hours</CardSectionLabel>
             <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>
             <OnDemandHoursText
               availability={zone.availability}
@@ -470,12 +471,12 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             )}
           </div>
           {zone.bookingInfo && (
-            <div className="px-1">
-              <p className="text-xs font-black text-[var(--text-dim)]">Booking</p>
+            <div>
+              <CardSectionLabel>Booking</CardSectionLabel>
               <CardBodyText>{zone.bookingInfo}</CardBodyText>
             </div>
           )}
-        </div>
+        </PanelBody>
       </Panel>
     );
   }
