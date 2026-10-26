@@ -1259,6 +1259,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   useSelectionFraming(mapRef, mapLoaded, {
     agencies, layers, selectedAgencySlug, selectedRoute: mapSelectedRoute, selectedStop, initialOnDemandSlug,
     initialMapCenter, areaFocus, resetViewKey, regionalView, framePadding: liveFramePadding,
+    // A Live vehicle card frames its vehicle; the route it belongs to must not refit over that.
+    vehicleCardOpen: !selectedRoute && !!liveOverlay?.vehicleCardId,
   });
 
   useRouteStyling(mapRef, mapLoaded, {

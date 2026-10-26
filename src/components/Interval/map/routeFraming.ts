@@ -81,6 +81,17 @@ export function cardBesideMap(map: maplibregl.Map): boolean {
   return map.getContainer().clientWidth >= PHONE_MAP_WIDTH;
 }
 
+/**
+ * What the route fit does for a selection: `skip` when this fit already ran, `hold` when a vehicle card is open
+ * (the vehicle's own frame wins, so the route counts as framed without moving the camera), otherwise `fit`.
+ * A route picked by the same click that opens a vehicle card, a route layer that loads late, or a padding change
+ * would otherwise refit the whole route over the vehicle frame.
+ */
+export function routeFitStep(fitKey: string, fittedKey: string | null, vehicleCardOpen: boolean): 'skip' | 'hold' | 'fit' {
+  if (fittedKey === fitKey) return 'skip';
+  return vehicleCardOpen ? 'hold' : 'fit';
+}
+
 /** Padding that keeps a framed route, place or vehicle clear of this card element, measured where it is now. */
 export function cardFramePadding(map: maplibregl.Map, card: Element | null | undefined): maplibregl.PaddingOptions {
   return routeFramePadding(map, 'left', { phoneSheet: true, card: card?.getBoundingClientRect() ?? null });

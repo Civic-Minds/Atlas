@@ -531,6 +531,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return { agencySlug, routeShortName, ids: focusIds != null ? focusIds.split(',').filter(Boolean) : null };
   }, [selectedRoute, focusIds]);
 
+  const cardVehicleId = cardVehicle?.id ?? null;
   // Update map overlay — no cleanup that nulls overlay (prevents zoom-reset on poll).
   // Fingerprint skips setOverlay when poll data is unchanged so MapCanvas/deck don't churn.
   const lastOverlayFpRef = useRef('');
@@ -546,19 +547,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       focusedVehicle?.id ?? '',
       focusedVehicle?.ts ?? '',
       vehicleFly?.ts ?? '',
+      cardVehicleId ?? '',
       focusArea?.ts ?? '',
     ].join('::');
     if (fp === lastOverlayFpRef.current) return;
     lastOverlayFpRef.current = fp;
     setOverlay({
-      vehicles: allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, cardRef, focusArea,
+      vehicles: allVehicles, focusedVehicle, vehicleFly, vehicleCardId: cardVehicleId, mapRouteKey, focus, cardRef, focusArea,
       onMapClick: (_lonLat, vehicles) => {
         if (vehicles.length === 1) { openVehicleCard(vehicles[0]); return; }
         if (vehicles.length > 1) { setVehiclePick(vehicles.map(v => v.id)); return; }
         setVehiclePick(null);
       },
     });
-  }, [active, allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, focusArea, setOverlay]);
+  }, [active, allVehicles, focusedVehicle, vehicleFly, cardVehicleId, mapRouteKey, focus, focusArea, setOverlay]);
 
 
   // Observed vs scheduled headway line for the selected route ("Every ~7 min · scheduled every 6 min")

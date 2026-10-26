@@ -26,6 +26,8 @@ export interface LiveVehiclesMapOverlay {
   focusedVehicle?: { id: string; lat: number; lon: number; ts: number } | null;
   // One-shot fly to a vehicle clicked in the list; ts re-triggers repeat clicks. Never zooms out below street level.
   vehicleFly?: { lat: number; lon: number; ts: number } | null;
+  /** The vehicle whose card is open, if any: its frame wins over the route's (useSelectionFraming). */
+  vehicleCardId?: string | null;
   /**
    * The picked route in the map's own key form (slug::routeId), so the map's shared selected-route styling and
    * framing draw it exactly like a route picked on the regular map.

@@ -6,7 +6,7 @@ import { getAgencyBounds, type getRegionalView } from '../../../utils/regionView
 import { splitRouteKey } from '../../../utils/routeKey';
 import { fitTargetForPoints, routeFitTarget } from '../../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../../shared/routeGeometry';
-import { cardBesideMap, selectionFramePadding } from './routeFraming';
+import { cardBesideMap, routeFitStep, selectionFramePadding } from './routeFraming';
 import { shouldApplyResetView } from './resetView';
 
 export interface SelectionFramingInput {
@@ -22,6 +22,8 @@ export interface SelectionFramingInput {
   regionalView: ReturnType<typeof getRegionalView>;
   /** Padding for the route fit when the card over the map is not the regular route card (Live's card). */
   framePadding?: ((map: maplibregl.Map) => maplibregl.PaddingOptions) | null;
+  /** A vehicle card is open over the selected route: the vehicle's frame wins, so the route fit stands down. */
+  vehicleCardOpen?: boolean;
 }
 
 /** Camera moves for a selection: agency, `?ondemand=` link, area, Reset View, route and stop. */
@@ -30,7 +32,7 @@ export function useSelectionFraming(
   mapLoaded: boolean,
   {
     agencies, layers, selectedAgencySlug, selectedRoute, selectedStop, initialOnDemandSlug,
-    initialMapCenter, areaFocus, resetViewKey, regionalView, framePadding,
+    initialMapCenter, areaFocus, resetViewKey, regionalView, framePadding, vehicleCardOpen = false,
   }: SelectionFramingInput,
 ) {
   const fittedRouteRef = useRef<string | null>(null);
@@ -107,7 +109,12 @@ export function useSelectionFraming(
     // once for that card, or the fit made for the regular card leaves the route under Live's wider card. Phones
     // keep the first fit: it already clears the bottom sheet, and Live's sheet isn't open yet at the hand-off.
     const fitKey = `${selectedRoute}|${framePadding && cardBesideMap(map) ? 'card' : 'map'}`;
-    if (fittedRouteRef.current === fitKey) return;
+    const step = routeFitStep(fitKey, fittedRouteRef.current, vehicleCardOpen);
+    if (step === 'skip') return;
+    if (step === 'hold') {
+      fittedRouteRef.current = fitKey;
+      return;
+    }
 
     // Compute full-route bounds from GeoJSON layer data.
     // agencySlug is added to features only in build-pmtiles, not the raw R2 GeoJSON,
@@ -142,7 +149,7 @@ export function useSelectionFraming(
       });
       fittedRouteRef.current = fitKey;
     }
-  }, [selectedRoute, mapLoaded, layers, framePadding]);
+  }, [selectedRoute, mapLoaded, layers, framePadding, vehicleCardOpen]);
 
   // Fly to selected stop when chosen
   useEffect(() => {
