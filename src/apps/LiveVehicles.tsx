@@ -29,7 +29,7 @@ import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
-import { routeKeyForShortName } from '../utils/routeKey';
+import { routeFeatureForShortName, routeKeyForShortName } from '../utils/routeKey';
 import type { MapFocus } from '../utils/routeFocus';
 import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
@@ -116,6 +116,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Locally-fetched agency GeoJSON (fallback when Interval layers haven't loaded yet)
   const [localLayers, setLocalLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
+  // One route lookup for the whole card: the agency's shapes, and a route's first shape by short name.
+  const routeLayer = useCallback(
+    (slug: string): GeoJSON.FeatureCollection | undefined => layers[slug] ?? localLayers[slug],
+    [layers, localLayers],
+  );
+  const routeFeature = useCallback((slug: string, routeShortName: string) => {
+    const fc = routeLayer(slug);
+    return fc ? routeFeatureForShortName(fc.features, routeShortName) : undefined;
+  }, [routeLayer]);
   // The card over the map, so the map frames routes, places and vehicles clear of it.
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -173,7 +182,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const resolvedVehiclesBySlug = useMemo(() => {
     const resolved: Record<string, LiveVehicle[]> = {};
     for (const [slug, vehicles] of Object.entries(vehiclesBySlug)) {
-      const fc = layers[slug] ?? localLayers[slug];
+      const fc = routeLayer(slug);
       if (!fc) { resolved[slug] = vehicles; continue; }
       // Group the route shapes once, not once per vehicle.
       const featuresByRoute = new Map<string, GeoJSON.Feature[]>();
@@ -195,7 +204,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       });
     }
     return resolved;
-  }, [vehiclesBySlug, layers, localLayers]);
+  }, [vehiclesBySlug, routeLayer]);
 
   useLiveRouteRequest({
     active, routeRequest, visibleSlugs, pendingRouteRef,
@@ -246,22 +255,22 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     }
     for (const slug of Object.keys(vehiclesBySlug)) slugsNeeded.add(slug);
     for (const slug of slugsNeeded) {
-      if (layers[slug] || localLayers[slug]) continue;
+      if (routeLayer(slug)) continue;
       const agency = agencies.find(a => a.slug === slug);
       if (!agency) continue;
       fetchAgencyGeo({ slug: agency.slug, name: agency.name, url: agency.url ?? '', betaOnly: agency.betaOnly })
         .then((data: GeoJSON.FeatureCollection) => setLocalLayers(prev => ({ ...prev, [slug]: data })))
         .catch(() => {});
     }
-  }, [selectedRoute, vehiclesBySlug, layers, localLayers, agencies]);
+  }, [selectedRoute, vehiclesBySlug, routeLayer, agencies]);
 
   // The picked route in the map's own key form, so the map's shared selected-route styling and framing draw it.
   const mapRouteKey = useMemo(() => {
     if (!selectedRoute) return null;
     const [slug, rsn] = selectedRoute.split('::');
-    const fc = slug ? layers[slug] ?? localLayers[slug] : undefined;
+    const fc = slug ? routeLayer(slug) : undefined;
     return fc && rsn ? routeKeyForShortName(slug, fc.features, rsn, getNowDay()) : null;
-  }, [layers, localLayers, selectedRoute]);
+  }, [routeLayer, selectedRoute]);
 
   // A vehicle's card, from a dot click, the overlapping-dots pick list, or a shared link.
   const openVehicleCard = useCallback((vehicle: LiveVehicle) => {
@@ -452,29 +461,19 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     ? (agencies.find(a => a.slug === selectedGroup.agencySlug)?.name ?? selectedGroup.agencySlug)
     : null;
 
-  // Look up route long name from loaded GeoJSON layers for the selected route
-  const selectedRouteLongName = useMemo(() => {
-    if (!selectedGroup) return null;
-    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
-    if (!fc) return null;
-    const feature = fc.features.find(f => (f.properties as any)?.routeShortName === selectedGroup.routeShortName);
-    return (feature?.properties as any)?.routeLongName ?? null;
-  }, [selectedGroup, layers, localLayers]);
-
-  // The feed's route_type, so the title reads the same as the regular route card's.
-  const selectedRouteType = useMemo(() => {
-    if (!selectedGroup) return null;
-    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
-    const feature = fc?.features.find(f => (f.properties as any)?.routeShortName === selectedGroup.routeShortName);
-    return (feature?.properties as any)?.routeType ?? null;
-  }, [selectedGroup, layers, localLayers]);
+  // The selected route's long name and the feed's route_type (so the title reads the same as the regular route card's).
+  const selectedRouteProps = useMemo(() => {
+    const feature = selectedGroup ? routeFeature(selectedGroup.agencySlug, selectedGroup.routeShortName) : undefined;
+    return (feature?.properties ?? null) as { routeLongName?: string | null; routeType?: number | null } | null;
+  }, [selectedGroup, routeFeature]);
+  const selectedRouteLongName = selectedRouteProps?.routeLongName ?? null;
+  const selectedRouteType = selectedRouteProps?.routeType ?? null;
 
   // Vehicle word for the selected route's mode ("Streetcar 4508", not "Bus 4508")
-  const modeWordFor = useCallback((agencySlug: string, routeShortName: string) => {
-    const fc = layers[agencySlug] ?? localLayers[agencySlug];
-    const feature = fc?.features.find(f => (f.properties as any)?.routeShortName === routeShortName);
-    return vehicleModeWord((feature?.properties as any)?.routeType);
-  }, [layers, localLayers]);
+  const modeWordFor = useCallback(
+    (agencySlug: string, routeShortName: string) => vehicleModeWord((routeFeature(agencySlug, routeShortName)?.properties as { routeType?: number | null } | null)?.routeType),
+    [routeFeature],
+  );
   const selectedRouteModeWord = useMemo(
     () => (selectedGroup ? modeWordFor(selectedGroup.agencySlug, selectedGroup.routeShortName) : 'Bus'),
     [selectedGroup, modeWordFor],
@@ -491,9 +490,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // headsign of its longest shape (a short turn like Roncesvalles must not rename the Humber direction).
   const directionLabels = useMemo(() => {
     if (!selectedGroup) return new Map<number, string>();
-    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
+    const fc = routeLayer(selectedGroup.agencySlug);
     return fc ? routeDirectionLabels(fc.features, selectedGroup.routeShortName) : new Map<number, string>();
-  }, [selectedGroup, layers, localLayers]);
+  }, [selectedGroup, routeLayer]);
 
   // Direction drill-down within a route
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
@@ -567,7 +566,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     if (!observed || observed.samples < 3) return null;
     const gap = Math.round(observed.gapMin);
 
-    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
+    const fc = routeLayer(selectedGroup.agencySlug);
     let scheduled: number | null = null;
     if (fc) {
       const day = getNowDay();
@@ -586,7 +585,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return scheduled != null
       ? `${capitalizeFirst(headwayAbout(gap))} · scheduled ${headwayEvery(Math.round(scheduled))}`
       : capitalizeFirst(headwayAbout(gap));
-  }, [selectedGroup, headwaysBySlug, layers, localLayers]);
+  }, [selectedGroup, headwaysBySlug, routeLayer]);
 
   // A route picked (from a link or the address) that has no card: say why, never show nothing.
   const requestedRouteNote = useMemo((): string | null => {
