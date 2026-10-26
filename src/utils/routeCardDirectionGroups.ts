@@ -3,7 +3,7 @@ import { labelDirectionGroups, sortDirectionGroupIds } from './directionLabel';
 import { hasDirectionPeriodService, routeCardDisplayHeadway } from './effectiveHeadway';
 import { dedupeCrossDirectionHeadsigns } from './crossDirectionDedup';
 import { branchDisplayPeriodHeadway, buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
-import { hasStretchRoles, stretchRowFeatures, variantOnlyRow } from './stretchCard';
+import { hasStretchRoles, stretchRowFeatures, tailNotThroughPeriod, variantOnlyRow } from './stretchCard';
 
 export interface RouteCardDirectionGroup {
   dirId: number;
@@ -75,13 +75,15 @@ export function buildDirectionGroups(
   for (const g of map.values()) {
     const directionFeatures = currentRoute.directions.filter(d => (d.directionId ?? 0) === g.dirId);
     if (!hasStretchRoles(directionFeatures)) continue;
-    let rows = stretchRowFeatures(directionFeatures, period).filter(d =>
-      metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null || hasDirectionPeriodService(d, period));
+    // #1115: a branch that does not run through the period has no row for it.
+    const notThrough = stretchRowFeatures(directionFeatures, period).filter(d => tailNotThroughPeriod(d, period));
+    let rows = stretchRowFeatures(directionFeatures, period).filter(d => !notThrough.includes(d) && (
+      metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null || hasDirectionPeriodService(d, period)));
     // With tails, the shared main stretch is the trunk they hang off: it gets a row only when it has a cadence of its own to show.
     const variantRow = variantOnlyRow(directionFeatures);
     if (variantRow) rows = [variantRow];
     if (rows.some(d => d.stretchRole === 'tail')) rows = rows.filter(d => d.stretchRole !== 'main' || routeCardDisplayHeadway(d, period) != null);
-    if (rows.length > 0) { g.realTier = rows; g.span = []; g.directionFeatures = directionFeatures; }
+    if (rows.length > 0 || notThrough.length > 0) { g.realTier = rows; g.span = []; g.directionFeatures = directionFeatures; }
   }
   // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.
   // Multiple shape variants can share the same headsign (e.g. different mid-route detours), producing

@@ -98,7 +98,7 @@ export interface RouteProperties {
   /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); noRegular = periods its card row reads "no regular service" (one gap, or under three departures). */
   stretchMeta?: {
     main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] } | null;
-    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] }>;
+    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; notThrough?: PeriodKey[] }>;
   };
   /** Night service runs on only part of the route: draw and name only these stops' segments ("part of the route"). */
   nightServicePartOfRoute?: boolean;
