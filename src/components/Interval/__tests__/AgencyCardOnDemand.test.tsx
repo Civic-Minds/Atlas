@@ -89,6 +89,14 @@ describe('on-demand card back link', () => {
     fireEvent.click(screen.getByRole('button', { name: /^← Map$/ }));
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(onBack).not.toHaveBeenCalled();
-    expect(screen.getAllByText(/Hamilton Street Railway/)).toHaveLength(1);
+    // Named by its service, once, and "On-demand service" only as the section label (CIV-929).
+    expect(screen.getByText(HAMILTON_MY_RIDE_SERVICE_AREA.serviceName!)).toBeInTheDocument();
+    expect(screen.queryByText(/Hamilton Street Railway/)).toBeNull();
+    expect(screen.getAllByText('On-demand service')).toHaveLength(1);
+  });
+
+  it("an on-demand-only agency's zone card goes back to the service name its agency card shows", () => {
+    renderZoneCard('West Glanbrook', 'Saturday', 'midday', { ...hamilton, onDemandOnly: true } as unknown as Agency, vi.fn());
+    expect(screen.getByRole('button', { name: `← ${HAMILTON_MY_RIDE_SERVICE_AREA.serviceName}` })).toBeInTheDocument();
   });
 });

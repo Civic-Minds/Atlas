@@ -391,6 +391,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     () => agencyDisplayParts(agency.name, agency.cities, agency.displayArea),
     [agency.name, agency.cities, agency.displayArea],
   );
+  // An on-demand-only agency's cards are named by its service ("GP Transit On-Demand"), which fits on one line (CIV-929).
+  const agencyCardName = agency.onDemandOnly && agency.onDemandServiceArea
+    ? onDemandCardName(agency.onDemandServiceArea, null, agencyNamePrimary)
+    : agencyNamePrimary;
   const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
   // The region link shows the region's name alone (CIV-929), not the area page's "All … agencies" label.
   const areaLink = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
@@ -436,15 +440,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {backToAgency ? (
             // A zone (or a fixed-route agency's service) reads like a route card: "← Agency" back to the agency
             // card, then the bold zone name (Ryan: "the on demand should be closer to the route card").
-            <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyNamePrimary, onClick: backToAgency }} />
+            <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
           ) : (
-            // An on-demand-only agency's whole-service card is its agency card: the shared agency card top, the
-            // agency named once (CIV-929).
+            // An on-demand-only agency's whole-service card is its agency card: the shared agency card top, named
+            // once, with no facts line (the "On-demand service" section label below says it) (CIV-929).
             <AgencyCardTop
-              name={agencyNamePrimary}
+              name={agencyCardName}
               place={agencyNameSecondary}
               back={{ to: 'Map', onClick: onClose }}
-              facts="On-demand service"
               report={reportButton}
             />
           )}
@@ -514,7 +517,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     >
       <div className={CARD_HEADER_BLOCK}>
         <AgencyCardTop
-          name={agencyNamePrimary}
+          name={agencyCardName}
           place={agencyNameSecondary}
           back={{ to: 'Map', onClick: onClose }}
           facts={agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(visibleRoutes, maxHeadway)}
