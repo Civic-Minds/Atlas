@@ -17,13 +17,13 @@ export interface HeatPoint {
   directionId: number;
   name: string;
   lonLat: [number, number];
-  /** Typical minutes added since the previous stop that stay over the next stops, never below 0 (trip-weighted across routes that share the stop). */
+  /** Typical minutes added since the previous stop that stay over the next stops, never below 0 (the most of the routes that share the stop). Unrounded. */
   addedMin: number;
   /** The typical minutes added since the previous stop, made back later or not (the segment card's "Typical added"). */
   rawAddedMin: number;
   /** The stretch into this stop (one route's, the busiest, when several share it). */
   fromStopId: string;
-  /** Trips behind the figure. */
+  /** Trips behind the figure (the route it comes from). */
   n: number;
   routes: string[];
 }
@@ -37,8 +37,8 @@ function lessExactStops(v3: LiveV3, band: DashboardBand, uncertain: readonly Unc
 
 /**
  * One point per stop (a stop id is one side of the street, so one direction). `routes` maps a route name to its analysis; `only` limits it to one direction of one
- * route (the picked route). Routes that share a stop are combined by trip-weighted mean, so a shared stop is not counted
- * twice. `uncertain` defaults to the analysis's own list of less exact starts.
+ * route (the picked route). Routes that share a stop take the route that adds the most there, so a shared stop is drawn
+ * once. `uncertain` defaults to the analysis's own list of less exact starts.
  */
 export function delayHeatPoints(
   routes: ReadonlyMap<string, LiveV3>,
@@ -47,7 +47,7 @@ export function delayHeatPoints(
     only?: { route: string; directionId: number } | null; agency?: string; uncertain?: (route: string) => readonly UncertainStart[];
   } = {},
 ): HeatPoint[] {
-  const acc = new Map<string, { sum: number; raw: number; n: number; point: HeatPoint; topN: number }>();
+  const acc = new Map<string, { kept: number; raw: number; n: number; point: HeatPoint }>();
   for (const [route, v3] of routes) {
     if (only && only.route !== route) continue;
     const data = v3.bands[band];
@@ -65,17 +65,16 @@ export function delayHeatPoints(
         // What stays: the lowest delay over this stop and the next HOLDS_STOPS (with enough trips), above the delay before.
         const before = x.medianDelayMin - x.medianAddedMin;
         const later = b.stretches.slice(i, i + 1 + HOLDS_STOPS).filter(t => t.n >= HEAT_MIN_TRIPS).map(t => t.medianDelayMin);
+        // Measured against the timetable like the "Where delays start" panel: falling back from early running counts too.
         const added = Math.max(0, Math.min(x.medianAddedMin, Math.min(...later) - before));
         // A stop id is one side of the street, so routes are combined by stop id (their direction numbers need not agree).
-        const hit = acc.get(x.toStopId) ?? acc.set(x.toStopId, { sum: 0, raw: 0, n: 0, point: { stopId: x.toStopId, directionId: b.directionId, name: titleCase(stop.name), lonLat: stop.lonLat as [number, number], addedMin: 0, rawAddedMin: 0, fromStopId: x.fromStopId, n: 0, routes: [] }, topN: 0 }).get(x.toStopId)!;
-        hit.sum += added * x.n;
-        hit.raw += x.medianAddedMin * x.n;
-        hit.n += x.n;
-        if (x.n > hit.topN) { hit.topN = x.n; hit.point.fromStopId = x.fromStopId; }
+        const hit = acc.get(x.toStopId) ?? acc.set(x.toStopId, { kept: -1, raw: 0, n: 0, point: { stopId: x.toStopId, directionId: b.directionId, name: titleCase(stop.name), lonLat: stop.lonLat as [number, number], addedMin: 0, rawAddedMin: 0, fromStopId: x.fromStopId, n: 0, routes: [] } }).get(x.toStopId)!;
+        // Routes sharing a stop: the one that adds the most (a quieter route never hides another route's delay start).
+        if (added > hit.kept) { hit.kept = added; hit.raw = x.medianAddedMin; hit.n = x.n; hit.point.fromStopId = x.fromStopId; }
         if (!hit.point.routes.includes(route)) hit.point.routes.push(route);
       });
     }
   }
-  const tenth = (x: number) => Math.round(x * 10) / 10;
-  return [...acc.values()].map(({ sum, raw, n, point }) => ({ ...point, addedMin: tenth(sum / n), rawAddedMin: tenth(raw / n), n }));
+  // Unrounded, so the colour step is the true value's; text rounds when it shows it.
+  return [...acc.values()].map(({ kept, raw, n, point }) => ({ ...point, addedMin: kept, rawAddedMin: raw, n }));
 }
