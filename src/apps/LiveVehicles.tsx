@@ -24,7 +24,7 @@ import { useColorVision } from '../context/ColorVisionContext';
 import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, routeLabelCase } from '../utils/format';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
-import { plural } from '../../shared/overflowText';
+import { countOf } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
@@ -419,7 +419,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             variant="spaced"
             right={
               <div className="flex items-center gap-1.5 shrink-0 ml-3">
-                <span className={`${LIST_ROW_DIM} shrink-0`}>{g.vehicles.length} veh</span>
+                <span className={`${LIST_ROW_DIM} shrink-0`}>{countOf(g.vehicles.length, 'vehicle')}</span>
                 {statusLabel && (
                   <span style={{ color: colors.border }} className="text-xs font-bold">
                     · {statusLabel}
@@ -871,7 +871,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 )}
                 {offScreenOnly && !query && (
                   <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
-                    Outside this view · {totalVehicles} {plural(totalVehicles, 'vehicle')}
+                    Outside this view · {countOf(totalVehicles, 'vehicle')}
                   </div>
                 )}
                 {renderRouteGroupList(sidebarRouteGroups)}
