@@ -12,6 +12,7 @@ import RouteCardTitle from '../../RouteCardTitle';
 import {
   CardDirectionRow,
   CardDivider,
+  CardCallout,
   CardSectionLabel,
   CardHelpNotice,
   SidebarCardHeaderBlock,
@@ -455,10 +456,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {compareRows && (() => {
         const { headline, lines } = compareCardSummary(compareRows);
         return (
-          <div className="mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2 text-xs font-bold text-[var(--text-primary)]" data-testid="compare-card-summary">
+          <CardCallout className="mb-3 text-xs font-bold text-[var(--text-primary)]" data-testid="compare-card-summary">
             {headline && <p className="text-xs font-black">{headline}</p>}
             {lines.map(line => <p key={line} className={headline ? 'mt-0.5 text-[var(--text-dim)]' : 'py-0.5'}>{line}</p>)}
-          </div>
+          </CardCallout>
         );
       })()}
       {patternLabel && (

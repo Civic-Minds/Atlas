@@ -27,6 +27,17 @@ export const SIDEBAR_CARD_BODY = `relative flex-1 min-h-0 ${SIDEBAR_CARD_SURFACE
 /** The line under a card title ("Atlanta · 102 routes · 2013–2026"). */
 export const CARD_SUMMARY = 'text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug';
 
+/** A card callout box's surface: the inset, rounded, outlined block used for summaries and grouped
+ *  options inside a card. CARD_CALLOUT adds the standard padding; use the surface alone only where a
+ *  block needs its own padding (the report form's checkbox group). */
+export const CARD_CALLOUT_SURFACE = 'rounded-xl border border-[var(--border-primary)] bg-[var(--bg-app)]';
+export const CARD_CALLOUT = `${CARD_CALLOUT_SURFACE} px-3 py-2.5`;
+
+/** A callout box inside a card (Compare's summary, History's trip time). Spacing and text styles come from the caller. */
+export function CardCallout({ className = '', ...rest }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={`${CARD_CALLOUT} ${className}`.trim()} {...rest} />;
+}
+
 const REPORT_REASONS = [
   'Route or agency is missing',
   'Route or branch is incorrectly combined',
@@ -299,7 +310,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                         key={category.key}
                         type="button"
                         onClick={() => { setValidationError(''); setSelectedCategory(category.key); }}
-                        className="w-full rounded-xl border border-[var(--border-primary)] bg-[var(--bg-app)] px-3 py-2.5 text-left hover:bg-[var(--bg-btn-hover)] transition-colors"
+                        className={`w-full ${CARD_CALLOUT} text-left hover:bg-[var(--bg-btn-hover)] transition-colors`}
                       >
                         <span className={`block ${CARD_LIST_ROUTE} font-black`}>{category.label}</span>
                         <span className={`block mt-0.5 ${CARD_NOTICE}`}>{category.description}</span>
@@ -340,7 +351,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               )}
 
               {selectedCategory && hasFrequencyReason && (
-                <fieldset className="space-y-0.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] p-3">
+                <fieldset className={`space-y-0.5 ${CARD_CALLOUT_SURFACE} p-3`}>
                   <legend className="px-1 text-xs font-black text-[var(--text-muted)]">Frequency details</legend>
                   {FREQUENCY_REASONS.map(reason => (
                     <label key={reason} className="flex items-start gap-2 px-1.5 py-1 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
