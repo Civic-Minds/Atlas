@@ -21,7 +21,6 @@ import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
 
-/** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 /** Desktop widths of the agency table: the names' smallest width, and each mode column's (eight fit in the page). */
 const AREA_NAME_COLUMN_REM = 10.75;
 const AREA_MODE_COLUMN_REM = 6.75;
@@ -32,6 +31,7 @@ function modeHeader(label: string) {
   return label.length > 14 && slash > 0 ? <>{label.slice(0, slash + 1)}<br />{label.slice(slash + 1)}</> : label;
 }
 
+/** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AreaPageData | null {
   if (typeof document === 'undefined') return null;
   try {
