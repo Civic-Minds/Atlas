@@ -27,7 +27,6 @@ import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
 import { useLiveCardMapLink, useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
-import { useSegmentDelay } from '../hooks/useSegmentDelay';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
@@ -121,10 +120,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const [vehiclePick, setVehiclePick] = useState<string[] | null>(null);
   const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
   const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
-  const { fitArea, highlight, setHighlight, zoomToStretch, registerMapClick, mapLineClickRef } = useLiveCardMapLink();
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  // With the performance card shown, the vehicle list folds behind one row.
-  const [vehiclesOpen, setVehiclesOpen] = useState(false);
+  const { fitArea, highlight, setHighlight } = useLiveCardMapLink();
   // A route handed over from the main map (or a link), waiting for its agency to come into view.
   const pendingRouteRef = useRef<string | null>(null);
 
@@ -199,7 +195,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       if (bbox) setFocusArea({ bounds: bbox, minZoom: MIN_LIVE_ZOOM + 0.2, ts: Date.now() });
     },
   });
-  useEffect(() => { setHighlight(null); setDetailsOpen(false); setVehiclesOpen(false); }, [selectedRoute]);
+  useEffect(() => { setHighlight(null); }, [selectedRoute]);
 
 
   // Clear selected route when it's no longer in view
@@ -324,11 +320,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     lastOverlayFpRef.current = fp;
     setOverlay({
       vehicles: overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, frameFeatures, selectedRouteKey: selectedRoute, focusArea, fitArea, highlight,
-      onMapClick: (lonLat, vehicles, toleranceM) => {
+      onMapClick: (_lonLat, vehicles) => {
         if (vehicles.length === 1) { openVehicleCard(vehicles[0]); return; }
         if (vehicles.length > 1) { setVehiclePick(vehicles.map(v => v.id)); return; }
         setVehiclePick(null);
-        mapLineClickRef.current?.(lonLat, toleranceM);
       },
     });
   }, [active, overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, frameFeatures, selectedRoute, focusArea, fitArea, highlight, setOverlay]);
@@ -517,7 +512,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const cardVehicle = vehicleCard && vehicleCard.routeKey === selectedRoute
     ? selectedGroup?.vehicles.find(v => v.id === vehicleCard.id) ?? null
     : null;
-  const performance = useSegmentDelay(selectedGroup?.agencySlug, selectedGroup?.routeShortName);
   const selectedAgencyName = selectedGroup
     ? (agencies.find(a => a.slug === selectedGroup.agencySlug)?.name ?? selectedGroup.agencySlug)
     : null;
@@ -572,7 +566,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     active, selectedRoute, cardVehicleId: cardVehicle?.id ?? null, selectedDirection, selectedGroup, pendingRouteRef,
     onRestore: (vehicle, group) => {
       if (vehicle) openVehicleCard(vehicle);
-      if (group) { setSelectedDirection(group); setVehiclesOpen(true); }
+      if (group) setSelectedDirection(group);
     },
   });
 
@@ -754,74 +748,57 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   slug={selectedGroup.agencySlug}
                   routeShortName={selectedGroup.routeShortName}
                   feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
-                  onZoom={zoomToStretch}
-                  onHighlight={setHighlight}
-                  registerMapClick={registerMapClick}
-                  onDetailsChange={setDetailsOpen}
                 />
-                {!detailsOpen && performance && (
-                  <button
-                    type="button"
-                    onClick={() => setVehiclesOpen(o => !o)}
-                    aria-expanded={vehiclesOpen}
-                    className="mt-3 pt-3 w-full border-t border-[var(--border-primary)] flex items-center justify-between text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  >
-                    <span>Vehicles · {selectedGroup.vehicles.length}</span>
-                    <ChevronRight className={`w-3 h-3 transition-transform ${vehiclesOpen ? 'rotate-90' : ''}`} />
-                  </button>
-                )}
-                {!detailsOpen && (!performance || vehiclesOpen) && (
-                  <SidebarCardSection label={selectedRouteHeadwayLine ?? undefined}>
-                    {/* Match static route cards: destinations first, live vehicles second. */}
-                    {selectedGroup.vehicles.length === 0 ? (
-                      <PanelEmpty>No vehicles on this route</PanelEmpty>
-                    ) : canGroupByDirection && !selectedDirection ? (
-                      [...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => (
-                        <div key={dirKey} className="relative pr-4">
-                          <CardDirectionRow
-                            label={dirKey}
-                            subLabel={dirKey === DIRECTION_UNCLEAR ? `${directionSummary(vehicles, selectedRouteModeWord)} · on track both directions share` : directionSummary(vehicles, selectedRouteModeWord)}
-                            onClick={() => setSelectedDirection(dirKey)}
-                          />
-                          <ChevronRight className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--text-dim)]" />
-                        </div>
-                      ))
-                    ) : (
-                      (selectedDirection
-                        ? (vehiclesByDirection?.get(selectedDirection) ?? [])
-                        : selectedGroup.vehicles
-                      ).map((v, i) => {
-                        const colors = getVehicleColors(v.status, colorMode);
-                        return (
-                          <div
-                            key={v.id}
-                            className="flex items-start justify-between gap-3 cursor-pointer"
-                            onClick={() => {
-                              setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
-                              setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
-                              setVehicleCard({ routeKey: `${v.agencySlug}::${v.routeShortName}`, id: v.id });
-                            }}
-                          >
-                            <div className="min-w-0">
-                              <p className={`${CARD_LIST_ROUTE} truncate`}>
-                                {liveVehicleRowLabel(v, i, selectedRouteModeWord)}
-                              </p>
-                              {v.speedKmh != null && (
-                                <p className="text-xs font-bold text-[var(--text-dim)] mt-0.5">{v.speedKmh} km/h</p>
-                              )}
-                            </div>
-                            <span
-                              style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                              className={`text-xs font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
-                            >
-                              {delayLabel(v)}
-                            </span>
+                <SidebarCardSection label={selectedRouteHeadwayLine ?? undefined}>
+                  {/* Match static route cards: destinations first, live vehicles second. */}
+                  {selectedGroup.vehicles.length === 0 ? (
+                    <PanelEmpty>No vehicles on this route</PanelEmpty>
+                  ) : canGroupByDirection && !selectedDirection ? (
+                    [...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => (
+                      <div key={dirKey} className="relative pr-4">
+                        <CardDirectionRow
+                          label={dirKey}
+                          subLabel={dirKey === DIRECTION_UNCLEAR ? `${directionSummary(vehicles, selectedRouteModeWord)} · on track both directions share` : directionSummary(vehicles, selectedRouteModeWord)}
+                          onClick={() => setSelectedDirection(dirKey)}
+                        />
+                        <ChevronRight className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--text-dim)]" />
+                      </div>
+                    ))
+                  ) : (
+                    (selectedDirection
+                      ? (vehiclesByDirection?.get(selectedDirection) ?? [])
+                      : selectedGroup.vehicles
+                    ).map((v, i) => {
+                      const colors = getVehicleColors(v.status, colorMode);
+                      return (
+                        <div
+                          key={v.id}
+                          className="flex items-start justify-between gap-3 cursor-pointer"
+                          onClick={() => {
+                            setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
+                            setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
+                            setVehicleCard({ routeKey: `${v.agencySlug}::${v.routeShortName}`, id: v.id });
+                          }}
+                        >
+                          <div className="min-w-0">
+                            <p className={`${CARD_LIST_ROUTE} truncate`}>
+                              {liveVehicleRowLabel(v, i, selectedRouteModeWord)}
+                            </p>
+                            {v.speedKmh != null && (
+                              <p className="text-xs font-bold text-[var(--text-dim)] mt-0.5">{v.speedKmh} km/h</p>
+                            )}
                           </div>
-                        );
-                      })
-                    )}
-                  </SidebarCardSection>
-                )}
+                          <span
+                            style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                            className={`text-xs font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
+                          >
+                            {delayLabel(v)}
+                          </span>
+                        </div>
+                      );
+                    })
+                  )}
+                </SidebarCardSection>
               </SidebarCardShell>
             ) : !isZoomedIn || (visibleSlugs.length === 0 && !isLoading) ? (
               <>

@@ -77,14 +77,6 @@ interface Props {
   routeShortName: string;
   /** Live feed is down, stale or incomplete: "Right now" is hidden. */
   feedDegraded: boolean;
-  /** Unused since CIV-892 (the card no longer opens a stretch); still passed by LiveVehicles. */
-  onZoom?: (bounds: [number, number, number, number]) => void;
-  /** Unused since CIV-892 (no stretch to highlight); still passed by LiveVehicles. */
-  onHighlight?: (coordinates: [number, number][] | null) => void;
-  /** Unused since CIV-892 (no map line-click into a stretch); still passed by LiveVehicles. */
-  registerMapClick?: (fn: ((lonLat: [number, number], toleranceM: number) => void) | null) => void;
-  /** Unused since CIV-892 (no Details screen); still passed by LiveVehicles. */
-  onDetailsChange?: (open: boolean) => void;
 }
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
