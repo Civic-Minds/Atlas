@@ -768,6 +768,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             labelWeight="regular"
+                            singleLine
                             label={label}
                             headway={rowNoRegular ? undefined : displayH ?? undefined}
                             limitedLabel={isLimited && edgeText ? edgeText : rowNoRegular ? noRegularLabel : undefined}
@@ -790,6 +791,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   {exclusiveSpans.length === 1 && (
                     <CardDirectionRow
                       labelWeight="regular"
+                      singleLine
                       key="s0"
                       label={branchLabel(group, exclusiveSpans[0], gi) || 'limited service'}
                       limited
@@ -797,7 +799,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     />
                   )}
                   {exclusiveSpans.length > 1 && (
-                    <CardDirectionRow key="smulti" labelWeight="regular" label={exclusiveSpanNames.join(' · ')} limited />
+                    <CardDirectionRow key="smulti" labelWeight="regular" singleLine label={exclusiveSpanNames.join(' · ')} limited />
                   )}
                 </div>
               </React.Fragment>

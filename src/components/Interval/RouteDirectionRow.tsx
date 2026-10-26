@@ -17,7 +17,8 @@ interface Props {
    *  bold only for what you scan for, the route number and the frequency). */
   labelWeight?: 'bold' | 'regular';
   /** Keep the label on one line, cut with an ellipsis and named in full on hover, so the badge always fits
-   *  beside it (the stop card's destination rows, CIV-918). */
+   *  beside it (the stop and route cards' destination rows, CIV-918). It keeps 6rem, so a long value
+   *  ("until 9:37am, every 12 min") never squeezes it to a bare ellipsis. */
   singleLine?: boolean;
   // Regular service
   headway?: number | null;
@@ -92,7 +93,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
     >
       <div className={`flex ${singleLine ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
         <span
-          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 ${singleLine ? 'min-w-0 truncate' : 'min-w-[6rem] break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
+          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
         >
           {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
