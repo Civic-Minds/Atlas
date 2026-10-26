@@ -47,16 +47,17 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
               onClick={() => setSelectedRoute(r.rKey)}
             >
               <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                <div className="flex items-start gap-2">
+                <div className="flex flex-wrap items-start gap-x-2 gap-y-0.5">
                   {r.displayShortName ? (
                     <span className="text-xs leading-snug font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
                       {r.displayShortName}
                     </span>
                   ) : null}
-                  {/* The name takes the row's free width and wraps in full, like the route card's direction rows. */}
+                  {/* The name takes the row's free width and wraps between words, like the route card's direction rows;
+                      below 6rem the badge moves to the next line instead of the name breaking mid-word. */}
                   <span className={r.displayShortName
-                    ? 'flex-1 min-w-0 text-xs leading-snug font-bold text-[var(--text-muted)] break-words'
-                    : 'flex-1 min-w-0 text-xs leading-snug font-black text-[var(--text-primary)] break-words'}
+                    ? 'flex-1 min-w-[6rem] text-xs leading-snug font-bold text-[var(--text-muted)] break-words'
+                    : 'flex-1 min-w-[6rem] text-xs leading-snug font-black text-[var(--text-primary)] break-words'}
                     title={r.routeLongName || r.agencyName}>
                     {r.routeLongName || r.agencyName}
                   </span>
