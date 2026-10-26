@@ -530,6 +530,7 @@ function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: st
   return (
     <span className={`inline-flex flex-wrap justify-end gap-x-1 min-w-0 ${className}`}>
       <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{text.slice(0, comma + 1)}</span>
+      {' '}
       <span className="whitespace-nowrap">{text.slice(comma + 2)}</span>
     </span>
   );

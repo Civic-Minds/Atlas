@@ -13,7 +13,7 @@ describe('part-period badges', () => {
 
   it('does the same for a limited value', () => {
     const { container } = render(<LimitedBadge label="until 9:05pm, every 20 min" />);
-    expect(container.textContent).toBe('until 9:05pm,every 20 min');
+    expect(container.textContent).toBe('until 9:05pm, every 20 min');
     expect(container.querySelector('.flex-wrap')).not.toBeNull();
   });
 
