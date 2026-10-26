@@ -518,6 +518,23 @@ const SUFFIX_TONE = {
   positive: 'text-[var(--status-positive-text)]',
 } as const;
 
+/**
+ * A part-period value ("from 7:05am, every 20 min") may break after its comma: on a narrow row the dot and
+ * "from 7:05am," stay on the first line and "every 20 min" goes under it, right-aligned, instead of running
+ * past the card edge (#1128). Each part stays whole; a short value stays one line as before.
+ */
+const twoPart = (text: string | undefined) => !!text && text.includes(', ');
+
+function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: string; className: string }) {
+  const comma = text.indexOf(', ');
+  return (
+    <span className={`inline-flex flex-wrap justify-end gap-x-1 min-w-0 ${className}`}>
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{text.slice(0, comma + 1)}</span>
+      <span className="whitespace-nowrap">{text.slice(comma + 2)}</span>
+    </span>
+  );
+}
+
 export function HeadwayBadge({
   headway,
   colorHeadway,
@@ -537,11 +554,13 @@ export function HeadwayBadge({
   className?: string;
 }) {
   const colorMode = useColorMode();
+  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />;
+  const words = label ?? fmtHeadway(headway);
+  const base = 'font-black text-[var(--text-primary)] text-xs leading-snug';
   return (
-    <span className={`inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0 ${className}`}>
+    <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />
-      <span className="whitespace-nowrap">{label ?? fmtHeadway(headway)}</span>
+      {twoPart(words) ? <TwoPartBadge dot={dot} text={words} className={base} /> : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
       {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
     </span>
   );
@@ -553,9 +572,11 @@ export function HeadwayBadge({
  */
 export function LimitedBadge({ label, className = '' }: { label?: string; className?: string }) {
   const colorMode = useColorMode();
+  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
+  if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap ${label ? '' : 'min-h-[1lh]'} ${className}`.trim()}>
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />
+      {dot}
       {label}
     </span>
   );

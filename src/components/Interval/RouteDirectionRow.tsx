@@ -98,7 +98,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
         >
           {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
         </span>
-        {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 shrink-0">
+        {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 min-w-0">
           {edgeGapAllowance && (
             <button
               type="button"
