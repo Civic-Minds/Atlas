@@ -81,8 +81,10 @@ export function useLiveVehiclesLayer(
     const vehicles = (liveOverlay.vehicles ?? []).filter(v => v.lat && v.lon);
     const focusedId = liveOverlay.focusedVehicle?.id ?? null;
     // The shared selection fade: with a route (or one of its directions) picked, every other vehicle steps back.
+    // The picked vehicle always stays at full strength, even when its direction is unclear or differs from the
+    // direction in view.
     const focus = liveOverlay.focus ?? null;
-    const alpha = (v: LiveVehicle) => focusOpacity(v, focus);
+    const alpha = (v: LiveVehicle) => (v.id === focusedId ? 1 : focusOpacity(v, focus));
     const labelVehicles = focus ? vehicles.filter(v => alpha(v) === 1) : [];
     const focusFp = focus ? `${focus.agencySlug}::${focus.routeShortName}::${focus.ids?.join(',') ?? '*'}` : '';
     const fp = `${liveVehiclesFingerprint(vehicles)}|${focusedId ?? ''}|${focusFp}|${labelVehicles.length}|${colorMode}`;
