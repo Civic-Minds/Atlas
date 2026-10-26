@@ -18,6 +18,8 @@ interface Props {
   /** The suffix's colour (HeadwayBadge suffixTone). */
   headwaySuffixTone?: 'dim' | 'negative' | 'positive';
   subLabel?: string;
+  /** The sub-label's weight: bold by default; 'medium' (the summary weight) for a stop name and distance (CIV-923). */
+  subLabelWeight?: 'bold' | 'medium';
   live?: boolean;
   // Limited service
   limited?: boolean;
@@ -42,7 +44,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelWeight = 'bold', live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const colorMode = useColorMode();
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
@@ -110,7 +112,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
         </span>}
       </div>
       {subLabel && (
-        <span className="text-xs font-bold text-[var(--text-dim)] block mt-0.5 truncate">{subLabel}</span>
+        <span className={`text-xs ${subLabelWeight === 'medium' ? 'font-medium' : 'font-bold'} text-[var(--text-dim)] block mt-0.5 truncate`}>{subLabel}</span>
       )}
     </div>
   );

@@ -77,7 +77,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                     <LimitedBadge className="ml-auto" />
                   )}
                 </div>
-                <p className="text-xs text-[var(--text-dim)] font-bold truncate leading-tight">
+                <p className="text-xs text-[var(--text-dim)] font-medium truncate leading-tight">
                   {titleCase(r.nearestStopName)} · {fmtDist(r.distanceMeters)}
                 </p>
               </div>
