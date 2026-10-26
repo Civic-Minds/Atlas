@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
+import { CardBackLink } from '../components/CardBack';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
@@ -9,7 +10,7 @@ import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_SIDEBAR, PANEL_TITLE, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
 import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardBackLink, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';

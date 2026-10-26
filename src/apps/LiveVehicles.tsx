@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { CardBackLink } from '../components/CardBack';
 import { Info, Moon, Sun, WifiOff, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
@@ -18,7 +19,7 @@ import { periodKeyForHour } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../utils/liveGrouping';
-import { CardBackLink, CardDirectionRow, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
+import { CardDirectionRow, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
 import { delayLabel, vehicleCardName, vehicleCardRows } from '../components/Live/vehicleCardModel';
