@@ -410,7 +410,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   const reportButton = (
     <CardReportButton
       title={`Agency issue: ${agency.name}`}
-      details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+      // The data dates the route card's report sends too (CIV-932), so an agency report says how fresh its data is.
+      details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Agency data refreshed:** ${agency.lastRefreshedAt ?? 'unknown'}\n**Feed expiry:** ${agency.lastFeedExpiry ?? 'unknown'}\n**Atlas URL:** ${currentAtlasUrl()}`}
       excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
     />
   );

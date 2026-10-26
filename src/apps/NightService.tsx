@@ -8,6 +8,8 @@ import type { NightServiceFrequency } from '../../shared/nightService';
 import { nightServiceKey, routeNightGrade } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import CardRouteList from '../components/Interval/CardRouteList';
+import { CardReportButton } from '../components/Interval/cardUi';
+import { currentAtlasUrl } from '../utils/reportIssue';
 import { routeLabels } from '../utils/format';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
@@ -47,6 +49,21 @@ interface NightServiceFeatureProperties {
   routeType?: number;
   headsign?: string | null;
   agencyName?: string | null;
+}
+
+/** What a report from the Night list sends (CIV-932): the view, every agency and route it lists with its night value, and the map's bounds. */
+function nightReportDetails(
+  frequency: NightServiceFrequency,
+  agencies: { name: string; routes: string[] }[],
+  bounds: { n: number; s: number; e: number; w: number } | null | undefined,
+): string {
+  return [
+    `**View:** routes every ${frequency} min or better from 2am to 5am`,
+    `**Map bounds:** ${bounds ? `${bounds.s.toFixed(4)},${bounds.w.toFixed(4)} to ${bounds.n.toFixed(4)},${bounds.e.toFixed(4)}` : 'unknown'}`,
+    '**Listed:**',
+    ...(agencies.length > 0 ? agencies.flatMap(agency => [`- ${agency.name}`, ...agency.routes.map(route => `  - ${route}`)]) : ['- Nothing listed']),
+    `**Atlas URL:** ${currentAtlasUrl()}`,
+  ].join('\n');
 }
 
 function nightRouteLabel(route: NightServiceRouteSummary, agency: { slug: string; agencyName: string }) {
@@ -185,10 +202,24 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
 
   return (
     <ResearchInfo heading={NIGHT_INFO_HEADING} onBack={onBackToMap} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} hidden={selectionActive} below={
-      <Panel sidebarSurface className="min-h-0 flex-1">
+      <Panel sidebarSurface data-report-anchor="true" className="min-h-0 flex-1">
         <PanelTitleBar>
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
           <span className={PANEL_TITLE}>Night Service</span>
+          {/* The list shows data, so it has the report flag (CIV-932); the negative margin keeps the bar's height. */}
+          <div className="ml-auto -my-1">
+            <CardReportButton
+              title={`Night service (${frequency} min view)`}
+              details={nightReportDetails(frequency, agencies.map(agency => ({
+                name: agency.agencyName,
+                routes: agency.routes.map(route => {
+                  const { primary, secondary } = nightRouteLabel(route, agency);
+                  return `${secondary ? `${primary} ${secondary}` : primary} (every ${nightGrade(route, agency.slug)} min${route.partOfRoute ? ', part of the route' : ''})`;
+                }),
+              })), bounds)}
+              excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            />
+          </div>
         </PanelTitleBar>
 
         <PanelBody>
