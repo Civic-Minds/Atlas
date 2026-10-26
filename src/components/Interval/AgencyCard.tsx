@@ -536,7 +536,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-xs font-black text-[var(--accent)]">On-demand service</p>
+                <CardSectionLabel flush>On-demand service</CardSectionLabel>
                 {agency.onDemandServiceArea.sourceUrl && (
                   <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.onDemandServiceArea.sourceUrl} kind="on_demand_source" agencySlug={agency.slug} className="shrink-0">
                     Details

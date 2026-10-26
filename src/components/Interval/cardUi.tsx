@@ -574,8 +574,10 @@ export function SidebarCardHeader({
   );
 }
 
-export function CardSectionLabel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={`${CARD_SECTION} mb-2 ${className}`}>{children}</div>;
+/** A small dim section label. `flush` drops the gap below it, for a label that shares a row with a link
+ *  (a margin class passed in `className` does not win over the built-in gap). */
+export function CardSectionLabel({ children, flush = false, className = '' }: { children: React.ReactNode; flush?: boolean; className?: string }) {
+  return <div className={`${CARD_SECTION}${flush ? '' : ' mb-2'} ${className}`}>{children}</div>;
 }
 
 export function CardDivider({ className = '' }: { className?: string }) {
