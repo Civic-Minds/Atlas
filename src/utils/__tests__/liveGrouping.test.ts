@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../liveGrouping';
+import { DIRECTION_UNCLEAR, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels } from '../liveGrouping';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
   id, routeShortName: '501', displayName: '501', tripId: 't', lat: 43.65, lon: -79.4, bearing: null, speedKmh: null, tsEpoch: null,
@@ -33,5 +33,35 @@ describe('groupVehiclesByDirection (every vehicle placed)', () => {
   it('falls back to Outbound / Inbound when a direction has no named shape', () => {
     const groups = groupVehiclesByDirection([v('a', { directionId: 0 }), v('b', { directionId: 1 })], new Map());
     expect([...groups.keys()]).toEqual(['Outbound', 'Inbound']);
+  });
+});
+
+describe('orderDirectionGroups (fixed row order, CIV-899)', () => {
+  const labels = new Map([[0, 'Neville Park'], [1, 'Long Branch']]);
+  const order = (vehicles: LiveVehicle[]) => orderDirectionGroups(groupVehiclesByDirection(vehicles, labels), labels).map(([k]) => k);
+
+  it('lists direction 0, then direction 1 (main destination before short turns), then the rest, with "Direction unclear" last', () => {
+    const vehicles = [
+      v('u'),
+      v('s', { directionId: 1, headsign: 'Humber Loop' }),
+      v('b', { directionId: 1 }),
+      v('h', { headsign: 'Dundas West Station' }),
+      v('d', { directionId: 0, headsign: 'Distillery' }),
+      v('a', { directionId: 0 }),
+    ];
+    expect(order(vehicles)).toEqual(['Neville Park', 'Distillery', 'Long Branch', 'Humber Loop', 'Dundas West Station', DIRECTION_UNCLEAR]);
+  });
+
+  it('gives the same order whatever order the feed lists the vehicles in', () => {
+    const vehicles = [v('u'), v('b', { directionId: 1 }), v('a', { directionId: 0 }), v('d', { directionId: 0, headsign: 'Distillery' })];
+    const expected = order(vehicles);
+    expect(order([...vehicles].reverse())).toEqual(expected);
+    expect(order([vehicles[2], vehicles[0], vehicles[3], vehicles[1]])).toEqual(expected);
+    expect(expected[expected.length - 1]).toBe(DIRECTION_UNCLEAR);
+  });
+
+  it('puts Outbound before Inbound when no shape names the directions', () => {
+    const groups = groupVehiclesByDirection([v('b', { directionId: 1 }), v('a', { directionId: 0 })], new Map());
+    expect(orderDirectionGroups(groups, new Map()).map(([k]) => k)).toEqual(['Outbound', 'Inbound']);
   });
 });
