@@ -19,6 +19,7 @@ import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import { loadingText, loadErrorText } from '../content/stateCopy';
 import { routeLabels } from '../utils/format';
+import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -72,22 +73,9 @@ interface Props {
 }
 
 function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; w: number; n: number; e: number }): boolean {
-  if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') return false;
-  const coordinates = feature.geometry.type === 'LineString'
-    ? feature.geometry.coordinates
-    : feature.geometry.coordinates.flat();
-  if (coordinates.length === 0) return false;
-  let minLon = Infinity;
-  let minLat = Infinity;
-  let maxLon = -Infinity;
-  let maxLat = -Infinity;
-  for (const [lon, lat] of coordinates) {
-    minLon = Math.min(minLon, lon);
-    minLat = Math.min(minLat, lat);
-    maxLon = Math.max(maxLon, lon);
-    maxLat = Math.max(maxLat, lat);
-  }
-  return maxLon >= bounds.w && minLon <= bounds.e && maxLat >= bounds.s && minLat <= bounds.n;
+  const box = boundingBox(lineCoordinates(feature.geometry));
+  if (!box) return false;
+  return box.maxLng >= bounds.w && box.minLng <= bounds.e && box.maxLat >= bounds.s && box.minLat <= bounds.n;
 }
 
 export default function NightService({ active, sidebarLeft, layers, query = '', frequency, onRouteSelect, selectionActive = false }: Props) {
