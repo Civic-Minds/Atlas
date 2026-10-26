@@ -278,6 +278,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     setVehiclePick(null);
     if (key !== selectedRouteRef.current) setSelectedRoute(key);
     setVehicleCard({ routeKey: key, id: vehicle.id });
+    // Framed beside the card (or above the phone sheet) like a vehicle picked from the list.
+    setVehicleFly({ lat: vehicle.lat, lon: vehicle.lon, ts: Date.now() });
     setFocusedVehicle({ id: vehicle.id, lat: vehicle.lat, lon: vehicle.lon, ts: Date.now() });
   }, []);
 
