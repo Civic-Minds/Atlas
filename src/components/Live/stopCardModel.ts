@@ -14,10 +14,11 @@ export const STOP_CARD_WORDS = {
   vehicles: 'Vehicles vs timetable',
   wait: 'Rider wait at this stop',
   lateShare: (pct: string) => `${pct} are 5½+ min late`,
-  extraWait: (min: string) => `${min} min longer than the scheduled gaps`,
-  onSchedule: 'as the scheduled gaps',
-  gaps: (close: string, far: string) => `Gaps: ${close} too close · ${far} too far apart`,
-  gapsTotal: (total: string) => `Gaps: ${total} too close or too far apart`,
+  // The measures keep the names the switcher and the table use, with the key's approved definitions.
+  extraWait: (min: string) => `Extra wait: ${min} min beyond the scheduled gap`,
+  noExtraWait: 'Extra wait: none beyond the scheduled gap',
+  gaps: (close: string, far: string) => `Bunching: ${close} too close · ${far} too far apart`,
+  gapsTotal: (total: string) => `Bunching: ${total} too close or too far apart`,
   notMeasured: 'Delay not measured',
   lessExact: 'Less exact here: vehicles report their location less often',
 } as const;
@@ -35,7 +36,7 @@ export function stopCardGroups(stop: RouteStripStop, extraWaitMin: number | null
   const wait: string[] = [];
   if (extraWaitMin != null) {
     const m = Math.max(0, extraWaitMin);
-    wait.push(m < 0.05 ? `Usually the same ${W.onSchedule}` : W.extraWait(tenth(m)));
+    wait.push(m < 0.05 ? W.noExtraWait : W.extraWait(tenth(m)));
   }
   const parts = bunchParts(stop);
   if (parts && stop.bunchedShare != null && stop.gappedShare != null) wait.push(W.gaps(`${parts.bunched}%`, `${parts.tooLong}%`));
