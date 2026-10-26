@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addSnapshot, lineModel, liveGaps, positionsSnapshot, RECENT_WINDOW_SEC, sharedSummary, placeOnLine, runningTimeTally, stretchBetween, stripStops, withStats } from '../livePerformance';
+import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, RECENT_WINDOW_SEC, sharedSummary, placeOnLine, runningTimeTally, stretchBetween, stripStops, withStats } from '../livePerformance';
 import type { SegmentDelayData, SegmentDelaySegment } from '../segmentDelayView';
 
 // Five stops along latitude 43.65, ~800 m apart, westbound (direction 0).
@@ -227,6 +227,16 @@ describe('"Right now" over the whole route (CIV-899)', () => {
     expect(g.gapsMin).toEqual([null, null]);
   });
 
+  it('counts a trip the analysis\'s timetable doesn\'t list once the map knows its direction, even off the line', () => {
+    const line = lineModel(wl, 0)!;
+    // n is on a new trip, parked off the recorded streets: without its direction it would never count.
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', k * 0.5], ['n', 'new1', 2.5, 0.003], ...(k >= 4 ? [['b', 't2', (k - 4) * 0.5] as [string, string, number]] : [])]));
+    expect(liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true, skipUnseenAdded: true })!.cars).toBe(2);
+    const g = liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true, skipUnseenAdded: true, extraTrips: new Set(['new1']) })!;
+    expect(g.cars).toBe(3);
+    expect(g.gapsMin).toEqual([null, null]);
+  });
+
   it('counts a car on a recorded branch without putting it between the line\'s cars', () => {
     const line = lineModel(wl, 0)!;
     const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', k * 0.5], ['c', 't3', 1, 0.005], ...(k >= 4 ? [['b', 't2', (k - 4) * 0.5] as [string, string, number]] : [])]));
@@ -252,5 +262,20 @@ describe('rolling buffer of the map\'s polls (CIV-893)', () => {
     expect(buf).toHaveLength(2);
     buf = addSnapshot(buf, positionsSnapshot([v('a', 3, 2_000)], 100 + RECENT_WINDOW_SEC + 10));
     expect(buf.map(s => s.capturedAt)).toEqual([115, 100 + RECENT_WINDOW_SEC + 10]);
+  });
+});
+
+describe('directions for trips the analysis doesn\'t list (CIV-899)', () => {
+  it('pairs the map\'s direction numbers with the analysis\'s from vehicles both know', () => {
+    // The map's 1 is the analysis's 0 (TTC numbers them the other way round).
+    const vs = [{ tripId: 't1', directionId: 1 }, { tripId: 't2', directionId: 1 }, { tripId: 'other', directionId: 0 }, { tripId: 'new1', directionId: 1 }, { tripId: 'new2', directionId: 0 }, { tripId: 'new3', directionId: null }];
+    const out = liveTripDirections(vs, { 0: ['t1', 't2'], 1: ['other'] });
+    expect([...out.get(0)!]).toEqual(['new1']);
+    expect([...out.get(1)!]).toEqual(['new2']);
+  });
+
+  it('pairs nothing when the map\'s directions don\'t line up with the analysis\'s', () => {
+    const vs = [{ tripId: 't1', directionId: 1 }, { tripId: 'other', directionId: 1 }, { tripId: 'new1', directionId: 1 }];
+    expect(liveTripDirections(vs, { 0: ['t1'], 1: ['other'] }).size).toBe(0);
   });
 });

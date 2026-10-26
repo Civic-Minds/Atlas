@@ -6,7 +6,7 @@ import { readUrlNumberParam, syncUrlParams } from '../../utils/syncUrlParams';
 import { periodKeyForHour } from '../../../shared/config';
 import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { halfMinutes, type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
-import { addSnapshot, lineModel, liveGaps, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
+import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 
 function halfText(m: number): string {
@@ -118,7 +118,9 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   // doesn't list is placed by its own movement since the card opened; until it has been seen twice it
   // is skipped (skipUnseenAdded). With 0 or 1 car the count still shows (no gaps line), so the
   // direction pills never vanish.
-  const live = feedDegraded ? null : liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true });
+  // Trips today's timetable runs that the analysis's doesn't list get their direction from the map's.
+  const extraTrips = liveTripDirections(vehicles, data.tripDirections).get(directionId);
+  const live = feedDegraded ? null : liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips });
   const range = live?.scheduledRangeSec;
   const schedLabel = range ? schedText({ scheduledMedianGapSec: range[0], scheduledP10Sec: range[0], scheduledP90Sec: range[1] }) : live?.scheduledSec ? mins(live.scheduledSec) : '–';
   // A gap is late at twice the timetable gap where the car behind is.
