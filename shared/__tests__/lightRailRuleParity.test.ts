@@ -17,6 +17,8 @@ const cases: Array<[string, number | string, string]> = [
   ['valleymetro', 0, 'Valley Metro Streetcar'], ['capmetro', 0, '550-Metro Rail Red Line'], ['x', 0, 'Line A Downtown'], ['x', 0, 'Line '],
   ['x', 0, 'Metro  Line'], ['x', 0, 'Metro Red Blue Line'], ['x', 0, 'King'], ['x', 2, 'Union Station'], ['x', 2, 'STATION EXPRESS'],
   ['x', 3, 'Metro A Line'], ['x', 2, 'Lakeshore West'], ['x', 0, ''],
+  // Edge cases: non-ASCII case, stray spaces, punctuation next to ION
+  ['x', 2, 'İON'], ['x', 2, ' ION '], ['x', 2, 'ION-Express'], ['x', 2, '(ION)'], ['x', 0, ' Line 5'], ['x', 0, 'Metro A Line '], ['x', 0, 'Metro 2 Line'],
   // Agencies whose every tram is light rail
   ['calgary', 0, 'Anything'], ['edmonton', 0, 'Something'],
 ];
