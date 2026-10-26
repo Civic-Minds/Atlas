@@ -507,6 +507,16 @@ export function dailyValuesOf(days: ReadonlyArray<Pick<NonNullable<LiveV3['daily
 }
 
 /** This week's daily values on days with good recordings, where the file has them. */
+/**
+ * The analysis with run time over each direction's main pattern only (CIV-945), wherever the file has it: the week's
+ * and each day's `tripTime` become `mainPatternTrip`. Older files come back unchanged.
+ */
+export function withMainPatternTrip(v3: LiveV3): LiveV3 {
+  if (!v3.weekly || v3.weekly.thisWeek.mainPatternTrip === undefined) return v3;
+  const main = <T extends { tripTime: unknown; mainPatternTrip?: WeekMetrics['mainPatternTrip'] }>(x: T): T => ({ ...x, tripTime: x.mainPatternTrip ?? null });
+  return { ...v3, weekly: { ...v3.weekly, thisWeek: main(v3.weekly.thisWeek), lastWeek: main(v3.weekly.lastWeek) }, daily: v3.daily && Object.fromEntries(Object.entries(v3.daily).map(([d, x]) => [d, main(x)])) };
+}
+
 export function weekDailyValues(v3: LiveV3): Required<DailyValues> {
   const ok = new Set(v3.weekly?.thisWeek.healthyDates ?? []);
   const perDay = dailyValuesOf(Object.entries(v3.daily ?? {}).filter(([d, x]) => ok.has(d) && x.healthy).map(([, x]) => x));

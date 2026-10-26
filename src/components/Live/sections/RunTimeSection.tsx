@@ -70,7 +70,7 @@ function PatternRow({ row, scale, width, dense, showLabel, unit }: { row: RunTim
   const tone: Record<RowLabel['id'], string> = { usual: 'font-bold text-[var(--text-primary)]', scheduled: 'text-[var(--text-secondary)]', slow: 'text-[var(--text-muted)]' };
   return (
     <li className={`min-w-0 ${few ? 'text-[var(--text-dim)]' : ''}`} title={row.figures || undefined}>
-      {showLabel && row.label && <div className={dense ? 'text-xs leading-4 text-[var(--text-secondary)]' : 'text-sm leading-5 text-[var(--text-secondary)]'}>{row.label}{few ? ' Few trips: treat with care.' : ''}</div>}
+      {showLabel && row.label && <div className={`text-pretty ${dense ? 'text-xs leading-4 text-[var(--text-secondary)]' : 'text-sm leading-5 text-[var(--text-secondary)]'}`}>{row.label}{few ? ' Few trips: treat with care.' : ''}</div>}
       {row.figures && <span className="sr-only">{row.figures}</span>}
       <div className={`relative ${dense ? 'h-[36px]' : 'h-[44px]'} ${few ? 'opacity-60' : ''}`} aria-hidden="true">
         <div className="absolute inset-y-0" style={{ left: INSET, right: INSET }}>
