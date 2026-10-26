@@ -1065,11 +1065,13 @@ function runTimesBetween(d: number, a: string, b: string, onlyPatterns?: Readonl
 type BranchRunTime = { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: NonNullable<ReturnType<typeof runTimeStat>>; bands: Record<TimeBand | 'all', ReturnType<typeof runTimeStat>>; byHour: Array<{ hour: number } & NonNullable<ReturnType<typeof runTimeStat>>> };
 const branchesByDir: Record<string, BranchRunTime[]> = {};
 // Run time per regular pattern (CIV-945): each timed on its own trips only, over its own stops trimmed to reliably measured
-// ends, the busiest first. Patterns with the same stops (two shapes) are one line. `kind`: the main pattern, a short turn
+// ends, the main one first. Patterns with the same stops (two shapes) are one line. `kind`: the main pattern, a short turn
 // (its stops are a run of the main pattern's), or a branch.
 type PatternRunTime = BranchRunTime & { kind: 'main' | 'shortTurn' | 'branch'; patternStops: number; fullPattern: boolean };
 const patternsRunTimeByDir: Record<string, PatternRunTime[]> = {};
 const mainPatternRows: RunTimeRow[] = [];
+type PatternGroup = { stops: string[]; ids: Set<string>; trips: number };
+const patternGroupsByDir = new Map<number, { groups: PatternGroup[]; coverage: (stopId: string) => number }>();
 for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
   const main = mainStretchStops(dirPatterns.map(p => ({ stops: p.stops.map(s => s.stopId), trips: tripsPerShape.get(p.id) ?? 0 })));
@@ -1114,8 +1116,37 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
       const g = groups.get(p.stops.join('|')) ?? groups.set(p.stops.join('|'), { stops: p.stops, ids: new Set(), trips: 0 }).get(p.stops.join('|'))!;
       g.ids.add(p.p.id); g.trips += p.trips;
     }
-    const ordered = [...groups.values()].sort((x, y) => y.trips - x.trips);
-    const mainStops = ordered[0]?.stops ?? [];
+    patternGroupsByDir.set(d, { groups: [...groups.values()].sort((x, y) => y.trips - x.trips), coverage });
+  }
+  const longest = dirPatterns.reduce<Pattern | null>((x, y) => (!x || y.stops.length > x.stops.length ? y : x), null);
+  stretchInfo[String(d)] = {
+    fromStopId: a, toStopId: b, fromName: stopInfo(a).name, toName: stopInfo(b).name, stops: stretch.length, routeStops: longest?.stops.length ?? stretch.length,
+    fullRoute: !!longest && longest.stops[0]?.stopId === a && longest.stops[longest.stops.length - 1]?.stopId === b,
+    mainPatternTrips: mainPatternRunTimes.filter(r => r.directionId === d && inGoodDays.has(r.date)).length,
+    trips: mainRunTimes.filter(r => r.directionId === d && inGoodDays.has(r.date)).length,
+  };
+}
+console.log(`runtime branches: ${Object.entries(branchesByDir).map(([d, bs]) => bs.map(x => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) n ${x.all.n}`).join('; ')).join('; ') || 'none'}`);
+// The main pattern is picked once per route (the busiest of either direction), and in the other direction it is the
+// pattern running the same way back: the one whose ends are nearest its ends swapped. So "Main" is one service both ways.
+{
+  const all = [...patternGroupsByDir].flatMap(([d, x]) => x.groups.map(g => ({ d, g })));
+  const top = all.reduce<(typeof all)[number] | null>((a, b) => (!a || b.g.trips > a.g.trips ? b : a), null);
+  const mainOf = new Map<number, PatternGroup>();
+  if (top) {
+    mainOf.set(top.d, top.g);
+    const [f, l] = [stopInfo(top.g.stops[0]).lonLat, stopInfo(top.g.stops[top.g.stops.length - 1]).lonLat];
+    for (const [d, x] of patternGroupsByDir) {
+      if (d === top.d || !x.groups.length) continue;
+      const gap = (g: PatternGroup) => { const a = stopInfo(g.stops[0]).lonLat, b = stopInfo(g.stops[g.stops.length - 1]).lonLat; return haversineM(a[1], a[0], l[1], l[0]) + haversineM(b[1], b[0], f[1], f[0]); };
+      mainOf.set(d, x.groups.reduce((a, b) => (gap(b) < gap(a) ? b : a)));
+    }
+  }
+  for (const [d, { groups, coverage }] of patternGroupsByDir) {
+    const main = mainOf.get(d);
+    if (!main) continue;
+    const ordered = [main, ...groups.filter(g => g !== main)];
+    const mainStops = main.stops;
     // A short turn: the main pattern's stops in a row, allowing for its own turning loop (up to 2 stops at either end off the main pattern).
     const isRunOfMain = (st: readonly string[]) => {
       let a = 0, b = st.length;
@@ -1142,15 +1173,7 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
     });
     if (lines.length) patternsRunTimeByDir[String(d)] = lines;
   }
-  const longest = dirPatterns.reduce<Pattern | null>((x, y) => (!x || y.stops.length > x.stops.length ? y : x), null);
-  stretchInfo[String(d)] = {
-    fromStopId: a, toStopId: b, fromName: stopInfo(a).name, toName: stopInfo(b).name, stops: stretch.length, routeStops: longest?.stops.length ?? stretch.length,
-    fullRoute: !!longest && longest.stops[0]?.stopId === a && longest.stops[longest.stops.length - 1]?.stopId === b,
-    mainPatternTrips: mainPatternRunTimes.filter(r => r.directionId === d && inGoodDays.has(r.date)).length,
-    trips: mainRunTimes.filter(r => r.directionId === d && inGoodDays.has(r.date)).length,
-  };
 }
-console.log(`runtime branches: ${Object.entries(branchesByDir).map(([d, bs]) => bs.map(x => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) n ${x.all.n}`).join('; ')).join('; ') || 'none'}`);
 console.log(`runtime patterns: ${Object.entries(patternsRunTimeByDir).map(([d, ls]) => ls.map(x => `dir ${d} ${x.kind} ${x.fromName} -> ${x.toName} (${x.stops}/${x.patternStops} stops) n ${x.all.n} typ ${x.all.typicalMin}`).join('; ')).join('; ') || 'none'}`);
 console.log(`runtime stretch: ${Object.entries(stretchInfo).map(([d, x]) => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) trips ${x.mainPatternTrips} -> ${x.trips}`).join('; ')}`);
 const windowRunTimes = mainRunTimes.filter(r => inWindow.has(r.date));

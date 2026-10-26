@@ -104,6 +104,10 @@ describe('patternRunTimeRows (CIV-945)', () => {
     expect(rows.map(r => r.main)).toEqual([true, false]);
     expect(rows[1].typical).toBe(23);
   });
+  it('says how much of a trimmed pattern is timed', () => {
+    const trimmed = { ...withPatterns, runningTime: { ...withPatterns.runningTime, patterns: { '0': [{ ...p('main', 'Q', 'S', 13, 500, 22), patternStops: 18, fullPattern: false }] } } } as unknown as LiveV3;
+    expect(patternRunTimeRows(trimmed, 'all', 0, nice)![0].label).toBe('Main: Q → S · 13 of 18 stops');
+  });
   it('is null for an older file', () => {
     expect(patternRunTimeRows(v3, 'all', 0, nice)).toBeNull();
   });
