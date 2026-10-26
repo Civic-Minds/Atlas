@@ -31,6 +31,8 @@ export interface LiveVehiclesMapOverlay {
    * framing draw it exactly like a route picked on the regular map.
    */
   mapRouteKey?: string | null;
+  /** Live's card over the map: route, place and vehicle framing keep clear of it (routeFraming cardFramePadding). */
+  cardRef?: React.RefObject<HTMLElement | null>;
   /** What stays at full strength on the vehicle layer: the picked route, or one of its directions. */
   focus?: MapFocus | null;
   // One-shot request to fly the map to a coverage area: [w, s, e, n] bounds,

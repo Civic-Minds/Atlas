@@ -12,12 +12,58 @@ const PHONE_TOP_BAR_BOTTOM = 51;
 /** Clear space kept between a framed route and the top bar or screen edge. */
 const PHONE_FRAME_MARGIN = 24;
 
+/** A card's on-screen box, as getBoundingClientRect gives it. */
+export interface CardRect { top: number; bottom: number; left: number; right: number }
+
+/** Smallest map area kept for the framed route when a tall card fills most of a phone screen. */
+const MIN_FRAME_SPAN = 120;
+
+/**
+ * Padding measured from the card itself: below (or above) a card that spans a phone screen's width, beside it on
+ * wide screens, so a framed route, place or vehicle never sits under the card.
+ */
+function cardRectPadding(container: HTMLElement, card: CardRect, side: CardSide, phoneSheet: boolean): maplibregl.PaddingOptions {
+  const { clientWidth, clientHeight } = container;
+  const box = typeof container.getBoundingClientRect === 'function' ? container.getBoundingClientRect() : { top: 0, left: 0 };
+  const top = card.top - box.top;
+  const bottom = card.bottom - box.top;
+  const left = card.left - box.left;
+  const right = card.right - box.left;
+  if (clientWidth < 640) {
+    const inset = PHONE_TOP_BAR_SIDE_INSET + PHONE_FRAME_MARGIN;
+    const topBar = PHONE_TOP_BAR_BOTTOM + PHONE_FRAME_MARGIN;
+    // A bottom sheet keeps the space above it; a card at the top keeps the space below it.
+    const sheet = top >= clientHeight / 2;
+    const above = sheet ? topBar : Math.max(topBar, Math.round(bottom + PHONE_FRAME_MARGIN));
+    const below = sheet ? Math.round(clientHeight - top + PHONE_FRAME_MARGIN) : PHONE_FRAME_MARGIN;
+    const spare = clientHeight - above - below - MIN_FRAME_SPAN;
+    // A card taller than the screen allows: give up space on the card's side, never the whole map.
+    return sheet
+      ? { top: above, bottom: spare < 0 ? Math.max(0, below + spare) : below, left: inset, right: inset }
+      : { top: spare < 0 ? Math.max(0, above + spare) : above, bottom: below, left: inset, right: inset };
+  }
+  const base = routeFramePadding({ getContainer: () => container } as maplibregl.Map, side, { phoneSheet });
+  return side === 'left'
+    ? { ...base, left: Math.max(base.left ?? 0, Math.round(right + PHONE_FRAME_MARGIN)) }
+    : { ...base, right: Math.max(base.right ?? 0, Math.round(clientWidth - left + PHONE_FRAME_MARGIN)) };
+}
+
 /**
  * Camera padding that keeps a route clear of the card: beside it on wide screens, above the
  * bottom sheet on phones. One place for every "zoom to this route or stretch" camera move.
  */
-export function routeFramePadding(map: maplibregl.Map, side: CardSide = 'left', { phoneSheet = false }: { phoneSheet?: boolean } = {}): maplibregl.PaddingOptions {
-  const { clientWidth, clientHeight } = map.getContainer();
+export function routeFramePadding(
+  map: maplibregl.Map,
+  side: CardSide = 'left',
+  { phoneSheet = false, card }: {
+    phoneSheet?: boolean;
+    /** The card's on-screen box (getBoundingClientRect), when the card's real size and place are known. */
+    card?: CardRect | null;
+  } = {},
+): maplibregl.PaddingOptions {
+  const container = map.getContainer();
+  const { clientWidth, clientHeight } = container;
+  if (card && card.bottom > card.top && card.right > card.left) return cardRectPadding(container, card, side, phoneSheet);
   // Live's card is a bottom sheet on phones; the main map and History keep their framing.
   if (phoneSheet && clientWidth < 640) {
     const inset = PHONE_TOP_BAR_SIDE_INSET + PHONE_FRAME_MARGIN;
@@ -26,6 +72,11 @@ export function routeFramePadding(map: maplibregl.Map, side: CardSide = 'left', 
   return side === 'left'
     ? { top: 80, bottom: 80, left: 320, right: 80 }
     : { top: 80, bottom: 80, left: 80, right: 280 };
+}
+
+/** Padding that keeps a framed route, place or vehicle clear of this card element, measured where it is now. */
+export function cardFramePadding(map: maplibregl.Map, card: Element | null | undefined): maplibregl.PaddingOptions {
+  return routeFramePadding(map, 'left', { phoneSheet: true, card: card?.getBoundingClientRect() ?? null });
 }
 
 /**
@@ -41,8 +92,10 @@ export function selectionFramePadding(map: maplibregl.Map, phoneSheet: boolean =
 export function frameRoute(
   map: maplibregl.Map,
   points: ReadonlyArray<LonLat>,
-  { side = 'left', maxZoom = 14, phoneSheet = false, padding: customPadding, duration }: {
+  { side = 'left', maxZoom = 14, minZoom, phoneSheet = false, padding: customPadding, duration }: {
     side?: CardSide; maxZoom?: number; phoneSheet?: boolean;
+    /** Never lands below this zoom (a place must open close enough for its vehicles to show). */
+    minZoom?: number;
     /** Replaces the card-based padding (for maps whose card is not beside them). */
     padding?: maplibregl.PaddingOptions;
     /** Animation length in ms; 0 jumps. Left out, bounds use the map's default and a single point flies for 900. */
@@ -52,7 +105,11 @@ export function frameRoute(
   const target = fitTargetForPoints(points);
   if (!target) return false;
   const padding = customPadding ?? routeFramePadding(map, side, { phoneSheet });
-  if (target.kind === 'bounds') map.fitBounds(target.bounds, { padding, maxZoom, ...(duration !== undefined && { duration }) });
+  if (target.kind === 'bounds' && minZoom !== undefined) {
+    const camera = map.cameraForBounds(target.bounds, { padding, maxZoom });
+    if (!camera) return false;
+    map.flyTo({ center: camera.center, zoom: Math.max(camera.zoom ?? 0, minZoom), ...(duration !== undefined && { duration }) });
+  } else if (target.kind === 'bounds') map.fitBounds(target.bounds, { padding, maxZoom, ...(duration !== undefined && { duration }) });
   else map.flyTo({ center: target.center, zoom: Math.max(map.getZoom(), maxZoom), padding, duration: duration ?? 900 });
   return true;
 }

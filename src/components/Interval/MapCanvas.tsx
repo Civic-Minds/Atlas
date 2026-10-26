@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { cardFramePadding } from './map/routeFraming';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Link2, Flag, Download } from 'lucide-react';
 import MapZoomButtons from '../MapZoomButtons';
@@ -1245,10 +1246,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // A route Live has open is the map's selection too: once the main map hands a route to Live's card (Interval
   // clears its own pick so its card stays closed), Live's pick drives the same selected-route styling and framing.
   const mapSelectedRoute = selectedRoute ?? liveOverlay?.mapRouteKey ?? null;
+  // Live's card is not the regular route card: frame a Live route clear of where that card really is.
+  const liveCardRef = liveOverlay?.cardRef;
+  const liveFramePadding = useMemo(
+    () => (liveCardRef && !selectedRoute ? (map: maplibregl.Map) => cardFramePadding(map, liveCardRef.current) : null),
+    [liveCardRef, selectedRoute],
+  );
 
   useSelectionFraming(mapRef, mapLoaded, {
     agencies, layers, selectedAgencySlug, selectedRoute: mapSelectedRoute, selectedStop, initialOnDemandSlug,
-    initialMapCenter, areaFocus, resetViewKey, regionalView,
+    initialMapCenter, areaFocus, resetViewKey, regionalView, framePadding: liveFramePadding,
   });
 
   useRouteStyling(mapRef, mapLoaded, {

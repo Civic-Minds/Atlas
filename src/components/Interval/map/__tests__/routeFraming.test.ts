@@ -85,3 +85,46 @@ describe('selectionFramePadding (main map route selection)', () => {
     expect(selectionFramePadding(fakeMap(1200, 800), false)).toEqual({ top: 80, bottom: 80, left: 320, right: 80 });
   });
 });
+
+describe('routeFramePadding measured from the card (Live)', () => {
+  const rect = (top: number, bottom: number, left: number, right: number) => ({ top, bottom, left, right });
+
+  it('frames below a phone card that sits at the top (the 506 cars were under it)', () => {
+    // Live's card on a 390x844 phone: 68px down to 382px, full width.
+    expect(routeFramePadding(fakeMap(390, 844), 'left', { phoneSheet: true, card: rect(68, 382, 21, 357) }))
+      .toEqual({ top: 406, bottom: 24, left: 45, right: 45 });
+  });
+
+  it('frames above a phone card that is a bottom sheet', () => {
+    expect(routeFramePadding(fakeMap(390, 844), 'left', { card: rect(500, 844, 0, 390) }))
+      .toEqual({ top: 75, bottom: 368, left: 45, right: 45 });
+  });
+
+  it('always leaves some map when the card fills nearly the whole phone screen', () => {
+    const p = routeFramePadding(fakeMap(390, 844), 'left', { card: rect(68, 800, 21, 357) });
+    expect(844 - (p.top ?? 0) - (p.bottom ?? 0)).toBeGreaterThanOrEqual(120);
+  });
+
+  it('clears the card\'s right edge on wide screens, never less than the regular padding', () => {
+    expect(routeFramePadding(fakeMap(1280, 800), 'left', { card: rect(68, 382, 133, 413) }))
+      .toEqual({ top: 80, bottom: 80, left: 437, right: 80 });
+    expect(routeFramePadding(fakeMap(1280, 800), 'left', { card: rect(68, 382, 20, 200) }))
+      .toEqual({ top: 80, bottom: 80, left: 320, right: 80 });
+  });
+
+  it('falls back to the regular padding with no card', () => {
+    expect(routeFramePadding(fakeMap(390, 844), 'left', { phoneSheet: true, card: null })).toEqual(routeFramePadding(fakeMap(390, 844), 'left', { phoneSheet: true }));
+  });
+});
+
+describe('frameRoute with a minimum zoom (Live place list)', () => {
+  it('lands at least at the minimum zoom, centred for the padding', () => {
+    const map = fakeMap() as ReturnType<typeof fakeMap> & { cameraForBounds: ReturnType<typeof vi.fn> };
+    map.cameraForBounds = vi.fn(() => ({ center: [-79.4, 43.7] as [number, number], zoom: 8.1 }));
+    const padding = { top: 10, bottom: 10, left: 10, right: 10 };
+    expect(frameRoute(map, [[-79.6, 43.5], [-79.2, 43.9]], { minZoom: 9.2, padding })).toBe(true);
+    expect(map.cameraForBounds).toHaveBeenCalledWith([[-79.6, 43.5], [-79.2, 43.9]], { padding, maxZoom: 14 });
+    expect(map.flyTo).toHaveBeenCalledWith({ center: [-79.4, 43.7], zoom: 9.2 });
+    expect(map.fitBounds).not.toHaveBeenCalled();
+  });
+});
