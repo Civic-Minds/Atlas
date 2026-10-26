@@ -3,11 +3,9 @@ import { isLivePollingRoute } from '../../../utils/livePolling';
 import { routeLabels, resolveBranchLabel } from '../../../utils/format';
 import RouteRowName from '../../RouteRowName';
 import { metricValueForPeriod } from '../../../utils/routeFacts';
-import type { TimePeriod } from '../../../hooks/useIntervalStats';
+import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   CardDirectionRow,
-  CardDivider,
-  CardSublineButton,
   CardSummaryRow,
   SidebarCardListRows,
 } from '../cardUi';
@@ -15,6 +13,13 @@ import type { StopBranch } from './StopCard';
 
 function branchHeadway(branch: StopBranch, period: TimePeriod): number | null {
   return metricValueForPeriod(branch.service, period);
+}
+
+/** The less frequent of the branch's own value and the stop's value, so a destination is never overstated. */
+function rowHeadway(branchValue: number | null, stopValue: number | null): number | null {
+  if (branchValue == null) return stopValue;
+  if (stopValue == null) return branchValue;
+  return Math.max(branchValue, stopValue);
 }
 
 interface Props {
@@ -29,9 +34,12 @@ interface Props {
   period: TimePeriod;
   showAgency: boolean;
   onOpenRoute: (rKey: string) => void;
+  /** The map hover (CIV-918): a destination row shows its route and direction on the map. */
+  hoveredBranch?: HoveredBranch | null;
+  setHoveredBranch?: (branch: HoveredBranch | null) => void;
 }
 
-/** One route at a stop — shared headway collapsed, flat list (#102). */
+/** One route at a stop: its name, then each destination as a route card row (CIV-918). */
 export default function StopRouteGroup({
   shortName,
   labelShortName,
@@ -43,14 +51,15 @@ export default function StopRouteGroup({
   period,
   showAgency,
   onOpenRoute,
+  hoveredBranch = null,
+  setHoveredBranch,
 }: Props) {
   const routeParts = routeLabels({ shortName: labelShortName ?? shortName, longName, routeType, agencySlug, agencyName: showAgency ? agencyName : undefined });
   // The list rule (CIV-928): "**504** King", not "504 — King".
   const routeLabel = <RouteRowName shortName={routeParts.primary} name={routeParts.secondary} />;
   const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;
-  const simpleBidirectional = hasMultipleDirections && branches.length === 2 &&
-    new Set(branches.map(b => b.directionId)).size === 2;
 
+  // Destinations ordered by direction, with no line between directions and no direction headings (CIV-918).
   const items = branches
     .map(branch => ({
       ...branch,
@@ -61,89 +70,58 @@ export default function StopRouteGroup({
         directionId: branch.directionId,
         multipleDirections: hasMultipleDirections,
       }),
-      // #934: part-period wording replaces the number, as on the route card's row.
-      hw: branch.periodText ? null : branchHeadway(branch, period),
+      // #934: part-period wording replaces the number, as on the route card's row. A row never claims more
+      // service than either measure gives: the stop's value counts every trip of the direction (504A and
+      // 504B together), and the branch's route-wide value can count trips that don't reach this stop.
+      hw: branch.periodText ? null : rowHeadway(branch.rowHeadway ?? null, branchHeadway(branch, period)),
     }))
-    .filter(item => item.label);
+    .filter(item => item.label)
+    .sort((a, b) => a.directionId - b.directionId);
+  // Where the route's patterns share the stop (504A and 504B at King and Bay), the route comes more often
+  // than any one destination: the route line keeps the stop's value, as the stop card showed before.
+  const rowValues = items.map(item => item.hw).filter((hw): hw is number => hw != null);
+  const pooledValues = items.map(item => (item.periodText ? null : branchHeadway(item, period))).filter((hw): hw is number => hw != null);
+  const pooled = pooledValues.length > 0 ? Math.min(...pooledValues) : null;
+  const routeHeadway = pooled != null && rowValues.length > 0 && pooled < Math.min(...rowValues) ? pooled : null;
 
   if (items.length === 0) return null;
 
-  const headways = items.map(i => i.hw).filter((h): h is number => h != null);
-  const allSame = headways.length > 0 && headways.every(h => h === headways[0]);
   const slug = branches[0]?.rKey.split('::')[0] ?? '';
   const live = isLivePollingRoute(slug, shortName);
 
-  const single = items.length === 1;
-  const compact = items.length > 1 && allSame && !items.some(i => i.periodText);
-
-  if (single) {
-    const item = items[0];
-    return (
-      <CardSummaryRow
-        label={routeLabel}
-        onClick={() => onOpenRoute(item.rKey)}
-        headway={item.hw}
-        text={item.periodText}
-        live={live}
-        below={(
-          <CardSublineButton onClick={() => onOpenRoute(item.rKey)} className="mt-0.5">
-            {item.label}
-          </CardSublineButton>
-        )}
-      />
-    );
-  }
-
-  if (compact) {
-    const sharedHw = headways[0]!;
-    return (
-      <div>
-        <CardSummaryRow
-          label={routeLabel}
-          onClick={() => onOpenRoute(branches[0]?.rKey ?? '')}
-          headway={sharedHw}
-          live={live}
-        />
-        <div className="space-y-0.5">
-          {(() => {
-            let lastDir: number | null = null;
-            return items.map(item => {
-              const showDivider = hasMultipleDirections && !simpleBidirectional
-                && lastDir !== null && item.directionId !== lastDir;
-              lastDir = item.directionId;
-              return (
-                <React.Fragment key={`${item.rKey}::${item.directionId}::${item.headsign ?? ''}`}>
-                  {showDivider && <CardDivider className="my-1" />}
-                  <CardSublineButton onClick={() => onOpenRoute(item.rKey)}>
-                    {item.label}
-                  </CardSublineButton>
-                </React.Fragment>
-              );
-            });
-          })()}
-        </div>
-      </div>
-    );
-  }
-
+  // The route card's rows (CIV-918): every destination has its own frequency on its first line, and
+  // hovering one shows that route and direction on the map.
   return (
     <div>
       <CardSummaryRow
         label={routeLabel}
         onClick={() => onOpenRoute(branches[0]?.rKey ?? '')}
+        headway={routeHeadway}
       />
       <SidebarCardListRows className="space-y-1 mt-0.5">
-        {items.map(item => (
-          <CardDirectionRow
-            key={`${item.rKey}::${item.directionId}::${item.headsign ?? ''}`}
-            label={item.label}
-            headway={item.hw ?? undefined}
-            limited={item.periodText != null}
-            limitedLabel={item.periodText}
-            live={live}
-            onClick={() => onOpenRoute(item.rKey)}
-          />
-        ))}
+        {items.map(item => {
+          const hovered = !!hoveredBranch && hoveredBranch.routeKey === item.rKey
+            && hoveredBranch.directionId === item.directionId && hoveredBranch.headsign === (item.headsign ?? undefined);
+          return (
+            <CardDirectionRow
+              key={`${item.rKey}::${item.directionId}::${item.headsign ?? ''}`}
+              label={item.label}
+              labelWeight="regular"
+              singleLine
+              headway={item.hw ?? undefined}
+              limited={item.periodText != null}
+              limitedLabel={item.periodText}
+              live={live}
+              onClick={() => onOpenRoute(item.rKey)}
+              {...(setHoveredBranch && item.headsign ? {
+                onHoverStart: () => setHoveredBranch({ routeKey: item.rKey, directionId: item.directionId, headsign: item.headsign ?? undefined }),
+                onHoverEnd: () => setHoveredBranch(null),
+                branchHovered: hovered,
+                branchDimmed: !!hoveredBranch && !hovered,
+              } : {})}
+            />
+          );
+        })}
       </SidebarCardListRows>
     </div>
   );

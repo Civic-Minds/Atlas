@@ -26,7 +26,12 @@ export function comparePanelTop(compareActive: boolean, searchFocused: boolean, 
   return compareActive && !searchOverlayHidesPanel(searchFocused, query) ? COMPARE_PANEL_TOP : null;
 }
 
-const TRANSIT_ACRONYMS: Record<string, string> = {
+/**
+ * The one list of real abbreviations Atlas keeps in capitals (CIV-935): stop names, destinations and route names.
+ * Keys are the word as titleCase first writes it ("Lbj"), values how it reads ("LBJ"). A word that is also an
+ * ordinary word or surname in place names ("Max", "Marc", "Path", "Ne") is in ROUTE_NAME_ONLY_ACRONYMS below instead.
+ */
+const NAME_ACRONYMS: Record<string, string> = {
   Go: 'GO',
   Dc: 'DC',
   Yrt: 'YRT',
@@ -116,7 +121,53 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Uc: 'UC',
   Ut: 'UT',
   Sf: 'SF',
+  // Agencies, campuses, airports and places, moved here from the route-name list so stops and destinations get them too.
+  Wce: 'WCE',
+  Mbta: 'MBTA',
+  Wmata: 'WMATA',
+  Septa: 'SEPTA',
+  Marta: 'MARTA',
+  Stm: 'STM',
+  Ets: 'ETS',
+  Ubc: 'UBC',
+  Utsc: 'UTSC',
+  Utm: 'UTM',
+  Mit: 'MIT',
+  Lax: 'LAX',
+  Lga: 'LGA',
+  Ewr: 'EWR',
+  Yvr: 'YVR',
+  Yyz: 'YYZ',
+  Bwi: 'BWI',
+  Nyc: 'NYC',
+  Nj: 'NJ',
+  Patco: 'PATCO',
+  Cbd: 'CBD',
+  // DART destinations ("LBJ / Central", "DFW") and other initialisms found in published stop names and headsigns.
+  Lbj: 'LBJ',
+  Dfw: 'DFW',
+  Eb: 'EB',
+  Wb: 'WB',
+  Nb: 'NB',
+  Sb: 'SB',
+  Ymca: 'YMCA',
+  Ywca: 'YWCA',
+  Cvs: 'CVS',
+  Dmv: 'DMV',
+  Suny: 'SUNY',
+  Usc: 'USC',
+  Vfw: 'VFW',
+  Ikea: 'IKEA',
 };
+
+/**
+ * Capitals kept only in route names: these are also ordinary words or surnames in stop and place names
+ * ("Max", "Marc", "Path", "Up") or compass letters a stop name spells as a word.
+ */
+const ROUTE_NAME_ONLY_ACRONYMS = [
+  'AM', 'PM', 'MAX', 'UP', 'TC', 'PATH', 'MARC', 'STO', 'SU',
+  'N', 'S', 'E', 'W', 'NE', 'SE', 'US',
+];
 
 // Articles/prepositions that stay lowercase unless they open the string
 const KEEP_LOWER = /^(of|to|the|a|an|and|or|in|at|by|for|via)$/i;
@@ -157,13 +208,13 @@ export function titleCase(s: string): string {
 
   // Preserve short route codes (e.g. "GO", "LW", "1X") as uppercase. Three-letter
   // service names such as MARTA's "RED" should still title-case; known three-letter
-  // acronyms are restored by the TRANSIT_ACRONYMS table below.
+  // acronyms are restored by the NAME_ACRONYMS table below.
   if (s.length <= 2 && /^[A-Z0-9a-z]+$/i.test(s)) {
     return s.toUpperCase();
   }
 
-  // Build the acronym matching regex dynamically from the keys of TRANSIT_ACRONYMS
-  const acronymKeys = Object.keys(TRANSIT_ACRONYMS).join('|');
+  // Build the acronym matching regex dynamically from the keys of NAME_ACRONYMS
+  const acronymKeys = Object.keys(NAME_ACRONYMS).join('|');
   const acronymRegex = new RegExp(`\\b(${acronymKeys})\\b`, 'gi');
 
   return s
@@ -181,7 +232,7 @@ export function titleCase(s: string): string {
     .replace(acronymRegex, (m, _g1, offset, str) => {
       // Don't convert "St." (Saint abbreviation) — only the standalone GO line-code "ST"
       if (m === 'St' && str[offset + m.length] === '.') return m;
-      return TRANSIT_ACRONYMS[m] ?? TRANSIT_ACRONYMS[m.toLowerCase()] ?? m;
+      return NAME_ACRONYMS[m] ?? NAME_ACRONYMS[m.toLowerCase()] ?? m;
     })
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
     // Mc surnames in all-caps feeds: "MCKNIGHT" -> "McKnight"
@@ -190,6 +241,15 @@ export function titleCase(s: string): string {
     .replace(/\bO'(\p{L})/gu, (_, c: string) => "O'" + c.toUpperCase())
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");
+}
+
+/**
+ * A stop name as the feed wrote it, cased only when the feed sent it all in capitals ("MOODY CENTER" →
+ * "Moody Center", CIV-935). A name that already has lower-case letters is the feed's own spelling and stays as
+ * written ("Lower Jarvis St at The Esplanade"), the same rule routeLabelCase uses for route names.
+ */
+export function stopNameCase(name: string): string {
+  return !name || /\p{Ll}/u.test(name) ? name : titleCase(name);
 }
 
 export function cleanRouteShortName(shortName: string | null | undefined): string {
@@ -237,17 +297,9 @@ export { shouldHideNumericRouteShortName };
  * names in the repo's agency config and pipeline fixtures; anything not on it ("WEST", "PARK", "MAIN", "VIVA") is a word.
  */
 export const ROUTE_NAME_ACRONYMS: ReadonlySet<string> = new Set([
-  // Transit agencies and systems
-  'BART', 'TTC', 'GO', 'YRT', 'HSR', 'GRT', 'NFTA', 'LTC', 'KTC', 'WETA', 'SFMTA', 'WCE', 'MBTA', 'WMATA', 'SEPTA', 'MARTA',
-  'STM', 'VTA', 'CTA', 'ETS', 'REM', 'AC', 'NWIA',
-  // Modes
-  'BRT', 'LRT',
-  // Campuses, airports, places, and common abbreviations
-  'UBC', 'UTSC', 'UTM', 'SFU', 'MIT', 'SFO', 'JFK', 'LAX', 'LGA', 'EWR', 'YVR', 'YYZ', 'BWI', 'NJ', 'NYC', 'DC', 'CBD', 'AM', 'PM',
-  // Service brands and rail/transit names riders read in capitals
-  'MAX', 'UP', 'TC', 'PATH', 'PATCO', 'MARC', 'STO', 'SU', 'RT',
-  // Compass directions and US highways ("NW 5TH AVE", "US 41"); not state codes: none appear as route-name words in the repo's data
-  'N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW', 'US',
+  // The shared list (stops and destinations get these too), then the route-name-only words.
+  ...Object.values(NAME_ACRONYMS).filter(word => word === word.toUpperCase()),
+  ...ROUTE_NAME_ONLY_ACRONYMS,
 ]);
 
 /**

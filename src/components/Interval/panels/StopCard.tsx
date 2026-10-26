@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { CardBackLink } from '../../CardBack';
-import { titleCase, routeLabels } from '../../../utils/format';
-import type { TimePeriod } from '../../../hooks/useIntervalStats';
+import { stopNameCase, titleCase, routeLabels } from '../../../utils/format';
+import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   AgencyFilterChips,
   CardDirectionRow,
@@ -23,7 +23,10 @@ import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
 export interface StopBranch {
   rKey: string;
   headsign: string | null;
+  /** The route's departures at the stop, pooled across its patterns where they share it (CIV-82). */
   service: HeadwayMetric;
+  /** The destination row's value (CIV-918): the branch's own, as on its route card row. */
+  rowHeadway?: number | null;
   directionId: number;
   /** #934: part-period wording shown in place of a number, as on the route card's row. */
   periodText?: string;
@@ -81,6 +84,9 @@ export interface StopCardProps {
   nearbyConnections: NearbyConnection[];
   /** Live arrivals lookup — set when the stop belongs to a live-capable agency. */
   liveStop?: { slug: string; stopId: string; lat: number; lon: number } | null;
+  /** The map hover for the destination rows (CIV-918). */
+  hoveredBranch?: HoveredBranch | null;
+  setHoveredBranch?: (branch: HoveredBranch | null) => void;
 }
 
 export const StopCard: React.FC<StopCardProps> = ({
@@ -95,9 +101,12 @@ export const StopCard: React.FC<StopCardProps> = ({
   period,
   nearbyConnections,
   liveStop,
+  hoveredBranch,
+  setHoveredBranch,
 }) => {
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const openRoute = (rKey: string) => {
+    setHoveredBranch?.(null);
     setSelectedStop(null);
     setSelectedRoute(rKey);
   };
@@ -168,6 +177,8 @@ export const StopCard: React.FC<StopCardProps> = ({
             period={period}
             showAgency={stopAgencies.length > 1}
             onOpenRoute={openRoute}
+            hoveredBranch={hoveredBranch}
+            setHoveredBranch={setHoveredBranch}
           />
         ))}
       </SidebarCardList>
@@ -181,7 +192,8 @@ export const StopCard: React.FC<StopCardProps> = ({
                 key={rKey}
                 label={route.text}
                 routeName={{ shortName: route.primary, name: route.secondary }}
-                subLabel={`${nearestStopName} · ${Math.round(distanceMeters)} m away`}
+                // "Moody Center", not the feed's "MOODY CENTER"; a feed's own mixed case stays as written (CIV-935).
+                subLabel={`${stopNameCase(nearestStopName)} · ${Math.round(distanceMeters)} m away`}
                 subLabelWeight="medium"
                 headway={headway ?? undefined}
                 onClick={() => openRoute(rKey)}

@@ -885,7 +885,6 @@ export const ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA = {
   serviceName: 'All Points Dial-A-Ride',
   serviceHours: 'Weekdays 6 a.m.–4 p.m.',
   hoursNote: 'No service on the last Friday of the month.',
-  tripRules: 'Open to the public. Days of service in outlying areas may be limited.',
   bookingInfo: 'Call 970-249-0128 (Montrose County and Norwood) or 970-874-7334 (Delta County) by noon the business day before.',
   pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
   bookingUrl: 'https://www.allpointstransit.com/dial-a-ride/',

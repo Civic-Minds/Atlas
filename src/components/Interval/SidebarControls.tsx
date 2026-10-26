@@ -500,7 +500,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
 
     const routeMap = new Map<string, { shortName: string; labelShortName: string; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
-    type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; directionId: number; periodText?: string };
+    type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string };
     // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
     const sharedIndexBySlug = new Map(Object.entries(nonCorridorLayers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
 
@@ -564,6 +564,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             service: service.value == null && p.headway != null && !periodText
               ? { ...service, value: p.headway, provenance: 'all-day-summary' }
               : service,
+            // A destination row says how often that destination comes (CIV-918): the branch's own value, the
+            // same number its row on the route card shows. The stop's value counts every trip of the
+            // direction (504A and 504B together at King and Bay), so it would overstate a destination.
+            rowHeadway: branchDisplayPeriodHeadway(p, period),
             directionId: dirId,
             ...(periodText ? { periodText } : {}),
           });
@@ -581,7 +585,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         routeType: v.routeType,
         branches: Array.from(v.branches.values())
           .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
-          .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}) })),
+          .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}) })),
       }));
   }, [currentStop, nonCorridorLayers, currentDay, period]);
 
@@ -929,6 +933,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           <StopCard
             currentStop={currentStop}
             back={stopBack}
+            hoveredBranch={hoveredBranch}
+            setHoveredBranch={setHoveredBranch}
             setSelectedStop={setSelectedStop}
             setSelectedRoute={setSelectedRoute}
             stopAgencies={stopAgencies}

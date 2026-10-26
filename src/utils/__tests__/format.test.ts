@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { agencyBackLinkName, COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
+import { agencyBackLinkName, stopNameCase, COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -8,6 +8,37 @@ interface IndexAgency {
 }
 
 const agencies = (indexData as { agencies: IndexAgency[] }).agencies;
+
+describe('one capitals rule for stop and destination names (CIV-935)', () => {
+  it('keeps real abbreviations in capitals and writes the rest in normal case', () => {
+    expect(titleCase('LBJ / CENTRAL STATION')).toBe('LBJ / Central Station');
+    expect(titleCase('Lbj / Central')).toBe('LBJ / Central');
+    expect(titleCase('DFW AIRPORT STATION')).toBe('DFW Airport Station');
+    expect(titleCase('CBD WEST TRANSFER CENTER')).toBe('CBD West Transfer Center');
+    expect(titleCase('MOODY CENTER')).toBe('Moody Center');
+    expect(titleCase('Alameda & Bob Hope EB')).toBe('Alameda & Bob Hope EB');
+    expect(titleCase('2230 3rd Ave (YMCA)')).toBe('2230 3rd Ave (YMCA)');
+  });
+
+  it('leaves French and Spanish words alone', () => {
+    expect(titleCase('LE HAILLAN ROSTAND')).toBe('Le Haillan Rostand');
+    expect(titleCase('GARE DE DIJON VILLE')).toBe('Gare De Dijon Ville');
+    expect(titleCase('PLACE STANISLAS')).toBe('Place Stanislas');
+    expect(titleCase('LA MINERVA')).toBe('La Minerva');
+  });
+
+  it("cases an all-capitals stop name and leaves a feed's own mixed case alone", () => {
+    expect(stopNameCase('MOODY CENTER')).toBe('Moody Center');
+    expect(stopNameCase('Lower Jarvis St at The Esplanade')).toBe('Lower Jarvis St at The Esplanade');
+  });
+
+  it('keeps route-name-only words out of stop names', () => {
+    expect(titleCase('MAX BROWN BLVD')).toBe('Max Brown Blvd');
+    expect(routeLabelCase('MAX BLUE LINE')).toBe('MAX Blue Line');
+    expect(ROUTE_NAME_ACRONYMS.has('CBD')).toBe(true);
+    expect(ROUTE_NAME_ACRONYMS.has('LBJ')).toBe(true);
+  });
+});
 
 describe('agencyBackLinkName', () => {
   it('never swaps the name for a bracketed city (#1102)', () => {

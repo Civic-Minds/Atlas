@@ -20,7 +20,7 @@ import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton } from './cardUi';
+import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
@@ -415,7 +415,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   const reportButton = (
     <CardReportButton
       title={`Agency issue: ${agency.name}`}
-      details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+      // The data dates the route card's report sends too (CIV-932), so an agency report says how fresh its data is.
+      details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Agency data refreshed:** ${agency.lastRefreshedAt ?? 'unknown'}\n**Feed expiry:** ${agency.lastFeedExpiry ?? 'unknown'}\n**Atlas URL:** ${currentAtlasUrl()}`}
       excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
     />
   );
@@ -546,44 +547,46 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <AgencyDataSourceLink agency={agency} />
             </p>
           )}
-          {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
-            <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
-              <div className="flex items-baseline justify-between gap-2">
-                <CardSectionLabel flush>On-demand service</CardSectionLabel>
-                {agency.onDemandServiceArea.sourceUrl && (
-                  <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.onDemandServiceArea.sourceUrl} kind="on_demand_source" agencySlug={agency.slug} className="shrink-0">
-                    Details
-                  </ArrowLink>
+          {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (() => {
+            const service = agency.onDemandServiceArea;
+            // Every on-demand service in the shared row style (CIV-962): its name bold like a route with no number,
+            // and its hours in grey; a service with no confirmed hours says so, as its zone card does. A line under it
+            // keeps it apart from the mode pills; with no pills, the header's own line already ends it.
+            const services = [
+              { serviceName: service.serviceName!, availability: service.availability, serviceHours: service.serviceHours },
+              ...otherZoneServices(service),
+            ];
+            return (
+              <div className={`mt-2 border-t border-[var(--border-primary)] pt-2 ${routeFilters.length > 0 || hasOnDemandPill ? 'border-b pb-2' : ''}`}>
+                <CardSectionLabel>On-demand service</CardSectionLabel>
+                {services.map((item, index) => (
+                  <div key={item.serviceName} className={index > 0 ? 'mt-1.5' : ''}>
+                    <p className="text-xs font-black text-[var(--text-primary)] leading-snug">{item.serviceName}</p>
+                    {item.availability || item.serviceHours ? (
+                      <OnDemandHoursText
+                        availability={item.availability}
+                        serviceHours={item.serviceHours}
+                        className={CARD_SUMMARY}
+                      />
+                    ) : (
+                      <p className={CARD_SUMMARY}>{onDemandRunningNote(undefined, day, period)}</p>
+                    )}
+                  </div>
+                ))}
+                {service.tripRules && <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">{service.tripRules}</p>}
+                {coverageNote?.kind === 'partly-mapped' && (
+                  <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
+                )}
+                {service.sourceUrl && (
+                  <p className="mt-1 text-xs">
+                    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={service.sourceUrl} kind="on_demand_source" agencySlug={agency.slug}>
+                      Details
+                    </ArrowLink>
+                  </p>
                 )}
               </div>
-              <p className="text-xs font-bold text-[var(--text-primary)] mt-0.5">{agency.onDemandServiceArea.serviceName}</p>
-              <OnDemandHoursText
-                availability={agency.onDemandServiceArea.availability}
-                serviceHours={agency.onDemandServiceArea.serviceHours}
-                day={day}
-                className="text-xs leading-snug text-[var(--text-muted)] mt-0.5"
-              />
-              {agency.onDemandServiceArea.tripRules && (
-                <p className="text-xs leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.tripRules}</p>
-              )}
-              {otherZoneServices(agency.onDemandServiceArea).map(zoneService => (
-                <div key={zoneService.serviceName} className="mt-1.5">
-                  <p className="text-xs font-bold text-[var(--text-primary)]">{zoneService.serviceName}</p>
-                  <OnDemandHoursText
-                    availability={zoneService.availability}
-                    serviceHours={zoneService.serviceHours}
-                    day={day}
-                    className="text-xs leading-snug text-[var(--text-muted)] mt-0.5"
-                  />
-                </div>
-              ))}
-              {coverageNote?.kind === 'partly-mapped' && (
-                <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">
-                  Not on the map yet: {coverageNote.missing}.
-                </p>
-              )}
-            </div>
-          )}
+            );
+          })()}
           {(routeFilters.length > 0 || hasOnDemandPill) && (
             <ModeFilterPillRow
               filters={routeFilters}

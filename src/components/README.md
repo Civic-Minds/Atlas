@@ -10,7 +10,7 @@ Reuse these components before creating new panel markup or Tailwind class combin
 
 ## Route and card content
 
-- `Interval/cardUi.tsx` contains route-card primitives: `SidebarCardShell`, `SidebarCardHeaderBlock`, `SidebarCardList`, `SidebarCardListRows`, `CardDirectionRow`, `CardSummaryRow`, `CardSublineButton`, `CardSectionLabel`, and `CardHelpNotice`.
+- `Interval/cardUi.tsx` contains route-card primitives: `SidebarCardShell`, `SidebarCardHeaderBlock`, `SidebarCardList`, `SidebarCardListRows`, `CardDirectionRow`, `CardSummaryRow`, `CardSectionLabel`, and `CardHelpNotice`.
 - `RouteCardTitle` is the shared route title treatment: with `agencyBackLink`, the agency name above it is the back link to the agency card ("← TTC") (the map and History); otherwise a plain eyebrow (Live, which has its own back link).
 - `RouteListRow` is the shared route-list row for agency/search surfaces. Use its default `divided` variant for browsing/search lists; use `variant="spaced"` for card-style content where whitespace separates rows.
 

@@ -5,6 +5,8 @@ import ListRow from '../../ui/ListRow';
 import AgencyGroupHeader from '../../ui/AgencyGroupHeader';
 import { CardBackLink } from '../../CardBack';
 import RouteRowName from '../../RouteRowName';
+import { CardReportButton } from '../cardUi';
+import { currentAtlasUrl } from '../../../utils/reportIssue';
 
 export interface DisambigRoute {
   key: string;
@@ -24,6 +26,15 @@ export interface DisambiguationPanelProps {
   setDisambiguationRoutes: (routes: string[] | null) => void;
 }
 
+/** What a report from the chooser sends (CIV-932): every route it lists, then the link (its `routes=` and map view). */
+export function chooserReportDetails(routes: readonly DisambigRoute[]): string {
+  return [
+    '**Routes listed:**',
+    ...routes.map(r => `- ${r.agencyName}: ${routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug, agencyName: r.agencyName }).text} (${r.key})`),
+    `**Atlas URL:** ${currentAtlasUrl()}`,
+  ].join('\n');
+}
+
 export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
   disambigDetails,
   setSelectedRoute,
@@ -37,10 +48,18 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
   }
 
   return (
-    <div className={`${SIDEBAR_CARD_SURFACE} ${PANEL_ENTER} max-h-[380px] overflow-y-auto custom-scrollbar`}>
-      {/* Nothing comes before the chooser, so its back link closes it (CIV-929). */}
-      <div className="px-4 pt-4">
+    <div data-report-anchor="true" className={`${SIDEBAR_CARD_SURFACE} ${PANEL_ENTER} max-h-[380px] overflow-y-auto custom-scrollbar`}>
+      {/* Nothing comes before the chooser, so its back link closes it (CIV-929). The report flag sits on the
+          same line (CIV-932); its negative margin keeps the line its old height. */}
+      <div className="px-4 pt-4 flex items-start justify-between gap-2">
         <CardBackLink onClick={() => setDisambiguationRoutes(null)}>Map</CardBackLink>
+        <div className="-my-1">
+          <CardReportButton
+            title="Route chooser"
+            details={chooserReportDetails(disambigDetails)}
+            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+          />
+        </div>
       </div>
       <div>
         {groups.map(g => (
