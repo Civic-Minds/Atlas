@@ -34,7 +34,7 @@ import useNetworkData, { type ReadyRoute } from './components/Live/tool/useNetwo
 import { WeekTable } from './LiveDashboardView';
 import { NOISE_RULE } from '../shared/liveDashboard';
 import { BANDS } from './LiveExplorePage';
-import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
+import { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
 import LegendItem from './components/ui/LegendItem';
 import { MAP_BADGE, MAP_BADGE_LABEL } from './styles';
@@ -65,6 +65,34 @@ function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure
   return (
     <div role="group" aria-label="Measure" className="pointer-events-auto absolute right-0 top-0 z-10 flex flex-wrap justify-end gap-1.5">
       {MAP_MEASURES.map(([k, text]) => <Pill key={k} size="segment" tone="glass" selected={measure === k} onClick={() => setMeasure(k)}>{text}</Pill>)}
+    </div>
+  );
+}
+
+/** The time of day as one pill showing the current period; a click opens a small menu with the five choices. */
+function PeriodMenu({ band, setBand }: { band: DashboardBand; setBand: (b: DashboardBand) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: Event) => { if (e instanceof KeyboardEvent ? e.key === 'Escape' : !ref.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('pointerdown', close);
+    document.addEventListener('keydown', close);
+    return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('keydown', close); };
+  }, [open]);
+  return (
+    <div ref={ref} className="relative">
+      <Pill size="segment" selected aria-haspopup="menu" aria-expanded={open} aria-label="Time of day" onClick={() => setOpen(o => !o)}>
+        {BANDS.find(([k]) => k === band)?.[1]}<span aria-hidden="true" className="ml-1">▾</span>
+      </Pill>
+      {open && (
+        <div role="menu" aria-label="Time of day" className="absolute left-0 top-full z-50 mt-1 flex min-w-full flex-col gap-0.5 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] p-1 shadow-lg">
+          {BANDS.map(([k, text]) => (
+            <button key={k} type="button" role="menuitemradio" aria-checked={k === band} onClick={() => { setBand(k as DashboardBand); setOpen(false); }}
+              className={`whitespace-nowrap rounded-lg px-2.5 py-1 text-left text-xs font-bold ${k === band ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>{text}</button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -265,7 +293,8 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
     />
   );
   // The direction switch sits in the top bar with the other pills.
-  const direction = ids.length > 1 && dirSlot ? createPortal(<PillGroup label="Direction" value={String(shown)} onChange={v => { setDir(Number(v)); setPick(null); }} options={ids.map(d => [String(d), v3!.directionLabels[String(d)]] as const)} />, dirSlot) : null;
+  // One pill showing the current direction; a click switches to the other.
+  const direction = ids.length > 1 && dirSlot ? createPortal(<Pill size="segment" selected aria-label="Direction" onClick={() => { setDir(ids[(ids.indexOf(shown) + 1) % ids.length]); setPick(null); }}>{v3!.directionLabels[String(shown)]}</Pill>, dirSlot) : null;
   // The picked route's name, in the top bar beside the direction pills (the name the route page's title uses).
   const routeName = routeSlot && ready && route ? createPortal(<h2 className="m-0 whitespace-nowrap text-sm font-bold">{ready.routeTitle || `${agency.toUpperCase()} ${ready.route}`}</h2>, routeSlot) : null;
   // The newest day in the figures, in the header: the picked route's, or the network summary's week.
@@ -343,7 +372,7 @@ export default function LiveToolPage() {
         <button type="button" onClick={() => { setRoute(null); setDir(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
         <div ref={setRouteSlot} className="contents" />
         <div ref={setDirSlot} className="contents" />
-        <PillGroup label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
+        <PeriodMenu band={band} setBand={setBand} />
         <div ref={setDataSlot} className="contents" />
       </header>
       <Body agency={agency} dirSlot={dirSlot} routeSlot={routeSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
