@@ -151,10 +151,15 @@ export const Z_HEADER    = 'z-[1100]';    // Header row, in-app right-side butto
 export const Z_DROPDOWN  = 'z-[1200]';    // Autocomplete dropdowns, app drawer panel
 export const Z_MODAL_BG  = 'z-[1400]';    // InfoPanel backdrop
 export const Z_MODAL_TOP = 'z-[1500]';    // FilterPanel backdrop (above InfoPanel)
+export const Z_PANEL_RAISED = 'z-[1001]'; // One step above the panels: Compare's map labels and link button, so a chip's menu opens over the phone route sheet
 export const PANEL_Z_INDEX = 1000;         // Numeric for inline styles (e.g. NearbyRoutesPanel)
 
-/** Every sidebar card's placement: its top sits 7px below the search bar (the bar ends at 49px on desktop, 51px on phones). */
-export const SIDEBAR_CARD_SLOT = 'absolute top-[58px] sm:top-[56px] left-6 sm:left-[var(--sidebar-left)]';
+/** The top of everything that sits under the search bar: 7px below it (the bar ends at 49px on desktop, 51px on phones).
+ *  The desktop step is its own token for a phone layout that starts somewhere else (Compare's lower map). */
+export const SIDEBAR_CARD_TOP_DESKTOP = 'sm:top-[56px]';
+export const SIDEBAR_CARD_TOP = `top-[58px] ${SIDEBAR_CARD_TOP_DESKTOP}`;
+/** Every sidebar card's placement: SIDEBAR_CARD_TOP plus its left edge. */
+export const SIDEBAR_CARD_SLOT = `absolute ${SIDEBAR_CARD_TOP} left-6 sm:left-[var(--sidebar-left)]`;
 export const SIDEBAR_CARD = `${SIDEBAR_CARD_SLOT} ${Z_PANEL}`;
 /** Every sidebar card's tallest size: it stops 7px above the bottom pills (measured: their top is 49px up
  *  on desktop, 53px on phones) and its list scrolls inside. */

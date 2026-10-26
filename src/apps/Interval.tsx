@@ -16,7 +16,7 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../styles';
+import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
@@ -150,13 +150,14 @@ const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
 
 /**
  * Where a compare side's label and controls sit on its map: top right of each half on desktop (never wider than its half),
- * centred on phones (where the halves stack). The wrapper ignores pointer events so the map stays
+ * centred on phones (where the halves stack). Map A's label sits where the sidebar cards start, just under
+ * the search bar; on phones map B is the lower half with no search bar over it, so its label sits near that half's top. The wrapper ignores pointer events so the map stays
  * draggable around it; the controls inside turn them back on. One step above the panels so a chip's
  * menu opens over the phone route sheet instead of behind it.
  */
 function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.ReactNode }) {
   return (
-    <div className={`absolute ${side === 'A' ? 'top-[68px]' : 'top-3 sm:top-[68px]'} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end z-[1001] pointer-events-none`}>
+    <div className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none`}>
       {children}
     </div>
   );
@@ -1119,7 +1120,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           </div>
         )}
         {compareActive && (
-          <div className="absolute left-1/2 top-1/2 z-[1001] -translate-x-1/2 -translate-y-1/2 max-sm:hidden">
+          <div className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden`}>
             <CompareLinkToggle linked={compareLinked} onChange={setCompareLinked} />
           </div>
         )}
