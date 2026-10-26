@@ -140,7 +140,8 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
               setSearchFocused?.(false);
             }}
           >
-            <p className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words min-w-0 text-left`} title={g.name}>
+            {/* One line: a long place ends in "…" and the full name shows on hover. */}
+            <p className={`${LIST_ROW_PRIMARY} truncate min-w-0 text-left`} title={g.name}>
               <AgencyName primary={primary} secondary={secondary} />
             </p>
           </ListRow>

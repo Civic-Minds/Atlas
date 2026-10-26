@@ -92,7 +92,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
                   className={`min-w-0 flex-1 ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
                 >
                   {/* "Agency · place", as every agency list writes it (CIV-971). */}
-                  <span className={`${LIST_ROW_PRIMARY} min-w-0 text-left`} title={agency.name}>
+                  <span className={`${LIST_ROW_PRIMARY} min-w-0 truncate text-left`} title={agency.name}>
                     <AgencyName primary={agency.display?.primary ?? agency.name} secondary={agency.display?.secondary} />
                   </span>
                 </ListRow>
