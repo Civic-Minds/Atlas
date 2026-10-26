@@ -137,7 +137,7 @@ export const ROUTE_VARIANTS_ENABLED = BETA_BUILD;
 export const RUNNING_TIMES_ENABLED = BETA_BUILD;
 // The expand control on the route card's frequency chart.
 export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
-// "Data source" link to the agency's own website on the agency card (CIV-467).
+// "Source" link to the agency's own website on the agency card (CIV-467; renamed in CIV-841).
 export const DATA_SOURCE_LINK_ENABLED = BETA_BUILD;
 
 /**

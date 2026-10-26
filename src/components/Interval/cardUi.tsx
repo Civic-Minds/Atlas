@@ -10,7 +10,6 @@ import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
 import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
-import LinkPill from '../ui/LinkPill';
 import RoundIconButton from '../ui/RoundIconButton';
 import { OutboundLink } from '../OutboundLink';
 import { CardBackLink } from '../CardBack';
@@ -28,7 +27,7 @@ export const CARD_HEADER_ONLY = 'shrink-0 px-4 pt-4 pb-3';
 /** The route card's scrolling body on desktop (the map's route card and History's route view). */
 export const SIDEBAR_CARD_BODY = `relative flex-1 min-h-0 ${SIDEBAR_CARD_SURFACE} px-4 pt-4 pb-2 overflow-y-auto overflow-x-hidden custom-scrollbar`;
 /** The line under a card title ("Atlanta · 102 routes · 2013–2026"). */
-export const CARD_SUMMARY = 'text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug';
+export const CARD_SUMMARY = 'text-xs font-medium text-[var(--text-dim)] mt-1 leading-snug';
 
 /** A card's body paragraph: a short muted sentence under a section label (the on-demand zone card's sections). */
 export const CARD_BODY_TEXT = 'text-xs leading-relaxed text-[var(--text-muted)] mt-1';
@@ -748,17 +747,13 @@ export function CardSublineButton({
   );
 }
 
-/** "Data source": a link to the agency's own website in an agency card's header. Beta-only; nothing for an agency with no website. */
+/** "Source": a link to the agency's own website in an agency card's header. Beta-only; nothing for an agency with no website. */
 export function AgencyDataSourceLink({ agency }: { agency: { slug: string; websiteUrl?: string } }) {
   if (!FEATURES.dataSourceLink || !agency.websiteUrl) return null;
   return (
-    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug} aria-label="Data source (opens in a new tab)" title="Opens in a new tab">
-      Data source
+    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug} aria-label="Source (opens in a new tab)" title="Opens in a new tab">
+      Source
     </ArrowLink>
   );
 }
 
-/** "All <place> area agencies": a small chip beside the card's summary line. */
-export function AgencyAreaChip({ href, label }: { href: string; label: string }) {
-  return <LinkPill href={href} className="mt-1">{label}</LinkPill>;
-}
