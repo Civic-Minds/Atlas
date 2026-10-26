@@ -27,7 +27,7 @@ function branchGeometryScore(d: ShapeProperties, features: GeoJSON.Feature[]): n
 /**
  * When the same GTFS headsign appears in multiple direction_id groups, drop stub
  * duplicates (short-turn / deadhead shapes) so destinations like "Kipling" don't
- * repeat under both Eastbound and Westbound on TTC 900.
+ * repeat under both Eastbound and Westbound on TTC 900. A direction is never left with no rows.
  */
 export function dedupeCrossDirectionHeadsigns(
   groups: DirectionBranchGroup[],
@@ -46,7 +46,7 @@ export function dedupeCrossDirectionHeadsigns(
   });
 
   groups.forEach((g, gi) => {
-    g.realTier = g.realTier.filter(d => {
+    const kept = g.realTier.filter(d => {
       const key = (d.headsign ?? '').trim().toLowerCase();
       if (!key) return true;
       const winner = best.get(key);
@@ -56,5 +56,8 @@ export function dedupeCrossDirectionHeadsigns(
       if (score < winner.score * 0.5) return false;
       return true;
     });
+    // Only a stub beside the direction's own rows is a duplicate: a direction whose every row shares a headsign with the
+    // other direction is a real return trip (RFTA HC "Hunter Creek Loop" both ways, #1118), so it keeps its rows.
+    if (kept.length > 0) g.realTier = kept;
   });
 }

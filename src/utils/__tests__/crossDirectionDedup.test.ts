@@ -45,4 +45,22 @@ describe('dedupeCrossDirectionHeadsigns', () => {
     expect(groups[0].realTier.map(d => d.headsign)).toEqual(['Kipling']);
     expect(groups[1].realTier.map(d => d.headsign)).toEqual(['Pearson Airport']);
   });
+
+  it('keeps a direction whose only row shares its headsign with the other direction (RFTA HC, #1118)', () => {
+    const line = (n: number) => ({ type: 'LineString' as const, coordinates: Array.from({ length: n }, (_, i) => [i, i]) });
+    const outbound: ShapeProperties = { routeId: 'HC', directionId: 0, tier: '20', headway: 20, routeShortName: 'HC', routeLongName: 'Hunter Creek', headsign: 'Hunter Creek Loop' };
+    const inbound: ShapeProperties = { ...outbound, directionId: 1 };
+    const features: GeoJSON.Feature[] = [
+      { type: 'Feature', properties: outbound, geometry: line(20) },
+      { type: 'Feature', properties: inbound, geometry: line(15) },
+    ];
+    const groups = [
+      { dirId: 0, realTier: [outbound], span: [] },
+      { dirId: 1, realTier: [inbound], span: [] },
+    ];
+
+    dedupeCrossDirectionHeadsigns(groups, features);
+
+    expect(groups.map(g => g.realTier.length)).toEqual([1, 1]);
+  });
 });
