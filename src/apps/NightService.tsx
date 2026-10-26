@@ -9,7 +9,7 @@ import { nightServiceKey, routeNightGrade } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CardReportButton } from '../components/Interval/cardUi';
-import { currentAtlasUrl } from '../utils/reportIssue';
+import { reportDetails } from '../utils/reportIssue';
 import { routeLabels } from '../utils/format';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
@@ -57,13 +57,12 @@ function nightReportDetails(
   agencies: { name: string; routes: string[] }[],
   bounds: { n: number; s: number; e: number; w: number } | null | undefined,
 ): string {
-  return [
-    `**View:** routes every ${frequency} min or better from 2am to 5am`,
-    `**Map bounds:** ${bounds ? `${bounds.s.toFixed(4)},${bounds.w.toFixed(4)} to ${bounds.n.toFixed(4)},${bounds.e.toFixed(4)}` : 'unknown'}`,
+  return reportDetails([
+    ['View', `routes every ${frequency} min or better from 2am to 5am`],
+    ['Map bounds', bounds ? `${bounds.s.toFixed(4)},${bounds.w.toFixed(4)} to ${bounds.n.toFixed(4)},${bounds.e.toFixed(4)}` : 'unknown'],
     '**Listed:**',
     ...(agencies.length > 0 ? agencies.flatMap(agency => [`- ${agency.name}`, ...agency.routes.map(route => `  - ${route}`)]) : ['- Nothing listed']),
-    `**Atlas URL:** ${currentAtlasUrl()}`,
-  ].join('\n');
+  ]);
 }
 
 function nightRouteLabel(route: NightServiceRouteSummary, agency: { slug: string; agencyName: string }) {

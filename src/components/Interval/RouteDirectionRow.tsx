@@ -3,8 +3,6 @@ import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
 import { Info } from 'lucide-react';
 import { fmtHeadwayRange } from '../../utils/format';
 import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
-import { headwayToTierColor } from './HeadwaySparkline';
-import { useColorMode } from '../../hooks/useColorMode';
 import { HeadwayBadge, LimitedBadge } from './cardUi';
 import RouteRowName from '../RouteRowName';
 
@@ -56,12 +54,10 @@ interface Props {
  * so there's one place to change instead of hunting across SidebarControls.
  */
 export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelWeight = 'bold', live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
-  const colorMode = useColorMode();
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
   const showRange = shouldShowBranchHeadwayRange(trunkHeadway, headway);
-  const dotColor = headwayToTierColor(showRange ? trunkHeadway! : (colorHeadway ?? headway), colorMode);
   const rangeText = showRange && headway != null && trunkHeadway != null
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;
@@ -98,7 +94,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
         >
           {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
         </span>
-        {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 shrink-0">
+        {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 min-w-0">
           {edgeGapAllowance && (
             <button
               type="button"
@@ -117,12 +113,8 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           {!limited && headway != null && !showRange && (
             <HeadwayBadge headway={headway} colorHeadway={colorHeadway} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} />
           )}
-          {!limited && rangeText && (
-            <span className="inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0">
-              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
-              <span className="whitespace-nowrap">{rangeText}</span>
-            </span>
-          )}
+          {/* The trunk-to-branch range ("every 6–12 min") is the shared badge, coloured by the trunk (CIV-1000). */}
+          {!limited && rangeText && <HeadwayBadge headway={trunkHeadway!} label={rangeText} />}
         </span>}
       </div>
       {subLabel && (

@@ -6,7 +6,7 @@ import AgencyName from '../../ui/AgencyName';
 import { CardBackLink } from '../../CardBack';
 import RouteListRow from '../../RouteListRow';
 import { CardReportButton } from '../cardUi';
-import { currentAtlasUrl } from '../../../utils/reportIssue';
+import { reportDetails } from '../../../utils/reportIssue';
 
 export interface DisambigRoute {
   key: string;
@@ -30,11 +30,10 @@ export interface DisambiguationPanelProps {
 
 /** What a report from the chooser sends (CIV-932): every route it lists, then the link (its `routes=` and map view). */
 export function chooserReportDetails(routes: readonly DisambigRoute[]): string {
-  return [
+  return reportDetails([
     '**Routes listed:**',
     ...routes.map(r => `- ${r.agencyName}: ${routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug, agencyName: r.agencyName }).text} (${r.key})`),
-    `**Atlas URL:** ${currentAtlasUrl()}`,
-  ].join('\n');
+  ]);
 }
 
 export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
