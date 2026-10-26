@@ -22,6 +22,7 @@ import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { DELAY_STARTS_LABEL, MAP_STEP_LIMITS, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { delayHeatPoints } from './components/Live/delayHeatModel';
+import { stopCardGroups, type CardGroup } from './components/Live/stopCardModel';
 import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
@@ -122,12 +123,13 @@ function Key({ measure }: { measure: MapMeasure }) {
 }
 
 /** The lines of a stop's card: the trimmed figures the strip's hover shows, then its extra wait where it has one. */
-function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStripStop, measure: MapMeasure, uncertain: readonly UncertainStart[]): string[] {
+function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStripStop, measure: MapMeasure, uncertain: readonly UncertainStart[]): CardGroup[] {
   const extra = v3.extraWait?.[band]?.find(x => x.directionId === dir && x.stopId === stop.stopId);
   // Delay starts: the figure the map colours by, then the stretch into this stop in the segment card's own words. Only for
   // a stop the map measures (never a terminal stretch or one with too few trips).
   const heat = measure === 'delayStarts' ? delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId: dir }, uncertain: () => uncertain }).find(p => p.stopId === stop.stopId) : undefined;
-  return [...(heat ? [`${DELAY_STAYS} ${mins(heat.addedMin)}`, ...segmentLines(v3.bands[band] as DashboardBandData, dir, heat.fromStopId, stop.stopId)] : []), ...stopDetail(stop).lines, ...(extra ? [`Extra wait ${minutesText(Math.max(0, extra.extraWaitMin))}`] : [])];
+  // Two labelled groups (CIV-946): vehicles against their timetable, then a rider's wait against the scheduled gaps.
+  return [...(heat ? [{ heading: measureLabel('delayStarts'), lines: [`${DELAY_STAYS} ${mins(heat.addedMin)}`, ...segmentLines(v3.bands[band] as DashboardBandData, dir, heat.fromStopId, stop.stopId)] }] : []), ...stopCardGroups(stop, extra ? extra.extraWaitMin : null)];
 }
 
 /** The lines of a segment's card: only the segment, never its start stop. */
@@ -143,11 +145,17 @@ function keptLine(v3: LiveV3, band: DashboardBand, dir: number, toStopId: string
 }
 
 /** The compact card shown on the map at the picked stop or segment. */
-function MapCard({ title, lines }: { title: string; lines: string[] }) {
+function MapCard({ title, lines = [], groups = [] }: { title: string; lines?: string[]; /** Labelled groups of lines (the stop card). */ groups?: CardGroup[] }) {
   return (
     <div className="space-y-0.5 p-3 text-xs">
       <div className="text-sm font-bold leading-snug">{title}</div>
       {lines.map(l => <div key={l} className="text-[var(--text-secondary)]">{l}</div>)}
+      {groups.map((g, i) => (
+        <div key={g.heading ?? i} className="pt-1.5">
+          {g.heading && <div className="font-bold text-[var(--text-muted)]">{g.heading}</div>}
+          {g.lines.map(l => <div key={l} className="text-[var(--text-secondary)]">{l}</div>)}
+        </div>
+      ))}
     </div>
   );
 }
@@ -245,7 +253,7 @@ function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, rout
   const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
   const card = v3 && bandData
     ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={[...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
-      : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
+      : picked ? <MapCard title={picked.name} groups={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null;
   const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
