@@ -11,15 +11,15 @@ export interface SortableColumn<T> extends DataTableColumn<T> {
  * Live pages use. Ties keep the incoming order. For a table whose sort lives in the address, use DataTable's
  * `sort` / `onSort` directly (the Live agency Routes table).
  */
-export default function SortableDataTable<T>({ columns, rows, defaultSort, fill = true, narrowFit, ...rest }: {
+export default function SortableDataTable<T>({ columns, rows, defaultSort, layout = 'fill', narrowFit, ...rest }: {
   columns: SortableColumn<T>[];
   rows: readonly T[];
   rowKey: (row: T) => Key;
   caption?: string;
   /** The column the rows start sorted by; omit to keep the incoming order until a header is clicked. */
   defaultSort?: string;
-  /** The table spans its container (default); false keeps every column at its set width, so tables line up. */
-  fill?: boolean;
+  /** `fill` spans its container (default); `fixed` keeps every column at its set width, so tables line up. */
+  layout?: 'fill' | 'fixed';
   /** See DataTable: on a phone the table fits its container, leaving out the columns marked `narrowHide`. */
   narrowFit?: boolean;
   rowTitle?: (row: T) => string | undefined;
@@ -33,8 +33,7 @@ export default function SortableDataTable<T>({ columns, rows, defaultSort, fill 
   return (
     <DataTable
       {...rest}
-      fixed
-      fill={fill}
+      layout={layout}
       narrowFit={narrowFit}
       rows={sorted}
       // Headers stay on one line, as in the Routes table.
