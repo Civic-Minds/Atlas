@@ -36,6 +36,8 @@ import { NOISE_RULE } from '../shared/liveDashboard';
 import { BANDS } from './LiveExplorePage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
+import LegendItem from './components/ui/LegendItem';
+import { MAP_BADGE, MAP_BADGE_LABEL } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -57,26 +59,30 @@ const DELAY_STARTS_NOTE = 'Typical minutes of delay added since the previous sto
 /** The stop card's line for that figure (wording to confirm). */
 const DELAY_STAYS = 'Added and kept';
 
-/** The map's key, with the heatmap toggle (CIV-942 prototype) above it. */
-function Key({ measure, toggleHeat }: { measure: MapMeasure; toggleHeat: () => void }) {
-  const labels = stepLabels(measure);
+/** The measures, on the map at the top left: they change only the map and the route list, so they sit with them. "Delay starts" (the CIV-942 heatmap) is one of the set. */
+const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
+function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void }) {
   return (
-    <div className="pointer-events-none absolute left-3 top-3 z-10 flex flex-col items-start gap-2">
-    <Pill size="segment" tone="glass" className="pointer-events-auto" selected={measure === 'delayStarts'} onClick={toggleHeat}>{DELAY_STARTS_LABEL}</Pill>
-    <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-2 text-xs shadow-sm">
-      <div className="font-bold text-[var(--text-secondary)]">{measureLabel(measure)}</div>
-      {measure === 'delayStarts' && <div className="text-[var(--text-legend)]">{DELAY_STARTS_NOTE}</div>}
-      <ul className="m-0 mt-1 flex flex-col gap-1 p-0">
-        {labels.map((l, i) => (
-          <li key={l} className="flex list-none items-center gap-2 text-[var(--text-legend)]"><span aria-hidden="true" className="inline-block h-2.5 w-5 rounded-full" style={{ background: STEP_VAR(measure, i) }} />{l}</li>
-        ))}
-        <li className="flex list-none items-center gap-2 text-[var(--text-legend)]"><span aria-hidden="true" className="inline-block h-2.5 w-5 rounded-full" style={{ background: 'var(--strip-delay-0)', opacity: 0.45 }} />Not measured</li>
-      </ul>
-    </div>
+    <div role="group" aria-label="Measure" className="pointer-events-auto absolute left-0 top-0 z-10 flex flex-wrap gap-1.5">
+      {MAP_MEASURES.map(([k, text]) => <Pill key={k} size="segment" tone="glass" selected={measure === k} onClick={() => setMeasure(k)}>{text}</Pill>)}
     </div>
   );
 }
 
+/** The map's key, as a row of pills along the bottom of the map (the regular map's legend pills). */
+function Key({ measure }: { measure: MapMeasure }) {
+  const labels = stepLabels(measure);
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {measure === 'delayStarts' && <div className={`${MAP_BADGE} h-8`}><span className={MAP_BADGE_LABEL}>{DELAY_STARTS_NOTE}</span></div>}
+      <div className={`${MAP_BADGE} h-8 gap-3`} role="group" aria-label="Map colours">
+        <span className="text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
+        {labels.map((l, i) => <LegendItem key={l} kind="line" color={STEP_VAR(measure, i)}><span className={MAP_BADGE_LABEL}>{l}</span></LegendItem>)}
+        <LegendItem kind="line" color="var(--strip-delay-0)" swatchClassName="opacity-45"><span className={MAP_BADGE_LABEL}>Not measured</span></LegendItem>
+      </div>
+    </div>
+  );
+}
 
 /** The lines of a stop's card: the trimmed figures the strip's hover shows, then its extra wait where it has one. */
 function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStripStop, measure: MapMeasure, uncertain: readonly UncertainStart[]): string[] {
@@ -103,7 +109,7 @@ function MapCard({ title, lines }: { title: string; lines: string[] }) {
   );
 }
 
-const PANEL_PAD = { top: 24, bottom: 24, left: 410, right: 24 };
+const PANEL_PAD = { top: 56, bottom: 24, left: 410, right: 24 };
 const NARROW_PAD = { top: 56, bottom: 24, left: 24, right: 24 };
 /** What the route's week figures cover (the Run time tile's own scope wording). */
 const BOTH_DIRECTIONS = 'both directions';
@@ -169,8 +175,8 @@ function LoadingWidget() {
 }
 
 /** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
-function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dataSlot, band, measure, toggleHeat, pick, setPick }: {
-  agency: string; dirSlot: HTMLElement | null; routeSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; toggleHeat: () => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dataSlot, band, measure, setMeasure, pick, setPick }: {
+  agency: string; dirSlot: HTMLElement | null; routeSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; setMeasure: (m: MapMeasure) => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const wide = useMediaQuery('(min-width: 1024px)');
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
@@ -234,7 +240,14 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
   }, [noteEl]); // eslint-disable-line react-hooks/exhaustive-deps
   const framePad = (pad: typeof PANEL_PAD) => ({ ...pad, bottom: Math.max(pad.bottom, noteH ? noteH + 12 + 12 : 0) });
   // The note is about delay at the first stops: it shows in the delay-based views (Late, Run time), not for the gap-based ones (Extra wait, Bunching).
-  const note = ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts') && <p ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
+  const showNote = ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts');
+  // The bottom of the map: the note (when it applies) above the key's row of pills. The route is framed above both.
+  const note = (
+    <div ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 flex flex-col items-start gap-2">
+      {showNote && <p className="m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready!.note}</p>}
+      <Key measure={measure} />
+    </div>
+  );
   const mapEl = (
     <RouteMap
       model={model} measure={measure} heat={heat} selected={pick} anchor={anchor} card={card} padding={framePad(wide ? PANEL_PAD : NARROW_PAD)}
@@ -257,7 +270,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
         <div className="absolute inset-0 overflow-y-auto">
           <div className="relative h-[55vh] min-h-[22rem]">
             <div className="absolute inset-0">{mapEl}</div>
-            <div className="pointer-events-none absolute inset-3"><Key measure={measure} toggleHeat={toggleHeat} />{note}</div>
+            <div className="pointer-events-none absolute inset-3"><MeasurePills measure={measure} setMeasure={setMeasure} />{note}</div>
           </div>
           <WidgetPanel className="p-3" widgets={routePanel ?? summary} />
           {!routePanel && <div className="flex p-3 pt-0"><OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} /></div>}
@@ -277,7 +290,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
           </>}
         </div>
         <div className="relative min-w-0 flex-1">
-          <Key measure={measure} toggleHeat={toggleHeat} />
+          <MeasurePills measure={measure} setMeasure={setMeasure} />
           {note}
         </div>
       </div>
@@ -293,9 +306,6 @@ export default function LiveToolPage() {
   const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
   const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) || m === 'delayStarts' ? (m as MapMeasure) : 'late'; });
-  // The measure the heatmap toggle goes back to when it is switched off.
-  const [before, setBefore] = useState<MapMeasure>('late');
-  const toggleHeat = () => { if (measure === 'delayStarts') setMeasure(before); else { setBefore(measure); setMeasure('delayStarts'); } };
   const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
   const [routeSlot, setRouteSlot] = useState<HTMLElement | null>(null);
   const [dataSlot, setDataSlot] = useState<HTMLElement | null>(null);
@@ -325,11 +335,10 @@ export default function LiveToolPage() {
         <button type="button" onClick={() => { setRoute(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
         <div ref={setRouteSlot} className="contents" />
         <div ref={setDirSlot} className="contents" />
-        <PillGroup label="Measure" value={measure} onChange={v => setMeasure(v as MapMeasure)} options={MEASURES} />
         <PillGroup label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
         <div ref={setDataSlot} className="contents" />
       </header>
-      <Body agency={agency} dirSlot={dirSlot} routeSlot={routeSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} toggleHeat={toggleHeat} pick={pick} setPick={setPick} />
+      <Body agency={agency} dirSlot={dirSlot} routeSlot={routeSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
     </>,
   );
 }
