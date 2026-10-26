@@ -1239,6 +1239,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onInfoOpen={onInfoOpen}
             onDemandFocus
             onDemandZoneId={selectedOnDemandZoneId}
+            onBackToAgency={setSelectedAgencySlug ? () => { setOnDemandStopAgencySlug(null); setSelectedAgencySlug(agency.slug); } : undefined}
           />
         ) : null;
       })()}

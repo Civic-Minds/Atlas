@@ -298,6 +298,8 @@ interface Props {
   onInfoOpen?: OpenInfoFn;
   onDemandFocus?: boolean;
   onDemandZoneId?: string | null;
+  /** The on-demand card's back link to the agency card (CIV-900); shown only when that is a different card. */
+  onBackToAgency?: () => void;
 }
 
 function RouteListSection({
@@ -339,6 +341,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onInfoOpen,
   onDemandFocus = false,
   onDemandZoneId = null,
+  onBackToAgency,
 }, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan, hideLimitedService }),
@@ -413,6 +416,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       ? true
       : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
     const runningNote = onDemandRunningNote(zone.availability, day, period);
+    const backToAgency = onBackToAgency && (onDemandZoneId || !agency.onDemandOnly) ? onBackToAgency : undefined;
     return (
       <Panel
         ref={ref}
@@ -422,9 +426,16 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
       >
         <div className={CARD_HEADER_BLOCK}>
-          {/* The shared heading: the service in bold with the agency's place beside it; the agency below. */}
-          <AgencyCardHeading name={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} place={agencyNameSecondary} className="mb-0" />
-          {serviceName !== agencyNamePrimary && <p className={CARD_SUMMARY}>{agencyNamePrimary}</p>}
+          {/* The shared heading: "← Agency" back to the agency card, then the service in bold with the agency's place
+              beside it. Without the back link the agency goes below; with it the back link already names the agency.
+              An on-demand-only agency's whole-service card is its agency card, so it has no back link. */}
+          <AgencyCardHeading
+            name={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)}
+            place={agencyNameSecondary}
+            back={backToAgency ? { to: agencyNamePrimary, onClick: backToAgency } : undefined}
+            className="mb-0"
+          />
+          {!backToAgency && serviceName !== agencyNamePrimary && <p className={CARD_SUMMARY}>{agencyNamePrimary}</p>}
           {FEATURES.dataSourceLink && agency.websiteUrl && (
             <p className="mt-1 text-xs"><AgencyDataSourceLink agency={agency} /></p>
           )}
