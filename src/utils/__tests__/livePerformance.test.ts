@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lineModel, liveGaps, sharedSummary, placeOnLine, runningTimeTally, stretchBetween, stripStops, withStats } from '../livePerformance';
+import { addSnapshot, lineModel, liveGaps, positionsSnapshot, RECENT_WINDOW_SEC, sharedSummary, placeOnLine, runningTimeTally, stretchBetween, stripStops, withStats } from '../livePerformance';
 import type { SegmentDelayData, SegmentDelaySegment } from '../segmentDelayView';
 
 // Five stops along latitude 43.65, ~800 m apart, westbound (direction 0).
@@ -170,5 +170,37 @@ describe('livePerformance', () => {
   it('returns nothing with fewer than two placed cars', () => {
     const line = lineModel(data, 0)!;
     expect(liveGaps(data, line, withStats(line, 'all'), 'all', [snap(5, [['a', 't1', 2]])], 5)).toBeNull();
+  });
+
+  it('returns the count with no gaps for fewer than two cars when asked (the Live card, CIV-893)', () => {
+    const line = lineModel(data, 0)!;
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', [snap(5, [['a', 't1', 2]])], 5, { countFewCars: true })).toEqual({ cars: 1, gapsMin: [], scheduledSec: 300 });
+  });
+
+  it('skips an unlisted car seen only once instead of marking the feed incomplete when asked', () => {
+    const line = lineModel(data, 0)!;
+    const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5], ['x', '-99', 2.5]])];
+    const g = liveGaps(data, line, withStats(line, 'all'), 'all', snaps, 1_000, { skipUnseenAdded: true })!;
+    expect(g.incomplete).toBeUndefined();
+    expect(g.cars).toBe(2);
+  });
+});
+
+describe('rolling buffer of the map\'s polls (CIV-893)', () => {
+  const v = (id: string, at: number, tsEpoch: number | null) => ({ id, tripId: 't1', lat: LAT, lon: lon(at), tsEpoch });
+
+  it('uses each car\'s own report time, or the poll time when the feed gives none', () => {
+    expect(positionsSnapshot([v('a', 1, 90), v('b', 2, null)], 100).v.map(c => c[4])).toEqual([90, 100]);
+  });
+
+  it('adds a poll only when something changed, and drops polls older than 30 min', () => {
+    const first = positionsSnapshot([v('a', 1, 90)], 100);
+    let buf = addSnapshot([], first);
+    // Same cars and places, rebuilt in a different order: not a new poll.
+    expect(addSnapshot(buf, positionsSnapshot([v('a', 1, 90)], 115))).toBe(buf);
+    buf = addSnapshot(buf, positionsSnapshot([v('a', 2, 105)], 115));
+    expect(buf).toHaveLength(2);
+    buf = addSnapshot(buf, positionsSnapshot([v('a', 3, 2_000)], 100 + RECENT_WINDOW_SEC + 10));
+    expect(buf.map(s => s.capturedAt)).toEqual([115, 100 + RECENT_WINDOW_SEC + 10]);
   });
 });

@@ -1,10 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import Pill from '../ui/Pill';
+import { useEffect, useMemo, useState } from 'react';
+import PillGroup from '../ui/PillGroup';
+import { SidebarCardSection } from '../Interval/cardUi';
 import { useSegmentDelay } from '../../hooks/useSegmentDelay';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { periodKeyForHour } from '../../../shared/config';
+import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { halfMinutes, type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
-import { lineModel, liveGaps, type RecentSnapshot, sharedSummary, withStats, type LineModel } from '../../utils/livePerformance';
+import { addSnapshot, lineModel, liveGaps, positionsSnapshot, type RecentSnapshot, sharedSummary, withStats, type LineModel } from '../../utils/livePerformance';
+import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 
 function halfText(m: number): string {
   const whole = Math.floor(Math.abs(m));
@@ -24,38 +27,22 @@ export function schedText(st: { scheduledMedianGapSec: number; scheduledP10Sec?:
   return `${mins(lo)}–${mins(hi)}`;
 }
 
-const HEAD = 'text-xs font-black text-[var(--text-dim)]';
 const AMBER = 'var(--status-caution-text)';
 
-function torontoHour(d = new Date()): number {
-  return Number(new Intl.DateTimeFormat('en-CA', { hour: 'numeric', hourCycle: 'h23', timeZone: 'America/Toronto' }).format(d));
+/** The agency's hour (LIVE_AGENCY_TIMEZONES); the browser's clock when the agency has no zone listed. */
+export function agencyHour(slug: string, d = new Date()): number {
+  return Number(new Intl.DateTimeFormat('en-CA', { hour: 'numeric', hourCycle: 'h23', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).format(d));
 }
 
-function torontoTime(d = new Date()): string {
-  return new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Toronto' }).format(d).replace('a.m.', 'am').replace('p.m.', 'pm');
+/** "11:42 pm" on the agency's clock. */
+export function agencyTime(slug: string, d = new Date()): string {
+  return new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).format(d).replace('a.m.', 'am').replace('p.m.', 'pm');
 }
 
-/** The period now, when the archive has it (late night included), else all day. */
-function livePeriod(data: SegmentDelayData): SegmentBand {
-  const key = periodKeyForHour(torontoHour());
+/** The period now at the agency, when the archive has it (late night included), else all day. */
+function livePeriod(data: SegmentDelayData, slug: string): SegmentBand {
+  const key = periodKeyForHour(agencyHour(slug));
   return key && (data.headways ?? []).some(h => h.bands[key]) ? (key as SegmentBand) : 'all';
-}
-
-function Chips<T extends string | number>({ options, value, onChange }: { options: { id: T; label: string }[]; value: T; onChange: (v: T) => void }) {
-  return (
-    <div className="flex flex-wrap gap-1">
-      {options.map(o => <Pill key={String(o.id)} selected={value === o.id} onClick={() => onChange(o.id)}>{o.label}</Pill>)}
-    </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5 pt-3 border-t border-[var(--border-primary)]">
-      <div className={HEAD}>{title}</div>
-      {children}
-    </div>
-  );
 }
 
 /** A row of small labelled figures. */
@@ -75,32 +62,40 @@ function Stats({ items }: { items: [string, string][] }) {
 interface Props {
   slug: string;
   routeShortName: string;
+  /** The route's vehicles as the map shows them (every poll); "Right now" is built from these. */
+  vehicles: readonly LiveVehicle[];
   /** Live feed is down, stale or incomplete: "Right now" is hidden. */
   feedDegraded: boolean;
 }
 
+/**
+ * The map's polls of the route's vehicles since the card opened (up to the last 30 min). A gap needs
+ * the car ahead's recent track: how long ago it passed the spot where the car behind is now.
+ */
+function useRecentPositions(vehicles: readonly LiveVehicle[]): RecentSnapshot[] {
+  const [buffer, setBuffer] = useState<RecentSnapshot[]>([]);
+  useEffect(() => {
+    setBuffer(b => addSnapshot(b, positionsSnapshot(vehicles, Math.floor(Date.now() / 1000))));
+  }, [vehicles]);
+  return buffer;
+}
+
 /** The Live route card: only what is live now ("Right now"), per direction. */
-export default function LiveRoutePerformance({ slug, routeShortName, feedDegraded }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded }: Props) {
   const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // The direction lives in the URL (dir) so a shared link reopens it.
   const [initial] = useState(() => new URLSearchParams(window.location.search));
-  const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => ({ id: Number(id), label })), [data]);
+  const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
   const [dir, setDir] = useState<number | null>(() => (initial.get('dir') != null && !Number.isNaN(Number(initial.get('dir'))) ? Number(initial.get('dir')) : null));
-  const directionId = directions.some(d => d.id === dir) ? dir! : directions[0]?.id ?? 0;
+  const directionId = directions.some(([id]) => id === dir) ? dir! : directions[0]?.[0] ?? 0;
+  const recent = useRecentPositions(vehicles);
+  // Re-checked every 30 s, so a feed that stops updating shows as incomplete instead of frozen.
   const [now, setNow] = useState(() => Date.now());
-  // The last 30 min of archived positions for this route, refreshed every 30 s (archive is written each minute).
-  const [recent, setRecent] = useState<RecentSnapshot[] | null>(null);
-  const [serverNow, setServerNow] = useState<number | null>(null);
   useEffect(() => {
-    let cancelled = false;
-    const load = () => fetch(`/api/live-recent?agency=${encodeURIComponent(slug)}&route=${encodeURIComponent(routeShortName)}`)
-      .then(r => (r.ok ? r.json() : null))
-      .then(j => { if (!cancelled) { setRecent(Array.isArray(j?.snapshots) ? j.snapshots : null); setServerNow(typeof j?.now === 'number' ? j.now : null); setNow(Date.now()); } })
-      .catch(() => { if (!cancelled) setRecent(null); });
-    load();
-    const t = setInterval(load, 30_000);
-    return () => { cancelled = true; clearInterval(t); };
-  }, [slug, routeShortName]);
+    setNow(Date.now());
+    const t = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(t);
+  }, [recent]);
 
   const line: LineModel | null = useMemo(() => (data ? lineModel(data, directionId) : null), [data, directionId]);
 
@@ -116,39 +111,44 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
     ? <div className="text-xs font-black text-[var(--status-caution-text)]">Replacement buses: all figures describe the buses running this route</div>
     : null;
 
-  const liveBand = livePeriod(data);
+  const liveBand = livePeriod(data, slug);
   const liveSched = sharedSummary(data, line, liveBand);
-  // No position history (no archive access, feed degraded) leaves live null: then no "Right now" at all, never a false "Fewer than 2 cars".
-  const live = feedDegraded || !recent || serverNow == null ? null : liveGaps(data, line, withStats(line, liveBand), liveBand, recent, serverNow);
+  // From the map's own polls, not the archive. A trip the timetable doesn't list is placed by its own
+  // movement since the card opened; until it has been seen twice it is skipped (skipUnseenAdded).
+  // With 0 or 1 car the count still shows (no gaps line), so the direction pills never vanish.
+  const live = feedDegraded ? null : liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true });
 
   return (
     <div className="flex flex-col gap-3">
       {replacement}
 
       {/* The direction pills only steer "Right now", so they show only with it. */}
-      {live && directions.length > 1 && <Chips options={directions} value={directionId} onChange={setDir} />}
+      {live && directions.length > 1 && <PillGroup label="Direction" options={directions} value={directionId} onChange={setDir} />}
 
       {live && (
-      <Section title={`Right now · ${torontoTime(new Date(now))}`}>
-        {live && !live.incomplete ? (
-          <>
-            <Stats items={[
-              [`Cars${line.sharedStreet ? ` (${line.sharedStreet.replace(/\s+(St|Ave|Rd|Blvd)$/i, '')})` : ''}`, String(live.cars)],
-              ['Scheduled', `every ${liveSched ? schedText(liveSched) : live.scheduledSec ? mins(live.scheduledSec) : '–'}`],
-            ]} />
-            <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-xs font-bold tabular-nums">
-              <span className="text-[var(--text-dim)]">Gaps, front to back (min)</span>
-              {live.gapsMin.map((g, i) => (
-                g == null
-                  ? <span key={i} className="text-[var(--text-dim)]" title="The car ahead's passing wasn't seen">–</span>
-                  : <span key={i} style={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? { color: AMBER } : undefined} className={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? 'font-black' : 'text-[var(--text-primary)]'}>{g}</span>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="text-xs font-bold text-[var(--text-muted)]">{live.incomplete ? 'Live feed incomplete right now' : 'Fewer than 2 cars on the shared section'}</div>
-        )}
-      </Section>
+        <SidebarCardSection label={`Right now · ${agencyTime(slug, new Date(now))}`}>
+          {live.incomplete ? (
+            <div className="text-xs font-bold text-[var(--text-muted)]">Live feed incomplete right now</div>
+          ) : (
+            <>
+              <Stats items={[
+                [`Cars${line.sharedStreet ? ` (${line.sharedStreet.replace(/\s+(St|Ave|Rd|Blvd)$/i, '')})` : ''}`, String(live.cars)],
+                ['Scheduled', `every ${liveSched ? schedText(liveSched) : live.scheduledSec ? mins(live.scheduledSec) : '–'}`],
+              ]} />
+              {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
+              {live.gapsMin.some(g => g != null) && (
+                <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-xs font-bold tabular-nums">
+                  <span className="text-[var(--text-dim)]">Gaps, front to back (min)</span>
+                  {live.gapsMin.map((g, i) => (
+                    g == null
+                      ? <span key={i} className="text-[var(--text-dim)]" title="The car ahead's passing wasn't seen">–</span>
+                      : <span key={i} style={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? { color: AMBER } : undefined} className={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? 'font-black' : 'text-[var(--text-primary)]'}>{g}</span>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </SidebarCardSection>
       )}
     </div>
   );

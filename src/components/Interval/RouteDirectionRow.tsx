@@ -1,6 +1,6 @@
 import React from 'react';
 import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
-import { Info } from 'lucide-react';
+import { ChevronRight, Info } from 'lucide-react';
 import { getTierColor } from '../../utils/colors';
 import { fmtHeadwayRange } from '../../utils/format';
 import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
@@ -36,6 +36,8 @@ interface Props {
   onClick?: () => void;
   /** While the sparkline is hovered: keep the row's pre-hover size so the card does not jump. */
   holdLayout?: boolean;
+  /** A trailing chevron: the row opens a list (Live's direction rows). Off by default. */
+  chevron?: boolean;
 }
 
 /**
@@ -43,7 +45,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const interactive = !!(onHoverStart && onHoverEnd);
@@ -115,6 +117,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
             </span>
           )}
         </span>}
+        {chevron && <ChevronRight aria-hidden="true" className="w-3 h-3 text-[var(--text-dim)] shrink-0" />}
       </div>
       {subLabel && (
         <span className="text-xs font-bold text-[var(--text-dim)] block mt-0.5 truncate">{subLabel}</span>
