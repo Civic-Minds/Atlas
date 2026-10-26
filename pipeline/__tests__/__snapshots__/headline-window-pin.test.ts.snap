@@ -75,7 +75,7 @@ exports[`processed fixture output is pinned > matches the recorded hash for ever
   "septa-t3-saturday": "97 features 7faffad1efd3",
   "slu-streetcar-calendar-dates-weekdays": "10 features e3194651d226",
   "stl-aout2626e": "63 features f1a84fa037ef",
-  "translink-044-weekday": "64 features 7c4d7b70b3fc",
+  "translink-044-weekday": "64 features beffb06dead1",
   "translink-321-weekday": "143 features a3bbbded5288",
   "translink-748-weekday": "71 features 6f68d83d9fe0",
   "translink-749-saturday": "81 features 26eeb05a4015",

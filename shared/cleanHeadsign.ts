@@ -35,6 +35,10 @@ export function cleanHeadsign(
     const escaped = shortName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     // Strip route short name repeated at the start of the headsign (common in many feeds)
     h = h.replace(new RegExp(`^${escaped}[A-Za-z0-9]*\\s*(?:-\\s*)?`), '');
+    // Zero-padded numeric short names: DART route "005" writes its headsigns as "5 LOVE FIELD AIRPORT" (#1098).
+    // The card title already drops the zeros (routeLabelParts), so match the unpadded number when it stands alone.
+    const unpadded = /^0+\d+$/.test(shortName) ? shortName.replace(/^0+/, '') : '';
+    if (unpadded) h = h.replace(new RegExp(`^${unpadded}(?:\\s+|\\s*-\\s*)(?=\\S)`), '');
     if (longName) {
       const escapedL = longName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       // "1 Main St towards Downtown" → "Downtown"
@@ -94,6 +98,10 @@ export function cleanHeadsign(
   // Trailing stop number/comma junk common in US feeds
   h = h.replace(/,\s+\d+.*$/i, '');
   h = h.replace(/,/g, '');
+
+  // A lone slash with a space after it but not before joins two names: DART "INWOOD/ LOVE FIELD STATION" (#1098).
+  // Evenly spaced "TC / MLK JR STATION" and headsigns with several slashes (lists of streets) are left alone.
+  if ((h.match(/\//g) ?? []).length === 1) h = h.replace(/(\S)\/\s+(?=\S)/, '$1/');
 
   // exo / STM Montreal buses: headsigns sometimes include "Destination" as a literal word
   h = h.replace(/\bDestination\b/gi, '');
