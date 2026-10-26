@@ -179,7 +179,6 @@ function RouteHistoryCard({
   frameClassName: string;
   frameStyle: React.CSSProperties;
 }) {
-  const { colorVisionFriendly } = useColorVision();
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const sheetMode = FEATURES.mobileRouteSheet && isPhone;
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(route.routeShortName);
@@ -226,7 +225,8 @@ function RouteHistoryCard({
   const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
   const fillPath = points.length ? `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z` : '';
 
-  const lineColor = worse ? (colorVisionFriendly ? '#c44516' : '#ef4444') : better ? (colorVisionFriendly ? '#009e73' : '#10b981') : '#9ca3af';
+  // The status tokens follow the colour-vision setting on their own (index.css).
+  const lineColor = worse ? 'var(--status-negative)' : better ? 'var(--status-positive)' : '#9ca3af';
   // Labels that fit (#1037): x-axis labels need 34 units across; value labels ("30 min", about 26
   // units wide and 8 tall) skip one that would sit on another, e.g. two snapshots in the same month.
   const labelIndices = labelsThatFit(points, 34);
@@ -268,8 +268,8 @@ function RouteHistoryCard({
             <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
               <defs>
                 <linearGradient id={`sparkline-grad-${route.routeShortName}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={lineColor} stopOpacity="0.18" />
-                  <stop offset="100%" stopColor={lineColor} stopOpacity="0" />
+                  <stop offset="0%" style={{ stopColor: lineColor }} stopOpacity="0.18" />
+                  <stop offset="100%" style={{ stopColor: lineColor }} stopOpacity="0" />
                 </linearGradient>
               </defs>
 
