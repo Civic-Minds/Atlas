@@ -574,6 +574,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .sort(([a], [b]) => compareRouteNumber(a, b))
       .map(([, v]) => ({
         shortName: v.shortName,
+        labelShortName: v.labelShortName,
         longName: v.longName,
         agencyName: v.agencyName,
         agencySlug: v.agencySlug,
