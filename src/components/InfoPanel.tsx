@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { X, Search, Radio, ArrowLeft } from 'lucide-react';
+import { X, Search, Radio } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
@@ -24,7 +24,7 @@ import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
-import RoundIconButton from './ui/RoundIconButton';
+import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -312,7 +312,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="shrink-0 flex items-center px-5 border-b border-[var(--border-primary)] h-12 relative overflow-hidden">
+        <div className={`${PANEL_HEADER_BAR} relative overflow-hidden`}>
           {/* Home title */}
           <div 
             className={`absolute inset-y-0 left-5 right-12 flex items-center transition-all duration-300 ease-out ${
@@ -330,29 +330,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               view !== 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
             }`}
           >
-            <button
+            <PanelBackButton
               onClick={() => {
                 if (view === 'agency-detail') setView('agencies');
                 else setView('home');
               }}
-              className="w-7 h-7 -ml-1.5 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] transition-colors shrink-0"
-              aria-label={view === 'agency-detail' ? 'Back to agencies' : 'Back'}
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-            </button>
-            <span className="text-xs font-bold text-[var(--text-primary)] truncate min-w-0">
+              label={view === 'agency-detail' ? 'Back to agencies' : 'Back'}
+            />
+            <h2 className={`${PANEL_HEADER_TITLE} truncate min-w-0`}>
               {headerTitle}
-            </span>
+            </h2>
           </div>
 
           <div className="flex-1" />
-          <RoundIconButton
-            onClick={onClose}
-            className="z-10"
-            aria-label="Close"
-          >
-            <X className="w-3.5 h-3.5" />
-          </RoundIconButton>
+          <PanelCloseButton onClick={onClose} className="z-10" label="Close" />
         </div>
 
         {/* Content View Container */}

@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
-import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
+import { Settings, SlidersHorizontal, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import Pill from '../ui/Pill';
@@ -19,7 +19,7 @@ import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { loadingText } from '../../content/stateCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
-import RoundIconButton from '../ui/RoundIconButton';
+import PanelHeader from '../ui/PanelHeader';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -370,34 +370,20 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             aria-modal="true"
             aria-labelledby="settings-panel-title"
           >
-            <div className="flex items-center justify-between px-5 py-2 border-b border-[var(--border-primary)] shrink-0">
-              <div className="flex items-center gap-1.5">
-                {view !== 'settings' && (
-                  <button
-                    onClick={() => { setView('settings'); setHiddenRoutesQuery(''); setHiddenRegionFilter(new Set()); }}
-                    className="w-7 h-7 -ml-1 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
-                    aria-label="Back to settings"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                  </button>
-                )}
-                <h2 id="settings-panel-title" className="text-xs font-black text-[var(--text-primary)]">
-                  {view === 'hidden-routes'
-                    ? 'Hidden routes'
-                    : view === 'limited-routes'
-                      ? 'Limited-service routes'
-                    : view === 'degraded-feeds'
-                      ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
-                      : isFilters ? 'Filters' : 'Settings'}
-                </h2>
-              </div>
-              <RoundIconButton
-                onClick={close}
-                aria-label={isFilters ? 'Close filters' : 'Close settings'}
-              >
-                <X className="w-3.5 h-3.5" />
-              </RoundIconButton>
-            </div>
+            <PanelHeader
+              titleId="settings-panel-title"
+              title={view === 'hidden-routes'
+                ? 'Hidden routes'
+                : view === 'limited-routes'
+                  ? 'Limited-service routes'
+                : view === 'degraded-feeds'
+                  ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
+                  : isFilters ? 'Filters' : 'Settings'}
+              onBack={view !== 'settings' ? () => { setView('settings'); setHiddenRoutesQuery(''); setHiddenRegionFilter(new Set()); } : undefined}
+              backLabel="Back to settings"
+              onClose={close}
+              closeLabel={isFilters ? 'Close filters' : 'Close settings'}
+            />
 
             <div className="overflow-y-auto flex flex-col">
               {view === 'hidden-routes' || view === 'limited-routes' ? (
