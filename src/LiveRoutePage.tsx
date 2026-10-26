@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
-  dateRangeText, freshness,
+  dateRangeText, freshness, goodDayCounts,
   type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -75,7 +75,7 @@ function WeekCompare({ v3 }: { v3: LiveV3 }) {
 /** The route pages' subtitle (full analysis and explore): the week, the trip count, where the figures come from. */
 export function routeSubtitle(v3: LiveV3, agency: string): string {
   const w = v3.weekly;
-  return liveSubtitle({ thisWeek: v3.window.dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${v3.totals.runs.toLocaleString()} trips`, agency, upTo: v3.window.dates[v3.window.dates.length - 1] });
+  return liveSubtitle({ thisWeek: v3.window.dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${goodDayCounts(v3).runs.toLocaleString()} trips`, agency, upTo: v3.window.dates[v3.window.dates.length - 1] });
 }
 
 /**

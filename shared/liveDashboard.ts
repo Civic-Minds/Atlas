@@ -107,14 +107,16 @@ export interface DashboardBunchingBand {
 }
 export interface LiveV3 {
   schema: 3;
-  window: { days: number; dates: string[]; requestedDays: number };
+  /** goodDates: the window's days with good recordings, the days every figure counts (older files lack it). */
+  window: { days: number; dates: string[]; requestedDays: number; goodDates?: string[] };
   thresholds: { earlyAtOrBelowMin: number; lateAtOrAboveMin: number; bunchedGapSec: number };
   method: string;
   swaps: { reassigned: number; dropped: number; rate: number };
   /** Runs the analysis does not use, with why (old files do not have this). */
   leftOut?: { noTimetableTrip: number; excluded: number; excludedLabel: string | null; kept: number };
   uncertainty: { nearCutoffShare: number; withinMin: number; note: string };
-  totals: { runs: number; stopPassages: number; droppedOffTimetable: number };
+  /** goodRuns and goodStopPassages count the good days (window.goodDates) only; older files lack them (CIV-910). */
+  totals: { runs: number; stopPassages: number; droppedOffTimetable: number; goodRuns?: number; goodStopPassages?: number };
   directionLabels: Record<string, string>;
   adherence: {
     timepoints: { all: AdherenceBlock; weekday: AdherenceBlock; weekend: AdherenceBlock };
@@ -419,6 +421,16 @@ export const isWeekendDate = (d: string) => { const g = new Date(`${d}T12:00:00Z
 const ofKind = (d: string, kind: DayKind) => kind === 'all' || (kind === 'weekend') === isWeekendDate(d);
 
 /** The days every Live surface counts: this week's days with good recordings (all the window's days for a file without the weekly block). */
+/**
+ * The good days and their trip and stop-departure counts: what the header and "Last N service days" line show, so they
+ * agree with every figure (CIV-910). A file without the good-day counts falls back to the whole window.
+ */
+export function goodDayCounts(v3: LiveV3): { days: number; dates: string[]; runs: number; stopPassages: number } {
+  const t = v3.totals;
+  if (t.goodRuns == null || t.goodStopPassages == null || !v3.window.goodDates?.length) return { days: v3.window.days, dates: v3.window.dates, runs: t.runs, stopPassages: t.stopPassages };
+  return { days: v3.window.goodDates.length, dates: v3.window.goodDates, runs: t.goodRuns, stopPassages: t.goodStopPassages };
+}
+
 export const healthyDatesOf = (v3: LiveV3): string[] => v3.weekly?.thisWeek.healthyDates ?? v3.window.dates;
 
 /**
