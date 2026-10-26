@@ -5,7 +5,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { routeLabels, shortenAgencyName, searchOverlayHidesPanel, comparePanelTop } from '../../utils/format';
+import { agencyDisplayParts, placeAlreadyInName, routeLabels, shortenAgencyName, searchOverlayHidesPanel, comparePanelTop } from '../../utils/format';
 import { partPeriodText, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { buildDirectionGroups } from '../../utils/routeCardDirectionGroups';
@@ -708,7 +708,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           if (f) {
             const p = f.properties as any;
             const facts = buildRouteFacts(p, slug);
-            return { key: facts.key, shortName: facts.shortName, labelShortName: facts.labelShortName, longName: facts.longName ?? '', agencyName: shortenAgencyName(facts.agencyName), agencySlug: slug, routeType: facts.routeType, color: getTierColor(p.tier, colorMode) };
+            const agency = agencies.find(a => a.slug === slug);
+            const agencyName = shortenAgencyName(facts.agencyName);
+            // The place beside the agency's name in the chooser's heading, unless the name already says it (CIV-971).
+            const place = agency ? agencyDisplayParts(agency.name, agency.cities, agency.displayArea).secondary : undefined;
+            const agencyPlace = place && !placeAlreadyInName(agencyName, place) ? place : undefined;
+            return { key: facts.key, shortName: facts.shortName, labelShortName: facts.labelShortName, longName: facts.longName ?? '', agencyName, agencyPlace, agencySlug: slug, routeType: facts.routeType, color: getTierColor(p.tier, colorMode) };
           }
         }
         return { key, shortName: key, longName: '', agencyName: '', agencySlug: undefined as string | undefined, routeType: undefined as number | undefined, color: 'var(--text-dim)' };
@@ -723,7 +728,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .sort((a, b) => compareAgencyName(a.agencyName, b.agencyName)
         || compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName));
     return details;
-  }, [disambiguationRoutes, nonCorridorLayers, colorMode]);
+  }, [disambiguationRoutes, nonCorridorLayers, colorMode, agencies]);
 
   // A recent route saved by an older build has no route type; read it from the loaded route so the row names the route like every other list.
   const recentlyViewedWithType = useMemo(() => recentlyViewed.map(r => {
