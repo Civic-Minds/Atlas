@@ -110,9 +110,11 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
           <OutboundLink
             href="https://www.openstreetmap.org/copyright"
             kind="attribution"
+            aria-label="© OpenStreetMap contributors"
             className={ATTRIB_LINK}
           >
-            © OpenStreetMap contributors
+            {/* Phones have room for the short form beside the location button; the hover keeps the full line. */}
+            © OpenStreetMap<span className="max-sm:hidden"> contributors</span>
           </OutboundLink>
           <span className={MAP_BADGE_LABEL}>, </span>
           <OutboundLink
