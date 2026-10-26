@@ -51,7 +51,7 @@ export const PATTERN_KIND_WORDS = { main: 'Main', shortTurn: 'Short turn', branc
 
 /**
  * The planner's rows for one direction, one per regular pattern timed on its own trips (CIV-945), the main pattern first,
- * each labelled "Main: From → To · N stops". Null when the file has no per-pattern figures (older files).
+ * each labelled "Main: From → To", the stop count in its hover. Null when the file has no per-pattern figures (older files).
  */
 export function patternRunTimeRows(v3: LiveV3, band: DashboardBand, d: number, nice: (name: string) => string): RunTimeRow[] | null {
   const list = v3.runningTime?.patterns?.[String(d)];
@@ -66,12 +66,12 @@ export function patternRunTimeRows(v3: LiveV3, band: DashboardBand, d: number, n
     if (!f) return [];
     return [{
       key: `${d}-${p.kind}-${p.fromStopId}-${p.toStopId}`, direction: d, main: p.kind === 'main',
-      // A pattern trimmed at a poorly measured end says how much of it is timed: "13 of 18 stops".
-      // The stop count never breaks across lines (no-break spaces): "13 of 18 stops" wraps as one piece.
-      label: `${PATTERN_KIND_WORDS[p.kind]}: ${nice(p.fromName)} → ${nice(p.toName)} · ${`${p.stops < p.patternStops ? `${p.stops} of ${p.patternStops}` : p.stops} stops`.replace(/ /g, '\u00a0')}`,
+      // The row names only its ends, so it fits one line on the card; the stop count is in the hover, with a pattern
+      // trimmed at a poorly measured end saying how much of it is timed: "13 of 18 stops".
+      label: `${PATTERN_KIND_WORDS[p.kind]}: ${nice(p.fromName)} → ${nice(p.toName)}`,
       trips: f.n, thin: f.n < MIN_PATTERN_TRIPS,
       typical: finite(f.typicalMin) ? f.typicalMin : undefined, scheduled: finite(f.scheduledMin) ? f.scheduledMin : undefined, p90: finite(f.p90Min) ? f.p90Min : undefined,
-      figures: `${dirName ? `${dirName}: ` : ''}${runningTimeFigures(f)} (${f.n.toLocaleString()} trips)`,
+      figures: `${dirName ? `${dirName}: ` : ''}${p.stops < p.patternStops ? `${p.stops} of ${p.patternStops}` : p.stops} stops, ${runningTimeFigures(f)} (${f.n.toLocaleString()} trips)`,
     }];
   });
 }
