@@ -19,6 +19,22 @@ export function splitRouteKey(key: string): { agencySlug: string; routeId: strin
   };
 }
 
+/**
+ * The map's key for a whole route named by its short name (Live keys routes by short name): the route's own ID,
+ * never one branch, so the shared selection lights up every branch. Prefers the given day's feature.
+ */
+export function routeKeyForShortName(
+  agencySlug: string,
+  features: readonly GeoJSON.Feature[],
+  routeShortName: string,
+  day?: string | null,
+): string | null {
+  const matches = features.filter(f => String((f.properties as { routeShortName?: unknown } | null)?.routeShortName ?? '') === routeShortName);
+  const feature = (day ? matches.find(f => (f.properties as { day?: unknown }).day === day) : undefined) ?? matches[0];
+  const routeId = (feature?.properties as { routeId?: unknown } | undefined)?.routeId;
+  return routeId != null && routeId !== '' ? buildRouteKey(agencySlug, String(routeId)) : null;
+}
+
 export interface RouteDisplayCandidate {
   key: string;
   agencySlug: string;

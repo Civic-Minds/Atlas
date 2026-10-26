@@ -1242,13 +1242,17 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     );
   };
 
+  // A route Live has open is the map's selection too: once the main map hands a route to Live's card (Interval
+  // clears its own pick so its card stays closed), Live's pick drives the same selected-route styling and framing.
+  const mapSelectedRoute = selectedRoute ?? liveOverlay?.mapRouteKey ?? null;
+
   useSelectionFraming(mapRef, mapLoaded, {
-    agencies, layers, selectedAgencySlug, selectedRoute, selectedStop, initialOnDemandSlug,
+    agencies, layers, selectedAgencySlug, selectedRoute: mapSelectedRoute, selectedStop, initialOnDemandSlug,
     initialMapCenter, areaFocus, resetViewKey, regionalView,
   });
 
   useRouteStyling(mapRef, mapLoaded, {
-    agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute, hoveredSearchRoute, hoveredBranch,
+    agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute: mapSelectedRoute, hoveredSearchRoute, hoveredBranch,
     selectedStop, routesForStop, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies,
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
     frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus,

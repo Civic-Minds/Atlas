@@ -123,10 +123,12 @@ function addOnDemandLayers(map: maplibregl.Map) {
  * under all other route lines. Hidden and filtered to nothing until the Live hook fills it.
  */
 // Width matches the regular map's base route class (buildFriendlyRouteWidthExpression): one even weight.
+/** The context lines' opacity with no route picked; a picked route fades the others (useRouteStyling). */
+export const LIVE_CONTEXT_OPACITY = 0.85;
 const LIVE_CONTEXT_PAINT = {
   'line-color': '#6b7280',
   'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, ...ROUTE_LINE_WIDTH_STOPS],
-  'line-opacity': 0.85,
+  'line-opacity': LIVE_CONTEXT_OPACITY,
 } as const;
 export const LIVE_CONTEXT_LAYER_IDS = ['live-context-overview-layer', 'live-context-routes-layer', 'live-context-local-layer'] as const;
 function addLiveContextLayers(map: maplibregl.Map) {
@@ -498,29 +500,6 @@ function addHistoryLayers(map: maplibregl.Map) {
   });
 }
 
-/** Live route shape. */
-function addLiveRouteShapeLayer(map: maplibregl.Map) {
-  // Live route shape dynamic layer (loaded in Live Vehicles app)
-  map.addSource('live-route-shape', {
-    type: 'geojson',
-    data: { type: 'FeatureCollection', features: [] }
-  });
-  map.addLayer({
-    id: 'live-route-shape-layer',
-    type: 'line',
-    source: 'live-route-shape',
-    paint: {
-      'line-color': ['get', 'color'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.5, 14, 3.5, 17, 5.0],
-      'line-opacity': 0.85
-    },
-    layout: {
-      'line-cap': 'round',
-      'line-join': 'round'
-    }
-  });
-}
-
 /**
  * Every source and layer the map adds once its basemap style has loaded, in drawing order
  * (first added is drawn lowest). Each overlay starts empty; its own hook fills it.
@@ -541,5 +520,4 @@ export function addMapLayers(map: maplibregl.Map, { lightMode, colorMode, highli
   addFrequencySegmentLayers(map);
   addSharedHoverLayer(map);
   addHistoryLayers(map);
-  addLiveRouteShapeLayer(map);
 }
