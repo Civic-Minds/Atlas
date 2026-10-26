@@ -1,7 +1,7 @@
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { getTierColor } from '../../utils/colors';
-import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
@@ -138,8 +138,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   onSearchRouteHover,
   analyticsApp = 'frequency',
 }) => {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
     for (const [slug, fc] of Object.entries(layers)) {

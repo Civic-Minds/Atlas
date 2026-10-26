@@ -14,6 +14,7 @@ import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate, routeLabels } from '../../utils/format';
 import { feedQualityListItems, presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
@@ -137,7 +138,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 }) => {
   const { colorVisionFriendly, setColorVisionFriendly } = useColorVision();
   const isFilters = mode === 'filters';
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [view, setView] = useState<'settings' | 'hidden-routes' | 'limited-routes' | 'degraded-feeds'>('settings');

@@ -8,7 +8,7 @@ import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_CARD_SURFACE, SID
 import { openAtlasProblemEmail } from '../../utils/reportIssue';
 import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
-import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import LinkPill from '../ui/LinkPill';
 import RoundIconButton from '../ui/RoundIconButton';
@@ -502,8 +502,7 @@ export function HeadwayBadge({
   suffixTone?: 'dim' | 'negative' | 'positive';
   className?: string;
 }) {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   return (
     <span className={`inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0 ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
@@ -516,10 +515,10 @@ export function HeadwayBadge({
 
 /** A route with no regular frequency to show: the grey dot and a word ("limited", "no regular service"), styled like HeadwayBadge. */
 export function LimitedBadge({ label, className = '' }: { label: string; className?: string }) {
-  const { colorVisionFriendly } = useColorVision();
+  const colorMode = useColorMode();
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap ${className}`.trim()}>
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorVisionFriendly ? 'friendly' : 'default') }} />
+      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />
       {label}
     </span>
   );

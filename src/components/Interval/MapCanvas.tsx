@@ -5,7 +5,6 @@ import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Link2, Flag, Download } from 'lucide-react';
 import MapZoomButtons from '../MapZoomButtons';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { type ColorVisionMode } from '../../utils/colors';
 import { getRegionalView, getSavedView } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
@@ -25,6 +24,7 @@ import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
 import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
 import { TRANSFER_POINT_SERVICE_TYPE, transferPointStop } from './map/transferPointStop';
@@ -300,7 +300,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   agencyDataFailedCount = 0,
 }) => {
   const { colorVisionFriendly } = useColorVision();
-  const colorMode: ColorVisionMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [pmtilesRoutesAvailable, setPmtilesRoutesAvailable] = useState<boolean | null>(null);

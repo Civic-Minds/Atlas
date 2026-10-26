@@ -4,7 +4,7 @@ import { Info } from 'lucide-react';
 import { fmtHeadwayRange } from '../../utils/format';
 import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
 import { headwayToTierColor } from './HeadwaySparkline';
-import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import { HeadwayBadge, LimitedBadge } from './cardUi';
 
 interface Props {
@@ -43,8 +43,7 @@ interface Props {
  * so there's one place to change instead of hunting across SidebarControls.
  */
 export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;

@@ -16,7 +16,7 @@ import { modesForView } from '../../../shared/viewLayers';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
-import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import LegendItem from '../ui/LegendItem';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
@@ -251,8 +251,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   groupLabel,
 }) => {
   const compactTopBar = useMediaQuery(COMPACT_TOP_BAR_QUERY);
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
   const [agencyQuery, setAgencyQuery] = useState('');
   const agencySearchRef = useRef<HTMLInputElement>(null);

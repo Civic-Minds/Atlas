@@ -21,7 +21,7 @@ import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomS
 import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
 import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey } from '../utils/routeModeFilters';
-import { useColorVision } from '../context/ColorVisionContext';
+import { useColorMode } from '../hooks/useColorMode';
 import { loadHistoryAgencyV2, loadHistoryShapesV2 } from '../utils/historyV2Loader';
 import { routesForYear, snapshotValue, yearsAvailable, type HistoryShapesFile } from '../../shared/historyV2Reader';
 import { HISTORY_VIEW_ALL, historyPeriodValue, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
@@ -656,13 +656,13 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
 
   // The map draws the selected year's routes only (routesForYear: no fallback to another year),
   // coloured by that year's weekday value (historyYearRoutes).
-  const { colorVisionFriendly: historyColorFriendly } = useColorVision();
+  const historyColorMode = useColorMode();
   useEffect(() => {
     if (!active) { setOverlay(null); return; }
     const agency = openAgencyHistory;
     if (!agency) { setOverlay(null); return; }
     const latestYear = yearsAvailable(agency).at(-1);
-    const yearRoutes = selectedYear > 0 ? historyYearRoutes(agency, selectedYear, historyColorFriendly ? 'friendly' : 'default', view, openAgencyShapes, latestYear) : [];
+    const yearRoutes = selectedYear > 0 ? historyYearRoutes(agency, selectedYear, historyColorMode, view, openAgencyShapes, latestYear) : [];
     setOverlay({
       slug: agency.slug,
       routeShortName: selectedRouteShortName ?? '',
@@ -671,7 +671,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
       selectedYear: selectedYear > 0 ? selectedYear : undefined,
       yearRoutes,
     });
-  }, [active, openAgencyHistory, openAgencyShapes, selectedRouteShortName, setOverlay, selectedYear, historyColorFriendly, view]);
+  }, [active, openAgencyHistory, openAgencyShapes, selectedRouteShortName, setOverlay, selectedYear, historyColorMode, view]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
 

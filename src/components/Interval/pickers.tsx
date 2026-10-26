@@ -3,7 +3,7 @@ import Pill from '../ui/Pill';
 import LegendItem from '../ui/LegendItem';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { headwayFilterLabel } from '../../utils/headwayText';
-import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import { DAY_TYPES, type DayType } from '../../../shared/dayTypes';
 import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
 
@@ -22,8 +22,7 @@ export function tierDotColor(max: number, colorMode: 'default' | 'friendly'): st
 
 /** Every frequency choice with its label and dot colour, for pickers that draw their own rows (the dropdown list). */
 export function useFrequencyOptions() {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   return HEADWAY_TIERS.map(({ max, label }) => ({ max, key: label, label: frequencyOptionLabel(max), color: tierDotColor(max, colorMode) }));
 }
 
