@@ -57,3 +57,13 @@ describe('every agency has a place', () => {
     expect(missing.filter(s => !EXPLICITLY_UNASSIGNED.includes(s))).toEqual([]);
   });
 });
+
+describe('agencyIndexRegionHref (CIV-966)', () => {
+  it('links to the state or province heading, and nowhere without a place', async () => {
+    const { agencyIndexRegionHref, agencyIndexRegionId } = await import('./agencyIndex');
+    expect(agencyIndexRegionHref({ country: 'United States', region: 'Colorado' })).toBe('/agencies#index-united-states-colorado');
+    expect(agencyIndexRegionId('Canada', 'Québec')).toBe('index-canada-quebec');
+    expect(agencyIndexRegionHref({ country: 'Canada' })).toBeNull();
+  });
+});
+

@@ -257,7 +257,8 @@ function writeAtomic(file: string, contents: string): void {
 
 function writeOutputs(out: AgencyPageSummaries): void {
   writeAtomic(OUT, JSON.stringify(out) + '\n');
-  writeAtomic(SLUGS_OUT, JSON.stringify(out.agencies.filter(a => a.routes.some(r => r.midday != null)).map(a => a.slug)) + '\n');
+  // Every agency gets a page, including ones with no regular midday service (CIV-965).
+  writeAtomic(SLUGS_OUT, JSON.stringify(out.agencies.map(a => a.slug)) + '\n');
 }
 
 async function main() {
