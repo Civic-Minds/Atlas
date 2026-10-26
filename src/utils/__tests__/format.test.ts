@@ -9,6 +9,32 @@ interface IndexAgency {
 
 const agencies = (indexData as { agencies: IndexAgency[] }).agencies;
 
+describe('one capitals rule for stop and destination names (CIV-935)', () => {
+  it('keeps real abbreviations in capitals and writes the rest in normal case', () => {
+    expect(titleCase('LBJ / CENTRAL STATION')).toBe('LBJ / Central Station');
+    expect(titleCase('Lbj / Central')).toBe('LBJ / Central');
+    expect(titleCase('DFW AIRPORT STATION')).toBe('DFW Airport Station');
+    expect(titleCase('CBD WEST TRANSFER CENTER')).toBe('CBD West Transfer Center');
+    expect(titleCase('MOODY CENTER')).toBe('Moody Center');
+    expect(titleCase('Alameda & Bob Hope EB')).toBe('Alameda & Bob Hope EB');
+    expect(titleCase('2230 3rd Ave (YMCA)')).toBe('2230 3rd Ave (YMCA)');
+  });
+
+  it('leaves French and Spanish words alone', () => {
+    expect(titleCase('LE HAILLAN ROSTAND')).toBe('Le Haillan Rostand');
+    expect(titleCase('GARE DE DIJON VILLE')).toBe('Gare De Dijon Ville');
+    expect(titleCase('PLACE STANISLAS')).toBe('Place Stanislas');
+    expect(titleCase('LA MINERVA')).toBe('La Minerva');
+  });
+
+  it('keeps route-name-only words out of stop names', () => {
+    expect(titleCase('MAX BROWN BLVD')).toBe('Max Brown Blvd');
+    expect(routeLabelCase('MAX BLUE LINE')).toBe('MAX Blue Line');
+    expect(ROUTE_NAME_ACRONYMS.has('CBD')).toBe(true);
+    expect(ROUTE_NAME_ACRONYMS.has('LBJ')).toBe(true);
+  });
+});
+
 describe('agencyBackLinkName', () => {
   it('never swaps the name for a bracketed city (#1102)', () => {
     expect(agencyBackLinkName('Valley Metro (Phoenix)')).toBe('Valley Metro');

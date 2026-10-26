@@ -187,7 +187,8 @@ export const StopCard: React.FC<StopCardProps> = ({
                 key={rKey}
                 label={route.text}
                 routeName={{ shortName: route.primary, name: route.secondary }}
-                subLabel={`${nearestStopName} · ${Math.round(distanceMeters)} m away`}
+                // The stop name in the one casing rule (CIV-935): "Moody Center", not the feed's "MOODY CENTER".
+                subLabel={`${titleCase(nearestStopName)} · ${Math.round(distanceMeters)} m away`}
                 subLabelWeight="medium"
                 headway={headway ?? undefined}
                 onClick={() => openRoute(rKey)}
