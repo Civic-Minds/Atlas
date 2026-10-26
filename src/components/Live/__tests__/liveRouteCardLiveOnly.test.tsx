@@ -21,10 +21,10 @@ describe('route card shows only what is live (CIV-892)', () => {
   });
   afterEach(() => vi.unstubAllGlobals());
 
-  it('has the direction pills and no period pills, archive summary or Details', async () => {
+  it('has no period pills, archive summary or Details', async () => {
     card();
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Westbound' })).toBeTruthy());
-    expect(screen.getByRole('button', { name: 'Eastbound' })).toBeTruthy();
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+    await new Promise(r => setTimeout(r, 0));
     for (const label of ['All day', 'AM Peak', 'Midday', 'PM Peak', 'Evening']) expect(screen.queryByRole('button', { name: label })).toBeNull();
     expect(screen.queryByText(/Last \d+ days/)).toBeNull();
     expect(screen.queryByRole('link', { name: /Full analysis/ })).toBeNull();
@@ -45,5 +45,7 @@ describe('route card shows only what is live (CIV-892)', () => {
     expect(screen.queryByText(/Right now/)).toBeNull();
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
     expect(screen.queryByText(/Live feed incomplete/)).toBeNull();
+    // The direction pills only steer "Right now", so they go with it.
+    expect(screen.queryByRole('button', { name: 'Westbound' })).toBeNull();
   });
 });
