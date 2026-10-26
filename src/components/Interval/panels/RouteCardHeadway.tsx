@@ -767,6 +767,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       return (
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
+                            labelWeight="regular"
                             label={label}
                             headway={rowNoRegular ? undefined : displayH ?? undefined}
                             limitedLabel={isLimited && edgeText ? edgeText : rowNoRegular ? noRegularLabel : undefined}
@@ -788,6 +789,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       filter is on: the filter hides them from the map, not from the route's own card. */}
                   {exclusiveSpans.length === 1 && (
                     <CardDirectionRow
+                      labelWeight="regular"
                       key="s0"
                       label={branchLabel(group, exclusiveSpans[0], gi) || 'limited service'}
                       limited
@@ -795,7 +797,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     />
                   )}
                   {exclusiveSpans.length > 1 && (
-                    <CardDirectionRow key="smulti" label={exclusiveSpanNames.join(' · ')} limited />
+                    <CardDirectionRow key="smulti" labelWeight="regular" label={exclusiveSpanNames.join(' · ')} limited />
                   )}
                 </div>
               </React.Fragment>

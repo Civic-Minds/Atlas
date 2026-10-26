@@ -13,6 +13,9 @@ interface Props {
   /** In a route list: the route's number and name, drawn as the list rule says ("**504** King", CIV-928) in place of `label`.
    *  Direction rows ("to Broadview") leave it out. */
   routeName?: { shortName: string; name?: string | null };
+  /** The label's weight: bold by default; 'regular' for a destination row on the route and stop cards (CIV-918:
+   *  bold only for what you scan for, the route number and the frequency). */
+  labelWeight?: 'bold' | 'regular';
   // Regular service
   headway?: number | null;
   colorHeadway?: number | null;
@@ -48,7 +51,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, routeName, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelWeight = 'bold', live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelWeight = 'bold', live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const colorMode = useColorMode();
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
@@ -85,7 +88,7 @@ export default function RouteDirectionRow({ label, routeName, headway, colorHead
       onMouseLeave={onHoverEnd}
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <span className={`font-bold flex-1 min-w-[6rem] leading-snug break-words ${clickable ? '' : 'text-[var(--text-primary)]'}`}>
+        <span className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] leading-snug break-words ${clickable ? '' : 'text-[var(--text-primary)]'}`}>
           {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
         </span>
         {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 shrink-0">

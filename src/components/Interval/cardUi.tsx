@@ -724,8 +724,6 @@ export function SidebarCardSection({ label, children }: { label?: string; childr
   );
 }
 
-const CARD_SUBLINE = 'text-xs font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors leading-snug';
-
 /** Route label + headway on one row (stop card groups). */
 export function CardSummaryRow({
   label,
@@ -747,7 +745,8 @@ export function CardSummaryRow({
 }) {
   const labelCls = `${CARD_LIST_ROUTE} block text-left w-full`;
   return (
-    <div className={`flex justify-between gap-2 ${below ? 'items-start' : 'items-center'}`}>
+    // The badge lines up with the label's first line, as on the route card's rows (CIV-918).
+    <div className="flex justify-between gap-2 items-start">
       <div className="flex-1 min-w-0">
         {onClick ? (
           <button type="button" onClick={onClick} className={`${labelCls} hover:text-[var(--accent)]`}>
@@ -762,27 +761,6 @@ export function CardSummaryRow({
         ? <span className="text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap">{text}</span>
         : headway != null && <HeadwayBadge headway={headway} live={live} suffix={headwaySuffix} />}
     </div>
-  );
-}
-
-/** Muted destination / sub-line in stop card groups. */
-export function CardSublineButton({
-  children,
-  onClick,
-  className = '',
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`block w-full text-left ${CARD_SUBLINE} py-0.5 rounded-lg -mx-1 px-1 ${className}`}
-    >
-      {children}
-    </button>
   );
 }
 

@@ -341,14 +341,30 @@ export function useRouteStyling(
         ]);
       } else if (selectedStop && routesForStop?.siblingIdsByAgency) {
         const servingMatch = buildServingStopMatchExpression(layers, routesForStop.siblingIdsByAgency);
-        setRouteLayerPaint(map, 'line-opacity', [
-          'case', servingMatch, 1.0, DIM_OPACITY,
-        ]);
-        setRouteLayerPaint(map, 'line-width', [
-          'interpolate', ['linear'], ['zoom'],
-          8, ['case', servingMatch, 2.0, DIM_WIDTH],
-          14, ['case', servingMatch, 3.0, DIM_WIDTH],
-        ]);
+        if (hoveredBranch?.routeKey) {
+          // A stop card destination row is hovered (CIV-918): that route and direction stand out, the stop's
+          // other routes fade, and the rest stays dim, as on the route card.
+          const branchMatch: any = ['all',
+            routeKeyMatchExpression(hoveredBranch.routeKey),
+            ['==', ['get', 'directionId'], hoveredBranch.directionId],
+            ...(hoveredBranch.headsign ? [['==', ['get', 'headsign'], hoveredBranch.headsign]] : []),
+          ];
+          setRouteLayerPaint(map, 'line-opacity', [
+            'case', branchMatch, 1.0, servingMatch, 0.4, DIM_OPACITY,
+          ]);
+          setRouteLayerPaint(map, 'line-width', [
+            'case', branchMatch, 3.5, servingMatch, 1.5, DIM_WIDTH,
+          ]);
+        } else {
+          setRouteLayerPaint(map, 'line-opacity', [
+            'case', servingMatch, 1.0, DIM_OPACITY,
+          ]);
+          setRouteLayerPaint(map, 'line-width', [
+            'interpolate', ['linear'], ['zoom'],
+            8, ['case', servingMatch, 2.0, DIM_WIDTH],
+            14, ['case', servingMatch, 3.0, DIM_WIDTH],
+          ]);
+        }
       } else {
         setRouteLayerPaint(map, 'line-width', colorVisionFriendly
           ? buildFriendlyRouteWidthExpression(headwayExpr)

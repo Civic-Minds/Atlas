@@ -893,7 +893,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   }, [stopBack.target, setSelectedAgencySlug]);
   const stopBackToAgency = stopBack.target?.kind === 'agency';
   const stopCardBack = useMemo(() => ({ to: stopBack.to, onClick: goBackFromStop, namesAgency: stopBackToAgency }), [stopBack.to, goBackFromStop, stopBackToAgency]);
-  useEffect(() => { setHoveredBranch(null); }, [selectedRoute]);
+  useEffect(() => { setHoveredBranch(null); }, [selectedRoute, selectedStop]);
 
   const clearMapSelection = useCallback(() => {
     setSelectedRoute(null);

@@ -49,6 +49,8 @@ export const routeKey = (p: ShapeProperties) => buildRouteKey(
 
 /** Sidebar hover target for branch/core highlight on the map. */
 export interface HoveredBranch {
+  /** The route a stop card row belongs to (CIV-918). The route card's rows leave it out: theirs is the selected route. */
+  routeKey?: string;
   directionId: number;
   headsign?: string;
   headsigns?: string[];

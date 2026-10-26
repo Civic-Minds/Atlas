@@ -997,6 +997,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           <StopCard
             currentStop={currentStop}
             back={stopBack}
+            hoveredBranch={hoveredBranch}
+            setHoveredBranch={setHoveredBranch}
             setSelectedStop={setSelectedStop}
             setSelectedRoute={setSelectedRoute}
             stopAgencies={stopAgencies}

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { CardBackLink } from '../../CardBack';
 import { titleCase, routeLabels } from '../../../utils/format';
-import type { TimePeriod } from '../../../hooks/useIntervalStats';
+import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   AgencyFilterChips,
   CardDirectionRow,
@@ -77,6 +77,9 @@ export interface StopCardProps {
   nearbyConnections: NearbyConnection[];
   /** Live arrivals lookup — set when the stop belongs to a live-capable agency. */
   liveStop?: { slug: string; stopId: string; lat: number; lon: number } | null;
+  /** The map hover for the destination rows (CIV-918). */
+  hoveredBranch?: HoveredBranch | null;
+  setHoveredBranch?: (branch: HoveredBranch | null) => void;
 }
 
 export const StopCard: React.FC<StopCardProps> = ({
@@ -91,9 +94,12 @@ export const StopCard: React.FC<StopCardProps> = ({
   period,
   nearbyConnections,
   liveStop,
+  hoveredBranch,
+  setHoveredBranch,
 }) => {
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const openRoute = (rKey: string) => {
+    setHoveredBranch?.(null);
     setSelectedStop(null);
     setSelectedRoute(rKey);
   };
@@ -163,6 +169,8 @@ export const StopCard: React.FC<StopCardProps> = ({
             period={period}
             showAgency={stopAgencies.length > 1}
             onOpenRoute={openRoute}
+            hoveredBranch={hoveredBranch}
+            setHoveredBranch={setHoveredBranch}
           />
         ))}
       </SidebarCardList>
