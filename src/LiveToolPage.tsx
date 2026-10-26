@@ -22,7 +22,7 @@ import AtlasLogo from './components/AtlasLogo';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { DELAY_STARTS_LABEL, MAP_STEP_LIMITS, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
-import { delayHeatPoints } from './components/Live/delayHeatModel';
+import { delayHeatPoints, type HeatPoint } from './components/Live/delayHeatModel';
 import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
@@ -148,11 +148,22 @@ function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
 }
 
 /** The widgets with nothing selected: the network's worst places, each a clickable list at full width. */
-function networkWidgets(s: AgencySummary, onOpen: (route: string, dir: number, pick: MapPick) => void): PanelWidget[] {
+/** Where delays start: each route direction's stop that adds the most delay that stays, the same figure the map and the route list use (CIV-942). */
+function delayStartRows(network: ReadonlyMap<string, LiveV3>, band: DashboardBand) {
+  const best = new Map<string, HeatPoint>();
+  for (const [r, v3] of network) for (const p of delayHeatPoints(new Map([[r, v3]]), band)) {
+    const k = `${r}|${p.directionId}`;
+    if (p.addedMin > 0 && p.addedMin > (best.get(k)?.addedMin ?? 0)) best.set(k, p);
+  }
+  return [...best.values()].sort((a, b) => b.addedMin - a.addedMin)
+    .map(p => ({ route: p.route, directionId: p.directionId, fromStopId: p.fromStopId, toStopId: p.stopId, fromName: p.fromName, toName: p.name, value: Math.round(p.addedMin * 10) / 10 }));
+}
+
+function networkWidgets(s: AgencySummary, network: ReadonlyMap<string, LiveV3>, band: DashboardBand, onOpen: (route: string, dir: number, pick: MapPick) => void): PanelWidget[] {
   const label = (r: string) => s.routes.find(x => x.route === r)?.label ?? r;
   const stopRows = s.worstStops.slice(0, 5).map(x => ({ key: `${x.route}-${x.stopId}-${x.directionId}`, label: shortStopName(titleCase(x.name)), sub: x.routeLabel, value: pct(x.lateShare), onPick: () => onOpen(x.route, x.directionId, { kind: 'stop', stopId: x.stopId }) }));
-  const stretchRows = (list: AgencySummary['delayStarts'], value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: stretchLabel(titleCase(x.fromName), titleCase(x.toName)), sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
-  const delays = stretchRows(s.delayStarts, mins), bunching = stretchRows(s.bunchingForms, risePointsText);
+  const stretchRows = (list: ReadonlyArray<Pick<AgencySummary['delayStarts'][number], 'route' | 'directionId' | 'fromStopId' | 'toStopId' | 'fromName' | 'toName' | 'value'>>, value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: stretchLabel(titleCase(x.fromName), titleCase(x.toName)), sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
+  const delays = stretchRows(delayStartRows(network, band), mins), bunching = stretchRows(s.bunchingForms, risePointsText);
   return [
     ...(stopRows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" intro={`The ${stopRows.length} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`} rows={stopRows} /> }] : []),
     ...(delays.length ? [{ key: 'delays', size: 'medium' as const, node: <ProblemsWidget title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there." rows={delays} /> }] : []),
@@ -256,7 +267,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
     return () => ro.disconnect();
   });
   const summary = useMemo(() => [headingWidget(agency.toUpperCase()), ...summaryWidgets(s, band)], [s, band, agency]);
-  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick, legend }) : !route ? networkWidgets(s, (r, d, p) => { setRoute(r); setDir(d); setPick(p); }) : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
+  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick, legend }) : !route ? networkWidgets(s, networkV3, band, (r, d, p) => { setRoute(r); setDir(d); setPick(p); }) : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
   // The map note sits over the map's bottom edge: the route is framed above it (its measured height plus its inset and a gap).
   const [noteEl, setNoteEl] = useState<HTMLElement | null>(null);
   const [noteH, setNoteH] = useState(0);
