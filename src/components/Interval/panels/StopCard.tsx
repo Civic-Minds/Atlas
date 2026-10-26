@@ -15,33 +15,14 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { reportDetails } from '../../../utils/reportIssue';
-import StopRouteGroup, { stopRouteBestHeadway } from './StopRouteGroup';
+import StopRouteGroup from './StopRouteGroup';
+import { stopRouteBestHeadway, type StopRoute } from '../../../utils/stopRoutes';
 import LiveStopArrivals from './LiveStopArrivals';
 import type { HeadwayMetric } from '../../../utils/routeFacts';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
 
-export interface StopBranch {
-  rKey: string;
-  headsign: string | null;
-  /** The route's departures at the stop, pooled across its patterns where they share it (CIV-82). */
-  service: HeadwayMetric;
-  /** The destination row's value (CIV-918): the branch's own, as on its route card row. */
-  rowHeadway?: number | null;
-  directionId: number;
-  /** #934: part-period wording shown in place of a number, as on the route card's row. */
-  periodText?: string;
-}
-
-export interface StopRoute {
-  shortName: string;
-  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
-  labelShortName?: string;
-  longName: string;
-  agencyName: string;
-  agencySlug?: string;
-  routeType?: number;
-  branches: StopBranch[];
-}
+// The stop card's route and branch shapes live with the code that builds them (CIV-997).
+export type { StopBranch, StopRoute } from '../../../utils/stopRoutes';
 
 export interface NearbyConnection {
   rKey: string;
