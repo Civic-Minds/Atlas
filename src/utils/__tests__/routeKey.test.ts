@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildRouteKey, dedupeRouteKeysByDisplay, routeKeyForShortName, splitRouteKey } from '../routeKey';
+import { buildRouteKey, dedupeRouteKeysByDisplay, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../routeKey';
 
 describe('route keys', () => {
   it('keeps unbranched route keys backward-compatible', () => {
@@ -48,5 +48,11 @@ describe('routeKeyForShortName (Live\'s route as the map\'s selection key)', () 
 
   it('gives null for a route the agency does not have', () => {
     expect(routeKeyForShortName('ttc', features, '999', 'Weekday')).toBeNull();
+  });
+
+  it('routeFeatureForShortName: the first shape with no day given (what Live\'s card title and vehicle word read)', () => {
+    expect(routeFeatureForShortName(features, '504')).toBe(features[1]);
+    expect(routeFeatureForShortName(features, '504', 'Weekday')).toBe(features[2]);
+    expect(routeFeatureForShortName(features, '999')).toBeUndefined();
   });
 });
