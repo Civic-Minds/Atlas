@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { routeBars } from '../tool/OverviewList';
+import { routeBars } from '../overviewListModel';
 
 const rows = (...v: (number | null)[]) => v.map(x => ({ f: x == null ? null : { value: x } }));
 

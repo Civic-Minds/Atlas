@@ -26,7 +26,8 @@ import { stopCardGroups, type CardGroup } from './components/Live/stopCardModel'
 import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
-import OverviewList, { rankRoutes } from './components/Live/tool/OverviewList';
+import OverviewList from './components/Live/tool/OverviewList';
+import { rankRoutes } from './components/Live/overviewListModel';
 import LateByHourSection, { routeLateDays, routeLeftOut, routeLateHours, routeLateOverall } from './components/Live/sections/LateByHourSection';
 import ProblemsWidget from './components/Live/tool/ProblemsWidget';
 import { worstStopRows } from './components/Live/sections/WorstStopsSection';
