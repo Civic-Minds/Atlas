@@ -94,6 +94,12 @@ function segmentLines(data: DashboardBandData, dir: number, fromStopId: string, 
   return x && x.n > 0 ? [`Typical added ${mins(x.medianAddedMin)}`, `Trips where it grows ${pct(x.growShare)} of ${x.n.toLocaleString()}`] : [];
 }
 
+/** Delay starts: a segment card's "Added and kept" line, the figure the map, list and panel use, when the segment ends at a measured stop. */
+function keptLine(v3: LiveV3, band: DashboardBand, dir: number, toStopId: string, fromStopId: string, uncertain: readonly UncertainStart[]): string[] {
+  const p = delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId: dir }, uncertain: () => uncertain }).find(x => x.stopId === toStopId && x.fromStopId === fromStopId);
+  return p ? [`${DELAY_STAYS} ${mins(p.addedMin)}`] : [];
+}
+
 /** The compact card shown on the map at the picked stop or segment. */
 function MapCard({ title, lines }: { title: string; lines: string[] }) {
   return (
@@ -243,7 +249,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
     : pick?.kind === 'segment' ? (() => { const c = model.segments.find(x => x.fromStopId === pick.fromStopId && x.toStopId === pick.toStopId)?.coordinates; return c ? c[Math.floor(c.length / 2)] : null; })() : null;
   const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
   const card = v3 && bandData
-    ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)} />
+    ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={[...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
       : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null;
   // The Bunching tile's legend line is shown only where the right panel has room for it (it never scrolls or clips); its text is the tile's hover title either way.
