@@ -8,10 +8,10 @@
     -87.3464
   ],
   "feedUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip",
-  "lastFeedExpiry": "20300129",
+  "lastFeedExpiry": "20270130",
   "lastFeedVersion": "",
   "referenceDateFromRunDate": true,
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Gary, Indiana",
     "Merrillville, Indiana",
@@ -19,26 +19,29 @@
   ],
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 90,
     "reasons": [
-      "1 validation warning.",
-      "1 shape correction needed."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 1,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 14
+      "featureCount": 28
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-10-26"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20300129",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip",
-  "lastPeekedExpiry": "20300129"
+  "lastPeekedExpiry": "20300129",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -9,20 +9,33 @@
   "feedUrl": "https://gismap.augustaga.gov/AugGAgis/GISWebLinks/Transit/GTFS/google_transit.zip",
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
-  "lastFeedExpiry": "20261201",
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20270130",
+  "lastFeedVersion": "08012026Augusta",
+  "lastRefreshedAt": "2026-10-26",
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20240224-4a743b70003a6451",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261201",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20240224)",
-  "feedRefreshErrorAt": "20261012",
-  "feedRefreshRetryCount": 3,
+  "expiredFeedCheckExpiry": "20270130",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gismap.augustaga.gov/AugGAgis/GISWebLinks/Transit/GTFS/google_transit.zip",
-  "lastPeekedExpiry": "20261201"
+  "lastPeekedExpiry": "20270130",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 32
+    },
+    "checkedAt": "2026-10-26"
+  }
 }

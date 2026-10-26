@@ -26,14 +26,14 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 27
+      "featureCount": 28
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-26"
   },
-  "lastFeedExpiry": "20281021",
-  "lastFeedVersion": "10/6/2026",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedExpiry": "20281026",
+  "lastFeedVersion": "10/23/2026",
+  "lastRefreshedAt": "2026-10-26",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",

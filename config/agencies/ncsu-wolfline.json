@@ -9,13 +9,13 @@
   ],
   "feedUrl": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20250228",
+  "lastFeedVersion": "20260917",
   "referenceDateFromRunDate": true,
   "excludeRouteShortNames": [
     "FTB",
     "GRK"
   ],
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-10-26",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2245/latest.zip",
   "bbox": [
@@ -27,7 +27,7 @@
   "cities": [
     "West Raleigh, North Carolina"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -46,7 +46,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 20
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

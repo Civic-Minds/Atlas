@@ -16,35 +16,37 @@
   ],
   "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
   "lastFeedExpiry": "20261220",
-  "lastFeedVersion": "20260905",
+  "lastFeedVersion": "20261020",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-763/latest.zip",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Sainte-Foy, Quebec",
     "Lévis, Quebec",
     "Québec, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "8 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 8,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 114
+      "featureCount": 189
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/Montreal",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
-  "lastPeekedExpiry": "20261220"
+  "lastPeekedExpiry": "20261220",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

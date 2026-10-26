@@ -14,10 +14,10 @@
     -73.21
   ],
   "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
-  "lastFeedExpiry": "20261030",
-  "lastFeedVersion": "20261019044646",
+  "lastFeedExpiry": "20270108",
+  "lastFeedVersion": "20261026044934",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3190/latest.zip",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Laval, Quebec",
     "Chomedey, Quebec",
@@ -30,10 +30,10 @@
     "Saint-Léonard, Quebec",
     "Saint-Laurent, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261030",
+  "expiredFeedCheckExpiry": "20270108",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -45,9 +45,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 284
+      "featureCount": 286
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/Montreal",
   "feedRefreshStatus": "current",
@@ -56,5 +56,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
-  "lastPeekedExpiry": "20261030"
+  "lastPeekedExpiry": "20270108"
 }

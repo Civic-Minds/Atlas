@@ -16,19 +16,19 @@
   ],
   "feedUrl": "https://marintransit.gov/data/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2937/latest.zip",
-  "lastFeedExpiry": "20270109",
+  "lastFeedExpiry": "20270110",
   "lastFeedVersion": "UTC: 04-Feb-2026 00:08",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "San Rafael, California",
     "Novato, California",
     "Chinatown, California",
     "Petaluma, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270109",
+  "expiredFeedCheckExpiry": "20270110",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://marintransit.gov/data/google_transit.zip",
@@ -43,11 +43,11 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 109
+      "featureCount": 118
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-10-26"
   },
-  "lastPeekedExpiry": "20270109",
+  "lastPeekedExpiry": "20270110",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,

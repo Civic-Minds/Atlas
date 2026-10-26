@@ -8,8 +8,8 @@
   ],
   "feedUrl": "https://passio3.com/casper/passioTransit/gtfs/google_transit.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedVersion": "20260917",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Casper, Wyoming",
     "Evansville, Wyoming",
@@ -25,11 +25,11 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 22
+      "featureCount": 32
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-26"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",

@@ -15,28 +15,26 @@
   ],
   "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
   "agencyId": "23",
-  "lastFeedExpiry": "20270326",
+  "lastFeedExpiry": "20271231",
   "lastFeedVersion": "FAL26-161.2",
-  "lastRefreshedAt": "2026-10-19",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-10-26",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "7 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 7,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 12
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -44,5 +42,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
-  "lastPeekedExpiry": "20270326"
+  "lastPeekedExpiry": "20271231"
 }

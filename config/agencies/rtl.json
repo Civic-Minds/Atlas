@@ -30,7 +30,7 @@
     "Saint-Léonard, Quebec",
     "Verdun, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261101",
@@ -55,6 +55,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-751/latest.zip",
   "lastPeekedExpiry": "20261101"
 }

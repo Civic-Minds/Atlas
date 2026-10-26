@@ -15,14 +15,14 @@
   "feedUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
   "region": "Louisiana",
   "lastFeedExpiry": "20270109",
-  "lastFeedVersion": "20260929",
-  "lastRefreshedAt": "2026-10-14",
+  "lastFeedVersion": "20261020",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Bossier City, Louisiana",
     "Shreveport, Louisiana"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1060/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -42,7 +42,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 58
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-10-26"
   },
   "lastPeekedExpiry": "20270109",
   "feedRefreshStatus": "current",

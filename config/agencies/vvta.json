@@ -7,9 +7,9 @@
   ],
   "feedUrl": "https://api.transloc.com/gtfs/vvta.zip",
   "lastFeedExpiry": "20261128",
-  "lastFeedVersion": "2026.08",
+  "lastFeedVersion": "2026.09",
   "region": "California",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-26",
   "websiteUrl": "http://vvta.org/",
   "cities": [
     "Victorville, California",
@@ -22,25 +22,24 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20250329-3f568bd33b3ddb28",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 90,
     "reasons": [
-      "1 minor schedule issue found while reading the feed.",
-      "2 route shapes needed adjustment before display."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 2,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 181
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-26"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

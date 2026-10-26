@@ -7,19 +7,19 @@
     -84.55
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-3193/latest.zip",
-  "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "20260924",
+  "lastFeedExpiry": "20270327",
+  "lastFeedVersion": "20261019",
   "region": "Georgia",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Smyrna, Georgia",
     "Marietta, Georgia",
     "Atlanta, Georgia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261231",
+  "expiredFeedCheckExpiry": "20270327",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3193/latest.zip",
@@ -34,11 +34,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 62
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-26"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20270327"
 }

@@ -16,12 +16,12 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-838/latest.zip",
   "lastFeedExpiry": "20270926",
-  "lastFeedVersion": "20261014",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "20261023",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Shoreline, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270926",
@@ -30,19 +30,18 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-838/latest.zip",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 90,
     "reasons": [
-      "1 minor schedule issue found while reading the feed.",
-      "4 route shapes needed adjustment before display."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 47
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

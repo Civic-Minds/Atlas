@@ -28,19 +28,23 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 95
+      "featureCount": 92
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-10-26"
   },
-  "lastFeedExpiry": "20261106",
-  "lastFeedVersion": "20260713",
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedExpiry": "20270319",
+  "lastFeedVersion": "20261022",
+  "lastRefreshedAt": "2026-10-26",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261106",
+  "expiredFeedCheckExpiry": "20270319",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
-  "lastPeekedExpiry": "20261106"
+  "lastPeekedExpiry": "20270319",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

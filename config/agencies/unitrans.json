@@ -15,32 +15,31 @@
   ],
   "feedUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-82/latest.zip",
-  "lastFeedExpiry": "20261213",
-  "lastFeedVersion": "Fall2026_V5",
-  "lastRefreshedAt": "2026-10-07",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "Fall-WinterBrk2026_V1",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Davis, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261213",
+  "expiredFeedCheckExpiry": "20270103",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 90,
     "reasons": [
-      "1 minor schedule issue found while reading the feed.",
-      "1 route shape needed adjustment before display."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 1,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 63
+      "featureCount": 64
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-26"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,5 +47,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
-  "lastPeekedExpiry": "20261213"
+  "lastPeekedExpiry": "20270103"
 }

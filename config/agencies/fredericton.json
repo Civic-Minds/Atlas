@@ -14,13 +14,13 @@
   ],
   "feedUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "202610190/20261018 23:30:00/20261019 04:00:00",
+  "lastFeedVersion": "202610260/20261025 23:30:00/20261026 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2460/latest.zip",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Fredericton, New Brunswick"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -37,7 +37,7 @@
       "routeHeadwayMismatches": 2,
       "featureCount": 56
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/Halifax",
   "feedRefreshStatus": "current",

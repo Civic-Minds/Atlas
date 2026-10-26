@@ -14,7 +14,7 @@
   "lastFeedExpiry": "20270206",
   "lastFeedVersion": "20260821",
   "region": "Maryland",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Baltimore, Maryland",
     "Towson, Maryland",
@@ -24,7 +24,7 @@
     "Bowie, Maryland",
     "Columbia, Maryland"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270206",
@@ -42,7 +42,7 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 445
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",

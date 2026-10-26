@@ -11,10 +11,10 @@
   ],
   "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
   "lastFeedExpiry": "20261212",
-  "lastFeedVersion": "Fall 2026, 2026-10-16T20:25:58+00:00, version D",
+  "lastFeedVersion": "Fall 2026, 2026-10-21T20:52:18+00:00, version D",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-437/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Dorchester, Massachusetts",
     "Brookline, Massachusetts",
@@ -27,7 +27,7 @@
     "Newton, Massachusetts",
     "Cambridge, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
@@ -35,17 +35,17 @@
     "status": "degraded",
     "score": 40,
     "reasons": [
-      "17 route shapes needed adjustment before display.",
+      "5 route shapes needed adjustment before display.",
       "11 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 17,
+      "shapeAnomalies": 5,
       "routeHeadwayMismatches": 11,
-      "featureCount": 1093
+      "featureCount": 967
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

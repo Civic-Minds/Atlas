@@ -10,13 +10,13 @@
   "region": "Kentucky",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2067/latest.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "20261005",
-  "lastRefreshedAt": "2026-10-07",
+  "lastFeedVersion": "20261021",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Lexington-Fayette, Kentucky",
     "Lexington, Kentucky"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -33,7 +33,7 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 135
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

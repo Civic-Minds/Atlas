@@ -9,8 +9,8 @@
   ],
   "feedUrl": "https://ride.vail.gov/gtfs",
   "lastFeedExpiry": "20261206",
-  "lastFeedVersion": "9/11/2026 Summer (9/11/2026-12/",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "10/24/2026 (Summer 10/24/2026-12/6/2026)",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Vail, Colorado"
   ],
@@ -26,9 +26,9 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 27
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-26"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261206",

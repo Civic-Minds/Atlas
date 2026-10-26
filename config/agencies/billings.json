@@ -15,17 +15,34 @@
   "feedUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
   "region": "Montana",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "20260917",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Billings, Montana"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 33
+    },
+    "checkedAt": "2026-10-26"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

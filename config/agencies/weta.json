@@ -17,8 +17,8 @@
   "feedUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3143/latest.zip",
   "lastFeedExpiry": "20261101",
-  "lastFeedVersion": "UTC: 18-Aug-2026 20:52",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedVersion": "2026-10-22",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Chinatown, California",
     "Oakland, California",
@@ -27,27 +27,29 @@
     "South San Francisco, California",
     "Richmond, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261101",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 3,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 45
+      "featureCount": 41
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
-  "lastPeekedExpiry": "20261101"
+  "lastPeekedExpiry": "20261101",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -9,10 +9,10 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-35/latest.zip",
   "lastFeedExpiry": "20270122",
-  "lastFeedVersion": "UTC: 09-Sep-2026 18:25",
+  "lastFeedVersion": "UTC: 22-Oct-2026 22:53",
   "region": "California",
-  "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-10-26",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270122",
@@ -28,9 +28,9 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 20
+      "featureCount": 25
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-26"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

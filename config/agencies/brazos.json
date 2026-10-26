@@ -32,19 +32,23 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 31
+      "featureCount": 35
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-10-26"
   },
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Mar 25, 2026, 2:20 PM",
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "Updated: Oct 28, 2025, 12:33 PM",
+  "lastRefreshedAt": "2026-10-26",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.btd.org/2025btdgtfs/",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

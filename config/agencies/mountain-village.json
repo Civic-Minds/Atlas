@@ -16,30 +16,29 @@
   "websiteUrl": "https://townofmountainvillage.com/getting-around/",
   "region": "Colorado",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
-  "lastFeedExpiry": "20270404",
+  "lastFeedExpiry": "20280503",
   "lastFeedVersion": "UTC: 16-Oct-2026 21:24",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Mountain Village, Colorado",
     "Telluride, Colorado"
   ],
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
+    "status": "review",
+    "score": 70,
     "reasons": [
-      "3 minor schedule issues found while reading the feed.",
-      "4 route shapes needed adjustment before display."
+      "3 minor schedule issues found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 3,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 12
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280503",
@@ -50,5 +49,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
-  "lastPeekedExpiry": "20270404"
+  "lastPeekedExpiry": "20280503"
 }

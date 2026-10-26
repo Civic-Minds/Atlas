@@ -15,16 +15,16 @@
   ],
   "feedUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3219/latest.zip",
-  "lastFeedExpiry": "20261122",
-  "lastFeedVersion": "10-19-26  02:35",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedExpiry": "20261206",
+  "lastFeedVersion": "10-26-26  02:35",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Medford, Oregon"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261122",
+  "expiredFeedCheckExpiry": "20261206",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,7 +36,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 12
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -45,5 +45,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
-  "lastPeekedExpiry": "20261122"
+  "lastPeekedExpiry": "20261206"
 }

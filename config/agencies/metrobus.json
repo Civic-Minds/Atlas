@@ -15,33 +15,35 @@
   ],
   "feedUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-758/latest.zip",
-  "lastFeedExpiry": "20261111",
+  "lastFeedExpiry": "20270103",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "St. John's, Newfoundland and Labrador"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261111",
+  "expiredFeedCheckExpiry": "20270103",
   "timezone": "America/St_Johns",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 105
+      "routeHeadwayMismatches": 0,
+      "featureCount": 106
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-26"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
-  "lastPeekedExpiry": "20261111"
+  "lastPeekedExpiry": "20270103",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

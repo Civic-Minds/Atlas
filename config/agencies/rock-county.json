@@ -21,8 +21,8 @@
   ],
   "timezone": "America/Chicago",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedVersion": "20260917",
+  "lastRefreshedAt": "2026-10-26",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -36,9 +36,9 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 21
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-26"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",

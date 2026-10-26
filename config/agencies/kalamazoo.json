@@ -10,12 +10,12 @@
   "region": "Michigan",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-674/latest.zip",
   "lastFeedExpiry": "20261228",
-  "lastFeedVersion": "20261014",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "20261022",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Kalamazoo, Michigan"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261228",
@@ -23,17 +23,17 @@
     "status": "review",
     "score": 60,
     "reasons": [
-      "20 route shapes needed adjustment before display.",
+      "12 route shapes needed adjustment before display.",
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 20,
+      "shapeAnomalies": 12,
       "routeHeadwayMismatches": 1,
       "featureCount": 121
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/Detroit",
   "feedRefreshStatus": "current",

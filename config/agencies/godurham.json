@@ -18,27 +18,25 @@
     "Durham, North Carolina"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "4 route have stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 4,
-      "featureCount": 118
+      "routeHeadwayMismatches": 0,
+      "featureCount": 112
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-26"
   },
-  "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "20260930",
-  "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedExpiry": "20270131",
+  "lastFeedVersion": "20261020",
+  "lastRefreshedAt": "2026-10-26",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261025",
+  "expiredFeedCheckExpiry": "20270131",
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -46,5 +44,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://godurham.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20270131"
 }

@@ -23,14 +23,14 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20221101-cc58fb6d6d6ac384",
-  "lastFeedCheckAt": "20261019",
-  "expiredFeedCheckCount": 6,
+  "lastFeedCheckAt": "20261026",
+  "expiredFeedCheckCount": 7,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20221101",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20221101)",
-  "feedRefreshErrorAt": "20261019",
-  "feedRefreshRetryCount": 4,
+  "feedRefreshErrorAt": "20261026",
+  "feedRefreshRetryCount": 5,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-335/latest.zip"
 }

@@ -20,14 +20,14 @@
     "https://metro.nfta.com/__googletransit/rail/google_transit.zip"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-401/latest.zip",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Buffalo, New York",
     "Amherst, New York",
     "Cheektowaga, New York",
     "Niagara Falls, Ontario"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -45,7 +45,7 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 291
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

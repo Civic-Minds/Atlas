@@ -14,16 +14,16 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-490/latest.zip",
   "region": "South Carolina",
-  "lastRefreshedAt": "2026-10-19",
-  "lastFeedExpiry": "20271013",
+  "lastRefreshedAt": "2026-10-26",
+  "lastFeedExpiry": "20271020",
   "lastFeedVersion": null,
   "cities": [
     "Greenville, South Carolina"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20271013",
+  "expiredFeedCheckExpiry": "20271020",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -33,9 +33,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 60
+      "featureCount": 54
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -44,5 +44,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-490/latest.zip",
-  "lastPeekedExpiry": "20271013"
+  "lastPeekedExpiry": "20271020"
 }

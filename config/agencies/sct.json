@@ -15,33 +15,31 @@
   ],
   "feedUrl": "https://tracksctbus.org/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3115/latest.zip",
-  "lastFeedExpiry": "20281021",
-  "lastFeedVersion": "272-10/1/2026,262-10/17/2026,265-7/30/2026",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedExpiry": "20281026",
+  "lastFeedVersion": "262-10/17/2026,272-10/25/2026,265-10/26/2026",
+  "lastRefreshedAt": "2026-10-26",
   "cities": [
     "Brentwood, New York",
     "Levittown, New York",
     "Milford, Connecticut",
     "Stratford, Connecticut"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261026",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route has stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 135
+      "routeHeadwayMismatches": 0,
+      "featureCount": 125
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-26"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

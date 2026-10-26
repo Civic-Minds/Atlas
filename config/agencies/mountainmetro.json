@@ -16,9 +16,9 @@
   ],
   "timezone": "America/Denver",
   "lastRawArchiveKey": "20250927-1abb7aaac18b1cfe",
-  "lastFeedCheckAt": "20261019",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261026",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261024",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://coloradosprings.gov/document/googletransit.zip",
@@ -36,8 +36,8 @@
     "checkedAt": "2026-10-14"
   },
   "lastPeekedExpiry": "20261024",
-  "feedRefreshStatus": "current",
-  "feedRefreshError": null,
-  "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20261024)",
+  "feedRefreshErrorAt": "20261026",
+  "feedRefreshRetryCount": 1
 }
