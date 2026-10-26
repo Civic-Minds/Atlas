@@ -127,7 +127,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const isZoomedIn = zoom !== null && zoom >= MIN_LIVE_ZOOM;
 
-  // Agency picked from "Live in these places": the list shows only its routes, since
+  // Agency picked from the zoomed-out agency list: the list shows only its routes, since
   // neighbouring agencies' bboxes overlap (Toronto / York Region).
   const [placeScope, setPlaceScope] = useState<string | null>(null);
   const placeScopeArrivedRef = useRef(false);
@@ -780,9 +780,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               </SidebarCardShell>
             ) : !isZoomedIn || (visibleSlugs.length === 0 && !isLoading) ? (
               <>
-                <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
-                  Live in these places
-                </div>
                 {livePlaces.map(p => (
                   <RouteListRow
                     key={p.slug}
