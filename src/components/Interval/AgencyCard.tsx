@@ -26,6 +26,7 @@ import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
 import { currentAtlasUrl } from '../../utils/reportIssue';
 import { getRolloutNotice } from '../../../shared/rolloutNotice';
+import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
@@ -404,7 +405,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       ? service.features.find(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === onDemandZoneId)
       : undefined;
     const zoneName = (selectedZone?.properties as { areaName?: string } | undefined)?.areaName;
-    const zoneDisplayName = zoneName?.replace(/\s+Area$/, '');
     const zone = resolveOnDemandZone(service, zoneName);
     const serviceName = zone.serviceName ?? service.serviceName ?? agencyNamePrimary;
     const pickupSentence = onDemandPickupSentence(service, zoneName);
@@ -426,7 +426,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       >
         <div className={CARD_HEADER_BLOCK}>
           {/* The shared heading: the service in bold with the agency's place beside it; the agency below. */}
-          <AgencyCardHeading name={[serviceName, zoneDisplayName].filter(Boolean).join(' — ')} place={agencyNameSecondary} className="mb-0" />
+          <AgencyCardHeading name={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} place={agencyNameSecondary} className="mb-0" />
           {serviceName !== agencyNamePrimary && <p className={CARD_SUMMARY}>{agencyNamePrimary}</p>}
           {FEATURES.dataSourceLink && agency.websiteUrl && (
             <p className="mt-1 text-xs"><AgencyDataSourceLink agency={agency} /></p>

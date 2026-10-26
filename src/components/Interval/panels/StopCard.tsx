@@ -55,8 +55,16 @@ export interface CurrentStopData {
   direction?: string;
 }
 
+/** The back link above the stop's title: "← " + the screen it returns to (CIV-832). */
+export interface StopCardBack {
+  to: string;
+  onClick: () => void;
+}
+
 export interface StopCardProps {
   currentStop: CurrentStopData;
+  /** Where the back link goes. Without it the link reads "← Map" and just closes the card. */
+  back?: StopCardBack;
   setSelectedStop: (s: string | null) => void;
   setSelectedRoute: (r: string | null) => void;
   stopAgencies: string[];
@@ -71,6 +79,7 @@ export interface StopCardProps {
 
 export const StopCard: React.FC<StopCardProps> = ({
   currentStop,
+  back,
   setSelectedStop,
   setSelectedRoute,
   stopAgencies,
@@ -102,7 +111,7 @@ export const StopCard: React.FC<StopCardProps> = ({
       <SidebarCardHeaderBlock>
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
-            <CardBackLink onClick={() => setSelectedStop(null)}>Map</CardBackLink>
+            <CardBackLink onClick={back?.onClick ?? (() => setSelectedStop(null))}>{back?.to ?? 'Map'}</CardBackLink>
             {stopAgencies.length === 1 ? (
               <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader

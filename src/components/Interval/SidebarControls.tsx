@@ -26,7 +26,7 @@ import {
 import { FLOATING_CARD, TRANSITION_BASE, SIDEBAR_CARD_SLOT, SIDEBAR_CARD_MAX_H, Z_PANEL, Z_DROPDOWN, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
-import type { StopRoute, NearbyConnection } from './panels/StopCard';
+import type { StopRoute, NearbyConnection, StopCardBack } from './panels/StopCard';
 import { RouteCardHeadway } from './panels/RouteCardHeadway';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
@@ -86,6 +86,8 @@ interface SidebarControlsProps {
   compareActive?: boolean;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
+  /** The stop card's back link: where it goes and its words (CIV-832). */
+  stopBack?: StopCardBack;
   analyticsApp?: string;
   onSearchRouteHover?: (key: string | null) => void;
 }
@@ -131,6 +133,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   compareActive = false,
   onInfoOpen,
   searchEnterRef,
+  stopBack,
   onSearchRouteHover,
   analyticsApp = 'frequency',
 }) => {
@@ -1003,6 +1006,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         {panelStop && (
           <StopCard
             currentStop={currentStop}
+            back={stopBack}
             setSelectedStop={setSelectedStop}
             setSelectedRoute={setSelectedRoute}
             stopAgencies={stopAgencies}
