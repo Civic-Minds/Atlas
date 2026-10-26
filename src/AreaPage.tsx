@@ -22,6 +22,16 @@ import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
+/** Desktop widths of the agency table: the names' smallest width, and each mode column's (eight fit in the page). */
+const AREA_NAME_COLUMN_REM = 10.75;
+const AREA_MODE_COLUMN_REM = 6.75;
+
+/** A mode header too long for its column breaks after the slash ("Gondola/" over "aerial tram"); the rest stay on one line. */
+function modeHeader(label: string) {
+  const slash = label.indexOf('/');
+  return label.length > 14 && slash > 0 ? <>{label.slice(0, slash + 1)}<br />{label.slice(slash + 1)}</> : label;
+}
+
 function readEmbeddedData(slug: string | undefined): AreaPageData | null {
   if (typeof document === 'undefined') return null;
   try {
@@ -90,8 +100,9 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
                   rows={data.agencies}
                   rowKey={a => a.slug}
                   columns={[
-                    { key: 'agency', header: 'Agency', rowHeader: true, className: 'font-normal', cell: a => <a className={`font-black ${LINK}`} href={agencyPagePath(a.slug)}>{a.name}</a> },
-                    ...data.modeColumns.map(m => ({ key: m, header: m, cell: (a: (typeof data.agencies)[number]) => a.modes[m] ?? '–' })),
+                    // Every area has the same mode columns (CIV-973); from sm up they are narrow enough for eight to fit beside the names.
+                    { key: 'agency', header: 'Agency', rowHeader: true, width: AREA_NAME_COLUMN_REM, className: 'font-normal', cell: a => <a className={`font-black ${LINK}`} href={agencyPagePath(a.slug)}>{a.name}</a> },
+                    ...data.modeColumns.map(m => ({ key: m, header: modeHeader(m), width: AREA_MODE_COLUMN_REM, cell: (a: (typeof data.agencies)[number]) => a.modes[m] ?? '–' })),
                   ]}
                 />
             </div>

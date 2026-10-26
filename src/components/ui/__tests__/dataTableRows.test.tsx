@@ -15,9 +15,11 @@ describe('DataTable end-aligned columns and row links (CIV-958)', () => {
     const { container } = render(<DataTable fixed endAligned rows={rows} rowKey={r => r.id} columns={columns} />);
     expect(screen.getByRole('columnheader', { name: 'Bus' }).className).toContain('text-right');
     expect(screen.getByRole('cell', { name: '210' }).className).toContain('text-right');
+    // From sm up the first column takes the rest and the others keep their width; on phones both keep the default widths (CIV-973).
     const cols = container.querySelectorAll('col');
-    expect((cols[0] as HTMLElement).style.width).toBe('');
-    expect((cols[1] as HTMLElement).style.width).toBe('8rem');
+    expect(cols[0].className).toContain('sm:w-auto');
+    expect((cols[0] as HTMLElement).style.getPropertyValue('--col-phone')).toBe('16rem');
+    expect((cols[1] as HTMLElement).style.getPropertyValue('--col-w')).toBe('8rem');
     expect((container.querySelector('table') as HTMLElement).style.width).toBe('100%');
   });
 

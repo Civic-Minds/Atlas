@@ -12,7 +12,7 @@ import {
   modeLabel,
   type AgencyPageSummary,
 } from './agencyPages';
-import { modeLabelSortIndex } from './modes';
+import { MODE_DEFINITIONS, VIRTUAL_LRT_MODE, modeLabelSortIndex } from './modes';
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
@@ -30,7 +30,7 @@ export interface AreaAgencyRow {
   slug: string;
   name: string;
   totalRoutes: number;
-  /** Route counts by mode label (only modes the agency has). */
+  /** Route counts by table column (AREA_TABLE_MODES, rarer modes added into "Other"), only the columns the agency has. */
   modes: Record<string, number>;
 }
 
@@ -48,7 +48,7 @@ export interface AreaPageData {
   /** Saturday and Sunday: every agency has it, none do, or it varies. */
   weekend: 'both' | 'sat' | 'sun' | 'none' | 'varies' | null;
   agencies: AreaAgencyRow[];
-  /** Mode columns for the agency table: modes at least one agency has, in display order. */
+  /** Mode columns for the agency table: the same fixed set on every area page (AREA_TABLE_MODES), then "Other" when an agency has a rarer mode. */
   modeColumns: string[];
   /** Newest schedule refresh among the area's agencies, and the data release the numbers come from. */
   newestRefresh: string | null;
@@ -56,6 +56,15 @@ export interface AreaPageData {
 }
 
 const SPAN_VARIES_HOURS = 3;
+
+/**
+ * The agency table's mode columns, the same on every area page and in the shared mode order, so a mode's column never
+ * moves from page to page; a missing mode shows a dash (CIV-973, Ryan: "the columns should never move").
+ */
+export const AREA_TABLE_MODES: readonly string[] = [1, VIRTUAL_LRT_MODE, 0, 2, 3, 4, 6]
+  .map(id => MODE_DEFINITIONS.find(m => m.id === id)!.label);
+/** One last column for the rarer modes (monorail, trolleybus, cable car, funicular, ...), shown only where an area has one. */
+export const AREA_TABLE_OTHER = 'Other';
 
 /**
  * The agencies counted on an area page (they have a page: weekday midday service), each with only the
@@ -73,6 +82,16 @@ export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies' | 'slug'>,
     if ((a.betaOnly && !BETA_BUILD) || !hasPage(a)) continue;
     const routes = a.routes.filter(r => r.areas?.includes(area.slug));
     if (routes.length > 0) out.push({ ...a, routes, routeCount: routes.length });
+  }
+  return out;
+}
+
+/** An agency's route counts by table column: the fixed modes as they are, every other mode added into "Other". */
+function tableModes(byMode: ReadonlyArray<{ label: string; routes: readonly unknown[] }>): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const m of byMode) {
+    const key = AREA_TABLE_MODES.includes(m.label) ? m.label : AREA_TABLE_OTHER;
+    out[key] = (out[key] ?? 0) + m.routes.length;
   }
   return out;
 }
@@ -96,7 +115,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
       slug: a.slug,
       name: a.name,
       totalRoutes: s.totalRoutes,
-      modes: Object.fromEntries(s.byMode.map(m => [m.label, m.routes.length])),
+      modes: tableModes(s.byMode),
     });
   }
   rows.sort((x, y) => y.totalRoutes - x.totalRoutes || compareAgencyName(x.name, y.name) || x.slug.localeCompare(y.slug));
@@ -123,7 +142,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     spanVaries: Number.isFinite(firstMin) && (firstMax - firstMin >= SPAN_VARIES_HOURS || lastMax - lastMin >= SPAN_VARIES_HOURS),
     weekend,
     agencies: rows,
-    modeColumns: byMode.map(m => m.label),
+    modeColumns: [...AREA_TABLE_MODES, ...(rows.some(r => r.modes[AREA_TABLE_OTHER]) ? [AREA_TABLE_OTHER] : [])],
     newestRefresh: newest,
     releaseDate,
   };

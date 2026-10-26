@@ -156,10 +156,10 @@ describe('AgencyPage other agencies list', () => {
 describe('AreaPage', () => {
   const data = buildAreaPageData(AREA, new Map([[TTC.slug, TTC], [HSR.slug, HSR]]), '2026-10-13T00:00:00Z');
 
-  it('lists agencies in a table with only the mode columns the area has, and links each agency', () => {
+  it('lists agencies in a table with the same mode columns as every area (CIV-973), and links each agency', () => {
     view(<AreaPage data={data} />);
     const headers = screen.getAllByRole('columnheader').map(h => h.textContent);
-    expect(headers).toEqual(['Agency', 'Subway/Metro', 'Bus']);
+    expect(headers).toEqual(['Agency', 'Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry', 'Gondola/aerial tram']);
     expect(screen.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
     const ttcRow = screen.getByRole('link', { name: 'Toronto Transit Commission' }).closest('tr')!;
     const hsrRow = screen.getByRole('link', { name: 'Hamilton Street Railway' }).closest('tr')!;

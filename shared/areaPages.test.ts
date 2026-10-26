@@ -31,9 +31,18 @@ describe('buildAreaPageData', () => {
     expect(d.bands).toEqual([2, 1, 1, 1, 0, 0, 1]); // 4 and 10, 12, 20, 30, none
     expect(d.agencies[0]).toMatchObject({ slug: 'ttc', totalRoutes: 4, modes: { 'Subway/Metro': 2, Bus: 2 } });
     expect(d.byMode).toEqual([{ label: 'Subway/Metro', routes: 2 }, { label: 'Bus', routes: 4 }]);
-    expect(d.modeColumns).toEqual(['Subway/Metro', 'Bus']);
+    // The same fixed columns on every area page, in the shared order (CIV-973); no "Other" without a rarer mode.
+    expect(d.modeColumns).toEqual(['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry', 'Gondola/aerial tram']);
     expect(d.span).toEqual({ first: 5, last: 28 });
     expect(d.newestRefresh).toBe('2026-09-01');
+  });
+
+  it('adds rarer modes into one last "Other" column, only where an agency has one (CIV-973)', () => {
+    const withRare = new Map([...ALL, ['mono', ag('mono', 'Monorail Co', [r('M', 12, 10), r('T', 11, 15), r('F', 4, 20)])] as const]);
+    const area = { ...AREA, agencies: [...AREA.agencies, 'mono'] };
+    const e = buildAreaPageData(area, withRare, null);
+    expect(e.modeColumns.at(-1)).toBe('Other');
+    expect(e.agencies.find(a => a.slug === 'mono')?.modes).toEqual({ Other: 2, Ferry: 1 });
   });
 
   it('takes the quickest route across the whole area', () => {
