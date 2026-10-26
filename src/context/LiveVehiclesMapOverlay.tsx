@@ -38,7 +38,8 @@ export interface LiveVehiclesMapOverlay {
   // Stretch of the selected route to draw on top of it.
   highlight?: [number, number][] | null;
   // Map click while Live is open: the vehicle under the pointer, if any.
-  onMapClick?: (lonLat: [number, number], vehicle: LiveVehicle | null, toleranceM: number) => void;
+  /** `vehicles`: every vehicle dot under the click (empty when the click missed them all). */
+  onMapClick?: (lonLat: [number, number], vehicles: LiveVehicle[], toleranceM: number) => void;
 }
 
 interface ContextValue {

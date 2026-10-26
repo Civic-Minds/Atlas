@@ -48,6 +48,7 @@ import type { NightServiceFrequency } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
 import Panel from '../ui/Panel';
+import { pickLiveVehicles } from './map/liveVehiclePick';
 import ListRow from '../ui/ListRow';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
@@ -766,6 +767,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     handleMapClickRef.current = (e: maplibregl.MapMouseEvent) => {
       const map = mapRef.current;
       if (!map) return;
+
+      // A Live vehicle dot belongs to Live's own click handler (vehicle card), not the route picker.
+      if (pickLiveVehicles(deckOverlayRef.current, e.point).length > 0) return;
 
       if (selectedAgencySlugRef.current) {
         setSelectedAgencySlugRef.current?.(null);

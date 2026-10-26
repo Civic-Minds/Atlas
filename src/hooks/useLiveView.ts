@@ -19,14 +19,15 @@ export function useLiveCardMapLink() {
 }
 
 /**
- * Live's view state in the URL so a shared link reopens it: the route, the followed vehicle
- * and the vehicle-list direction (the route card keeps its own p, dir, stretch and view).
- * The followed vehicle and direction are restored once the linked route is open.
+ * Live's view state in the URL so a shared link reopens it: the route, the vehicle whose card is
+ * open (not the vehicle the map is centred on) and the vehicle-list direction (the route card
+ * keeps its own p, dir, stretch and view).
+ * The vehicle card and direction are restored once the linked route is open.
  */
-export function useLiveViewUrl({ active, selectedRoute, focusedVehicle, selectedDirection, selectedGroup, pendingRouteRef, onRestore }: {
+export function useLiveViewUrl({ active, selectedRoute, cardVehicleId, selectedDirection, selectedGroup, pendingRouteRef, onRestore }: {
   active: boolean;
   selectedRoute: string | null;
-  focusedVehicle: { id: string } | null;
+  cardVehicleId: string | null;
   selectedDirection: string | null;
   selectedGroup: { vehicles: LiveVehicle[] } | null;
   pendingRouteRef: React.RefObject<string | null>;
@@ -38,8 +39,8 @@ export function useLiveViewUrl({ active, selectedRoute, focusedVehicle, selected
   })() : null);
   useEffect(() => {
     if (!active || pendingRouteRef.current) return;
-    syncUrlParams({ route: selectedRoute, vehicle: focusedVehicle?.id ?? null, group: selectedDirection });
-  }, [active, selectedRoute, focusedVehicle?.id, selectedDirection, pendingRouteRef]);
+    syncUrlParams({ route: selectedRoute, vehicle: cardVehicleId, group: selectedDirection });
+  }, [active, selectedRoute, cardVehicleId, selectedDirection, pendingRouteRef]);
   useEffect(() => {
     const r = restoreRef.current;
     if (!r || !selectedGroup) return;

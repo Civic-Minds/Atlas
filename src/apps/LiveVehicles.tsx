@@ -117,6 +117,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const [vehicleFly, setVehicleFly] = useState<{ lat: number; lon: number; ts: number } | null>(null);
   // The vehicle whose card is open, tied to its route so a route change closes it.
   const [vehicleCard, setVehicleCard] = useState<{ routeKey: string; id: string } | null>(null);
+  // Vehicles under a map click on overlapping dots, waiting for the user to pick one.
+  const [vehiclePick, setVehiclePick] = useState<string[] | null>(null);
   const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
   const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
   const { fitArea, highlight, setHighlight, zoomToStretch, registerMapClick, mapLineClickRef } = useLiveCardMapLink();
@@ -288,6 +290,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return allVehicles.filter(v => `${v.agencySlug}::${v.routeShortName}` === selectedRoute);
   }, [allVehicles, selectedRoute]);
 
+  // A vehicle's card, from a dot click, the overlapping-dots pick list, or a shared link.
+  const openVehicleCard = useCallback((vehicle: LiveVehicle) => {
+    const key = `${vehicle.agencySlug}::${vehicle.routeShortName}`;
+    setVehiclePick(null);
+    if (key !== selectedRouteRef.current) setSelectedRoute(key);
+    setVehicleCard({ routeKey: key, id: vehicle.id });
+    setFocusedVehicle({ id: vehicle.id, lat: vehicle.lat, lon: vehicle.lon, ts: Date.now() });
+  }, []);
+
   // Update map overlay — no cleanup that nulls overlay (prevents zoom-reset on poll).
   // Fingerprint skips setOverlay when poll data is unchanged so MapCanvas/deck don't churn.
   const lastOverlayFpRef = useRef('');
@@ -313,14 +324,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     lastOverlayFpRef.current = fp;
     setOverlay({
       vehicles: overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, frameFeatures, selectedRouteKey: selectedRoute, focusArea, fitArea, highlight,
-      onMapClick: (lonLat, vehicle, toleranceM) => {
-        if (vehicle) {
-          const key = `${vehicle.agencySlug}::${vehicle.routeShortName}`;
-          if (key !== selectedRouteRef.current) setSelectedRoute(key);
-          setVehicleCard({ routeKey: key, id: vehicle.id });
-          setFocusedVehicle({ id: vehicle.id, lat: vehicle.lat, lon: vehicle.lon, ts: Date.now() });
-          return;
-        }
+      onMapClick: (lonLat, vehicles, toleranceM) => {
+        if (vehicles.length === 1) { openVehicleCard(vehicles[0]); return; }
+        if (vehicles.length > 1) { setVehiclePick(vehicles.map(v => v.id)); return; }
+        setVehiclePick(null);
         mapLineClickRef.current?.(lonLat, toleranceM);
       },
     });
@@ -533,12 +540,22 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   }, [selectedGroup, layers, localLayers]);
 
   // Vehicle word for the selected route's mode ("Streetcar 4508", not "Bus 4508")
-  const selectedRouteModeWord = useMemo(() => {
-    if (!selectedGroup) return 'Bus';
-    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
-    const feature = fc?.features.find(f => (f.properties as any)?.routeShortName === selectedGroup.routeShortName);
+  const modeWordFor = useCallback((agencySlug: string, routeShortName: string) => {
+    const fc = layers[agencySlug] ?? localLayers[agencySlug];
+    const feature = fc?.features.find(f => (f.properties as any)?.routeShortName === routeShortName);
     return vehicleModeWord((feature?.properties as any)?.routeType);
-  }, [selectedGroup, layers, localLayers]);
+  }, [layers, localLayers]);
+  const selectedRouteModeWord = useMemo(
+    () => (selectedGroup ? modeWordFor(selectedGroup.agencySlug, selectedGroup.routeShortName) : 'Bus'),
+    [selectedGroup, modeWordFor],
+  );
+
+  // Overlapping dots: the vehicles under the click that are still in the feed.
+  const pickVehicles = useMemo(() => {
+    if (!vehiclePick) return [];
+    const byId = new Map(allVehicles.map(v => [v.id, v]));
+    return vehiclePick.map(id => byId.get(id)).filter((v): v is LiveVehicle => !!v);
+  }, [vehiclePick, allVehicles]);
 
   // Direction label lookup from GeoJSON features: the route's main destination per direction, i.e. the
   // headsign of its longest shape (a short turn like Roncesvalles must not rename the Humber direction).
@@ -552,9 +569,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
   useEffect(() => { setSelectedDirection(null); }, [selectedRoute]);
   useLiveViewUrl({
-    active, selectedRoute, focusedVehicle, selectedDirection, selectedGroup, pendingRouteRef,
+    active, selectedRoute, cardVehicleId: cardVehicle?.id ?? null, selectedDirection, selectedGroup, pendingRouteRef,
     onRestore: (vehicle, group) => {
-      if (vehicle) setFocusedVehicle({ id: vehicle.id, lat: vehicle.lat, lon: vehicle.lon, ts: Date.now() });
+      if (vehicle) openVehicleCard(vehicle);
       if (group) { setSelectedDirection(group); setVehiclesOpen(true); }
     },
   });
@@ -659,7 +676,29 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           {/* Content */}
           <PanelBody>
             {requestedRouteNote && <PanelEmpty>{requestedRouteNote}</PanelEmpty>}
-            {selectedGroup && cardVehicle ? (
+            {pickVehicles.length > 1 ? (
+              pickVehicles.map((v, i) => {
+                const modeWord = modeWordFor(v.agencySlug, v.routeShortName);
+                const colors = getVehicleColors(v.status, colorMode);
+                return (
+                  <RouteListRow
+                    key={v.id}
+                    shortName={cleanRouteShortName(v.routeShortName)}
+                    name={vehicleCardName(v, modeWord) ?? liveVehicleRowLabel(v, i, modeWord)}
+                    onClick={() => openVehicleCard(v)}
+                    variant="spaced"
+                    right={
+                      <span
+                        style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                        className={`text-xs font-black shrink-0 whitespace-nowrap ml-3 ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
+                      >
+                        {delayLabel(v)}
+                      </span>
+                    }
+                  />
+                );
+              })
+            ) : selectedGroup && cardVehicle ? (
               <SidebarCardShell className="px-4 pt-4">
                 <SidebarCardHeaderBlock>
                   <CardBackLink onClick={() => setVehicleCard(null)}>Route {cleanRouteShortName(selectedGroup.routeShortName)}</CardBackLink>
