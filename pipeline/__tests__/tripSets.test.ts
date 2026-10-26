@@ -6,7 +6,7 @@ import { processGtfsBuffer } from '../process-core';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { decodeStopRuns } from '../../shared/stopRuns';
-import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
+import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -835,5 +835,27 @@ describe('rule 3: sibling branches that take turns through a period (#1072, HSR 
   it('legitimate: a sibling at a slower cadence (every 60 after every 30) is not a handover', () => {
     const d = build(every(360, 720, 30), every(780, 1380, 60), f);
     expect(rollupDirection(d)).toEqual(without(d));
+  });
+});
+
+describe('a tail that does not run through a period, by the main stretch\'s rule (#1115)', () => {
+  const tail = (times: number[]) => ({ kind: 'tail' as const, stops: ['a'], refStop: 'a', lengthKm: 1, times, nightTimes: [], tripCount: times.length });
+  const every = (from: number, to: number, step: number) => Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
+
+  it('a peak-only branch (TTC 84 to Pioneer Village: every 20 to 9:35, none until 15:12) does not run through midday', () => {
+    const { notThrough } = tailNotThrough(tail([...every(375, 575, 20), ...every(912, 1110, 30)]));
+    expect(notThrough).toContain('midday');
+    expect(notThrough).not.toContain('amPeak');
+    expect(notThrough).not.toContain('pmPeak');
+  });
+
+  it('a branch running through the period unevenly still runs through it (OC Transpo 63 PM: every 15 with one 32-minute gap)', () => {
+    const pm = [929, 944, 959, 1014, 1029, 1061, 1076, 1091, 1106, 1121];
+    expect(tailNotThrough(tail(pm)).notThrough).not.toContain('pmPeak');
+  });
+
+  it('a branch running every 12 all day runs through every daytime period', () => {
+    const { notThrough } = tailNotThrough(tail(every(360, 1380, 12)));
+    expect(notThrough.filter(p => ['amPeak', 'midday', 'pmPeak', 'evening'].includes(p))).toEqual([]);
   });
 });
