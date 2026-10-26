@@ -4,7 +4,7 @@ import { runTimeDiffText } from '../../../../shared/liveWording';
 import type { AgencyRouteRow, AgencySummary } from '../../../../shared/liveAgency';
 import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
 import { routeLabels } from '../../../utils/format';
-import { measureLabel, type MapMeasure } from '../routeMapModel';
+import { mapStep, measureLabel, type MapMeasure } from '../routeMapModel';
 import { delayHeatPoints } from '../delayHeatModel';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -26,6 +26,20 @@ function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure, 
   }
 }
 
+/**
+ * Each row's bar (CIV-946, "most late routes"): its length against the worst route in the list, its colour the map's
+ * step for that figure, so the list reads as a ranked bar chart. Only the bad side has a bar: a run time faster than the
+ * timetable has none. Widths are shares of the bar's column (0–1).
+ */
+export function routeBars(rows: { f: { value: number } | null }[], measure: MapMeasure): ({ width: number; color: string } | null)[] {
+  const top = Math.max(0, ...rows.map(({ f }) => f?.value ?? 0));
+  return rows.map(({ f }) => {
+    if (!f || !(f.value > 0) || !(top > 0)) return null;
+    const step = mapStep(measure, f.value) ?? 0;
+    return { width: f.value / top, color: `var(--strip-${measure === 'bunching' ? 'bunching' : 'delay'}-${step})` };
+  });
+}
+
 /** The routes in the overview's order: worst figure for the measure first, routes with none at the end (the list and the top bar's route menu). */
 export function rankRoutes(s: AgencySummary, network: Map<string, LiveV3>, measure: MapMeasure, band: DashboardBand = 'all') {
   return s.routes
@@ -41,6 +55,7 @@ export default function OverviewList({ s, measure, band = 'all', route, network,
   const rows = useMemo(() => rankRoutes(s, network, measure, band), [s, measure, band, network]);
   // Every route is listed: the route list is the only route picker. Nothing scrolls, so a list taller than its room is clipped at the bottom.
   const shown = rows;
+  const bars = useMemo(() => routeBars(rows, measure), [rows, measure]);
   return (
     <section aria-label="Routes" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 shadow-lg backdrop-blur">
       <div className="flex shrink-0 items-baseline justify-between text-xs font-bold text-[var(--text-muted)]">
@@ -48,7 +63,7 @@ export default function OverviewList({ s, measure, band = 'all', route, network,
         <span>{measureLabel(measure)}</span>
       </div>
       <ul className="m-0 mt-1 min-h-0 flex-1 overflow-hidden p-0">
-        {shown.map(({ r, f }) => {
+        {shown.map(({ r, f }, i) => {
           const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency.toUpperCase() });
           return (
             <li key={r.route} className="list-none">
@@ -57,6 +72,8 @@ export default function OverviewList({ s, measure, band = 'all', route, network,
                 <span className="font-bold">{l.primary}</span>
                 <span className="truncate text-[var(--text-secondary)]">{l.secondary}</span>
                 <span className="tabular-nums">{f?.text ?? '–'}</span>
+                {/* Under the name and figure, so the bar takes no room from the name. */}
+                <span aria-hidden className="col-span-2 col-start-2 mb-0.5 h-1">{bars[i] && <span className="block h-full rounded-full" style={{ width: `${Math.max(2, bars[i]!.width * 100)}%`, background: bars[i]!.color }} />}</span>
               </button>
             </li>
           );
