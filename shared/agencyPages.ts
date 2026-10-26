@@ -182,7 +182,8 @@ export function agencyPageData(
         .sort((x, y) => (a.center && x.center ? distanceKm(a.center, x.center) : 0) - (a.center && y.center ? distanceKm(a.center, y.center) : 0))
         .slice(0, MAX_AREA_LIST)
     : nearbyAgencies(a, all);
-  const hasPage = new Set(all.filter(o => o.routes.some(r => r.midday != null)).map(o => o.slug));
+  // Every agency in the list has a page (CIV-965), so a connection links whenever its agency is in it.
+  const hasPage = new Set(all.map(o => o.slug));
   const fullName = new Map(all.map(o => [o.slug, o.name]));
   const connections = (a.connections ?? []).filter(c => !c.betaOnly || BETA_BUILD).map(c => ({ ...c, name: fullName.get(c.slug) ?? c.name, page: hasPage.has(c.slug) }));
   const place = area && agencySpansArea(a.bbox, area.bbox) ? areaRegionName(area) : a.city;

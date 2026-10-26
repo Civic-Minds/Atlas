@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   AGENCY_INDEX_DATA_SCRIPT_ID,
   agencyIndexDescription,
+  agencyIndexRegionId,
   resolveAgencyIndexSeo,
   type AgencyIndexData,
 } from '../shared/agencyIndex';
@@ -93,7 +94,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
               <SectionTitle id={`index-${g.country}`}>{g.country}</SectionTitle>
               {g.regions.map(r => (
                 <div key={r.region} className="mt-5">
-                  {r.region !== g.country && <h3 className="text-base font-black">{r.region}</h3>}
+                  {r.region !== g.country && <h3 id={agencyIndexRegionId(g.country, r.region)} className="text-base font-black">{r.region}</h3>}
                   <ul className={`mt-2 text-sm ${INDEX_COLUMNS}`}>
                     {r.agencies.map(a => {
                       const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{plural(a.routes, 'route')}</span>;

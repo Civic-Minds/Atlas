@@ -13,6 +13,18 @@ export const AGENCY_INDEX_PATH = '/agencies';
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
 export const AGENCY_INDEX_DATA_SCRIPT_ID = 'agency-index-data';
 
+const anchorSlug = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+/** The id of a state or province heading in the list; a country listed with no regions keeps its own heading's id. */
+export function agencyIndexRegionId(country: string, region: string): string {
+  return region === country ? `index-${country}` : `index-${anchorSlug(country)}-${anchorSlug(region)}`;
+}
+
+/** Link to an agency's state or province in the list (CIV-966), or null when the agency has no country and region. */
+export function agencyIndexRegionHref(a: { country?: string; region?: string }): string | null {
+  return a.country && a.region ? `${AGENCY_INDEX_PATH}#${encodeURIComponent(agencyIndexRegionId(a.country, a.region))}` : null;
+}
+
 export interface AgencyIndexAgency {
   slug: string;
   name: string;

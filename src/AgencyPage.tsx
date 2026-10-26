@@ -12,11 +12,13 @@ import {
   resolveAgencySeo,
   AGENCY_DATA_SCRIPT_ID,
   CONNECTS_WITH,
+  NO_MIDDAY_PHRASE,
   connectionNames,
   type AgencyPageData,
   type AgencyPageRoute,
 } from '../shared/agencyPages';
 import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
+import { agencyIndexRegionHref } from '../shared/agencyIndex';
 import { andOthers } from '../shared/overflowText';
 import { routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE } from '../shared/config';
@@ -48,22 +50,27 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
  * loads from the full summary file instead (dead code in production builds).
  */
 /**
- * The intro sentence, once, under the title. The place links to its area page when the agency has one, and connecting
- * agencies named in it are links when they have a page.
+ * The intro sentence, once, under the title. The place links to its area page when the agency has one, and otherwise
+ * to its state or province in the all-agencies list (CIV-966); connecting agencies named in it are links when they have
+ * a page. An agency with no regular midday service says so after it (CIV-965).
  */
 function Intro({ data }: { data: AgencyPageData }) {
   const { intro, introLead, place, connections, area } = data;
   const sentence = 'mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]';
   const link = `${LINK} underline underline-offset-2`;
   const placeAt = introLead.length;
-  if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}</p>;
+  const noMidday = data.agency.routes.length > 0 && data.agency.routes.every(r => r.midday == null)
+    ? ` ${data.agency.routes.length === 1 ? 'Its route has' : 'Its routes have'} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
+    : '';
+  const placeHref = area ? `/area/${area.slug}` : agencyIndexRegionHref(data.agency);
+  if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}{noMidday}</p>;
   const at = intro.indexOf(CONNECTS_WITH, placeAt);
   const { named, others } = connectionNames(connections);
   const between = intro.slice(placeAt + place.length, at < 0 ? intro.length - 1 : at);
   return (
     <p className={sentence}>
       {introLead}
-      {area ? <a className={link} href={`/area/${area.slug}`}>{place}</a> : place}
+      {placeHref ? <a className={link} href={placeHref}>{place}</a> : place}
       {between}
       {at >= 0 && named.length > 0 && (
         <>
@@ -77,7 +84,7 @@ function Intro({ data }: { data: AgencyPageData }) {
           {others > 0 ? ` ${andOthers(others, 'agency', 'agencies')}` : ''}
         </>
       )}
-      .
+      .{noMidday}
     </p>
   );
 }

@@ -98,13 +98,21 @@ describe('AgencyPage intro', () => {
     const d = agencyPageData(withConns, [withConns, HSR], null);
     expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway/metro, 3 bus) in Toronto with 7,566 stops and connects with Hamilton Street Railway, Tiny Transit, C and 1 other agency.');
     view(<AgencyPage data={d} />);
-    const p = screen.getByText(/operates 5 routes \(2 subway\/metro, 3 bus\) in Toronto with 7,566 stops/);
+    const p = screen.getByText((_, el) => el?.tagName === 'P' && /operates 5 routes \(2 subway\/metro, 3 bus\) in Toronto with 7,566 stops/.test(el.textContent ?? ''));
     expect(p.textContent).toBe(d.intro);
+    // No area page: the place links to its province in the all-agencies list (CIV-966).
+    expect(screen.getByRole('link', { name: 'Toronto' }).getAttribute('href')).toBe('/agencies#index-canada-ontario');
     expect(document.body.textContent!.split('operates 5 routes (').length - 1).toBe(1);
     expect(screen.getAllByRole('link', { name: 'Hamilton Street Railway' })[0].getAttribute('href')).toBe('/agency/hsr');
     expect(screen.queryByRole('link', { name: 'Tiny Transit' })).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Connects with' })).toBeNull();
     expect(screen.queryByTitle(/150 m/)).toBeNull();
+  });
+
+  it('says after the intro when an agency has no regular midday service (CIV-965)', () => {
+    const none = { ...HSR, routes: [r('A', 3, null), r('B', 3, null)] };
+    view(<AgencyPage data={agencyPageData(none, [none, TTC], null)} />);
+    expect(screen.getByText(/Its routes have no regular midday service\./)).toBeTruthy();
   });
 
   it('has no connects-with clause without connections', () => {
