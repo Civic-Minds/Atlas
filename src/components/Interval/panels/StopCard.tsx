@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { CardBackButton } from '../../CardBack';
 import { titleCase, routeLabels } from '../../../utils/format';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import {
@@ -10,7 +11,6 @@ import {
   SidebarCardSection,
   SidebarCardShell,
   CardReportButton,
-  CardBackButton,
   FlaggableValue,
   type CardReportButtonHandle,
 } from '../cardUi';

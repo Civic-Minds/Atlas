@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { CardBackLink } from '../CardBack';
 import { ChevronRight } from 'lucide-react';
-import { CardBackLink } from '../Interval/cardUi';
 import { cleanRouteShortName } from '../../utils/format';
 import Pill from '../ui/Pill';
 import { useLiveDashboard, liveDashboardPath } from '../../hooks/useLiveDashboard';
