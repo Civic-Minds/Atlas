@@ -26,7 +26,7 @@ import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels } from '../utils/liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { routeKeyForShortName } from '../utils/routeKey';
@@ -308,14 +308,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     }
 
     return [...map.entries()]
-      .sort(([keyA], [keyB]) => {
-        const [slugA, rsnA] = keyA.split('::');
-        const [slugB, rsnB] = keyB.split('::');
-        if (slugA !== slugB) return slugA.localeCompare(slugB);
-        const numA = parseInt(rsnA), numB = parseInt(rsnB);
-        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-        return rsnA.localeCompare(rsnB);
-      })
       .map(([key, vs]) => {
         const [agencySlug, routeShortName] = key.split('::');
         const lateCount = vs.filter(v => v.status === 'late').length;
@@ -327,7 +319,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           routeShortName,
         ));
         return { agencySlug, routeShortName, displayName, vehicles: vs, lateCount, earlyCount, dominantStatus };
-      });
+      })
+      .sort(compareLiveRoutes);
   }, [allVehicles, query, layers, localLayers]);
 
   // Viewport-filter the sidebar list: only show routes with at least one vehicle on screen

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
   id, routeShortName: '501', displayName: '501', tripId: 't', lat: 43.65, lon: -79.4, bearing: null, speedKmh: null, tsEpoch: null,
@@ -93,5 +93,24 @@ describe('orderDirectionGroups (fixed row order, CIV-899)', () => {
   it('puts Outbound before Inbound when no shape names the directions', () => {
     const groups = groupVehiclesByDirection([v('b', { directionId: 1 }), v('a', { directionId: 0 })], new Map());
     expect(orderDirectionGroups(groups, new Map()).map(([k]) => k)).toEqual(['Outbound', 'Inbound']);
+  });
+});
+
+describe('compareLiveRoutes (route list order)', () => {
+  const r = (agencySlug: string, routeShortName: string) => ({ agencySlug, routeShortName });
+  const order = (list: ReturnType<typeof r>[]) => [...list].sort(compareLiveRoutes).map(x => `${x.agencySlug} ${x.routeShortName}`);
+
+  it('sorts by agency, then route number in natural order', () => {
+    expect(order([r('ttc', '510'), r('ttc', '7'), r('miway', '1'), r('ttc', '10'), r('ttc', '506')]))
+      .toEqual(['miway 1', 'ttc 7', 'ttc 10', 'ttc 506', 'ttc 510']);
+  });
+
+  it('puts lettered branches in a fixed order whatever order the feed lists them', () => {
+    expect(order([r('ttc', '7B'), r('ttc', '7'), r('ttc', '7A')])).toEqual(['ttc 7', 'ttc 7A', 'ttc 7B']);
+    expect(order([r('ttc', '7A'), r('ttc', '7B'), r('ttc', '7')])).toEqual(['ttc 7', 'ttc 7A', 'ttc 7B']);
+  });
+
+  it('keeps numbered routes ahead of named ones', () => {
+    expect(order([r('sfmta', 'N'), r('sfmta', '38'), r('sfmta', 'F')])).toEqual(['sfmta 38', 'sfmta F', 'sfmta N']);
   });
 });

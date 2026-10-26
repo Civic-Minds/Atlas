@@ -1,4 +1,14 @@
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
+import { compareRouteNumber } from '../../shared/sortCompare';
+
+/** Live's route list order: by agency slug, then route number in natural order ("2" < "10", "7A" < "7B"). */
+export function compareLiveRoutes(
+  a: { agencySlug: string; routeShortName: string },
+  b: { agencySlug: string; routeShortName: string },
+): number {
+  if (a.agencySlug !== b.agencySlug) return a.agencySlug.localeCompare(b.agencySlug);
+  return compareRouteNumber(a.routeShortName, b.routeShortName);
+}
 
 /** The group for a vehicle whose direction cannot be told (it sits on track both directions share). */
 export const DIRECTION_UNCLEAR = 'Direction unclear';
