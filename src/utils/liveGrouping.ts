@@ -41,9 +41,14 @@ export function routeDirectionLabels(features: readonly GeoJSON.Feature[], route
 export function groupVehiclesByDirection(vehicles: readonly LiveVehicle[], directionLabels: ReadonlyMap<number, string>): Map<string, LiveVehicle[]> {
   const groups = new Map<string, LiveVehicle[]>();
   for (const v of vehicles) {
-    const key = v.headsign
-      ?? (v.directionId != null ? (directionLabels.get(v.directionId) ?? (v.directionId === 0 ? 'Outbound' : 'Inbound')) : DIRECTION_UNCLEAR);
+    const key = vehicleDirectionKey(v, directionLabels);
     (groups.get(key) ?? groups.set(key, []).get(key)!).push(v);
   }
   return groups;
+}
+
+/** The direction group a vehicle belongs to (see groupVehiclesByDirection). */
+export function vehicleDirectionKey(v: Pick<LiveVehicle, 'headsign' | 'directionId'>, directionLabels: ReadonlyMap<number, string>): string {
+  return v.headsign
+    ?? (v.directionId != null ? (directionLabels.get(v.directionId) ?? (v.directionId === 0 ? 'Outbound' : 'Inbound')) : DIRECTION_UNCLEAR);
 }

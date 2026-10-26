@@ -18,7 +18,7 @@ import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../utils/liveGrouping';
+import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels, vehicleDirectionKey } from '../utils/liveGrouping';
 import { CardDirectionRow, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { routeKeyForShortName } from '../utils/routeKey';
@@ -257,13 +257,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return fc && rsn ? routeKeyForShortName(slug, fc.features, rsn, getNowDay()) : null;
   }, [layers, localLayers, selectedRoute]);
 
-  // Every vehicle stays on the map; a picked route keeps its own at full strength and fades the rest.
-  const focus = useMemo<MapFocus | null>(() => {
-    if (!selectedRoute) return null;
-    const [agencySlug, routeShortName] = selectedRoute.split('::');
-    return { agencySlug, routeShortName };
-  }, [selectedRoute]);
-
   // A vehicle's card, from a dot click, the overlapping-dots pick list, or a shared link.
   const openVehicleCard = useCallback((vehicle: LiveVehicle) => {
     const key = `${vehicle.agencySlug}::${vehicle.routeShortName}`;
@@ -272,39 +265,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     setVehicleCard({ routeKey: key, id: vehicle.id });
     setFocusedVehicle({ id: vehicle.id, lat: vehicle.lat, lon: vehicle.lon, ts: Date.now() });
   }, []);
-
-  // Update map overlay — no cleanup that nulls overlay (prevents zoom-reset on poll).
-  // Fingerprint skips setOverlay when poll data is unchanged so MapCanvas/deck don't churn.
-  const lastOverlayFpRef = useRef('');
-  useEffect(() => {
-    if (!active) {
-      lastOverlayFpRef.current = '';
-      return;
-    }
-    const fp = [
-      liveVehiclesFingerprint(allVehicles),
-      mapRouteKey ?? '',
-      focus ? `${focus.agencySlug}::${focus.routeShortName}::${focus.ids?.join(',') ?? '*'}` : '',
-      focusedVehicle?.id ?? '',
-      focusedVehicle?.ts ?? '',
-      vehicleFly?.ts ?? '',
-      focusArea?.ts ?? '',
-      fitArea?.ts ?? '',
-      highlight?.length ?? 0,
-      highlight?.[0]?.join(',') ?? '',
-    ].join('::');
-    if (fp === lastOverlayFpRef.current) return;
-    lastOverlayFpRef.current = fp;
-    setOverlay({
-      vehicles: allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, focusArea, fitArea, highlight,
-      onMapClick: (_lonLat, vehicles) => {
-        if (vehicles.length === 1) { openVehicleCard(vehicles[0]); return; }
-        if (vehicles.length > 1) { setVehiclePick(vehicles.map(v => v.id)); return; }
-        setVehiclePick(null);
-      },
-    });
-  }, [active, allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, focusArea, fitArea, highlight, setOverlay]);
-
 
   // Clear overlay when deactivating or unmounting
   useEffect(() => {
@@ -560,6 +520,49 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const [soleKey] = [...vehiclesByDirection.keys()];
     return soleKey !== 'Outbound' && soleKey !== 'Inbound';
   }, [vehiclesByDirection]);
+
+  // Every vehicle stays on the map; a picked route keeps its own at full strength and fades the rest. A picked
+  // direction, or the direction of the vehicle whose card is open, narrows that to the direction's vehicles.
+  const focusDirection = selectedDirection ?? (cardVehicle ? vehicleDirectionKey(cardVehicle, directionLabels) : null);
+  const focusIds = focusDirection ? (vehiclesByDirection?.get(focusDirection) ?? []).map(v => v.id).join(',') : null;
+  const focus = useMemo<MapFocus | null>(() => {
+    if (!selectedRoute) return null;
+    const [agencySlug, routeShortName] = selectedRoute.split('::');
+    return { agencySlug, routeShortName, ids: focusIds != null ? focusIds.split(',').filter(Boolean) : null };
+  }, [selectedRoute, focusIds]);
+
+  // Update map overlay — no cleanup that nulls overlay (prevents zoom-reset on poll).
+  // Fingerprint skips setOverlay when poll data is unchanged so MapCanvas/deck don't churn.
+  const lastOverlayFpRef = useRef('');
+  useEffect(() => {
+    if (!active) {
+      lastOverlayFpRef.current = '';
+      return;
+    }
+    const fp = [
+      liveVehiclesFingerprint(allVehicles),
+      mapRouteKey ?? '',
+      focus ? `${focus.agencySlug}::${focus.routeShortName}::${focus.ids?.join(',') ?? '*'}` : '',
+      focusedVehicle?.id ?? '',
+      focusedVehicle?.ts ?? '',
+      vehicleFly?.ts ?? '',
+      focusArea?.ts ?? '',
+      fitArea?.ts ?? '',
+      highlight?.length ?? 0,
+      highlight?.[0]?.join(',') ?? '',
+    ].join('::');
+    if (fp === lastOverlayFpRef.current) return;
+    lastOverlayFpRef.current = fp;
+    setOverlay({
+      vehicles: allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, focusArea, fitArea, highlight,
+      onMapClick: (_lonLat, vehicles) => {
+        if (vehicles.length === 1) { openVehicleCard(vehicles[0]); return; }
+        if (vehicles.length > 1) { setVehiclePick(vehicles.map(v => v.id)); return; }
+        setVehiclePick(null);
+      },
+    });
+  }, [active, allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, focusArea, fitArea, highlight, setOverlay]);
+
 
   // Observed vs scheduled headway line for the selected route ("Every ~7 min · scheduled every 6 min")
   const selectedRouteHeadwayLine = useMemo((): string | null => {
