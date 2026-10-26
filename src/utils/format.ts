@@ -2,6 +2,7 @@ import { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cle
 import { routeDisplay, shouldHideNumericRouteShortName } from '../../shared/routeDisplay';
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';
+import { countOf } from '../../shared/overflowText';
 export { cleanHeadsign, formatRemDisplay, getRouteLabel };
 
 /**
@@ -292,6 +293,12 @@ export function vehicleModeWord(routeType: number | null | undefined): string {
     case 4: return 'Ferry';
     default: return 'Bus';
   }
+}
+
+/** The count and its vehicle word, lower-case: "1 streetcar", "10 streetcars", "3 buses", "2 ferries". */
+export function vehicleModeCount(count: number, modeWord: string): string {
+  const word = modeWord.toLowerCase();
+  return countOf(count, word, word === 'bus' ? 'buses' : word === 'ferry' ? 'ferries' : undefined);
 }
 
 /** Sidebar label for a live vehicle row when headsign is unavailable. */
