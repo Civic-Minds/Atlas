@@ -6,7 +6,7 @@ import { FEATURES } from '../shared/config';
 import { minutesText } from '../shared/liveFormat';
 import { excludingWeeksText, leftOutReason } from '../shared/liveWording';
 import type { AgencySummary } from '../shared/liveAgency';
-import { weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
+import { weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3, type WeekMetrics } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
@@ -156,7 +156,17 @@ const PANEL_PAD = { top: 56, bottom: 24, left: 410, right: 24 };
 const NARROW_PAD = { top: 56, bottom: 24, left: 24, right: 24 };
 /** What the route's week figures cover (the Run time tile's own scope wording). */
 const BOTH_DIRECTIONS = 'both directions';
-const weekly = (v3: LiveV3) => (v3.weekly ? kpiTiles(v3.weekly, weekDailyValues(v3)) : []);
+/**
+ * A picked route's week figures. Run time is its main pattern's alone (CIV-945: short turns and branches no longer blur
+ * it; each has its own row in the Run time card), where the file has it.
+ */
+const weekly = (v3: LiveV3) => {
+  if (!v3.weekly) return [];
+  if (v3.weekly.thisWeek.mainPatternTrip === undefined) return kpiTiles(v3.weekly, weekDailyValues(v3));
+  const main = <T extends { tripTime: unknown; mainPatternTrip?: WeekMetrics['mainPatternTrip'] }>(x: T): T => ({ ...x, tripTime: x.mainPatternTrip ?? null });
+  const own: LiveV3 = { ...v3, weekly: { ...v3.weekly, thisWeek: main(v3.weekly.thisWeek), lastWeek: main(v3.weekly.lastWeek) }, daily: v3.daily && Object.fromEntries(Object.entries(v3.daily).map(([d, x]) => [d, main(x)])) };
+  return kpiTiles(own.weekly!, weekDailyValues(own));
+};
 
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
