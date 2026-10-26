@@ -28,6 +28,7 @@ import type { SharedStretchPattern } from './sharedStretch.js';
 import { forCrossMidnightWindow, headwayToTier, medianHeadwayInWindow, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import { sustainedWithMidpoint } from './tripSets.js';
+import { trueServiceEdges } from './transit-phase2.js';
 
 /** A same-headsign pattern pools at every common stop when it serves this share of the other's stops. */
 export const SAME_HEADSIGN_COVERAGE = 2 / 3;
@@ -140,15 +141,24 @@ export function pooledWaitInWindow(times: readonly number[], start: number, end:
   const inWindow = collapseBunched([...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b));
   if (inWindow.length < minDeps || inWindow.length < 2) return null;
   if (!sustainedWithMidpoint(inWindow, true, start, end)) return null;
-  let sum = 0;
-  let sumSq = 0;
+  const gaps: number[] = [];
   for (let i = 1; i < inWindow.length; i++) {
     const gap = inWindow[i] - inWindow[i - 1];
     if (gap > PERIOD_COVERAGE_MAX_HEADWAY) return null;
-    sum += gap;
-    sumSq += gap * gap;
+    gaps.push(gap);
   }
-  const wait = Math.round(sumSq / sum);
+  const waitOf = (list: readonly number[]) => list.reduce((a, g) => a + g * g, 0) / list.reduce((a, g) => a + g, 0);
+  let exact = waitOf(gaps);
+  // A gap at a true end (or start) of service, the same edge test as the settled edge gap
+  // allowance (trueServiceEdges, FREQUENCY_RULES section A), does not count against the wait:
+  // a rider at the stop then has no later bus to wait for (DRT 901 Simcoe weekday evening:
+  // every 15 with a last 27-minute gap to the last trip read 16). The trimmed list keeps the
+  // same minimum as that allowance (4 departures), and the edge gap only ever lowers the wait.
+  const raw = [...new Set(forCrossMidnightWindow([...times], end))];
+  const edges = trueServiceEdges(inWindow, raw);
+  const trimmed = gaps.slice(edges.opening ? 1 : 0, edges.closing ? gaps.length - 1 : gaps.length);
+  if ((edges.opening || edges.closing) && trimmed.length + 1 >= 4) exact = Math.min(exact, waitOf(trimmed));
+  const wait = Math.round(exact);
   const ownSorted = own ? [...new Set(forCrossMidnightWindow([...own], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b) : [];
   const ownValue = ownSorted.length >= minDeps ? medianHeadwayInWindow(ownSorted, start, end, minDeps, true) : null;
   return ownValue != null ? Math.min(wait, ownValue) : wait;

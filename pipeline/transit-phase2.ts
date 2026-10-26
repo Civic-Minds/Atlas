@@ -136,6 +136,22 @@ export const determineTier = (
 };
 
 /**
+ * Whether the first and last of a window's departures are true service edges: no raw departure
+ * of the day comes before the first (opening) or after the last (closing). A gap created by the
+ * analysis window is not an edge of the service. Shared by the edge gap allowance below and the
+ * pooled stop wait (CIV-845, pipeline/stopPools.ts).
+ */
+export function trueServiceEdges(analysisTimes: readonly number[], rawTimes: readonly number[]): { opening: boolean; closing: boolean } {
+    if (analysisTimes.length === 0) return { opening: false, closing: false };
+    const first = analysisTimes[0];
+    const last = analysisTimes[analysisTimes.length - 1];
+    return {
+        opening: !rawTimes.some(time => time < first),
+        closing: !rawTimes.some(time => time > last),
+    };
+}
+
+/**
  * Determine a tier while allowing each true opening or closing gap to exceed
  * the target tier by up to ten minutes total. This is an absolute ceiling,
  * not ten minutes added to the ordinary grace allowance.
@@ -164,8 +180,7 @@ const determineTierWithEdgeGapAllowanceDetail = (
 ): EdgeGapAllowanceResult => {
     const analysisTimes = [...context.analysisTimes];
     const rawTimes = context.rawDepartureTimes;
-    const actualOpening = !rawTimes.some(time => time < analysisTimes[0]);
-    const actualClosing = !rawTimes.some(time => time > analysisTimes[analysisTimes.length - 1]);
+    const { opening: actualOpening, closing: actualClosing } = trueServiceEdges(analysisTimes, rawTimes);
 
     for (const tier of tiers) {
         const gaps = analysisTimes.slice(1).map((time, index) => time - analysisTimes[index]);
