@@ -111,10 +111,11 @@ export interface LiveV3 {
   window: { days: number; dates: string[]; requestedDays: number; goodDates?: string[] };
   thresholds: { earlyAtOrBelowMin: number; lateAtOrAboveMin: number; bunchedGapSec: number };
   method: string;
-  swaps: { reassigned: number; dropped: number; rate: number };
+  /** The good-prefixed fields count the good days (window.goodDates) only; older files lack them (CIV-910). */
+  swaps: { reassigned: number; dropped: number; rate: number; goodReassigned?: number; goodDropped?: number; goodRate?: number };
   /** Runs the analysis does not use, with why (old files do not have this). */
-  leftOut?: { noTimetableTrip: number; excluded: number; excludedLabel: string | null; kept: number };
-  uncertainty: { nearCutoffShare: number; withinMin: number; note: string };
+  leftOut?: { noTimetableTrip: number; excluded: number; excludedLabel: string | null; kept: number; goodNoTimetableTrip?: number; goodExcluded?: number; goodKept?: number };
+  uncertainty: { nearCutoffShare: number; goodNearCutoffShare?: number; withinMin: number; note: string };
   /** goodRuns and goodStopPassages count the good days (window.goodDates) only; older files lack them (CIV-910). */
   totals: { runs: number; stopPassages: number; droppedOffTimetable: number; goodRuns?: number; goodStopPassages?: number };
   directionLabels: Record<string, string>;
@@ -429,6 +430,29 @@ export function goodDayCounts(v3: LiveV3): { days: number; dates: string[]; runs
   const t = v3.totals;
   if (t.goodRuns == null || t.goodStopPassages == null || !v3.window.goodDates?.length) return { days: v3.window.days, dates: v3.window.dates, runs: t.runs, stopPassages: t.stopPassages };
   return { days: v3.window.goodDates.length, dates: v3.window.goodDates, runs: t.goodRuns, stopPassages: t.goodStopPassages };
+}
+
+/**
+ * The Limits section's unscheduled-trips, mismatched-trip-numbers and near-a-limit figures over the good days, so they
+ * leave out a bad-recording day like every other figure (CIV-910). A file without the good-day fields falls back to the
+ * whole window, field group by field group.
+ */
+export function goodDayLimits(v3: LiveV3): {
+  leftOut: { noTimetableTrip: number; excluded: number; kept: number } | null;
+  swaps: { reassigned: number; dropped: number; rate: number };
+  nearCutoffShare: number;
+} {
+  const good = !!v3.window.goodDates?.length;
+  const lo = v3.leftOut, sw = v3.swaps, u = v3.uncertainty;
+  const leftOut = !lo ? null
+    : good && lo.goodNoTimetableTrip != null && lo.goodExcluded != null && lo.goodKept != null
+      ? { noTimetableTrip: lo.goodNoTimetableTrip, excluded: lo.goodExcluded, kept: lo.goodKept }
+      : { noTimetableTrip: lo.noTimetableTrip, excluded: lo.excluded, kept: lo.kept };
+  const swaps = good && sw.goodReassigned != null && sw.goodDropped != null && sw.goodRate != null
+    ? { reassigned: sw.goodReassigned, dropped: sw.goodDropped, rate: sw.goodRate }
+    : { reassigned: sw.reassigned, dropped: sw.dropped, rate: sw.rate };
+  const nearCutoffShare = good && u.goodNearCutoffShare != null ? u.goodNearCutoffShare : u.nearCutoffShare;
+  return { leftOut, swaps, nearCutoffShare };
 }
 
 export const healthyDatesOf = (v3: LiveV3): string[] => v3.weekly?.thisWeek.healthyDates ?? v3.window.dates;

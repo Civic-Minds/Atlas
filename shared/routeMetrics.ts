@@ -132,3 +132,49 @@ export function goodDayTotals(runs: ReadonlyArray<{ date: string; stops: readonl
   const kept = keepGoodDays(runs, good);
   return { runs: kept.length, stopPassages: kept.reduce((n, r) => n + r.stops.length, 0) };
 }
+
+/** The "How this is measured" Limits counts over one set of days: unscheduled trips, mismatched trip numbers, near a limit. */
+export interface LimitCounts {
+  /** Runs seen under a trip number not on the timetable, runs of another service left out, and timetabled runs kept. */
+  noTimetableTrip: number;
+  excluded: number;
+  kept: number;
+  /** Runs off their own timetable slot: matched to another slot, or left out; rate = all of them over the runs plus the left-out ones. */
+  reassigned: number;
+  dropped: number;
+  swapRate: number;
+  /** Share of trip-start departures within `withinMin` of an on-time limit. */
+  nearCutoffShare: number;
+}
+
+/**
+ * The Limits counts over `days` (CIV-910): the analysis writes them over the whole window and over the good days, and the
+ * pages show the good-day ones, so a bad-recording day is left out of these shares as it is of every other figure.
+ */
+export function limitCounts(
+  input: {
+    leftOut: ReadonlyArray<{ date: string; reason: 'excluded' | 'no_timetable_trip' }>;
+    kept: readonly string[];
+    swaps: ReadonlyArray<{ date: string; outcome: 'reassigned' | 'dropped' }>;
+    runs: ReadonlyArray<{ date: string; stops: ReadonlyArray<{ tripStart?: boolean; delaySec: number }> }>;
+  },
+  days: ReadonlySet<string>,
+  limits: { earlyAtOrBelowMin: number; lateAtOrAboveMin: number; withinMin: number },
+): LimitCounts {
+  const leftOut = input.leftOut.filter(x => days.has(x.date));
+  const swaps = input.swaps.filter(x => days.has(x.date));
+  const runs = keepGoodDays(input.runs, days);
+  const reassigned = swaps.filter(x => x.outcome === 'reassigned').length;
+  const dropped = swaps.length - reassigned;
+  const starts = runs.flatMap(r => r.stops.filter(s => s.tripStart).map(s => s.delaySec / 60));
+  const near = starts.filter(m => Math.abs(m - limits.earlyAtOrBelowMin) < limits.withinMin || Math.abs(m - limits.lateAtOrAboveMin) < limits.withinMin).length;
+  return {
+    noTimetableTrip: leftOut.filter(x => x.reason === 'no_timetable_trip').length,
+    excluded: leftOut.filter(x => x.reason === 'excluded').length,
+    kept: input.kept.filter(d => days.has(d)).length,
+    reassigned,
+    dropped,
+    swapRate: runs.length + dropped ? swaps.length / (runs.length + dropped) : 0,
+    nearCutoffShare: starts.length ? near / starts.length : 0,
+  };
+}

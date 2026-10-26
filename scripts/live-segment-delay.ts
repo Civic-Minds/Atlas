@@ -24,7 +24,7 @@ import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type Run
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, stopGapsRow, type GapWindow, type StopGapsRow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { feedGaps, routeEmptyMinutes, MIN_SCHEDULED_TRIPS } from '../shared/feedOutages.js';
-import { dayHealth, delivered, goodDates, goodDayTotals, keepGoodDays, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
+import { dayHealth, delivered, goodDates, goodDayTotals, keepGoodDays, limitCounts, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
@@ -916,12 +916,13 @@ const orderIndex = (dir: number, stopId: string) => stopOrder.get(dir)?.indexOf(
 const r1 = (x: number | null) => (x == null ? null : Math.round(x * 10) / 10);
 const r3 = (x: number | null) => (x == null ? null : Math.round(x * 1000) / 1000);
 
-const leftOutInWindow = (reason: 'excluded' | 'no_timetable_trip') => leftOutRuns.filter(x => x.reason === reason && inWindow.has(x.date)).length;
-const swapsInWindow = swapLog.filter(x => inWindow.has(x.date));
-const swapsReassigned = swapsInWindow.filter(x => x.outcome === 'reassigned').length;
-const swapsDropped = swapsInWindow.length - swapsReassigned;
-const tpMinutes = windowRuns.flatMap(r => r.stops.filter(s => s.tripStart).map(s => s.delaySec / 60));
-const nearCutoffShare = tpMinutes.length ? tpMinutes.filter(m => Math.abs(m - EARLY_AT_OR_BELOW_MIN) < 0.75 || Math.abs(m - LATE_AT_OR_ABOVE_MIN) < 0.75).length / tpMinutes.length : 0;
+// The Limits counts (unscheduled trips, mismatched trip numbers, near a limit) over the whole window, and over the good days
+// only, which the pages show so these shares leave out a bad-recording day like every other figure (CIV-910).
+const limitInput = { leftOut: leftOutRuns, kept: keptRuns, swaps: swapLog, runs: windowRuns };
+const limitCutoffs = { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_AT_OR_ABOVE_MIN, withinMin: 0.75 };
+const windowLimits = limitCounts(limitInput, inWindow, limitCutoffs);
+const goodLimits = limitCounts(limitInput, inGoodDays, limitCutoffs);
+const nearCutoffShare = windowLimits.nearCutoffShare;
 const BANDS: (TimeBand | 'all')[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
 // B2 ranks only stops on a regular pattern (the main stretch's rule: 20%+ of the direction's trips), so a rare
 // diversion or odd pattern with a few late trips cannot top the list. Other stops are listed, not ranked.
@@ -1241,14 +1242,19 @@ const v3 = {
   method: 'Delay at a stop = the time the car left it (interpolated between archived positions, at the point 25 m past the stop on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Departure, not arrival: at terminals a car arrives and waits, which would look early. Trips are matched by trip number; a run 15+ min off its own trip is reassigned when another scheduled trip on the same pattern fits within 3 min at 80% of stops, otherwise dropped; passages over an hour off are dropped. Estimated from positions: the TTC feed has no delay values. Positions come about every minute, so each time is interpolated; ' + Math.round(nearCutoffShare * 100) + '% of timepoint departures fall within 0.75 min of an on-time cutoff, where a small error can change the label. "Early" means the car left before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
   leftOut: {
     /** Runs seen in the window under a trip number that is not in the timetable (unscheduled buses, extra moves). */
-    noTimetableTrip: leftOutInWindow('no_timetable_trip'),
+    noTimetableTrip: windowLimits.noTimetableTrip,
     /** Runs of the service left out on purpose (see `excludedLabel`). */
-    excluded: leftOutInWindow('excluded'),
+    excluded: windowLimits.excluded,
     excludedLabel: EXCLUDE_HEADSIGN ? 'replacement buses' : null,
-    kept: keptRuns.filter(d => inWindow.has(d)).length,
+    kept: windowLimits.kept,
+    // The same over the good days (window.goodDates) only, which the pages show (CIV-910).
+    goodNoTimetableTrip: goodLimits.noTimetableTrip, goodExcluded: goodLimits.excluded, goodKept: goodLimits.kept,
   },
-  swaps: { reassigned: swapsReassigned, dropped: swapsDropped, rate: r3(windowRuns.length + swapsDropped ? swapsInWindow.length / (windowRuns.length + swapsDropped) : 0) },
-  uncertainty: { nearCutoffShare: r3(nearCutoffShare), withinMin: 0.75, note: 'Share of terminal departures within 0.75 min of an on-time cutoff; positions are about a minute apart, so those can land on either side.' },
+  swaps: {
+    reassigned: windowLimits.reassigned, dropped: windowLimits.dropped, rate: r3(windowLimits.swapRate),
+    goodReassigned: goodLimits.reassigned, goodDropped: goodLimits.dropped, goodRate: r3(goodLimits.swapRate),
+  },
+  uncertainty: { nearCutoffShare: r3(nearCutoffShare), goodNearCutoffShare: r3(goodLimits.nearCutoffShare), withinMin: 0.75, note: 'Share of terminal departures within 0.75 min of an on-time cutoff; positions are about a minute apart, so those can land on either side.' },
   totals: {
     runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded,
     // The same over the good days (window.goodDates) only: what the pages show, so the counts match every figure (CIV-910).

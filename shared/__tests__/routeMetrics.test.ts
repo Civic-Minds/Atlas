@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays } from '../stopDelay';
 import { headwayBandStat } from '../segmentDelay';
 import { stopBunching, stopGapsRow } from '../bunching';
-import { dayHealth, delivered, goodDates, goodDayTotals, snapshotsPerDate, HEALTHY_DAY_SHARE, MIN_SAME_TYPE_DAYS, keepGoodDays, runTimeStat, weekSplit, type RunTimeRow, type TripOutcome } from '../routeMetrics';
+import { dayHealth, delivered, goodDates, goodDayTotals, limitCounts, snapshotsPerDate, HEALTHY_DAY_SHARE, MIN_SAME_TYPE_DAYS, keepGoodDays, runTimeStat, weekSplit, type RunTimeRow, type TripOutcome } from '../routeMetrics';
 
 const row = (sched: number, actual: number): RunTimeRow => ({ date: 'd', directionId: 0, startHour: 8, schedSec: sched * 60, actualSec: actual * 60 });
 
@@ -65,6 +65,27 @@ describe('good days only (CIV-318)', () => {
     expect(goodDayTotals(twoStops, good)).toEqual({ runs: 90, stopPassages: 180 });
     expect(goodDayTotals(runs, new Set(window))).toEqual({ runs: 120, stopPassages: 120 });
     expect(runs).toHaveLength(120);
+  });
+
+  it('the unscheduled-trips, mismatched-trip-numbers and near-a-limit shares leave the bad day out (CIV-910)', () => {
+    // Good days: 30 timetabled runs leaving on time, 1 unscheduled run each, 1 run matched to another slot on Oct 10.
+    // The bad day (Oct 12): 30 runs leaving 5 min late (near the 5.5-min limit), 30 unscheduled runs, 2 of another service,
+    // 5 runs matched to another slot and 10 left out.
+    const starts = window.flatMap(d => Array.from({ length: 30 }, () => ({ date: d, stops: [{ tripStart: true, delaySec: (d === '2026-10-12' ? 5 : 0) * 60 }] })));
+    const leftOut = window.flatMap(d => [
+      ...Array.from({ length: d === '2026-10-12' ? 30 : 1 }, () => ({ date: d, reason: 'no_timetable_trip' as const })),
+      ...(d === '2026-10-12' ? [{ date: d, reason: 'excluded' as const }, { date: d, reason: 'excluded' as const }] : []),
+    ]);
+    const swaps = [
+      { date: '2026-10-10', outcome: 'reassigned' as const },
+      ...Array.from({ length: 5 }, () => ({ date: '2026-10-12', outcome: 'reassigned' as const })),
+      ...Array.from({ length: 10 }, () => ({ date: '2026-10-12', outcome: 'dropped' as const })),
+    ];
+    const input = { leftOut, kept: starts.map(r => r.date), swaps, runs: starts };
+    const limits = { earlyAtOrBelowMin: -1.5, lateAtOrAboveMin: 5.5, withinMin: 0.75 };
+    expect(limitCounts(input, good, limits)).toEqual({ noTimetableTrip: 3, excluded: 0, kept: 90, reassigned: 1, dropped: 0, swapRate: 1 / 90, nearCutoffShare: 0 });
+    // Over every day, the bad day moves all three shares.
+    expect(limitCounts(input, new Set(window), limits)).toEqual({ noTimetableTrip: 33, excluded: 2, kept: 120, reassigned: 6, dropped: 10, swapRate: 16 / 130, nearCutoffShare: 0.25 });
   });
 
   it('worst stops and a direction late share: the bad day is excluded and the result is the hand-computed value', () => {
