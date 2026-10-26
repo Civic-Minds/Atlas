@@ -45,6 +45,18 @@ describe('StopRouteGroup rows (CIV-918)', () => {
     expect(screen.getAllByText('every 5 min')).toHaveLength(1);
   });
 
+  it("a branch value better than the stop's is not used: the row never claims more service than the stop sees", () => {
+    render(
+      <StopRouteGroup
+        shortName="503" longName="Kingston Rd" agencyName="TTC" agencySlug="ttc"
+        branches={[{ ...branch('Victoria Park', 0, 10), rowHeadway: 6 }]}
+        period="midday" showAgency={false} onOpenRoute={() => {}}
+      />,
+    );
+    expect(screen.getByText('every 10 min')).toBeInTheDocument();
+    expect(screen.queryByText('every 6 min')).toBeNull();
+  });
+
   it('gives every destination its own frequency, even when they all match', () => {
     renderGroup();
     expect(screen.getAllByText('every 20 min')).toHaveLength(2);

@@ -15,6 +15,13 @@ function branchHeadway(branch: StopBranch, period: TimePeriod): number | null {
   return metricValueForPeriod(branch.service, period);
 }
 
+/** The less frequent of the branch's own value and the stop's value, so a destination is never overstated. */
+function rowHeadway(branchValue: number | null, stopValue: number | null): number | null {
+  if (branchValue == null) return stopValue;
+  if (stopValue == null) return branchValue;
+  return Math.max(branchValue, stopValue);
+}
+
 interface Props {
   shortName: string;
   longName: string;
@@ -60,9 +67,10 @@ export default function StopRouteGroup({
         directionId: branch.directionId,
         multipleDirections: hasMultipleDirections,
       }),
-      // #934: part-period wording replaces the number, as on the route card's row. A row shows its branch's
-      // own value, never the stop's value for every trip, so a destination is never shown as more frequent.
-      hw: branch.periodText ? null : branch.rowHeadway ?? null,
+      // #934: part-period wording replaces the number, as on the route card's row. A row never claims more
+      // service than either measure gives: the stop's value counts every trip of the direction (504A and
+      // 504B together), and the branch's route-wide value can count trips that don't reach this stop.
+      hw: branch.periodText ? null : rowHeadway(branch.rowHeadway ?? null, branchHeadway(branch, period)),
     }))
     .filter(item => item.label)
     .sort((a, b) => a.directionId - b.directionId);
