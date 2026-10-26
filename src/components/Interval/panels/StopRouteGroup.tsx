@@ -104,6 +104,7 @@ export default function StopRouteGroup({
               key={`${item.rKey}::${item.directionId}::${item.headsign ?? ''}`}
               label={item.label}
               labelWeight="regular"
+              singleLine
               headway={item.hw ?? undefined}
               limited={item.periodText != null}
               limitedLabel={item.periodText}
