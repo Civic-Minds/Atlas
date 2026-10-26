@@ -5,20 +5,13 @@ import { MAP_BADGE } from '../../styles';
 import Pill from '../ui/Pill';
 import RoundIconButton from '../ui/RoundIconButton';
 import { FilterChips } from './FilterChips';
+import { SideBadge } from '../ui/SideBadge';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
 import { plural } from '../../../shared/overflowText';
 
+export { SideBadge } from '../ui/SideBadge';
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
-
-export function SideBadge({ side }: { side: 'A' | 'B' }) {
-  return (
-    <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[var(--text-primary)] text-2xs font-black text-[var(--bg-panel)]" aria-hidden="true">
-      {side}
-    </span>
-  );
-}
-
 
 /** Frequency, day and time buttons for one compare side (the phone filter panel uses this for B). */
 export function CompareSidePicker({ side, onChange }: { side: CompareSide; onChange: (side: CompareSide) => void }) {

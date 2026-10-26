@@ -20,6 +20,7 @@ import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
 import LegendItem from '../ui/LegendItem';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
+import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
@@ -491,7 +492,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return (
       <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label="Filters for both maps">
         <span title={compactTopBar ? 'Both maps' : undefined} className="h-8 px-3 flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">
-          <span className="inline-flex h-4 px-1 items-center justify-center rounded-full bg-[var(--text-primary)] text-2xs font-black text-[var(--bg-panel)]" aria-hidden="true">A+B</span>
+          <SideBadge side="A+B" />
           {!compactTopBar && 'Both maps'}
         </span>
         {modeChip('')}
