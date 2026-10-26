@@ -38,7 +38,7 @@ import ListRow from '../components/ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ArrowLink from '../components/ui/ArrowLink';
 import { currentAtlasUrl } from '../utils/reportIssue';
-import ModeFilterPill from '../components/ui/ModeFilterPill';
+import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
@@ -496,20 +496,7 @@ function HistoryAgencyPanel({
         />
         </div>
         {routeFilters.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {routeFilters.map(filter => {
-              const active = activeFilter === filter.key;
-              return (
-                <ModeFilterPill
-                  key={filter.key}
-                  onClick={() => setActiveFilter(active ? null : filter.key)}
-                  selected={active}
-                  label={filter.label}
-                  count={filter.count}
-                />
-              );
-            })}
-          </div>
+          <ModeFilterPillRow filters={routeFilters} selected={activeFilter} onSelect={setActiveFilter} />
         )}
       </div>
 

@@ -12,7 +12,7 @@ import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, sidebarFrameStyle } from '../../styles';
 import Panel, { PanelBody } from '../ui/Panel';
 import Pill from '../ui/Pill';
-import ModeFilterPill from '../ui/ModeFilterPill';
+import ModeFilterPillRow from '../ui/ModeFilterPillRow';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
 import { headwayEveryRange } from '../../utils/headwayText';
@@ -572,19 +572,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             </div>
           )}
           {(routeFilters.length > 0 || hasOnDemandPill) && (
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {routeFilters.map(f => {
-                const on = !onDemandOn && activeFilter === f.key;
-                return (
-                  <ModeFilterPill
-                    key={f.key}
-                    onClick={() => { setOnDemandChoice(false); setActiveFilter(on ? null : f.key); }}
-                    selected={on}
-                    label={f.label}
-                    count={f.count}
-                  />
-                );
-              })}
+            <ModeFilterPillRow
+              filters={routeFilters}
+              selected={onDemandOn ? null : activeFilter}
+              onSelect={key => { setOnDemandChoice(false); setActiveFilter(key); }}
+            >
               {hasOnDemandPill && (
                 <Pill
                   onClick={() => { setActiveFilter(null); setOnDemandChoice(!onDemandOn); }}
@@ -594,7 +586,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                   {ON_DEMAND_PILL_LABEL}
                 </Pill>
               )}
-            </div>
+            </ModeFilterPillRow>
           )}
           {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
