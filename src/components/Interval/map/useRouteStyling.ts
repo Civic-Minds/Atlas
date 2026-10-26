@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import * as maplibregl from 'maplibre-gl';
-import { getNightServiceColor, getTierColor, buildFocusedRouteLineOpacityExpression, buildDefaultRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../../utils/colors';
+import { getNightServiceColor, buildFocusedRouteLineOpacityExpression, buildDefaultRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../../utils/colors';
 import type { Agency } from '../../../App';
 import type { TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import type { HistoryMapOverlay } from '../../../context/HistoryMapOverlay';
@@ -20,6 +20,9 @@ import {
   ROUTE_LINE_WIDTH_STOPS,
   setRouteLayerPaint,
   resetRoutesLayerDefaultPaint,
+  frequentServiceColorExpression,
+  researchOverlayPaint,
+  RESEARCH_OVERLAY_LAYERS,
 } from './routeStyle';
 import { historyYearColorExpression, onTodaysLines } from '../../../utils/historyYearMap';
 
@@ -229,16 +232,7 @@ export function useRouteStyling(
         ]);
       }
       if (frequentServiceView && map.getLayer('frequent-service-routes-layer')) {
-        map.setPaintProperty('frequent-service-routes-layer', 'line-color', [
-          'match', ['get', 'frequentServiceBand'], '15', getTierColor('15', colorMode), getTierColor('30', colorMode),
-        ]);
-        map.setPaintProperty('frequent-service-routes-layer', 'line-width', [
-          'interpolate', ['linear'], ['zoom'],
-          8, ['match', ['get', 'frequentServiceBand'], '15', 3.2, 2.0],
-          11, ['match', ['get', 'frequentServiceBand'], '15', 3.8, 2.5],
-          14, ['match', ['get', 'frequentServiceBand'], '15', 4.6, 3.2],
-          17, ['match', ['get', 'frequentServiceBand'], '15', 6.0, 4.5],
-        ]);
+        map.setPaintProperty('frequent-service-routes-layer', 'line-color', frequentServiceColorExpression(colorMode) as any);
       }
 
       // Opacity based on route state (focused vs dimmed).
@@ -381,23 +375,14 @@ export function useRouteStyling(
         }
       }
 
-      // Night Service draws its own overlay layer: fade it behind a selected route exactly like the main
-      // map does for its route layers (same match expression, same dim values).
-      if (map.getLayer('night-service-routes-layer')) {
-        if (nightServiceView && selectedRoute) {
-          const focused = buildFocusedRoutePaint(routeKeyMatchExpression(selectedRoute), DIM_OPACITY, DIM_WIDTH);
-          map.setPaintProperty('night-service-routes-layer', 'line-opacity', focused.opacity as any);
-          map.setPaintProperty('night-service-routes-layer', 'line-width', [
-            'interpolate', ['linear'], ['zoom'],
-            8, ['case', routeKeyMatchExpression(selectedRoute), 3.5, 1.5],
-            11, ['case', routeKeyMatchExpression(selectedRoute), 3.5, 2.0],
-            14, ['case', routeKeyMatchExpression(selectedRoute), 3.5, 2.5],
-            17, 3.5,
-          ] as any);
-        } else {
-          map.setPaintProperty('night-service-routes-layer', 'line-opacity', 0.9);
-          map.setPaintProperty('night-service-routes-layer', 'line-width', ['interpolate', ['linear'], ['zoom'], 8, 2, 11, 2.5, 14, 3.2, 17, 4.5]);
-        }
+      // Night and Frequent Service draw their own overlay layers: fade the other lines behind a route
+      // selected in that view with the shared focus paint, else back to the layer's own paint.
+      for (const overlay of RESEARCH_OVERLAY_LAYERS) {
+        if (!map.getLayer(overlay.id)) continue;
+        const viewOn = overlay.view === 'night' ? nightServiceView : frequentServiceView;
+        const paint = researchOverlayPaint(overlay.width, viewOn ? selectedRoute : null);
+        map.setPaintProperty(overlay.id, 'line-opacity', paint.opacity as any);
+        map.setPaintProperty(overlay.id, 'line-width', paint.width as any);
       }
 
       // The bright qualifying-segment overlay only makes sense alongside the dimmed-base-route

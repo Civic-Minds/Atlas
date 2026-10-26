@@ -1,9 +1,9 @@
 import * as maplibregl from 'maplibre-gl';
-import { HEADWAY_TIERS, getNightServiceColor, type ColorVisionMode } from '../../../utils/colors';
+import { getNightServiceColor, type ColorVisionMode } from '../../../utils/colors';
 import { getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl } from '../../../lib/mapStyle';
 import { tileRouteKeyExpr } from '../../../../shared/tileFilterExprs';
 import { buildFocusCase, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
-import { ROUTE_LINE_WIDTH_BY_ZOOM, ROUTE_LINE_WIDTH_STOPS } from './routeStyle';
+import { ROUTE_LINE_WIDTH_BY_ZOOM, ROUTE_LINE_WIDTH_STOPS, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression } from './routeStyle';
 import { ON_DEMAND_FOCUSED_PROP } from './onDemandFocus';
 
 const ON_DEMAND_AREA_COLOR = '#64748b';
@@ -23,8 +23,6 @@ function onDemandByZoom(regional: unknown, street: unknown): unknown[] {
 function onDemandOpacity(confirmed: number, unconfirmed: number, faded: number): unknown[] {
   return buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], unconfirmed, confirmed], faded);
 }
-const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
-const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
 
 // Debug-only route highlight layer (?highlight=... -- see MapCanvasProps.highlightRoutes).
 // High-contrast palette deliberately distinct from HEADWAY_TIERS colors so it reads as an
@@ -274,8 +272,8 @@ function addNightServiceLayers(map: maplibregl.Map, colorMode: ColorVisionMode) 
     source: 'night-service-routes',
     paint: {
       'line-color': getNightServiceColor(colorMode),
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2, 11, 2.5, 14, 3.2, 17, 4.5],
-      'line-opacity': 0.9,
+      'line-width': NIGHT_SERVICE_WIDTH_BY_ZOOM as any,
+      'line-opacity': OVERLAY_ROUTE_OPACITY,
     },
     layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
   });
@@ -299,14 +297,10 @@ function addFrequentServiceLayers(map: maplibregl.Map) {
     type: 'line',
     source: 'frequent-service-routes',
     paint: {
-      'line-color': ['match', ['get', 'frequentServiceBand'], '15', FREQUENT_15_COLOR, FREQUENT_30_COLOR],
-      'line-width': ['interpolate', ['linear'], ['zoom'],
-        8, ['match', ['get', 'frequentServiceBand'], '15', 3.2, 2.0],
-        11, ['match', ['get', 'frequentServiceBand'], '15', 3.8, 2.5],
-        14, ['match', ['get', 'frequentServiceBand'], '15', 4.6, 3.2],
-        17, ['match', ['get', 'frequentServiceBand'], '15', 6.0, 4.5],
-      ],
-      'line-opacity': 0.9,
+      // The startup colours; the route styling effect repaints them for the colour-vision setting.
+      'line-color': frequentServiceColorExpression('default') as any,
+      'line-width': FREQUENT_SERVICE_WIDTH_BY_ZOOM as any,
+      'line-opacity': OVERLAY_ROUTE_OPACITY,
     },
     layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
   });
