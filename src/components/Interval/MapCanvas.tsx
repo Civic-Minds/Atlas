@@ -140,6 +140,8 @@ interface MapCanvasProps {
   period: TimePeriod;
   q: string;
   selectedRoute: string | null;
+  /** The route Live's card has open, in the map's key form: the map's selection while Interval has none of its own. */
+  liveSelectedRoute?: string | null;
   /** Debug-only: draw these routes on the map in distinct colors, independent of selectedRoute.
    * Not exposed in any UI -- set via ?highlight=agency::routeId,agency::routeId2 in Interval.tsx. */
   highlightRoutes?: string[];
@@ -240,6 +242,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   period,
   q,
   selectedRoute,
+  liveSelectedRoute = null,
   highlightRoutes = [],
   hoveredSearchRoute = null,
   hoveredBranch = null,
@@ -1245,7 +1248,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   // A route Live has open is the map's selection too: once the main map hands a route to Live's card (Interval
   // clears its own pick so its card stays closed), Live's pick drives the same selected-route styling and framing.
-  const mapSelectedRoute = selectedRoute ?? liveOverlay?.mapRouteKey ?? null;
+  const mapSelectedRoute = selectedRoute ?? liveSelectedRoute;
   // Live's card is not the regular route card: frame a Live route clear of where that card really is.
   const liveCardRef = liveOverlay?.cardRef;
   const liveFramePadding = useMemo(

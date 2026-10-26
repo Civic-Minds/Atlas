@@ -29,6 +29,8 @@ import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
 import { buildCompareRow } from '../utils/compareRows';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
+import { liveHandoffSettled, mapFocusRoute } from '../utils/routeFocus';
+import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import { getPolledRoute } from '../../shared/livePollingConfig';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
@@ -852,7 +854,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [selectedRoute, selectedStop, disambiguationRoutes, selectedAgencySlug, onDemandStopAgencySlug, externalPanelOpen, dismissMapSelection]);
 
-  // Live mode: hand a live route to Live's card. Live then owns the route param.
+  // Live mode: hand a live route to Live's card. Live then owns the route param, and its pick is the map's
+  // selection (liveMapRoute below), so the map keeps the shared selected-route fade and framing.
+  const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
+  const liveOverlayRef = useRef(liveOverlay);
+  liveOverlayRef.current = liveOverlay;
+  // The handed route stays the map's selection until Live has taken it (liveHandoffSettled).
+  const [liveHandoff, setLiveHandoff] = useState<{ route: string; liveRouteAtHandoff: string | null } | null>(null);
   const handedToLiveRef = useRef(false);
   useEffect(() => {
     if (!onLiveRouteSelected || !selectedRoute) return;
@@ -863,9 +871,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     const rsn = (feature?.properties as ShapeProperties | undefined)?.routeShortName;
     if (!rsn || !getPolledRoute(agencySlug, rsn)) return;
     handedToLiveRef.current = true;
+    setLiveHandoff({ route: selectedRoute, liveRouteAtHandoff: mapFocusRoute(liveOverlayRef.current?.focus) });
     onLiveRouteSelected(agencySlug, rsn);
     setSelectedRoute(null);
   }, [onLiveRouteSelected, selectedRoute, layers]);
+  const liveFocusRoute = mapFocusRoute(liveOverlay?.focus);
+  const liveMapRouteKey = liveOverlay?.mapRouteKey ?? null;
+  const liveOpen = !!liveOverlay;
+  useEffect(() => {
+    if (liveHandoff && liveHandoffSettled(liveHandoff, liveOpen ? { route: liveFocusRoute, mapRouteKey: liveMapRouteKey } : null)) setLiveHandoff(null);
+  }, [liveHandoff, liveOpen, liveFocusRoute, liveMapRouteKey]);
+  const liveMapRoute = liveHandoff?.route ?? liveMapRouteKey;
 
   // Sync selected route and stop to URL — replaceState via shared merge so
   // concurrent writers (day, map center, filters) don't clobber each other.
@@ -913,6 +929,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             period={period}
             q={q}
             selectedRoute={selectedRoute}
+            liveSelectedRoute={liveMapRoute}
             highlightRoutes={highlightRoutes}
             hoveredSearchRoute={hoveredSearchRoute}
             hoveredBranch={hoveredBranch}

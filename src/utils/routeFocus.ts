@@ -39,3 +39,27 @@ export function focusOpacity(
   if (!inRoute) return dimOpacity;
   return !focus.ids || focus.ids.includes(item.id) ? 1 : dimOpacity;
 }
+
+/** The route a MapFocus is on, as "slug::routeShortName" (null with nothing picked). */
+export function mapFocusRoute(focus: MapFocus | null | undefined): string | null {
+  return focus ? `${focus.agencySlug}::${focus.routeShortName}` : null;
+}
+
+/**
+ * A route the main map handed to Live stays the map's selection until Live has taken it: until Live's own map
+ * key is that route, or Live's pick moved on from what it was at the hand-off (opened it, or went back). Without
+ * the hold, the map would frame Live's previous route for a moment between the two.
+ */
+export function liveHandoffSettled(
+  handoff: { route: string; liveRouteAtHandoff: string | null },
+  live: { route: string | null; mapRouteKey: string | null } | null,
+): boolean {
+  if (!live) return true;
+  if (live.mapRouteKey && sameRouteId(live.mapRouteKey, handoff.route)) return true;
+  return live.route !== handoff.liveRouteAtHandoff;
+}
+
+function sameRouteId(a: string, b: string): boolean {
+  const routeOf = (key: string) => key.split('::branch:')[0];
+  return routeOf(a) === routeOf(b);
+}
