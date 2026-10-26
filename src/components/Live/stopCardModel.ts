@@ -38,7 +38,8 @@ export function stopCardGroups(stop: RouteStripStop, extraWaitMin: number | null
     const m = Math.max(0, extraWaitMin);
     wait.push(m < 0.05 ? W.noExtraWait : W.extraWait(tenth(m)));
   }
-  const parts = bunchParts(stop);
+  // A terminal with no wait figure and no gaps out of line would show the heading over "0% · 0%" alone: left out.
+  const parts = (p => (p && p.total === 0 && !wait.length ? null : p))(bunchParts(stop));
   if (parts && stop.bunchedShare != null && stop.gappedShare != null) wait.push(W.gaps(`${parts.bunched}%`, `${parts.tooLong}%`));
   else if (parts) wait.push(W.gapsTotal(`${parts.total}%`));
   return [
