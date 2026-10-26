@@ -31,7 +31,7 @@ import { RouteCardHeadway } from './panels/RouteCardHeadway';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
-import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
+import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, cardStopView, metricValueForPeriod } from '../../utils/routeFacts';
 import { buildSharedStopIndex } from '../../../shared/sharedStops';
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
@@ -595,7 +595,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         for (const sId of siblingIds) {
           const service = buildRouteStopMetric(p, sId, sharedIndexBySlug.get(slug));
           const hw = metricValueForPeriod(service, period);
-          if (hw != null || (periodText && p.stopHeadways?.[sId] != null)) {
+          if (hw != null || (periodText && cardStopView(p).stopHeadways?.[sId] != null)) {
             stopHw = hw ?? undefined;
             matchingStopId = sId;
             break; // Use the first matching sibling stop ID that this route serves

@@ -2565,6 +2565,22 @@ export async function processGtfsBuffer(
       if (Object.keys(stopPeriodHeadways).length > 0) {
         feature.properties.stopPeriodHeadways = stopPeriodHeadways;
       }
+      // CIV-845 B: the stop card's branch rows keep the values main publishes (the guarded pooled
+      // value or the pattern's own), so "to Pearson Airport" on TTC 52 reads its own 18, not the
+      // shared 8 the line shows. Only stops where those differ from the shown values; null or a
+      // missing period means main had none. Agency JSON only (not a tile key).
+      const cardStopHeadways: Record<string, number | null> = {};
+      const cardStopPeriodHeadways: Record<string, Partial<Record<PeriodKey, number>>> = {};
+      for (const { stopId } of onShape) {
+        const guarded = allStopHw[stopId] ?? null;
+        if (guarded !== (shownStopHeadways[stopId] ?? null)) cardStopHeadways[stopId] = guarded;
+        const guardedPeriods = allStopPeriodHw[stopId] ?? {};
+        const shownPeriods = stopPeriodHeadways[stopId] ?? {};
+        const keys = new Set([...Object.keys(guardedPeriods), ...Object.keys(shownPeriods)]) as Set<PeriodKey>;
+        if ([...keys].some(pk => guardedPeriods[pk] !== shownPeriods[pk])) cardStopPeriodHeadways[stopId] = { ...guardedPeriods };
+      }
+      if (Object.keys(cardStopHeadways).length > 0) feature.properties.cardStopHeadways = cardStopHeadways;
+      if (Object.keys(cardStopPeriodHeadways).length > 0) feature.properties.cardStopPeriodHeadways = cardStopPeriodHeadways;
       if (!isMapless && drawnPatternStops().length > 1) {
         // CIV-152: each drawn stop's every-gap grade, the method the route tier uses, on the
         // stop's own (pooled) list, never better than its headway's tier. The client colours the

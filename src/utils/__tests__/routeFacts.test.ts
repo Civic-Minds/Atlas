@@ -81,6 +81,43 @@ describe('routeFacts', () => {
     expect(buildRouteServiceSummary(p).display.value).toBe(9);
   });
 
+  it('CIV-845 B: a stop card branch row reads the branch value main publishes, not the shared shown wait', () => {
+    // TTC 52 to Pearson Airport at Lawrence West at Dufferin: the line shows the shared 8, the
+    // branch's own (guarded) value is 18 in the evening and 20 all day.
+    const p = {
+      routeId: '52', directionId: 1, headsign: 'Pearson Airport', headway: 20,
+      stopHeadways: { s1: 8, s2: 20 },
+      stopPeriodHeadways: { s1: { evening: 8, midday: 6 }, s2: { evening: 18 } },
+      cardStopHeadways: { s1: 20 },
+      cardStopPeriodHeadways: { s1: { evening: 18, midday: 6 } },
+      sharedStretches: [{ from: 0, to: 1, with: ['Martin Grove'] }],
+      stopOrder: ['s1', 's2'],
+    } as any;
+    const card = buildRouteStopMetric(p, 's1');
+    expect(card.value).toBe(20);
+    expect(metricValueForPeriod(card, 'evening')).toBe(18);
+    expect(metricValueForPeriod(card, 'midday')).toBe(6);
+    // The shown values the line reads are unchanged.
+    expect(p.stopPeriodHeadways.s1.evening).toBe(8);
+    expect(p.stopHeadways.s1).toBe(8);
+    // A stop with no card override reads as before.
+    expect(metricValueForPeriod(buildRouteStopMetric(p, 's2'), 'evening')).toBe(18);
+    // The shared-stretch lookup compares against main's value: a guarded pooled 7 beats 18.
+    const index = new Map([['52|1|', { s1: { headway: 7, periods: [null, null, null, 7] } }]]);
+    expect(metricValueForPeriod(buildRouteStopMetric(p, 's1', index as any), 'evening')).toBe(7);
+  });
+
+  it('CIV-845 B: a null card value means main published none for that stop', () => {
+    const p = {
+      routeId: '1', directionId: 0, headway: 30,
+      stopHeadways: { s1: 25 }, stopPeriodHeadways: { s1: { pmPeak: 25 } },
+      cardStopHeadways: { s1: null }, cardStopPeriodHeadways: { s1: {} },
+    } as any;
+    const card = buildRouteStopMetric(p, 's1');
+    expect(card.value).toBeNull();
+    expect(card.provenance).toBe('none');
+  });
+
   it('uses one period fallback order for every metric projection', () => {
     expect(metricValueForPeriod({
       value: 20,

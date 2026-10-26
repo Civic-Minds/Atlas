@@ -56,6 +56,13 @@ export interface RouteProperties {
   /** #879: drawn stops with no boardable stop time (pickup_type 1 on every visit); never graded, coloured from their neighbours. */
   dropOffOnlyStops?: string[];
   stopPeriodHeadways?: Record<string, HeadwayByPeriod>;
+  /**
+   * CIV-845 B, agency JSON only: at pooled stops where the shown values (stopHeadways,
+   * stopPeriodHeadways: the rider's wait on every pattern) differ, the guarded values main
+   * publishes, which the stop card's branch rows read. null or a missing period: none.
+   */
+  cardStopHeadways?: Record<string, number | null>;
+  cardStopPeriodHeadways?: Record<string, HeadwayByPeriod>;
   stopOrder?: string[];
   stopPositions?: number[];
   /**

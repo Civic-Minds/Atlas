@@ -195,6 +195,15 @@ describe('shared stretch pooling (synthetic)', () => {
       for (const v of stopHwAt(p)) expect([24, 25, 30]).toContain(v);
       expect(stopHwAt(p).filter(v => v < 30).length).toBeGreaterThanOrEqual(7);
       expect(p.headway).toBe(30);
+      // CIV-845 B: the stop card keeps each branch's own value, as main publishes it: every stop
+      // whose shown value moved carries the branch's 30 for the card, the others carry nothing.
+      for (const stopId of p.stopOrder as string[]) {
+        if (p.stopHeadways[stopId] < 30) expect(p.cardStopHeadways[stopId]).toBe(30);
+        else expect(p.cardStopHeadways?.[stopId]).toBeUndefined();
+        const card = p.cardStopPeriodHeadways?.[stopId];
+        if (card) for (const v of Object.values(card)) expect(v).toBe(30);
+      }
+      expect(Object.keys(p.cardStopPeriodHeadways ?? {}).length).toBeGreaterThanOrEqual(7);
     }
     expectStretchesSound(routes);
   });

@@ -129,7 +129,8 @@ function computeRouteServiceSummary(p: ShapeProperties): RouteServiceSummary {
  * it, metric by metric, wherever that is lower than the stop's own; so stop card, route card and
  * map agree. Never worse than the stop's own value (getPooledStop).
  */
-export function buildRouteStopMetric(p: ShapeProperties, stopId: string, sharedIndex?: SharedStopIndex): HeadwayMetric {
+export function buildRouteStopMetric(shown: ShapeProperties, stopId: string, sharedIndex?: SharedStopIndex): HeadwayMetric {
+  const p = cardStopView(shown);
   const own = pairedTripSafeStopPeriods(p, p.stopPeriodHeadways?.[stopId]);
   const ownValue = pairedTripSafeStopAllDay(p, p.stopHeadways?.[stopId] ?? null);
   if (sharedIndex) {
@@ -146,6 +147,30 @@ export function buildRouteStopMetric(p: ShapeProperties, stopId: string, sharedI
     }
   }
   return metric(ownValue, own, undefined, ownValue != null || own ? 'stop-specific' : 'none');
+}
+
+const cardStopViewCache = new WeakMap<ShapeProperties, ShapeProperties>();
+/**
+ * CIV-845 B: the stop card reads each branch's values as main publishes them (cardStopHeadways,
+ * cardStopPeriodHeadways where they differ from the shown ones), so a branch row shows its own
+ * frequency ("to Pearson Airport" on TTC 52 about 18) while the line keeps the shared value. The
+ * shared-stretch lookup compares against the same values, as on main.
+ */
+export function cardStopView(p: ShapeProperties): ShapeProperties {
+  if (!p.cardStopHeadways && !p.cardStopPeriodHeadways) return p;
+  const cached = cardStopViewCache.get(p);
+  if (cached) return cached;
+  const stopHeadways = { ...(p.stopHeadways ?? {}) };
+  for (const [stopId, v] of Object.entries(p.cardStopHeadways ?? {})) {
+    if (v == null) delete stopHeadways[stopId]; else stopHeadways[stopId] = v;
+  }
+  const stopPeriodHeadways = { ...(p.stopPeriodHeadways ?? {}) };
+  for (const [stopId, v] of Object.entries(p.cardStopPeriodHeadways ?? {})) {
+    if (!v || Object.keys(v).length === 0) delete stopPeriodHeadways[stopId]; else stopPeriodHeadways[stopId] = v;
+  }
+  const view = { ...p, stopHeadways, stopPeriodHeadways };
+  cardStopViewCache.set(p, view);
+  return view;
 }
 
 /**
