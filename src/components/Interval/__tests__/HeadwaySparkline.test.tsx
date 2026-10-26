@@ -31,6 +31,11 @@ describe('HeadwaySparkline', () => {
     expect(screen.queryAllByTestId('sparkline-hover-band')).toHaveLength(0);
   });
 
+  it('draws no band for a selected period with no bars (a night route at midday)', () => {
+    render(<HeadwaySparkline byHour={{ 26: 30, 27: 30 }} period="midday" onPeriodChange={() => {}} />);
+    expect(screen.queryAllByTestId('sparkline-hover-band')).toHaveLength(0);
+  });
+
   it('starts the hover highlight below the period label row, so the label sits above it', () => {
     const { container } = render(
       <HeadwaySparkline byHour={{ 12: 20, 18: 25 }} period="midday" onPeriodChange={() => {}} allowExpand />,
