@@ -26,6 +26,11 @@
       "1": "Inbound"
     }
   },
+  "directionHeadsigns": {
+    "HC": {
+      "1": "Rubey Park"
+    }
+  },
   "feedQuality": {
     "status": "healthy",
     "score": 100,
