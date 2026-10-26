@@ -1,7 +1,7 @@
 import type { WheelEvent as ReactWheelEvent } from 'react';
 import ModeTab from '../ModeTab';
 import { Columns2, Lock, LockOpen } from 'lucide-react';
-import { MAP_BADGE } from '../../styles';
+import { MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../../styles';
 import Pill from '../ui/Pill';
 import RoundIconButton from '../ui/RoundIconButton';
 import { FilterChips } from './FilterChips';
@@ -110,9 +110,9 @@ export function CompareSideBar({ side, settings, onChange, counts }: CompareSide
     <div className="flex flex-col items-center sm:items-end gap-1.5 min-w-0 max-w-full" data-compare-side={side}>
       <div onWheel={forwardWheelToMap} className={`pointer-events-auto ${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-full sm:min-w-0`}>
         <SideBadge side={side} />
-        <span className="text-xs font-black text-[var(--text-primary)] whitespace-nowrap sm:shrink-0" data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
+        <span className={`${MAP_BADGE_COUNT} whitespace-nowrap sm:shrink-0`} data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
         {counts && (
-          <span className="text-xs font-semibold text-[var(--text-dim)] whitespace-nowrap sm:min-w-0 sm:truncate" data-testid={`compare-counts-${side}`}>
+          <span className={`${MAP_BADGE_LABEL} whitespace-nowrap sm:min-w-0 sm:truncate`} data-testid={`compare-counts-${side}`}>
             <span className="hidden sm:inline">· </span>{counts.total} {plural(counts.total, 'route')}
           </span>
         )}
