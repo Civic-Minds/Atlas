@@ -391,7 +391,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     () => agencyDisplayParts(agency.name, agency.cities, agency.displayArea),
     [agency.name, agency.cities, agency.displayArea],
   );
-  // An on-demand-only agency's cards are named by its service ("GP Transit On-Demand"), which fits on one line (CIV-929).
+  // An on-demand-only agency's cards are named by its service ("GP Transit On-Demand"), with no place beside it,
+  // so it fits on one line beside the report flag; the zone card has no place either (CIV-929).
   const agencyCardName = agency.onDemandOnly && agency.onDemandServiceArea
     ? onDemandCardName(agency.onDemandServiceArea, null, agencyNamePrimary)
     : agencyNamePrimary;
@@ -413,6 +414,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
     />
   );
+
+  // A link's on-demand card waits for the service's zones instead of flashing the routes card (CIV-929).
+  if (onDemandFocus && !agency.onDemandServiceArea) return null;
 
   if (onDemandFocus && agency.onDemandServiceArea) {
     const service = agency.onDemandServiceArea;
@@ -446,7 +450,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             // once, with no facts line (the "On-demand service" section label below says it) (CIV-929).
             <AgencyCardTop
               name={agencyCardName}
-              place={agencyNameSecondary}
+              place={null}
               back={{ to: 'Map', onClick: onClose }}
               report={reportButton}
             />
@@ -518,7 +522,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       <div className={CARD_HEADER_BLOCK}>
         <AgencyCardTop
           name={agencyCardName}
-          place={agencyNameSecondary}
+          place={agency.onDemandOnly ? null : agencyNameSecondary}
           back={{ to: 'Map', onClick: onClose }}
           facts={agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(visibleRoutes, maxHeadway)}
           report={reportButton}
