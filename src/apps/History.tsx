@@ -34,7 +34,7 @@ import {
   type HistoryTier,
 } from '../../shared/historyEligibility';
 import { capitalizeFirst, headwayAmount, headwayEvery, runTimeAmount } from '../utils/headwayText';
-import Panel, { PanelTitleBar } from '../components/ui/Panel';
+import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ArrowLink from '../components/ui/ArrowLink';
@@ -507,7 +507,7 @@ function HistoryAgencyPanel({
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <PanelBody>
         {visibleRouteRows.length === 0 && (
           <PanelEmpty>{routeQuery || activeFilter ? noRoutesMatchText(routeFilters.find(f => f.key === activeFilter)?.label) : NO_ROUTES_LOADED}</PanelEmpty>
         )}
@@ -531,7 +531,7 @@ function HistoryAgencyPanel({
           })}
           onSelect={onRouteSelect}
         />
-      </div>
+      </PanelBody>
     </Panel>
   );
 }

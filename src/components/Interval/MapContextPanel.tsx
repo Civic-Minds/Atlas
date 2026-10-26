@@ -4,7 +4,7 @@ import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANE
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels } from './SearchSuggestionsPanel';
 import RegionFilterPills from '../RegionFilterPills';
-import Panel, { PanelTitleBar } from '../ui/Panel';
+import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import AgencyGroupHeader from '../ui/AgencyGroupHeader';
 import AgencyName from '../ui/AgencyName';
@@ -82,7 +82,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
         </div>
       )}
 
-      <div className="custom-scrollbar overflow-y-auto py-1">
+      <PanelBody className="py-1">
         {mode === 'agencies' ? (
           agencies.length > 0 ? agencies.map(agency => {
             return (
@@ -129,7 +129,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
             <PanelEmpty>No matching routes.</PanelEmpty>
           )
         )}
-      </div>
+      </PanelBody>
     </Panel>
   );
 };
