@@ -576,9 +576,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
     let scheduled: number | null = null;
     if (fc) {
-      const now = new Date();
-      const day = now.getDay() === 0 ? 'Sunday' : now.getDay() === 6 ? 'Saturday' : 'Weekday';
-      const hour = now.getHours();
+      const day = getNowDay();
+      const hour = new Date().getHours();
       const vehicleHeadsigns = new Set(selectedGroup.vehicles.map(v => v.headsign).filter((h): h is string => !!h));
       for (const f of fc.features) {
         const p = f.properties as any;
