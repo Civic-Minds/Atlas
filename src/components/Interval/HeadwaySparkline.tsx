@@ -10,6 +10,7 @@ import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
+import RoundIconButton from '../ui/RoundIconButton';
 import LegendItem from '../ui/LegendItem';
 import { delayAmount, headwayAmount, headwayEvery, runTimeAmount } from '../../utils/headwayText';
 import { TripTimeStrip, AxisOverlay, tripTimeAxisTicks, type AxisTick, tripTimeHeading, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
@@ -486,14 +487,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   All time periods are shown together.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsExpanded(false)}
-                aria-label="Close schedule"
-                className="shrink-0 rounded-full p-1.5 text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]"
-              >
+              <RoundIconButton onClick={() => setIsExpanded(false)} aria-label="Close schedule">
                 <X className="w-4 h-4" />
-              </button>
+              </RoundIconButton>
             </div>
             {directionOptions && directionOptions.length > 1 && !bothDirections && (
               <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Schedule direction">
