@@ -4,6 +4,7 @@ import { Maximize2, X } from 'lucide-react';
 import { headwayToTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
 export { headwayToTierColor };
+import { CARD_NOTE, CHART_HEADING, CHART_PERIOD_LABEL } from '../../styles';
 import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS, TIME_PERIODS } from '../../../shared/config';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
@@ -337,7 +338,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             style={{ left: `${band.left * 100}%`, width: `${band.width * 100}%` }}
           >
             {labelRow && (
-              <span className="absolute -top-6 left-0.5 sm:left-1 text-xs font-black text-[var(--text-muted)] whitespace-nowrap">
+              <span className={`absolute -top-6 left-0.5 sm:left-1 ${CHART_PERIOD_LABEL} whitespace-nowrap`}>
                 {band.label.endsWith(' Peak') ? (
                   <>
                     <span className="sm:hidden" aria-hidden="true">{band.label.replace(' Peak', '')}</span>
@@ -350,7 +351,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         ))}
         {yAxis && <AxisOverlay ticks={yAxis} height={H} className={labelRow ? 'top-12' : 'top-2'} />}
         {activeLabelKey && (
-          <span className={`absolute top-0 text-xs font-bold text-[var(--text-dim)] pointer-events-none ${allowExpand && !expanded ? 'right-7' : 'right-0'}`}>
+          <span className={`absolute top-0 ${CARD_NOTE} pointer-events-none ${allowExpand && !expanded ? 'right-7' : 'right-0'}`}>
             {PERIOD_LABELS[activeLabelKey]}
           </span>
         )}
@@ -429,7 +430,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 
       </div>
       {(stackedLegend.length > 0 || reserveStackedLegendSpace) && (
-        <div className={`flex min-h-[10px] flex-col items-start gap-y-0.5 mt-1 text-xs font-bold text-[var(--text-dim)] leading-tight ${legendInvisible ? 'invisible' : ''}`}>
+        <div className={`flex min-h-[10px] flex-col items-start gap-y-0.5 mt-1 ${CARD_NOTE} leading-tight ${legendInvisible ? 'invisible' : ''}`}>
           {stackedLegend.map((segment, i) => (
             <LegendItem key={`${segment.label}-${i}`} color={segment.color}>{segment.label}</LegendItem>
           ))}
@@ -487,7 +488,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-base font-black text-[var(--text-primary)]">{title}</h2>
-                <p className="mt-1 text-xs font-bold text-[var(--text-dim)]">
+                <p className={`mt-1 ${CARD_NOTE}`}>
                   All time periods are shown together.
                 </p>
               </div>
@@ -522,7 +523,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                           key={band.key}
                           // On a phone the last name ends at the chart's right edge (its start would run past it) and Night is
                           // dropped: it would overlap both its neighbours.
-                          className={`absolute top-0 text-xs font-black text-[var(--text-muted)] whitespace-nowrap ${band.key === 'late' ? 'hidden sm:inline' : ''} ${phone && band.key === 'overnight' ? 'right-0' : ''}`}
+                          className={`absolute top-0 ${CHART_PERIOD_LABEL} whitespace-nowrap ${band.key === 'late' ? 'hidden sm:inline' : ''} ${phone && band.key === 'overnight' ? 'right-0' : ''}`}
                           style={phone && band.key === 'overnight' ? undefined : { left: `${band.left * 100}%` }}
                         >
                           {/* The frequency column is half the dialog wide, so the peaks use the short form ("AM", "PM"). */}
@@ -531,7 +532,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                       ))}
                     </div>
                   </div>
-                  <div className="hidden sm:block pl-11 text-xs font-bold text-[var(--text-muted)] sm:col-start-2 sm:row-start-1 sm:mb-1">{tripTimeHeading(gridBlocks.some(option => option.tripTime?.loop))}</div>
+                  <div className={`hidden sm:block pl-11 ${CHART_HEADING} sm:col-start-2 sm:row-start-1 sm:mb-1`}>{tripTimeHeading(gridBlocks.some(option => option.tripTime?.loop))}</div>
                   {gridBlocks.map(option => {
                     const hw = modalHour != null ? option.byHour[modalHour] : null;
                     const tt = modalHour != null ? option.tripTime?.byHour[modalHour] : null;

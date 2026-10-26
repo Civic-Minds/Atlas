@@ -9,6 +9,7 @@ import { splitRouteKey } from '../../utils/routeKey';
 import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
+import PanelEmpty from '../ui/PanelEmpty';
 import type { AreaSearchResult } from '../../../shared/areaSearch';
 import { plural } from '../../../shared/overflowText';
 
@@ -235,9 +236,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   return (
     <div className="-mx-4 mb-4 flex flex-col gap-5">
       {noResults ? (
-        <div className="px-4 text-xs font-bold text-[var(--text-dim)] py-2">
-          No matches found.
-        </div>
+        <PanelEmpty>No matches found.</PanelEmpty>
       ) : routesFirst ? (
         <>
           {areaBlock}

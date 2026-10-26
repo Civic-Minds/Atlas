@@ -6,7 +6,7 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
+import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE } from '../styles';
 import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardTop, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
@@ -351,7 +351,7 @@ function RouteHistoryCard({
           <CardCallout tone={summary.worse ? 'negative' : 'positive'} className="mt-3">
             <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>{summary.text}</p>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
-            <p className="text-xs text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
+            <p className={`${CARD_NOTICE} mt-1`}>Latest archived snapshot: {last.label}</p>
           </CardCallout>
         )}
 
@@ -360,7 +360,7 @@ function RouteHistoryCard({
             <p className="text-xs font-bold leading-tight text-[var(--text-primary)]">
               Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
             </p>
-            <p className="text-xs text-[var(--text-dim)] mt-1">
+            <p className={`${CARD_NOTICE} mt-1`}>
               End-to-end scheduled time on a representative weekday trip. Only shown when the route's stops and alignment haven't changed between these years.
             </p>
           </CardCallout>
@@ -499,7 +499,7 @@ function HistoryAgencyPanel({
           )}
         >
           {!routeQuery && !activeFilter && (
-            <p className="text-xs text-[var(--text-dim)] mt-1">Biggest changes first</p>
+            <p className={`${CARD_NOTICE} mt-1`}>Biggest changes first</p>
           )}
         </AgencyCardTop>
         {routeFilters.length > 0 && (

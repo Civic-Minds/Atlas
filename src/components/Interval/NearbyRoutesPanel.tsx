@@ -67,7 +67,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   {/* The list rule (CIV-928): the name after a number is the light weight, in its own colour. */}
                   <span className={r.displayShortName
                     ? `flex-auto text-xs leading-snug ${ROUTE_ROW_NAME}`
-                    : 'flex-auto text-xs leading-snug font-black text-[var(--text-primary)]'}
+                    : 'flex-auto text-xs leading-snug font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors'}
                     title={r.routeLongName || r.agencyName}>
                     {r.routeLongName || r.agencyName}
                   </span>
