@@ -20,7 +20,7 @@ import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyAreaChip, AgencyCardHeading, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CardHelpNotice, CardReportButton } from './cardUi';
+import { AgencyAreaChip, AgencyCardHeading, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
@@ -433,42 +433,37 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           <div>
             <p className="text-xs font-black text-[var(--text-dim)]">On-demand service</p>
             {showsShadedArea && (
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">
+              <CardBodyText>
                 The shaded map area shows where this on-demand service operates.
-              </p>
+              </CardBodyText>
             )}
             {pickupSentence && (
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{pickupSentence}</p>
+              <CardBodyText>{pickupSentence}</CardBodyText>
             )}
             {coverageNote?.kind === 'partly-mapped' && (
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
+              <CardBodyText>Not on the map yet: {coverageNote.missing}.</CardBodyText>
             )}
           </div>
           {zone.eligibility && (
             <div className="px-1">
               <p className="text-xs font-black text-[var(--text-dim)]">Who can ride</p>
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.eligibility}</p>
+              <CardBodyText>{zone.eligibility}</CardBodyText>
             </div>
           )}
           {zone.tripRules && (
             <div className="px-1">
               <p className="text-xs font-black text-[var(--text-dim)]">Trip rules</p>
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.tripRules}</p>
+              <CardBodyText>{zone.tripRules}</CardBodyText>
             </div>
           )}
           <div className="px-1">
             <p className="text-xs font-black text-[var(--text-dim)]">Service hours</p>
-            <p
-              className="text-xs leading-relaxed text-[var(--text-muted)] mt-1"
-              data-testid="on-demand-running-note"
-            >
-              {runningNote}
-            </p>
+            <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>
             <OnDemandHoursText
               availability={zone.availability}
               serviceHours={zone.serviceHours}
               day={day}
-              className="text-xs leading-relaxed text-[var(--text-muted)] mt-1"
+              className={CARD_BODY_TEXT}
             />
             {zone.availability && zone.hoursNote && (
               <p className="text-xs leading-snug text-[var(--text-dim)] mt-1">{zone.hoursNote}</p>
@@ -477,7 +472,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {zone.bookingInfo && (
             <div className="px-1">
               <p className="text-xs font-black text-[var(--text-dim)]">Booking</p>
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.bookingInfo}</p>
+              <CardBodyText>{zone.bookingInfo}</CardBodyText>
             </div>
           )}
         </div>

@@ -29,6 +29,14 @@ export const SIDEBAR_CARD_BODY = `relative flex-1 min-h-0 ${SIDEBAR_CARD_SURFACE
 /** The line under a card title ("Atlanta · 102 routes · 2013–2026"). */
 export const CARD_SUMMARY = 'text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug';
 
+/** A card's body paragraph: a short muted sentence under a section label (the on-demand zone card's sections). */
+export const CARD_BODY_TEXT = 'text-xs leading-relaxed text-[var(--text-muted)] mt-1';
+
+/** A card body paragraph (CARD_BODY_TEXT). Extra classes from the caller go after the shared ones. */
+export function CardBodyText({ className = '', ...rest }: React.HTMLAttributes<HTMLParagraphElement>) {
+  return <p className={`${CARD_BODY_TEXT} ${className}`.trim()} {...rest} />;
+}
+
 /** A card callout box's surface: the inset, rounded, outlined block used for summaries and grouped
  *  options inside a card. CARD_CALLOUT adds the standard padding; use the surface alone only where a
  *  block needs its own padding (the report form's checkbox group). */
