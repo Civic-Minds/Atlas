@@ -440,6 +440,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               routeType={currentRoute.routeType ?? currentRoute.directions[0]?.routeType}
               agencySlug={currentRoute.agencySlug ?? routeSlug}
               agencyName={agencyDisplayName}
+              agencyFullName={routeAgency?.name}
               onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
               agencyBackLink
             />

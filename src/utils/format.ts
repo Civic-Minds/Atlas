@@ -535,6 +535,20 @@ function isMixedCaseCode(s: string): boolean {
   return !/[\s,]/.test(s) && (s.match(/[A-Z]/g)?.length ?? 0) >= 2;
 }
 
+/**
+ * The agency's name in a card's back link ("← Valley Metro"): shortenAgencyName, except that a bracketed city
+ * never stands in for the name ("Valley Metro (Phoenix)" → "Valley Metro", not "Phoenix"). A bracketed brand
+ * code still does ("DART", "LA Metro", "CATbus"). Lists and search keep shortenAgencyName (#1102).
+ */
+export function agencyBackLinkName(name: string): string {
+  const short = shortenAgencyName(name);
+  const m = name.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+  if (!m || short !== m[2].trim()) return short;
+  const bracket = m[2].trim();
+  const isCode = !isPlaceAbbrev(bracket) && (looksLikeBrandCode(bracket) || isMixedCaseCode(bracket));
+  return isCode || !m[1].trim() ? short : m[1].trim();
+}
+
 export function shortenAgencyName(name: string): string {
   const lower = name.toLowerCase();
   if (lower.includes('ac transit')) return 'AC Transit';
@@ -624,9 +638,7 @@ export function shortenAgencyName(name: string): string {
     const abbrev = match[1].trim();
     const outer = name.replace(/\s*\([^)]+\)\s*$/, '').trim();
     if (outer.length <= 10 && outer.length < name.length) return outer;
-    // The bracket stands in for the name only when it is a brand code ("DART", "LA Metro"), by the same test the
-    // agency card's name uses. A bracketed place never does: "Valley Metro (Phoenix)" stays "Valley Metro" (#1102).
-    if (abbrev.length <= 10 && !isPlaceAbbrev(abbrev) && (looksLikeBrandCode(abbrev) || isMixedCaseCode(abbrev))) return abbrev;
+    if (abbrev.length <= 10) return abbrev;
     // Strip long locator parens (e.g. "(Colorado Springs)", "(Mississauga)")
     return outer;
   }

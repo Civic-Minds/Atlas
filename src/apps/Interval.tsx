@@ -873,7 +873,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     else if (target.kind === 'onDemand') setOnDemandStopAgencySlug(target.selection);
     else if (target.kind === 'agency') setSelectedAgencySlug?.(target.agencySlug);
   }, [stopBack.target, setSelectedAgencySlug]);
-  const stopCardBack = useMemo(() => ({ to: stopBack.to, onClick: goBackFromStop }), [stopBack.to, goBackFromStop]);
+  const stopBackToAgency = stopBack.target?.kind === 'agency';
+  const stopCardBack = useMemo(() => ({ to: stopBack.to, onClick: goBackFromStop, namesAgency: stopBackToAgency }), [stopBack.to, goBackFromStop, stopBackToAgency]);
   useEffect(() => { setHoveredBranch(null); }, [selectedRoute]);
 
   const clearMapSelection = useCallback(() => {

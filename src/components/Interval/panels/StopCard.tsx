@@ -59,6 +59,8 @@ export interface CurrentStopData {
 export interface StopCardBack {
   to: string;
   onClick: () => void;
+  /** The link goes back to the stop's agency card, so it already names the agency (its wording can differ from the list's short name, #1102). */
+  namesAgency?: boolean;
 }
 
 export interface StopCardProps {
@@ -115,7 +117,7 @@ export const StopCard: React.FC<StopCardProps> = ({
             {stopAgencies.length === 1 ? (
               <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader
-                  eyebrow={back?.to === stopAgencies[0] ? null : stopAgencies[0]}
+                  eyebrow={back?.namesAgency || back?.to === stopAgencies[0] ? null : stopAgencies[0]}
                   title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                   titleClamp
                 />
