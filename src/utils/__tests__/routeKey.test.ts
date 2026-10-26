@@ -29,6 +29,32 @@ describe('route keys', () => {
   });
 });
 
+describe('Live route keys (slug::routeShortName, the value Live links carry in ?route=)', () => {
+  it('builds the same value Live always wrote, so old links still match', () => {
+    for (const [slug, rsn] of [['ttc', '504'], ['ttc', '7A'], ['sfmta', 'N'], ['go-transit', 'LW'], ['miway', '109']]) {
+      expect(buildRouteKey(slug, rsn)).toBe(`${slug}::${rsn}`);
+    }
+  });
+
+  it('reads an old link\'s route value back into agency and short name', () => {
+    const route = new URLSearchParams('lat=43.65&lon=-79.38&z=13&route=ttc%3A%3A504&vehicle=4412&group=Distillery').get('route')!;
+    expect(splitRouteKey(route)).toEqual({ agencySlug: 'ttc', routeId: '504', routeBranch: undefined });
+    expect(splitRouteKey(new URLSearchParams('route=ttc::504').get('route')!).routeId).toBe('504');
+    expect(splitRouteKey('sfmta::N')).toMatchObject({ agencySlug: 'sfmta', routeId: 'N' });
+  });
+
+  it('round-trips every key Live builds', () => {
+    for (const [slug, rsn] of [['ttc', '504'], ['ttc', '7A'], ['yrt', '98E']]) {
+      const { agencySlug, routeId } = splitRouteKey(buildRouteKey(slug, rsn));
+      expect([agencySlug, routeId]).toEqual([slug, rsn]);
+    }
+  });
+
+  it('keeps a short name with :: whole, where split(\'::\') cut it', () => {
+    expect(splitRouteKey('agency::A::B').routeId).toBe('A::B');
+  });
+});
+
 describe('routeKeyForShortName (Live\'s route as the map\'s selection key)', () => {
   const f = (properties: Record<string, unknown>): GeoJSON.Feature => ({ type: 'Feature', properties, geometry: { type: 'LineString', coordinates: [] } });
   const features = [

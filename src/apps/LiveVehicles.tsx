@@ -29,7 +29,7 @@ import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
-import { routeFeatureForShortName, routeKeyForShortName } from '../utils/routeKey';
+import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
 import type { MapFocus } from '../utils/routeFocus';
 import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
@@ -129,7 +129,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const cardRef = useRef<HTMLDivElement>(null);
 
 
-  // selectedRoute is a composite "slug::routeShortName" key
+  // selectedRoute is Live's route key, buildRouteKey(slug, routeShortName) ("ttc::504"): Live keys routes by short name,
+  // and this is the value its links carry in ?route=.
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const selectedRouteRef = useRef(selectedRoute);
   selectedRouteRef.current = selectedRoute;
@@ -219,8 +220,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // Clear selected route when it's no longer in view
   useEffect(() => {
     if (!selectedRoute) return;
-    const [slug] = selectedRoute.split('::');
-    if (!visibleSlugs.includes(slug)) {
+    if (!visibleSlugs.includes(splitRouteKey(selectedRoute).agencySlug)) {
       setSelectedRoute(null);
       setFocusedVehicle(null);
     }
@@ -250,7 +250,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   useEffect(() => {
     const slugsNeeded = new Set<string>();
     if (selectedRoute) {
-      const [slug] = selectedRoute.split('::');
+      const { agencySlug: slug } = splitRouteKey(selectedRoute);
       if (slug) slugsNeeded.add(slug);
     }
     for (const slug of Object.keys(vehiclesBySlug)) slugsNeeded.add(slug);
@@ -267,14 +267,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // The picked route in the map's own key form, so the map's shared selected-route styling and framing draw it.
   const mapRouteKey = useMemo(() => {
     if (!selectedRoute) return null;
-    const [slug, rsn] = selectedRoute.split('::');
+    const { agencySlug: slug, routeId: rsn } = splitRouteKey(selectedRoute);
     const fc = slug ? routeLayer(slug) : undefined;
     return fc && rsn ? routeKeyForShortName(slug, fc.features, rsn, getNowDay()) : null;
   }, [routeLayer, selectedRoute]);
 
   // A vehicle's card, from a dot click, the overlapping-dots pick list, or a shared link.
   const openVehicleCard = useCallback((vehicle: LiveVehicle) => {
-    const key = `${vehicle.agencySlug}::${vehicle.routeShortName}`;
+    const key = buildRouteKey(vehicle.agencySlug, vehicle.routeShortName);
     setVehiclePick(null);
     if (key !== selectedRouteRef.current) setSelectedRoute(key);
     setVehicleCard({ routeKey: key, id: vehicle.id });
@@ -302,7 +302,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
     const map = new Map<string, LiveVehicle[]>();
     for (const v of filtered) {
-      const key = `${v.agencySlug}::${v.routeShortName}`;
+      const key = buildRouteKey(v.agencySlug, v.routeShortName);
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(v);
     }
@@ -312,19 +312,19 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       for (const feature of collection.features) {
         const properties = feature.properties as { routeShortName?: string | null; routeLongName?: string | null } | null;
         if (!properties?.routeShortName || !properties.routeLongName) continue;
-        routeNamesByKey.set(`${slug}::${properties.routeShortName}`, properties.routeLongName);
+        routeNamesByKey.set(buildRouteKey(slug, properties.routeShortName), properties.routeLongName);
       }
     }
 
     return [...map.entries()]
       .map(([key, vs]) => {
-        const [agencySlug, routeShortName] = key.split('::');
+        const { agencySlug, routeId: routeShortName } = splitRouteKey(key);
         const lateCount = vs.filter(v => v.status === 'late').length;
         const earlyCount = vs.filter(v => v.status === 'early').length;
         const dominantStatus: LiveVehicle['status'] =
           lateCount > 0 ? 'late' : earlyCount > 0 ? 'early' : vs[0].status;
         const displayName = routeLabelCase(cleanRouteDisplayName(
-          routeNamesByKey.get(`${agencySlug}::${routeShortName}`) || vs[0].displayName || `Route ${routeShortName}`,
+          routeNamesByKey.get(key) || vs[0].displayName || `Route ${routeShortName}`,
           routeShortName,
         ));
         return { agencySlug, routeShortName, displayName, vehicles: vs, lateCount, earlyCount, dominantStatus };
@@ -352,7 +352,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return LIVE_POLLING_ROUTES
       .filter(r => ELIGIBLE_SLUGS.has(r.slug) && visibleSlugs.includes(r.slug))
       .map(r => ({
-        key: `${r.slug}::${r.displayRouteShortName}`,
+        key: buildRouteKey(r.slug, r.displayRouteShortName),
         agencySlug: r.slug,
         routeShortName: r.displayRouteShortName,
         label: r.displayName ? routeLabelCase(r.displayName) : r.displayRouteShortName,
@@ -391,7 +391,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     let lastSlug = '';
     let agencyHeaderIndex = 0;
     return groups.map(g => {
-      const key = `${g.agencySlug}::${g.routeShortName}`;
+      const key = buildRouteKey(g.agencySlug, g.routeShortName);
       const isSelected = selectedRoute === key;
       const colors = getVehicleColors(g.dominantStatus, colorMode);
       const statusLabel = g.lateCount > 0
@@ -442,8 +442,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         setFocusedVehicle(null);
         return null;
       }
-      const vehicles = vehiclesBySlug[key.split('::')[0]] ?? [];
-      const v = vehicles.find(v => `${v.agencySlug}::${v.routeShortName}` === key);
+      const vehicles = vehiclesBySlug[splitRouteKey(key).agencySlug] ?? [];
+      const v = vehicles.find(v => buildRouteKey(v.agencySlug, v.routeShortName) === key);
       if (v) setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
       return key;
     });
@@ -451,7 +451,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Data for route card view
   const selectedGroup = selectedRoute
-    ? routeGroups.find(g => `${g.agencySlug}::${g.routeShortName}` === selectedRoute) ?? null
+    ? routeGroups.find(g => buildRouteKey(g.agencySlug, g.routeShortName) === selectedRoute) ?? null
     : null;
   const cardVehicle = vehicleCard && vehicleCard.routeKey === selectedRoute
     ? selectedGroup?.vehicles.find(v => v.id === vehicleCard.id) ?? null
@@ -525,7 +525,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const focusIds = focusDirection ? (vehiclesByDirection?.get(focusDirection) ?? []).map(v => v.id).join(',') : null;
   const focus = useMemo<MapFocus | null>(() => {
     if (!selectedRoute) return null;
-    const [agencySlug, routeShortName] = selectedRoute.split('::');
+    const { agencySlug, routeId: routeShortName } = splitRouteKey(selectedRoute);
     return { agencySlug, routeShortName, ids: focusIds != null ? focusIds.split(',').filter(Boolean) : null };
   }, [selectedRoute, focusIds]);
 
@@ -590,7 +590,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // A route picked (from a link or the address) that has no card: say why, never show nothing.
   const requestedRouteNote = useMemo((): string | null => {
     if (!selectedRoute || selectedGroup || isLoading) return null;
-    const [slug, routeShortName] = selectedRoute.split('::');
+    const { agencySlug: slug, routeId: routeShortName } = splitRouteKey(selectedRoute);
     const agencyName = agencyDisplayName(agencies, slug);
     if (!getPolledRoute(slug, routeShortName)) {
       const followed = LIVE_POLLING_ROUTES.filter(r => r.slug === slug).map(r => r.displayRouteShortName);
@@ -703,7 +703,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 onClick={() => {
                   setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
                   setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
-                  setVehicleCard({ routeKey: `${v.agencySlug}::${v.routeShortName}`, id: v.id });
+                  setVehicleCard({ routeKey: buildRouteKey(v.agencySlug, v.routeShortName), id: v.id });
                 }}
               >
                 <div className="min-w-0">
