@@ -9,7 +9,7 @@ import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, sidebarFrameStyle } from '../../styles';
 import Panel from '../ui/Panel';
 import Pill from '../ui/Pill';
 import ModeFilterPill from '../ui/ModeFilterPill';
@@ -419,10 +419,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         data-report-anchor="true"
         sidebar
         enter
-        style={{
-          '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-          ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-        } as React.CSSProperties}
+        style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
       >
         <div className={CARD_HEADER_BLOCK}>
           {/* The shared heading: the service in bold with the agency's place beside it; the agency below. */}
@@ -494,10 +491,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       data-report-anchor="true"
       sidebar
       enter
-      style={{
-          '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-        ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-      } as React.CSSProperties}
+      style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       <div className={CARD_HEADER_BLOCK}>
         {/* grouped (beta, with the Data source link): the area link is a chip, About + Data source share a row, and the report flag

@@ -23,7 +23,7 @@ import {
   type RouteSearchResult,
   type StopSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, TRANSITION_BASE, SIDEBAR_CARD_SLOT, SIDEBAR_CARD_MAX_H, Z_PANEL, Z_DROPDOWN, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, TRANSITION_BASE, SIDEBAR_CARD_SLOT, SIDEBAR_CARD_MAX_H, Z_PANEL, Z_DROPDOWN, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
 import type { StopRoute, NearbyConnection, StopCardBack } from './panels/StopCard';
@@ -971,10 +971,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         ? `${BOTTOM_SHEET_FRAME} ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`
         : `${SIDEBAR_CARD_SLOT} ${searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${SIDEBAR_CARD_MAX_H} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
-        '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+        ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined),
         ...(compareTop != null ? { top: `${compareTop}px`, maxHeight: `calc(100vh - ${compareTop + 64}px)` } : {}),
-        ...(matchSearchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-      } as React.CSSProperties}
+      }}
     >
       {searchFocused && query === '' && (
         <SearchSuggestionsPanel

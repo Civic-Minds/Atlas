@@ -6,7 +6,7 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
+import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
 import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardHeading, CARD_HEADER_BLOCK, CARD_SUMMARY, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
@@ -858,10 +858,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const panelInteractive = Boolean(selectedSlug || showAgencyChooser || searchFocused);
   // Placement shared by History's panels, by the regular cards' rule: anchored under the search bar
   // at its width on desktop (#1033 parity B). Each panel adds its own top, as its regular card does.
-  const frameStyle = {
-    '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-    ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-  } as React.CSSProperties;
+  const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);
   const frameClassName = `transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!panelInteractive ? 'pointer-events-none' : ''}`;
 
   return (

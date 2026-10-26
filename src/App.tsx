@@ -4,7 +4,7 @@ import { Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'luc
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
-import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN, SEARCH_ICON } from './styles';
+import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN, SEARCH_ICON } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -862,7 +862,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             {historyOn && (historyOpened || inHistory) && (
               <React.Suspense fallback={inHistory ? (
                 // The shared loading panel, where History's panels open (#1028 item 20).
-                <Panel sidebar style={{ '--sidebar-left': `${sidebarLeft}px`, ...(searchBarWidth && !isPhone ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}) } as React.CSSProperties}>
+                <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)}>
                   <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
                 </Panel>
               ) : null}>
@@ -871,11 +871,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} selectionActive={intervalSelectionActive} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} selectionActive={intervalSelectionActive} />
               </React.Suspense>
             )}
             {inFrequentService && (
-              <ResearchInfo heading={FREQUENT_INFO_HEADING} sidebarLeft={sidebarLeft} hidden={intervalSelectionActive}>
+              <ResearchInfo heading={FREQUENT_INFO_HEADING} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} hidden={intervalSelectionActive}>
                 {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
               </ResearchInfo>
             )}

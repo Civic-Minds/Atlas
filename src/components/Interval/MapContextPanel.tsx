@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, sidebarFrameStyle } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels } from './SearchSuggestionsPanel';
 import RegionFilterPills from '../RegionFilterPills';
@@ -59,10 +59,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
     <Panel
       sidebar
       className="pointer-events-auto"
-      style={{
-        '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-        ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-      } as React.CSSProperties}
+      style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       <PanelTitleBar>
         <div className="min-w-0 flex-1">
