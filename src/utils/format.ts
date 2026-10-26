@@ -530,6 +530,11 @@ function hasWord(haystack: string, word: string): boolean {
   return new RegExp(`\\b${word}\\b`).test(haystack);
 }
 
+/** A one-word code with two or more capitals ("CATbus", "SacRT", "StaRT"); a place has one ("Phoenix"). */
+function isMixedCaseCode(s: string): boolean {
+  return !/[\s,]/.test(s) && (s.match(/[A-Z]/g)?.length ?? 0) >= 2;
+}
+
 export function shortenAgencyName(name: string): string {
   const lower = name.toLowerCase();
   if (lower.includes('ac transit')) return 'AC Transit';
@@ -619,7 +624,9 @@ export function shortenAgencyName(name: string): string {
     const abbrev = match[1].trim();
     const outer = name.replace(/\s*\([^)]+\)\s*$/, '').trim();
     if (outer.length <= 10 && outer.length < name.length) return outer;
-    if (abbrev.length <= 10) return abbrev;
+    // The bracket stands in for the name only when it is a brand code ("DART", "LA Metro"), by the same test the
+    // agency card's name uses. A bracketed place never does: "Valley Metro (Phoenix)" stays "Valley Metro" (#1102).
+    if (abbrev.length <= 10 && !isPlaceAbbrev(abbrev) && (looksLikeBrandCode(abbrev) || isMixedCaseCode(abbrev))) return abbrev;
     // Strip long locator parens (e.g. "(Colorado Springs)", "(Mississauga)")
     return outer;
   }

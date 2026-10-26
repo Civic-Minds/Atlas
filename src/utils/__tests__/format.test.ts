@@ -10,6 +10,19 @@ interface IndexAgency {
 const agencies = (indexData as { agencies: IndexAgency[] }).agencies;
 
 describe('shortenAgencyName', () => {
+  it('never swaps the name for a bracketed city (#1102)', () => {
+    expect(shortenAgencyName('Valley Metro (Phoenix)')).toBe('Valley Metro');
+    expect(shortenAgencyName('Capital Metro (Austin)')).toBe('Capital Metro');
+    expect(shortenAgencyName('Cascades East Transit (Bend, OR)')).toBe('Cascades East Transit');
+  });
+
+  it('still uses a bracketed brand code', () => {
+    expect(shortenAgencyName('Dallas Area Rapid Transit (DART)')).toBe('DART');
+    expect(shortenAgencyName('Clemson Area Transit (CATbus)')).toBe('CATbus');
+    expect(shortenAgencyName('Sacramento Regional Transit (SacRT)')).toBe('SacRT');
+    expect(shortenAgencyName('Los Angeles County Metropolitan Transportation Authority (LA Metro)')).toBe('LA Metro');
+  });
+
   // Specific regressions for confirmed substring collisions — a short
   // acronym check (e.g. "vta") matching inside an unrelated agency's full
   // legal name (e.g. "Antelope VTA" via "AVTA").
@@ -64,10 +77,15 @@ describe('shortenAgencyName', () => {
   //             Bergerac, France (Transports Urbains Bergeracois)
   // Multi-region single agencies (exo, BC Transit both legitimately operate
   // many service areas under one brand) are also expected, not collisions.
+  // Real brand names two networks share, kept since a bracketed city never
+  // replaces the name (#1102): Valley Metro (Phoenix / Roanoke), Mountain Line
+  // (Flagstaff / Missoula), Wave Transit (Mobile / Wilmington), and the MTA NYCT
+  // Bus feeds split by borough.
   const KNOWN_SHARED_ACRONYMS = new Set([
     'CAT', 'GET', 'The Bus', 'DART', 'CARTA',
     'SMART', 'TCAT', 'CATA', 'SCT', 'SAM', 'RTC', 'exo', 'BC Transit',
     'Citibus', 'TAC', 'TUB',
+    'Valley Metro', 'Mountain Line', 'Wave Transit', 'MTA NYCT Bus',
   ]);
 
   // General regression guard: no two distinct real agencies in the live
