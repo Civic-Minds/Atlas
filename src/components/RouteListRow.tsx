@@ -36,7 +36,8 @@ export default function RouteListRow({
   const fullName = name && name !== shortName ? `${shortName} ${name}` : shortName;
   const label = (
     <p className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words ${selected ? SELECTION_ACTIVE_TEXT : ''}`} title={fullName}>
-      <RouteRowName shortName={shortName} name={name} />
+      {/* text-xs on the name keeps search's row height exactly as it was (its line box is 16px, the label's 15px). */}
+      <RouteRowName shortName={shortName} name={name} nameClassName="text-xs" />
     </p>
   );
   return (
