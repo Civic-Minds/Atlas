@@ -56,7 +56,7 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     // Car a moved from stop 1 to stop 2; car b is now where a was a minute ago.
     act(() => { view.rerender(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 2, T0 + 120), car('b', 't2', 1.5, T0 + 120)]} feedDegraded={false} />); });
     expect(screen.getByText('Right now · 9:02 am')).toBeTruthy();
-    expect(screen.getByText('Cars')).toBeTruthy();
+    expect(screen.getByText('Vehicles')).toBeTruthy();
     expect(screen.getByText('2')).toBeTruthy();
     expect(screen.getByText('Gaps, front to back (min)')).toBeTruthy();
     expect(screen.getByText('1')).toBeTruthy();
@@ -67,7 +67,7 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
 
   it('shows the count and keeps the direction pills with only one car, and never "Fewer than 2 cars"', () => {
     card([car('a', 't1', 2, T0)]);
-    expect(screen.getByText('Cars')).toBeTruthy();
+    expect(screen.getByText('Vehicles')).toBeTruthy();
     expect(screen.getByText('1')).toBeTruthy();
     expect(screen.queryByText('Gaps, front to back (min)')).toBeNull();
     expect(screen.getByRole('button', { name: 'Eastbound' })).toBeTruthy();

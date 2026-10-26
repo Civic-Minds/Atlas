@@ -46,7 +46,7 @@ function livePeriod(data: SegmentDelayData, slug: string): SegmentBand {
 }
 
 /**
- * A row of small labelled figures. Labels wrap rather than cut off ("Cars (College)" on a desktop card); labels
+ * A row of small labelled figures. Labels wrap rather than cut off on a narrow card; labels
  * share the first grid row and figures the second, so the figures stay level when one label takes two lines.
  */
 function Stats({ items }: { items: [string, string][] }) {
@@ -141,7 +141,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
           ) : (
             <>
               <Stats items={[
-                ['Cars', String(live.cars)],
+                ['Vehicles', String(live.cars)],
                 ['Scheduled', `every ${schedLabel}`],
               ]} />
               {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
