@@ -6,7 +6,7 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
+import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
 import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardHeading, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CARD_SUMMARY, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
@@ -14,6 +14,7 @@ import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
 import { useRecentSearches } from '../hooks/useRecentSearches';
+import { useFadePresence } from '../hooks/useFadePresence';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { FEATURES } from '../../shared/config';
 import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
@@ -572,8 +573,8 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
     // Only the opening moment matters; later changes to these props are ignored on purpose.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
-  const [shouldRender, setShouldRender] = useState(active);
-  const [visible, setVisible] = useState(false);
+  // Fades in and out with the map's sidebar card (200ms).
+  const { mounted: shouldRender, visible } = useFadePresence(active);
   // Agency name and place from the catalog, by the same rule as the agency card and About list (#1028 items 16-17).
   const catalogBySlug = useMemo(() => new Map((agencyCatalog ?? []).map(a => [a.slug, a])), [agencyCatalog]);
   const agencyNameParts = useCallback((slug: string, fallbackName: string) => {
@@ -605,18 +606,6 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
     historyConfigRequested.current = true;
     loadHistoryConfig();
   }, [active, loadHistoryConfig]);
-
-  useEffect(() => {
-    if (active) {
-      setShouldRender(true);
-      const id = setTimeout(() => setVisible(true), 10);
-      return () => clearTimeout(id);
-    } else {
-      setVisible(false);
-      const id = setTimeout(() => setShouldRender(false), 280);
-      return () => clearTimeout(id);
-    }
-  }, [active]);
 
   const historyAgencies = useMemo(() => {
     // Snapshots with no label or a future year (bad upstream data) are left out everywhere (#1030).
@@ -847,7 +836,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   // Placement shared by History's panels, by the regular cards' rule: anchored under the search bar
   // at its width on desktop (#1033 parity B). Each panel adds its own top, as its regular card does.
   const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);
-  const frameClassName = `transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!panelInteractive ? 'pointer-events-none' : ''}`;
+  const frameClassName = `transition-opacity ${TRANSITION_BASE} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!panelInteractive ? 'pointer-events-none' : ''}`;
 
   return (
     <>

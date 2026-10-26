@@ -45,6 +45,7 @@ import { hasRegularServiceInPeriod, hasStretchRoles, stretchRowFeatures, variant
 import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from '../../utils/sortCompare';
 import { SIDEBAR_CARD_BODY } from './cardUi';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
+import { useFadePresence } from '../../hooks/useFadePresence';
 import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
 
 interface SidebarControlsProps {
@@ -928,19 +929,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const sheetSubject = selectedRoute ?? (currentStop as { stopId?: string } | null)?.stopId ?? null;
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(sheetSubject);
 
-  const [panelShouldRender, setPanelShouldRender] = useState(false);
-  const [panelVisible, setPanelVisible] = useState(false);
-  useEffect(() => {
-    if (hasContent) {
-      setPanelShouldRender(true);
-      const id = setTimeout(() => setPanelVisible(true), 10);
-      return () => clearTimeout(id);
-    } else {
-      setPanelVisible(false);
-      const id = setTimeout(() => setPanelShouldRender(false), 200);
-      return () => clearTimeout(id);
-    }
-  }, [hasContent]);
+  const { mounted: panelShouldRender, visible: panelVisible } = useFadePresence(hasContent);
 
   const routeSlug = selectedRoute
     ? splitRouteKey(selectedRoute).agencySlug
