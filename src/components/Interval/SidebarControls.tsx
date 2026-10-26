@@ -89,6 +89,8 @@ interface SidebarControlsProps {
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
   /** The stop card's back link: where it goes and its words (CIV-832). */
   stopBack?: StopCardBack;
+  /** The route card's back link when it isn't the agency card: "← Near You" for a route opened from Near You (CIV-930). */
+  routeBack?: { to: string; onClick: () => void };
   analyticsApp?: string;
   onSearchRouteHover?: (key: string | null) => void;
 }
@@ -135,6 +137,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   onInfoOpen,
   searchEnterRef,
   stopBack,
+  routeBack,
   onSearchRouteHover,
   analyticsApp = 'frequency',
 }) => {
@@ -1018,6 +1021,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   routeAgency={routeAgency}
                   setSelectedAgencySlug={setSelectedAgencySlug}
                   setSelectedRoute={setSelectedRoute}
+                  back={routeBack}
                   maxHeadway={maxHeadway}
                   period={period}
                   setPeriod={setPeriod}

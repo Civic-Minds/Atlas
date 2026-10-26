@@ -16,18 +16,21 @@ interface Props {
   agencyBackLink?: boolean;
   /** The agency's full name, when `agencyName` is already shortened: the back link names the agency, never a bracketed city (#1102). */
   agencyFullName?: string | null;
+  /** A back link to somewhere other than the agency card ("← Near You", CIV-930); the agency name shows as the eyebrow under it. */
+  back?: { to: string; onClick: () => void };
 }
 
-export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true, agencyBackLink = false, agencyFullName }: Props) {
+export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true, agencyBackLink = false, agencyFullName, back: otherBack }: Props) {
   const title = routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text;
   const displayAgency = showAgency && agencyName ? shortenAgencyName(agencyName) : null;
-  const back = agencyBackLink && onAgencyClick && displayAgency ? { to: agencyBackLinkName(agencyFullName ?? agencyName!), onClick: onAgencyClick } : undefined;
+  const back = otherBack
+    ?? (agencyBackLink && onAgencyClick && displayAgency ? { to: agencyBackLinkName(agencyFullName ?? agencyName!), onClick: onAgencyClick } : undefined);
   return (
     <SidebarCardHeader
       back={back}
-      eyebrow={back ? null : displayAgency}
+      eyebrow={back && !otherBack ? null : displayAgency}
       title={title}
-      onEyebrowClick={back ? undefined : onAgencyClick}
+      onEyebrowClick={back && !otherBack ? undefined : onAgencyClick}
       titleClamp
     />
   );

@@ -4,7 +4,7 @@ import { HeadwayBadge, LimitedBadge } from './cardUi';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
-import { NEARBY_PANEL_SLOT, PANEL_TITLE } from '../../styles';
+import { PANEL_TITLE, sidebarFrameStyle } from '../../styles';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import { ROUTE_ROW_NAME } from '../RouteRowName';
@@ -15,6 +15,9 @@ interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
   loading?: boolean;
   setSelectedRoute: (key: string | null) => void;
+  sidebarLeft?: number;
+  /** The search bar's width on desktop, so the card lines up with it like every other card. */
+  searchBarWidth?: number;
 }
 
 function fmtDist(m: number): string {
@@ -25,12 +28,16 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
   routes,
   loading = false,
   setSelectedRoute,
+  sidebarLeft,
+  searchBarWidth,
 }, ref) {
   return (
+    // The left card slot at the shared card width, where the in-view lists open (CIV-930).
     <Panel
+      sidebar
       enter
       ref={ref}
-      className={NEARBY_PANEL_SLOT}
+      style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       <PanelTitleBar>
         <span className={PANEL_TITLE}>Near You</span>
