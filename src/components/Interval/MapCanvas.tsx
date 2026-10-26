@@ -1339,7 +1339,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           <button
             onClick={() => setExportDialogOpen(true)}
             aria-label="Export map image"
-            className="box-border !h-8 !w-8 max-sm:!h-[32px] max-sm:!w-[32px] min-h-8 min-w-8 shrink-0 p-0 max-sm:hidden flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
+            className="box-border !h-8 !w-8 max-sm:!h-[32px] max-sm:!w-[32px] min-h-8 min-w-8 shrink-0 p-0 max-sm:hidden flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
           </button>
@@ -1348,7 +1348,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <button
           onClick={locateUser}
           aria-label="Go to my location"
-          className="w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
+          className="w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
         >
           <LocateFixed className="w-3.5 h-3.5" />
         </button>

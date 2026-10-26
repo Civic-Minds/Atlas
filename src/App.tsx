@@ -901,12 +901,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </React.Suspense>
           </ErrorBoundary>
         {(agenciesLoadState === 'loading' || modeCatchingUp) && (
-          <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">
+          <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] pointer-events-none">
             Loading map…
           </div>
         )}
         {agenciesLoadState === 'error' && (
-          <div className="absolute left-1/2 bottom-5 -translate-x-1/2 flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)] shadow-lg">
+          <div className="absolute left-1/2 bottom-5 -translate-x-1/2 flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)]">
             <span>{loadErrorText('agency data')}</span>
             <button
               type="button"

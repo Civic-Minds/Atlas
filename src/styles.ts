@@ -1,6 +1,6 @@
 /**
  * Shared structural class constants for Atlas UI primitives.
- * Color tokens live in CSS variables (index.css). These handle shape, shadow, and surface.
+ * Color tokens live in CSS variables (index.css). These handle shape and surface (nothing has a shadow).
  */
 
 import type { CSSProperties } from 'react';
@@ -9,7 +9,7 @@ import type { CSSProperties } from 'react';
 export const SURFACE = 'bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)]';
 
 /** Circular icon button (w-8 h-8, top-bar style; 32px on phones) */
-export const ICON_BTN = `w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center ${SURFACE} rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors`;
+export const ICON_BTN = `w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center ${SURFACE} rounded-full text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors`;
 
 /** Shared transition timing tokens */
 export const TRANSITION_FAST = 'duration-150 ease-out';
@@ -22,23 +22,22 @@ export const PANEL_ENTER_LEFT = `animate-in fade-in slide-in-from-left-2 ${TRANS
 export const PANEL_ENTER_TOP = `animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right ${TRANSITION_FAST}`;
 
 /** Right-anchored dropdown card — Settings, Info, etc. */
-export const DROPDOWN_PANEL = `absolute top-[4.5rem] left-3 right-3 sm:left-auto sm:right-6 sm:w-[360px] h-[calc(100vh-5.5rem)] flex flex-col ${SURFACE} rounded-2xl shadow-2xl overflow-hidden`;
+export const DROPDOWN_PANEL = `absolute top-[4.5rem] left-3 right-3 sm:left-auto sm:right-6 sm:w-[360px] h-[calc(100vh-5.5rem)] flex flex-col ${SURFACE} rounded-2xl overflow-hidden`;
 
 /** Scale + opacity entrance animation for dropdown panels */
 export const dropdownAnim = (visible: boolean) =>
   `transition-[opacity,transform] ${TRANSITION_BASE} origin-top-right ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`;
 
 /** Generic floating card (dropdown menus, small overlays) */
-export const FLOATING_CARD = `${SURFACE} rounded-2xl shadow-2xl`;
-/** Every sidebar card's surface: a smaller shadow than FLOATING_CARD, so the 7px gap above the bottom pills
- *  stays a clear strip of map and the pills aren't greyed. */
-export const SIDEBAR_CARD_SURFACE = `${SURFACE} rounded-2xl shadow-lg`;
+export const FLOATING_CARD = `${SURFACE} rounded-2xl`;
+/** Every sidebar card's surface. */
+export const SIDEBAR_CARD_SURFACE = `${SURFACE} rounded-2xl`;
 
 /** Shared shell for a scrollable sidebar card. */
 export const PANEL_SHELL = `${FLOATING_CARD} flex flex-col overflow-hidden`;
 
 /** Top-bar pill surface (search bar, headway filter row) */
-export const PILL_SURFACE = `h-8 max-sm:h-[32px] flex items-center ${SURFACE} rounded-full shadow-lg`;
+export const PILL_SURFACE = `h-8 max-sm:h-[32px] flex items-center ${SURFACE} rounded-full`;
 /** Shared responsive width used by the top search bar */
 export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 
@@ -46,7 +45,7 @@ export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-72 lg:w-72 xl:w-80 max-w-sm';
 
 /** Shared glass pill geometry; surfaces and borders are supplied by each state. */
-export const GLASS_PILL = 'backdrop-blur-md rounded-full shadow-lg';
+export const GLASS_PILL = 'backdrop-blur-md rounded-full';
 /** Filter chip pill base — border color added dynamically per active state */
 export const CHIP_BASE = `${GLASS_PILL} bg-[var(--bg-panel)] border`;
 
@@ -66,7 +65,7 @@ export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';
 export const ACTION_PRIMARY = 'bg-[var(--action-primary-bg)] border-[var(--action-primary-border)] text-[var(--action-primary-fg)]';
 
 /** Bottom map HUD badge (routes, coverage, loading, attribution) */
-export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3';
+export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full px-3';
 export const MAP_BADGE_COUNT = 'text-xs font-black text-[var(--text-primary)]';
 export const MAP_BADGE_LABEL = 'text-xs font-semibold leading-none text-[var(--text-muted)]';
 
@@ -134,7 +133,7 @@ export const CARD_NOTICE_INLINE = 'px-4 pt-2 pb-1 opacity-80';
 
 /**
  * Pill search box wrapper inside panels and dropdowns. Same look as the top search bar (surface,
- * edge, height, roundness, icon and text), minus its floating shadow, so every search field matches.
+ * edge, height, roundness, icon and text), so every search field matches.
  */
 export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-full pl-2 pr-3 gap-2.5';
 

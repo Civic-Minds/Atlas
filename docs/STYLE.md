@@ -28,7 +28,7 @@ Tables, controls and labels
 Colour and shape
 
 - No dark fills. Selected and "on" states use a flat, pale tonal tint with darker text (the `--control-active-*` and `--accent-selected-*` tokens, `CONTROL_ACTIVE` in `src/styles.ts`). No solid near-black pills with white text.
-- No raised or shadowed pills. Keep the flat look.
+- Nothing has a shadow. Keep the flat look.
 - No all-caps text anywhere: no `uppercase` class, no `text-transform: uppercase`, no hard-coded capitals in labels, headers, badges or titles. Drop the wide letter spacing that usually comes with it. An agency's own route code in capitals ("SSSF", "WCE") is the route's name and stays as written.
 - A clear (X) button inside a pill-shaped search box sits at least `right-2` in from the edge, never flush with the border.
 

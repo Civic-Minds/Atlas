@@ -26,7 +26,7 @@ export default function AtlasLogo({ ariaLabel, href, onClick, showMark = true, s
   const content = (
     <>
       {showMark && (
-        <span className="w-8 h-8 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] shadow-lg rounded-full flex items-center justify-center shrink-0 group-hover:opacity-80 transition-opacity">
+        <span className="w-8 h-8 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full flex items-center justify-center shrink-0 group-hover:opacity-80 transition-opacity">
           <MapIcon className="w-3.5 h-3.5 text-[var(--accent)]" aria-hidden="true" />
         </span>
       )}

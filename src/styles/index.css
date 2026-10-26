@@ -294,7 +294,6 @@ input:focus-visible {
   border: 1px solid var(--border-primary);
   border-radius: 8px;
   pointer-events: none;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .tooltip-name {
@@ -364,13 +363,11 @@ input:focus-visible {
   border: 2px solid var(--accent);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.1s ease;
 }
 
 .time-scrubber-range::-webkit-slider-thumb:hover {
   transform: scale(1.05);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }
 
 .time-scrubber-range::-moz-range-track {
@@ -386,11 +383,9 @@ input:focus-visible {
   border: 2px solid var(--accent);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.1s ease;
 }
 
 .time-scrubber-range::-moz-range-thumb:hover {
   transform: scale(1.05);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }

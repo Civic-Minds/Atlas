@@ -71,7 +71,7 @@ export function CompareLinkToggle({ linked, onChange }: { linked: boolean; onCha
       aria-label={COMPARE_LINK_LABEL}
       title={COMPARE_LINK_LABEL}
       data-testid="compare-link-toggle"
-      className={`h-10! w-10! border-2! shadow-xl ring-4 ring-[var(--bg-panel)] backdrop-blur-md ${linked ? '' : 'bg-[var(--bg-panel)]! border-[var(--border-primary)]!'}`}
+      className={`h-10! w-10! border-2! ring-4 ring-[var(--bg-panel)] backdrop-blur-md ${linked ? '' : 'bg-[var(--bg-panel)]! border-[var(--border-primary)]!'}`}
     >
       <Icon className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
     </RoundIconButton>

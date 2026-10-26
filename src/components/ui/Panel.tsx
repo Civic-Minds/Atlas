@@ -4,7 +4,7 @@ import { FLOATING_CARD, PANEL_BODY, SIDEBAR_CARD_SURFACE, PANEL_ENTER, PANEL_TIT
 interface PanelProps extends ComponentProps<'div'> {
   /** Anchor below the search bar on the left, at the shared sidebar card width and height (needs --sidebar-left). */
   sidebar?: boolean;
-  /** The sidebar cards' surface (smaller shadow) without the placement: a card stacked inside a sidebar slot. */
+  /** The sidebar cards' surface without the placement: a card stacked inside a sidebar slot. */
   sidebarSurface?: boolean;
   /** Play the shared entrance animation. */
   enter?: boolean;
