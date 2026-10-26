@@ -133,13 +133,14 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
           { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm tabular-nums text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? '–' : '–'}</span> },
         ]}
       />
-      {excluding && <p className="m-0 mt-1 border-t border-[var(--border-primary)] pt-1 text-xs leading-4 text-[var(--text-dim)]" title={excludingTitle}>{excluding}</p>}
+      {/* The footnote: how the figures are worked out, kept visible but small and light (Live rule: math explanations stay visible). */}
+      {excluding && <p className="m-0 mt-1 border-t border-[var(--border-primary)] pt-1 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={excludingTitle}>{excluding}</p>}
       {notes && notes.length > 0 && (
         <ul className={`m-0 list-none p-0 text-pretty ${excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`}>
-          {notes.map(n => <li key={n} className="text-xs leading-4 text-[var(--text-dim)]">{n}</li>)}
+          {notes.map(n => <li key={n} className="text-xs leading-4 text-[var(--text-dim)] opacity-75">{n}</li>)}
         </ul>
       )}
-      {caption && <p className="m-0 mt-1 text-xs leading-4 text-[var(--text-dim)]" title={captionTitle}>{caption}</p>}
+      {caption && <p className="m-0 mt-0.5 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={captionTitle}>{caption}</p>}
     </section>
   );
 }
