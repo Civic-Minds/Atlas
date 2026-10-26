@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { agencyBackLinkName, COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
+import { agencyBackLinkName, stopNameCase, COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -25,6 +25,11 @@ describe('one capitals rule for stop and destination names (CIV-935)', () => {
     expect(titleCase('GARE DE DIJON VILLE')).toBe('Gare De Dijon Ville');
     expect(titleCase('PLACE STANISLAS')).toBe('Place Stanislas');
     expect(titleCase('LA MINERVA')).toBe('La Minerva');
+  });
+
+  it("cases an all-capitals stop name and leaves a feed's own mixed case alone", () => {
+    expect(stopNameCase('MOODY CENTER')).toBe('Moody Center');
+    expect(stopNameCase('Lower Jarvis St at The Esplanade')).toBe('Lower Jarvis St at The Esplanade');
   });
 
   it('keeps route-name-only words out of stop names', () => {

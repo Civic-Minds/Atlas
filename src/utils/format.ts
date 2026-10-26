@@ -243,6 +243,15 @@ export function titleCase(s: string): string {
     .replace(/à-l'/gi, "à-l'");
 }
 
+/**
+ * A stop name as the feed wrote it, cased only when the feed sent it all in capitals ("MOODY CENTER" →
+ * "Moody Center", CIV-935). A name that already has lower-case letters is the feed's own spelling and stays as
+ * written ("Lower Jarvis St at The Esplanade"), the same rule routeLabelCase uses for route names.
+ */
+export function stopNameCase(name: string): string {
+  return !name || /\p{Ll}/u.test(name) ? name : titleCase(name);
+}
+
 export function cleanRouteShortName(shortName: string | null | undefined): string {
   if (!shortName) return '';
   // Strip leading zeros for digits only (e.g. "01" -> "1", but leave "0" alone)

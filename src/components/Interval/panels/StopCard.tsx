@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { CardBackLink } from '../../CardBack';
-import { titleCase, routeLabels } from '../../../utils/format';
+import { stopNameCase, titleCase, routeLabels } from '../../../utils/format';
 import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   AgencyFilterChips,
@@ -187,8 +187,8 @@ export const StopCard: React.FC<StopCardProps> = ({
                 key={rKey}
                 label={route.text}
                 routeName={{ shortName: route.primary, name: route.secondary }}
-                // The stop name in the one casing rule (CIV-935): "Moody Center", not the feed's "MOODY CENTER".
-                subLabel={`${titleCase(nearestStopName)} · ${Math.round(distanceMeters)} m away`}
+                // "Moody Center", not the feed's "MOODY CENTER"; a feed's own mixed case stays as written (CIV-935).
+                subLabel={`${stopNameCase(nearestStopName)} · ${Math.round(distanceMeters)} m away`}
                 subLabelWeight="medium"
                 headway={headway ?? undefined}
                 onClick={() => openRoute(rKey)}
