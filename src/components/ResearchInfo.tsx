@@ -1,6 +1,6 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import Panel from './ui/Panel';
-import { LIST_ROW_PRIMARY, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { LIST_ROW_PRIMARY, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDTH, sidebarFrameStyle } from '../styles';
 
 /**
  * The one info card every research view (Night, Frequent Service, future ones) shows in the same place
@@ -8,10 +8,12 @@ import { LIST_ROW_PRIMARY, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_LEFT_FALLBA
  * Always visible, no close button. Counts live in the map's stat pills, not here.
  * A view's own panel (e.g. Night's route list) goes in `below`, as a separate card under it.
  */
-export default function ResearchInfo({ heading, children, sidebarLeft, hidden = false, below }: {
+export default function ResearchInfo({ heading, children, sidebarLeft, searchBarWidth, hidden = false, below }: {
   heading: string;
   children: ReactNode;
   sidebarLeft?: number | null;
+  /** The search bar's width on desktop, so the card lines up with it like every other card. */
+  searchBarWidth?: number;
   /** Hide while a route is selected and its card is showing. */
   hidden?: boolean;
   below?: ReactNode;
@@ -19,7 +21,7 @@ export default function ResearchInfo({ heading, children, sidebarLeft, hidden = 
   return (
     <div
       className={`${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} flex flex-col gap-2 ${SIDEBAR_CARD_MAX_H} ${hidden ? 'invisible pointer-events-none' : 'pointer-events-auto'}`}
-      style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as CSSProperties}
+      style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       <Panel enter sidebarSurface className="shrink-0">
         <div className="px-4 pt-2.5 pb-3">

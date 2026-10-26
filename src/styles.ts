@@ -3,6 +3,8 @@
  * Color tokens live in CSS variables (index.css). These handle shape, shadow, and surface.
  */
 
+import type { CSSProperties } from 'react';
+
 /** Glass panel surface: background + blur + primary border */
 export const SURFACE = 'bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)]';
 
@@ -165,3 +167,14 @@ export const PANEL_SIDEBAR = `${PANEL_SIDEBAR_SLOT} ${Z_PANEL}`;
 
 /** Fallback sidebar left offset (px) — used until ResizeObserver measures the real position */
 export const SIDEBAR_LEFT_FALLBACK = 182;
+
+/**
+ * Inline placement every sidebar card shares: its left edge (--sidebar-left, the fallback until the
+ * real position is measured) and, on desktop, the search bar's width. Callers pass no width on phones.
+ */
+export function sidebarFrameStyle(sidebarLeft?: number | null, searchBarWidth?: number): CSSProperties {
+  return {
+    '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+    ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
+  } as CSSProperties;
+}

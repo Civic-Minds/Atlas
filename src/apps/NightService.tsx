@@ -63,6 +63,7 @@ interface NightServiceIndexFile {
 interface Props {
   active?: boolean;
   sidebarLeft?: number;
+  searchBarWidth?: number;
   layers: Record<string, GeoJSON.FeatureCollection>;
   query?: string;
   frequency: NightServiceFrequency;
@@ -77,7 +78,7 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
   return box.maxLng >= bounds.w && box.minLng <= bounds.e && box.maxLat >= bounds.s && box.minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, layers, query = '', frequency, onRouteSelect, selectionActive = false }: Props) {
+export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, selectionActive = false }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
@@ -163,7 +164,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
   if (!active) return null;
 
   return (
-    <ResearchInfo heading={NIGHT_INFO_HEADING} sidebarLeft={sidebarLeft} hidden={selectionActive} below={
+    <ResearchInfo heading={NIGHT_INFO_HEADING} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} hidden={selectionActive} below={
       <Panel sidebarSurface className="min-h-0 flex-1">
         <PanelTitleBar>
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
