@@ -42,7 +42,8 @@ describe('buildAreaPageData', () => {
     const area = { ...AREA, agencies: [...AREA.agencies, 'mono'] };
     const e = buildAreaPageData(area, withRare, null);
     expect(e.modeColumns.at(-1)).toBe('Other');
-    expect(e.agencies.find(a => a.slug === 'mono')?.modes).toEqual({ Other: 2, Ferry: 1 });
+    // Trolleybus routes count in the Bus column in this table (Ryan, CIV-973 follow-up); monorail goes in Other.
+    expect(e.agencies.find(a => a.slug === 'mono')?.modes).toEqual({ Other: 1, Bus: 1, Ferry: 1 });
   });
 
   it('takes the quickest route across the whole area', () => {
@@ -87,7 +88,7 @@ describe('buildAreaPageData', () => {
   it('adds every counted agency to the map link when the page counts one the area does not list (CIV-274)', () => {
     const index = { vancouver: { name: 'Vancouver', cities: [], page: true, agencies: ['translink'], bbox: [0, 0, 1, 1] } } as any;
     const area = { slug: 'vancouver' } as any;
-    const row = (slug: string) => ({ slug, name: slug, totalRoutes: 1, modes: {} });
+    const row = (slug: string) => ({ slug, name: slug, displayName: slug, totalRoutes: 1, modes: {} });
     expect(areaMapHref({ area, agencies: [row('translink'), row('bc-fraser-valley')] }, index)).toBe('/?area=vancouver&agencies=translink%2Cbc-fraser-valley');
     expect(areaMapHref({ area, agencies: [row('translink')] }, index)).toBe('/?area=vancouver');
   });
@@ -113,7 +114,7 @@ describe('areaAboutParagraph', () => {
 
   it('is one sentence with the agency and route counts', () => {
     expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway/metro, 4 bus).');
-    const one = base({ agencies: [{ slug: 'a', name: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
+    const one = base({ agencies: [{ slug: 'a', name: 'A', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
     expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route.');
   });
 });
