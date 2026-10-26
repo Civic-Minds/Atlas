@@ -14,6 +14,23 @@ export interface RouteCardDirectionGroup {
   directionFeatures?: ShapeProperties[];
 }
 
+/** An agency's per-route direction overrides, keyed by route short name (config `directionLabels`, `directionHeadsigns`). */
+export interface RouteDirectionOverrides {
+  directionLabels?: Record<string, string>;
+  directionHeadsigns?: Record<string, string>;
+}
+
+/** The current route's direction overrides from its agency's config: one lookup for both (CIV-985). */
+export function routeDirectionOverrides(
+  agencies: ReadonlyArray<{ slug: string; directionLabels?: Record<string, Record<string, string>>; directionHeadsigns?: Record<string, Record<string, string>> }>,
+  agencySlug: string | undefined,
+  routeShortName: string | null | undefined,
+): RouteDirectionOverrides {
+  const agency = agencySlug ? agencies.find(a => a.slug === agencySlug) : undefined;
+  const key = routeShortName ?? '';
+  return { directionLabels: agency?.directionLabels?.[key], directionHeadsigns: agency?.directionHeadsigns?.[key] };
+}
+
 /**
  * The route card's direction groups (moved out of SidebarControls so tests and sweeps run the card's own rows).
  * Group directions by directionId so outbound/inbound are visually separated,

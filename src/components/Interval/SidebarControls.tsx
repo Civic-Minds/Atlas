@@ -8,7 +8,7 @@ import { findVariantFamily } from '../../utils/routeVariants';
 import { agencyDisplayParts, placeAlreadyInName, routeLabels, shortenAgencyName, searchOverlayHidesPanel, comparePanelTop } from '../../utils/format';
 import { partPeriodText, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
-import { buildDirectionGroups } from '../../utils/routeCardDirectionGroups';
+import { buildDirectionGroups, routeDirectionOverrides } from '../../utils/routeCardDirectionGroups';
 import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT } from '../../utils/agencySearch';
 import {
   splitAgencyGroups,
@@ -410,18 +410,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return findVariantFamily(feats, currentRoute.routeShortName ?? null, period, slug);
   }, [currentRoute, nonCorridorLayers, currentDay, period]);
 
-  const directionLabelOverrides = useMemo(() => {
-    if (!currentRoute) return undefined;
-    const slug = (currentRoute as any).agencySlug as string | undefined;
-    const agency = slug ? agencies.find(a => a.slug === slug) : undefined;
-    return agency?.directionLabels?.[currentRoute.routeShortName ?? ''];
-  }, [agencies, currentRoute]);
-  const directionHeadsigns = useMemo(() => {
-    if (!currentRoute) return undefined;
-    const slug = (currentRoute as any).agencySlug as string | undefined;
-    const agency = slug ? agencies.find(a => a.slug === slug) : undefined;
-    return agency?.directionHeadsigns?.[currentRoute.routeShortName ?? ''];
-  }, [agencies, currentRoute]);
+  const { directionLabels: directionLabelOverrides, directionHeadsigns } = useMemo(
+    () => (currentRoute ? routeDirectionOverrides(agencies, (currentRoute as any).agencySlug as string | undefined, currentRoute.routeShortName) : {}),
+    [agencies, currentRoute],
+  );
 
   // Group directions by directionId so outbound/inbound are visually separated,
   // and collapse multiple span patterns in the same group into one row.

@@ -15,13 +15,20 @@ async function fixtureZip(name: string): Promise<Buffer> {
   return zip.generateAsync({ type: 'nodebuffer' });
 }
 
+// Processing the fixture takes a few seconds, so both cases share one run, with room to spare on a busy machine (#1127).
+const FIXTURE_TIMEOUT_MS = 60_000;
+
 describe('thin-pool fallback stops floor the period values', () => {
-  beforeAll(() => { vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-21T12:00:00') }); });
+  let routeRows: any[] = [];
+  beforeAll(async () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-21T12:00:00') });
+    const result = await processGtfsBuffer(await fixtureZip('trimet-72-6-floor'), undefined, { slug: 'trimet' });
+    routeRows = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null);
+  }, FIXTURE_TIMEOUT_MS);
   afterAll(() => { vi.useRealTimers(); });
 
-  it('TriMet 72 Saturday toward Clackamas: two departures from a same-stop-list shape count, so the first stop floors the morning at 33, not its own 51', async () => {
-    const result = await processGtfsBuffer(await fixtureZip('trimet-72-6-floor'), undefined, { slug: 'trimet' });
-    const rows = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null && p.routeId === '72' && p.directionId === 1);
+  it('TriMet 72 Saturday toward Clackamas: two departures from a same-stop-list shape count, so the first stop floors the morning at 33, not its own 51', () => {
+    const rows = routeRows.filter((p: any) => p.routeId === '72' && p.directionId === 1);
     const sat = rows.find((p: any) => p.day === 'Saturday');
     // The first stop's own reading is 51 (three own departures); the merged list with the two
     // same-stop-list departures reads 33, and the row floors there rather than at the pool's 32
@@ -31,9 +38,8 @@ describe('thin-pool fallback stops floor the period values', () => {
     expect(sat.headwayByPeriod.midday).toBe(24);
   });
 
-  it('TriMet 6 weekday toward Goose Hollow: the Hayden Meadows loop, served by no other pattern, floors the evening at its own 32', async () => {
-    const result = await processGtfsBuffer(await fixtureZip('trimet-72-6-floor'), undefined, { slug: 'trimet' });
-    const rows = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null && p.routeId === '6' && p.directionId === 1);
+  it('TriMet 6 weekday toward Goose Hollow: the Hayden Meadows loop, served by no other pattern, floors the evening at its own 32', () => {
+    const rows = routeRows.filter((p: any) => p.routeId === '6' && p.directionId === 1);
     const wk = rows.find((p: any) => p.day === 'Weekday');
     // The pool at the terminal reads 15 in the evening; only every other bus serves the loop.
     expect(wk.headwayByPeriod.evening).toBe(32);
