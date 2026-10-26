@@ -50,7 +50,7 @@ export default function PanelHeader({
 }) {
   return (
     <div className={PANEL_HEADER_BAR}>
-      <div className="flex items-center gap-1.5 min-w-0">
+      <div className="flex items-center gap-1.5">
         {onBack && <PanelBackButton onClick={onBack} label={backLabel ?? 'Back'} />}
         <h2 id={titleId} className={PANEL_HEADER_TITLE}>{title}</h2>
       </div>
