@@ -29,7 +29,7 @@ interface Props {
   padding?: { top: number; bottom: number; left: number; right: number };
   /** Distance of the zoom buttons from the right edge, px: the main map's 12, more where a panel floats over the map's right side. */
   controlsRight?: number | string;
-  /** Where delay starts (the CIV-942 prototype): a heat layer, plus a dot per stop when zoomed in and no stops are drawn already. */
+  /** Where delay starts (the CIV-942 prototype): a soft dot per stop, with a sharp centre where no stops are drawn already. */
   heat?: HeatPoint[] | null;
   className?: string;
 }
@@ -124,17 +124,18 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       map.addLayer({ id: 'seg-halo', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 12] } });
       map.addLayer({ id: 'seg', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], 0.25, 1], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 8] } });
       map.addLayer({ id: 'seg-sel', type: 'line', source: 'segments', filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 7, 15, 15], 'line-opacity': 0.35 } });
-      // The heat: each stop weighted by the minutes added there (0 adds nothing; the red step, half a minute or more, counts fully).
+      // The heat: one soft dot per stop in its own step colour, bigger the more it adds (never summed with its neighbours,
+      // so the colour is always the stop's own figure and matches the key). Hottest drawn on top.
       const [, top] = MAP_STEP_LIMITS.delayStarts;
       map.addSource('heat', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-      map.addLayer({ id: 'heat', type: 'heatmap', source: 'heat', paint: {
-        'heatmap-weight': ['interpolate', ['linear'], ['get', 'added'], 0, 0, top, 1],
-        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 10, 12, 13, 22, 15, 34],
-        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1.6, 13, 1.2, 15, 1],
-        'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 12, 0.9, 15, 0.65],
-        'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.25, css('--strip-delay-1') + '66', 0.6, css('--strip-delay-1'), 1, css('--strip-delay-2')],
+      const size = (z: number) => ['interpolate', ['linear'], ['get', 'added'], 0, 2 + z * 0.3, top, 6 + z, top * 4, 9 + z * 1.5];
+      map.addLayer({ id: 'heat', type: 'circle', source: 'heat', layout: { 'circle-sort-key': ['get', 'added'] }, paint: {
+        'circle-color': ['get', 'color'],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, size(2), 15, size(8)] as unknown as maplibregl.ExpressionSpecification,
+        'circle-blur': ['case', ['>=', ['get', 'added'], 0.25], 0.6, 0],
+        'circle-opacity': ['case', ['>=', ['get', 'added'], 0.25], 0.85, 0.7],
       } });
-      map.addLayer({ id: 'heat-dot', type: 'circle', source: 'heat', minzoom: 13, filter: ['==', ['get', 'dot'], 1], paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 3, 15, 6], 'circle-stroke-color': halo, 'circle-stroke-width': 1.5 } });
+      map.addLayer({ id: 'heat-dot', type: 'circle', source: 'heat', filter: ['all', ['==', ['get', 'dot'], 1], ['>=', ['get', 'added'], 0.25]], layout: { 'circle-sort-key': ['get', 'added'] }, paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 15, 5], 'circle-stroke-color': halo, 'circle-stroke-width': 1 } });
       map.addLayer({ id: 'stp', type: 'circle', source: 'stops', paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 15, 6], 'circle-stroke-color': halo, 'circle-stroke-width': 1.5 } });
       map.addLayer({ id: 'stp-sel', type: 'circle', source: 'stops', filter: ['==', ['get', 'sel'], 1], paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 6, 15, 11], 'circle-stroke-color': light ? '#111827' : '#ffffff', 'circle-stroke-width': 2 } });
       ready.current = true;
@@ -149,7 +150,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       else pick.current(null, null);
     });
     map.on('mousemove', e => {
-      const hit = map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers: ['stp', 'heat-dot', 'seg'] })[0];
+      const hit = map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers: ['stp', 'heat-dot', 'heat', 'seg'] })[0];
       map.getCanvas().style.cursor = hit ? 'pointer' : '';
       const text = hit ? String(hit.properties?.name ?? hit.properties?.label ?? '') : '';
       setTip(text ? { x: e.point.x, y: e.point.y, text } : null);

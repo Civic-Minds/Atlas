@@ -6,7 +6,7 @@ import { FEATURES } from '../shared/config';
 import { minutesText } from '../shared/liveFormat';
 import { LATE_SHORT, LATE_THRESHOLD, excludingWeeksText, leftOutReason, risePointsText } from '../shared/liveWording';
 import type { AgencySummary } from '../shared/liveAgency';
-import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
+import { weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
@@ -54,7 +54,9 @@ function stepLabels(measure: MapMeasure): [string, string, string] {
 const STEP_VAR = (measure: MapMeasure, step: number) => `var(--strip-${measure === 'bunching' ? 'bunching' : 'delay'}-${step})`;
 
 /** The heatmap prototype's one line on what the colour means (CIV-942, wording to confirm). */
-const DELAY_STARTS_NOTE = 'Typical minutes vehicles add since the previous stop';
+const DELAY_STARTS_NOTE = 'Typical minutes of delay added since the previous stop that stay for the next 3 stops';
+/** The stop card's line for that figure (wording to confirm). */
+const DELAY_STAYS = 'Added and kept';
 
 /** The map's key, with the heatmap toggle (CIV-942 prototype) above it. */
 function Key({ measure, toggleHeat }: { measure: MapMeasure; toggleHeat: () => void }) {
@@ -78,11 +80,12 @@ function Key({ measure, toggleHeat }: { measure: MapMeasure; toggleHeat: () => v
 
 
 /** The lines of a stop's card: the trimmed figures the strip's hover shows, then its extra wait where it has one. */
-function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStripStop, measure: MapMeasure): string[] {
+function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStripStop, measure: MapMeasure, uncertain: readonly UncertainStart[]): string[] {
   const extra = v3.extraWait?.[band]?.find(x => x.directionId === dir && x.stopId === stop.stopId);
-  // Delay starts: the stretch that ends at this stop first, in the segment card's own words.
-  const into = measure === 'delayStarts' ? v3.bands[band].buildup.find(b => b.directionId === dir)?.stretches.find(t => t.toStopId === stop.stopId) : undefined;
-  return [...(into ? segmentLines(v3.bands[band] as DashboardBandData, dir, into.fromStopId, into.toStopId) : []), ...stopDetail(stop).lines, ...(extra ? [`Extra wait ${minutesText(Math.max(0, extra.extraWaitMin))}`] : [])];
+  // Delay starts: the figure the map colours by, then the stretch into this stop in the segment card's own words. Only for
+  // a stop the map measures (never a terminal stretch or one with too few trips).
+  const heat = measure === 'delayStarts' ? delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId: dir }, uncertain: () => uncertain }).find(p => p.stopId === stop.stopId) : undefined;
+  return [...(heat ? [`${DELAY_STAYS} ${mins(heat.addedMin)}`, ...segmentLines(v3.bands[band] as DashboardBandData, dir, heat.fromStopId, stop.stopId)] : []), ...stopDetail(stop).lines, ...(extra ? [`Extra wait ${minutesText(Math.max(0, extra.extraWaitMin))}`] : [])];
 }
 
 /** The lines of a segment's card: only the segment, never its start stop. */
@@ -230,7 +233,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
   const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
   const card = v3 && bandData
     ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)} />
-      : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked, measure)} /> : null
+      : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null;
   // The Bunching tile's legend line is shown only where the right panel has room for it (it never scrolls or clips); its text is the tile's hover title either way.
   const panelRef = useRef<HTMLDivElement>(null);
