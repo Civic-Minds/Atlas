@@ -39,6 +39,7 @@ import ResearchInfo from './components/ResearchInfo';
 import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
+import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent } from './lib/analytics';
@@ -268,7 +269,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       return true;
     });
   }, []);
-  const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
+  // The agency card opens from a link's ?operator= (CIV-919). History keeps its own `agency` param.
+  const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(() => (
+    window.location.pathname.startsWith('/apps/history') ? null : parseAgencyCardParam(window.location.search)
+  ));
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string; frequency: NightServiceFrequency } | null>(null);
@@ -433,6 +437,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     if (inHistory) syncUrlParams(encodeHistoryView(historyView));
   }, [inHistory, historyView]);
+  // The open agency card in the link (CIV-919); History never carries it.
+  useEffect(() => {
+    syncUrlParams({ [AGENCY_CARD_PARAM]: inHistory ? null : selectedAgencySlug });
+  }, [inHistory, selectedAgencySlug]);
 
   // Interval reloads all its agency data whenever this list's identity changes, so it must stay the same
   // array until its contents change (a fresh filter() every render looped History at phone width).

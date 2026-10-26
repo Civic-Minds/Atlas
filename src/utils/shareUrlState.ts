@@ -295,3 +295,37 @@ export function encodeFullDayUrlState(state: FullDayUrlState, defaultDirection: 
     fdir: state.direction && state.direction !== defaultDirection ? state.direction : null,
   };
 }
+
+/**
+ * Map cards that open from a link (CIV-919). Each has its own name, kept clear of History's
+ * `agency` (the map stays mounted under History, see above) and of the map's `agencies`/`hide`.
+ *   - `operator=<slug>`: the agency card.
+ *   - `routes=<key>,<key>`: the chooser for overlapping routes, named by its route keys (not a
+ *     click point) so the link opens the same list wherever the map is.
+ */
+export const AGENCY_CARD_PARAM = 'operator';
+export const ROUTE_CHOOSER_PARAM = 'routes';
+
+/** The agency card's slug from a link, or null. Slugs are [a-z0-9-]; anything else is ignored. */
+export function parseAgencyCardParam(search: string | URLSearchParams): string | null {
+  const raw = toSearchParams(search).get(AGENCY_CARD_PARAM)?.trim().toLowerCase();
+  return raw && /^[a-z0-9-]+$/.test(raw) ? raw : null;
+}
+
+/** The chooser's route keys joined by `,`; null when fewer than two (nothing to choose). */
+export function encodeRouteChooserParam(keys: readonly string[] | null | undefined): string | null {
+  const unique = [...new Set(keys ?? [])];
+  return unique.length > 1 ? unique.join(',') : null;
+}
+
+/**
+ * Route keys from a `routes=` value. Keys start with an agency slug and `::`, so a comma splits
+ * keys only when the next key starts that way: a route ID that itself contains a comma stays whole.
+ * Null when fewer than two keys are left.
+ */
+export function parseRouteChooserParam(search: string | URLSearchParams): string[] | null {
+  const raw = toSearchParams(search).get(ROUTE_CHOOSER_PARAM);
+  if (!raw) return null;
+  const keys = [...new Set(raw.split(/,(?=[a-z0-9-]+::)/).map(s => s.trim()).filter(key => /^[a-z0-9-]+::./.test(key)))];
+  return keys.length > 1 ? keys : null;
+}
