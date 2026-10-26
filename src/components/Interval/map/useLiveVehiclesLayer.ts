@@ -287,38 +287,7 @@ export function useLiveVehiclesLayer(
     frameRoute(map, [[w, s], [e, n]], { minZoom: area.minZoom ?? 0, padding: cardFramePadding(map, cardRefRef.current?.current) });
   }, [liveOverlay?.focusArea, mapLoaded, mapRef]);
 
-  // Stretch zoom from the route card: same framing as selecting the route.
-  useEffect(() => {
-    const map = mapRef.current;
-    const area = liveOverlay?.fitArea;
-    if (!map || !mapLoaded || !area) return;
-    const [w, so, e, n] = area.bounds;
-    frameRoute(map, [[w, so], [e, n]], { maxZoom: 16, phoneSheet: true });
-  }, [liveOverlay?.fitArea, mapLoaded, mapRef]);
-
-  // Highlighted stretch, drawn over the route shape.
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-    const coords = liveOverlay?.highlight ?? null;
-    const data: GeoJSON.FeatureCollection = {
-      type: 'FeatureCollection',
-      features: coords && coords.length > 1 ? [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } }] : [],
-    };
-    const source = map.getSource('live-stretch') as maplibregl.GeoJSONSource | undefined;
-    if (source) { source.setData(data); return; }
-    if (!coords) return;
-    map.addSource('live-stretch', { type: 'geojson', data });
-    map.addLayer({
-      id: 'live-stretch-layer',
-      type: 'line',
-      source: 'live-stretch',
-      paint: { 'line-color': '#2563eb', 'line-width': ['interpolate', ['linear'], ['zoom'], 11, 5, 14, 8, 17, 11], 'line-opacity': 0.45 },
-      layout: { 'line-cap': 'round', 'line-join': 'round' },
-    });
-  }, [liveOverlay?.highlight, mapLoaded, mapRef]);
-
-  // Clicks while Live is open: every vehicle dot under the click goes to Live; anywhere else goes to the route card (stretch picking).
+  // Clicks while Live is open: every vehicle dot under the click goes to Live (an empty click clears the pick list).
   const onMapClickRef = useRef(liveOverlay?.onMapClick);
   onMapClickRef.current = liveOverlay?.onMapClick;
   useEffect(() => {

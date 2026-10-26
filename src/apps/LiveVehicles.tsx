@@ -29,7 +29,7 @@ import { delayLabel, vehicleCardName, vehicleCardRows } from '../components/Live
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
-import { useLiveCardMapLink, useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
+import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
@@ -125,7 +125,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const [vehiclePick, setVehiclePick] = useState<string[] | null>(null);
   const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
   const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
-  const { fitArea, highlight, setHighlight } = useLiveCardMapLink();
   // A route handed over from the main map (or a link), waiting for its agency to come into view.
   const pendingRouteRef = useRef<string | null>(null);
 
@@ -200,7 +199,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       if (bbox) setFocusArea({ bounds: bbox, minZoom: MIN_LIVE_ZOOM + 0.2, ts: Date.now() });
     },
   });
-  useEffect(() => { setHighlight(null); }, [selectedRoute]);
 
 
   // Clear selected route when it's no longer in view
@@ -549,21 +547,18 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       focusedVehicle?.ts ?? '',
       vehicleFly?.ts ?? '',
       focusArea?.ts ?? '',
-      fitArea?.ts ?? '',
-      highlight?.length ?? 0,
-      highlight?.[0]?.join(',') ?? '',
     ].join('::');
     if (fp === lastOverlayFpRef.current) return;
     lastOverlayFpRef.current = fp;
     setOverlay({
-      vehicles: allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, cardRef, focusArea, fitArea, highlight,
+      vehicles: allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, cardRef, focusArea,
       onMapClick: (_lonLat, vehicles) => {
         if (vehicles.length === 1) { openVehicleCard(vehicles[0]); return; }
         if (vehicles.length > 1) { setVehiclePick(vehicles.map(v => v.id)); return; }
         setVehiclePick(null);
       },
     });
-  }, [active, allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, focusArea, fitArea, highlight, setOverlay]);
+  }, [active, allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, focusArea, setOverlay]);
 
 
   // Observed vs scheduled headway line for the selected route ("Every ~7 min · scheduled every 6 min")
