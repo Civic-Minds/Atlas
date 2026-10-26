@@ -10,6 +10,11 @@ describe('AgencyCardTop', () => {
     expect(screen.getByRole('heading').textContent).toBe('MARTA Atlanta');
   });
 
+  it('leaves the place out when the name already says it', () => {
+    render(<AgencyCardTop as="h2" name="Grande Prairie Transit On-Demand" place="Grande Prairie" back={noop} />);
+    expect(screen.getByRole('heading').textContent).toBe('Grande Prairie Transit On-Demand');
+  });
+
   it('leaves the place out when there is none', () => {
     render(<AgencyCardTop name="TTC" back={noop} />);
     expect(screen.getByText('TTC').textContent).toBe('TTC');

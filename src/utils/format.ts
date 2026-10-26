@@ -463,8 +463,8 @@ function normalizeBrandCode(s: string): string {
   return trimmed;
 }
 
-/** True when place text (or its significant words) already appears in the agency name. */
-function placeAlreadyInName(agency: string, place: string): boolean {
+/** True when place text (or its significant words) already appears in the agency name. Also used by the agency card top. */
+export function placeAlreadyInName(agency: string, place: string): boolean {
   const norm = (s: string) =>
     s
       .toLowerCase()

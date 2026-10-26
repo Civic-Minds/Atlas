@@ -1,7 +1,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { Flag, Radio, X } from 'lucide-react';
-import { fmtHeadway } from '../../utils/format';
+import { fmtHeadway, placeAlreadyInName } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { getTierColor } from '../../utils/colors';
 import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_CARD_SURFACE, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
@@ -501,7 +501,8 @@ export function AgencyCardTop({
     <div className="flex items-start gap-2 min-w-0">
       <div className="min-w-0 flex-1">
         <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>
-        <AgencyNameHeading as={as} name={name} place={place} className="mb-0" />
+        {/* The place only when the name doesn't already say it ("Grande Prairie Transit On-Demand", not "… Grande Prairie"). */}
+        <AgencyNameHeading as={as} name={name} place={place && !placeAlreadyInName(name, place) ? place : null} className="mb-0" />
         {region && <p className="mt-0.5 flex min-w-0 text-xs whitespace-nowrap">{region}</p>}
         {facts && <p className={CARD_SUMMARY}>{facts}</p>}
         {children}
