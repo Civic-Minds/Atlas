@@ -7,7 +7,7 @@ import { buildRouteModeFilters } from '../../../utils/routeModeFilters';
 import { AVAILABLE_FILTER_MODES } from '../../../utils/shareUrlState';
 
 // One shared definition of mode order and labels; every place that lists modes must follow it (#827).
-const EXPECTED_ORDER = ['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Monorail', 'Bus', 'Trolleybus', 'Ferry', 'Cable car', 'Gondola/aerial tram', 'Funicular', 'On-demand'];
+const EXPECTED_ORDER = ['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Monorail', 'People mover', 'Bus', 'Trolleybus', 'Ferry', 'Cable car', 'Gondola/aerial tram', 'Funicular', 'On-demand'];
 const SHUFFLED = [3, 2, 100, 6, 4, 1, 0];
 
 const route = (mode: number): AgencyPageRoute => ({ name: String(mode), longName: null, mode, midday: 10, am: 10, pm: 10, evening: null, overnight: null });

@@ -14,6 +14,7 @@
 import { processGtfsBuffer, type GtfsPreprocess, type ProcessOptions, type ProcessResult } from './process-core.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { extractAgencySections } from '../shared/agencySections.js';
+import { applyOnDemandRoutes } from './onDemandRoutes.js';
 
 export interface AgencyFeedConfig {
   slug: string;
@@ -22,6 +23,8 @@ export interface AgencyFeedConfig {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  /** #1119: routes (short names) that run on demand; nothing measured from their placeholder timetable is published. */
+  onDemandRoutes?: string[];
   timezoneOverride?: string;
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
@@ -216,6 +219,8 @@ export async function processAgencyFeeds(
   }
   stopsMeta.stopCount = stopsMeta.stops.length;
   Object.assign(runningTimes, primaryCollection.runningTimes ?? {});
+  const onDemandChanged = applyOnDemandRoutes(features as Array<{ properties?: Record<string, unknown> | null }>, runningTimes, agency.onDemandRoutes);
+  if (onDemandChanged > 0) onProgress?.(`On-demand routes: ${onDemandChanged} features carry no timetable values (#1119)`);
   // CIV-321: one pass over the merged list, so supplemental features' keys number on from the main feed's.
   const sections = extractAgencySections(features as Array<{ geometry?: { type?: string } | null; properties?: Record<string, unknown> | null }>);
 
