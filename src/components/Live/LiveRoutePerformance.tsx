@@ -135,7 +135,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
                 [`Cars${line.sharedStreet ? ` (${line.sharedStreet.replace(/\s+(St|Ave|Rd|Blvd)$/i, '')})` : ''}`, String(live.cars)],
                 ['Scheduled', `every ${liveSched ? schedText(liveSched) : live.scheduledSec ? mins(live.scheduledSec) : '–'}`],
               ]} />
-              {live.gapsMin.length > 0 && (
+              {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
+              {live.gapsMin.some(g => g != null) && (
                 <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-xs font-bold tabular-nums">
                   <span className="text-[var(--text-dim)]">Gaps, front to back (min)</span>
                   {live.gapsMin.map((g, i) => (

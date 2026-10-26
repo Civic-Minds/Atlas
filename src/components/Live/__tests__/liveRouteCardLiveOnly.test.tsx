@@ -74,6 +74,12 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
   });
 
+  it('shows no gaps line while no gap is known yet (cars just seen, no track of the car ahead)', () => {
+    card([car('a', 't1', 3, T0), car('b', 't2', 1.5, T0)]);
+    expect(screen.getByText('2')).toBeTruthy();
+    expect(screen.queryByText('Gaps, front to back (min)')).toBeNull();
+  });
+
   it('skips a car on a trip the timetable does not list until it has been seen moving', () => {
     card([car('a', 't1', 3, T0), car('b', 't2', 1.5, T0), car('x', '-99', 2.5, T0)]);
     expect(screen.queryByText('Live feed incomplete right now')).toBeNull();
