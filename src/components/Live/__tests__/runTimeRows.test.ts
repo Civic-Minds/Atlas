@@ -108,6 +108,10 @@ describe('patternRunTimeRows (CIV-945)', () => {
     const trimmed = { ...withPatterns, runningTime: { ...withPatterns.runningTime, patterns: { '0': [{ ...p('main', 'Q', 'S', 13, 500, 22), patternStops: 18, fullPattern: false }] } } } as unknown as LiveV3;
     expect(patternRunTimeRows(trimmed, 'all', 0, nice)![0].label).toBe('Main: Q → S · 13\u00a0of\u00a018\u00a0stops');
   });
+  it('leaves out a trimmed main row no longer than a short turn', () => {
+    const tunnel = { ...withPatterns, runningTime: { ...withPatterns.runningTime, patterns: { '0': [{ ...p('main', 'Q', 'S', 13, 500, 22), patternStops: 18, fullPattern: false }, { ...p('shortTurn', 'L', 'S', 13, 300, 23), patternStops: 14, fullPattern: false }] } } } as unknown as LiveV3;
+    expect(patternRunTimeRows(tunnel, 'all', 0, nice)!.map(r => r.label)).toEqual(['Short turn: L → S · 13\u00a0of\u00a014\u00a0stops']);
+  });
   it('is null for an older file', () => {
     expect(patternRunTimeRows(v3, 'all', 0, nice)).toBeNull();
   });

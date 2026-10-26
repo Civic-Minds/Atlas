@@ -57,7 +57,11 @@ export function patternRunTimeRows(v3: LiveV3, band: DashboardBand, d: number, n
   const list = v3.runningTime?.patterns?.[String(d)];
   if (!list?.length) return null;
   const dirName = v3.directionLabels?.[String(d)];
-  return list.flatMap(p => {
+  // A main pattern trimmed at a poorly measured end to no more stops than a short turn would read as no longer than it
+  // (the 510 northbound at the Union tunnel): its row is left out; the week table still gives the main pattern's figure.
+  const main = list.find(p => p.kind === 'main');
+  const hideMain = !!main && main.stops < main.patternStops && list.some(p => p.kind === 'shortTurn' && p.stops >= main.stops);
+  return list.filter(p => !(hideMain && p === main)).flatMap(p => {
     const f = branchFigures(p, band);
     if (!f) return [];
     return [{
